@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 141 time(s) in 28 run(s).
+Seen 204 time(s) in 36 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -53,11 +53,11 @@ Seen 141 time(s) in 28 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 826 ms | 519978 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 1394 ms | 10331 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 1177 ms | 7157 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 23 | 200 | 814–21715 ms | 5436–1410350 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 30 | 200 | 814–21715 ms | 3233–1410350 ms | — |
 | inspect | step 1: goto /marketplace/ | 2 | 200 | 1158–1484 ms | 18023–18294 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 684 ms | 354420 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 1520 ms | 5189 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 13 | 200 | 846–2695 ms | 25003–1792588 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 1520–2853 ms | 5189–5609 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 15 | 200 | 846–2695 ms | 3017–1792588 ms | — |
 | inspect | step 1: goto /marketplace/create/item | 1 | 200 | 2060 ms | 5602 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 905 ms | 6083 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1230 ms | 4876 ms | — |
@@ -70,6 +70,21 @@ Seen 141 time(s) in 28 run(s).
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 720 ms | 5367 ms | — |
 | inspect | scroll: +315px in 8 wheel steps, 297 ms | 1 | 200 | 2119 ms | 1147627 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 3 | 200 | 893–2190 ms | 274709–439238 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 1200 ms | 3793 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 1825 ms | 9400 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 3229 ms | 9323 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 1260 ms | 2367 ms | — |
+| host | step 7: goto /me | 1 | 200 | 1237 ms | 3982 ms | — |
+| host | step 12: goto /me | 1 | 200 | 1304 ms | 3137 ms | — |
+| host | step 17: goto /me | 1 | 200 | 1270 ms | 3098 ms | — |
+| flow | step 1: goto /marketplace/ | 3 | 200 | 888–953 ms | 2495–3545 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 827–994 ms | 1979–4824 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 842–1749 ms | 1991–3800 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 1959 ms | 13692 ms | — |
+| host | step 41: sellLocation | 30 | 200 | 874–2595 ms | 128649–614569 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 1164 ms | 5748 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 4 | 200 | 827–926 ms | 615012–657625 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 1495 ms | 2924 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -111,7 +126,7 @@ Answered:
       },
       "notifications_page": {
         "filter_config": {
-          "selected_filter_tokens": "(1 items)",
+          "selected_filter_tokens": "(taken out)",
           "filters": "(2 items)"
         },
         "query_id": "Cg8BdAZq2xOoDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
@@ -148,35 +163,35 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg?stp=c0.0.736.736a_cp0_dst-jpg_tt6&cstp=mx736x736&ctp=s56x56&_nc_cat=102&ccb=1-7&_nc_sid=28885b&_nc_ohc=dWRATbNp6I8Q7kNvwH4-B8k&_nc_oc=AdpjmQFhIvPBiezViDZ4ju2zpYQvNKce7KJ1cDk5ZwnUs3-brXj7nHStaZnoCXRWT7U&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=Uryd8m2w7xwged87I9Accw&_nc_ss=792a8&oh=00_AQP5Y0… (452 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2043x2048&ctp=s56x56&_nc_cat=103&ccb=1-7&_nc_sid=28885b&_nc_ohc=mTvq4GvCFTIQ7kNvwEKAH8n&_nc_oc=AdqBw6WDPrXHjNTRptvUvyDlbbNOWiyJhnDkZ-Qvx19xBjbnlYQdnmB0G8Da7G4aN1g&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=Uryd8m2w7xwged87I9Accw&_nc_ss=792a8&oh=00_AQMvfAoLBc3e9rje-cSy… (438 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg?stp=c174.0.612.612a_cp0_dst-jpg_tt6&cstp=mx612x612&ctp=s64x64&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=6mhlZxHrGKoQ7kNvwHj35rF&_nc_oc=AdoI4NOBqivl7FTlzJR9MW41FbxQ8UyDcFl1F4uQfRdQ20mWVVWpAQJMM9Z6y-1lgLQ&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=Uryd8m2w7xwged87I9Accw&_nc_ss=792a8&oh=00_AQOwz… (453 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg?stp=c448.0.1152.1152a_cp0_dst-jpg_tt6&cstp=mx1152x1152&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sZhdCBmCWREQ7kNvwF0HQ-j&_nc_oc=AdozgQ3Gs_jLrJEu082VQ5-eSKSwgDQdKkYzNfbeSA0z1lMQ9pPJ4_Ug6_dKxVRFUaE&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=Uryd8m2w7xwged87I9Accw&_nc_ss=792a8&oh=00_A… (457 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx960x949&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=KaK2tVsDwPsQ7kNvwFaXMzW&_nc_oc=Adr1B5eVfTR6nR1dNHlhAquvCIdRU6GBdoz7Zo64I3omcLxb9xoBE7RWF5CghZcFwlI&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=Uryd8m2w7xwged87I9Accw&_nc_ss=792a8&oh=00_AQNGe2Khb8RdSMWYZh-x_… (437 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -249,7 +264,7 @@ Answered:
       },
       "notifications_page": {
         "filter_config": {
-          "selected_filter_tokens": "(1 items)",
+          "selected_filter_tokens": "(taken out)",
           "filters": "(2 items)"
         },
         "query_id": "Cg8BdAZq2wzHDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
@@ -286,35 +301,35 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg?stp=c0.0.736.736a_cp0_dst-jpg_tt6&cstp=mx736x736&ctp=s56x56&_nc_cat=102&ccb=1-7&_nc_sid=28885b&_nc_ohc=dWRATbNp6I8Q7kNvwEGQ49a&_nc_oc=Adrlwp_BnR4s3q_jF96kRTz5bpTmpjidFscmDGOQyeRCh2nNQSE1pZ4fsCC_6TRZNRA&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=96WNEokUe-rj5hU5BEsIUA&_nc_ss=792a8&oh=00_AQPBB1… (452 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2043x2048&ctp=s56x56&_nc_cat=103&ccb=1-7&_nc_sid=28885b&_nc_ohc=mTvq4GvCFTIQ7kNvwEeGOhT&_nc_oc=AdpjSCPlcpS9sMjraUxRqkVqHuMq5S55Iktcu0IUsJIHFXRD1YwfYSvb2BKLqV7qrHo&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=96WNEokUe-rj5hU5BEsIUA&_nc_ss=792a8&oh=00_AQNvIm1JkVhknq_1OLBZ… (438 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx960x949&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=KaK2tVsDwPsQ7kNvwHtyDo6&_nc_oc=AdoLUetqB02mrxQW1euuwm3XG4jmDZNgGPgi7F6a0oGcA6Sc4KXh2LU8TM0O9G1leNI&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=96WNEokUe-rj5hU5BEsIUA&_nc_ss=792a8&oh=00_AQONXo5ld0k7boNObYUzI… (437 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg?stp=c174.0.612.612a_cp0_dst-jpg_tt6&cstp=mx612x612&ctp=s64x64&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=6mhlZxHrGKoQ7kNvwGcwIM5&_nc_oc=AdqYy92OxfnJqb0NVNmuDJSx8xTfcLavIPe1D_CIgiH_RssK1rVYh8dqC7KJHa81D3Q&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=96WNEokUe-rj5hU5BEsIUA&_nc_ss=792a8&oh=00_AQNxY… (453 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg?stp=c448.0.1152.1152a_cp0_dst-jpg_tt6&cstp=mx1152x1152&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sZhdCBmCWREQ7kNvwHCRtlQ&_nc_oc=Adox_RWLNEp40S0VLYzOfQRzSMoqJLo9hDtMKt3jeYZg8IA7aA1nbvpFHJAxzUYsMf0&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=96WNEokUe-rj5hU5BEsIUA&_nc_ss=792a8&oh=00_A… (457 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -355,13 +370,12 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +376px in 9 wheel steps, 328 ms: 200, 1399 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 2853 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
   "server_timestamps": "true",
@@ -370,10 +384,7 @@ Sent:
     "environment": "MAIN_SURFACE",
     "scale": 1
   },
-  "doc_id": "29240849615602606",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "29240849615602606"
 }
 ```
 
@@ -385,32 +396,53 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669",
+        "id": "61593939852820",
         "__isActor": "User",
-        "name": "Bethlehem Trash"
+        "name": "Uski Guvh"
       },
       "notifications_page": {
         "filter_config": {
-          "selected_filter_tokens": "(1 items)",
-          "filters": "(2 items)"
+          "selected_filter_tokens": "(taken out)",
+          "filters": [
+            "(3 fields)",
+            "(3 fields)"
+          ]
         },
-        "query_id": "Cg8BdAZq3ExMDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "query_id": "Cg8BdAZq3agJDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
         "edges": [
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "… 2 more"
+          {
+            "node": "(6 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":1,\"nc\":0,\"rt\":\"bucket_header\",\"ah\":35,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[]}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531],\"nid\":[1788763333642799,1788763359717652],\"ts\":1788763359}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":2,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511],\"nid\":[1788763333642799,1788763359717652,1788763402791959],\"ts\":1788763402}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":3,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313],\"nid\":[1788763333642799,1788763359717652,1788763402791959,1788763559150493,1788… (430 chars)"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":4,\"rc\":5,\"nc\":4,\"rt\":\"notification\",\"ah\":403,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091],\"nid\":[1788763333642799,1788763359717652,1788763402791959,178876… (479 chars)"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":5,\"rc\":6,\"nc\":5,\"rt\":\"notification\",\"ah\":495,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091,61594307126888],\"nid\":[1788763333642799,1788763359717652,17887634… (528 chars)"
+          },
+          "… 4 more"
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[61556829712306],\"ts\":1792454835,\"nid\":[1792727402487884,1792780995154195,1792705704726789,179249478090093… (437 chars)",
-          "has_next_page": true
+          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":10,\"nc\":9,\"rt\":\"notification\",\"ah\":863,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091,61594307126888],\"nid\":[1788763333642799,1788763359717652,1788763402791… (608 chars)",
+          "has_next_page": false
         }
       },
-      "notifications_unseen_count": 0,
-      "last_update_timestamp": 1792822348,
+      "notifications_unseen_count": 9,
+      "last_update_timestamp": 1792911369,
       "notifications_sound_path": [
         "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
         "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
@@ -428,67 +460,116 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg?stp=c0.0.736.736a_cp0_dst-jpg_tt6&cstp=mx736x736&ctp=s56x56&_nc_cat=102&ccb=1-7&_nc_sid=28885b&_nc_ohc=P8lpRE_5nbwQ7kNvwGV-YyL&_nc_oc=AdrUB3FcUok04Og6xfHyL3qNwtCyYC4fqfXmjdxD25xDoyvlXlXHwBKVf2t3y-IQlAQ&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=7DYsPAP2xlRF9O3CSiHC-A&_nc_ss=792a8&oh=00_AQNDgx… (452 chars)",
+        "uri": "/images/facebook_logo/fb_icon_144x144.png",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2043x2048&ctp=s56x56&_nc_cat=103&ccb=1-7&_nc_sid=28885b&_nc_ohc=mTvq4GvCFTIQ7kNvwHGYmvG&_nc_oc=Adp0VPrbdkSycTDtAu4mqsYPUJIWza_-qtTAbF6teF_6anSqpeAxD_mbslyHG2-VfuY&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=7DYsPAP2xlRF9O3CSiHC-A&_nc_ss=792a8&oh=00_AQNvZzFa7P6zGsMmr2_W… (438 chars)",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/ym/r/ZfYoJCs7kVW.webp",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg?stp=c174.0.612.612a_cp0_dst-jpg_tt6&cstp=mx612x612&ctp=s64x64&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sUzALpNpS68Q7kNvwHekJ3L&_nc_oc=Adoqt0pSmIP9_a7lqfoMUSBpJ9qa3p6E_esvcIyVumf-9pobQoHQxNe5AFB2tC-FZvA&_nc_zt=23&_nc_ht=scontent-xxc1-1.xx&_nc_gid=7DYsPAP2xlRF9O3CSiHC-A&_nc_ss=792a8&oh=00_AQMD0… (453 chars)",
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg?stp=c448.0.1152.1152a_cp0_dst-jpg_tt6&cstp=mx1152x1152&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=_IusIZsgjHwQ7kNvwERFsjQ&_nc_oc=Adqe5mIMoCHZrBFmPl7NygsfJI00JjcFIIYDYnsQvfn8bSMzVDfNqlG_uXjJ698wna0&_nc_zt=23&_nc_ht=scontent-xxc1-1.xx&_nc_gid=7DYsPAP2xlRF9O3CSiHC-A&_nc_ss=792a8&oh=00_A… (457 chars)",
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/853582536_122150707779161888_647311438129383443_n.jpg (481 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx960x949&ctp=s64x64&_nc_cat=109&ccb=1-7&_nc_sid=1760b9&_nc_ohc=KaK2tVsDwPsQ7kNvwH-ZdnK&_nc_oc=AdroQSB_tzam3NXsATQ_pjKi_AE-asWfZg50q6rxhODmffyyN7AREMQGxk-zq5YGGoE&_nc_zt=23&_nc_ht=scontent-xxc1-1.xx&_nc_gid=7DYsPAP2xlRF9O3CSiHC-A&_nc_ss=792a8&oh=00_AQOAY_OpaRUcZAH2Euc3V… (437 chars)",
+        "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (431 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
-      }
+      },
+      {
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/799171017_122095281129476343_5621487743282889452_n.jpg (483 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 1 more"
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792822348484,
-      "time_at_flush_ms": 1792822349318
+      "request_start_time_ms": 1792911369228,
+      "time_at_flush_ms": 1792911371642
     },
     "is_final": true,
     "sr_payload": {
       "ddd": {
         "hsrp": {
-          "hsdp": "(5 fields)",
-          "hblp": "(3 fields)"
+          "hsdp": {
+            "clpData": "(3 fields)",
+            "gkxData": "(1 fields)",
+            "ixData": "(6 fields)",
+            "metaconfigData": "(1 fields)",
+            "qexData": "(1 fields)",
+            "qplData": "(1 fields)"
+          },
+          "hblp": {
+            "consistency": "(1 fields)",
+            "rsrcMap": "(25 fields)",
+            "compMap": "(4 fields)",
+            "indexUpgrades": "(2 fields)"
+          }
         },
         "jsmods": {
-          "define": "(7 items)",
-          "require": "(7 items)",
-          "phd2_indexes": ":2273,2274,1853,1852,1592"
+          "define": [
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "… 53 more"
+          ],
+          "require": [
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(4 items)",
+            "(1 items)",
+            "… 14 more"
+          ],
+          "phd2_indexes": ":2294,2295,142,143,1606,532,823,824,825,826,150"
         },
         "allResources": [
           "f94yn+O",
-          "YG5p7TX",
-          "csr:_24_0_lR",
-          "csr:_24_1_6H"
+          "27aiPPU",
+          "w0WEQPq",
+          "qo0X/QJ",
+          "4YfkVO4",
+          "rckwxCD",
+          "… 2 more"
         ],
         "tieredResources": {
-          "r": "(3 items)",
-          "rdfds": "(0 items)",
-          "rds": "(1 items)"
+          "r": [
+            "f94yn+O",
+            "27aiPPU",
+            "w0WEQPq",
+            "qo0X/QJ",
+            "4YfkVO4",
+            "rckwxCD",
+            "… 1 more"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_4_1_2b"
+          ]
         }
       }
     }

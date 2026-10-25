@@ -99,6 +99,7 @@ export function pageStatesDiagram(): Diagram {
     lines.push(`  ${s.id}["${label(s.id)}: ${label(s.what)}"]`);
     lines.push(`  page --> ${s.id}`);
     if (s.person) lines.push(`  ${s.id} --> person`);
+    else if (s.needsNothing) lines.push(`  ${s.id} -->|"nothing to resolve"| next${s.id}(["carry on"])`);
     else lines.push(`  ${s.id} -->|"${label(resolverStep(s.resolve))}"| next${s.id}(["next state"])`);
   }
   return { name: "pageStates", title: "Known page states (rule 54)", about: "From `PAGE_STATES` (`src/browser/flow/helpers/pageState.ts`), first match wins. The hooks report each with its resolver; only a person's state stops the account.", mermaid: lines.join("\n") };

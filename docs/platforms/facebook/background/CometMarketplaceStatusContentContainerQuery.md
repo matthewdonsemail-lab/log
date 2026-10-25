@@ -13,18 +13,18 @@
 | Called from | `CometMarketplaceStatusContentContainer.react` |
 | rea | `ev_eecb50d6202597bec156a7136d3b27861031a02f173fdddc659c696e06a51c8d` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /marketplace/inbox | 1 | 200 | 384 ms | 22463 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 604 ms | 473985 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 604–1522 ms | 294170–473985 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 604 ms
+**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 1522 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
   "data": {
     "viewer": {
       "marketplaceViolationTransparencyViewModel": {
-        "profile_name": "Bethlehem Trash",
+        "profile_name": "Hore Vai",
         "toast_title": null,
         "toast_body": null,
         "toast_icon_type": "WARNING_CAUTION",
@@ -65,7 +65,7 @@ Answered:
           "headline_text": "Tell us how we're doing",
           "body_text": "How satisfied or dissatisfied are you with the help you received for this issue?",
           "feedback_button_text": "Give feedback",
-          "entity_id": "61594063207669",
+          "entity_id": "61593981307720",
           "csat_channel": "INTEGRITY_HUB_MARKETPLACE_STATUS",
           "audience_config": "FB_GENPOP",
           "should_show": true,
@@ -74,14 +74,14 @@ Answered:
       },
       "actor": {
         "__typename": "User",
-        "id": "61594063207669"
+        "id": "61593981307720"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792685331863,
-      "time_at_flush_ms": 1792685331898
+      "request_start_time_ms": 1792911173600,
+      "time_at_flush_ms": 1792911173633
     },
     "is_final": true
   }

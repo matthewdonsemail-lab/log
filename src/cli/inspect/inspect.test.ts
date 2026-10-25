@@ -31,7 +31,7 @@ describe("log inspect", () => {
     expect(result.out).toContain("ended (exit 0)");
   });
 
-  test("a browser Facebook sends to a checkpoint while it is open sets the account to CHECKPOINT in Twenty", async () => {
+  test("a browser Facebook sends to a checkpoint while it is open sets the account to DEACTIVATED in Twenty", async () => {
     const twenty = marketplaceFixture();
     const result = await run(["inspect", "start", "--account", "galwayOne"], {
       twenty,
@@ -46,8 +46,8 @@ describe("log inspect", () => {
       },
     });
     expect(result.code).toBe(0);
-    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")).toMatchObject({ accountStatus: "CHECKPOINT", statusReason: "checkpointed" });
-    expect(result.err).toContain("galwayOne is CHECKPOINT in Twenty: Facebook sent the page to /checkpoint/1501092823525282/ (a checkpoint) at 2026-10-24T06:51:09.000Z");
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")).toMatchObject({ accountStatus: "DEACTIVATED", statusReason: "checkpointed" });
+    expect(result.err).toContain("galwayOne is checkpointed, so it is DEACTIVATED in Twenty and its listings are marked lost: Facebook sent the page to /checkpoint/1501092823525282/ (a checkpoint) at 2026-10-24T06:51:09.000Z");
   });
 
   test("a browser that never lands on a checkpoint leaves the account's status as it was", async () => {

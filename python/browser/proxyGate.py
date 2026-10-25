@@ -304,8 +304,27 @@ async def check_attached(context: Any) -> None:
         log(f"Self-check passed: exit {observed['ip']}, {page.get('timeZone')}, {page.get('language')} (page and worker)")
         return
     code, detail = problem
+    if code == "browserExitIpMismatch":
+        moved = exit_checked(observed["ip"])
+        if moved is None:
+            page = observed["page"]
+            log(f"Self-check passed: exit {observed['ip']}, {page.get('timeZone')}, {page.get('language')} (page and worker)")
+            return
+        detail = moved
     log(f"Self-check refused ({code}): {detail}. Stopping the browser before anything else loads.")
     raise GateError(code, detail)
+
+
+def exit_checked(ip: str, locate: Any = None) -> str | None:
+    try:
+        where = (locate or locate_ip)(ip)
+    except Exception:
+        where = {"country": "", "timezone": ""}
+    if where.get("country") != _armed["country"] or where.get("timezone") != _armed["timezone"]:
+        return f"the browser exits at {ip} in {where.get('country') or 'an unknown country'} ({where.get('timezone') or 'no timezone'}), the gate checked {_armed['exitIp']} in {_armed['country']} ({_armed['timezone']})"
+    log(f"The browser exits at {ip}, not the gate's {_armed['exitIp']}: checked it, {where['country']} on {where['timezone']}, the same as the account's")
+    _armed["exitIp"] = ip
+    return None
 
 
 def pinned() -> dict[str, Any]:

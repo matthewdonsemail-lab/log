@@ -71,7 +71,7 @@ Answered:
         "name": "Bethlehem Trash",
         "id": "61594063207669",
         "profile_picture": {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=pKXaD6Cu3LwNLkf1Bhg26w&_nc_ss=792a8&oh=00_AQOI… (454 chars)"
+          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
         },
         "url": "https://www.facebook.com/profile.php?id=61594063207669"
       }

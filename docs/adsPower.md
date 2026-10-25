@@ -20,11 +20,11 @@ Its client, `Listaro_backup/src/lib/adspower-client.ts`, is ported here.
 | --- | --- |
 | `src/browser/driver/` | The browser-agnostic session machine (XState v5) and the capability list every browser fills |
 | `src/browser/adsPower/client.ts` | The Local API client (v2 endpoints, `Authorization: Bearer <ADSPOWER_API_KEY>`, "Too many request" retried twice, catalog errors), `syncProfiles`, and `adsPowerDriver` |
-| `src/browser/adsPower/helpers/` | `profileRequest` (the create body) and `planSync` (create, relink, linked or skip, per account) |
+| `src/browser/adsPower/helpers/` | `profileRequest` (the create body) and `planSync` (release, create, relink, linked or skip, per account) |
 | `src/browser/adsPower/types.ts` | Its types, and `adsPowerCapabilities`, its row of the parity table |
 | `python/browser/adsPowerBrowser.py` | The same Local API from Python: set the profile's proxy, start, stop |
 | `python/browser/browserDriver.py` | `open_ads_power`: gate, proxy on, start headed, `connect_over_cdp`, the profile's context, session HAR, self-check; at the end, stop and proxy off |
-| `src/cli/adsPower/` | `log adsPower status`, `log adsPower profiles`, `log adsPower sync [--apply]` |
+| `src/cli/adsPower/` | `log adsPower status`, `log adsPower profiles`, `log adsPower sync [--apply] [--homes <US,IE>]` |
 
 Twenty gains two fields, both additive (rule 13):
 - `adsPowerProfileId`: the profile linked to the account.
@@ -43,6 +43,23 @@ Each profile is set up with:
 It holds **no proxy, password or 2FA key**. The proxy is put on the profile only to
 open it, after the gate, and taken off at close. The profile keeps its own cookies;
 Twenty's saved session is carried in once, only into a profile with no Facebook login.
+
+## Giving a profile back (rule 78)
+
+AdsPower's plan holds 22 profiles, so a profile is only held by an account
+that will use it:
+
+- **DEACTIVATED:** `log facebook account status <a> DEACTIVATED` deletes the
+  account's profile from AdsPower, clears `adsPowerProfileId`, then runs the
+  sync so an account waiting for a profile gets the freed slot. An account set
+  DEACTIVATED in Twenty directly gives its profile back at the next
+  `log adsPower sync --apply`.
+- **Homes:** `LOG_ADSPOWER_HOMES` in `.env.local` (`US`), or `--homes` on the
+  sync, names the home countries that hold profiles. An account whose home is
+  elsewhere gives its profile back the same way and gets none.
+
+The sync releases first, then makes and links profiles. The account's Twenty
+row, cookies and status stay as they are.
 
 ## Opening an account on AdsPower
 

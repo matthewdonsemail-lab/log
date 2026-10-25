@@ -35,7 +35,8 @@ The twitter-controller reads the same `socialAccounts` (only `accountName`,
 DEACTIVATED takes the account's proxy off in the same write (`proxy` is
 cleared), so it holds no proxy and costs no traffic. `log proxy assign
 --missing` skips it and `log proxy assign --account` refuses it, the lifecycle
-ends at once, and no run or sign-in may open it. Its listings are lost and
+ends at once, and no run or sign-in may open it. Its AdsPower profile is
+deleted and unlinked, and the slot goes to an account waiting for one (rule 78). Its listings are lost and
 replaced like a RESTRICTED account's. Its row, cookies and history stay.
 
 `log facebook account status <name> <STATUS> [--reason <code>]` sets it by hand. Runs

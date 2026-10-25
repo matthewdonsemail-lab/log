@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_0c2339980e57a3eba861020b7a9574cd8e636d3ae647fcaed1d57a654880b374` |
+| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
 
-Seen 18 time(s) in 6 run(s).
+Seen 36 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,6 +27,16 @@ Seen 18 time(s) in 6 run(s).
 | inspect | step 25: click e1241 | 1 | 200 | 7484 ms | 7701 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 3860 ms | 17661 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 4291 ms | 15359 ms | — |
+| inspect | step 1: goto /me | 2 | 200 | 749–862 ms | 6218–6220 ms | — |
+| inspect | step 7: click e1395 | 2 | 200 | 791–832 ms | 11645–11648 ms | — |
+| host | step 7: goto /me | 2 | 200 | 1165–1280 ms | 3718–3771 ms | — |
+| host | step 12: goto /me | 2 | 200 | 984–1034 ms | 3870–3877 ms | — |
+| host | step 17: goto /me | 2 | 200 | 990–1063 ms | 3028–3031 ms | — |
+| host | step 21: clickRole button "…" | 1 | 200 | 1032 ms | 7865 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 2195–3050 ms | 5012–6707 ms | — |
+| host | step 32: goto /me | 2 | 200 | 538–1419 ms | 5716–5753 ms | — |
+| host | step 39: clickRole button "…" | 1 | 200 | 857 ms | 3823 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 2195–4545 ms | 5140–644742 ms | — |
 
 <!-- facts:end -->
 

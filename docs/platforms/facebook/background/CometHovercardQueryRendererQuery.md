@@ -13,7 +13,7 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 336 time(s) in 17 run(s).
+Seen 354 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Seen 336 time(s) in 17 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 680 ms | 3065 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 2 | 200 | 889–1013 ms | 20562–22832 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 1444–1982 ms | 2375–900961 ms | — |
-| inspect | step 2: snapshot | 6 | 200 | 627–814 ms | 373–11488 ms | — |
+| inspect | step 2: snapshot | 8 | 200 | 546–814 ms | 373–14449 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 445 ms | 6889 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 1626–1861 ms | 41727–95250 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 474 ms | 7700 ms | — |
@@ -134,6 +134,10 @@ Seen 336 time(s) in 17 run(s).
 | inspect | scroll: +400px in 9 wheel steps, 281 ms | 2 | 200 | 523–718 ms | 3926–4124 ms | — |
 | inspect | scroll: +592px in 15 wheel steps, 906 ms | 5 | 200 | 372–492 ms | 3542–14308 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 11 | 200 | 369–1396 ms | 2595–301353 ms | — |
+| inspect | step 1: goto /me | 4 | 200 | 588–1233 ms | 9921–22469 ms | — |
+| inspect | step 8: wait 5s | 6 | 200 | 547–792 ms | 67342–202011 ms | — |
+| host | step 17: goto /me | 3 | 200 | 580–943 ms | 9289–12025 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 3 | 200 | 824–898 ms | 68–85995 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -197,7 +201,7 @@ Answered:
           },
           "url": "https://www.facebook.com/pages/New-York-New-York/108424279189115",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png?stp=c81.0.275.275a_dst-png&cstp=mx275x275&ctp=s100x100&_nc_cat=1&ccb=1-7&_nc_sid=0104bd&_nc_ohc=0rU1AdD8l94Q7kNvwFIe7fh&_nc_oc=AdocrcZEUg2kX5ppKxUJtJ2WnUR9mkGgvR8ogNsZodTQgv-MO-I21_vungOY1de6nzc&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_ss=792a8&oh=00_AQPgUTiZkgXTVKyjCa3VmfMDg-tkRaFLswZcNAm7cgTaqA&o… (410 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -239,7 +243,7 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png?stp=c81.0.275.275a_dst-png&cstp=mx275x275&ctp=s100x100&_nc_cat=1&ccb=1-7&_nc_sid=0104bd&_nc_ohc=0rU1AdD8l94Q7kNvwFIe7fh&_nc_oc=AdocrcZEUg2kX5ppKxUJtJ2WnUR9mkGgvR8ogNsZodTQgv-MO-I21_vungOY1de6nzc&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_ss=792a8&oh=00_AQPgUTiZkgXTVKyjCa3VmfMDg-tkRaFLswZcNAm7cgTaqA&o… (410 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -476,7 +480,7 @@ Answered:
           },
           "url": "https://www.facebook.com/profile.php?id=61562855553053",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg?stp=dst-jpg_tt6&cstp=mx960x960&ctp=s100x100&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=0yzy-3KHH8wQ7kNvwHdy-QY&_nc_oc=AdrCK-QqiEMhPTyAMLoE4Hf7QHmZGL73e4HiOYa14TQBKDRu5hTje8boubVcsSYzpVQ&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=8am2TItWhYVWOYefCR_aSg&_nc_ss=792a8&oh=00_AQP9FtwkRBV3E-j0P34bXAZj… (434 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -541,7 +545,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg?stp=dst-jpg_tt6&cstp=mx960x960&ctp=s100x100&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=0yzy-3KHH8wQ7kNvwHdy-QY&_nc_oc=AdrCK-QqiEMhPTyAMLoE4Hf7QHmZGL73e4HiOYa14TQBKDRu5hTje8boubVcsSYzpVQ&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=8am2TItWhYVWOYefCR_aSg&_nc_ss=792a8&oh=00_AQP9FtwkRBV3E-j0P34bXAZj… (434 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -712,7 +716,7 @@ Answered:
           "profile_url": "https://www.facebook.com/groups/4191018610937243/",
           "__typename": "Group",
           "profile_picture": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg?stp=c97.0.776.776a_cp6_dst-jpg_tt6&cstp=mx776x776&ctp=s100x100&_nc_cat=106&ccb=1-7&_nc_sid=33e84f&_nc_ohc=Ha3-UBUXX1cQ7kNvwH1h5e1&_nc_oc=Adrj8dc6Y28P9mpxtdHIy5eZTyRQjz4coBRsdSO5ZQ94IitbL69Z9vnkQNgTMlK9zxQ&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=dPANk9a29oiXcIFDaLwBwg&_nc_ss=792a8&oh=00_AQNk… (454 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -731,7 +735,7 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg?stp=c97.0.776.776a_cp6_dst-jpg_tt6&cstp=mx776x776&ctp=s100x100&_nc_cat=106&ccb=1-7&_nc_sid=33e84f&_nc_ohc=Ha3-UBUXX1cQ7kNvwH1h5e1&_nc_oc=Adrj8dc6Y28P9mpxtdHIy5eZTyRQjz4coBRsdSO5ZQ94IitbL69Z9vnkQNgTMlK9zxQ&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=dPANk9a29oiXcIFDaLwBwg&_nc_ss=792a8&oh=00_AQNk… (454 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
         "label": null,
         "width": null,
         "height": null,

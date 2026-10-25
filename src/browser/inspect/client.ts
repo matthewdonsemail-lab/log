@@ -31,12 +31,32 @@ function readJson(file: string): CurrentInspect | null {
   }
 }
 
+export function processAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch (error) {
+    return (error as { code?: string }).code === 'EPERM'
+  }
+}
+
+const ownerGone = (session: CurrentInspect): boolean => typeof session.pid === 'number' && !processAlive(session.pid)
+
 export function openInspects(path = currentInspectPath()): CurrentInspect[] {
   const dir = inspectSessionsDir(path)
   const found = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => readJson(join(dir, f))) : []
-  const sessions = found.filter((s): s is CurrentInspect => s !== null)
+  const sessions: CurrentInspect[] = []
+  for (const session of found) {
+    if (!session) continue
+    if (ownerGone(session)) {
+      rmSync(sessionFile(session.account, path), { force: true })
+      continue
+    }
+    sessions.push(session)
+  }
   const legacy = readJson(path)
-  if (legacy && !sessions.some((s) => s.account === legacy.account)) sessions.push(legacy)
+  if (legacy && ownerGone(legacy)) rmSync(path, { force: true })
+  else if (legacy && !sessions.some((s) => s.account === legacy.account)) sessions.push(legacy)
   return sessions
 }
 
@@ -48,7 +68,7 @@ export function readCurrentInspect(path = currentInspectPath(), account?: string
 
 export function writeCurrentInspect(current: CurrentInspect, path = currentInspectPath()): void {
   mkdirSync(inspectSessionsDir(path), { recursive: true })
-  const text = `${JSON.stringify(current, null, 2)}\n`
+  const text = `${JSON.stringify({ ...current, pid: current.pid ?? process.pid }, null, 2)}\n`
   writeFileSync(sessionFile(current.account, path), text)
   writeFileSync(path, text)
 }

@@ -1,3 +1,4 @@
+import { blockedListings, sweepBlockedListings } from "../../marketplace/replacement/index.ts";
 import { readFileSync } from "node:fs";
 import { loadFlow } from "../../browser/flow/index.ts";
 import { setListingStatus } from "../../marketplace/agencyListing/index.ts";
@@ -16,6 +17,7 @@ export const LISTINGS_USAGE = "Usage: log facebook listings [--status <STATUS>] 
 export const LISTING_USAGE = [
   "Usage: log facebook listing <agencyListingId> [--json]",
   "       log facebook listing create --account <accountName> --file <listing.json> [--json]",
+  "       log facebook listing sweep [--apply] [--json]   (every listing whose account is blocked (checkpoint, restricted, banned, dead, deactivated, or a wrong password) is marked ACCOUNT_LOST, and a campaign's copy goes to another account; a dry run unless --apply)",
   "       log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)",
   "       log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypass] [--now] [--json]   (delete it on Facebook through the recorded flow marketplaceListingDelete, then REMOVED in Twenty; a dry run unless --live)",
   "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).",
@@ -96,6 +98,12 @@ export const LISTING_INPUT: CommandInput = {
       ],
     },
     {
+      words: ["sweep"], effect: "write",
+      summary: "Mark every listing of a blocked account ACCOUNT_LOST (a dry run unless --apply)",
+      positionals: [],
+      flags: [{ name: "apply", kind: "boolean", description: "Write ACCOUNT_LOST to Twenty and hand campaign copies to another account" }, JSON_FLAG],
+    },
+    {
       words: ["lint"],
       summary: "Check a listing.json against the copy rules and the create form, saving nothing",
       positionals: [],
@@ -132,6 +140,20 @@ export const listingCommand: Command = {
       return { code: 0, stdout: `${file}: passes${n ? `, ${n} copy version(s) (${checked.ad.copyVersions.map((v) => v.id).join(", ")}), enough for ${n} listing(s) live in one city` : ", no copy versions: fine on one account, a campaign over 1 listing in a city needs at least 3"}.` };
     }
     if (key === "remove") return removeListing(context, extra, parsed.flags);
+    if (key === "sweep") {
+      try {
+        if (!parsed.flags["apply"]) {
+          const rows = await blockedListings(context.twenty);
+          if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ apply: false, lost: rows.map((r) => ({ listing: r.listing.id, title: r.listing.title, account: r.account.accountName, status: r.account.status, reason: r.account.statusReason })) }, null, 2) };
+          return { code: 0, stdout: [`${rows.length} listing(s) on blocked accounts would be marked ACCOUNT_LOST (dry run; --apply writes it):`, ...rows.map((r) => `  ${toTwentyEnum(r.listing.status ?? "unknown")} ${r.listing.title} on ${r.account.accountName} (${toTwentyEnum(r.account.status ?? "unknown")}${r.account.statusReason ? `, ${r.account.statusReason}` : ""})`)].join("\n") };
+        }
+        const report = await sweepBlockedListings(context.twenty);
+        if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ apply: true, lost: report.lost.map((r) => r.listing.id), replaced: report.replacements.filter((r) => r.next).map((r) => r.next!.id) }, null, 2) };
+        return { code: 0, stdout: [`${report.lost.length} listing(s) marked ACCOUNT_LOST:`, ...report.lost.map((r) => `  ${r.listing.title} on ${r.account.accountName}`), ...report.replacements.map((r) => r.next && r.account ? `  "${r.old.title}" → READY ${r.next.id} on ${r.account.accountName}` : `  "${r.old.title}" stays ACCOUNT_LOST: ${r.detail}`)].join("\n") };
+      } catch (error) {
+        return refuseError("listing", error);
+      }
+    }
     if (key === "create") {
       const account = parsed.flags["account"];
       const file = parsed.flags["file"];

@@ -38,6 +38,7 @@ export interface CurrentInspect {
   messengerPin?: boolean
   goal?: string | null
   goalSince?: string | null
+  pid?: number
 }
 
 export interface InspectCommand {
@@ -56,6 +57,7 @@ export interface InspectStepOptions {
   rest?: boolean
   already?: [string, string]
   findMs?: number
+  within?: string
 }
 
 export interface FeedPost {

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pageProblem } from "../../../browser/flow/index.ts";
-import { recordAccountIssue } from "../../../marketplace/replacement/index.ts";
+import { setStatusAndReplace } from "../../../marketplace/replacement/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 
@@ -29,7 +29,7 @@ export function navigationsOf(runDir: string): Navigation[] {
 
 export function watchCheckpoint(context: CommandContext, account: FacebookAccount, runDir: string, everyMs = 1000): { stop: () => Promise<void> } {
   let seen = 0;
-  let recorded = account.status === "checkpoint";
+  let recorded = account.status === "deactivated";
   let pending: Promise<void> = Promise.resolve();
   const tick = () => {
     if (recorded) return;
@@ -44,8 +44,8 @@ export function watchCheckpoint(context: CommandContext, account: FacebookAccoun
     const landed = navigations[index];
     const problem = pageProblem({ action: "navigated" }, { url: landed.url })!;
     const detail = `${problem.detail} at ${landed.at}, while its browser was open (${runDir})`;
-    pending = recordAccountIssue(context.twenty, account, "checkpointed", detail).then(
-      () => context.err(`>>> ${account.accountName} is CHECKPOINT in Twenty: ${detail}`),
+    pending = setStatusAndReplace(context.twenty, account, "deactivated", "checkpointed", detail, context.now?.() ?? new Date()).then(
+      () => context.err(`>>> ${account.accountName} is checkpointed, so it is DEACTIVATED in Twenty and its listings are marked lost: ${detail}`),
       (error) => {
         recorded = false;
         context.err(`>>> ${account.accountName} landed on a checkpoint but Twenty was not updated (${error instanceof Error ? error.message : String(error)}): retrying`);

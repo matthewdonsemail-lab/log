@@ -17,8 +17,8 @@ Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/insp
 | --- | --- | --- | --- | --- | --- |
 | 1 | `s01_gotome` | open `https://www.facebook.com/me` | — | — | 01_gotoHttpsWwwFacebook, 28985 ms, rea `ev_8d5b627c0e4f842a58785cdaf9d9ffce58b4c4ace3f766bd858f0ebbea50010d` |
 | 2 | `s02_clickProfilePictureActions` | click button "Profile picture actions" | — | — | 02_clickE141, 7078 ms, rea `ev_31fe39b50844e2fd8b48166e3a4c5dd3634369977ba2a867417c9417e3ffb3a0` |
-| 3 | `s03_clickChooseProfilePicture` | click menuitem "Choose profile picture" | — | — | 03_clickE1096, 6343 ms, rea `ev_22ab5500725e970a0cb541c1dc8da093c50cfe5d0bf3a739a02cc1c27cb780e3` |
-| 4 | `s04_uploadUploadPhoto` | upload button "Upload Photo" with `{profilePhoto}` | — | — | 04_uploadE1180, 5563 ms, rea `ev_e9f7a16b4c9b566b57a536e5049d8466a9c4e77e04ab61e3bd056a9d15a2ee16` |
+| 3 | `s03_clickChooseProfilePicture` | click menuitem "Choose profile picture" | [`ProfileCometProfilePictureEditDialogQuery`](../profile/ProfileCometProfilePictureEditDialogQuery.md) | `ProfileCometProfilePictureEditDialogQuery` 2xx: `data.viewer.actor.id` = the account's id | 03_clickE1096, 6343 ms, rea `ev_22ab5500725e970a0cb541c1dc8da093c50cfe5d0bf3a739a02cc1c27cb780e3` |
+| 4 | `s04_uploadUploadPhoto` | upload button "Upload photo" with `{profilePhoto}` | [`profilePictureUpload`](../profile/profilePictureUpload.md) | `profilePictureUpload` 2xx: `payload.profileID` = the account's id; `payload.fbid` is present | 04_uploadE1180, 5563 ms, rea `ev_e9f7a16b4c9b566b57a536e5049d8466a9c4e77e04ab61e3bd056a9d15a2ee16` |
 | 5 | `s05_clickSave` | click button "Save" | [`ProfileCometProfilePictureSetMutation`](../profile/ProfileCometProfilePictureSetMutation.md) | `ProfileCometProfilePictureSetMutation` 2xx | 06_clickE1262, 5609 ms, rea `ev_0857cd848e933126fcf077d94d0c040c4682e19b8f2cd686ee61c283ca1c8947` |
 | 6 | `s06_clickAddCoverPhoto` | click button "Add Cover Photo" | — | — | 09_clickE1272, 7422 ms, rea `ev_0cc4233ac9114e0ca6bd514680a8a78979e0870891e5ce2072835e0a8d7b094f` |
 | 7 | `s07_uploadUploadPhoto` | upload menuitem "Upload photo" with `{coverPhoto}` | — | — | 10_uploadE1395, 5875 ms, rea `ev_7a0dd7626fcc03f9ce5694a1a9a7bfcf17a98323103c05f6513ec07d670bf90a` |
@@ -38,9 +38,9 @@ stateDiagram-v2
   s01_gotome --> failed
   s02_clickProfilePictureActions --> s03_clickChooseProfilePicture
   s02_clickProfilePictureActions --> failed
-  s03_clickChooseProfilePicture --> s04_uploadUploadPhoto
+  s03_clickChooseProfilePicture --> s04_uploadUploadPhoto: ProfileCometProfilePictureEditDialogQuery
   s03_clickChooseProfilePicture --> failed
-  s04_uploadUploadPhoto --> s05_clickSave
+  s04_uploadUploadPhoto --> s05_clickSave: profilePictureUpload
   s04_uploadUploadPhoto --> failed
   s05_clickSave --> s06_clickAddCoverPhoto: ProfileCometProfilePictureSetMutation
   s05_clickSave --> failed

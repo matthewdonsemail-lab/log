@@ -13,7 +13,7 @@
 | Called from | `useListingShippableEligibilityCheck` |
 | rea | `ev_2268109b78d0872eb0a55170e823376ab0a90f53109df20c59492cda9ce542b7` |
 
-Seen 34 time(s) in 12 run(s).
+Seen 35 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,6 +21,7 @@ Seen 34 time(s) in 12 run(s).
 | publish | Uploading 5 photo(s) | 18 | 200 | 326–397 ms | 5483–10056 ms | — |
 | publish | Uploading 2 photo(s) | 4 | 200 | 319–333 ms | 4295–4779 ms | — |
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1668 ms | 1104 ms | — |
+| flow | scroll: container +87px in 3 steps | 1 | 200 | 658 ms | 980 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 

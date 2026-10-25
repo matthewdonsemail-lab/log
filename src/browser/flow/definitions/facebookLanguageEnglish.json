@@ -1,0 +1,120 @@
+{
+  "name": "facebookLanguageEnglish",
+  "summary": "Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic.",
+  "params": [],
+  "steps": [
+    {
+      "id": "s03_gotosettings",
+      "action": "goto",
+      "url": "https://www.facebook.com/settings/?tab=language_and_region",
+      "recorded": {
+        "step": "04_gotoHttpsWwwFacebook",
+        "ms": 17984,
+        "reaEvidenceId": "ev_5b224cc5f670d0212a58312fc528e6b978d2875d398479455f59dd1a0a7c8534",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "AppLastUsedTimestampsFetcherQuery",
+          "useFriendingCometFriendRequestBadgeCountQuery",
+          "useCometWatchBadgeCountQuery",
+          "useGroupsCometTabBadgeCountQuery",
+          "CometGamingBadgeCountQuery",
+          "CometNotificationsDropdownQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s05_click",
+      "action": "click",
+      "role": "button",
+      "name": "لغة الحساب يمكنك رؤية الأزرار والعناوين والنصوص الأخرى بلغتك المفضلة. وستكون المراسلات التي تصلك، مثل رسائل البريد الإلكتروني الخاصة بالحساب أو الإشعارات بهذه اللغة.",
+      "expect": "CometUSFFDSDialogQuery",
+      "recorded": {
+        "step": "08_clickE968",
+        "ms": 9515,
+        "reaEvidenceId": "ev_174bc48245d9c051d54507e9eec807b44608721e79a773d01d8fd76d5c9c6544",
+        "requests": [
+          "CometHomeCreateMenuContentQuery",
+          "CometHomeMegaMenuAllProductsQuery",
+          "CometHomeMegaMenuShortcutsQuery",
+          "CometUSFFDSDialogQuery"
+        ]
+      },
+      "answers": [
+        {
+          "call": "CometUSFFDSDialogQuery",
+          "says": [
+            {
+              "answer": "data.xfb_unified_settings.row_item.node_id",
+              "is": "ACCOUNT_AND_APP_LANGUAGE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s06_clickEnglishUs",
+      "action": "click",
+      "role": "radio",
+      "name": "English (US) الإنجليزية ( الولايات المتحدة الأمريكية )",
+      "recorded": {
+        "step": "09_clickE1091",
+        "ms": 6578,
+        "reaEvidenceId": "ev_f3e5c92e8ecb0ff7a6903ed4592bb60e9cdf2f4c00e1003b9b06ac7e425e5787",
+        "requests": []
+      }
+    },
+    {
+      "id": "s07_click",
+      "action": "click",
+      "role": "button",
+      "name": "موافق",
+      "within": "تحديث الصفحة",
+      "expect": "useCometUSFScrollablePickerMutation",
+      "recorded": {
+        "step": "10_clickE2992",
+        "ms": 19782,
+        "reaEvidenceId": "ev_05d150abf0b46fcb7db56af9efa38e25fbd51e964dc449a5221007bcbfa30cdb",
+        "requests": [
+          "useCometUSFScrollablePickerMutation",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "useGroupsCometTabBadgeCountQuery",
+          "useFriendingCometFriendRequestBadgeCountQuery",
+          "useCometWatchBadgeCountQuery",
+          "CometGamingBadgeCountQuery",
+          "CometNotificationsDropdownQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "AppLastUsedTimestampsFetcherQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      },
+      "answers": [
+        {
+          "call": "useCometUSFScrollablePickerMutation",
+          "says": [
+            {
+              "answer": "data.xfb_update_usf_scrollable_picker.headerOptions",
+              "present": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261025T025641_61593881475391",
+    "account": "61593881475391",
+    "builtAt": "2026-10-25T03:06:58.246Z"
+  }
+}

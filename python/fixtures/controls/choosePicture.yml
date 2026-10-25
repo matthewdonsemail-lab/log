@@ -1,0 +1,18 @@
+- main [ref=e33]:
+  - button "Profile picture actions" [ref=e133] [cursor=pointer]:
+    - img [ref=e134]
+  - dialog "Choose profile picture" [ref=e1301]:
+    - heading "Choose profile picture" [active] [level=2] [ref=e1304]:
+      - generic [ref=e1306]: Choose profile picture
+    - button "Close" [ref=e1308] [cursor=pointer]
+    - generic [ref=e1311]:
+      - button "Upload photo" [ref=e1313] [cursor=pointer]:
+        - generic [ref=e1314]:
+          - img [ref=e1315]
+          - generic [ref=e1318]: Upload photo
+      - button "Add Frame" [ref=e1320] [cursor=pointer]:
+        - generic [ref=e1321]:
+          - img [ref=e1322]
+          - generic [ref=e1325]: Add Frame
+  - button "New message" [ref=e1197] [cursor=pointer]:
+    - img [ref=e1198]

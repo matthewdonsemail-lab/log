@@ -1,0 +1,1526 @@
+{
+  "CometClassicHomeLeftRailContainerQuery": {
+    "variables": {
+      "isEligibleForProfessionalTools": false,
+      "numExploreBookmarks": 10,
+      "numShortcutBookmarks": 5,
+      "scale": 1,
+      "useNucleusIcon": false
+    }
+  },
+  "CometFeedInlineComposerQuery": {
+    "variables": {
+      "scale": 1
+    }
+  },
+  "CometHomeContactChannelsContainerQuery": {
+    "variables": {}
+  },
+  "CometHomeContactCommunityChatsContainerQuery": {
+    "variables": {
+      "numChatsToFetch": 3
+    }
+  },
+  "CometHomeContactGroupsContainerQuery": {
+    "variables": {
+      "excludeBroadcastChannelThreads": true,
+      "excludeCmThreads": true,
+      "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+    }
+  },
+  "CometHomeContactsContainerQuery": {
+    "variables": {
+      "numContactsToFetch": 17,
+      "scale": 1
+    }
+  },
+  "CometHomeContentQuery": {
+    "variables": {}
+  },
+  "CometMegaphoneRootQuery": {
+    "variables": {
+      "first": 1,
+      "scale": 1
+    }
+  },
+  "CometModernHomeFeedQuery": {
+    "variables": {
+      "RELAY_INCREMENTAL_DELIVERY": true,
+      "connectionClass": "EXCELLENT",
+      "feedbackSource": 1,
+      "feedInitialFetchSize": 4,
+      "feedLocation": "NEWSFEED",
+      "feedStyle": "DEFAULT",
+      "orderby": [
+        "TOP_STORIES"
+      ],
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "recentVPVs": [],
+      "refreshMode": "COLD_START",
+      "renderLocation": "homepage_stream",
+      "scale": 1,
+      "shouldChangeBRSLabelFieldName": false,
+      "shouldObfuscateCategoryField": true,
+      "shouldUseBRSLabelFieldNameV1": false,
+      "shouldUseBRSLabelFieldNameV2": false,
+      "useDefaultActor": false,
+      "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+      "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+      "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+      "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+      "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+      "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    }
+  },
+  "CometRightSideHeaderCardsQuery": {
+    "variables": {
+      "refresh_num": 0,
+      "scale": 1,
+      "__relay_internal__pv__GHLShouldChangeRHCSideFeedFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeRHCAdsFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeRHCFieldNamerelayprovider": false
+    }
+  },
+  "CometSearchBootstrapKeywordsDataSourceQuery": {
+    "variables": {
+      "first": 2000
+    }
+  },
+  "EBFetchBackupIdsSharedFragmentQuery": {
+    "variables": {}
+  },
+  "FBScreenTimeLogger_syncMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1",
+        "device_time_iso": "2026-10-23T07:54:52.628Z",
+        "fb_web_fb_intervals_payload": {
+          "device_timestamp": "1792742092",
+          "device_timezone": "America/New_York",
+          "intervals": [
+            {
+              "end_timestamp": "1792731798",
+              "start_timestamp": "1792731337"
+            },
+            {
+              "end_timestamp": "1792732767",
+              "start_timestamp": "1792732562"
+            },
+            {
+              "end_timestamp": "1792737847",
+              "start_timestamp": "1792737807"
+            },
+            {
+              "end_timestamp": "1792740565",
+              "start_timestamp": "1792740545"
+            },
+            {
+              "end_timestamp": "1792740809",
+              "start_timestamp": "1792740691"
+            },
+            {
+              "end_timestamp": "1792742092",
+              "start_timestamp": "1792741789"
+            }
+          ],
+          "local_storage_id": "2159989",
+          "version": "V1"
+        },
+        "screentime_snapshot_payload": {
+          "l24h_s": -1,
+          "last_sync_timestamp": 1792741789,
+          "today_s": 300
+        },
+        "trigger_reason": "REGULAR"
+      }
+    }
+  },
+  "FBYRPTimeLimitsEnforcementQuery": {
+    "variables": {}
+  },
+  "fetchMWChatVideoAutoplaySettingQuery": {
+    "variables": {}
+  },
+  "MAWVerifyThreadCutover_ContactCapabilities2Query": {
+    "variables": {
+      "id": "61594063207669"
+    }
+  },
+  "MWQuickPromotionThreadlistBannerQuery": {
+    "variables": {}
+  },
+  "OhaiWebPublicKeyConfigQuery": {
+    "variables": {}
+  },
+  "RTWebCallBlockSettingHooksQuery": {
+    "variables": {}
+  },
+  "StoriesTrayRectangularRootQuery": {
+    "variables": {
+      "blur": 10,
+      "bucketsToFetch": 6,
+      "isFbNotesIncluded": false,
+      "scale": 1,
+      "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
+      "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
+      "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
+      "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
+      "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false
+    }
+  },
+  "useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation": {
+    "variables": {
+      "is_new_user_upsell": true,
+      "is_new_user_soft_block": false
+    }
+  },
+  "useMWEncryptedBackupsFetchBackupIdsV2Query": {
+    "variables": {}
+  },
+  "VestaServerGraphQLRegisterProviderBeginRegisterMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "3",
+        "base64url_encoded_opaque_r1": "QkjYWmUWoa5qGSCRi6HXrDMvlTduP2GgAhHD4BS60V4",
+        "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
+        "product_use_case": "MSGR_ENC_BACKUP",
+        "vesta_client_api_version": 6,
+        "vesta_client_protocol_version": 1,
+        "is_vesta_ota_enabled": false
+      }
+    }
+  },
+  "VestaServerGraphQLRegisterProviderFinishRegisterMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "4",
+        "base64url_encoded_enc_reg_payload": "gGkcxqXv5kAnGleduETjXTDXFyyBh1s53ozcV-4jukjCBcPGWp-wieVepLTDRYXTcQmBH4--oB6lB3ziZ3oPytwoQj5No8yd4Tio3j9gcuFTI3B3LW3EfHx5Q4kQFWELtXc8G_fbEDUITVM3TIGPGQ21_fiRs5_rYbrkOoYHsdQDpkkMFNRwqjKLXthCMjRci0W9TQB6PZ-xW410MpyD9NxcbQIzr1AkoGx8lkylRYKf2JhCYaF4-kxURVAc7mCAvfcN3NwrSebdJuXb4wZdT4GUqkH5Jdkmwl4d29KrZMUzABf3b3IUYuaoX3zb4zCB5RqidNa-3jy7IUN4C_l9eTkmAQrRBBXzTr7MxZNh_WR7XmAxvlMpFODYUAosTtYi6xoFnNCY54d2qFF-… (512 chars)",
+        "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
+        "product_use_case": "MSGR_ENC_BACKUP",
+        "vesta_client_api_version": 6,
+        "vesta_client_protocol_version": 1,
+        "is_post_login_register": false
+      }
+    }
+  },
+  "VestaServerGraphQLRegisterProviderInitQuery": {
+    "variables": {
+      "request": {
+        "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
+        "product_use_case": "MSGR_ENC_BACKUP",
+        "vesta_client_api_version": 6
+      }
+    }
+  },
+  "usePseudoBlockedUserInterstitialF3Query": {
+    "variables": {}
+  },
+  "CometHomeCreateMenuContentQuery": {
+    "variables": {}
+  },
+  "CometHomeMegaMenuAllProductsQuery": {
+    "variables": {
+      "scale": 1,
+      "useNucleusIcon": false
+    }
+  },
+  "CometHomeMegaMenuShortcutsQuery": {
+    "variables": {
+      "scale": 1,
+      "useNucleusIcon": false
+    }
+  },
+  "CometMarketplaceLeftRailNavigationContainerQuery": {
+    "variables": {
+      "buyLocation": {
+        "latitude": 37.193232725035,
+        "longitude": -3.6622435304279
+      },
+      "category_ranking_enabled": false,
+      "hide_l2_cats": true,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__MarketplaceJobsSubtabFiltersCometrelayprovider": false
+    }
+  },
+  "CometMarketplaceNotificationsListContainerQuery": {
+    "variables": {
+      "isCOBMOB": false,
+      "scale": 1
+    }
+  },
+  "CometMarketplaceNUXUpdateStateMutation": {
+    "variables": {
+      "input": {
+        "force_dismiss": true,
+        "nux_type": "marketplace_boosted_listing_www_post_publish_nux",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "CometMarketplacePartnerSelectorContainerQuery": {
+    "variables": {}
+  },
+  "CometMarketplaceRootQuery": {
+    "variables": {}
+  },
+  "CometMarketplaceSetBrowseRadiusMutation": {
+    "variables": {
+      "input": {
+        "browse_radius": 65,
+        "use_suggested_radius": false,
+        "actor_id": "61594063207669",
+        "client_mutation_id": "2"
+      }
+    }
+  },
+  "CometNotificationsDropdownQuery": {
+    "variables": {
+      "count": 15,
+      "environment": "MAIN_SURFACE",
+      "scale": 1
+    }
+  },
+  "MarketplaceBannerContainerQuery": {
+    "variables": {
+      "params": {
+        "render_location": "HOME_FEED"
+      },
+      "scale": 1
+    }
+  },
+  "MarketplaceCometBrowseFeedLightContainerQuery": {
+    "variables": {
+      "buyLocation": {
+        "latitude": 40.6262,
+        "longitude": -75.3757
+      },
+      "count": 1,
+      "cursor": null,
+      "imageWidth": 256,
+      "mediaType": "image/jpeg",
+      "radius": 65000,
+      "scale": 1,
+      "sizing": "cover-fill-cropped",
+      "useSDFPath": true,
+      "__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider": false,
+      "__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider": false,
+      "__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__MarketplaceCometAdmodulerelayprovider": true,
+      "__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider": false
+    }
+  },
+  "MarketplaceCometPartnerListingDialogContentMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1",
+        "selected_partner_ids": [
+          "1240470891063721",
+          "1629659441068862"
+        ],
+        "should_enable_auto_opt_in": true,
+        "should_hide_organic_listings": false,
+        "viewed_partner_ids": [
+          "1240470891063721",
+          "1629659441068862"
+        ]
+      }
+    }
+  },
+  "MarketplaceCometPartnerListingDialogContentQuery": {
+    "variables": {}
+  },
+  "MarketplaceSearchAddressDataSourceQuery": {
+    "variables": {
+      "params": {
+        "caller": "MARKETPLACE",
+        "country_filter": null,
+        "integration_strategy": "STRING_MATCH",
+        "page_category": [
+          "CITY",
+          "SUBCITY",
+          "NEIGHBORHOOD",
+          "POSTAL_CODE"
+        ],
+        "query": "Maracena, Spain",
+        "search_type": "PLACE_TYPEAHEAD",
+        "viewer_coordinates": {
+          "latitude": 37.193232725035,
+          "longitude": -3.6622435304279
+        }
+      }
+    }
+  },
+  "MarketplaceYouSellingUpsellCardQuery": {
+    "variables": {}
+  },
+  "MarketplaceComposerAIPricingDialogImplSimilarListingsQuery": {
+    "variables": {
+      "ai_suggested_condition": null,
+      "ai_suggested_price_cents": null,
+      "category_ids": [
+        "895487550471874"
+      ],
+      "composer_mode": "create",
+      "limit": 10,
+      "listing_title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
+      "pricing_attempt_id": "230dead1-5a56-4448-bf15-82d8f6cbdbe0",
+      "pricing_source": "ONE_CLICK_LISTING",
+      "session_id": null
+    }
+  },
+  "useListingShippableEligibilityCheckQuery": {
+    "variables": {
+      "params": {
+        "category_id": "895487550471874",
+        "item_price": {
+          "currency": "USD",
+          "price": "99"
+        },
+        "title": ""
+      }
+    }
+  },
+  "useMarketplaceComposerAttributesQuery": {
+    "variables": {
+      "categoryID": null
+    }
+  },
+  "useMarketplaceComposerBISNumberEligibilityRefetchQuery": {
+    "variables": {
+      "category_id": "895487550471874",
+      "has_prefetched_category": true
+    }
+  },
+  "useMarketplaceComposerPricePredictionQuery": {
+    "variables": {
+      "params": {
+        "category_id": "1583634935226685",
+        "currency": "USD",
+        "photo_id": "122127505023468773",
+        "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+      }
+    }
+  },
+  "CometMarketplaceSetBuyLocationMutation": {
+    "variables": {
+      "input": {
+        "latitude": 40.6262,
+        "longitude": -75.3757,
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "MarketplaceBuyLocationDialogLocationUrlQuery": {
+    "variables": {
+      "buy_location": {
+        "latitude": 40.6262,
+        "longitude": -75.3757
+      }
+    }
+  },
+  "MarketplaceBuyLocationDialogQuery": {
+    "variables": {}
+  },
+  "CometMarketplaceBoostListingPostPublishNuxDialogQuery": {
+    "variables": {
+      "listingID": "1425935622848350",
+      "scale": 1,
+      "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
+    }
+  },
+  "useCometMarketplaceListingCreateMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "6",
+        "attribution_id_v2": "CometMarketplaceComposerRoot.react,comet.marketplace.composer,unexpected,1792667868932,525104,1606854132932955,,;CometMarketplaceComposerRoot.react,comet.marketplace.composer,via_cold_start,1792667592330,780780,1606854132932955,,",
+        "audience": {
+          "marketplace": {
+            "marketplace_id": "1663689853903557"
+          }
+        },
+        "data": {
+          "client_application": null,
+          "common": {
+            "attribute_data_json": "{\"condition\":\"new\"}",
+            "category_id": "895487550471874",
+            "commerce_shipping_carrier": null,
+            "commerce_shipping_carriers": [],
+            "comparable_price": "null",
+            "cost_per_additional_item": null,
+            "delivery_types": [
+              "IN_PERSON"
+            ],
+            "description": {
+              "text": "Junk removal and full cleanouts in Bethlehem and nearby.\n\nHouses, apartments, garages, basements, sheds, storage units, hoarder cleanouts.\n\nWe load it, haul it and sweep up. Furniture, appliances, bags, debris.\n\nFrom $99 for small loads. Message a photo of the job for a quote."
+            },
+            "draft_type": null,
+            "hidden_from_friends_visibility": "VISIBLE_TO_EVERYONE",
+            "is_personalization_required": null,
+            "is_photo_order_set_by_seller": false,
+            "is_preview": false,
+            "item_price": {
+              "currency": "USD",
+              "price": "99"
+            },
+            "latitude": 40.6262,
+            "listing_email_id": null,
+            "longitude": -75.3757,
+            "min_acceptable_checkout_offer_price": "null",
+            "personalization_info": null,
+            "product_hashtag_names": [],
+            "quantity": null,
+            "shipping_calculation_logic_version": null,
+            "shipping_cost_option": "BUYER_PAID_SHIPPING",
+            "shipping_cost_range_lower_cost": null,
+            "shipping_cost_range_upper_cost": null,
+            "shipping_label_price": "0",
+            "shipping_label_rate_code": null,
+            "shipping_label_rate_type": null,
+            "shipping_offered": false,
+            "shipping_options_data": [],
+            "shipping_package_weight": null,
+            "shipping_price": "null",
+            "shipping_service_type": null,
+            "sku": "",
+            "source_type": "marketplace_unknown",
+            "suggested_hashtag_names": [],
+            "surface": "composer",
+            "title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
+            "variants": [],
+            "video_ids": [],
+            "xpost_target_ids": [],
+            "comments_disabled": false,
+            "photo_ids": [
+              "122127505023468773",
+              "122127505173468773"
+            ]
+          }
+        },
+        "vin_autofill_summary": null
+      }
+    }
+  },
+  "CometMarketplaceInboxBuyerTabViewContainerQuery": {
+    "variables": {}
+  },
+  "CometMarketplaceInboxContentContainerQuery": {
+    "variables": {}
+  },
+  "CometMarketplaceInboxSellerTabThreadViewContainerQuery": {
+    "variables": {
+      "availabilities": null,
+      "filterLabels": null,
+      "listingId": null,
+      "lookBackInDays": null,
+      "search": null,
+      "unreadOnly": null
+    }
+  },
+  "CometMarketplaceInboxSetPreferredViewerRoleMutation": {
+    "variables": {
+      "input": {
+        "inbox_viewer_role": "BUYER",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "CometMarketplaceStatusContentContainerQuery": {
+    "variables": {
+      "scale": 1
+    }
+  },
+  "CometMarketplaceNotificationsNavRootContainerQuery": {
+    "variables": {
+      "count": 10,
+      "isCOBMOB": false,
+      "scale": 1
+    }
+  },
+  "CometMarketplaceYouFeedItemCommentListQuery": {
+    "variables": {
+      "feedbackSource": 62,
+      "feedLocation": "MARKETPLACE_YOU_FEED",
+      "listingId": "1425935622848350",
+      "scale": 1,
+      "shouldIncludeProductFeedback": false,
+      "useDefaultActor": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false
+    }
+  },
+  "CometMarketplaceYouSellingFastContentContainerQuery": {
+    "variables": {
+      "count": 5,
+      "order": "CREATION_TIMESTAMP_DESC",
+      "scale": 1,
+      "shouldDeferInfoSection": false,
+      "state": null,
+      "title_search": null,
+      "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
+    }
+  },
+  "CometMessagingJewelDropdownEBUpsellContainerQuery": {
+    "variables": {
+      "__relay_internal__pv__MWEBNewUserOnboardingShouldLoadUpsellsrelayprovider": false
+    }
+  },
+  "MarketplaceCometBrowseFeedLightPaginationQuery": {
+    "variables": {
+      "buyLocation": {
+        "latitude": 40.6262,
+        "longitude": -75.3757
+      },
+      "count": 5,
+      "cursor": "{\"basic\":{\"item_index\":1,\"feed_slice_number\":1,\"ss_version\":17179869185},\"ads\":{\"items_since_last_ad\":0,\"items_retrieved\":2,\"ad_index\":1,\"ad_slot\":1,\"dynamic_gap_rule\":0,\"counted_organic_items\":0,\"average_organic_score\":0,\"is_dynamic_gap_rule_set\":false,\"first_organic_score\":0,\"is_dynamic_initial_gap_set\":false,\"iterated_organic_items\":1,\"top_organic_score\":0,\"feed_slice_number\":0,\"feed_retrieved_… (1707 chars)",
+      "imageWidth": 256,
+      "includePDPRelevantListings": false,
+      "mediaType": "image/jpeg",
+      "pdpListingId": "",
+      "radius": 65000,
+      "refinement": null,
+      "scale": 1,
+      "sizing": "cover-fill-cropped",
+      "useSDFPath": true,
+      "__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider": false,
+      "__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider": false,
+      "__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__MarketplaceCometAdmodulerelayprovider": true,
+      "__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider": false
+    }
+  },
+  "MarketplaceDeleteUtilsQuery": {
+    "variables": {
+      "id": "1425935622848350",
+      "shouldSkip": false
+    }
+  },
+  "MarketplaceYourListingDialogQuery": {
+    "variables": {
+      "listingId": "28779899605000522",
+      "scale": 1,
+      "shouldShowAllMessagesOnYouFeedCard": true,
+      "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
+    }
+  },
+  "MWChatEncryptedBackupsUpsellMessengerInboxQuery": {
+    "variables": {
+      "doesUserHaveAnEB": true,
+      "shouldShowOnboardingInterstitial": false
+    }
+  },
+  "MWThreadListQPQuery": {
+    "variables": {
+      "__relay_internal__pv__MWThreadListQP_enableEBWebUXrelayprovider": true,
+      "__relay_internal__pv__MWEBNewUserOnboardingShouldLoadUpsellsrelayprovider": false
+    }
+  },
+  "CometMarketplaceSellingRootContentQuery": {
+    "variables": {
+      "includeSellerCompliance": true,
+      "scale": 1
+    }
+  },
+  "CometNotificationsUpdateSeenStateMutation": {
+    "variables": {
+      "input": {
+        "environment": "MAIN_SURFACE",
+        "is_comet": true,
+        "last_notif_sync_time": 1792731669,
+        "notif_ids": [
+          "bm90aWZpY2F0aW9uOjYxNTk0MDYzMjA3NjY5OjE3OTI3Mjc0MDI0ODc4ODQ6NDUxNzYxNzExNTI2Njg3Ok1BSU5fU1VSRkFDRQ==",
+          "bm90aWZpY2F0aW9uOjYxNTk0MDYzMjA3NjY5OjE3OTI3MDU3MDQ3MjY3ODk6NDUxNzYxNzExNTI2Njg3Ok1BSU5fU1VSRkFDRQ==",
+          "bm90aWZpY2F0aW9uOjYxNTk0MDYzMjA3NjY5OjE3OTI0OTQ3ODA5MDA5MzU6NDUxNzYxNzExNTI2Njg3Ok1BSU5fU1VSRkFDRQ==",
+          "bm90aWZpY2F0aW9uOjYxNTk0MDYzMjA3NjY5OjE3OTI0NjAxMzg5Mjc1MzM6NDUxNzYxNzExNTI2Njg3Ok1BSU5fU1VSRkFDRQ=="
+        ],
+        "query_id": "Cg8BdAZq2uoVDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "source": "unknown",
+        "update_type": "MARK_ALL_SEEN",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      },
+      "environment": "MAIN_SURFACE"
+    }
+  },
+  "CometHovercardQueryRendererQuery": {
+    "variables": {
+      "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
+      "context": "DEFAULT",
+      "entityID": "108424279189115",
+      "scale": 1,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
+    }
+  },
+  "CometMarketplaceRecordPDPDwellTimeMutation": {
+    "variables": {
+      "input": {
+        "listing_id": "1749699906261391",
+        "start_time": 1792742061173,
+        "actor_id": "61594063207669",
+        "client_mutation_id": "3"
+      }
+    }
+  },
+  "CometMarketplaceSetProductItemSeenStateMutation": {
+    "variables": {
+      "input": {
+        "has_seen": true,
+        "product_item_id": "1749699906261391",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "2"
+      }
+    }
+  },
+  "FeedComposerCometRootQuery": {
+    "variables": {
+      "callerName": "fx_product_foundation_client_FXOnline_client_cache",
+      "customPartnerParams": [
+        {
+          "key": "CROSSPOSTING_DESTINATION_APP",
+          "value": "IG"
+        },
+        {
+          "key": "CROSSPOSTING_SHARE_TO_SURFACE",
+          "value": "FEED"
+        },
+        {
+          "key": "SHOULD_RETURN_AUTO_XPOST_SETTING",
+          "value": "true"
+        }
+      ],
+      "hasStory": false,
+      "isBizWeb": false,
+      "isLinksInPostEnabled": false,
+      "privacySelectorRenderLocation": "COMET_COMPOSER",
+      "profileID": "61594063207669",
+      "scale": 1,
+      "serviceNames": [
+        "CROSS_POSTING_SETTING"
+      ],
+      "storyID": "",
+      "__relay_internal__pv__ShouldEnableSimplifiedComposerIconsrelayprovider": false,
+      "__relay_internal__pv__CometUnifiedVideoCreation_showPrivacyMergerelayprovider": true,
+      "__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider": false,
+      "__relay_internal__pv__FeedComposerCometRoot_shouldFetchCrosspostMetadatarelayprovider": false
+    }
+  },
+  "FriendingCometFriendRequestsRootQuery": {
+    "variables": {
+      "scale": 1
+    }
+  },
+  "MarketplacePDPC2CMediaViewerWithImagesQuery": {
+    "variables": {
+      "targetId": "1749699906261391"
+    }
+  },
+  "MarketplacePDPContainerQuery": {
+    "variables": {
+      "enableJobEmployerActionBar": false,
+      "enableJobSeekerActionBar": false,
+      "feedbackSource": 56,
+      "feedLocation": "MARKETPLACE_MEGAMALL",
+      "referralCode": "marketplace_top_picks",
+      "referralSurfaceString": "browse_tab",
+      "scale": 1,
+      "shouldFetchLoggedOutSimilarListings": false,
+      "targetId": "1749699906261391",
+      "useDefaultActor": false,
+      "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPShouldShowLoggedOutSellerTrustrelayprovider": false,
+      "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPIsLoggedOutrelayprovider": false,
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__MarketplacePDPShouldShowBSGRecommendationsrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPJobShouldShowSharedGroupsSectionrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPJobIsShareToGroupsEnabledOnCometrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPShouldShowFAQrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPShouldShowRelatedCategoriesrelayprovider": false,
+      "__relay_internal__pv__MarketplacePDPShouldShowSupportFooterrelayprovider": false
+    }
+  },
+  "MarketplacePDPRightColumnAdsQuery": {
+    "variables": {
+      "adsRelatedTo": "1749699906261391",
+      "browseContext": "PDP_RELATED_ADS_FEED",
+      "count": 1,
+      "cursor": "",
+      "scale": 1,
+      "__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider": true
+    }
+  },
+  "ProfileCometHeaderQuery": {
+    "variables": {
+      "scale": 1,
+      "selectedID": "100078448742456",
+      "selectedSpaceType": "profile",
+      "shouldUseFXIMProfilePicEditor": false,
+      "userID": "100078448742456"
+    }
+  },
+  "ProfileCometTimelineFeedQuery": {
+    "variables": {
+      "count": 1,
+      "feedbackSource": 0,
+      "feedLocation": "TIMELINE",
+      "omitPinnedPost": true,
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "renderLocation": "timeline",
+      "runWithContinuationKey": true,
+      "scale": 1,
+      "userID": "61556829712306",
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+      "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+      "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+      "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    }
+  },
+  "ProfileCometTimelineListViewRootQuery": {
+    "variables": {
+      "previousProfileId": null,
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "renderLocation": "timeline",
+      "scale": 1,
+      "userID": "61556829712306",
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__GroupsCometGroupChatLazyLoadLastMessageSnippetrelayprovider": false,
+      "__relay_internal__pv__ProfileCometFeaturedHighlightsPortraitAspectRatioGKrelayprovider": false,
+      "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+    }
+  },
+  "CometNewsFeedPaginationQuery": {
+    "variables": {
+      "RELAY_INCREMENTAL_DELIVERY": true,
+      "clientQueryId": "0c0cde08-7bc3-465b-99b7-9eff2660f24d",
+      "clientSession": null,
+      "connectionClass": "EXCELLENT",
+      "count": 5,
+      "cursor": "FQgVAhsBXAIVCBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qUTZMVFF6T1RRM05UWTRNVGc1TWprNU9UTTNNVFE2TURvdE5Ua3pNRGt6TVRFeE9EVTFNelUyT1RBd01Ebz0AGwNVHAIYBAIIFQAA",
+      "experimentalValues": null,
+      "feedLocation": "NEWSFEED",
+      "feedStyle": "DEFAULT",
+      "feedbackSource": 1,
+      "focusCommentID": null,
+      "orderby": [
+        "TOP_STORIES"
+      ],
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "recentVPVs": [
+        {
+          "client_vpv_token": "68a91a67-9edd-4b17-9adc-62acee6c0cdf",
+          "evt": "vpv",
+          "feed_backend_data_serialized_payloads": "GwtGsgMGGszp0cTi8JGyA8YB8KsB7AEmbgLwAwKeAaABALrgl4K3/xv8Axy0AwYiuuCXgrf/GxsBSMABA2ZvZhsAAA==",
+          "fetch_tracking": false,
+          "original_qid": "-5930931118553569000",
+          "qid": "-5930931118553569000",
+          "timestamp": 1792741789722,
+          "vsid": "1741057011017077865",
+          "vspos": 1
+        },
+        {
+          "client_vpv_token": "1959b343-04db-4faf-9b94-39a1790b9e6d",
+          "evt": "vpv",
+          "feed_backend_data_serialized_payloads": "GwZGGuz44sSeic4DxgGw5APsATL8AxjCAcoWtAMGGwFIwAEEbm9uZRsDSbbmAwbe5gMGhOcDBgA=",
+          "fetch_tracking": false,
+          "original_qid": "-5930931118553569000",
+          "qid": "-5930931118553569000",
+          "timestamp": 1792741819557,
+          "vsid": "6447435482739151293",
+          "vspos": 2
+        }
+      ],
+      "referringStoryRenderLocation": null,
+      "refreshMode": "AUTO",
+      "renderLocation": "homepage_stream",
+      "scale": 1,
+      "shouldChangeBRSLabelFieldName": false,
+      "shouldObfuscateCategoryField": true,
+      "shouldUseBRSLabelFieldNameV1": false,
+      "shouldUseBRSLabelFieldNameV2": false,
+      "useDefaultActor": false,
+      "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+      "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+      "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+      "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+      "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+      "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    }
+  },
+  "CometUFIFeedbackReactMutation": {
+    "variables": {
+      "input": {
+        "attribution_id_v2": "CometHomeRoot.react,comet.home,via_cold_start,1792732560933,80386,4748854339,,",
+        "feedback_id": "ZmVlZGJhY2s6MTIyMzExMjkxMDgyMDI5MDQx",
+        "feedback_reaction_id": "1635855486666999",
+        "feedback_source": "NEWS_FEED",
+        "is_tracking_encrypted": true,
+        "tracking": [
+          "AZihIoUx0lY6kt-0ST0sCSSoGccaBFOsDLmHSkY3pflbhbwmj9jrlfcFCMOfOFfK5WpPjaTswdbTjmcApIJivCEzw10f7kQlQ0EBl9a4OSik5M3v9s2iZiYWn7JTF8HYn3VXNI-QE8GoiStheM-0p-7dCPsYuFsHV4Avvkr4IaTGTG2-kwMjb-qdSJ_fyodYM4WUj1lEgGycxnGD6rp8m-vQBt7YGQ77ZIZfq7T7oVDhKH5YYsDfStIjWzsJIrY9YjxmSF_sFZbiOW3n6b4_3HHfVGJyjP79FLe0HkAxe_cAcgWFwz0T9gCkBBXYHqK0c8GHJN_3pqGPUDNIMHmd3c81qMOo6JkPm2wlU0F-f6qSdThSkKt3Uu3GeMvRiHe2MJrbPlRd2qlYuKGF… (2060 chars)"
+        ],
+        "session_id": "4350d157-00b5-4b70-8d45-db5dbb1ef5be",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      },
+      "scale": 1,
+      "canUseNicknameOnComet": false,
+      "useDefaultActor": false,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false
+    }
+  },
+  "useCIXLogMutation": {
+    "variables": {
+      "input": {
+        "frx": {
+          "context": "{\"session_id\":\"adffeb56-4cac-4a66-b463-dc2a9d952d19\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"27743469221988791\"}",
+          "frx_menu_item_loaded": null,
+          "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742061111,904453,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1749699906261391"
+        },
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "useInstreamAdsHaloFetcherQuery": {
+    "variables": {
+      "hostVideoId": "1607183873661381",
+      "playerSubOrigin": "fb_shorts_viewer",
+      "playerFormat": "full_screen",
+      "tracePolicy": "comet.reels.tab",
+      "instreamVideoAdType": "NONLIVE",
+      "storyIdentifier": null,
+      "isSponsorHostVideo": false
+    }
+  },
+  "ProfileCometTopAppSectionQuery": {
+    "variables": {
+      "collectionToken": null,
+      "scale": 1,
+      "sectionToken": "YXBwX3NlY3Rpb246MTAwMDc4NDQ4NzQyNDU2OjE2ODY4NDg0MTc2ODM3NQ==",
+      "useDefaultActor": false,
+      "userID": "100078448742456",
+      "__relay_internal__pv__FBProfile_enable_perf_improv_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextUnifiedVideorelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoCometVideoMedia_comet_photosensitive_content_warning_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaHeaderControls_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_organic_ad_cta_on_comet_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_meta_ai_pill_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_ai_embodiment_chat_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_video_augment_pills_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoPlayerScrubber_fb_comet_vpv_heatmap_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoDescriptionWithEntities_comet_translations_revamp_sync_caption_with_audio_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoFeedbackBar_comet_reels_save_button_gkrelayprovider": false,
+      "__relay_internal__pv__usePushPipEngagementCounts_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMenu_fb_reels_ranking_debug_tool_gkrelayprovider": false,
+      "__relay_internal__pv__CometAudioLanguageUtils_comet_translations_revamp_preferred_languages_gkrelayprovider": false
+    }
+  },
+  "FBUnifiedVideoContainerQuery": {
+    "variables": {
+      "count": 5,
+      "cursor": "eyJjdXJzb3IiOiJGUUlWREJzQlhBSVZBQmdmY0RGOFJtZEJWMjlpY1hCd2NtazNNRTAyYTBGU1lta3hPV2wwUkZGQlBRQWJBVlVBQWhVQ0FBPT0iLCJjb3VudCI6MSwiaGx0IjoxNzkyNzQyODk3fQ",
+      "scale": 1,
+      "should_include_comet_reels_seo_llm_content": false,
+      "should_use_stream": true,
+      "stream_initial_count": 1,
+      "useDefaultActor": false,
+      "video_feed_context_data": {
+        "arltw_feed_section_type": "FB_SHORTS_CHAINING",
+        "in_session_watched_video": null,
+        "is_async_ads_enabled": true,
+        "is_async_ads_headload_coupling_enabled": true,
+        "player_behavior": "UNIFIED_PLAYER_VDD",
+        "real_time_ranking_context_data": {
+          "recent_vpvs_v2": []
+        },
+        "request_type": "NORMAL",
+        "seed_video_id": null,
+        "shorts_search_params": {},
+        "surface_type": "FEED_VIDEO_DEEP_DIVE",
+        "tracking_code": "",
+        "video_channel_entry_point": "NEWSFEED",
+        "client_viewer_session_id": "3b01b990-9736-4449-a4a7-1e2ee732f7da"
+      },
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextUnifiedVideorelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoCometVideoMedia_comet_photosensitive_content_warning_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaHeaderControls_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_organic_ad_cta_on_comet_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_meta_ai_pill_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_ai_embodiment_chat_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_video_augment_pills_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoPlayerScrubber_fb_comet_vpv_heatmap_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoDescriptionWithEntities_comet_translations_revamp_sync_caption_with_audio_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoFeedbackBar_comet_reels_save_button_gkrelayprovider": false,
+      "__relay_internal__pv__usePushPipEngagementCounts_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMenu_fb_reels_ranking_debug_tool_gkrelayprovider": false,
+      "__relay_internal__pv__CometAudioLanguageUtils_comet_translations_revamp_preferred_languages_gkrelayprovider": false
+    }
+  },
+  "FBUnifiedVideoEntityDialogImplQuery": {
+    "variables": {
+      "scale": 1,
+      "useDefaultActor": false,
+      "entityId": "28907750262178382",
+      "__relay_internal__pv__FBUnifiedVideoEntityProfileAudioGridFirstPageSizerelayprovider": 4,
+      "__relay_internal__pv__FBUnifiedVideoEntityProfileHeaderAudio_comet_reels_audio_dialog_saverelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaContentContainer_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextUnifiedVideorelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoCometVideoMedia_comet_photosensitive_content_warning_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaHeaderControls_enable_chapters_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_organic_ad_cta_on_comet_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_meta_ai_pill_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_ai_embodiment_chat_pill_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoMediaFooter_enable_video_augment_pills_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoPlayerScrubber_fb_comet_vpv_heatmap_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoDescriptionWithEntities_comet_translations_revamp_sync_caption_with_audio_gkrelayprovider": false,
+      "__relay_internal__pv__FBUnifiedVideoFeedbackBar_comet_reels_save_button_gkrelayprovider": false,
+      "__relay_internal__pv__usePushPipEngagementCounts_comet_video_document_picture_in_picture_gkrelayprovider": false,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__FBUnifiedVideoMenu_fb_reels_ranking_debug_tool_gkrelayprovider": false,
+      "__relay_internal__pv__CometAudioLanguageUtils_comet_translations_revamp_preferred_languages_gkrelayprovider": false
+    }
+  },
+  "FBUnifiedVideoSeenStateMutation": {
+    "variables": {
+      "input": {
+        "video_ids": [
+          "1967507720600004"
+        ],
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "CometMarketplaceSellerListingTransactionReportingDialogQuery": {
+    "variables": {
+      "id": "1425935622848350",
+      "scale": 1
+    }
+  },
+  "CometMarketplaceYouFeedCardMoreMenuTargetQuery": {
+    "variables": {
+      "id": "1425935622848350",
+      "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
+    }
+  },
+  "CometMarketplaceYouFeedCardMoreMenuViewerQuery": {
+    "variables": {
+      "listingId": "1425935622848350"
+    }
+  },
+  "useCometC2CTransactionSurveyImpressionMutation": {
+    "variables": {
+      "input": {
+        "action": "DELETE",
+        "for_sale_item_id": "1425935622848350",
+        "is_short_survey_holdout": true,
+        "referral_surface": null,
+        "surface_new": "MARKETPLACE_PAGE_SELLING",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "useCometC2CTransactionSurveyResponseMutation": {
+    "variables": {
+      "input": {
+        "action": "DELETE",
+        "duplicate_hash": "f770b48411f2c3f8d5207912dc894c177586273bbc5be446c262c51b831cebf0",
+        "for_sale_item_id": "1425935622848350",
+        "is_short_survey_holdout": true,
+        "referral_surface": "UNKNOWN",
+        "response": "NO",
+        "surface_new": "MARKETPLACE_PAGE_SELLING",
+        "actor_id": "61594063207669",
+        "client_mutation_id": "2"
+      }
+    }
+  },
+  "useCometMarketplaceForSaleItemDeleteMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1",
+        "batch_delete_variants": true,
+        "for_sale_item_id": "1425935622848350",
+        "referral_surface": null,
+        "surface": "MARKETPLACE_PAGE_SELLING"
+      }
+    }
+  },
+  "CometProfileVerificationBadgePopoverQuery": {
+    "variables": {
+      "profileID": "100011448242903"
+    }
+  },
+  "CometUnifiedShareSheetDialogQuery": {
+    "variables": {
+      "feedLocation": "GROUP",
+      "hasParentStory": false,
+      "isComposerDisabled": false,
+      "isLinkSharingEnabled": true,
+      "isShareToFeedDisabled": false,
+      "privacySelectorRenderLocation": "COMET_COMPOSER",
+      "qe_optional_share_to_page": true,
+      "scale": 1,
+      "shareableParams": {
+        "url": "https://www.facebook.com/groups/junkremovalwinners/"
+      },
+      "storyParams": {}
+    }
+  },
+  "MAWCatQuery": {
+    "variables": {}
+  },
+  "UnifiedShareSheetMessengerSectionQuery": {
+    "variables": {
+      "__relay_internal__pv__isAttachmentsQueryOptimizationEnabledrelayprovider": true,
+      "__relay_internal__pv__isWaAddressableFieldsEnabledrelayprovider": true
+    }
+  },
+  "UserSignalsHovercardQuery": {
+    "variables": {
+      "scale": 1,
+      "userSignalID": "810150165507170"
+    }
+  },
+  "UFACAISupportChatExperienceQuery": {
+    "variables": {
+      "request": {
+        "existing_token": null
+      }
+    }
+  },
+  "useCometAISupportConversationLoggerMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1",
+        "additional_data": [
+          {
+            "key": "component_context",
+            "value": "CometAIHTSChatBubbleButton"
+          },
+          {
+            "key": "source_surface"
+          },
+          {
+            "key": "web_session",
+            "value": "j2n11v:9fde91:20f3pj"
+          }
+        ],
+        "attempt_token": "Q8CtDAEoCn4qCWgxsluih0G4Yxsz5XkrXIho1J1SOq2E7WLfu2N5GMj9wlNlrKfRoaZrHz7wc1CBC85tdDgKQtudxE4h3fwdfETVzeKGoRaXctkKfyJBzPLEtMLuL5EgjHKdFJdTGOcTnaaENp3VjhMSzzQW0IkXxM2hPF367ZpVNNF47nhvQB0JsufcbbjBpKnCj0kp6FG1qceh0XRisR3HsXQcbwcv7AcPsIy8Qpf-Mwl2dTHzK8V8oq0FN1A-NS5ORAUVDuQJR9tZmxVEndiZXIWMUBe23aAimwSf_mVTAhMHaSaekXLdHHMU7JjKcDgsOz2ET6qkEKM8CvfSi1sdDnV1p9xwCM6sXkNTXlkYvB0L-GROrS-QTBJ-hPRr_k_QOEd7hGX78OkG… (2007 chars)",
+        "entry_point": "COMET_AI_HTS_GENPOP_FB_UFAC",
+        "event": "START_CHAT_BUTTON_IMPRESSION"
+      }
+    }
+  },
+  "useUFACSubmitActionMutation": {
+    "variables": {
+      "designSystem": "FDS",
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "2",
+        "action": "PROCEED",
+        "caller": null,
+        "enrollment_id": null
+      },
+      "scale": 1
+    }
+  },
+  "GroupsCometFeedRegularStoriesPaginationQuery": {
+    "variables": {
+      "count": 3,
+      "cursor": "Cg8TZXhpc3RpbmdfdW5pdF9jb3VudAICDwtyZWFsX2N1cnNvcg+vQVFIVHc4WTQzal9UOERCUm1nZmxpcFRLVE4xSW1lU3V2R3AzdU54VHV1X3BVM3VSd3owc3ZYNmg3YV8xX2FSblEwbXlKbWJLY0UzMGI4LTVtdDM5TC1EbmtROmV5SXdJam94TnpreU9ESXlNVGd5TENJeElqbzNOamd5TENJeklqb3dMQ0kwSWpveExDSTFJam95TENJMklqb3dMQ0kzSWpvdE1Td2lPQ0k2TFRGOQ8TaGVhZGVyX2dsb2JhbF9jb3VudAIBDxJtYWluX2ZlZWRfcG9zaXRpb24CAg8NZmVlZF9vcmRlcmluZw8bcmFua2VkX2ludGVyZXN0X2NvbW11bml0… (548 chars)",
+      "feedLocation": "GROUP",
+      "feedType": "DISCUSSION",
+      "feedbackSource": 0,
+      "filterTopicId": null,
+      "focusCommentID": null,
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "referringStoryRenderLocation": null,
+      "renderLocation": "group",
+      "scale": 1,
+      "sortingSetting": "TOP_POSTS",
+      "stream_initial_count": 1,
+      "useDefaultActor": false,
+      "youthIntegrityHostID": "3549906855288164",
+      "id": "3549906855288164",
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+      "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+      "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+      "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    }
+  },
+  "GroupsCometMembersPageNewMembersSectionRefetchQuery": {
+    "variables": {
+      "count": 10,
+      "cursor": "AQHT8B1dRzleCIFUPFP21wBYh4FFlGUzBQBBGjZqCRUXhynD36mogS_w0zd0hvc5A2Wd5bqq7i7A150go3RSvVxqnw",
+      "groupID": "3549906855288164",
+      "recruitingGroupFilterNonCompliant": false,
+      "scale": 1,
+      "id": "3549906855288164"
+    }
+  },
+  "useGroupsCometVisitMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "61594063207669",
+        "client_mutation_id": "1",
+        "badge_entry_point": "GROUPS_TAB_MAIN",
+        "bookmark_folder_id": "FAVORITES",
+        "environment": "COMET",
+        "group_id": "3549906855288164"
+      },
+      "scale": 1,
+      "bookmarkID": "3549906855288164"
+    }
+  },
+  "CometLogoutHandlerQuery": {
+    "variables": {}
+  },
+  "FriendingCometMutualFriendsSocialContextTooltipContentQuery": {
+    "variables": {
+      "count": 10,
+      "ordering": [
+        "importance"
+      ],
+      "userIDs": [
+        "61559438276167"
+      ]
+    }
+  },
+  "ProfileCometProfilePictureEditDialogQuery": {
+    "variables": {
+      "scale": 1
+    }
+  },
+  "ProfileCometProfilePictureSetMutation": {
+    "variables": {
+      "input": {
+        "attribution_id_v2": "ProfileCometTimelineListViewRoot.react,comet.profile.timeline.list,via_cold_start,1792860342969,926542,190055527696468,,",
+        "caption": "",
+        "existing_photo_id": "122123515989461450",
+        "expiration_time": null,
+        "profile_id": "61593843527201",
+        "profile_pic_method": "EXISTING",
+        "profile_pic_source": "TIMELINE",
+        "scaled_crop_rect": {
+          "height": 0.74667,
+          "width": 1,
+          "x": 0,
+          "y": 0.12667
+        },
+        "skip_cropping": true,
+        "actor_id": "61593843527201",
+        "client_mutation_id": "1"
+      },
+      "isPage": false,
+      "isProfile": true,
+      "scale": 1,
+      "__relay_internal__pv__ProfileGeminiIsCoinFlipEnabledrelayprovider": false
+    }
+  },
+  "ProfileCometTimelineFeedRefetchQuery": {
+    "variables": {
+      "afterTime": null,
+      "beforeTime": null,
+      "count": 2,
+      "cursor": "Cg8Ob3JnYW5pY19jdXJzb3IJAAACREFRSFRHb0tza3ZSU1FlRkhMRE8tN0dXaGR6OGwtT3NDVk5CeFNRbnlSOF9HRkdyUkhSLW9pRExHVjFSa0NWV19TcnRybjFWQUtPQ0laZlpFbmdYTWVGQUFJazBnVkFsTFh0cW5mcVJ6TF80VlRscWxMRkVyYVdKNlZ5Sl9xclFjM2ZENG1tSlh4SDQtb0ZSQXQ2U1BZT1ZULW1rQjZ5b0FkUmYyYWRpb190Wlp6MUtGaUFMNlZsVWI3bVNXdi0wUnNsdEdLM0Q4clV5dGZDeElfd0prcTRMQTU2amtCNW5HQjJ2VVBQTTE2TEdQX1RtcXJzN2V2QzRYal9YVHFrc1FtU0NKTVU4dV9aejYwd3FQbF9ldFZS… (888 chars)",
+      "feedLocation": "TIMELINE",
+      "feedbackSource": 0,
+      "focusCommentID": null,
+      "memorializedSplitTimeFilter": null,
+      "omitPinnedPost": true,
+      "postedBy": null,
+      "privacy": null,
+      "privacySelectorRenderLocation": "COMET_STREAM",
+      "referringStoryRenderLocation": null,
+      "renderLocation": "timeline",
+      "run_with_continuation_key": true,
+      "scale": 1,
+      "stream_count": 1,
+      "taggedInOnly": null,
+      "trackingCode": null,
+      "useDefaultActor": false,
+      "id": "61593843527201",
+      "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+      "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+      "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+      "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+      "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+      "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+      "__relay_internal__pv__IsWorkUserrelayprovider": false,
+      "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+      "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+      "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+      "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": false,
+      "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+      "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+      "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+      "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+      "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+      "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "ORIGINAL",
+      "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+      "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+      "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+      "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+      "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+      "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+      "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": true,
+      "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    }
+  },
+  "ProfilePromptQuickPromotionMutation": {
+    "variables": {
+      "input": {
+        "profile_id": "61593843527201",
+        "prompt_event": "impression",
+        "prompt_type": "PERSONAL_PROFILE_DIRECTORY_PROFILE_MEGAPHONE_PROMPT",
+        "qp_id": "1256202615885785",
+        "actor_id": "61593843527201",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "CometActorGatewayHandlerQuery": {
+    "variables": {
+      "scale": 1
+    }
+  },
+  "CometTS2BitArrayLoggerMutation": {
+    "variables": {
+      "app_id": "2220391788200892",
+      "end_time": 1792911376,
+      "start_time": 1792911368
+    }
+  },
+  "useAccountStatusClearEnrollmentEntryPointActionMutation": {
+    "variables": {
+      "serialized_state": "(taken out)",
+      "ixt_clear_token": "(taken out)"
+    }
+  },
+  "FBScrapingWarningMutation": {
+    "variables": {}
+  },
+  "ConversationalSupport2FAChatExperienceQuery": {
+    "variables": {
+      "request": {
+        "encrypted_context": "AWTUEHDUcB9PBQd5kdy9OgqSr7d1xncXAqTkIoIW4y_pYnHoLJDSCrIj-tyG_APliv1g1WN7hU2K4irzi4h-W4KX5Uout76RvX6aEdoxMG4ex_zi3zDRt5AYBqYVKeIBYCuBzhpIaaWYKr3-WzCBl40ltprT1ZBTesRIkkp-uBaZzFr-Z5pqT9qmuwG3t_M6VFRPNdB0Gam75M2WCJ-Ja-Lod899r2eO6nP_k9Vtsi0zUNT-N8mT6Dbk6ER93490GH2mJ-PCAvp-FafB1YCuFhi-7Fq0_HCKU_CJmtE53SugBLtra5RDGRUL3Cp8Z63r4FVKlk6pkrMpyGveHj9dfzXEbA0j_b6oPNB5WlKBowNbwBiEhgF9WHbrnJIPfqiEcHMS4vlvoXlwfyrW… (802 chars)",
+        "existing_token": null
+      }
+    }
+  },
+  "usePasskeyAuthOptionsQuery": {
+    "variables": {
+      "encryptedContext": "AWTUEHDUcB9PBQd5kdy9OgqSr7d1xncXAqTkIoIW4y_pYnHoLJDSCrIj-tyG_APliv1g1WN7hU2K4irzi4h-W4KX5Uout76RvX6aEdoxMG4ex_zi3zDRt5AYBqYVKeIBYCuBzhpIaaWYKr3-WzCBl40ltprT1ZBTesRIkkp-uBaZzFr-Z5pqT9qmuwG3t_M6VFRPNdB0Gam75M2WCJ-Ja-Lod899r2eO6nP_k9Vtsi0zUNT-N8mT6Dbk6ER93490GH2mJ-PCAvp-FafB1YCuFhi-7Fq0_HCKU_CJmtE53SugBLtra5RDGRUL3Cp8Z63r4FVKlk6pkrMpyGveHj9dfzXEbA0j_b6oPNB5WlKBowNbwBiEhgF9WHbrnJIPfqiEcHMS4vlvoXlwfyrW… (802 chars)"
+    }
+  },
+  "TwoStepVerificationChallengePickerDialogQuery": {
+    "variables": {
+      "encryptedContext": "AWTUEHDUcB9PBQd5kdy9OgqSr7d1xncXAqTkIoIW4y_pYnHoLJDSCrIj-tyG_APliv1g1WN7hU2K4irzi4h-W4KX5Uout76RvX6aEdoxMG4ex_zi3zDRt5AYBqYVKeIBYCuBzhpIaaWYKr3-WzCBl40ltprT1ZBTesRIkkp-uBaZzFr-Z5pqT9qmuwG3t_M6VFRPNdB0Gam75M2WCJ-Ja-Lod899r2eO6nP_k9Vtsi0zUNT-N8mT6Dbk6ER93490GH2mJ-PCAvp-FafB1YCuFhi-7Fq0_HCKU_CJmtE53SugBLtra5RDGRUL3Cp8Z63r4FVKlk6pkrMpyGveHj9dfzXEbA0j_b6oPNB5WlKBowNbwBiEhgF9WHbrnJIPfqiEcHMS4vlvoXlwfyrW… (802 chars)"
+    }
+  },
+  "TwoFactorAuthWizTriggerNonceCreatorMutation": {
+    "variables": {
+      "input": {
+        "tctx": "AWTUEHDUcB9PBQd5kdy9OgqSr7d1xncXAqTkIoIW4y_pYnHoLJDSCrIj-tyG_APliv1g1WN7hU2K4irzi4h-W4KX5Uout76RvX6aEdoxMG4ex_zi3zDRt5AYBqYVKeIBYCuBzhpIaaWYKr3-WzCBl40ltprT1ZBTesRIkkp-uBaZzFr-Z5pqT9qmuwG3t_M6VFRPNdB0Gam75M2WCJ-Ja-Lod899r2eO6nP_k9Vtsi0zUNT-N8mT6Dbk6ER93490GH2mJ-PCAvp-FafB1YCuFhi-7Fq0_HCKU_CJmtE53SugBLtra5RDGRUL3Cp8Z63r4FVKlk6pkrMpyGveHj9dfzXEbA0j_b6oPNB5WlKBowNbwBiEhgF9WHbrnJIPfqiEcHMS4vlvoXlwfyrW… (802 chars)",
+        "actor_id": "0",
+        "client_mutation_id": "1"
+      }
+    }
+  },
+  "useCDSWebLoginMutation": {
+    "variables": {
+      "input": {
+        "actor_id": "0",
+        "client_mutation_id": "1",
+        "access_flow_version": "pre_mt_behavior",
+        "account_recovery_entry_point": null,
+        "app": "facebook",
+        "auth_domain_data_key": null,
+        "caa_login_request_extra_info": {
+          "ab_test_data": "CAAAA/AAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA/AAAAAAAOFBB",
+          "shared_prefs_data": "eyIxMTAyMCI6W3sidCI6MTc5Mjg4MDg3My41MTksImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS9sb2dpbi8ifSwidiI6IkFtZXJpY2EvTmV3X1lvcmsifV0sIjMwMDAwIjpbeyJ0IjoxNzkyODgwODczLjUxOSwiY3R4Ijp7ImNuIjoiaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL2xvZ2luLyJ9LCJ2IjpmYWxzZX1dLCIzMDAwMSI6W3sidCI6MTc5Mjg4MDg3My41MiwiY3R4Ijp7ImNuIjoiaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL2xvZ2luLyJ9LCJ2Ijo1fV0sIjMwMDAyIjpbeyJ0IjoxNzkyODgwODczLjUy… (3068 chars)",
+          "cuid": "",
+          "guid": "f6750bf83416fd988",
+          "lgndim": "eyJ3IjoxOTIwLCJoIjoxMDgwLCJhdyI6MTkyMCwiYWgiOjEwMzIsImMiOjI0fQ==",
+          "lgnjs": "1792880873",
+          "lgnrnd": "152748_m0Xu",
+          "locale": "en_US",
+          "login_source": "comet_headerless_login",
+          "next": "",
+          "prefill_contact_point": "",
+          "prefill_source": "",
+          "prefill_type": "",
+          "skstamp": "",
+          "timezone": "240"
+        },
+        "credential_type": "password",
+        "dyi_job_id": "",
+        "enc_password": {
+          "sensitive_string_value": "#PWD_BROWSER:5:1792880899:AfNQAGndqWdiJ71i24ndngIcSbBcGr4+y4phsD83Do1Bq/ZXsr8XGWra/LbY2f0tetQUaShJTuJ+wlfQZMMqeHmm3T4AJf60S4gn97Q4MVJsA82p6yKJMDyPjbKfwMy48cusnnth1n+bisPJWRgAI5itFpC5"
+        },
+        "event_request_id": "cc7fd771-7ecd-4773-9b81-24ecc8f92e1e",
+        "identifier": "cnscaqudutld@fexpost.com",
+        "ig_web_device_id": null,
+        "initial_request_id": "1",
+        "lids": null,
+        "login_source": "LOGIN",
+        "next": null,
+        "passkey_payload": null,
+        "persistent": true,
+        "query_params": "{}",
+        "trusted_device_records": "{}",
+        "use_uid_to_login": false,
+        "waterfall_id": "1a270a36-1ddb-46c8-b303-5198533ed3fc"
+      },
+      "scale": 1
+    }
+  },
+  "useTwoFactorLoginValidateCodeMutation": {
+    "variables": {
+      "method": "TOTP",
+      "flow": "TWO_FACTOR_LOGIN",
+      "encryptedContext": "AWTUEHDUcB9PBQd5kdy9OgqSr7d1xncXAqTkIoIW4y_pYnHoLJDSCrIj-tyG_APliv1g1WN7hU2K4irzi4h-W4KX5Uout76RvX6aEdoxMG4ex_zi3zDRt5AYBqYVKeIBYCuBzhpIaaWYKr3-WzCBl40ltprT1ZBTesRIkkp-uBaZzFr-Z5pqT9qmuwG3t_M6VFRPNdB0Gam75M2WCJ-Ja-Lod899r2eO6nP_k9Vtsi0zUNT-N8mT6Dbk6ER93490GH2mJ-PCAvp-FafB1YCuFhi-7Fq0_HCKU_CJmtE53SugBLtra5RDGRUL3Cp8Z63r4FVKlk6pkrMpyGveHj9dfzXEbA0j_b6oPNB5WlKBowNbwBiEhgF9WHbrnJIPfqiEcHMS4vlvoXlwfyrW… (802 chars)",
+      "maskedContactPoint": null,
+      "next_uri": null,
+      "shared_prefs_data": "eyIxMTAyMCI6W3sidCI6MTc5Mjg4MTA4Ny44NTYsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS90d29fc3RlcF92ZXJpZmljYXRpb24vdHdvX2ZhY3Rvci8ifSwidiI6IkFtZXJpY2EvTmV3X1lvcmsifV0sIjMwMDAwIjpbeyJ0IjoxNzkyODgxMDg3Ljg1NiwiY3R4Ijp7ImNuIjoiaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL3R3b19zdGVwX3ZlcmlmaWNhdGlvbi90d29fZmFjdG9yLyJ9LCJ2IjpmYWxzZX1dLCIzMDAwMSI6W3sidCI6MTc5Mjg4MTA4Ny44NTYsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZh… (4184 chars)",
+      "trust_this_device": null
+    }
+  }
+}

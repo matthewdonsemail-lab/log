@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, waitFor } from 'xstate'
 import { createBrowserSession } from '../driver/index'
-import { listFacebookAccounts } from '../../marketplace/socialAccount/index'
+import { listFacebookAccounts, setAccountStatus } from '../../marketplace/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
 import { adsPowerDriver } from './index'
 import { AdsPowerError, createAdsPowerClient } from './index'
 import type { AdsPowerClient, AdsPowerProfile } from './index'
-import { planSync, profileRequest, remarkAccountId, syncProfiles, twentyRemark } from './index'
+import { adsPowerHomes, homesOf, planSync, profileRequest, remarkAccountId, syncProfiles, twentyRemark } from './index'
 
 function fakeFetch(answers: Record<string, unknown[]>) {
   const calls: { path: string; body: unknown; auth: string | null }[] = []
@@ -33,9 +33,16 @@ function memoryAdsPower(profiles: AdsPowerProfile[] = []) {
       return { profileId, profileNo: null }
     },
     updateProfile: async (id, fields) => void log.push(`update ${id} ${JSON.stringify(fields)}`),
+    deleteProfiles: async (ids) => {
+      for (const id of ids) profiles.splice(profiles.findIndex((p) => p.profileId === id), 1)
+      log.push(`delete ${ids.join(',')}`)
+    },
     startBrowser: async (id) => (log.push(`start ${id}`), { profileId: id, cdpUrl: 'ws://127.0.0.1:9/devtools/browser/x', debugPort: '9' }),
     activeBrowser: async () => null,
-    stopBrowser: async (id) => void log.push(`stop ${id}`)
+    stopBrowser: async (id) => void log.push(`stop ${id}`),
+    kernels: async () => [{ version: "156", downloaded: true }],
+    downloadKernel: async () => ({ status: "completed", progress: null }),
+    profileUserAgents: async (ids) => Object.fromEntries(ids.map((id) => [id, "Mozilla/5.0 Chrome/156.0.8078.47 Safari/537.36"]))
   }
   return { client, profiles, log }
 }
@@ -96,18 +103,54 @@ describe('adsPower profiles from Twenty (rule 42)', () => {
   test('sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked', async () => {
     const twenty = marketplaceFixture()
     const ads = memoryAdsPower()
-    const dry = await syncProfiles(twenty, ads.client, { apply: false })
+    const dry = await syncProfiles(twenty, ads.client, { apply: false, homes: null })
     expect(dry.applied).toBe(false)
     expect(ads.log).toEqual([])
     const lines: string[] = []
-    const applied = await syncProfiles(twenty, ads.client, { apply: true, log: (l) => lines.push(l) })
+    const applied = await syncProfiles(twenty, ads.client, { apply: true, homes: null, log: (l) => lines.push(l) })
     expect(ads.log.filter((l) => l.startsWith('create'))).toHaveLength(8)
     expect(lines.some((l) => /^adsPower \d+\/11 galwayOne: made profile p\d+, linked in Twenty$/.test(l))).toBe(true)
     const linked = (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
     expect(linked.adsPowerProfileId).toBe(applied.entries.find((e) => e.accountName === 'galwayOne')!.profileId)
-    const again = await syncProfiles(twenty, ads.client, { apply: true })
+    const again = await syncProfiles(twenty, ads.client, { apply: true, homes: null })
     expect(again.entries.filter((e) => e.action === 'create')).toHaveLength(0)
     expect(again.entries.filter((e) => e.action === 'linked')).toHaveLength(8)
+  })
+})
+
+describe('a deactivated or out-of-home account gives its AdsPower profile back (rule 78)', () => {
+  test('the plan releases the profile of a deactivated account, and one whose home is outside the chosen homes', async () => {
+    const accounts = await listFacebookAccounts(marketplaceFixture())
+    const galwayOne = { ...accounts.find((a) => a.accountName === 'galwayOne')!, status: 'deactivated' as const, adsPowerProfileId: 'g1' }
+    const profiles = [{ profileId: 'g1', profileNo: '1', name: 'galwayOne', groupId: '7', remark: twentyRemark(galwayOne.id), lastOpenTime: null }]
+    const plan = planSync([galwayOne, ...accounts.filter((a) => a.accountName !== 'galwayOne')], profiles, ['US'])
+    expect(plan.find((e) => e.accountName === 'galwayOne')).toMatchObject({ action: 'release', profileId: 'g1', note: 'status deactivated' })
+    expect(plan.find((e) => e.accountName === 'galwayTwo')).toMatchObject({ action: 'skip', note: 'home IE is not in US' })
+    expect(plan.filter((e) => e.action === 'create').every((e) => accounts.find((a) => a.id === e.accountId)!.homeCountry === 'US')).toBe(true)
+  })
+
+  test('applied, a release deletes the profile and unlinks it in Twenty before the freed slot goes to an account waiting for one', async () => {
+    const twenty = marketplaceFixture()
+    const ads = memoryAdsPower()
+    await syncProfiles(twenty, ads.client, { apply: true, homes: null })
+    const galwayOne = (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
+    const held = galwayOne.adsPowerProfileId!
+    await setAccountStatus(twenty, galwayOne.id, 'deactivated', 'setByHand')
+    const lines: string[] = []
+    const result = await syncProfiles(twenty, ads.client, { apply: true, homes: null, log: (l) => lines.push(l) })
+    expect(result.entries[0]).toMatchObject({ accountName: 'galwayOne', action: 'release', profileId: held })
+    expect(ads.log).toContain(`delete ${held}`)
+    expect(ads.profiles.some((p) => p.profileId === held)).toBe(false)
+    expect((await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!.adsPowerProfileId).toBeNull()
+    expect(lines[1]).toMatch(/galwayOne: released profile .+ \(status deactivated\), unlinked in Twenty$/)
+    const again = await syncProfiles(twenty, ads.client, { apply: true, homes: null })
+    expect(again.entries.find((e) => e.accountName === 'galwayOne')).toMatchObject({ action: 'skip', note: 'status deactivated' })
+  })
+
+  test('the homes come from LOG_ADSPOWER_HOMES, comma separated, any case', () => {
+    expect(adsPowerHomes({ LOG_ADSPOWER_HOMES: 'us, ie' })).toEqual(['US', 'IE'])
+    expect(adsPowerHomes({})).toBeNull()
+    expect(homesOf(' ')).toBeNull()
   })
 })
 
@@ -116,7 +159,7 @@ describe('the AdsPower driver in the browser session machine (rule 44)', () => {
 
   async function linkedAccount() {
     const twenty = marketplaceFixture()
-    await syncProfiles(twenty, memoryAdsPower().client, { apply: true })
+    await syncProfiles(twenty, memoryAdsPower().client, { apply: true, homes: null })
     return (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
   }
 

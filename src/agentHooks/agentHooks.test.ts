@@ -73,6 +73,14 @@ describe("page state hook", () => {
     expect(hookReply("Stop", [at()], empty).output).toBeNull();
   });
 
+  test("a known state that needs nothing (the group members list) is said once and never holds the turn", () => {
+    const exchanges = [{ offsetMs: 1, kind: "api" as const, name: "GroupsCometMembersPageNewMembersSectionRefetchQuery", method: "POST", host: "www.facebook.com", path: "/api/graphql/", status: 200, ms: 600, sent: {}, answer: { data: { node: { new_members: { edges: [{ node: { id: "1" } }] } } } }, errors: [], known: false }];
+    const members = at({ step: "05_scroll", url: "https://www.facebook.com/groups/junkremovalwinners/members", exchanges });
+    expect(findingOf(members)).toMatchObject({ kind: "state", resolvable: false, mark: "05_scroll:groupMembersList" });
+    expect(hookReply("Stop", [members], empty).output).toBeNull();
+    expect(JSON.stringify(hookReply("PostToolUse", [members], empty).output)).toContain("nothing to resolve");
+  });
+
   test("memory reads the older shape and survives junk", () => {
     expect(parseMemory('{"reading":"41_x:none"}')).toEqual({ seen: { reading: "41_x:none" }, stopBlocked: null });
     expect(parseMemory("not json")).toEqual(empty);

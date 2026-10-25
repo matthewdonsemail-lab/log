@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 20 time(s) in 13 run(s).
+Seen 24 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,6 +36,10 @@ Seen 20 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 622 ms | 7193 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 902 ms | 18342 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 805 ms | 45801 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 861 ms | 219888 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 851 ms | 12037 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 723 ms | 9213 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -117,13 +121,12 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 902 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 851 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
   "server_timestamps": "true",
@@ -131,10 +134,7 @@ Sent:
     "first": 1,
     "scale": 1
   },
-  "doc_id": "28541893478753857",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "28541893478753857"
 }
 ```
 
@@ -151,8 +151,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792822379719,
-      "time_at_flush_ms": 1792822380079
+      "request_start_time_ms": 1792911375700,
+      "time_at_flush_ms": 1792911376157
     },
     "is_final": true
   }

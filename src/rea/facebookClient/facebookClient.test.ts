@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { DOCS_INDEX, mergeOperations, operationNamesByDocId, writeOperationDocs } from "./client";
+import { DOCS_INDEX, indexRunModules, mergeOperations, operationNamesByDocId, writeOperationDocs } from "./client";
 import { domainOf, formFields, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, requestsInStep, responseErrors, sliceFor, stepLabel, TO_WRITE } from "./helpers/index";
 import type { ClientOperation, FacebookModule } from "./types";
 
@@ -178,5 +178,22 @@ describe("the reels domain, from the first Reels recording (rule 49)", () => {
     const { domainOf } = await import("./index");
     for (const name of ["FBUnifiedVideoSeenStateMutation", "FBUnifiedVideoContainerQuery", "FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery", "FBUnifiedVideoProfileSavedReelsQuery", "FBUnifiedVideoEntityDialogImplQuery"]) expect(domainOf(name)).toBe("reels");
     expect(domainOf("fetchMWChatVideoAutoplaySettingQuery")).toBe("background");
+  });
+});
+
+describe("a run that isn't settled yet still gives the docs its bundles", () => {
+  test("the bundles come from its session.har, are kept as scripts/, and lost bodies are said", () => {
+    const dir = join(mkdtempSync(join(tmpdir(), "unsettled")), "adsPower");
+    mkdirSync(dir);
+    const entry = (url: string, content: Record<string, unknown>) => ({ startedDateTime: "2026-10-24T21:16:00.000Z", request: { url, method: "GET", headers: [] }, response: { status: 200, headers: [], content } });
+    writeFileSync(join(dir, "session.har"), JSON.stringify({ log: { entries: [
+      entry("https://static.xx.fbcdn.net/rsrc.php/v4/a.js", { mimeType: "application/x-javascript", text: BUNDLE }),
+      entry("https://static.xx.fbcdn.net/rsrc.php/v4/b.js", { mimeType: "application/x-javascript", size: 0, _bodyError: "Error: No resource with given identifier found" }),
+    ] } }));
+    const lines: string[] = [];
+    const modules = indexRunModules([{ dir, run: "runs/host/20261024T211541_61593939852820", action: "host" }], (l) => lines.push(l));
+    expect(modules.has("useMarketplaceComposerAttributesQuery_facebookRelayOperation")).toBe(true);
+    expect(existsSync(join(dir, "scripts", "script0.js"))).toBe(true);
+    expect(lines[0]).toContain("not settled yet, 1 bundle(s) taken from its session.har; 1 response body(ies) lost in the recording");
   });
 });

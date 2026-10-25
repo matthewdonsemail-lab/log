@@ -13,6 +13,7 @@ STATIC = re.compile(r"javascript|css|image/|font/|woff", re.I)
 TEXT_TYPES = re.compile(r"json|javascript|text|html|xml|x-www-form-urlencoded", re.I)
 MAX_BODY = 2_000_000
 MAX_DOCUMENT_BODY = 16_000_000
+LARGE_BODY = re.compile(r"html|javascript|ecmascript", re.I)
 
 
 class Recorder:
@@ -46,6 +47,13 @@ class Recorder:
 
     async def _entry(self, request: Any, failed: str | None) -> None:
         try:
+            response = None if failed else await request.response()
+            raw, body_error = None, None
+            if response is not None:
+                try:
+                    raw = await response.body()
+                except Exception as exc:
+                    body_error = f"{type(exc).__name__}: {str(exc).splitlines()[0][:160] if str(exc) else ''}"
             started = request.timing.get("startTime") or time.time() * 1000
             headers = await request.all_headers()
             body = request.post_data
@@ -62,22 +70,21 @@ class Recorder:
                              "content": {"size": 0, "mimeType": ""}, "redirectURL": "", "headersSize": -1, "bodySize": -1},
                 "cache": {}, "timings": {"send": 0, "wait": 0, "receive": 0},
             }
-            response = None if failed else await request.response()
             if response is not None:
                 rheaders = await response.all_headers()
                 mime = rheaders.get("content-type", "")
                 content: dict[str, Any] = {"size": 0, "mimeType": mime}
-                try:
-                    raw = await response.body()
+                if raw is not None:
                     content["size"] = len(raw)
-                    limit = MAX_DOCUMENT_BODY if "html" in mime.lower() else MAX_BODY
-                    if len(raw) <= limit:
-                        if TEXT_TYPES.search(mime):
-                            content["text"] = raw.decode("utf8", "replace")
-                        else:
-                            content["text"], content["encoding"] = base64.b64encode(raw).decode(), "base64"
-                except Exception:
-                    pass
+                    limit = MAX_DOCUMENT_BODY if LARGE_BODY.search(mime) or request.url.split("?", 1)[0].endswith(".js") else MAX_BODY
+                    if len(raw) > limit:
+                        content["_bodyError"] = f"over {limit} bytes"
+                    elif TEXT_TYPES.search(mime):
+                        content["text"] = raw.decode("utf8", "replace")
+                    else:
+                        content["text"], content["encoding"] = base64.b64encode(raw).decode(), "base64"
+                elif body_error:
+                    content["_bodyError"] = body_error
                 entry["response"].update({"status": response.status, "statusText": response.status_text,
                                           "headers": [{"name": k, "value": v} for k, v in rheaders.items()],
                                           "content": content, "redirectURL": rheaders.get("location", "")})

@@ -227,3 +227,20 @@ describe("live logs", () => {
     expect(formatLogLine("2026-10-19T07:00:00.000Z", "connect", "session", "x")).toBe("2026-10-19T07:00:00.000Z connect session| x");
   });
 });
+
+describe("readMembers", () => {
+  test("is its own tool with named fields, no live twin, and bypass needs confirmBypass", () => {
+    const names = toolsFromCommands(COMMANDS).map((t) => t.name);
+    expect(names).toContain("readMembers");
+    expect(names).toContain("readGroup");
+    expect(names).toContain("readGroupLive");
+    expect(names).not.toContain("readMembersLive");
+    const tool = toolsFromCommands(COMMANDS).find((t) => t.name === "readMembers")!;
+    expect(tool.inputSchema.required).toEqual(["account", "group", "count"]);
+    expect(Object.keys(tool.inputSchema.properties)).toEqual(expect.arrayContaining(["secondsPerScroll", "maxScrolls", "owners", "bypass", "confirmBypass", "waitMs"]));
+    expect(guardCall("readMembers", { account: "a", group: "junkremovalwinners", count: 30, secondsPerScroll: 10 }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "read", "members", "--account=a", "--group=junkremovalwinners", "--count=30", "--secondsPerScroll=10"] });
+    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, bypass: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, bypass: true, confirmBypass: true }, COMMANDS).ok).toBe(true);
+    expect(guardCall("readMembers", { account: "a", group: "g", count: 30, live: true }, COMMANDS).ok).toBe(false);
+  });
+});

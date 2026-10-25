@@ -1,0 +1,277 @@
+{
+  "deletePost": {
+    "operations": [
+      {
+        "friendlyName": "useCometTrashPostMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "useCometTrashPostMutation"
+    ]
+  },
+  "facebookLanguageEnglish": {
+    "operations": [
+      {
+        "friendlyName": "CometUSFFDSDialogQuery",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      },
+      {
+        "friendlyName": "useCometUSFScrollablePickerMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "CometUSFFDSDialogQuery",
+      "useCometUSFScrollablePickerMutation"
+    ]
+  },
+  "groupHeaderMenus": {
+    "operations": [
+      {
+        "friendlyName": "useLinkSharingCreateWrappedUrlMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "useLinkSharingCreateWrappedUrlMutation"
+    ]
+  },
+  "groupMembers": {
+    "operations": [],
+    "gaps": []
+  },
+  "groupPostComments": {
+    "operations": [],
+    "gaps": []
+  },
+  "groupPostDialog": {
+    "operations": [],
+    "gaps": []
+  },
+  "groupTabs": {
+    "operations": [
+      {
+        "friendlyName": "useGroupsCometVisitMutation",
+        "docId": "27788177020768038",
+        "kind": "mutation",
+        "family": "groups",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "marketplaceListingDelete": {
+    "operations": [
+      {
+        "friendlyName": "CometMarketplaceYouFeedCardMoreMenuTargetQuery",
+        "docId": "28716475871275076",
+        "kind": "query",
+        "family": "background",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "useCometMarketplaceForSaleItemDeleteMutation",
+        "docId": "30073389588942699",
+        "kind": "mutation",
+        "family": "background",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "useCometC2CTransactionSurveyResponseMutation",
+        "docId": "10064548803584243",
+        "kind": "mutation",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "marketplaceListingPublish": {
+    "operations": [
+      {
+        "friendlyName": "CometMarketplaceSetBuyLocationMutation",
+        "docId": "27784133851221395",
+        "kind": "mutation",
+        "family": "location",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "useCometMarketplaceListingCreateMutation",
+        "docId": "9551550371629242",
+        "kind": "mutation",
+        "family": "publishing",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "CometMarketplaceNUXUpdateStateMutation",
+        "docId": "23955024057437109",
+        "kind": "mutation",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "messengerPinCreate": {
+    "operations": [
+      {
+        "friendlyName": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+        "docId": "28946945608223566",
+        "kind": "mutation",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "postComment": {
+    "operations": [
+      {
+        "friendlyName": "useCometUFICreateCommentMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "useCometUFICreateCommentMutation"
+    ]
+  },
+  "profilePhotoPost": {
+    "operations": [
+      {
+        "friendlyName": "ComposerStoryCreateMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "ComposerStoryCreateMutation"
+    ]
+  },
+  "profilePost": {
+    "operations": [
+      {
+        "friendlyName": "ComposerStoryCreateMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "ComposerStoryCreateMutation"
+    ]
+  },
+  "profileSetup": {
+    "operations": [
+      {
+        "friendlyName": "ProfileCometProfilePictureEditDialogQuery",
+        "docId": "27308360595486690",
+        "kind": "query",
+        "family": "profile",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "profilePictureUpload",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      },
+      {
+        "friendlyName": "ProfileCometProfilePictureSetMutation",
+        "docId": "29015178351504159",
+        "kind": "mutation",
+        "family": "profile",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "ProfileCometCoverPhotoUpdateMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      },
+      {
+        "friendlyName": "useFXIMUpdateNameMutation",
+        "docId": null,
+        "kind": null,
+        "family": null,
+        "hasVariables": false
+      }
+    ],
+    "gaps": [
+      "profilePictureUpload",
+      "ProfileCometCoverPhotoUpdateMutation",
+      "useFXIMUpdateNameMutation"
+    ]
+  },
+  "warmupCreateAccessCheck": {
+    "operations": [],
+    "gaps": []
+  },
+  "warmupFeedBrowse": {
+    "operations": [
+      {
+        "friendlyName": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+        "docId": "9948369021930229",
+        "kind": "query",
+        "family": "background",
+        "hasVariables": true
+      },
+      {
+        "friendlyName": "CometNewsFeedPaginationQuery",
+        "docId": "29004938205805573",
+        "kind": "query",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "warmupMarketplaceBrowse": {
+    "operations": [
+      {
+        "friendlyName": "MarketplacePDPContainerQuery",
+        "docId": "28939900068975315",
+        "kind": "query",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "warmupMessagesVisit": {
+    "operations": [
+      {
+        "friendlyName": "MarketplaceCometBrowseFeedLightPaginationQuery",
+        "docId": "28980683528217734",
+        "kind": "query",
+        "family": "background",
+        "hasVariables": true
+      }
+    ],
+    "gaps": []
+  },
+  "warmupSellingVisit": {
+    "operations": [],
+    "gaps": []
+  }
+}

@@ -423,12 +423,12 @@ Answered:
 
 ## What it does
 
-The People tab's "New to the group" list (`GroupsCometMembersPageNewMembersSection_group`): by `groupID` and a `cursor` it loads the next `count` members who joined most recently. It fires each time the list is scrolled near its end. In Bethlehem's run 20261024T060921 it fired 38 times over the 24 steps, about one page of members per scroll, each answered 200 in 0.5 to 1.9 s.
+The People tab's "New to the group" list loading its next page (`GroupsCometMembersPageNewMembersSection_group.graphql`, `/groups/<g>/members`). The page's HTML carries the first 10 new members (`data.group.new_members`); each time the list's end scrolls into view, this query asks for the next `count: 10` after the `cursor` (the last `page_info.end_cursor`), by `groupID`. Its answer is `data.node.new_members`: `edges[]`, each with `join_status_text.text` ("Joined on Wednesday") and a `node` of `__typename: "User"` carrying `id`, `name`, `url`, `bio_text.text`, `profile_plus_category_display_name` and `follower_count`, then `page_info` (`end_cursor`, `has_next_page`). In run 20261024T060921 (account 61594063207669, "Junk Removal Winners") a plain scroll (3-5 wheel moves) fired it 1 to 3 times, 2 on average: 34 answers over 18 scrolls, 340 members, no duplicates, each 200 in 500-850 ms.
 
 ## What our machine does with it
 
-No machine on main waits for it or reads it. The members read in PR 43 (`readMembers`) scrolls this tab and reads the members from these answers. The scrolls that load it are reads; nothing on the tab was pressed.
+`membersReadMachine` (`src/facebook/group/members`, `log facebook read members`, rule 77) reads every answer of it in each scroll step's own HAR (`membersFromRefetch`): the members are merged by id, `page_info.has_next_page: false` ends the read, and an answer for another group (`node.id`) is ignored. It never sends this query itself: the page does, because the step scrolled. A step on the members page whose answer to it holds `new_members` edges is the known page state `groupMembersList`, which needs nothing, so an inspect scroll there is decided without SubQ.
 
 ## What can go wrong
 
-Only 200s have been seen, in one run. How fast and how far it is paged is the risk: in that run 38 pages (about 400 members) of one group were loaded in 41 minutes. The account was put into Facebook's checkpoint 8 minutes after the last of them (PR 43 comments). A failed page would stop the list growing; the read would see no new members and stop.
+Only 200s have been seen. If an answer had no edges, the step adds no members and the read scrolls again until `--maxScrolls`; `has_next_page: false` ends it as the list's end. If a scroll fired no refetch (the list's end not yet in view), the step adds nothing and the next scroll goes on. A checkpoint or login during a scroll stops the read with what it had (`checkpointed`, `loginWall`); a failed step stops it with `groupReadStepFailed`. It only reads: nothing on Facebook changes.

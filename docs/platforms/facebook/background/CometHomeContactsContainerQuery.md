@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 23 time(s) in 13 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +38,10 @@ Seen 23 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 648 ms | 7202 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 953 ms | 18354 ms | A server error field_exception occured. Check server logs for details. |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 582–1109 ms | 45814–1773952 ms | A server error field_exception occured. Check server logs for details. |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 1077 ms | 219899 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 562 ms | 12047 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 928 ms | 9220 ms | A server error field_exception occured. Check server logs for details. |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -201,13 +205,12 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 953 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 562 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometHomeContactsContainerQuery",
   "server_timestamps": "true",
@@ -215,10 +218,7 @@ Sent:
     "numContactsToFetch": 17,
     "scale": 1
   },
-  "doc_id": "28451034771148738",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "28451034771148738"
 }
 ```
 
@@ -240,7 +240,7 @@ Answered:
           "__module_operation_CometHomeContactsContainerQuery": null,
           "__module_component_CometHomeContactsContainerQuery": null
         },
-        "id": "61594063207669"
+        "id": "61593939852820"
       }
     }
   },
@@ -276,8 +276,8 @@ Answered:
   ],
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792822379787,
-      "time_at_flush_ms": 1792822380151
+      "request_start_time_ms": 1792911375721,
+      "time_at_flush_ms": 1792911375875
     },
     "is_final": true
   }

@@ -13,6 +13,7 @@ export type ErrorLayer =
   | 'adsPower'
   | 'group'
   | 'warmup'
+  | 'twitter'
 
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
@@ -94,6 +95,103 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it.'
   },
+  accountNotTwitter: {
+    layer: 'account',
+    meaning: 'A log twitter command was given an account whose platform in Twenty is not TWITTER.',
+    retryable: false,
+    raisedIn: ['twitter/account/session'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Name a TWITTER socialAccount (its accountName is the handle).'
+  },
+  noTwitterSession: {
+    layer: 'account',
+    meaning: "The X account's saved cookies in Twenty have no auth_token + ct0, so there is no session to call X with.",
+    retryable: false,
+    raisedIn: ['twitter/account/session'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Save the account's cookies from a normal manual login into its socialAccounts row."
+  },
+  targetMissing: {
+    layer: 'twitter',
+    meaning: "A log twitter send or queue item names no target: a reply, quote or like needs the post's url, a dm the recipient's user id.",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Give --tweet <post url> (reply, quote, like) or --userId <id> (dm), taken from treg research.'
+  },
+  tweetUrlInvalid: {
+    layer: 'twitter',
+    meaning: "The post given to a log twitter send isn't an x.com post url (https://x.com/<handle>/status/<id>).",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: "Give the post's own url, as treg research returned it."
+  },
+  userIdInvalid: {
+    layer: 'twitter',
+    meaning: "The dm recipient isn't an X user id (digits only); a handle is not an id.",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: "Give the recipient's numeric user id from treg research."
+  },
+  textMissing: {
+    layer: 'twitter',
+    meaning: 'A reply, quote or dm was given no text.',
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Give the approved copy with --text.'
+  },
+  notApproved: {
+    layer: 'twitter',
+    meaning: 'A send on X was asked for with --live but without who approved it (rule 8: nothing is sent without a named approver).',
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Add --approvedBy <who approved it>; only send what matt approved.'
+  },
+  styleFailed: {
+    layer: 'twitter',
+    meaning: 'The copy breaks the house style: lowercase only, no commas, semicolons, full stops, em or en dashes (urls are exempt).',
+    retryable: false,
+    raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
+    action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
+  },
+  queueInvalid: {
+    layer: 'twitter',
+    meaning: "The queue file can't be used: it is missing, isn't a queue, or a target or variations file is wrong.",
+    retryable: false,
+    raisedIn: ['twitter/queue/plan'],
+    action: 'Build it again with log twitter queue build, or fix the file it names.'
+  },
+  queueNotApproved: {
+    layer: 'twitter',
+    meaning: "The queue isn't approved, or it changed after it was approved: its fingerprint (the account and every item's action, target and copy) no longer matches.",
+    retryable: false,
+    raisedIn: ['twitter/queue/plan', 'twitter/queue/run'],
+    action: 'Review it with log twitter queue show, then log twitter queue approve --by <who>.'
+  },
+  queueNoPlan: {
+    layer: 'twitter',
+    meaning: 'The queue has no random plan to run.',
+    retryable: false,
+    raisedIn: ['twitter/queue/run'],
+    action: 'Draw one with log twitter queue plan <queue> --window <5h>.'
+  },
+  queueBusy: {
+    layer: 'twitter',
+    meaning: "Another run holds the queue's lock (<queue>.lock), or nudge was asked for with no run going.",
+    retryable: false,
+    raisedIn: ['twitter/queue/run'],
+    action: 'Wait for the run to end; delete the lock only if no run is going.'
+  },
+  governorBlocked: {
+    layer: 'account',
+    meaning: "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the 40-a-day write budget (fbk's RequestGovernor, one per account under ~/.logCli/fbk/<account>).",
+    retryable: false,
+    raisedIn: ['directApi/engine'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Stop for this account until the pause ends or the day rolls over; never retry into it.'
+  },
   wrongPassword: {
     layer: 'account',
     meaning: "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",
@@ -138,6 +236,15 @@ export const ERROR_CATALOG = {
     publish: 'blocked',
     monitor: 'blocked',
     action: reconnect
+  },
+  identityVerificationRequired: {
+    layer: 'account',
+    meaning: 'Facebook holds the account\'s listings until a person confirms their identity: Selling says "Confirm your identity to publish this and any future listings", and MarketplaceYourListingDialogQuery answers a seller notice of type INTEGRITY_NEEDS_VERIFICATION_VH ("More Info Needed to Publish This Listing", "Please confirm your mobile number before selling on Marketplace").',
+    retryable: false,
+    raisedIn: ['marketplace/check', 'flow.marketplaceListingPublish'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: tellMatt
   },
   suspended: {
     layer: 'account',
@@ -1373,6 +1480,98 @@ export const ERROR_CATALOG = {
     retryable: true,
     raisedIn: ['facebook/group/read.scrolling', 'facebook/group/read.openingPost', 'facebook/group/read.scrollingComments'],
     action: "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
+  },
+  controlMissing: {
+    layer: 'browser',
+    meaning: "No visible control of the step's role has its name as its accessible name, aria-label, label, text or placeholder (case and spacing ignored), inside the dialog the step names.",
+    retryable: false,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Read the step's snapshot.yml: the page changed or a state came up first. Record the page again with log inspect and rebuild the flow (rule 29)."
+  },
+  controlAmbiguous: {
+    layer: 'browser',
+    meaning: 'More than one visible, enabled control matches the step, so none is clicked: the step never guesses.',
+    retryable: false,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Give the step the dialog it sits in (`within`, from the recording's snapshot) or record the page again (rule 29)."
+  },
+  controlDisabled: {
+    layer: 'browser',
+    meaning: "The step's control is there but stayed disabled until the step's wait ran out: what it waits on never finished.",
+    retryable: true,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Read the previous step's answers (rule 73): the call that enables it did not come back."
+  },
+  noHomeRegion: {
+    layer: 'account',
+    meaning: "The account's home city has no state or province in CITY_REGIONS, so its Marketplace location can't be typed as \"City, State\" written out (rule 72).",
+    retryable: false,
+    raisedIn: ['cli/preflight', 'host.setLocation'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Add the city with its state or province code to CITY_REGIONS in src/marketplace/home/types.ts.'
+  },
+  twoStepNoAuthApp: {
+    layer: 'account',
+    meaning: "Facebook asked for a passkey and its method picker (TwoStepVerificationChallengePickerDialogQuery) offered no authentication app (TOTP), or disabled it, so the account's authenticator secret can't sign it in.",
+    retryable: false,
+    raisedIn: ['host.signIn'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: tellMatt
+  },
+  overlayNotCleared: {
+    layer: 'browser',
+    meaning: "A known overlay (the browser-notifications notice, an ended 'What happened' notice) stayed over the page after its key, or its clearing call didn't answer as it must, so the flow's first click never happens.",
+    retryable: true,
+    raisedIn: ['flow.clearOverlays'],
+    action: "Read the press step's snapshot and exchanges (rule 73): the overlay may have changed. Record it with log inspect and update its page state (rule 54)."
+  },
+  adsPowerKernelMissing: {
+    layer: 'adsPower',
+    meaning: "The SunBrowser kernel a profile starts is not downloaded, so it can't start: with ua_auto that is the Chrome version in the profile's own user agent (Scranton's is 154, Exeter's 156), not the newest.",
+    retryable: true,
+    raisedIn: ['host.openBrowser', 'cli/preflight'],
+    action: 'Run `log facebook preflight --apply`: it downloads the kernel and waits for it.'
+  },
+  noAdsPowerProfile: {
+    layer: 'adsPower',
+    meaning: 'The account has no AdsPower profile linked (adsPowerProfileId is empty).',
+    retryable: false,
+    raisedIn: ['cli/preflight'],
+    action: 'Run `log adsPower sync --apply`.'
+  },
+  sessionOpen: {
+    layer: 'runtime',
+    meaning: "A live session already holds the account's browser, so another can't open it.",
+    retryable: true,
+    raisedIn: ['cli/preflight'],
+    action: 'Use that session, or close it: log inspect do stop --account <a>.'
+  },
+  proxyWrongCountry: {
+    layer: 'account',
+    meaning: "The proxy answers, but its exit is in another country than the account's home.",
+    retryable: false,
+    raisedIn: ['cli/preflight'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log proxy assign --account <id>`.'
+  },
+  proxyCheckFailed: {
+    layer: 'account',
+    meaning: 'The proxy check itself could not run (the worker or the run folder failed), so the proxy is unknown.',
+    retryable: true,
+    raisedIn: ['cli/preflight'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log proxy check --account <id>` and read its error.'
+  },
+  opensSpent: {
+    layer: 'runtime',
+    meaning: "The host already opened the account's browser the most times allowed today (rule 35).",
+    retryable: true,
+    raisedIn: ['lifecycle.opening', 'cli/preflight'],
+    action: 'It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37).'
   },
 } as const satisfies Record<string, ErrorEntry>
 

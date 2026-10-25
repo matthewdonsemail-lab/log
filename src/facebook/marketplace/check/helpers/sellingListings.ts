@@ -2,6 +2,8 @@ import type { AgencyListingStatus } from '../../../../marketplace/agencyListing/
 import type { SellingListing } from '../types.ts'
 import { responseTexts } from './graphqlResponses.ts'
 
+export const IDENTITY_HOLD = /confirm your identity|verify your identity|confirm it.?s you/i
+
 const CLICKS = /"listing_insights":\{"insights":\[\{"count":(\d+)\}/
 
 const LISTING = /"id":"(\d{10,})","marketplace_listing_title":"((?:[^"\\]|\\.)*)"/g
@@ -34,6 +36,7 @@ export function statusOfListing(l: Omit<SellingListing, 'status'>): AgencyListin
   if (l.rejected) return 'policyViolation'
   if (l.duplicate) return 'duplicateTakedown'
   if (l.notice && /review/i.test(l.notice)) return 'underReview'
+  if (l.notice && IDENTITY_HOLD.test(l.notice)) return 'blocked'
   if (l.onMarketplace && !l.draft && !l.pending) return 'active'
   return 'unknown'
 }

@@ -9,6 +9,9 @@ const HEADER = "log-cli page state (rules 54-55, scripts/hooks/pageState.ts):";
 export function findingOf(at: BrowserAt): Finding {
   const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin, exchanges: at.exchanges });
   const where = `step ${at.step}, ${at.url || "no url yet"}`;
+  if (state?.needsNothing) {
+    return { account: at.account, kind: "state", state, mark: `${at.step}:${state.id}`, line: `${at.account}: page state **${state.id}**: ${state.what} (${where}). Known, nothing to resolve: ${state.resolve}.`, resolvable: false };
+  }
   if (state) {
     const next = state.person ? "Only a person can clear it: stop this account and tell matt." : "Known state, resolve it, do not stop:";
     return { account: at.account, kind: "state", state, mark: `${at.step}:${state.id}`, line: `${at.account}: page state **${state.id}**: ${state.what} (${where}). ${next} ${state.resolve}.`, resolvable: !state.person };

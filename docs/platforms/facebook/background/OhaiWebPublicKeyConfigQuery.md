@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 117 time(s) in 33 run(s).
+Seen 150 time(s) in 41 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,19 +68,19 @@ Seen 117 time(s) in 33 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 746 ms | 2176 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1334 ms | 2264 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 685 ms | 2261 ms | — |
-| inspect | step 1: goto /marketplace/status | 2 | 200 | 352–451 ms | 5880–9428 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 341–504 ms | 4148–4501 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 342–574 ms | 4091–1343893 ms | — |
+| inspect | step 1: goto /marketplace/status | 4 | 200 | 352–504 ms | 5880–9428 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 4 | 200 | 341–637 ms | 3545–4501 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 7 | 200 | 342–574 ms | 3300–1343893 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 1099 ms | 2612 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2620 ms | 2036 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2026 ms | 2711 ms | — |
-| inspect | step 4: goto /marketplace/status | 1 | 200 | 864 ms | 4278 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1015 ms | 1930 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 429–975 ms | 2313–1515040 ms | — |
+| inspect | step 4: goto /marketplace/status | 2 | 200 | 523–864 ms | 3182–4278 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 2 | 200 | 427–1015 ms | 1930–2229 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 4 | 200 | 397–975 ms | 2018–1515040 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 379 ms | 6402 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 966 ms | 7668 ms | — |
-| flow | step 1: goto /marketplace/ | 1 | 200 | 374 ms | 6652 ms | — |
-| flow | step 3: goto /marketplace/create/item | 1 | 200 | 435 ms | 3223 ms | — |
+| flow | step 1: goto /marketplace/ | 4 | 200 | 374–553 ms | 4043–6652 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 435–503 ms | 2822–5012 ms | — |
 | warmup | step 1: goto /marketplace/ | 1 | 200 | 367 ms | 3824 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 389 ms | 3346 ms | — |
 | warmup | step 5: goto /messages/ | 1 | 200 | 583 ms | 5032 ms | — |
@@ -92,6 +92,21 @@ Seen 117 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 327 ms | 7842 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 531 ms | 4672 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 322 ms | 3622 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 408 ms | 5553 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 479 ms | 11104 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 383 ms | 9698 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 370 ms | 2707 ms | — |
+| host | step 7: goto /me | 1 | 200 | 359 ms | 4049 ms | — |
+| host | step 12: goto /me | 1 | 200 | 379 ms | 3268 ms | — |
+| host | step 17: goto /me | 1 | 200 | 375 ms | 3471 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 440–529 ms | 2328–4547 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 395 ms | 22253 ms | — |
+| host | step 28: clickRole button "…" | 1 | 200 | 364 ms | 7819 ms | — |
+| host | step 31: goto /marketplace/status | 1 | 200 | 464 ms | 6129 ms | — |
+| host | step 32: goto /me | 1 | 200 | 374 ms | 5413 ms | — |
+| host | step 40: goto /marketplace/create/item | 1 | 200 | 439 ms | 7925 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 475 ms | 5963 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 438–503 ms | 616559–657136 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
