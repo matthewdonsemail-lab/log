@@ -7243,3 +7243,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the engine's dm reads twikit's Message as X built it: a message id means sent (messageId), and the 1:1 conversation id is the two user ids, lower first (conversationId). It no longer looks for a conversation_id attribute twikit's Message never has. TwitterSessionAnswer gains messageId.
 Why: matt asked to check a dm from matthewsoldit to abel. It was sent, but the engine read it as dropped (no conversation id), exited 1 and fed a false soft block to matthewsoldit's governor (a 15-minute pause).
 Checked: live, twitterDmLive from matthewsoldit to abelqxr (2072692285829943296, from abelqxr's own session check), approved by matt: X answered with the message; abel's dm history read from abel's session shows message 2114318615877157235, from 1974596626342686720 to 2072692285829943296, text test dm from log cli. bun run check: 1047 pass.
+
+## 2026-10-25 11:36Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/twikit/tests/test_user_id.py`: added def settings_answers_404, def test_user_id_falls_back_to_the_twid_cookie_when_settings_answers_404, def test_user_id_raises_the_original_error_with_no_twid_cookie, def test_user_id_still_uses_settings_when_it_answers
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: vendor/twikit's Client.user_id() still asks X's v1.1 settings first, and when that fails (X answers it 404, code 34) it falls back to the account's own id in the twid cookie (u%3D<id>, _user_id_from_cookie), cached like before. With no twid cookie the original error is raised. client.py imports re and unquote for it. vendor/twikit/tests/test_user_id.py holds it.
+Why: matt asked to fix it as a vendor/twikit change (rule 81, we maintain twikit). user_id() is what get_dm_history and the other conversation calls build on, and it failed on every account because X 404s the settings read.
+Checked: 13 twikit tests pass (3 new: the 404 falls back to twid and is cached, no twid raises NotFound, a working settings answer is still used). Live: twikit's own get_dm_history on abelqxr's session, with no id seeded, returned message 2114318615877157235 from matthewsoldit (test dm from log cli). twikitTransport check ok, bun run check 1047 pass.
