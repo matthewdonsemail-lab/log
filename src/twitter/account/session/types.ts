@@ -48,6 +48,7 @@ export interface TwitterSessionAnswer {
   checked?: TwitterFollow[]
   tweetId?: string
   conversationId?: string
+  messageId?: string
   mode?: string
   liked?: boolean
   already?: boolean

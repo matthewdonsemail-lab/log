@@ -7233,3 +7233,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the MCP's live wording names the command's platform (platformLabel: X for twitter, Facebook otherwise): a live tool's title (live on X), its Live line, its confirmLive field, the plain tool's pointer to its Live twin, and guardCall's refusals. Facebook tools read as before.
 Why: after the restart matt asked to check the new X tools; twitterReply's description said What acts on Facebook is twitterReplyLive.
 Checked: over MCP twitterSessionCheck (loggedIn), twitterFollows (@abelqxr follows you, you follow them) and twitterReply as a dry run (X not contacted) all answered; the generated descriptions say X for twitterReply and twitterReplyLive and Facebook for publishLive; bun run check: 1047 pass.
+
+## 2026-10-25 11:33Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/twitterApi/engine.py`: changed def send
+- `src/twitter/account/session/types.ts`: changed interface TwitterSessionAnswer
+
+What changed: the engine's dm reads twikit's Message as X built it: a message id means sent (messageId), and the 1:1 conversation id is the two user ids, lower first (conversationId). It no longer looks for a conversation_id attribute twikit's Message never has. TwitterSessionAnswer gains messageId.
+Why: matt asked to check a dm from matthewsoldit to abel. It was sent, but the engine read it as dropped (no conversation id), exited 1 and fed a false soft block to matthewsoldit's governor (a 15-minute pause).
+Checked: live, twitterDmLive from matthewsoldit to abelqxr (2072692285829943296, from abelqxr's own session check), approved by matt: X answered with the message; abel's dm history read from abel's session shows message 2114318615877157235, from 1974596626342686720 to 2072692285829943296, text test dm from log cli. bun run check: 1047 pass.

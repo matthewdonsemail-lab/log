@@ -240,10 +240,11 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "event": "sent", "liked": True, "tweetId": tweet_id}
     if action == "dm":
         message = await client.send_dm(str(spec["userId"]), spec["text"])
-        conversation = str(getattr(message, "conversation_id", "") or "") or None
-        if not conversation:
-            return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the dm with no conversation id: nothing was sent"}
-        return {"ok": True, "event": "sent", "mode": "dm", "conversationId": conversation, "userId": str(spec["userId"])}
+        message_id = str(getattr(message, "id", "") or "") or None
+        if not message_id:
+            return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the dm with no message id: nothing was sent"}
+        pair = sorted([str(getattr(message, "sender_id", "") or ""), str(getattr(message, "recipient_id", "") or "")], key=lambda i: int(i) if i.isdigit() else 0)
+        return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"])}
     if action == "reply":
         tweet = await client.create_tweet(text=spec["text"], reply_to=tweet_id_from_url(spec["tweetUrl"]))
     else:
