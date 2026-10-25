@@ -7497,3 +7497,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Reddit is log-cli's third platform, made whole by `log new platform reddit --noProxy` over MCP (hosts reddit.com, redd.it, redditmedia.com; home https://www.reddit.com/; session cookie reddit_session): its account session, `log reddit session check` and MCP tool, a direct-API engine in python/redditApi (engineNotBuilt until a client is vendored) and docs/platforms/reddit, wired through the syntax tree. The Twenty client is regenerated and now has REDDIT. The gate's self-check compares timezones with `same_zone` (the same UTC offset through the year) instead of their names.
 Why: matt asked for Reddit as a new platform, with no proxy like X, to load Maleficent-Try-8338's AdsPower browser in `log inspect` and record Reddit's internal calls. The self-check refused the first no-proxy run because the browser said Asia/Saigon and the exit lookup said Asia/Ho_Chi_Minh, two names of one zone.
 Checked: a 12-step inspect run on Maleficent-Try-8338 (gate on this machine's exit, AdsPower profile with no proxy, self-check passed, logged in; goal met 86%, 0 findings); a test that same_zone takes Asia/Saigon and Asia/Ho_Chi_Minh as one and New York and Chicago as two; bun run check (every gate, 1075 tests).
+
+## 2026-10-25 13:04Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: the Facebook request docs' operations.json is rebuilt: its build time and run count only, every operation kept.
+Why: the pre-push docs gate refused the push because the two Reddit inspect runs were newer than the docs (rule 27). They hold no Facebook requests, and the docs builder reads only Facebook's calls, so no Reddit request doc is written yet.
+Checked: `log facebook capture --docs` (0 Facebook requests in the 2 runs, exit 0); git diff shows only builtAt and runs changed.
