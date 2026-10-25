@@ -137,7 +137,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter like`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.favorite_tweet for the like; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 - `log twitter dm`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 - `log twitter queue`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log reddit session`: Engine: the direct-API engine only (no client vendored yet, account.ping for the session check; no browser). Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log reddit session`: Engine: the direct-API engine only (rdvwr, account.ping for the session check; no browser). Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 ### How a call reaches log-cli
 
@@ -238,6 +238,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowDeletePost`, `flowDeletePostLive` | `log flow run deletePost` | Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live). | none | gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove |
 | `flowFacebookLanguageEnglish`, `flowFacebookLanguageEnglishLive` | `log flow run facebookLanguageEnglish` | Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic. | none | gotosettings → click → clickEnglishUs → click |
 | `flowGroupHeaderMenus`, `flowGroupHeaderMenusLive` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
+| `flowGroupMembers`, `flowGroupMembersLive` | `log flow run groupMembers` | Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction | none | gotogroupsJunkremovalwinners → gotogroupsJunkremovalwinnersMembers → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll |
 | `flowGroupPostComments`, `flowGroupPostCommentsLive` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
 | `flowGroupPostDialog`, `flowGroupPostDialogLive` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
 | `flowGroupTabs`, `flowGroupTabsLive` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
@@ -432,6 +433,9 @@ flowchart TB
   f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
   mcp --> f_groupHeaderMenus
   f_groupHeaderMenus --> c_flow
+  f_groupMembers["flowGroupMembers: flow run groupMembers"]
+  mcp --> f_groupMembers
+  f_groupMembers --> c_flow
   f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
   mcp --> f_groupPostComments
   f_groupPostComments --> c_flow
@@ -1101,7 +1105,7 @@ Check that Reddit still accepts an account's saved session, on the direct-API en
 
 ```text
 log reddit session check --account <accountName> [--json]
-Checks that Reddit still accepts the account's saved session, on the direct-API engine (no client vendored yet, no browser). Sends nothing.
+Checks that Reddit still accepts the account's saved session, on the direct-API engine (vendor/rdvwr on one curl_cffi session, no browser). Sends nothing.
 Reddit's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 ```
 

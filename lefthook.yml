@@ -6,6 +6,9 @@ pre-commit:
     twikitTransport:
       run: bun run check:twikitTransport
 
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
+
     platforms:
       run: bun run check:platforms
 
@@ -32,6 +35,9 @@ pre-push:
 
     twikitTransport:
       run: bun run check:twikitTransport
+
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
 
     platforms:
       run: bun run check:platforms

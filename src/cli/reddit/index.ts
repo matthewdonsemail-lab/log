@@ -5,7 +5,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const REDDIT_SESSION_USAGE = [
   "Usage: log reddit session check --account <accountName> [--json]",
-  "Checks that Reddit still accepts the account's saved session, on the direct-API engine (no client vendored yet, no browser). Sends nothing.",
+  "Checks that Reddit still accepts the account's saved session, on the direct-API engine (vendor/rdvwr on one curl_cffi session, no browser). Sends nothing.",
   "Reddit's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.",
 ].join("\n");
 
@@ -24,7 +24,7 @@ export const REDDIT_SESSION_INPUT: CommandInput = {
 };
 
 function render(accountName: string, answer: PlatformAnswer): string {
-  if (answer.ok) return `log reddit session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (no client vendored yet, no browser).`;
+  if (answer.ok) return `log reddit session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (vendor/rdvwr on one curl_cffi session, no browser).`;
   return `log reddit session check: ${accountName}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
 }
 
@@ -47,7 +47,7 @@ export const redditSessionCommand: Command = {
       const gate = redditGate(account);
       if (!gate.ok) return refuse("reddit session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directReddit) return { code: 1, stderr: "log reddit session check: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: session check on the direct-API engine (no client vendored yet)`);
+      context.err(`${account.accountName}: session check on the direct-API engine (vendor/rdvwr)`);
       const run = context.directReddit(account, { action: "ping" });
       for (const line of await recordRedditSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       const code = run.answer.ok ? 0 : 1;

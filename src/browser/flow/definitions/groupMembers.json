@@ -1,0 +1,433 @@
+{
+  "name": "groupMembers",
+  "summary": "Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotogroupsJunkremovalwinners",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/junkremovalwinners",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 34031,
+        "reaEvidenceId": "ev_b94fa8ba71250b5979433c9c6ef392d896c6a8a2c533ce779a4c053f44b3b35e",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "useGroupsCometVisitMutation",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "GroupsCometFeedRegularStoriesPaginationQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "GroupsCometFeedRegularStoriesPaginationQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s02_gotogroupsJunkremovalwinnersMembers",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/junkremovalwinners/members",
+      "recorded": {
+        "step": "03_gotoHttpsWwwFacebook",
+        "ms": 18172,
+        "reaEvidenceId": "ev_5b68c26454a368478c8e606ca0366b33e18ffd9263dd51d345e7c070ab876dc6",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s03_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "04_scroll35X",
+        "ms": 18000,
+        "reaEvidenceId": "ev_1583c03bf2a1f641ff83daa06477ca1774a7c0b25feba7124dcf9df72d2bb76d",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "UserSignalsHovercardQuery",
+          "UserSignalsHovercardQuery",
+          "UserSignalsHovercardQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "05_scroll35X",
+        "ms": 17562,
+        "reaEvidenceId": "ev_720f06159ebda00cb688301aa11b1d5495839248817c065676ace13df508af58",
+        "requests": [
+          "CometProfileVerificationBadgePopoverQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometNotificationsDropdownQuery",
+          "CometNotificationsDropdownQuery",
+          "CometNotificationsDropdownQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometNotificationsDropdownQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "06_scroll35X",
+        "ms": 19407,
+        "reaEvidenceId": "ev_26999b1b305937e15e7144eae381d7bfbbef19be1e2c193d15cac76ba681dc2e",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometFeedInlineComposerQuery",
+          "CometModernHomeFeedQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometMegaphoneRootQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery",
+          "StoriesTrayRectangularRootQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+        ]
+      }
+    },
+    {
+      "id": "s06_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "07_scroll35X",
+        "ms": 15219,
+        "reaEvidenceId": "ev_9cf12966e3b262954b490d565d9d4a3640e77506f598bad5006dbeb8594099d2",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s07_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "08_scroll35X",
+        "ms": 15156,
+        "reaEvidenceId": "ev_74f357fb1b338df417f56dc0b5b1645ca8211f0331a63f85265aea006fd312fa",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s08_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "09_scroll35X",
+        "ms": 19609,
+        "reaEvidenceId": "ev_8f44b0b13a2031bd78bdd348b579ea7d5cd71d22c584293f5a20e76adee4dc6e",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "FBScreenTimeLogger_syncMutation",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+        ]
+      }
+    },
+    {
+      "id": "s09_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "10_scroll35X",
+        "ms": 24250,
+        "reaEvidenceId": "ev_b1d02afb185f0285d6c32989d6a002016a00fbb09b512bf871c4bb90df07cc2e",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s10_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "11_scroll35X",
+        "ms": 22875,
+        "reaEvidenceId": "ev_9ebfcfe2d8cc27e09d95f3db1302708da80c34b479fe9be772dd2556c070a2c7",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s11_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "12_scroll35X",
+        "ms": 16328,
+        "reaEvidenceId": "ev_7ef91c45b552a03620a189dfc8198a9e155bc84d0680a940b37be52a48743b97",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s12_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "13_scroll35X",
+        "ms": 30766,
+        "reaEvidenceId": "ev_362eba9c8c7179a2c8a90dd712ce9af5a43cb3bf3d58c856e840ef1a5660b244",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s13_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "14_scroll35X",
+        "ms": 19141,
+        "reaEvidenceId": "ev_4b616a57ab4399a8e26559414628aa292535f01e15dbb92e5323d4c77f4c11b5",
+        "requests": [
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s14_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "15_scroll35X",
+        "ms": 16750,
+        "reaEvidenceId": "ev_aa65a99dc75fc9a5cc936b68f28b948641eb423fe1e59eaad0597fc398c55428",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+        ]
+      }
+    },
+    {
+      "id": "s15_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "16_scroll35X",
+        "ms": 16969,
+        "reaEvidenceId": "ev_a473a8440bf43d488e110162acb2a33a6f80956d64fa165a0a5c8658ea0622ec",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s16_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "17_scroll35X",
+        "ms": 17578,
+        "reaEvidenceId": "ev_fea3b191ab3bd8e90ec43897315c2dc748449fbc91078c31071ebea3d795f554",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s17_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "18_scroll35X",
+        "ms": 20641,
+        "reaEvidenceId": "ev_6a78ff4242d30abeb644550357f8136a53954bf334cd6f90e7b1ba46365940b7",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s18_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "19_scroll35X",
+        "ms": 21938,
+        "reaEvidenceId": "ev_323f3a0a4a69c4afda86040bd640930d3ba527ef9ae75070a50251586b9244d4",
+        "requests": [
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s19_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "20_scroll35X",
+        "ms": 22734,
+        "reaEvidenceId": "ev_2f5fdb38a58693b392b816a3ad2cce8e034494bdcc72bd102d4809196c103312",
+        "requests": [
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "FBScreenTimeLogger_syncMutation",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s20_scroll",
+      "action": "scroll",
+      "args": [],
+      "recorded": {
+        "step": "21_scroll35X",
+        "ms": 14500,
+        "reaEvidenceId": "ev_3e54a6512b990439515fc8dc78c8fe7cd5ff2c4885bd9dc86837c018e9f05580",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery",
+          "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\inspect\\20261024T060921_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-24T06:20:55.617Z"
+  }
+}

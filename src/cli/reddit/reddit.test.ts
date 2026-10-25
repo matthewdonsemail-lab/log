@@ -46,14 +46,16 @@ describe("log reddit session check", () => {
     expect(r.calls).toEqual([]);
   });
 
-  test("the generated engine answers engineNotBuilt until its client is wired in", () => {
+  test("the engine runs on vendor/rdvwr and refuses an action it doesn't have, sending nothing", () => {
     const dir = mkdtempSync(join(tmpdir(), "redditEngine"));
     const cookiesPath = join(dir, "cookies.json");
     writeFileSync(cookiesPath, JSON.stringify({ session: "x" }));
     const spec = join(dir, "spec.json");
-    writeFileSync(spec, JSON.stringify({ action: "ping", account: "redditOne", platform: "reddit", stateRoot: join(dir, "state"), cookiesPath }));
+    writeFileSync(spec, JSON.stringify({ action: "vote", account: "redditOne", platform: "reddit", stateRoot: join(dir, "state"), cookiesPath }));
     const engine = spawnSync(process.env.LOG_PYTHON || "python", [REDDIT_PLATFORM.engine, spec], { encoding: "utf8" });
     if (engine.error) return;
-    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "engineNotBuilt" });
+    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "actionUnknown" });
+    const loads = spawnSync(process.env.LOG_PYTHON || "python", ["-c", "import sys; sys.path.insert(0, 'vendor/rdvwr'); import rdvwr; print(rdvwr.IMPERSONATE)"], { encoding: "utf8" });
+    expect(loads.stdout.trim()).toBe("chrome131");
   });
 });
