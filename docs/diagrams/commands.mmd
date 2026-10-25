@@ -158,6 +158,9 @@ flowchart TB
   cli --> c_queue
   mcp --> c_queue
   c_queue --> live
+  c_new["new"]
+  cli --> c_new
+  mcp --> c_new
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

@@ -4,12 +4,25 @@ export function toolBaseName(command: Pick<Command, "name" | "platform">): strin
   return isPlatform(command.platform) && command.platform !== PLATFORMS[0] ? `${command.platform}${command.name[0].toUpperCase()}${command.name.slice(1)}` : command.name;
 }
 
-export function platformLabel(command: Pick<Command, "platform">): string {
-  return command.platform === "twitter" ? "X" : "Facebook";
+export const commandKey = toolBaseName;
+
+export function commandWordOfKey(key: string, platform: string): string {
+  if (platform === PLATFORMS[0] || !key.startsWith(platform)) return key;
+  const rest = key.slice(platform.length);
+  return rest[0].toLowerCase() + rest.slice(1);
 }
 
 export const PLATFORMS = ["facebook", "twitter"] as const;
 export type Platform = (typeof PLATFORMS)[number];
+
+export const PLATFORM_LABELS: Readonly<Record<Platform, string>> = {
+  facebook: "Facebook",
+  twitter: "X",
+};
+
+export function platformLabel(command: Pick<Command, "platform">): string {
+  return isPlatform(command.platform) ? PLATFORM_LABELS[command.platform] : PLATFORM_LABELS[PLATFORMS[0]];
+}
 
 export const isPlatform = (word: string | undefined): word is Platform => (PLATFORMS as readonly string[]).includes(word ?? "");
 

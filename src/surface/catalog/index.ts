@@ -1,3 +1,4 @@
+import { commandKey } from "../../cli/runner/helpers/platforms.ts";
 import { AGENT_HOOKS, MCP_SERVER_NAME } from "../../agentHooks/registry/index.ts";
 import type { AgentHook, HookEvent } from "../../agentHooks/registry/index.ts";
 import { toolName } from "../../browser/flow/index.ts";
@@ -46,6 +47,7 @@ export function commandEntry(command: Command): CommandEntry {
   const tools = commandTools([command]).map((t) => t.tool);
   return {
     name: command.name,
+    key: commandKey(command),
     summary: command.summary,
     usage: usageLines(command.usage),
     flags: flagsOf(command.usage),
@@ -54,10 +56,10 @@ export function commandEntry(command: Command): CommandEntry {
     terminalOnly,
     longRunning: LONG_RUNNING.has(command.name),
     browser: commandBrowser(command.name),
-    engine: commandEngine(command.name),
+    engine: commandEngine(commandKey(command)),
     platform: command.platform,
     words: commandWords(command),
-    rules: [...(COMMAND_RULES[command.name] ?? []), ...EVERY_TOOL_RULES],
+    rules: [...(COMMAND_RULES[commandKey(command)] ?? []), ...EVERY_TOOL_RULES],
     hooks: { cli: hooksOn("Bash"), mcp: terminalOnly ? [] : hooksOn(`mcp__${MCP_SERVER_NAME}__${tools[0]}`) },
   };
 }

@@ -42,8 +42,8 @@ export type DirectOutcome<Row> =
 export type CommandEngine = 'directApiFirst' | 'directApiOnly' | 'browser' | 'none'
 
 export interface DirectRoute {
-  platform: 'facebook' | 'twitter'
-  library: 'fbk' | 'twikit'
+  platform: string
+  library: string
   only: boolean
   surface: string
   method: string

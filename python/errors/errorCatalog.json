@@ -184,6 +184,37 @@
     ],
     "action": "Wait for the run to end; delete the lock only if no run is going."
   },
+  "accountNotOnPlatform": {
+    "layer": "account",
+    "meaning": "A log <platform> command was given an account whose platform in Twenty isn't that platform.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/session"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Name a socialAccount of that platform (its accountName is the handle)."
+  },
+  "noPlatformSession": {
+    "layer": "account",
+    "meaning": "The account's saved cookies in Twenty don't hold the session cookies its platform needs, so there is no session to call it with.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/session"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Save the account's cookies from a normal manual login into its socialAccounts row."
+  },
+  "engineNotBuilt": {
+    "layer": "runtime",
+    "meaning": "The platform's direct-API engine was made by log new platform and has no client wired in yet, so it can't call the platform.",
+    "retryable": false,
+    "raisedIn": [
+      "platformKit/session"
+    ],
+    "action": "Vendor the platform's client under vendor/<library>, then fill in its actions in python/<platform>Api/engine.py."
+  },
   "governorBlocked": {
     "layer": "account",
     "meaning": "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the 40-a-day write budget (fbk's RequestGovernor, one per account under ~/.logCli/fbk/<account>).",

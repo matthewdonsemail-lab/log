@@ -8,6 +8,7 @@ export interface Flag {
 
 export interface CommandEntry {
   name: string;
+  key: string;
   summary: string;
   usage: string[];
   flags: Flag[];

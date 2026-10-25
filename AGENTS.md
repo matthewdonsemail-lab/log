@@ -978,6 +978,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     An account already DEACTIVATED is left as it is.
     `src/cli/inspect/helpers/watchCheckpoint.ts`.
 
+83. 2026-10-25 · matt: a new platform is made with one command, written
+    normally: `log new platform <name>` (MCP `newPlatform`). It writes the
+    platform's account session on the shared `src/platformKit/session`,
+    `log <name> session check` with its MCP tool, a direct-API engine in
+    `python/<name>Api` on the shared `python/platformKit/engine.py`, and
+    `docs/platforms/<name>/README.md`, and wires it into the repo by editing
+    each file through its syntax tree (`PLATFORMS`, `PLATFORM_LABELS`,
+    `COMMANDS`, `createContext`, `CommandContext`, `DIRECT_ROUTES`,
+    `COMMAND_RULES`), checking every edit landed before anything is written.
+    Without `--apply` it only lists what it would do; nothing is overwritten;
+    it names what Twenty is missing (the `socialAccounts.platform` option) and
+    never changes Twenty. Routes and rules are keyed by the platform-qualified
+    name (`commandKey`: `read`, `twitterSession`, `redditSession`), so two
+    platforms' commands never share one. lefthook's `platforms` (`bun run
+    check:platforms`, pre-commit and pre-push) refuses a platform missing its
+    label, src, command, engine, session route, rules or docs.
+    `src/scaffold/platform`, `src/cli/new`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

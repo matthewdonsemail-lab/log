@@ -1,5 +1,5 @@
 import { formToolName, inputSchemaOf } from "../../../cli/runner/helpers/commandInput.ts";
-import { isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/platforms.ts";
+import { commandKey, isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/platforms.ts";
 import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.ts";
 import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
@@ -112,12 +112,12 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
       `${form.summary}.`,
       ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
-      ...engineLines(command.name, entry.live),
+      ...engineLines(commandKey(command), entry.live),
       ...formUsage(command, form),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on ${platformLabel(command)} is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
       ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
-      rulesLine(command.name),
+      rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
@@ -141,14 +141,14 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
       ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
-      ...engineLines(command.name, entry.live),
+      ...engineLines(commandKey(command), entry.live),
       command.usage,
       ...(NOTES[command.name] ?? []),
       entry.live
         ? `Pass the arguments after the command name in \`args\`, with ${liveFlags}. \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`
         : `Pass the arguments after the command name in \`args\`, e.g. ["--json"].${liveFlags ? ` It never takes ${liveFlags}: that is \`${command.name}${LIVE_SUFFIX}\`.` : ""} \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`,
       ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
-      rulesLine(command.name),
+      rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
