@@ -76,7 +76,7 @@ export function runTwitterEngine(account: TwitterAccount, request: TwitterEngine
     writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
     const spec = join(dir, 'spec.json')
     writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, cookiesPath, refreshedPath }), { mode: 0o600 })
-    const run = spawnSync(process.env.LOG_PYTHON || 'python', [ENGINE, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', [ENGINE, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, windowsHide: true })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: TwitterSessionAnswer
     try {
