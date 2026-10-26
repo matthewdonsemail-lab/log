@@ -7785,3 +7785,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the DM use case page says how a cold DM opens. Find one of the person's own relevant recent tweets and forward it first (its link, so X shows the card). Then one informal line: "saw this", how you're really connected (mutual follow, or they follow you, checked with `twitterFollows`), something brief about their tweet, then the ask. With no usable tweet, send the plain opener instead. Never a bio-based "saw you're…", their name, made-up camaraderie or "thanks for following". Step 5 points at it, and the old bio-based example lines are gone.
 Why: matt read 40 bio-based treg DMs and said they were really bad: "this is how I dm… build the context of the convo, that's how we cold dm", and asked for it to be written into the use cases.
 Checked: docs only. The 40 treg DMs were rewritten this way (17 with their own tweet forwarded, 23 with the plain opener, mutual follows checked live: 23 mutual, 17 follow only one way), and the dm queue checks clean, nothing sent.
+
+## 2026-10-26 03:06Z · docs/coldDmMethod
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/twitter/README.md`: edited
+
+What changed: the X use cases' queue steps now plan sends 2 minutes apart (`minGap` 120, the code's default), with a window of about 2 minutes per person (20 people: 40m), and only longer when the owner asks. Before, step 6 said `window: "75m", minGap: 600`, which made 10-minute gaps look like the norm.
+Why: matt: the time between messages was too long and he wants it faster, and the line that made the long gap look acceptable has to change. The 40 treg DMs had been planned 10 minutes apart over 7 hours.
+Checked: docs only. The running DM queue was re-planned live: the 37 left over 80 minutes at 2 minutes apart, and the first DM after the change went out at 03:05.
