@@ -119,6 +119,24 @@
     ],
     "action": "Give the recipient's numeric user id from treg research."
   },
+  "limitInvalid": {
+    "layer": "twitter",
+    "meaning": "The --limit given to log twitter dms is not a whole number from 1 to 200.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter/dms"
+    ],
+    "action": "Give --limit as a whole number from 1 to 200, or leave it out for 20."
+  },
+  "conversationInvalid": {
+    "layer": "twitter",
+    "meaning": "The --conversation given to log twitter dms isn't an X conversation id (digits, or two user ids joined by a dash).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter/dms"
+    ],
+    "action": "Copy the conversation id from the inbox list that log twitter dms prints."
+  },
   "textMissing": {
     "layer": "twitter",
     "meaning": "A reply, quote or dm was given no text.",

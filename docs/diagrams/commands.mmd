@@ -53,6 +53,7 @@ flowchart TB
   subgraph g_twitter["X"]
     c_twitterSession["session"]
     c_twitterFollows["follows"]
+    c_twitterDms["dms"]
     c_twitterReply["reply"]
     c_twitterQuote["quote"]
     c_twitterLike["like"]
@@ -159,6 +160,8 @@ flowchart TB
   mcp --> c_twitterSession
   cli --> c_twitterFollows
   mcp --> c_twitterFollows
+  cli --> c_twitterDms
+  mcp --> c_twitterDms
   cli --> c_twitterReply
   mcp --> c_twitterReply
   cli --> c_twitterQuote
