@@ -7677,3 +7677,21 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `--force` on `log twitter reply|quote|like|dm` and `log twitter queue run` (MCP `force`) lets an X send go past the account's governor, its pause after a block and its hourly, daily and write caps, for that one call or run. The engine still asks the governor first. When the governor blocks and `force` is set, the send goes ahead, and the answer carries `forcedPast` with what it went past. Without `force` nothing changes (`governorBlocked`). X's own answer still decides, and the queue's own cool-offs still apply. Rule 86 is in AGENTS.md and the MCP instructions, and the X send tools cite it.
 Why: matt: "make it so that we can skip that there as well if i say to do something it can force past it", after a reply he asked for ("send one now") was refused with `governorBlocked: cooldown active for 765s`.
 Checked: live on matthewsoldit: `log twitter reply ... --force --live` posted https://x.com/matthewsoldit/status/2114530339842658590 past a 660 s cooldown, and the answer said so. `bun test` over cli/twitter, mcp and surface: 90 pass, 0 fail (new test: force reaches the engine only when given). `tsc --noEmit` clean, README rebuilt.
+
+## 2026-10-26 01:42Z · feat/twitterForce
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/twitter/families.test.ts`: added test "plan honours --minGap as given on the command line, and refuses one that isn't a whole number", test "a target that carries its own text keeps it, and the rest draw from the variations", test "a cancel stops a run while it waits, sending nothing more"
+- `src/cli/twitter/helpers/queue.ts`: added function wholeFlag · changed const QUEUE_USAGE, const QUEUE_INPUT, function runCommand, const queueCommand
+- `src/mcp/server/index.ts`: changed function runGuarded
+- `src/twitter/queue/plan/client.ts`: changed function buildQueue
+- `src/twitter/queue/plan/types.ts`: changed interface BuildTarget
+- `src/twitter/queue/run/client.ts`: added const CANCELLED · changed function waitUntil, function runQueue
+- `src/twitter/queue/run/types.ts`: changed interface RunDeps
+
+What changed: three X queue bugs fixed. (1) `log twitter queue plan --minGap`, `--limit`, `build --seed` and `nudge --replies` were ignored. The parser hands integer flags over as strings, and the queue only accepted a number, so `--minGap 600` planned 120 s apart. `wholeFlag` now reads them, and anything that isn't a whole number is refused. (2) A target can carry its own `text`, written for that person's post. `queue build` keeps it and draws only the other targets' lines from the variations, and `--variations` isn't needed when every target has its own. Two targets with the same text are refused. Before this, build shuffled every line across the targets, so personal lines had to be put back by hand. (3) A cancel stops a queue run during its waits and cool-offs, and before each send. `CommandContext.cancelled` comes from the MCP job (`jobCancel`). The run saves, says where it stopped, and resumes when run again. Before this, a cancel was only checked at a browser step, which a queue never has, so a cancelled run held the account until its next send.
+Why: matt: "fix the bugs, don't turn it into an MCP tool", after the cold-caller run hit all three: `--minGap 600` planned 2 min apart, the 6 personal replies had to be matched to people by hand, and a cancelled run kept matthewsoldit busy through its 15-minute cool-off.
+Checked: `bun test` over cli/twitter and mcp: 82 pass, 0 fail, with three new tests: minGap honoured and refused when not whole, own text kept with the rest drawn, a cancel stops a waiting run with nothing sent. `tsc --noEmit` clean. Live: `queue plan --window 75m --minGap 600` planned the 5 remaining cold-caller replies at least 600 s apart, and the run is sending them now.

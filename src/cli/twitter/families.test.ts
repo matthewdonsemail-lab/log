@@ -222,6 +222,58 @@ describe("log twitter queue", () => {
     expect(loadQueue(f.queue).items.filter((i) => i.status === "pending")).toHaveLength(3);
   });
 
+  test("plan honours --minGap as given on the command line, and refuses one that isn't a whole number", async () => {
+    const h = harness();
+    const f = queueFiles();
+    await h.run(["twitter", "queue", "build", "--targets", f.targets, "--variations", f.lines, "--out", f.queue, "--account", "xTwo"]);
+    const planned = await h.run(["twitter", "queue", "plan", f.queue, "--window", "60m", "--minGap", "600"]);
+    expect(planned.out).toContain("at least 600s apart");
+    const times = loadQueue(f.queue).randomRun!.events.map((e) => Date.parse(e.at)).sort((a, b) => a - b);
+    for (let i = 1; i < times.length; i++) expect(times[i] - times[i - 1]).toBeGreaterThanOrEqual(600_000);
+    expect((await h.run(["twitter", "queue", "plan", f.queue, "--window", "60m", "--minGap", "ten"])).err).toContain("--minGap is a whole number");
+  });
+
+  test("a target that carries its own text keeps it, and the rest draw from the variations", async () => {
+    const h = harness();
+    const f = queueFiles();
+    writeFileSync(f.targets, JSON.stringify({ items: [{ handle: "alice", tweet_url: POST_A, text: "jaja alice line" }, { handle: "bob", tweet_url: POST_B }, { handle: "carol", tweet_url: POST_C, text: "jaja carol line" }] }));
+    writeFileSync(f.lines, JSON.stringify(["jaja alice line", "only line left"]));
+    expect((await h.run(["twitter", "queue", "build", "--targets", f.targets, "--variations", f.lines, "--out", f.queue, "--account", "xTwo"])).code).toBe(0);
+    expect(loadQueue(f.queue).items.map((i) => i.text)).toEqual(["jaja alice line", "only line left", "jaja carol line"]);
+    const own = join(f.dir, "own.json");
+    const ownQueue = join(f.dir, "ownQueue.json");
+    writeFileSync(own, JSON.stringify([{ handle: "alice", tweet_url: POST_A, text: "jaja alice line" }]));
+    expect((await h.run(["twitter", "queue", "build", "--targets", own, "--out", ownQueue, "--account", "xTwo"])).code).toBe(0);
+  });
+
+  test("a cancel stops a run while it waits, sending nothing more", async () => {
+    let cancel = false;
+    const twenty = fixture();
+    const sent: TwitterEngineSpec[] = [];
+    let clock = Date.parse("2026-10-26T01:00:00Z");
+    const ctx = {
+      twenty,
+      out: () => {},
+      err: () => {},
+      now: () => new Date(clock),
+      sleep: async (ms: number) => {
+        clock += ms;
+        cancel = true;
+      },
+      cancelled: () => cancel,
+      directTwitter: (_a: unknown, spec: TwitterEngineSpec): TwitterEngineRun => {
+        sent.push(spec);
+        return { answer: { ok: true, event: "sent", tweetId: "1" }, refreshed: null };
+      },
+    };
+    const f = queueFiles();
+    for (const argv of [["build", "--targets", f.targets, "--variations", f.lines, "--out", f.queue, "--account", "xTwo"], ["approve", f.queue, "--by", "matt"], ["plan", f.queue, "--window", "30m", "--start", "2026-10-26T01:10:00Z"]]) await runCli(["twitter", "queue", ...argv], ctx as never);
+    const code = await runCli(["twitter", "queue", "run", f.queue, "--live"], ctx as never);
+    expect(code).toBe(5);
+    expect(sent).toEqual([]);
+    expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("cancelled while waiting");
+  });
+
   test("nudge is refused with no run going", async () => {
     const h = harness();
     const f = await builtAndPlanned(h);

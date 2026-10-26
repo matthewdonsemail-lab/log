@@ -1183,7 +1183,7 @@ X's answer decides: a conversation id is sent, none is a drop. Every answer is o
 Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine MCP tools: `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge`, one per form, with named fields.
 
 ```text
-log twitter queue build --targets <targets.json> --variations <a.json,b.json> --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]
+log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]
 log twitter queue show <queue.json> [--json]
 log twitter queue check <queue.json> [--json]
 log twitter queue status <queue.json> [--json]
@@ -1192,7 +1192,7 @@ log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <ti
 log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--live]
 log twitter queue nudge <queue.json> [--replies <n>]
 A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).
-build pairs each target with one unique line from the variations, shuffled. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.
+build pairs each target with one unique line from the variations, shuffled; a target that carries its own text (written for that person's post) keeps it. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.
 run walks the plan as an XState machine (planned, waiting, liking, replying, cooling, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: a block or throttle cools off (15 min doubling to 4 h, or X's reset time, 24 h on the daily limit 344) and retries the post once at the end; a deleted post or replies off (385/433) is skipped; a dead session or 5 cool-offs in a row halts it and, with --alertChannel, tags matt in buzz. It saves after every step, so running it again resumes. --force sends every event past the account's governor (its pause and caps), only when matt asked (rule 86); X's answers and the run's own cool-offs still apply.
 ```
 

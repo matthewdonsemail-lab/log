@@ -32,7 +32,7 @@ import { openTwitterAccount } from "./account.ts";
 const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, description: "The queue file (.json)" };
 
 export const QUEUE_USAGE = [
-  "Usage: log twitter queue build --targets <targets.json> --variations <a.json,b.json> --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]",
+  "Usage: log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]",
   "       log twitter queue show <queue.json> [--json]",
   "       log twitter queue check <queue.json> [--json]",
   "       log twitter queue status <queue.json> [--json]",
@@ -41,7 +41,7 @@ export const QUEUE_USAGE = [
   "       log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--live]",
   "       log twitter queue nudge <queue.json> [--replies <n>]",
   "A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).",
-  "build pairs each target with one unique line from the variations, shuffled. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.",
+  "build pairs each target with one unique line from the variations, shuffled; a target that carries its own text (written for that person's post) keeps it. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.",
   "run walks the plan as an XState machine (planned, waiting, liking, replying, cooling, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: a block or throttle cools off (15 min doubling to 4 h, or X's reset time, 24 h on the daily limit 344) and retries the post once at the end; a deleted post or replies off (385/433) is skipped; a dead session or 5 cool-offs in a row halts it and, with --alertChannel, tags matt in buzz. It saves after every step, so running it again resumes. --force sends every event past the account's governor (its pause and caps), only when matt asked (rule 86); X's answers and the run's own cool-offs still apply.",
 ].join("\n");
 
@@ -55,8 +55,8 @@ export const QUEUE_INPUT: CommandInput = {
       summary: "Build a queue file pairing each target with one unique approved line, sending nothing",
       positionals: [],
       flags: [
-        flag("targets", "string", "The targets file: a list (or items) of {handle, tweet_url | post_url | user_id, post_text}", { required: true }),
-        flag("variations", "string", "The copy files, comma-separated: each a list (or messages) of lines", { required: true }),
+        flag("targets", "string", "The targets file: a list (or items) of {handle, tweet_url | post_url | user_id, post_text, text}; text is that target's own line", { required: true }),
+        flag("variations", "string", "The copy files, comma-separated: each a list (or messages) of lines; not needed when every target carries its own text"),
         flag("out", "string", "The queue file to write (never overwritten)", { required: true }),
         flag("account", "string", "The TWITTER socialAccount that will send it", { required: true }),
         flag("action", "enum", "What each item sends (default reply)", { values: QUEUE_ACTIONS }),
@@ -100,6 +100,14 @@ export const QUEUE_INPUT: CommandInput = {
 };
 
 const fail = (message: string): CommandResult => ({ code: 1, stderr: `log twitter queue: ${message}\n${QUEUE_USAGE}` });
+
+export function wholeFlag(flags: Record<string, unknown>, name: string, fallback: number): number {
+  const value = flags[name];
+  if (value === undefined) return fallback;
+  const n = typeof value === "number" ? value : Number(String(value).trim());
+  if (!Number.isInteger(n)) throw new Error(`--${name} is a whole number`);
+  return n;
+}
 
 function readJson(path: string): unknown {
   if (!existsSync(path)) throw Object.assign(new Error(`no file at ${path}`), { code: "queueInvalid" });
@@ -189,6 +197,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
         },
         nowMs,
         sleep: context.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms))),
+        cancelled: context.cancelled,
         rng: systemRandom,
         log,
         alert: (message, mention) => {
@@ -237,7 +246,7 @@ export const queueCommand: Command = {
       if (word === "build") {
         const out = flags["out"] as string;
         if (existsSync(out)) return refuse("twitter queue build", "queueInvalid", `${out} exists; it is never overwritten`);
-        const files = String(flags["variations"]).split(",").map((f) => f.trim()).filter(Boolean);
+        const files = String(flags["variations"] ?? "").split(",").map((f) => f.trim()).filter(Boolean);
         let targets;
         let lines: string[];
         try {
@@ -249,7 +258,7 @@ export const queueCommand: Command = {
         const action = (flags["action"] as QueueAction | undefined) ?? "reply";
         let queue: Queue;
         try {
-          queue = buildQueue({ account: flags["account"] as string, action, targets, lines, sources: [flags["targets"] as string, ...files], seed: typeof flags["seed"] === "number" ? (flags["seed"] as number) : 1, now });
+          queue = buildQueue({ account: flags["account"] as string, action, targets, lines, sources: [flags["targets"] as string, ...files], seed: wholeFlag(flags, "seed", 1), now });
         } catch (error) {
           return refuse("twitter queue build", "queueInvalid", error instanceof Error ? error.message : String(error));
         }
@@ -287,7 +296,7 @@ export const queueCommand: Command = {
         if (Number.isNaN(start.getTime())) return fail("--start is a time, e.g. 2026-10-26T09:00:00+07:00");
         let queue: Queue;
         try {
-          queue = planQueue(load(file), { window: flags["window"] as string, limit: typeof flags["limit"] === "number" ? (flags["limit"] as number) : 0, start, minGap: typeof flags["minGap"] === "number" ? (flags["minGap"] as number) : 120, like: flags["like"] === true, likeChance: chance }, systemRandom, now);
+          queue = planQueue(load(file), { window: flags["window"] as string, limit: wholeFlag(flags, "limit", 0), start, minGap: wholeFlag(flags, "minGap", 120), like: flags["like"] === true, likeChance: chance }, systemRandom, now);
         } catch (error) {
           return fail(error instanceof Error ? error.message : String(error));
         }
@@ -298,7 +307,12 @@ export const queueCommand: Command = {
         return { code: 0, stdout: [`log twitter queue plan: ${events.length} events across ${queue.randomRun!.window} from ${start.toISOString()}, at least ${queue.randomRun!.minGap}s apart. Saved in ${file}; nothing sent.`, ...lines].join("\n") };
       }
       if (word === "run") return await runCommand(context, file, flags);
-      const replies = typeof flags["replies"] === "number" ? (flags["replies"] as number) : 1;
+      let replies: number;
+      try {
+        replies = wholeFlag(flags, "replies", 1);
+      } catch (error) {
+        return fail(error instanceof Error ? error.message : String(error));
+      }
       if (replies < 1) return fail("--replies must be at least 1");
       if (!existsSync(lockPathOf(file))) return refuse("twitter queue nudge", "queueBusy", "no run is going on this queue: start one with queue run --live first");
       const have = existsSync(nudgePathOf(file)) ? Number(readFileSync(nudgePathOf(file), "utf8").trim() || 0) || 0 : 0;

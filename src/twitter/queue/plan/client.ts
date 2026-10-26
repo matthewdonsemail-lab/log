@@ -105,11 +105,16 @@ export function shuffle<T>(items: readonly T[], rng: Rng): T[] {
 }
 
 export function buildQueue(input: { account: string; action: QueueAction; targets: BuildTarget[]; lines: string[]; sources: string[]; seed: number; now: Date }): Queue {
-  const pool = [...new Set(input.lines)]
-  if (pool.length < input.targets.length) throw new Error(`${pool.length} unique lines for ${input.targets.length} targets: add more variations`)
+  const own = input.targets.map((t) => (typeof t.text === 'string' && t.text.trim() ? t.text.trim() : null))
+  const ownLines = own.filter((l): l is string => l !== null)
+  if (new Set(ownLines).size < ownLines.length) throw new Error('two targets carry the same text: every target needs its own line')
+  const pool = [...new Set(input.lines)].filter((l) => !ownLines.includes(l))
+  const drawn = own.filter((l) => l === null).length
+  if (pool.length < drawn) throw new Error(`${pool.length} unique lines for ${drawn} targets without their own text: add more variations`)
   const shuffled = shuffle(pool, seededRandom(input.seed))
+  let next = 0
   const items: QueueItem[] = input.targets.map((target, i) => {
-    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: shuffled[i], status: 'pending' as const }
+    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const }
     if (input.action === 'dm') {
       if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a dm queue needs each recipient's id`)
       return { ...base, userId: String(target.userId) }
