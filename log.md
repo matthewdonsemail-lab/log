@@ -7975,3 +7975,17 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an X Chat thread's last time, last sender and last text all come from its last decrypted message once X Chat is open; a later read receipt or reaction no longer makes the thread look like the other person wrote last.
 Why: the inbox hook flagged "@W2Warrior wrote" at 05:59 with matt's own cold DM as the text: W2Warrior's newest event was a read, not a message.
 Checked: `bun run check` 1102 pass; the saved W2Warrior thread's last decrypted message is matt's (03:41), so the thread now reads "you sent last".
+
+## 2026-10-26 08:31Z · main
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/affiliateMarketing.md`: new file
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/engagerDms.md`: edited
+- `src/inbox/watch/client.ts`: changed function pollReaders, function inboxContext
+
+What changed: a new use case, `docs/useCases/twitter/affiliateMarketing.md`: read and index every conversation (X Chat included), search for the ones about a tool, read each person's merged history, sort them, reply with context and the affiliate credit only where it helps (never to a rival's founder), and book the partner program call, with the lessons from today's wrong replies. Indexed in both use-case READMEs. dmInbox.md and engagerDms.md no longer say X Chat can't be read. The inbox watcher's alert now says to read the person with `--with <handle>` (old thread and X Chat merged), and a reply that shows in both the old thread and its X Chat mirror alerts once.
+Why: matt asked for an affiliate marketing use case, and asked whether the inbox monitor now covers the unified X Chat inbox.
+Checked: `bun run check` with LOG_PYTHON: 1102 pass, 0 fail, every gate green.

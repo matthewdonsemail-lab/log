@@ -53,7 +53,8 @@ export function pollReaders(readers: readonly InboxReader[], now: Date = new Dat
       const { messages, seen } = newMessages(reader.platform, account, threads, readJson<SeenThreads>(path, {}), now)
       writeJson(path, seen)
       if (first) continue
-      found.push(...messages)
+      const fresh = messages.filter((m) => !found.some((f) => f.account === m.account && f.with === m.with && f.text === m.text))
+      found.push(...fresh.filter((m, i) => fresh.findIndex((o) => o.with === m.with && o.text === m.text) === i))
     }
   }
   if (found.length) {
@@ -96,7 +97,7 @@ export function releasePoll(): void {
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
   const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
-  return [`>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account. Tell matt now, with what they said, and read the thread with \`log ${messages[0].platform} dms --account ${messages[0].account} --conversation <id>\` before answering anything.`, ...lines].join('\n')
+  return [`>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account. Tell matt now, with what they said, and read everything with that person, the old DM thread and X Chat merged, with \`log ${messages[0].platform} dms --account ${messages[0].account} --with <handle>\` before answering anything.`, ...lines].join('\n')
 }
 
 export function twitterAccounts(root: string = twitterStateRoot()): string[] {

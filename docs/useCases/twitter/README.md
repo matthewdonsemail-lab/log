@@ -9,6 +9,7 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [engagementReplies.md](engagementReplies.md) | answer the people who commented on your own posts | replies, through the queue |
 | [engagerDms.md](engagerDms.md) | DM the people who liked or reposted your post | dms, through the queue |
 | [dmInbox.md](dmInbox.md) | read the DM inbox and list who is waiting on you | nothing |
+| [affiliateMarketing.md](affiliateMarketing.md) | follow up the conversations about a tool you use, with your affiliate credit where it helps, and book the partner call | dms, one by one or through the queue |
 | [followers.md](followers.md) | check who really follows you before saying so | nothing |
 
 DMs are their own pages. Recruiting is public replies only.

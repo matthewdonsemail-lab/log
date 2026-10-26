@@ -29,7 +29,7 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 ## What to know
 
 - A DM only lands if the person accepts DMs from accounts they don't follow. X answers otherwise, and the queue logs it and moves on.
-- Some chats live in X's encrypted Chat. Neither `twitterDms` nor a send can see or continue those, so the owner checks their X Chat for the names before approving, and messages friends from the app.
+- Some chats live in X's encrypted Chat. `twitterDms` reads them once the account's X Chat PIN is saved, and step 4 must include them: a person you already talk to in X Chat never gets a cold template. A send still goes out as an old-style DM, which shows in their X Chat too.
 
 ## Not built yet
 

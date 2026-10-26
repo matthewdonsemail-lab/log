@@ -10,6 +10,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Answering the people who engaged with your posts](twitter/engagementReplies.md) | answers commenters under your post, or on a fresh post of theirs |
 | X | [DMing the people who liked or reposted your post](twitter/engagerDms.md) | ranks the likers, you pick, one opening line each, sent as a dm queue |
 | X | [Reading the DM inbox](twitter/dmInbox.md) | who is waiting on you and what they asked, sends nothing |
+| X | [Affiliate marketing through your DMs](twitter/affiliateMarketing.md) | follows up every conversation about a tool you use, with your affiliate credit where it helps, and books the partner call |
 | X | [Checking who really follows you](twitter/followers.md) | a live follows check before anyone is called a follower |
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |

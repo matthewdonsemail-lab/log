@@ -21,7 +21,9 @@ One `twitterDms` call reads the inbox and the message requests in a few seconds.
 
 ## What to know
 
-- `twitterDms` reads the inbox and the message requests. X's encrypted Chat can't be read, so an empty result for a friend means no old-style thread, not that you never talked.
+- `twitterDms` reads the inbox, the message requests and X's encrypted Chat. X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`); without it X Chat threads show who and when, not what.
+- A person can have both an old DM thread and an X Chat thread. Read them together with `twitterDms` { account, with: "<handle>" } before answering, so nothing they said in X Chat is missed.
+- To find something said in any conversation, search instead of reading every thread: `search` { query, with, after } after `searchIndex`.
 - A DM send counts as a write against the account's 40 a day.
 
 ## Not built yet
