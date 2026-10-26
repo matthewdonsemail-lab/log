@@ -8484,3 +8484,11 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the launch self-check (`compare` in `python/browser/proxyGate.py`) passes `navigator.languages` when it starts with the pinned languages, in page and worker, not only when it equals them. A list that doesn't start with them is still `browserLocaleMismatch`, and `navigator.language`, Intl and the number locale are still exact. This is PR #48's change on today's main. Its rule was 86, which main had since given to the X `--force`, so it is rule 92 here. The MCP instructions' gate line cites it.
 Why: the first Canadian account on AdsPower (Kamloops) was refused three times on 2026-10-24: SunBrowser 154 reports `en-CA, en, en-US, en-GB` with the profile set to `en-CA, en`. matt chose to check the order only. matt, 2026-10-28: fold the relevant open PRs into main.
 Checked: `compare` by hand: `en-CA, en, en-US, en-GB` passes, and `en-US, en-CA, en` and `en-CA` alone are refused. `bun test src/mcp`: 59 pass. The docs are already up to date.
+## 2026-10-26 02:31Z · docs/coldDmMethod
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/twitter/engagerDms.md`: edited
+
+What changed: the DM use case page says how a cold DM opens. Find one of the person's own relevant recent tweets and forward it first (its link, so X shows the card). Then one informal line: "saw this", how you're really connected (mutual follow, or they follow you, checked with `twitterFollows`), something brief about their tweet, then the ask. With no usable tweet, send the plain opener instead. Never a bio-based "saw you're…", their name, made-up camaraderie or "thanks for following". Step 5 points at it, and the old bio-based example lines are gone.
+Why: matt read 40 bio-based treg DMs and said they were really bad: "this is how I dm… build the context of the convo, that's how we cold dm", and asked for it to be written into the use cases.
+Checked: docs only. The 40 treg DMs were rewritten this way (17 with their own tweet forwarded, 23 with the plain opener, mutual follows checked live: 23 mutual, 17 follow only one way), and the dm queue checks clean, nothing sent.
