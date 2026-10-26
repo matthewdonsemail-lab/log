@@ -7662,6 +7662,40 @@ What changed: `log twitter dms --account <a> [--limit <n>] [--waiting] [--conver
 Why: matt asked to check the last 8 people he was meant to message on matthewsoldit, meaning DMs: "the whole point of log is that we're able to have social media management". log could send a DM but not read one, and twitter-controller never read DMs either, so that family was missing.
 Checked: a live read on matthewsoldit (`log twitter dms --account matthewsoldit --limit 40 --json`): X answered loggedIn, 2 pages, 40 conversations, 18 whose last message wasn't his; the session and refreshed cookies went back to Twenty. `bun test` with LOG_PYTHON=C:\Python312\python.exe over cli/reddit, cli/twitter, mcp, errors and surface: 257 pass, 0 fail (two new dms tests). `tsc --noEmit` clean, every lefthook gate ok. A full `bun run check` without LOG_PYTHON had one Reddit test fail because the default python can't load vendor/rdvwr; it passes with the repo's Python. Group DMs with more than one other person are listed but weren't read message by message.
 
+## 2026-10-26 01:33Z · feat/twitterForce
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/twitterApi/engine.py`: changed def run
+- `src/cli/twitter/families.test.ts`: added test "--force asks the engine to go past the governor, only when given, and says what it went past"
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE, const QUEUE_INPUT, function runCommand
+- `src/cli/twitter/helpers/send.ts`: added const FORCE · changed function usageOf, function inputOf, function renderSent, function sendCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed interface TwitterEngineSpec, interface TwitterSessionAnswer
+
+What changed: `--force` on `log twitter reply|quote|like|dm` and `log twitter queue run` (MCP `force`) lets an X send go past the account's governor, its pause after a block and its hourly, daily and write caps, for that one call or run. The engine still asks the governor first. When the governor blocks and `force` is set, the send goes ahead, and the answer carries `forcedPast` with what it went past. Without `force` nothing changes (`governorBlocked`). X's own answer still decides, and the queue's own cool-offs still apply. Rule 86 is in AGENTS.md and the MCP instructions, and the X send tools cite it.
+Why: matt: "make it so that we can skip that there as well if i say to do something it can force past it", after a reply he asked for ("send one now") was refused with `governorBlocked: cooldown active for 765s`.
+Checked: live on matthewsoldit: `log twitter reply ... --force --live` posted https://x.com/matthewsoldit/status/2114530339842658590 past a 660 s cooldown, and the answer said so. `bun test` over cli/twitter, mcp and surface: 90 pass, 0 fail (new test: force reaches the engine only when given). `tsc --noEmit` clean, README rebuilt.
+
+## 2026-10-26 01:42Z · feat/twitterForce
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/twitter/families.test.ts`: added test "plan honours --minGap as given on the command line, and refuses one that isn't a whole number", test "a target that carries its own text keeps it, and the rest draw from the variations", test "a cancel stops a run while it waits, sending nothing more"
+- `src/cli/twitter/helpers/queue.ts`: added function wholeFlag · changed const QUEUE_USAGE, const QUEUE_INPUT, function runCommand, const queueCommand
+- `src/mcp/server/index.ts`: changed function runGuarded
+- `src/twitter/queue/plan/client.ts`: changed function buildQueue
+- `src/twitter/queue/plan/types.ts`: changed interface BuildTarget
+- `src/twitter/queue/run/client.ts`: added const CANCELLED · changed function waitUntil, function runQueue
+- `src/twitter/queue/run/types.ts`: changed interface RunDeps
+
+What changed: three X queue bugs fixed. (1) `log twitter queue plan --minGap`, `--limit`, `build --seed` and `nudge --replies` were ignored. The parser hands integer flags over as strings, and the queue only accepted a number, so `--minGap 600` planned 120 s apart. `wholeFlag` now reads them, and anything that isn't a whole number is refused. (2) A target can carry its own `text`, written for that person's post. `queue build` keeps it and draws only the other targets' lines from the variations, and `--variations` isn't needed when every target has its own. Two targets with the same text are refused. Before this, build shuffled every line across the targets, so personal lines had to be put back by hand. (3) A cancel stops a queue run during its waits and cool-offs, and before each send. `CommandContext.cancelled` comes from the MCP job (`jobCancel`). The run saves, says where it stopped, and resumes when run again. Before this, a cancel was only checked at a browser step, which a queue never has, so a cancelled run held the account until its next send.
+Why: matt: "fix the bugs, don't turn it into an MCP tool", after the cold-caller run hit all three: `--minGap 600` planned 2 min apart, the 6 personal replies had to be matched to people by hand, and a cancelled run kept matthewsoldit busy through its 15-minute cool-off.
+Checked: `bun test` over cli/twitter and mcp: 82 pass, 0 fail, with three new tests: minGap honoured and refused when not whole, own text kept with the rest drawn, a cancel stops a waiting run with nothing sent. `tsc --noEmit` clean. Live: `queue plan --window 75m --minGap 600` planned the 5 remaining cold-caller replies at least 600 s apart, and the run is sending them now.
+
 ## 2026-10-26 01:34Z · docs/twitterUseCases
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):

@@ -457,10 +457,13 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
         return refused
     account = spec["account"]
     governor = governor_for(account)
+    forced_past = None
     try:
         governor.before_request(is_mutation=action in WRITES, quiet=True)
     except GovernorBlockedError as e:
-        return {"ok": False, "code": "governorBlocked", "detail": str(e)}
+        if spec.get("force") is not True:
+            return {"ok": False, "code": "governorBlocked", "detail": str(e)}
+        forced_past = str(e)
     client = Client(language="en-US")
     client.set_cookies(cookies, clear_cookies=True)
     try:
@@ -482,6 +485,8 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
     refreshed = client.get_cookies()
     if spec.get("refreshedPath") and refreshed:
         Path(spec["refreshedPath"]).write_text(json.dumps({k: v for k, v in refreshed.items() if k != "__cf_bm"}), encoding="utf-8")
+    if forced_past:
+        out["forcedPast"] = forced_past
     out["governor"] = governor.status()
     return out
 

@@ -1030,6 +1030,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     read or whose reasoning isn't written. The first Reddit run: 39 calls,
     33 read from their code, the other 6 from their step.
 
+86. 2026-10-26 · matt: "if I say to do something it can force past it."
+    An X send can go past the account's governor (its pause after a block,
+    its hourly, daily and write caps) when matt says so: `--force` on `log
+    twitter reply|quote|like|dm` and `log twitter queue run` (MCP `force`).
+    Only for that call or that run, only when matt asked; never by default.
+    X's own answer still decides (rule 73) and the queue's own cool-offs
+    still apply. The answer says what it went past (`forcedPast`). The
+    governor still counts the request.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

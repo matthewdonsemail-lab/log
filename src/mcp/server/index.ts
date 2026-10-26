@@ -117,6 +117,7 @@ async function runGuarded(name: string, argv: string[], context: Partial<Command
       ...context,
       ...(job
         ? {
+            cancelled: () => cancelRequested(job.id),
             sendInspect: (current, action, args, timeoutMs, expect, options) => {
               if (action !== "stop" && cancelRequested(job.id)) throw new JobCancelled(job.id);
               return send(current, action, args, timeoutMs, expect, options);
