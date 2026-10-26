@@ -120,6 +120,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     err: overrides.err ?? ((line) => console.error(line)),
     now: overrides.now ?? (() => new Date()),
     sleep: overrides.sleep,
+    cancelled: overrides.cancelled,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
     directReddit: overrides.directReddit ?? runRedditEngine,

@@ -27,6 +27,7 @@ export interface RunDeps {
   alert: (message: string, mention: boolean) => void
   takeNudge: () => number
   save: () => void
+  cancelled?: () => boolean
 }
 
 export type FailureKind = 'auth' | 'gone' | 'throttle' | 'broken'

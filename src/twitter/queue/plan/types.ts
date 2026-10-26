@@ -62,6 +62,7 @@ export interface BuildTarget {
   tweetUrl?: string
   userId?: string
   postText?: string
+  text?: string
 }
 
 export interface PlanOptions {

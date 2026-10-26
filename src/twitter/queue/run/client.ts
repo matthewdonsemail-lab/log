@@ -60,10 +60,13 @@ export function dropPost(todo: PlanEvent[], n: number, why: string): void {
   }
 }
 
+const CANCELLED = -1
+
 async function waitUntil(deps: RunDeps, dueSeconds: number): Promise<number> {
   let left = dueSeconds - deps.nowMs() / 1000
   while (left > 0) {
     await deps.sleep(Math.min(POLL_SECONDS, left) * 1000)
+    if (deps.cancelled?.()) return CANCELLED
     const nudged = deps.takeNudge()
     if (nudged) return nudged
     left = dueSeconds - deps.nowMs() / 1000
@@ -95,6 +98,11 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     deps.alert(`[${state()}] ${message} (${sentTotal()} sent in total)`, true)
     return { state: 'halted', reason: message, sent: sentTotal(), skipped: plan.events.filter((e) => e.kind === 'reply' && e.skipped).length }
   }
+  const stop = (where: string): RunResult => {
+    deps.save()
+    deps.log(`[${state()}] cancelled ${where}: nothing more is sent, ${sentTotal()} sent in total. Running it again resumes.`)
+    return { state: 'halted', reason: 'cancelled', sent: sentTotal(), skipped: plan.events.filter((e) => e.kind === 'reply' && e.skipped).length }
+  }
   const todo = plan.events.filter((e) => !e.done && !e.skipped)
   deps.log(`random run: ${todo.length} events from @${queue.account}, approved by ${queue.approval!.by}, window ${plan.window}, cool-off on blocks`)
   send({ type: 'BEGIN' })
@@ -114,11 +122,13 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       if (wait > 0) {
         deps.log(`[${state()}] next ${event.kind} #${event.n} @${item.handle ?? '?'} at ${event.at}`)
         nudged = await waitUntil(deps, due)
+        if (nudged === CANCELLED) return stop(`while waiting for ${event.kind} #${event.n}`)
         if (nudged) deps.log(`[${state()}] nudged: ${event.kind} #${event.n} @${item.handle ?? '?'} now (was ${event.at}, ${nudged} replies in the nudge)`)
       }
     }
     const ready = event.kind === 'like' && item.sentAtRun === plan.planned ? 'sent' : 'pending'
     if (item.status !== ready) return halt(`#${event.n} is ${item.status}, not ready for its ${event.kind}: plan it again`)
+    if (deps.cancelled?.()) return stop(`before ${event.kind} #${event.n}`)
     send({ type: event.kind === 'like' ? 'LIKE_DUE' : 'REPLY_DUE' })
     const answer = await deps.send(item, event.kind)
     const now = new Date(deps.nowMs()).toISOString()
@@ -180,6 +190,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     const back = new Date(deps.nowMs() + seconds * 1000).toISOString().slice(11, 16)
     deps.alert(`[cooling] ${what}: x made no tweet or throttled (${retry}). cool-off ${cools} of ${MAX_COOLS}: ${Math.round(seconds / 60)} min${reset ? ' (x reset time)' : ''}, back at ${back} UTC. x said: ${said.slice(0, 160)}`, false)
     nudged = await waitUntil(deps, deps.nowMs() / 1000 + seconds)
+    if (nudged === CANCELLED) return stop(`during cool-off ${cools}`)
     if (nudged) deps.log(`nudge ended the cool-off early (${nudged} replies)`)
     shiftRest(todo, deps.nowMs() / 1000, deps.rng)
     send({ type: 'RESUME' })

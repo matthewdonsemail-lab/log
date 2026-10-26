@@ -25,6 +25,7 @@ export interface TwitterEngineSpec {
   handles?: string[]
   limit?: number
   conversationId?: string
+  force?: boolean
 }
 
 export interface TwitterFollow {
@@ -91,6 +92,7 @@ export interface TwitterSessionAnswer {
   threads?: TwitterDmThread[]
   waitingOnYou?: number
   messages?: TwitterDmMessage[]
+  forcedPast?: string
 }
 
 export interface TwitterEngineRun {
