@@ -17,14 +17,23 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 | 2 | Score them: their bio matches who you want, they reposted (a bonus) or engaged with more than one post, and a sensible follower count. Few followers and no bio is a bot | treg's X profile read | a ranked list |
 | 3 | The owner checks the top of the list: drop the team, people they don't want to contact, and friends (friends get a personal note, not a template) | a table | the owner's corrections applied |
 | 4 | Check for an existing thread with each person, and DMs already waiting | `twitterDms` { account, limit: 200 } | no one gets a cold template where a chat already exists |
-| 5 | One opening line per person on why they're on the list, then the base message. No link in the first DM. The link goes only after a yes | house style | passes `twitterQueueCheck` |
+| 5 | Write each DM the cold DM way below: their own tweet forwarded first, then one informal line | house style | passes `twitterQueueCheck` |
 | 6 | Queue as dms: targets are `{handle, user_id, text}`, `action: "dm"`. Approve, plan, run live | README queue steps, `twitterQueueBuild` { action: "dm" } | `finished` |
 
-## What an opening line looks like
+## How a cold DM opens
 
-> yo saw you liked the post on `<topic>` and you've done growth at `<their company>`
+Never open cold with a line built from their bio. Build the context of the conversation from what they posted:
 
-> yo appreciate the rt on the `<post>`
+1. **Find one of their own recent tweets that's relevant** (an original post, not a reply or a repost), with treg's posts read for that handle.
+2. **Forward it into the DM:** the tweet's link goes first, so X shows it as a card in the chat.
+3. **Then one informal line:** "saw this", then what's true about how you're connected ("also saw we follow each other but never chatted", or "saw you followed me but we ain't chatted yet" when you don't follow them back; check with `twitterFollows`), then something brief about their tweet, then the ask.
+4. **No usable tweet:** don't forward anything. Send the plain opener: "mate we follow each other but ain't chatted yet lad whats up".
+
+Never: "saw you're `<bio thing>`", their name, made-up camaraderie, or "thanks for following".
+
+> `https://x.com/<them>/status/<id>` saw this and noticed we follow each other but haven't spoken 4249 live ads for one product is insane you using `<tool>` for pulling ad data yet
+
+> mate we follow each other but ain't chatted yet lad whats up
 
 ## What to know
 

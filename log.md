@@ -7776,3 +7776,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter followers --account <a> [--limit <n>] [--json]` (MCP `twitterFollowers`, read only, no live twin) reads the account's own followers on the direct-API engine (twikit's `get_user_followers`, 100 a page, 1.5 s apart, no browser, no proxy, rule 80), newest first: user id, handle, name, bio, location, follower, following and post counts, whether X says they take DMs, and protected. It sends nothing. The engine's new `followers` read stops at `--limit` (default 200, at most 4000), at the end of the list, or after 40 pages, and says when the list was read to the end (`complete`). Route `twitterFollowers`, its rules, a row in docs/twitterPlatform.md, and the README rebuilt.
 Why: matt asked for 40 random followers he's never messaged, "from the mcp stuff". log could check whether named handles follow the account but couldn't list its followers.
 Checked: live on matthewsoldit: 400 followers read to the end in 9 pages. With `log twitter dms --limit 200` (65 conversations), 25 of them already had a DM thread, and 40 were picked at random from the other 375. `bun test` over cli/twitter, mcp, errors and surface: 260 pass, 0 fail (new test: one read, limit passed, a bad limit refused before X is called). `tsc --noEmit` clean.
+
+## 2026-10-26 02:31Z · docs/coldDmMethod
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/twitter/engagerDms.md`: edited
+
+What changed: the DM use case page says how a cold DM opens. Find one of the person's own relevant recent tweets and forward it first (its link, so X shows the card). Then one informal line: "saw this", how you're really connected (mutual follow, or they follow you, checked with `twitterFollows`), something brief about their tweet, then the ask. With no usable tweet, send the plain opener instead. Never a bio-based "saw you're…", their name, made-up camaraderie or "thanks for following". Step 5 points at it, and the old bio-based example lines are gone.
+Why: matt read 40 bio-based treg DMs and said they were really bad: "this is how I dm… build the context of the convo, that's how we cold dm", and asked for it to be written into the use cases.
+Checked: docs only. The 40 treg DMs were rewritten this way (17 with their own tweet forwarded, 23 with the plain opener, mutual follows checked live: 23 mutual, 17 follow only one way), and the dm queue checks clean, nothing sent.
