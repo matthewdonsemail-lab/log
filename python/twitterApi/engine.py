@@ -359,8 +359,7 @@ async def xchat_threads(client: Any, me: str, opened: dict[str, list[dict[str, A
         said = [m for m in (opened or {}).get(conv.get("conversation_id") or "", []) if m.get("text") is not None]
         if said:
             last = said[-1]
-            if (last.get("time_ms") or 0) >= (last_ms or 0):
-                last_ms, from_me = last.get("time_ms"), str(last.get("sender_id")) == me
+            last_ms, from_me = last.get("time_ms") or last_ms, str(last.get("sender_id")) == me
         out.append({
             "conversationId": conv.get("conversation_id"),
             "box": "xchat",

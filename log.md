@@ -7966,3 +7966,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: X Chat (encrypted DMs) is read through log. X's own encryption SDK, chat-xdk v0.5.2, is vendored at `vendor/chatXdk` (Rust source plus its prebuilt Python wheel, installed from there). `vendor/twikit` reads keys and the Juicebox token map (`GetPublicKeysQuery`), unlocks with the PIN (`unlock_xchat`) and decrypts every conversation (`get_xchat_messages`), paging the X Chat inbox once per run. `log twitter chat pin` saves the PIN from a masked prompt after checking it against Juicebox. `log twitter dms` fills X Chat threads with their text, and `--with` merges a person's legacy and X Chat threads from one export read. New `log search` (MCP `search`, `searchIndex`, `searchBench`): BM25 (bm25s) plus meaning (verso-db HNSW over local all-MiniLM-L6-v2, embedded in a worker process so its sharp never meets the repo's) fused with RRF, filters by platform, account, person and day, indexes kept in ~/.logCli/search. Rules 88 and 89.
 Why: matt: replies were going out from old legacy threads while the real conversations sat in encrypted X Chat ("DONT OPEN IT IN MY CHROME WE FUCKING BUILT IT OUT"), and finding context by reading every conversation is too slow; he asked for hybrid BM25 + vector search with RRF in Bun.
 Checked: `bun run check` with LOG_PYTHON: 1102 pass, 0 fail, every gate green; twikit tests 3 pass. Live: the PIN unlocked through Juicebox; `log search index` read 200 conversations with X Chat decrypted (Zach's thread now shows "ty for sending! I dont think this is exactly what we need rn"); indexed 541 chunks in 24.4 s; `log search bench`: warm p50 3.81 ms, p95 5.55 ms, p99 8.39 ms (200 queries), cold p50 5.91 ms (first query 677 ms loading the model), linear scan 9.34 ms a query.
+
+## 2026-10-26 06:04Z · feat/xchatDecryptSearch
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/twitterApi/engine.py`: changed def xchat_threads
+
+What changed: an X Chat thread's last time, last sender and last text all come from its last decrypted message once X Chat is open; a later read receipt or reaction no longer makes the thread look like the other person wrote last.
+Why: the inbox hook flagged "@W2Warrior wrote" at 05:59 with matt's own cold DM as the text: W2Warrior's newest event was a read, not a message.
+Checked: `bun run check` 1102 pass; the saved W2Warrior thread's last decrypted message is matt's (03:41), so the thread now reads "you sent last".
