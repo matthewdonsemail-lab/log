@@ -1,6 +1,6 @@
-# From bought accounts to live Marketplace listings
+# From accounts to live Marketplace listings
 
-How a rubbish removal business gets listings in front of people in every town it serves: buy aged Facebook accounts, turn each one into a believable local profile, and post a listing from each one. This page walks one account all the way through, shows which part of log-cli does each step, and what decides that the step worked.
+How a local service business gets listings in front of people in every town it serves: take aged Facebook accounts, turn each one into a believable local profile, and post a listing from each one. This page walks one account all the way through, shows which part of log-cli does each step, and what decides that the step worked.
 
 ## The idea in one line
 
@@ -8,7 +8,7 @@ One account per town. Each one gets a proxy in that town, its own browser profil
 
 ```mermaid
 flowchart LR
-  buy["1. buy and import<br/>Twenty socialAccounts"] --> proxy["2. a proxy near<br/>the home town"]
+  buy["1. import the account<br/>Twenty socialAccounts"] --> proxy["2. a proxy near<br/>the home town"]
   proxy --> device["3. one AdsPower<br/>profile each"]
   device --> host["4. the host opens the browser<br/>once a day"]
   host --> setup["5. sign in, check,<br/>photo, name, location"]
@@ -17,18 +17,15 @@ flowchart LR
   publish --> check["8. check it every 12 min<br/>clicks into Twenty"]
 ```
 
-## A real run: Bethlehem, Pennsylvania (2026-10-20 to 2026-10-23)
+## One account, end to end
 
-- **Bought** as an aged account for about 29 cents and imported into Twenty with its home town, cookies and two-step secret.
-- **Proxy:** a Byteful residential proxy about 10 km from Bethlehem.
-- **Location:** typing "Bethlehem, PA" was offered only as Bethlehem in the West Bank, and a bare zip offered Granada, Spain first. So locations are always typed with the state written out, "Bethlehem, Pennsylvania" (rules 68 and 72).
-- **Listing:** junk removal, $99, two photos. Facebook's create answer returned listing **1425935622848350**, under review at first, and Twenty marked it UNDER_REVIEW.
-- **First day:** 23 clicks, 0 messages. Proxy traffic was 957 MB, about $3.11, so about $3.40 to take one account to a live listing.
-- It was later taken down live: the delete answer named `deleted_for_sale_item_id` 1425935622848350, and the row became REMOVED (rows are never deleted, rule 13).
+- **Imported** into Twenty with its home town, cookies and two-step secret.
+- **Proxy:** a residential proxy near the home town, checked for country and distance before it's saved.
+- **Location:** typing "City, ST" can be offered as a different place entirely (a town of the same name abroad), and a bare zip can be offered as another country first. So locations are always typed with the state written out, "City, State" (rules 68 and 72).
+- **Listing:** the service, a price and photos. Facebook's create answer returns the listing id, under review at first, and Twenty marks it UNDER_REVIEW, then live.
+- **Taken down** when needed: the delete answer names the listing id, and the row becomes REMOVED (rows are never deleted, rule 13).
 
-Later the same way: Mountain Top (listing 28779899605000522) and Hazleton (1789968938884830) in the Wilkes-Barre area.
-
-The maths matt worked from: 100 accounts plus proxies is about $304, about $330 with a month of AdsPower. One lead is worth about $150, so three leads pay for all of it.
+Count the cost per account (the account, its proxy traffic, the browser profile) against what one lead is worth before scaling to many towns.
 
 ## The steps and the commands
 
@@ -37,14 +34,14 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | Step | Command | MCP tool | What decides it worked |
 | --- | --- | --- | --- |
 | Import | `scripts/twenty/importVendorAccounts.mjs` | – | the row in Twenty `socialAccounts` |
-| Proxy | `log proxy assign --account <a> --vendor byteful`, `log proxy check` | `proxy` | the exit IP is in the home country and within 100 km of the home town |
+| Proxy | `log proxy assign --account <a> --vendor <vendor>`, `log proxy check` | `proxy` | the exit IP is in the home country and within 100 km of the home town |
 | Browser profile | `log adsPower sync --apply` | `adsPower` | one AdsPower profile per account, linked in `adsPowerProfileId` |
 | Ready? | `log facebook preflight` | `preflight` | hours, proxy, kernel, opens left, photo on disk, before anything opens |
 | Open the day | `log facebook host start --account <a> --live` | `hostStartLive` | the browser's own timezone, language and exit IP match the account |
 | Sign in | `log facebook connect --account <a>` (the host does it) | `connect` | Facebook's `c_user` and `xs` cookies |
 | Account check | `log facebook check --account <a>` | `check` | `/marketplace/status` says selling is open |
 | Photo, cover, name | `log facebook profile setup --account <a> --live` | `profileLive` | the photo and name saves answer without an error |
-| Location | `log inspect do setLocation "Bethlehem, Pennsylvania" --live` (the host does it) | `inspectDoLive` | the location save's answer names the town |
+| Location | `log inspect do setLocation "<City>, <State>" --live` (the host does it) | `inspectDoLive` | the location save's answer names the town |
 | Warm-up | `log facebook warmup stages run`, `log facebook warmup reel` | `warmup`, `warmupLive` | the five browsing activities each see their own answer; then 24 h before it's ready |
 | Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | at least 3 versions per ad, each title at least half different |
 | Publish | `log flow run marketplaceListingPublish --account <a> --live` | `flowMarketplaceListingPublishLive` | the create answer returns the listing id |
@@ -56,7 +53,7 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 
 - **One browser a day.** The host opens each account's browser once per local day and keeps it open; every action is a tab in it (rule 35). On top of that, an account's browser opens at most 8 times a day, 10 minutes apart (rule 24).
 - **The proxy first.** No browser opens without a proxy in the account's home country (rule 12).
-- **Local hours.** Nothing runs outside 08:00–22:00 in the account's home town unless matt asks (rules 18 and 20).
+- **Local hours.** Nothing runs outside 08:00–22:00 in the account's home town unless the owner asks (rules 18 and 20).
 - **The same device every time.** Each account keeps one fingerprint (rule 15).
 - **Recorded.** Every step is recorded, and Facebook's own answers decide what happened, never the screen (rule 73).
 
@@ -76,9 +73,9 @@ flowchart LR
 - Flows are recorded once with `log inspect` and then replayed on any account (`src/browser/flow/definitions/*.json`, docs in `docs/platforms/facebook/flows/`).
 - When a step lands somewhere new, its internal API calls are read, SubQ is asked what they mean, and the new state gets a name (rule one at the top of `AGENTS.md`).
 
-## What happened to the accounts
+## When accounts are lost
 
-Not every account makes it. Of the Pennsylvania accounts, several were lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings went to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). On 2026-10-25, Twenty held 17 listings and 4 were live.
+Not every account makes it. Some are lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings go to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). A checkpointed account is deactivated and gives its browser profile back (rules 78 and 82).
 
 ## Not built yet
 
@@ -89,4 +86,4 @@ Not every account makes it. Of the Pennsylvania accounts, several were lost befo
 
 The pipeline doesn't care what the listing sells. Anything that wants a local profile in many towns uses the same parts: the proxy per town, the profile, the warm-up, the recorded publish flow, and the 12-minute check. A new kind of listing is a new copy set and photos (`skills/listingCopy`, `skills/listingCreative`), not new code.
 
-Sources: `OUTBOX/RUBBISH_REMOVAL_UPDATE_DAYS_3_4_V10.md`, `PLANS/GET_IN_FRONT_OF_SERVICE_AREAS.md` (buzz workspace), and here `log.md`, `docs/lifecycle.md`, `docs/accountsAndListings.md`, `docs/proxies.md`, `docs/adsPower.md`, `skills/host/SKILL.md`.
+Sources here: `docs/lifecycle.md`, `docs/accountsAndListings.md`, `docs/proxies.md`, `docs/adsPower.md`, `skills/host/SKILL.md`.

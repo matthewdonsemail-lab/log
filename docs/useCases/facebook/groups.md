@@ -9,9 +9,9 @@ flowchart LR
   magpie --> twenty["4. matches land in<br/>Twenty socialListening"]
 ```
 
-## A real example
+## How it runs
 
-Bethlehem asked to join Northeast Bethlehem Neighbors, and a read of a local group brought back 13 posts with their comments. Plymouth reads groups without opening a browser at all: the direct-API engine (fbk) reads the feed with its saved session.
+An account asks to join a neighbourhood group in its town. Once in, each read brings back the group's newest posts with their comments. Where the account has a saved session, the direct-API engine (fbk) reads the feed without opening a browser at all; otherwise the read is a tab in the account's open browser.
 
 ## The commands
 
@@ -22,10 +22,10 @@ Bethlehem asked to join Northeast Bethlehem Neighbors, and a read of a local gro
 | Poll | `log facebook poll <group> <account> <how long>` | `poll` | each read's answer; OpenMagpie's watch picks the matches |
 | Members | `log facebook read members --account <a> --group <g> --count 40 --owners` | `readMembers` | the members list's answers, about 10 more per scroll |
 
-`read members --owners` keeps people whose bio says owner, founder, CEO or self-employed, or who run a page. One run on Junk Removal Winners kept 15 owners out of 30 members, saved under `~/.logCli/members/`.
+`read members --owners` keeps people whose bio says owner, founder, CEO or self-employed, or who run a page, saved under `~/.logCli/members/`.
 
 ## Not built yet
 
 Acting on a match (a comment or a message from the same account).
 
-Sources: `docs/groupListening.md`, `docs/groupMembers.md`, `docs/commandNaming.md`, `log.md`.
+Sources: `docs/groupListening.md`, `docs/groupMembers.md`, `docs/commandNaming.md`.
