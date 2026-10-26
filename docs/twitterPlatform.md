@@ -54,6 +54,7 @@ Twitter's families are what the controller does now, by area. Discovery stays tr
 | `log twitter session check --account <a>` | `twitter/account/session` | `--action ping` | no |
 | `log twitter follows --account <a> --handles <h,…>` | `twitter/graph/follows` | `--action follows` | no |
 | `log twitter dms --account <a> [--waiting] [--conversation <id>]` | `cli/twitter/dms` | none (the controller never read DMs: twikit's `dm/inbox_initial_state`, `dm/inbox_timeline` and `dm/conversation`) | no |
+| `log twitter followers --account <a> [--limit <n>]` | `cli/twitter/followers` | none (twikit's `get_user_followers`, 100 a page) | no |
 | `log twitter reply` / `quote` | `twitter/post/send` | `--action reply / quote` | `twitterReplyLive`, `twitterQuoteLive` (rule 8) |
 | `log twitter dm --userId <id>` | `twitter/post/send` | `--action dm` | `twitterDmLive` |
 | `log twitter like` | `twitter/post/send` | `--action like` | `twitterLikeLive` |

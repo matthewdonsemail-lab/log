@@ -59,6 +59,19 @@ describe("log twitter follows", () => {
   });
 });
 
+describe("log twitter followers", () => {
+  test("reads the account's own followers once on the direct-API engine and sends nothing", async () => {
+    const h = harness(() => ({ ok: true, complete: true, followers: [{ userId: "1", handle: "alice", name: "Alice", bio: "builds agents", location: "Lisbon", followers: 120, following: 80, posts: 900, canDm: true, protected: false }] }));
+    const r = await h.run(["twitter", "followers", "--account", "xTwo", "--limit", "50"]);
+    expect(r.code).toBe(0);
+    expect(h.calls).toEqual([{ action: "followers", limit: 50 }]);
+    expect(r.out).toContain("1 followers read (all of them)");
+    expect(r.out).toContain("@alice · 120 followers · Lisbon");
+    expect((await h.run(["twitter", "followers", "--account", "xTwo", "--limit", "0"])).err).toContain("limitInvalid");
+    expect(h.calls).toHaveLength(1);
+  });
+});
+
 describe("log twitter dms", () => {
   const thread = (id: string, handle: string, lastFromMe: boolean, text: string) => ({ conversationId: id, box: "inbox" as const, type: "oneToOne" as const, with: [{ userId: id, handle }], lastAt: "2026-10-25T10:00:00Z", lastFromMe, lastText: text, unread: !lastFromMe, messagesLoaded: 1 });
 

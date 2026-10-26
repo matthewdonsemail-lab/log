@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox")
+READS = ("ping", "follows", "inbox", "followers")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -375,6 +375,44 @@ async def conversation(client: Any, cookies: dict[str, str], conversation_id: st
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "limits": limits_of(response), "messages": messages}
 
 
+def follower_of(user: Any) -> dict[str, Any]:
+    return {
+        "userId": str(getattr(user, "id", "") or ""),
+        "handle": getattr(user, "screen_name", None),
+        "name": getattr(user, "name", None),
+        "bio": getattr(user, "description", "") or "",
+        "location": getattr(user, "location", "") or "",
+        "followers": getattr(user, "followers_count", 0),
+        "following": getattr(user, "following_count", 0),
+        "posts": getattr(user, "statuses_count", 0),
+        "canDm": bool(getattr(user, "can_dm", False)),
+        "protected": bool(getattr(user, "protected", False)),
+        "createdAt": getattr(user, "created_at", None),
+    }
+
+
+async def followers(client: Any, cookies: dict[str, str], limit: int) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    page = await client.get_user_followers(me, count=100)
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    pages = 1
+    while True:
+        added = 0
+        for user in page:
+            row = follower_of(user)
+            if row["userId"] and row["userId"] not in seen:
+                seen.add(row["userId"])
+                out.append(row)
+                added += 1
+        if len(out) >= limit or not added or not getattr(page, "next_cursor", None) or pages >= 40:
+            break
+        await asyncio.sleep(1.5)
+        page = await page.next()
+        pages += 1
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "pages": pages, "followers": out[:limit], "complete": len(out) < limit}
+
+
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     action = spec["action"]
     raw = keep_create_answers(client)
@@ -433,6 +471,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return {"ok": False, "code": "sessionDead" if dead else "sessionUnknown", "event": "sessionDead" if dead else "failed", "detail": f"X answered HTTP {status} to the session check before the {action}", "loginState": state, "httpStatus": status}
     if action == "follows":
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
+    if action == "followers":
+        return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
     if action == "inbox":
         limit = max(1, min(int(spec.get("limit") or 20), 200))
         if spec.get("conversationId"):

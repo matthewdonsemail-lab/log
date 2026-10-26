@@ -7752,3 +7752,27 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a queue run no longer turns one X 344 into a day's wait. A 344 gets the same short, doubling cool-off as a throttle (15 min doubling to 4 h), and X is asked again on the retry. Only after 3 344s in a row (`DAILY_AFTER`) does the run wait a day. The cool-off line now says what X answered and at what time, why it waits that long, and the date and time it tries again ("x answered at 2026-10-26 01:46 UTC: … trying again at … (a short wait, then x is asked again, cool-off 1 of 5). nothing is known about x after that answer until the next try"). It no longer says "x made no tweet or throttled", which was a guess.
 Why: matt: "how can we stop the confusion if stuff is blocked, because it wasn't blocked, you just said it was when it wasn't". X answered 344 to one reply from matthewsoldit at 01:46 UTC. The run set a 24-hour wait and it was reported as a block, but X accepted the next reply at 02:04.
 Checked: `bun test src/cli/twitter src/mcp`: 83 pass, 0 fail. New test: with X answering 344 every time, the first two cool-offs are short waits (the first back within the hour), the third says the daily limit came 3 times in a row and waits a day, and each line carries X's answer and its time. Live, before this change: after the 344 a nudged reply to @loafofherlife posted at 02:04 and @MariluCarvallo's at 02:05.
+
+## 2026-10-26 02:13Z · feat/twitterFollowers
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/twitterPlatform.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def follower_of, def followers · changed const READS, def act
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/families.test.ts`: added test "reads the account's own followers once on the direct-API engine and sends nothing"
+- `src/cli/twitter/helpers/followers.ts`: added const FOLLOWERS_USAGE, const FOLLOWERS_INPUT, const flat, function line, function render, const followersCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./followers.ts"
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: added interface TwitterFollower · changed type TwitterAction, interface TwitterSessionAnswer
+
+What changed: `log twitter followers --account <a> [--limit <n>] [--json]` (MCP `twitterFollowers`, read only, no live twin) reads the account's own followers on the direct-API engine (twikit's `get_user_followers`, 100 a page, 1.5 s apart, no browser, no proxy, rule 80), newest first: user id, handle, name, bio, location, follower, following and post counts, whether X says they take DMs, and protected. It sends nothing. The engine's new `followers` read stops at `--limit` (default 200, at most 4000), at the end of the list, or after 40 pages, and says when the list was read to the end (`complete`). Route `twitterFollowers`, its rules, a row in docs/twitterPlatform.md, and the README rebuilt.
+Why: matt asked for 40 random followers he's never messaged, "from the mcp stuff". log could check whether named handles follow the account but couldn't list its followers.
+Checked: live on matthewsoldit: 400 followers read to the end in 9 pages. With `log twitter dms --limit 200` (65 conversations), 25 of them already had a DM thread, and 40 were picked at random from the other 375. `bun test` over cli/twitter, mcp, errors and surface: 260 pass, 0 fail (new test: one read, limit passed, a bad limit refused before X is called). `tsc --noEmit` clean.

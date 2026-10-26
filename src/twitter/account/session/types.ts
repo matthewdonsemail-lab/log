@@ -9,7 +9,7 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'reply' | 'quote' | 'like' | 'dm'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'reply' | 'quote' | 'like' | 'dm'
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm']
 
@@ -68,6 +68,20 @@ export interface TwitterDmMessage {
   from?: string | null
 }
 
+export interface TwitterFollower {
+  userId: string
+  handle?: string | null
+  name?: string | null
+  bio: string
+  location: string
+  followers: number
+  following: number
+  posts: number
+  canDm: boolean
+  protected: boolean
+  createdAt?: string | null
+}
+
 export interface TwitterSessionAnswer {
   ok: boolean
   code?: string
@@ -93,6 +107,8 @@ export interface TwitterSessionAnswer {
   waitingOnYou?: number
   messages?: TwitterDmMessage[]
   forcedPast?: string
+  followers?: TwitterFollower[]
+  complete?: boolean
 }
 
 export interface TwitterEngineRun {

@@ -138,14 +138,14 @@ export const ERROR_CATALOG = {
     layer: 'twitter',
     meaning: 'The --limit given to log twitter dms is not a whole number from 1 to 200.',
     retryable: false,
-    raisedIn: ['cli/twitter/dms'],
+    raisedIn: ['cli/twitter/dms', 'cli/twitter/followers'],
     action: 'Give --limit as a whole number from 1 to 200, or leave it out for 20.'
   },
   conversationInvalid: {
     layer: 'twitter',
     meaning: "The --conversation given to log twitter dms isn't an X conversation id (digits, or two user ids joined by a dash).",
     retryable: false,
-    raisedIn: ['cli/twitter/dms'],
+    raisedIn: ['cli/twitter/dms', 'cli/twitter/followers'],
     action: 'Copy the conversation id from the inbox list that log twitter dms prints.'
   },
   textMissing: {
