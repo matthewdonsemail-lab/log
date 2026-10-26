@@ -1,5 +1,5 @@
 import { readGroupDirect } from "../read/helpers/directApi.ts";
-import { dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
+import { chatCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
 import { runTwitterEngine } from "../../twitter/account/session/index.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
@@ -26,6 +26,7 @@ import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
+import { searchCommand } from "../search/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
@@ -87,6 +88,8 @@ export const COMMANDS: Command[] = [
   sessionCommand,
   followsCommand,
   dmsCommand,
+  chatCommand,
+  searchCommand,
   followersCommand,
   replyCommand,
   quoteCommand,

@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "xchatContacts")
+READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -325,13 +325,42 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
     }
 
 
-async def xchat_threads(client: Any, me: str) -> list[dict[str, Any]]:
+def xchat_message(m: dict[str, Any], me: str, handles: dict[str, str]) -> dict[str, Any]:
+    sender = str(m.get("sender_id") or "")
+    return {"id": str(m.get("event_id") or ""), "conversationId": str(m.get("conversation_id") or ""), "time": iso_of(m.get("time_ms")), "senderId": sender, "recipientId": None, "text": m.get("text") if m.get("text") is not None else f"(could not open: {m.get('error') or 'no key'})", "fromMe": sender == me, "from": handles.get(sender)}
+
+
+async def xchat_read(client: Any, spec: dict[str, Any]) -> dict[str, list[dict[str, Any]]] | None:
+    pin_path = spec.get("pinPath")
+    if not pin_path:
+        return None
+    try:
+        await xchat_read_keys(client, spec)
+    except Exception as e:
+        raise XChatLocked(str(e)) from e
+    return await client.get_xchat_messages()
+
+
+async def xchat_read_keys(client: Any, spec: dict[str, Any]) -> None:
+    await client.unlock_xchat(Path(spec["pinPath"]).read_text(encoding="utf-8").strip())
+
+
+class XChatLocked(Exception):
+    pass
+
+
+async def xchat_threads(client: Any, me: str, opened: dict[str, list[dict[str, Any]]] | None = None) -> list[dict[str, Any]]:
     convs = await client.get_xchat_conversations()
     out = []
     for conv in convs:
         people = [{"userId": uid, "handle": (conv.get("handles") or {}).get(uid)} for uid in conv.get("participant_ids") or []]
         last_ms = conv.get("last_time_ms")
         from_me = bool(conv.get("last_from_me"))
+        said = [m for m in (opened or {}).get(conv.get("conversation_id") or "", []) if m.get("text") is not None]
+        if said:
+            last = said[-1]
+            if (last.get("time_ms") or 0) >= (last_ms or 0):
+                last_ms, from_me = last.get("time_ms"), str(last.get("sender_id")) == me
         out.append({
             "conversationId": conv.get("conversation_id"),
             "box": "xchat",
@@ -340,14 +369,14 @@ async def xchat_threads(client: Any, me: str) -> list[dict[str, Any]]:
             "with": people,
             "lastAt": iso_of(last_ms),
             "lastFromMe": from_me,
-            "lastText": None if last_ms is None else "(encrypted X Chat message)",
+            "lastText": None if last_ms is None else (said[-1]["text"] if said else ("(encrypted X Chat message)" if opened is None else "(could not open)")),
             "unread": bool(last_ms is not None and not from_me),
-            "messagesLoaded": 0,
+            "messagesLoaded": len(said),
         })
     return out
 
 
-async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, Any]:
+async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[str, list[dict[str, Any]]] | None = None, export: bool = False) -> dict[str, Any]:
     me = own_user_id(cookies) or ""
     data, response = await client.get(DM_INBOX, params=INBOX_PARAMS, headers=client._base_headers)
     state = (data or {}).get("inbox_initial_state") or {}
@@ -369,12 +398,44 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, A
                 break
     threads = [thread_of(c, pool["messages"], pool["users"], me, pool["boxes"].get(cid, "inbox")) for cid, c in pool["conversations"].items()]
     try:
-        threads += await xchat_threads(client, me)
+        threads += await xchat_threads(client, me, opened)
     except Exception:
         pass
     threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
     threads = threads[:limit]
-    return {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
+    out = {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
+    if export:
+        out["conversations"] = conversations_of(threads, pool, opened, me)
+    return out
+
+
+def conversations_of(threads: list[dict[str, Any]], pool: dict[str, Any], opened: dict[str, list[dict[str, Any]]] | None, me: str) -> list[dict[str, Any]]:
+    handles = {uid: (u.get("screen_name") or "") for uid, u in pool["users"].items()}
+    for t in threads:
+        for p in t["with"]:
+            if p.get("handle"):
+                handles[p["userId"]] = p["handle"]
+    out = []
+    for t in threads:
+        cid = t["conversationId"]
+        if t["box"] == "xchat":
+            messages = [xchat_message(m, me, handles) for m in (opened or {}).get(cid, []) if m.get("text") is not None]
+        else:
+            messages = [{**m, "fromMe": m["senderId"] == me, "from": handles.get(m["senderId"])} for m in pool["messages"] if m["conversationId"] == cid]
+        messages.sort(key=lambda m: m.get("time") or "")
+        out.append({"conversationId": cid, "box": t["box"], "with": t["with"], "messages": messages})
+    return out
+
+
+async def xchat_conversation(client: Any, cookies: dict[str, str], conversation_id: str, limit: int, opened: dict[str, list[dict[str, Any]]] | None) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    if opened is None:
+        return {"ok": False, "code": "xchatPinMissing", "detail": "this is an X Chat conversation and its text is encrypted: save the account's X Chat PIN with `log twitter chat pin --account <a>` (a masked prompt, kept in Twenty)", "loginState": "loggedIn"}
+    handles: dict[str, str] = {}
+    for conv in await client.get_xchat_conversations():
+        handles.update(conv.get("handles") or {})
+    messages = [xchat_message(m, me, handles) for m in opened.get(conversation_id, [])][-limit:]
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "messages": messages}
 
 
 async def conversation(client: Any, cookies: dict[str, str], conversation_id: str, limit: int) -> dict[str, Any]:
@@ -512,11 +573,28 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
     if action == "xchatContacts":
         return await xchat_contacts(client, cookies)
+    if action == "xchatUnlock":
+        if not spec.get("pinPath"):
+            return {"ok": False, "code": "xchatPinMissing", "detail": "no PIN was given to check", "loginState": "loggedIn"}
+        try:
+            await xchat_read_keys(client, spec)
+        except Exception as e:
+            return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with that PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
+        return {"ok": True, "loginState": "loggedIn", "userId": own_user_id(cookies)}
     if action == "inbox":
         limit = max(1, min(int(spec.get("limit") or 20), 200))
-        if spec.get("conversationId"):
-            return await conversation(client, cookies, str(spec["conversationId"]), limit)
-        return await inbox(client, cookies, limit)
+        try:
+            opened = await xchat_read(client, spec)
+        except XChatLocked as e:
+            return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
+        except Exception as e:
+            return {"ok": False, "code": "xchatReadFailed", "detail": f"X Chat unlocked but its messages didn't open: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
+        conversation_id = str(spec.get("conversationId") or "")
+        if ":" in conversation_id:
+            return await xchat_conversation(client, cookies, conversation_id, limit, opened)
+        if conversation_id:
+            return await conversation(client, cookies, conversation_id, limit)
+        return await inbox(client, cookies, limit, opened, spec.get("export") is True)
     return {**(await send(client, spec)), "loginState": "loggedIn"}
 
 
