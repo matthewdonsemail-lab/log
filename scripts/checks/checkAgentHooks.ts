@@ -44,7 +44,7 @@ try {
       problems.push(`${hook.script} (${hook.event}) doesn't exist`);
       continue;
     }
-    const run = spawnSync("bun", [script], { input: JSON.stringify(samples[hook.event]), encoding: "utf8", timeout: hook.timeout * 1000, env: { ...process.env, LOG_HOOK_MEMORY: join(scratch, "memory.json") } });
+    const run = spawnSync("bun", [script], { input: JSON.stringify(samples[hook.event]), encoding: "utf8", timeout: hook.timeout * 1000, env: { ...process.env, LOG_HOOK_MEMORY: join(scratch, "memory.json"), LOG_INBOX_STATE: join(scratch, "inbox"), LOG_INBOX_POLL: "off" } });
     const out = (run.stdout ?? "").trim();
     if (run.status === 2 && (hook.event === "PreToolUse" || hook.event === "Stop") && run.stderr.trim()) continue;
     if (run.status !== 0) {

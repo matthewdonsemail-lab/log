@@ -247,14 +247,17 @@ flowchart LR
   mcp -->|tool lines| live
   live -.->|tail -f, under Monitor| agent
   pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
-  post0{{"PostToolUse: pageState.ts"}} -.->|after| agent
+  post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
+  post1{{"PostToolUse: pageState.ts"}} -.->|after| agent
   turn0{{"SessionStart: pageState.ts"}} -.-> agent
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
   turn2{{"SessionStart: storage.ts"}} -.-> agent
   turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
   turn4{{"SessionStart: engines.ts"}} -.-> agent
   turn5{{"UserPromptSubmit: engines.ts"}} -.-> agent
-  turn6{{"Stop: pageState.ts"}} -.-> agent
+  turn6{{"SessionStart: inbox.ts"}} -.-> agent
+  turn7{{"UserPromptSubmit: inbox.ts"}} -.-> agent
+  turn8{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
 ```
 
@@ -598,11 +601,14 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | UserPromptSubmit | every turn | [`scripts/hooks/storage.ts`](scripts/hooks/storage.ts) | the same storage check with each of matt's prompts (measured at most every 15 minutes) |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/engines.ts`](scripts/hooks/engines.ts) | which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines; and, loudly, when the log MCP server runs older code than the checkout |
 | UserPromptSubmit | every turn | [`scripts/hooks/engines.ts`](scripts/hooks/engines.ts) | the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed |
+| UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
+| PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
 | PreToolUse | `Bash\|PowerShell\|Monitor` | [`scripts/hooks/liveLogs.ts`](scripts/hooks/liveLogs.ts) | a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26) |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts), Stop (pageState.ts).
+Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, inbox.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts), Stop (pageState.ts).
 
 ### The hooks in one turn
 
@@ -618,11 +624,13 @@ sequenceDiagram
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
   Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout
+  Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
   Note over Hook: where every open browser is, with each of matt's prompts
   Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
+  Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
   loop each tool call
     Agent->>Hook: PreToolUse
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
@@ -632,6 +640,7 @@ sequenceDiagram
       Agent->>Tool: the call
       Tool-->>Agent: its result
       Agent->>Hook: PostToolUse
+    Note over Hook: the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once
     Note over Hook: a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once
     end
   end

@@ -3243,6 +3243,8 @@ class Client:
         except Exception:
             me = str(self._user_id_from_cookie() or '')
 
+        from ..xchat import decode_event
+
         def collect(items):
             out = []
             for item in items or []:
@@ -3257,7 +3259,23 @@ class Client:
                     if part.isdigit():
                         ids.add(part)
                 ids.discard(me)
-                out.append({'conversation_id': cid, 'participant_ids': sorted(ids)})
+                handles = {}
+                for part in detail.get('participants_results') or []:
+                    rest = str(part.get('rest_id') or '')
+                    core = ((part.get('result') or {}).get('core') or {})
+                    if rest and core.get('screen_name'):
+                        handles[rest] = core['screen_name']
+                events = [decode_event(e) for e in (item.get('latest_message_events') or [])]
+                events = [e for e in events if e.get('time_ms') is not None]
+                last = max(events, key=lambda e: e['time_ms']) if events else None
+                out.append({
+                    'conversation_id': cid,
+                    'participant_ids': sorted(ids),
+                    'last_sender_id': last['sender_id'] if last else None,
+                    'last_time_ms': last['time_ms'] if last else None,
+                    'last_from_me': bool(last and last['sender_id'] == me),
+                    'handles': {k: v for k, v in handles.items() if k != me},
+                })
             return out
 
         response, _ = await self.gql.get_initial_xchat_page()

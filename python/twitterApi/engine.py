@@ -325,6 +325,28 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
     }
 
 
+async def xchat_threads(client: Any, me: str) -> list[dict[str, Any]]:
+    convs = await client.get_xchat_conversations()
+    out = []
+    for conv in convs:
+        people = [{"userId": uid, "handle": (conv.get("handles") or {}).get(uid)} for uid in conv.get("participant_ids") or []]
+        last_ms = conv.get("last_time_ms")
+        from_me = bool(conv.get("last_from_me"))
+        out.append({
+            "conversationId": conv.get("conversation_id"),
+            "box": "xchat",
+            "type": "group" if len(people) > 1 else "oneToOne",
+            "name": None,
+            "with": people,
+            "lastAt": iso_of(last_ms),
+            "lastFromMe": from_me,
+            "lastText": None if last_ms is None else "(encrypted X Chat message)",
+            "unread": bool(last_ms is not None and not from_me),
+            "messagesLoaded": 0,
+        })
+    return out
+
+
 async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, Any]:
     me = own_user_id(cookies) or ""
     data, response = await client.get(DM_INBOX, params=INBOX_PARAMS, headers=client._base_headers)
@@ -346,6 +368,10 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, A
             if not added:
                 break
     threads = [thread_of(c, pool["messages"], pool["users"], me, pool["boxes"].get(cid, "inbox")) for cid, c in pool["conversations"].items()]
+    try:
+        threads += await xchat_threads(client, me)
+    except Exception:
+        pass
     threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
     threads = threads[:limit]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
