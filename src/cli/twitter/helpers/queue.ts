@@ -34,7 +34,7 @@ const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, d
 export const QUEUE_USAGE = [
   "Usage: log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]",
   "       log twitter queue show <queue.json> [--json]",
-  "       log twitter queue check <queue.json> [--json]",
+  "       log twitter queue check <queue.json> [--skipXChatCheck] [--json]",
   "       log twitter queue status <queue.json> [--json]",
   "       log twitter queue approve <queue.json> --by <who>",
   "       log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]",
@@ -64,7 +64,7 @@ export const QUEUE_INPUT: CommandInput = {
       ],
     },
     { words: ["show"], summary: "Show a queue: who, which post, what copy, and its approval", positionals: [QUEUE], flags: [JSON_FLAG] },
-    { words: ["check"], summary: "Check every pending item's target and house style, contacting nothing", positionals: [QUEUE], flags: [JSON_FLAG] },
+    { words: ["check"], summary: "Check every pending item's target and house style; for a dm queue, read the account's X Chat inbox and drop anyone already in a conversation", positionals: [QUEUE], flags: [flag("skipXChatCheck", "boolean", "Skip the X Chat prior-conversation drop, only when matt asked (rule 87)"), JSON_FLAG] },
     { words: ["status"], summary: "Count a queue's items by status", positionals: [QUEUE], flags: [JSON_FLAG] },
     { words: ["approve"], effect: "write", summary: "Record who approved the queue as it stands now", positionals: [QUEUE], flags: [flag("by", "string", "Who approved it", { required: true })] },
     {
@@ -278,10 +278,28 @@ export const queueCommand: Command = {
       if (word === "check") {
         const queue = load(file);
         const problems = itemProblems(queue);
+        let priorSkipped: { handle: string | null; n: number }[] = [];
+        if (queue.items.some((i) => i.action === "dm" && i.status === "pending") && flags["skipXChatCheck"] !== true) {
+          const opened = await openTwitterAccount(context, "twitter queue check", queue.account);
+          if (!opened.ok) return opened.result;
+          context.err(queueLog(file, `reading ${queue.account}'s X Chat inbox to drop anyone already in a conversation (rule 87)`, now));
+          const run = await opened.engine({ action: "xchatContacts" });
+          if (!run.answer.ok) return refuse("twitter queue check", "xChatCheckFailed", run.answer.detail ?? run.answer.code ?? "the X Chat inbox read failed");
+          const contacts = new Set(run.answer.contacts ?? []);
+          for (const item of queue.items) {
+            if (item.action === "dm" && item.status === "pending" && item.userId && contacts.has(item.userId)) {
+              item.status = "skipped";
+              item.result = "priorConversation: already in an X Chat conversation with this account (rule 87)";
+              priorSkipped.push({ handle: item.handle ?? null, n: item.n });
+            }
+          }
+          if (priorSkipped.length) saveQueue(file, queue);
+        }
         const pending = queue.items.filter((i) => i.status === "pending").length;
-        context.err(queueLog(file, `checked ${pending} pending: ${problems.length} failed (nothing sent)`, now));
-        if (flags["json"]) return { code: problems.length ? 1 : 0, stdout: JSON.stringify({ pending, problems }, null, 2) };
-        return { code: problems.length ? 1 : 0, stdout: [`log twitter queue check: ${pending} pending, ${problems.length} failed, nothing sent.`, ...problems.map((p) => `  #${p.n}: ${p.detail}`)].join("\n") };
+        context.err(queueLog(file, `checked ${pending} pending: ${problems.length} failed, ${priorSkipped.length} dropped for a prior X Chat conversation (nothing sent)`, now));
+        const priorLines = priorSkipped.map((p) => `  dropped #${p.n} @${p.handle ?? "?"}: already in an X Chat conversation`);
+        if (flags["json"]) return { code: problems.length ? 1 : 0, stdout: JSON.stringify({ pending, problems, priorConversationDropped: priorSkipped }, null, 2) };
+        return { code: problems.length ? 1 : 0, stdout: [`log twitter queue check: ${pending} pending, ${problems.length} failed, ${priorSkipped.length} dropped for a prior X Chat conversation, nothing sent.`, ...priorLines, ...problems.map((p) => `  #${p.n}: ${p.detail}`)].join("\n") };
       }
       if (word === "approve") {
         const queue = approveQueue(load(file), flags["by"] as string, now);

@@ -302,6 +302,23 @@ describe("log twitter queue", () => {
     expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("cancelled while waiting");
   });
 
+  test("check on a dm queue drops anyone already in an X Chat conversation (rule 87)", async () => {
+    const h = harness((spec) => (spec.action === "xchatContacts" ? { ok: true, contacts: ["42"] } : { ok: false, code: "notExpected" }));
+    const f = queueFiles();
+    const targets = join(f.dir, "dmTargets.json");
+    writeFileSync(targets, JSON.stringify({ items: [{ handle: "newperson", user_id: "7", text: "mate we follow each other but aint chatted whats up" }, { handle: "oldfriend", user_id: "42", text: "mate we follow each other but aint chatted whats up too" }] }));
+    expect((await h.run(["twitter", "queue", "build", "--targets", targets, "--out", f.queue, "--account", "xTwo", "--action", "dm"])).code).toBe(0);
+    const r = await h.run(["twitter", "queue", "check", f.queue]);
+    expect(h.calls).toEqual([{ action: "xchatContacts" }]);
+    expect(r.out).toContain("1 dropped for a prior X Chat conversation");
+    expect(r.out).toContain("dropped #2 @oldfriend");
+    const queue = loadQueue(f.queue);
+    expect(queue.items.find((i) => i.handle === "oldfriend")!.status).toBe("skipped");
+    expect(queue.items.find((i) => i.handle === "newperson")!.status).toBe("pending");
+    const skip = await h.run(["twitter", "queue", "check", f.queue, "--skipXChatCheck"]);
+    expect(skip.out).toContain("0 dropped");
+  });
+
   test("nudge is refused with no run going", async () => {
     const h = harness();
     const f = await builtAndPlanned(h);

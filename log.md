@@ -7776,3 +7776,58 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter followers --account <a> [--limit <n>] [--json]` (MCP `twitterFollowers`, read only, no live twin) reads the account's own followers on the direct-API engine (twikit's `get_user_followers`, 100 a page, 1.5 s apart, no browser, no proxy, rule 80), newest first: user id, handle, name, bio, location, follower, following and post counts, whether X says they take DMs, and protected. It sends nothing. The engine's new `followers` read stops at `--limit` (default 200, at most 4000), at the end of the list, or after 40 pages, and says when the list was read to the end (`complete`). Route `twitterFollowers`, its rules, a row in docs/twitterPlatform.md, and the README rebuilt.
 Why: matt asked for 40 random followers he's never messaged, "from the mcp stuff". log could check whether named handles follow the account but couldn't list its followers.
 Checked: live on matthewsoldit: 400 followers read to the end in 9 pages. With `log twitter dms --limit 200` (65 conversations), 25 of them already had a DM thread, and 40 were picked at random from the other 375. `bun test` over cli/twitter, mcp, errors and surface: 260 pass, 0 fail (new test: one read, limit passed, a bad limit refused before X is called). `tsc --noEmit` clean.
+
+## 2026-10-26 04:04Z · feat/xchatPriorCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/x/xchat/README.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const XCHAT_INITIAL, const XCHAT_PAGE, def xchat_conversation_user_ids, def xchat_contacts · changed const READS, def act
+- `src/cli/twitter/families.test.ts`: added test "check on a dm queue drops anyone already in an X Chat conversation (rule 87)"
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE, const QUEUE_INPUT, const queueCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, interface TwitterSessionAnswer
+
+What changed: `log twitter queue check` on a dm queue now reads the account's own X Chat inbox and drops any pending dm whose recipient the account already has a conversation with (status skipped, `priorConversation`). X Chat is X's newer encrypted inbox, separate from the legacy DM inbox `log twitter dms` reads, so a 'never messaged' list built on the old read misses it. New engine action `xchatContacts` (`python/twitterApi/engine.py`, read-only): it calls `api.x.com/graphql` GetInitialXChatPageQuery and pages GetInboxPageRequestQuery with the account's session (no PIN; who and when are readable, the text isn't) and returns every counterpart user id. `--skipXChatCheck` bypasses it only when matt asks. New error `xChatCheckFailed`, rule 87, and docs/platforms/x/xchat.
+Why: matt: a 40-person 'never messaged' treg dm run reached 7 people he'd already spoken to in X Chat, because the filter only saw the legacy inbox. 'it let people who i have spoken to go through... it didn't do its job at all'. He asked to build the X Chat check into the dm queue.
+Checked: live on matthewsoldit: `queue check` on the 17 unsent treg targets read the X Chat inbox and dropped exactly the 3 with prior conversations (VladSmolyansky, DistinctLee, vincenzo_micale), leaving 14. `bun run check`: 1092 pass, 0 fail, incl. a new test (an existing X Chat contact is skipped, a new one stays, --skipXChatCheck bypasses). The full-inbox scan found 10 of the 40 had prior chats; 7 had already been sent before the run was stopped (noted to matt). The engine's key-recovery/decryption (reading the message text via the PIN) is not built; this change only needs who, not what.
+
+## 2026-10-26 04:11Z · feat/xchatPriorCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `python/twitterApi/engine.py`: changed def xchat_contacts · removed const XCHAT_INITIAL, const XCHAT_PAGE, def xchat_conversation_user_ids
+- `vendor/twikit/tests/test_xchat.py`: added def run, def offline_client, def conv, def test_xchat_endpoints_hit_the_api_host, def test_get_xchat_conversations_pages_and_returns_counterpart_ids
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class Endpoint, class GQLClient
+
+What changed: the X Chat inbox read now lives in vendor/twikit, not hand-rolled in log's engine. twikit gains the X Chat GraphQL endpoints (`Endpoint.XCHAT_*` on `api.x.com/graphql`: GetInitialXChatPageQuery, GetInboxPageRequestQuery, and the conversation/message/key/token ops for later), `GQLClient.get_initial_xchat_page` / `get_xchat_inbox_page`, and `Client.get_xchat_conversations()` which pages the account's own encrypted-DM inbox and returns each conversation's id and counterpart rest ids (text stays encrypted; who and when are readable from the session). `python/twitterApi/engine.py`'s `xchatContacts` action now just calls `client.get_xchat_conversations()` instead of its own GraphQL. All through twikit's curl_cffi transport (rule 81). Rule 87 updated to say the read is twikit's.
+Why: matt: the discovery had to go back into the vendored client so it isn't an issue in future ('did we update the twikit vendor stuff with our new discovery'). Rule 81: we own vendor/twikit and keep it current ourselves.
+Checked: `bun run check` with the repo Python: 1092 pass, 0 fail, incl. check:twikitTransport (curl_cffi only). New twikit test (tests/test_xchat.py): endpoints hit api.x.com and paging returns counterpart ids, 2 passed under pytest. Live: `log twitter queue check` on the 17 unsent treg dm targets, now routed through twikit, dropped the same 3 prior-conversation people (VladSmolyansky, DistinctLee, vincenzo_micale).
+
+## 2026-10-26 04:22Z · feat/xchatPriorCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `README.md`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `python/twitterApi/engine.py`: added def xchat_threads · changed def inbox
+- `scripts/checks/checkAgentHooks.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/inbox.ts`: added const repo, const raw, const event, const text
+- `src/agentHooks/registry/index.ts`: added const INBOX · changed const AGENT_HOOKS
+- `src/inbox/watch/client.ts`: added function inboxRoot, const pendingPath, const deliveredPath, const planPath, const lockPath, const seenPath, function readJson, function writeJson, function newMessages, function pollReaders, function takePending, function claimPoll, function releasePoll, function inboxContext, function twitterAccounts, function twitterThreads, function inboxReaders
+- `src/inbox/watch/index.ts`: added export from "./client", export from "./types"
+- `src/inbox/watch/types.ts`: added interface InboxThread, interface InboxReader, interface InboxMessage, type SeenThreads, interface PollPlan, const POLL_MIN_SECONDS, const POLL_MAX_SECONDS, const POLL_LOCK_SECONDS
+- `src/inbox/watch/watch.test.ts`: added const thread, test "only a thread whose newest message is theirs and newer than last look is new", test "an X Chat reply with encrypted text still surfaces, labelled", test "the first look learns what's there; the next says what arrived, once", test "a poll is claimed at most once per gap, never while one runs, never when off"
+- `src/surface/catalog/index.ts`: changed function hooksOn
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/xchat.py`: added def _read_fields, def _as_text, def decode_event
+
+What changed: X Chat replies are now seen everywhere, not just in the dm queue's prior-conversation drop. twikit gains `xchat.decode_event` (a Thrift binary-protocol field reader that pulls a message event's id, sender id, conversation id and time in ms, never the encrypted body), and `get_xchat_conversations` now returns each conversation's last sender, last time and the counterparts' handles. `log twitter dms` (engine `inbox` action, new `xchat_threads`) appends every X Chat conversation to the inbox it already returns, as box `xchat`, with who/when and `lastText` null (text stays encrypted). A new agent hook `scripts/hooks/inbox.ts` (src/inbox/watch) polls every signed-in account's inbox in the background every 4 to 8 minutes through `log twitter dms` (so X Chat is covered), and on SessionStart, each prompt and each log/shell tool call puts any new message in front of the agent (`>>> NEW MESSAGE`). `hooksOn` now returns each tool event once in canonical order.
+Why: matt: bring it all up to date so X Chat replies aren't missed, after a reply (@shwetasd19) went unseen because the reads only knew the legacy inbox.
+Checked: `bun run check` with the repo Python: 1096 pass, 0 fail (new watch tests incl. an encrypted X Chat reply surfacing labelled; new twikit xchat test). Live: `log twitter dms --account matthewsoldit` now returns 32 X Chat threads alongside the legacy inbox, and shows new replies from @wolfie_ and @circleonscreens that the old read never saw.

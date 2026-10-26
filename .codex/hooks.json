@@ -31,6 +31,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -60,16 +70,13 @@
             "timeout": 10
           }
         ]
-      }
-    ],
-    "PreToolUse": [
+      },
       {
-        "matcher": "Bash|PowerShell|Monitor",
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/liveLogs.ts\"",
-            "timeout": 10
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "timeout": 15
           }
         ]
       }
@@ -80,8 +87,30 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell|Monitor|mcp__log__.*",
+        "hooks": [
+          {
+            "type": "command",
             "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
             "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Monitor",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/liveLogs.ts\"",
+            "timeout": 10
           }
         ]
       }

@@ -119,6 +119,15 @@
     ],
     "action": "Give the recipient's numeric user id from treg research."
   },
+  "xChatCheckFailed": {
+    "layer": "twitter",
+    "meaning": "A dm queue check couldn't read the account's X Chat inbox, so it can't tell who is already in a conversation.",
+    "retryable": true,
+    "raisedIn": [
+      "cli/twitter/queue"
+    ],
+    "action": "Check the X session (log twitter session check), then run the check again; --skipXChatCheck bypasses it only when matt asked."
+  },
   "limitInvalid": {
     "layer": "twitter",
     "meaning": "The --limit given to log twitter dms is not a whole number from 1 to 200.",

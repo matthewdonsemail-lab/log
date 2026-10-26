@@ -247,14 +247,17 @@ flowchart LR
   mcp -->|tool lines| live
   live -.->|tail -f, under Monitor| agent
   pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
-  post0{{"PostToolUse: pageState.ts"}} -.->|after| agent
+  post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
+  post1{{"PostToolUse: pageState.ts"}} -.->|after| agent
   turn0{{"SessionStart: pageState.ts"}} -.-> agent
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
   turn2{{"SessionStart: storage.ts"}} -.-> agent
   turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
   turn4{{"SessionStart: engines.ts"}} -.-> agent
   turn5{{"UserPromptSubmit: engines.ts"}} -.-> agent
-  turn6{{"Stop: pageState.ts"}} -.-> agent
+  turn6{{"SessionStart: inbox.ts"}} -.-> agent
+  turn7{{"UserPromptSubmit: inbox.ts"}} -.-> agent
+  turn8{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
 ```
 
@@ -312,7 +315,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter quote`](#log-twitter-quote) | Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterQuote`, `twitterQuoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 30, 38, 39, 40, 41 |
 | [`log twitter like`](#log-twitter-like) | Like one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterLike`, `twitterLikeLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 30, 38, 39, 40, 41 |
 | [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 30, 38, 39, 40, 41 |
-| [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--live` `--replies <n>` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 30, 38, 39, 40, 41 |
+| [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--skipXChatCheck` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--live` `--replies <n>` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 30, 38, 39, 40, 41 |
 | [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--hosts <a.com,b.com>` `--home <https://…>` `--noProxy` `--noBrowser` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
 | [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 
@@ -598,11 +601,14 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | UserPromptSubmit | every turn | [`scripts/hooks/storage.ts`](scripts/hooks/storage.ts) | the same storage check with each of matt's prompts (measured at most every 15 minutes) |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/engines.ts`](scripts/hooks/engines.ts) | which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines; and, loudly, when the log MCP server runs older code than the checkout |
 | UserPromptSubmit | every turn | [`scripts/hooks/engines.ts`](scripts/hooks/engines.ts) | the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed |
+| UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
+| PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
 | PreToolUse | `Bash\|PowerShell\|Monitor` | [`scripts/hooks/liveLogs.ts`](scripts/hooks/liveLogs.ts) | a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26) |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts), Stop (pageState.ts).
+Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, inbox.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts), Stop (pageState.ts).
 
 ### The hooks in one turn
 
@@ -618,11 +624,13 @@ sequenceDiagram
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
   Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout
+  Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
   Note over Hook: where every open browser is, with each of matt's prompts
   Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
+  Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
   loop each tool call
     Agent->>Hook: PreToolUse
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
@@ -632,6 +640,7 @@ sequenceDiagram
       Agent->>Tool: the call
       Tool-->>Agent: its result
       Agent->>Hook: PostToolUse
+    Note over Hook: the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once
     Note over Hook: a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once
     end
   end
@@ -1200,7 +1209,7 @@ Build, approve, plan and run a queue of approved X replies, quotes or dms at ran
 ```text
 log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]
 log twitter queue show <queue.json> [--json]
-log twitter queue check <queue.json> [--json]
+log twitter queue check <queue.json> [--skipXChatCheck] [--json]
 log twitter queue status <queue.json> [--json]
 log twitter queue approve <queue.json> --by <who>
 log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]

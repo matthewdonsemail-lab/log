@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers")
+READS = ("ping", "follows", "inbox", "followers", "xchatContacts")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -325,6 +325,28 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
     }
 
 
+async def xchat_threads(client: Any, me: str) -> list[dict[str, Any]]:
+    convs = await client.get_xchat_conversations()
+    out = []
+    for conv in convs:
+        people = [{"userId": uid, "handle": (conv.get("handles") or {}).get(uid)} for uid in conv.get("participant_ids") or []]
+        last_ms = conv.get("last_time_ms")
+        from_me = bool(conv.get("last_from_me"))
+        out.append({
+            "conversationId": conv.get("conversation_id"),
+            "box": "xchat",
+            "type": "group" if len(people) > 1 else "oneToOne",
+            "name": None,
+            "with": people,
+            "lastAt": iso_of(last_ms),
+            "lastFromMe": from_me,
+            "lastText": None if last_ms is None else "(encrypted X Chat message)",
+            "unread": bool(last_ms is not None and not from_me),
+            "messagesLoaded": 0,
+        })
+    return out
+
+
 async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, Any]:
     me = own_user_id(cookies) or ""
     data, response = await client.get(DM_INBOX, params=INBOX_PARAMS, headers=client._base_headers)
@@ -346,6 +368,10 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, A
             if not added:
                 break
     threads = [thread_of(c, pool["messages"], pool["users"], me, pool["boxes"].get(cid, "inbox")) for cid, c in pool["conversations"].items()]
+    try:
+        threads += await xchat_threads(client, me)
+    except Exception:
+        pass
     threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
     threads = threads[:limit]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
@@ -413,6 +439,17 @@ async def followers(client: Any, cookies: dict[str, str], limit: int) -> dict[st
     return {"ok": True, "loginState": "loggedIn", "userId": me, "pages": pages, "followers": out[:limit], "complete": len(out) < limit}
 
 
+async def xchat_contacts(client: Any, cookies: dict[str, str]) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    convs = await client.get_xchat_conversations()
+    contacts: set[str] = set()
+    for conv in convs:
+        for rest in conv.get("participant_ids") or []:
+            if rest and rest != me:
+                contacts.add(str(rest))
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversations": len(convs), "contacts": sorted(contacts)}
+
+
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     action = spec["action"]
     raw = keep_create_answers(client)
@@ -473,6 +510,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
     if action == "followers":
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
+    if action == "xchatContacts":
+        return await xchat_contacts(client, cookies)
     if action == "inbox":
         limit = max(1, min(int(spec.get("limit") or 20), 200))
         if spec.get("conversationId"):

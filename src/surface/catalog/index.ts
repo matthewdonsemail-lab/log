@@ -35,7 +35,8 @@ export function flagsOf(usage: string): Flag[] {
 const TOOL_EVENTS: HookEvent[] = ["PreToolUse", "PostToolUse"];
 
 export function hooksOn(tool: string, hooks: readonly AgentHook[] = AGENT_HOOKS): HookEvent[] {
-  return hooks.filter((h) => TOOL_EVENTS.includes(h.event) && h.matcher !== undefined && new RegExp(`^(?:${h.matcher})$`).test(tool)).map((h) => h.event);
+  const events = hooks.filter((h) => TOOL_EVENTS.includes(h.event) && h.matcher !== undefined && new RegExp(`^(?:${h.matcher})$`).test(tool)).map((h) => h.event);
+  return TOOL_EVENTS.filter((e) => events.includes(e));
 }
 
 export function sessionHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): AgentHook[] {
