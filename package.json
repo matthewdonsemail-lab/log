@@ -34,8 +34,11 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
+    "@huggingface/transformers": "^4.3.1",
     "@modelcontextprotocol/sdk": "^1.32.1",
+    "bm25s": "2.0.0",
     "sharp": "^0.34.5",
+    "verso-db": "0.8.1",
     "xstate": "5.33.3"
   },
   "devDependencies": {
@@ -48,5 +51,8 @@
     "typescript": "^5.9.3"
   },
   "author": "matthewdonsemail-lab",
-  "license": "MIT"
+  "license": "MIT",
+  "trustedDependencies": [
+    "onnxruntime-node"
+  ]
 }

@@ -3278,28 +3278,143 @@ class Client:
                 })
             return out
 
+        return collect(await self._xchat_inbox_items(max_pages))
+
+    async def _xchat_inbox_items(self, max_pages: int = 30) -> list[dict]:
+        cached = getattr(self, '_xchat_items', None)
+        if cached is not None:
+            return cached
+        items = []
         response, _ = await self.gql.get_initial_xchat_page()
         page = (response or {}).get('data', {}).get('get_initial_chat_page') or {}
-        convs = collect(page.get('items'))
+        items += page.get('items') or []
         cursor_obj = page.get('inboxCursor') or {}
-        cursor = cursor_obj.get('cursor_id')
-        snapshot = cursor_obj.get('graph_snapshot_id')
-        pages = 1
+        cursor, snapshot, pages = cursor_obj.get('cursor_id'), cursor_obj.get('graph_snapshot_id'), 1
         while cursor and pages < max_pages:
             response, _ = await self.gql.get_xchat_inbox_page(cursor, snapshot)
             data = (response or {}).get('data', {})
             box = data.get('get_inbox_page') or data.get('get_inbox_page_request') or {}
-            items = box.get('items') or []
-            if not items:
+            if not box.get('items'):
                 break
-            convs += collect(items)
-            cursor_obj = box.get('inboxCursor') or {}
-            nxt = cursor_obj.get('cursor_id')
+            items += box['items']
+            nxt = (box.get('inboxCursor') or {}).get('cursor_id')
             pages += 1
-            if nxt == cursor or not nxt:
+            if not nxt or nxt == cursor:
                 break
             cursor = nxt
-        return convs
+        self._xchat_items = items
+        return items
+
+    async def get_xchat_public_keys(
+        self, user_ids: list[str], include_juicebox_tokens: bool = False
+    ) -> list[dict]:
+        """
+        Reads users' registered X Chat public keys.
+
+        Parameters
+        ----------
+        user_ids : list[:class:`str`]
+            Rest ids to look up, at most 100 per call.
+        include_juicebox_tokens : :class:`bool`, default=False
+            Also return the Juicebox token map each user's keys sit under
+            (only the viewer's own is usable, to unlock with the PIN).
+
+        Returns
+        -------
+        list[:class:`dict`]
+            One dict per user: ``user_id``, ``version``, ``public_key``,
+            ``signing_public_key``, ``identity_public_key_signature`` and
+            ``token_map``.
+        """
+        from ..xchat import public_keys_of
+
+        out = []
+        ids = [str(i) for i in user_ids]
+        for start in range(0, len(ids), 100):
+            response, _ = await self.gql.get_xchat_public_keys(ids[start:start + 100], include_juicebox_tokens)
+            out += public_keys_of(response)
+        return out
+
+    async def unlock_xchat(self, pin: str):
+        """
+        Unlocks the viewer's X Chat private keys with their PIN.
+
+        The keys are recovered from Juicebox, X's PIN-protected key store,
+        through the vendored chat-xdk (``vendor/chatXdk``). A wrong PIN
+        uses one of the account's limited guesses. Once unlocked,
+        :func:`get_xchat_messages` can read message text.
+
+        Parameters
+        ----------
+        pin : :class:`str`
+            The account's X Chat PIN.
+        """
+        from chat_xdk import Chat
+
+        from ..xchat import juicebox_config
+
+        me = str(await self.user_id())
+        own = await self.get_xchat_public_keys([me], include_juicebox_tokens=True)
+        if not own or not own[0].get('token_map'):
+            raise ValueError('this account has no X Chat keys registered')
+        chat = Chat(juicebox_config(own[0]['token_map']))
+        chat.unlock(pin)
+        chat.set_identity(me, own[0]['version'])
+        chat.set_cache_keys(True)
+        self._xchat = chat
+        self._xchat_me = me
+
+    async def get_xchat_messages(self, max_pages: int = 30) -> dict[str, list[dict]]:
+        """
+        Reads and decrypts the viewer's X Chat messages, by conversation.
+
+        Pulls every conversation in the X Chat inbox with its latest
+        message events and conversation-key changes, verifies each sender
+        against their registered signing key and decrypts the text with the
+        keys :func:`unlock_xchat` recovered.
+
+        Returns
+        -------
+        dict[:class:`str`, list[:class:`dict`]]
+            Conversation id to its messages, oldest first: ``event_id``,
+            ``sender_id``, ``time_ms``, ``type`` and ``text``. Events that
+            could not be opened are listed with ``text`` None and an
+            ``error``.
+        """
+        from ..xchat import decode_event, message_of, signing_key_entry
+
+        chat = getattr(self, '_xchat', None)
+        if chat is None:
+            raise ValueError('call unlock_xchat(pin) first')
+        items = await self._xchat_inbox_items(max_pages)
+        events, people = [], {self._xchat_me}
+        for item in items:
+            events += item.get('latest_conversation_key_change_events') or []
+            events += item.get('latest_message_events') or []
+            cid = str((item.get('conversation_detail') or {}).get('conversation_id') or '')
+            for part in (item.get('conversation_detail') or {}).get('participants_results') or []:
+                if part.get('rest_id'):
+                    people.add(str(part['rest_id']))
+            people.update(p for p in cid.split(':') if p.isdigit())
+        keys = await self.get_xchat_public_keys(sorted(people))
+        chat.set_signing_keys([e for e in (signing_key_entry(k) for k in keys) if all(isinstance(v, str) and v for v in e.values())])
+        chat.set_reject_unverified(False)
+        result = chat.decrypt_events(events)
+        out: dict[str, list[dict]] = {}
+        for decrypted in result.get('messages') or []:
+            message = message_of(decrypted)
+            if message['type'] != 'Message':
+                continue
+            out.setdefault(message['conversation_id'], []).append(message)
+        for index, error in (result.get('errors') or {}).items():
+            raw = events[int(index)] if str(index).isdigit() and int(index) < len(events) else None
+            head = decode_event(raw) if raw else {}
+            cid = head.get('conversation_id')
+            if cid:
+                out.setdefault(cid, []).append({**head, 'type': 'Message', 'text': None, 'error': str(error)[:200]})
+        for messages in out.values():
+            messages.sort(key=lambda m: m.get('time_ms') or 0)
+        return out
 
     async def get_group_dm_history(
         self,

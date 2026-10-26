@@ -7853,3 +7853,125 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter dms --with <handle>` (MCP `twitterDms` `with`) reads one person's thread by their handle, so you never look up a conversation id by hand. It reads the inbox, finds the thread whose participant handle matches (case-insensitive, an @ dropped), prefers the readable legacy thread over an X Chat one when a person has both, and reads that conversation's messages; an X Chat-only thread comes back as its who/when summary (text encrypted). The conversation-id check now also accepts a group id (a `g` prefix).
 Why: matt: reading someone's thread shouldn't need a hand-rolled command to find the conversation id first; it has to be one MCP call.
 Checked: `bun run check`: 1097 pass, 0 fail (new test: --with finds the id and prefers the legacy thread; an unknown handle is targetMissing). Live: `log twitter dms --account matthewsoldit --with alex_whedon` read his 3-message thread directly, ending on his 'let me talk to the team and get back to you'.
+
+## 2026-10-26 05:54Z · feat/xchatDecryptSearch
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `bun.lock`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `package.json`: edited
+- `python/twitterApi/engine.py`: added def xchat_message, def xchat_read, def xchat_read_keys, class XChatLocked, def conversations_of, def xchat_conversation · changed const READS, def xchat_threads, def inbox, def act
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/search/index.ts`: added const SEARCH_USAGE, const FILTERS, const SEARCH_INPUT, const searchDeps, const BENCH_QUERIES, function conversationOf, function hitLine, function indexAll, const searchCommand
+- `src/cli/twitter/families.test.ts`: added test "--with <handle> reads both the legacy and the X Chat thread in one export read and merges them by time" · removed test "--with <handle> finds the conversation itself and prefers the readable thread over X Chat"
+- `src/cli/twitter/helpers/chat.ts`: added const CHAT_USAGE, interface ChatPrompts, const chatDeps, const CHAT_INPUT, function isChatPin, const chatCommand
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, const dmsCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./chat.ts"
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `src/search/conversations/client.test.ts`: added const dir, const convo, const corpus, test "chunks keep who said what and overlap", test "reciprocal rank fusion rewards agreement", test "percentiles", test "saves and loads conversations", test "hybrid search finds by keyword and filters by person"
+- `src/search/conversations/client.ts`: added type ChunkMeta, interface ConversationIndex, function searchRoot, function conversationsRoot, function saveConversations, function loadConversations, function queryTerms, function buildIndex, function openIndex, function passes, function search, function linearScan, function benchmark
+- `src/search/conversations/helpers/chunk.ts`: added function speakerOf, function chunksOf
+- `src/search/conversations/helpers/embed.ts`: added type Worker, function startWorker, function localEmbedder, function hashEmbedder
+- `src/search/conversations/helpers/embedWorker.ts`: added const model, const extractor, const buffer
+- `src/search/conversations/helpers/fuse.ts`: added interface Fused, function reciprocalRankFusion, function percentiles
+- `src/search/conversations/helpers/index.ts`: added export from "./chunk", export from "./embed", export from "./fuse"
+- `src/search/conversations/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/search/conversations/types.ts`: added interface ConversationMessage, interface Conversation, interface Chunk, interface SearchFilters, interface SearchOptions, interface SearchHit, interface Embedder, interface Latency, const CHUNK_MESSAGES, const CHUNK_OVERLAP, const RRF_K, const SEARCH_DEPTH, const EMBED_MODEL, const EMBED_DIMENSIONS
+- `src/twitter/account/session/client.ts`: changed function runTwitterEngine
+- `src/twitter/account/session/types.ts`: added interface TwitterDmConversation · changed type TwitterAction, interface TwitterEngineSpec, interface TwitterSessionAnswer
+- `vendor/chatXdk/Cargo.lock`: new file
+- `vendor/chatXdk/Cargo.toml`: new file
+- `vendor/chatXdk/LICENSE`: new file
+- `vendor/chatXdk/README.md`: new file
+- `vendor/chatXdk/THIRD_PARTY_NOTICES.md`: new file
+- `vendor/chatXdk/crates/core/Cargo.toml`: new file
+- `vendor/chatXdk/crates/core/build.rs`: new file
+- `vendor/chatXdk/crates/core/examples/gen_sdk_vectors.rs`: new file
+- `vendor/chatXdk/crates/core/fuzz/.gitignore`: new file
+- `vendor/chatXdk/crates/core/fuzz/Cargo.toml`: new file
+- `vendor/chatXdk/crates/core/fuzz/fuzz_targets/decrypt_event.rs`: new file
+- `vendor/chatXdk/crates/core/fuzz/fuzz_targets/parse_message_content.rs`: new file
+- `vendor/chatXdk/crates/core/fuzz/fuzz_targets/parse_message_event.rs`: new file
+- `vendor/chatXdk/crates/core/src/chat.rs`: new file
+- `vendor/chatXdk/crates/core/src/core.rs`: new file
+- `vendor/chatXdk/crates/core/src/crypto/encryption.rs`: new file
+- `vendor/chatXdk/crates/core/src/crypto/hash.rs`: new file
+- `vendor/chatXdk/crates/core/src/crypto/key_factory.rs`: new file
+- `vendor/chatXdk/crates/core/src/crypto/keys.rs`: new file
+- `vendor/chatXdk/crates/core/src/crypto/mod.rs`: new file
+- `vendor/chatXdk/crates/core/src/error.rs`: new file
+- `vendor/chatXdk/crates/core/src/internals.rs`: new file
+- `vendor/chatXdk/crates/core/src/keys/conversation_keys.rs`: new file
+- `vendor/chatXdk/crates/core/src/keys/juicebox.rs`: new file
+- `vendor/chatXdk/crates/core/src/keys/keypair_manager.rs`: new file
+- `vendor/chatXdk/crates/core/src/keys/mod.rs`: new file
+- `vendor/chatXdk/crates/core/src/lib.rs`: new file
+- `vendor/chatXdk/crates/core/src/params.rs`: new file
+- `vendor/chatXdk/crates/core/src/pipeline.rs`: new file
+- `vendor/chatXdk/crates/core/src/protocol/mod.rs`: new file
+- `vendor/chatXdk/crates/core/src/protocol/safe_reader.rs`: new file
+- `vendor/chatXdk/crates/core/src/protocol/serialization.rs`: new file
+- `vendor/chatXdk/crates/core/src/signatures.rs`: new file
+- `vendor/chatXdk/crates/core/src/thrift/event.rs`: new file
+- `vendor/chatXdk/crates/core/src/thrift/mod.rs`: new file
+- `vendor/chatXdk/crates/core/src/thrift/product.rs`: new file
+- `vendor/chatXdk/crates/core/src/thrift/trees.rs`: new file
+- `vendor/chatXdk/crates/core/src/types.rs`: new file
+- `vendor/chatXdk/crates/core/src/utils.rs`: new file
+- `vendor/chatXdk/crates/core/tests/sdk_vectors.rs`: new file
+- `vendor/chatXdk/crates/core/tests/signatures_test.rs`: new file
+- `vendor/chatXdk/crates/macros/Cargo.toml`: new file
+- `vendor/chatXdk/crates/macros/src/lib.rs`: new file
+- `vendor/chatXdk/crates/pyo3/.gitignore`: new file
+- `vendor/chatXdk/crates/pyo3/Cargo.toml`: new file
+- `vendor/chatXdk/crates/pyo3/LICENSE`: new file
+- `vendor/chatXdk/crates/pyo3/README.md`: new file
+- `vendor/chatXdk/crates/pyo3/THIRD_PARTY_NOTICES.md`: new file
+- `vendor/chatXdk/crates/pyo3/build.rs`: new file
+- `vendor/chatXdk/crates/pyo3/pyproject.toml`: new file
+- `vendor/chatXdk/crates/pyo3/python/chat_xdk/__init__.py`: added const __version__, class QuickReplyOption, class QuickReplyOptionsRequest, class QuickReplyOptionsResponse, class QuickReplyRequest, class QuickReplyResponse, class QuickReply, const _GUESSES_REMAINING, def guesses_remaining, const __all__
+- `vendor/chatXdk/crates/pyo3/python/chat_xdk/__init__.pyi`: new file
+- `vendor/chatXdk/crates/pyo3/python/tests/test_api.py`: added def _repo_root, def _load_vectors, const _PNG_16x8, const _JPEG_HEADER, class TestUtilityFunctions, class TestApiShapes
+- `vendor/chatXdk/crates/pyo3/python/tests/test_sdk_vectors.py`: added def _repo_root, def _load_vectors, def _fixture_signing_keys, def _thrift_string_field, def _frame_send_payload, const QUICK_REPLY_REQUEST, const QUICK_REPLY_RESPONSE, class TestPythonSdkVectors
+- `vendor/chatXdk/crates/pyo3/src/lib.rs`: new file
+- `vendor/chatXdk/docs/API.md`: new file
+- `vendor/chatXdk/examples/python/.env.example`: new file
+- `vendor/chatXdk/examples/python/README.md`: new file
+- `vendor/chatXdk/examples/python/bot.py`: added const logger, def generate_reply, class ConversationState, class ChatBot
+- `vendor/chatXdk/examples/python/chat_core.py`: added def _b64decode, def _as_dict, class ChatCore, def message_text, def prep_to_request
+- `vendor/chatXdk/examples/python/e2e_live.py`: added def _signing_from, def _key_entries, def _await_decrypted, def main, def _groups_flow
+- `vendor/chatXdk/examples/python/register.py`: added const STATE_DIR, const BLOB_PATH, const MARKER_PATH, def _load_env, def _read_marker, def _write_marker, def _registration_body, def _save_blob, def register, def main
+- `vendor/chatXdk/examples/python/requirements.txt`: new file
+- `vendor/chatXdk/examples/python/run.py`: added def _load_dotenv, def main
+- `vendor/chatXdk/examples/python/tests/test_chat_core.py`: added const _HERE, const _EXAMPLE, const _REPO_ROOT, def _load_vectors, class TestChatCore, class TestPreparedChanges
+- `vendor/chatXdk/examples/python/x_api.py`: added const BASE_URL, class XChatClient
+- `vendor/chatXdk/rust-toolchain.toml`: new file
+- `vendor/chatXdk/thrift/event.thrift`: new file
+- `vendor/chatXdk/thrift/product.thrift`: new file
+- `vendor/chatXdk/thrift/trees.thrift`: new file
+- `vendor/chatXdk/wheels/chatxdk-0.5.2-cp310-abi3-win_amd64.whl`: new file
+- `vendor/twikit/tests/test_xchat.py`: added def test_public_keys_pick_latest_version_and_map_signing_entry
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class GQLClient
+- `vendor/twikit/twikit/xchat.py`: added def public_keys_of, def signing_key_entry, def juicebox_config, def message_of
+
+What changed: X Chat (encrypted DMs) is read through log. X's own encryption SDK, chat-xdk v0.5.2, is vendored at `vendor/chatXdk` (Rust source plus its prebuilt Python wheel, installed from there). `vendor/twikit` reads keys and the Juicebox token map (`GetPublicKeysQuery`), unlocks with the PIN (`unlock_xchat`) and decrypts every conversation (`get_xchat_messages`), paging the X Chat inbox once per run. `log twitter chat pin` saves the PIN from a masked prompt after checking it against Juicebox. `log twitter dms` fills X Chat threads with their text, and `--with` merges a person's legacy and X Chat threads from one export read. New `log search` (MCP `search`, `searchIndex`, `searchBench`): BM25 (bm25s) plus meaning (verso-db HNSW over local all-MiniLM-L6-v2, embedded in a worker process so its sharp never meets the repo's) fused with RRF, filters by platform, account, person and day, indexes kept in ~/.logCli/search. Rules 88 and 89.
+Why: matt: replies were going out from old legacy threads while the real conversations sat in encrypted X Chat ("DONT OPEN IT IN MY CHROME WE FUCKING BUILT IT OUT"), and finding context by reading every conversation is too slow; he asked for hybrid BM25 + vector search with RRF in Bun.
+Checked: `bun run check` with LOG_PYTHON: 1102 pass, 0 fail, every gate green; twikit tests 3 pass. Live: the PIN unlocked through Juicebox; `log search index` read 200 conversations with X Chat decrypted (Zach's thread now shows "ty for sending! I dont think this is exactly what we need rn"); indexed 541 chunks in 24.4 s; `log search bench`: warm p50 3.81 ms, p95 5.55 ms, p99 8.39 ms (200 queries), cold p50 5.91 ms (first query 677 ms loading the model), linear scan 9.34 ms a query.
+
+## 2026-10-26 06:04Z · feat/xchatDecryptSearch
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/twitterApi/engine.py`: changed def xchat_threads
+
+What changed: an X Chat thread's last time, last sender and last text all come from its last decrypted message once X Chat is open; a later read receipt or reaction no longer makes the thread look like the other person wrote last.
+Why: the inbox hook flagged "@W2Warrior wrote" at 05:59 with matt's own cold DM as the text: W2Warrior's newest event was a read, not a message.
+Checked: `bun run check` 1102 pass; the saved W2Warrior thread's last decrypted message is matt's (03:41), so the thread now reads "you sent last".

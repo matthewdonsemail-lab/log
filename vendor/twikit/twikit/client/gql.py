@@ -138,6 +138,14 @@ class GQLClient:
         variables = {'continue_cursor': {'cursor_id': cursor_id, 'graph_snapshot_id': graph_snapshot_id}}
         return await self.gql_get(Endpoint.XCHAT_INBOX_PAGE, variables)
 
+    async def get_xchat_public_keys(self, user_ids: list[str], include_juicebox_tokens: bool = False):
+        variables = {'ids': [str(i) for i in user_ids], 'include_juicebox_tokens': include_juicebox_tokens}
+        return await self.gql_get(Endpoint.XCHAT_PUBLIC_KEYS, variables)
+
+    async def get_xchat_message_events_page(self, max_local_sequence_id: str | None = None):
+        variables = {'continue_cursor': {'max_local_sequence_id': max_local_sequence_id}} if max_local_sequence_id else {}
+        return await self.gql_get(Endpoint.XCHAT_MESSAGE_EVENTS_PAGE, variables)
+
     async def gql_post(
         self,
         url: str,

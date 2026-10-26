@@ -7,7 +7,7 @@ export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--json]",
   "Reads the account's X direct messages on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
   "Without --conversation it reads the inbox and the message requests (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and lists the newest conversations first: who, when, the last message and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages (dm/conversation), oldest first.",
-  "--with <handle> reads one person's thread by their handle, finding their conversation for you (a legacy thread's messages in full; an X Chat thread's who and when, its text encrypted). X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
+  "--with <handle> reads everything with one person by their handle: their legacy thread and their X Chat thread merged into one timeline, oldest first. X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
 ].join("\n");
 
 export const DMS_INPUT: CommandInput = {
@@ -69,31 +69,33 @@ export const dmsCommand: Command = {
     const limit = typeof rawLimit === "string" ? Number(rawLimit) : 20;
     if (!Number.isInteger(limit) || limit < 1 || limit > 200) return refuse("twitter dms", "limitInvalid", "--limit is a whole number from 1 to 200");
     const conversation = parsed.flags["conversation"];
-    if (conversation !== undefined && (typeof conversation !== "string" || !/^[\dg]+(?:-\d+)?$/.test(conversation))) return refuse("twitter dms", "conversationInvalid", "--conversation is X's conversation id (digits, or two user ids joined by a dash)");
+    if (conversation !== undefined && (typeof conversation !== "string" || !/^[\dg]+(?:[-:]\d+)?$/.test(conversation))) return refuse("twitter dms", "conversationInvalid", "--conversation is X's conversation id (digits, or two user ids joined by a dash)");
     const withHandle = parsed.flags["with"];
     if (withHandle !== undefined && (typeof withHandle !== "string" || !withHandle.trim())) return refuse("twitter dms", "targetMissing", "--with names a handle");
     const waiting = parsed.flags["waiting"] === true;
     try {
       const opened = await openTwitterAccount(context, "twitter dms", ref);
       if (!opened.ok) return opened.result;
+      const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
+      const chatPin = secrets?.messengerPin ?? undefined;
+      const read = (spec: { limit: number; conversationId?: string; export?: boolean }) => opened.engine({ action: "inbox", ...spec, ...(chatPin ? { chatPin } : {}) });
       let convoId = typeof conversation === "string" ? conversation : undefined;
       if (typeof withHandle === "string") {
         const needle = withHandle.trim().replace(/^@/, "").toLowerCase();
-        context.err(`${opened.account.accountName}: finding @${needle}'s conversation`);
-        const index = await opened.engine({ action: "inbox", limit: 200 });
+        context.err(`${opened.account.accountName}: finding @${needle}'s conversations${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
+        const index = await read({ limit: 200, export: true });
         if (!index.answer.ok) return { code: 1, stdout: render(opened.account.accountName, index.answer, false) };
-        const matches = (index.answer.threads ?? []).filter((t) => t.with.some((p) => (p.handle ?? "").toLowerCase() === needle));
-        const match = matches.find((t) => t.box !== "xchat") ?? matches[0];
-        if (!match) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation in this account's inbox`);
-        if (match.box === "xchat") {
-          const code = 0;
-          if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ok: true, thread: match }, null, 2) };
-          return { code, stdout: [`log twitter dms: @${opened.account.accountName}, @${needle} is an X Chat conversation (text encrypted), via the direct-API engine (twikit, no browser):`, threadLine(match, 0)].join("\n") };
-        }
-        convoId = match.conversationId;
+        const matches = (index.answer.conversations ?? []).filter((c) => c.with.some((p) => (p.handle ?? "").toLowerCase() === needle));
+        if (!matches.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation in this account's inbox`);
+        const messages = matches.flatMap((c) => c.messages).sort((x, y) => (x.time ?? "").localeCompare(y.time ?? "")).slice(-limit);
+        const answer = { ...index.answer, conversations: undefined, threads: undefined, ok: true, conversationId: matches.map((m) => m.conversationId).join(" + "), messages };
+        const merged = { ...index, answer };
+        if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer }, null, 2) };
+        const governor = governorLine(merged);
+        return { code: answer.ok ? 0 : 1, stdout: [render(opened.account.accountName, answer, false), ...(governor ? [governor] : [])].join("\n") };
       }
-      context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine (twikit), X called directly`);
-      const run = await opened.engine({ action: "inbox", limit, ...(typeof convoId === "string" ? { conversationId: convoId } : {}) });
+      context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine (twikit), X called directly${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
+      const run = await read({ limit, ...(typeof convoId === "string" ? { conversationId: convoId } : {}) });
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {
         const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter((t) => !t.lastFromMe) } : run.answer;

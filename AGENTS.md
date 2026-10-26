@@ -1055,6 +1055,34 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `xchatContacts` (`python/twitterApi/engine.py`) calls it, read-only.
     `docs/platforms/x/xchat` / `RESEARCH/X_CHAT_ENCRYPTED_INBOX_API_2026-10-26.md`.
 
+88. 2026-10-26 · matt: "DONT OPEN IT IN MY CHROME WE FUCKING BUILT IT OUT
+    BECAUSE THE vendor/twikit hasnt been updated." X Chat (encrypted DMs) is
+    read through log only, in the same shapes as the legacy DMs, never by
+    opening x.com in a browser. X's own encryption SDK is vendored at
+    `vendor/chatXdk` (xdevplatform/chat-xdk v0.5.2: its Rust source and the
+    prebuilt Python wheel, installed from there). `vendor/twikit` reads the
+    account's keys and Juicebox token map (`GetPublicKeysQuery`), unlocks them
+    with the account's X Chat PIN (`client.unlock_xchat`) and decrypts every
+    conversation's events (`client.get_xchat_messages`). The PIN is saved by
+    matt once in a masked Clack prompt, `log twitter chat pin --account <a>`,
+    kept in Twenty (`socialAccounts.messengerPin` on the X row) and handed to
+    the engine only in the run's private folder. `log twitter dms` fills each
+    X Chat thread's last message, and `--with <handle>` merges a person's
+    legacy and X Chat threads into one timeline. Nobody is answered on X
+    without reading their X Chat side first.
+
+89. 2026-10-26 · matt: finding context in conversations is a search, never
+    reading every thread. `log search "<query>"` (MCP `search`) runs BM25
+    (bm25s) and meaning search (verso-db HNSW over local all-MiniLM-L6-v2
+    embeddings, `@huggingface/transformers`) in parallel and fuses them with
+    reciprocal rank fusion, with `--platform`, `--account`, `--with` and
+    `--after` filters. `log search index` reads every conversation through
+    the platform's engine in one export read (X Chat decrypted with the saved
+    PIN, rule 88), keeps them in `~/.logCli/conversations` and the indexes in
+    `~/.logCli/search`, which survive restarts. `log search bench` prints
+    p50, p95 and p99, cold and warm, beside a linear scan.
+    `src/search/conversations`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
