@@ -7831,3 +7831,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: X Chat replies are now seen everywhere, not just in the dm queue's prior-conversation drop. twikit gains `xchat.decode_event` (a Thrift binary-protocol field reader that pulls a message event's id, sender id, conversation id and time in ms, never the encrypted body), and `get_xchat_conversations` now returns each conversation's last sender, last time and the counterparts' handles. `log twitter dms` (engine `inbox` action, new `xchat_threads`) appends every X Chat conversation to the inbox it already returns, as box `xchat`, with who/when and `lastText` null (text stays encrypted). A new agent hook `scripts/hooks/inbox.ts` (src/inbox/watch) polls every signed-in account's inbox in the background every 4 to 8 minutes through `log twitter dms` (so X Chat is covered), and on SessionStart, each prompt and each log/shell tool call puts any new message in front of the agent (`>>> NEW MESSAGE`). `hooksOn` now returns each tool event once in canonical order.
 Why: matt: bring it all up to date so X Chat replies aren't missed, after a reply (@shwetasd19) went unseen because the reads only knew the legacy inbox.
 Checked: `bun run check` with the repo Python: 1096 pass, 0 fail (new watch tests incl. an encrypted X Chat reply surfacing labelled; new twikit xchat test). Live: `log twitter dms --account matthewsoldit` now returns 32 X Chat threads alongside the legacy inbox, and shows new replies from @wolfie_ and @circleonscreens that the old read never saw.
+
+## 2026-10-26 04:39Z · fix/inboxNoConsole
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/inbox/watch/client.ts`: changed function twitterThreads
+- `src/twitter/account/session/client.ts`: changed function runTwitterEngine
+
+What changed: the inbox watcher's background poll no longer flashes a console window on Windows. Its detached poller already ran hidden, but the two spawns it makes under that did not: the `bun bin/log.ts twitter dms` read (`twitterThreads`) and the Python X engine spawn (`runTwitterEngine`). Both now pass `windowsHide: true`, so each poll every 4 to 8 minutes runs silently.
+Why: matt: the watcher pops a cmd window open when it loads, which is bad; make it stop.
+Checked: `bun run check`: 1096 pass, 0 fail. The spawns that run during a poll (bun read and python engine) now carry windowsHide; the detached poller already had it.
