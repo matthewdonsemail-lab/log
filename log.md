@@ -7731,3 +7731,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every use case page (docs/useCases, X and Facebook) now describes the method and leaves out the owner's own details. Out: the account's handle, other people's handles and names, real conversations, job and company links, prices and costs, listing and post ids, town names, run counts, the owner's file paths and private repos, the scheduled task and its thresholds, and channel names. Kept: each job's idea, how to run it from a fresh context, the steps with their command and MCP tool, what decides each step, and the lessons the runs taught, written without names (a work word in every search, check location first, one reply per person, personal lines go through where generic ones were dropped, the queue instead of a hand loop). Examples use placeholders (`<account>`, `<role link>`). The X README also covers per-target `text`, `--minGap`, `jobCancel` and `--force` (rule 86). The index says new pages follow the same line, and the README's link to the pages says what log-cli is built to do.
 Why: matt: the use cases "had stuff about my internals which shouldn't be inside" and "has to be seen by other people". Keep the general good idea and make them agnostic.
 Checked: a grep over docs/useCases for the owner's name and handle, @handles, company links, ~/.buzz paths (RESEARCH, OUTBOX, GUIDES, .scratch), the private repo and task names, town names, dollar amounts and long ids came back with none. `bun run check:docs`: README and 6 diagrams match the code. Docs only. This branch's earlier log.md entry is left as it was written (rule 5).
+
+## 2026-10-26 01:58Z · fix/queueCoolOffDate
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/families.test.ts`: changed test "run --live walks the machine: sent, gone, a throttle cools off and is retried once at the end"
+- `src/twitter/queue/run/client.ts`: changed function runQueue
+
+What changed: a queue run's cool-off line now says when it's back with the date and time ("back at 2026-10-27 02:07 UTC"), not just the time. A 24-hour wait read as "back at 02:07" looked like 20 minutes later.
+Why: after X's 344 on matthewsoldit the run said "1461 min, back at 02:07 UTC", which got reported to matt as later today. matt: "This isn't true".
+Checked: `bun test src/cli/twitter`: 23 pass, 0 fail. The cool-off test now checks the line carries a date.

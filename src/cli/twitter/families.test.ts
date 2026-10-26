@@ -207,6 +207,7 @@ describe("log twitter queue", () => {
     expect(h.calls.filter((c) => c.tweetUrl === POST_C)).toHaveLength(2);
     expect(h.calls.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
     expect(r.err).toContain("cool-off 1 of 5");
+    expect(r.err).toMatch(/back at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
     expect(r.err).toMatch(/state +cooling/);
     expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("random run done: 2 replies sent, 1 skipped");
     expect(existsSync(f.queue.replace(/\.json$/, ".lock"))).toBe(false);

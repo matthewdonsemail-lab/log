@@ -187,7 +187,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     cools += 1
     send({ type: 'COOL' })
     deps.save()
-    const back = new Date(deps.nowMs() + seconds * 1000).toISOString().slice(11, 16)
+    const back = new Date(deps.nowMs() + seconds * 1000).toISOString().slice(0, 16).replace('T', ' ')
     deps.alert(`[cooling] ${what}: x made no tweet or throttled (${retry}). cool-off ${cools} of ${MAX_COOLS}: ${Math.round(seconds / 60)} min${reset ? ' (x reset time)' : ''}, back at ${back} UTC. x said: ${said.slice(0, 160)}`, false)
     nudged = await waitUntil(deps, deps.nowMs() / 1000 + seconds)
     if (nudged === CANCELLED) return stop(`during cool-off ${cools}`)
