@@ -1,142 +1,92 @@
 # Recruiting on X with a reply queue
 
-How matt recruits people on X: find people who just posted that they want work, reply to each one with a short line in their own language that points at the job page, and send the replies slowly over an hour or two from his own account. This page shows each step, which part of log-cli does it, and a real run.
+Find people who just posted that they want work, or who already do the job. Reply to each one publicly from @matthewsoldit with one line in their own language, about their own post, ending with the job link. matt approves the list, then the queue sends the replies slowly with likes mixed in. Applicants then come in through the job page.
 
-## The idea in one line
+Recruiting is public replies only. DMs are a different job: [dmInbox.md](dmInbox.md) and [engagerDms.md](engagerDms.md).
 
-Search X for fresh posts with a work signal, write one personal reply per person, get matt's approval for the whole list, then let a queue send the replies at random moments, with likes mixed in.
+## Run it from a fresh context
 
-```mermaid
-flowchart LR
-  search["1. treg search<br/>fresh posts with a work signal"] --> table["2. a table in buzz<br/>who, which post, the copy"]
-  table --> approve["3. matt approves<br/>queue approve --by matt"]
-  approve --> plan["4. random times<br/>queue plan --window 75m --like"]
-  plan --> run["5. the queue sends<br/>queue run --live"]
-  run --> buzz["6. buzz hears about<br/>cool-offs and stops"]
-  run --> apply["7. people apply<br/>Twenty agencyCareerApplications"]
-```
+Say: **"go on docs/useCases/twitter/recruiting.md for the <role> role"**. The agent then:
 
-## A real run (2026-10-24)
+1. Reads this page, then [README.md](README.md) for the queue and the rules on every X page.
+2. Reads the role in the table below, and the standing orders it names.
+3. Runs the steps below to the end. It keeps searching until it has qualified people, posts the table, and sends once matt says yes. It never stops at "nobody qualified" (matt, 2026-10-24).
 
-Two roles were open on listeningkit.com: the Business Development Operations Specialist (the "Jarvis" role) and a remote cold caller / appointment setter for Latin America.
+| Role | Job link | Where the people are | Languages | Standing orders |
+| --- | --- | --- | --- | --- |
+| Business Development Operations Specialist ("Jarvis") | https://listeningkit.com/career/business-development-operations-specialist | Philippines, India, Africa, Latin America | `lang:tl`, `lang:hi`, `lang:es` | `GUIDES/JARVIS_RECRUITER_STANDING_ORDERS.md` |
+| Cold caller / appointment setter (calls US businesses in English) | https://listeningkit.com/career/cold-caller-appointment-setter | Latin America | `lang:es` | this page, and `REPOS/recruitLoop/terms.json` for the terms |
 
-- **The search** used treg's X search, never X itself (rule 53). A language-only search (`lang:es`, `lang:tl`, `lang:hi`) brought back noise, so each query added one work word: "busco trabajo", "naghahanap ng trabaho", "virtual assistant", "CRM", "cold calling", "call center". The BDO sweep ran 60 queries and found 572 authors, about 211 of them in the Philippines, India, Africa or Latin America. The search cost about $0.05 and the profile reads about $0.13. The cold-caller sweep ran 102 Spanish queries and found 622 people.
-- **Qualified** meant: the post is in that language and from the last 3 days, the profile's location is in one of those regions, it's a real person with a work signal, and they were never contacted before (the send logs in `OUTBOX/RECRUITMENT_SEND_LOG_*.tsv`).
-- **The copy** is one line per person, in their language, about their own post, in the house style: all lowercase, no commas, no full stops, no dashes (urls are fine). One BDO reply read:
+A new role gets a row here: its job link, where to hire, the languages.
 
-  > nakita ko na naghahanap ka ng work naghi-hire kami ng remote business development operations specialist apply ka dito &lt;job link&gt;
+## What "qualified" means
 
-  One cold-caller reply read:
+All five, checked on every person before they go in the table:
 
-  > vi tu post y por si te interesa buscamos cold callers remotos que llamen en inglés a negocios de ee uu para agendar citas 👉 &lt;job link&gt;
+1. **Language and freshness:** the post really is in the role's language (X sometimes tags English, pidgin or Swahili as `tl`), and it was posted in the last 3 days.
+2. **Location:** the profile's location is in the role's regions. No location means no contact: hold them and list them separately. Never anyone in the US, Canada, UK, Europe or Australia.
+3. **A real person:** not a news, brand, job board, government or meme account.
+4. **Work signal:** they say they're looking for work or freelancing, or the bio or post shows the skill. For BDO that's VA, sales, admin, ops, CRM, data, automation or AI tools. For the cold caller it's call center, telemarketing, sales, setter or closer work they did themselves.
+5. **Never contacted:** not in any `OUTBOX/RECRUITMENT_SEND_LOG_*.tsv`, not replied to by matt before (see the README's one-reply rule), not afahmy_dev.
 
-- **The result that day:** 14 replies went out from @matthewsoldit (8 BDO, 6 cold caller). Two didn't post at first: one person had replies switched off (skipped), and one reply came back "x created no tweet". That second one was the reason for the rule below: a plain loop lost it, and the queue sent it again later. 4 people had applied for the BDO role by then.
+## The steps
 
-matt's rule from that day: any send to two or more people goes through the queue, with approval, random times and likes, never a hand-written loop.
+| # | Step | Tool | Done when |
+| --- | --- | --- | --- |
+| 0 | Is the account signed in | `twitterSessionCheck` { account: "matthewsoldit" } | `loggedIn` |
+| 1 | Search: the role's language plus one work word per query, last 3 days, `-filter:retweets -filter:replies` | treg `anyapi.x.search.posts` (about $0.00075 a call) | a pool of authors, minus everyone already contacted |
+| 2 | Read every profile | treg `anyapi.x.user.profile` | location, bio and followers for each one |
+| 3 | Qualify them with the five checks | by hand, or SubQ in recruitLoop | a keep list, plus a "no location" hold list |
+| 4 | Write one line per person, in their language, about their post, ending with the link | matt's voice, house style | every line passes `twitterQueueCheck` |
+| 5 | Post the table in #agency-recruitment-handoff: handle, location, why, post url, the line | `buzz messages send` | matt says yes |
+| 6 | Queue it: build, set each item's text, check, approve, plan with likes, dry run, live run | the README's queue steps | the run is `finished` |
+| 7 | Log and report: every reply url, or X's event | `OUTBOX/RECRUITMENT_SEND_LOG_<date>.tsv`, a buzz message tagging matt | all rows say sent, skipped or blocked |
+| 8 | Check applicants | Twenty `agencyCareerApplications` | new applicants reported |
 
-## Who does what
+### Search terms that worked
 
-| Step | Who | What they use |
-| --- | --- | --- |
-| Wake up daily, check applicants | the `recruiter` agent in buzz (#agency-recruitment-handoff) | Twenty `agencyCareerApplications` |
-| Find people | the `recruiter` agent, or matt-claude | treg `anyapi.x.search.posts`, `anyapi.x.user.profile` |
-| Judge who fits | matt-claude | the table the recruiter posts in buzz |
-| Approve | matt | `log twitter queue approve --by matt` |
-| Send | the queue on matt's account | `log twitter queue run --live` |
+A language-only search (`lang:es` alone) brings back noise: TV, football and greetings. Each query needs one work word.
 
-## The commands, step by step
+- **es:** busco trabajo, necesito trabajo, busco chamba, trabajo remoto, ventas, vendedor, call center, telemarketing, cold calling, setter, closer, high ticket, bilingüe, agente outbound, cobranza, teleperformance, foundever, konecta, atento, sitel, alorica, taskus
+- **tl:** naghahanap ng trabaho, virtual assistant, VA, onlinejobs, freelancer
+- **hi:** नौकरी चाहिए, job chahiye, virtual assistant, CRM, data entry
+- **any:** CRM, lead gen, n8n, Make, GoHighLevel, Airtable
 
-Each step is a `log twitter` command and an MCP tool of the same name (`twitterQueueBuild`, `twitterQueueRunLive`, …). They all run on the direct-API engine: twikit, calling X directly with the account's saved session, no browser and no proxy (rule 80).
+### Lines that went out
 
-**0. Is the account still logged in?**
+> nakita ko na naghahanap ka ng work naghi-hire kami ng remote business development operations specialist apply ka dito https://listeningkit.com/career/business-development-operations-specialist
 
-```bash
-log twitter session check --account matthewsoldit
-```
+> vi tu post y por si te interesa buscamos cold callers remotos que llamen en inglés a negocios de ee uu para agendar citas 👉 https://listeningkit.com/career/cold-caller-appointment-setter
 
-X's own answer decides. The result goes to Twenty (`socialAccounts.sessionState`), and X's refreshed cookies are saved back.
+## Real runs
 
-**1. Build the queue** from the people you found and the lines you wrote:
+| Date | Role | Searched | Qualified | Sent | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 2026-10-09 | cold caller, Jarvis | `lang:es` keyword search, replies under the model tweet | 3 cold caller, 5 Jarvis | 8 | first runs. The 5 Jarvis replies went to India/Nigeria and unknown-location accounts, and Americans were messaged. Checking location before every send became a rule |
+| 2026-10-24 | Jarvis (first try) | 20 posts per language, no work word | 0 of 21 | 0 | every post came from one minute (03:10). A random sample of the language, not candidates. Never search without a work word |
+| 2026-10-24 | Jarvis | 60 queries, 572 authors, about $0.17 | 9, plus 6 held | 8 | one had replies locked |
+| 2026-10-24 | cold caller | 102 queries, 622 people | 6, plus 4 held (no location) | 6 | the hand loop lost one reply to "x created no tweet". The rest went through the queue with likes, and the queue rule was born |
+| 2026-10-24 onward | cold caller, unattended | recruitLoop, every 6 h | SubQ, at most 15 a run | 32 sent, 1 blocked (the 18:07 run) | see below |
 
-```bash
-log twitter queue build --targets targets.json --variations lines.json --out queue.json --account matthewsoldit
-```
+Notes for each run: `RESEARCH/JARVIS_QUALIFIED_SWEEP_2026-10-24.md`, `RESEARCH/COLD_CALLER_LATAM_SWEEP_2026-10-24.md`, `RESEARCH/X_HIRING_CANDIDATES_ROUND2_2026-10-09.md`. Sends: `OUTBOX/RECRUITMENT_SEND_LOG_2026-10-24.tsv`. All paths are in the buzz workspace (`~/.buzz`).
 
-`targets.json` is a list of `{handle, tweet_url, post_text}` (or `user_id` for DMs). `lines.json` is a list of lines. Each person gets a different line. Nothing is sent.
+## The unattended loop (recruitLoop)
 
-**2. Look at it, and check it:**
+`~/.buzz/REPOS/recruitLoop/coldCaller.ts` runs the cold caller steps with nobody watching. The Windows task `ListeningKit Cold Caller Loop` starts it every 6 hours.
 
-```bash
-log twitter queue show queue.json
-log twitter queue check queue.json
-```
+1. treg search on the 102 terms in `terms.json`, posts from the last 2 days. Anyone in `state/seen.json` or a send log is skipped.
+2. treg profile reads.
+3. SubQ scores fit ≥ 0.7, latam ≥ 0.6 and person ≥ 0.7. At most 15 a run.
+4. Claude (haiku) writes one Spanish line per person about their own post, ending with the link.
+5. The queue: build, set each text, check, approve as matt (his standing yes for this loop), plan with likes, run live. Alerts go to matt.
 
-`check` runs every line through the house style and checks every post url, and contacts nothing.
+Each run's files are in `state/runs/<timestamp>/` (candidates, decisions, targets, queue). Read a run's result with `twitterQueueStatus` { queue: "<run>/queue.json" }. The loop still calls twitter-controller's `sequence.py` and `random_run.py`. Moving it to `log twitter queue` is the next change. The queue file is the same, so its queues already load in log-cli.
 
-**3. Approve it:**
-
-```bash
-log twitter queue approve queue.json --by matt
-```
-
-This saves a fingerprint of the account plus every item's target and copy. Change one word afterwards and the approval no longer counts, so the run refuses until it is approved again.
-
-**4. Draw the times:**
-
-```bash
-log twitter queue plan queue.json --window 75m --like
-```
-
-Every reply (and, with `--like`, a like on some of the posts, before or after the reply) gets a random moment inside the window, at least two minutes apart.
-
-**5. Run it:**
-
-```bash
-log twitter queue run queue.json
-log twitter queue run queue.json --live --alertChannel <buzz channel> --alertMention <matt's pubkey>
-```
-
-Without `--live` it is a dry run that lists what it would send and when. With `--live` it sends, one at a time, at those times. It saves after every step, so starting it again picks up where it stopped. What it does when X pushes back:
-
-- **X made no tweet, or slowed us down:** it waits 15 minutes, then 30, then 1, 2 and 4 hours (or until the time X gives), and tries that post once more at the end.
-- **Daily limit (code 344):** it waits 24 hours.
-- **Post deleted or replies off (385, 433):** it skips that person.
-- **Session gone, or 5 waits in a row with nothing sent:** it stops and tags matt in buzz.
-
-**6. Hurry it up:** `log twitter queue nudge queue.json --replies 2` tells a running queue to send the next two now.
-
-**7. One-off sends**, when it's just one person: `log twitter reply`, `quote`, `like` and `dm`. They are dry runs until `--live --approvedBy matt`.
-
-**8. Who follows back:** `log twitter follows --account matthewsoldit --handles a,b,c` reads, for each handle, whether they follow the account and whether it follows them. It sends nothing.
-
-## What log-cli does underneath
-
-```mermaid
-flowchart LR
-  cmd["log twitter … / MCP tool"] --> gate["checks: account, approval, house style"]
-  gate --> engine["python/twitterApi/engine.py<br/>session check, then one twikit call"]
-  engine --> x["X"]
-  x --> answer["X's answer as one word:<br/>sent, dropped, throttled, dailyLimit,<br/>gone, sessionDead …"]
-  answer --> twenty["Twenty: session state and cookies"]
-  answer --> governor["the account's governor<br/>(40 sends a day, pauses on a block)"]
-```
-
-- Code: `src/twitter/queue/plan` (the queue file, approval, the times), `src/twitter/queue/run` (the queue as an XState machine: planned, waiting, liking, replying, cooling, finished, halted), `src/twitter/post/send` (one send's checks), `src/twitter/copy/style` (the house style).
-- The queue file is the same one twitter-controller wrote, so an old queue still loads and stays approved.
-- Every account has its own governor under `~/.logCli/twitter/<account>`.
+- Dry run (no queue, no send): `bun ~/.buzz/REPOS/recruitLoop/coldCaller.ts --dry`
 
 ## Not built yet
 
-- Tracking who replied back. Applicants arrive through the job page, in Twenty `agencyCareerApplications`.
-- Reading DMs into Twenty.
+- Knowing who answered a recruiting reply. For now applicants show up in Twenty `agencyCareerApplications`.
+- recruitLoop writes its sends to the log as `queued` and never updates them. Read the real result from the run's queue with `twitterQueueStatus`.
 
-## Ways to reuse it
-
-The pieces don't care what the message is about. A queue is just "these people, these lines, approved by someone, sent slowly". A few shapes it already fits:
-
-- Any list of people found by a treg search, where each one gets a short personal reply.
-- DMs instead of replies: `--action dm` on `queue build`, with each person's `user_id`.
-- Likes only, one at a time: `log twitter like`.
-- Checking who followed back after a round: `log twitter follows`.
-
-Sources: `GUIDES/X_OUTREACH_TREG_TO_TWITTER_CONTROLLER.md`, `GUIDES/X_SEQUENCER_HOW_TO.md`, `GUIDES/JARVIS_RECRUITER_STANDING_ORDERS.md`, `RESEARCH/JARVIS_QUALIFIED_SWEEP_2026-10-24.md`, `RESEARCH/COLD_CALLER_LATAM_SWEEP_2026-10-24.md`, `OUTBOX/RECRUITMENT_SEND_LOG_2026-10-24.tsv` (all in the buzz workspace), and `docs/twitterPlatform.md` here.
+Sources: `GUIDES/JARVIS_RECRUITER_STANDING_ORDERS.md`, `GUIDES/JARVIS_ROLE_RECRUITING.md`, `GUIDES/X_OUTREACH_TREG_TO_TWITTER_CONTROLLER.md`, the #agency-recruitment-handoff thread of 2026-10-24, and `REPOS/recruitLoop/README.md` (all in `~/.buzz`).

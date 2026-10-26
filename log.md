@@ -7661,3 +7661,20 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter dms --account <a> [--limit <n>] [--waiting] [--conversation <id>] [--json]` (MCP `twitterDms`, no live twin) reads an X account's direct messages on the direct-API engine (twikit, no browser, no proxy, rule 80), sending nothing and marking nothing read. The engine's new `inbox` read calls X's `dm/inbox_initial_state` (the endpoint twikit already named but never used), then pages `dm/inbox_timeline/trusted` and `untrusted` (message requests) 1.5 s apart, and turns each conversation into one thread: who, inbox or request, one-to-one or group, the last message and whether it was the account's, and unread from the account's own `last_read_event_id`. `--waiting` keeps the threads whose last message isn't the account's, the people waiting on a reply. `--conversation <id>` reads one thread's messages from `dm/conversation`, oldest first. Route `twitterDms` in DIRECT_ROUTES, rules in COMMAND_RULES, two error codes (`limitInvalid`, `conversationInvalid`), docs/twitterPlatform.md's table and the README rebuilt.
 Why: matt asked to check the last 8 people he was meant to message on matthewsoldit, meaning DMs: "the whole point of log is that we're able to have social media management". log could send a DM but not read one, and twitter-controller never read DMs either, so that family was missing.
 Checked: a live read on matthewsoldit (`log twitter dms --account matthewsoldit --limit 40 --json`): X answered loggedIn, 2 pages, 40 conversations, 18 whose last message wasn't his; the session and refreshed cookies went back to Twenty. `bun test` with LOG_PYTHON=C:\Python312\python.exe over cli/reddit, cli/twitter, mcp, errors and surface: 257 pass, 0 fail (two new dms tests). `tsc --noEmit` clean, every lefthook gate ok. A full `bun run check` without LOG_PYTHON had one Reddit test fail because the default python can't load vendor/rdvwr; it passes with the repo's Python. Group DMs with more than one other person are listed but weren't read message by message.
+
+## 2026-10-26 01:34Z · docs/twitterUseCases
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: new file
+- `docs/useCases/twitter/dmInbox.md`: new file
+- `docs/useCases/twitter/engagementReplies.md`: new file
+- `docs/useCases/twitter/engagerDms.md`: new file
+- `docs/useCases/twitter/followers.md`: new file
+- `docs/useCases/twitter/recruiting.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: new file
+
+What changed: docs/useCases/twitter/ now holds every X job we've run from @matthewsoldit as its own page: recruiting (rewritten), topicReplies, engagementReplies, engagerDms, dmInbox and followers, plus twitter/README.md with the queue steps and the rules every X page shares. Each page opens with how to run it from a fresh context ("go on <page> for <what>"), then the steps as MCP tools in order, what decides each step, the real runs and what isn't built yet. Recruiting now has a roles table (job links, regions, languages), the five checks that make someone qualified, the search terms that worked, every run since 2026-10-09 and the recruitLoop that runs every 6 hours; DMs are out of it. The use cases index and the README link to all of them.
+Why: matt asked for the recruitment use case to be outlined so it's all there, for the DMs to be their own part rather than recruitment, and for a use case for each thing we've done on X across buzz, so a fresh context can be told to go and run one.
+Checked: every count and state on the pages was read from its source: the 10-24 recruitLoop queue (32 sent, 1 blocked) and the data brokering queue (35 sent, 115 pending) with twitterQueueStatus, the inbox with twitterDms --waiting (14 waiting, 6 requests), the rest from the RESEARCH and OUTBOX files each page names. Queue per-person copy checked against src/twitter/queue/plan/client.ts buildQueue. Docs only, no code changed.

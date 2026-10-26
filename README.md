@@ -82,7 +82,7 @@ printing, and a [Clack](https://github.com/bombshell-dev/clack) guided menu
 
 ## Use cases
 
-What log-cli has been used for, with a real run, every step's command and MCP tool, and what decides each step worked: [recruiting on X with a reply queue](docs/useCases/twitter/recruiting.md), [from bought accounts to live Marketplace listings](docs/useCases/facebook/marketplaceListings.md) and [listening to local Facebook groups](docs/useCases/facebook/groups.md). The index is [docs/useCases](docs/useCases/README.md).
+What log-cli has been used for, with a real run, every step's command and MCP tool, and what decides each step worked: [everything on X](docs/useCases/twitter/README.md) (recruiting, topic replies, answering engagers, DMing likers, the DM inbox, follower checks), [from bought accounts to live Marketplace listings](docs/useCases/facebook/marketplaceListings.md) and [listening to local Facebook groups](docs/useCases/facebook/groups.md). The index is [docs/useCases](docs/useCases/README.md).
 
 ## Run it
 
