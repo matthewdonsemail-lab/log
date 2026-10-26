@@ -115,6 +115,16 @@ describe("log twitter reply, quote, like, dm", () => {
     expect(JSON.parse(dropped.out)).toMatchObject({ event: "dropped", code: "xSentNothing", approvedBy: "matt" });
   });
 
+  test("--force asks the engine to go past the governor, only when given, and says what it went past", async () => {
+    const h = harness(() => ({ ok: true, event: "sent", tweetId: "778", forcedPast: "cooldown active for 660s" }));
+    const forced = await h.run(["twitter", "reply", "--account", "xTwo", "--tweet", POST_A, "--text", "love this one", "--approvedBy", "matt", "--force", "--live"]);
+    expect(forced.code).toBe(0);
+    expect(h.calls[0]).toEqual({ action: "reply", live: true, approvedBy: "matt", tweetUrl: POST_A, text: "love this one", force: true });
+    expect(forced.out).toContain("Forced past the governor: cooldown active for 660s");
+    await h.run(["twitter", "reply", "--account", "xTwo", "--tweet", POST_A, "--text", "love this one", "--approvedBy", "matt", "--live"]);
+    expect(h.calls[1].force).toBeUndefined();
+  });
+
   test("a dead session goes back to Twenty", async () => {
     const h = harness(() => ({ ok: false, event: "sessionDead", code: "sessionDead", loginState: "loggedOut", detail: "401" }));
     const r = await h.run(["twitter", "like", "--account", "xTwo", "--tweet", POST_A, "--approvedBy", "matt", "--live"]);
