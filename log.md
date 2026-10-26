@@ -7841,3 +7841,15 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the inbox watcher's background poll no longer flashes a console window on Windows. Its detached poller already ran hidden, but the two spawns it makes under that did not: the `bun bin/log.ts twitter dms` read (`twitterThreads`) and the Python X engine spawn (`runTwitterEngine`). Both now pass `windowsHide: true`, so each poll every 4 to 8 minutes runs silently.
 Why: matt: the watcher pops a cmd window open when it loads, which is bad; make it stop.
 Checked: `bun run check`: 1096 pass, 0 fail. The spawns that run during a poll (bun read and python engine) now carry windowsHide; the detached poller already had it.
+
+## 2026-10-26 04:50Z · feat/dmsByHandle
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/twitter/families.test.ts`: added test "--with <handle> finds the conversation itself and prefers the readable thread over X Chat"
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, const DMS_INPUT, const dmsCommand
+- `src/twitter/account/session/types.ts`: changed interface TwitterDmThread
+
+What changed: `log twitter dms --with <handle>` (MCP `twitterDms` `with`) reads one person's thread by their handle, so you never look up a conversation id by hand. It reads the inbox, finds the thread whose participant handle matches (case-insensitive, an @ dropped), prefers the readable legacy thread over an X Chat one when a person has both, and reads that conversation's messages; an X Chat-only thread comes back as its who/when summary (text encrypted). The conversation-id check now also accepts a group id (a `g` prefix).
+Why: matt: reading someone's thread shouldn't need a hand-rolled command to find the conversation id first; it has to be one MCP call.
+Checked: `bun run check`: 1097 pass, 0 fail (new test: --with finds the id and prefers the legacy thread; an unknown handle is targetMissing). Live: `log twitter dms --account matthewsoldit --with alex_whedon` read his 3-message thread directly, ending on his 'let me talk to the team and get back to you'.

@@ -97,6 +97,18 @@ describe("log twitter dms", () => {
     expect((await h.run(["twitter", "dms", "--account", "xTwo", "--conversation", "alice"])).err).toContain("conversationInvalid");
     expect(h.calls).toHaveLength(1);
   });
+
+  test("--with <handle> finds the conversation itself and prefers the readable thread over X Chat", async () => {
+    const h = harness((spec) => {
+      if (spec.action === "inbox" && spec.conversationId) return { ok: true, conversationId: spec.conversationId, messages: [{ id: "9", conversationId: spec.conversationId, time: "2026-10-25T10:00:00Z", senderId: "1", text: "very cool", fromMe: false, from: "alex" }] };
+      return { ok: true, threads: [{ conversationId: "xchat1", box: "xchat", type: "oneToOne", with: [{ userId: "1", handle: "alex" }], lastAt: "2026-10-25T11:00:00Z", lastFromMe: true, lastText: null, unread: false, messagesLoaded: 0 }, { conversationId: "1-2", box: "inbox", type: "oneToOne", with: [{ userId: "1", handle: "alex" }], lastAt: "2026-10-25T10:00:00Z", lastFromMe: false, lastText: "very cool", unread: true, messagesLoaded: 1 }] };
+    });
+    const r = await h.run(["twitter", "dms", "--account", "xTwo", "--with", "@alex"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("@alex: very cool");
+    expect(h.calls).toEqual([{ action: "inbox", limit: 200 }, { action: "inbox", limit: 20, conversationId: "1-2" }]);
+    expect((await h.run(["twitter", "dms", "--account", "xTwo", "--with", "nobody"])).err).toContain("targetMissing");
+  });
 });
 
 describe("log twitter reply, quote, like, dm", () => {

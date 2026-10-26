@@ -46,7 +46,7 @@ export interface TwitterDmPerson {
 
 export interface TwitterDmThread {
   conversationId: string
-  box: 'inbox' | 'request'
+  box: 'inbox' | 'request' | 'xchat'
   type: 'oneToOne' | 'group'
   name?: string | null
   with: TwitterDmPerson[]
