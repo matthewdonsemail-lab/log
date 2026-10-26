@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers")
+READS = ("ping", "follows", "inbox", "followers", "xchatContacts")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -413,6 +413,51 @@ async def followers(client: Any, cookies: dict[str, str], limit: int) -> dict[st
     return {"ok": True, "loginState": "loggedIn", "userId": me, "pages": pages, "followers": out[:limit], "complete": len(out) < limit}
 
 
+XCHAT_INITIAL = "https://api.x.com/graphql/Q4Mw0C6YcnjJac21wq-5NA/GetInitialXChatPageQuery"
+XCHAT_PAGE = "https://api.x.com/graphql/txrXftx8RcSvw9jCjwRZWA/GetInboxPageRequestQuery"
+
+
+def xchat_conversation_user_ids(items: list[dict[str, Any]], me: str) -> set[str]:
+    out: set[str] = set()
+    for it in items or []:
+        detail = it.get("conversation_detail") or {}
+        for part in detail.get("participants_results") or []:
+            rest = str(part.get("rest_id") or "")
+            if rest and rest != me:
+                out.add(rest)
+        cid = str(detail.get("conversation_id") or "")
+        for part in cid.split(":"):
+            if part and part != me and part.isdigit():
+                out.add(part)
+    return out
+
+
+async def xchat_contacts(client: Any, cookies: dict[str, str]) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    data, _ = await client.get(XCHAT_INITIAL, params={"variables": "{}"}, headers=client._base_headers)
+    page = (data or {}).get("data", {}).get("get_initial_chat_page") or {}
+    contacts = xchat_conversation_user_ids(page.get("items") or [], me)
+    cursor = (page.get("inboxCursor") or {}).get("cursor_id")
+    snapshot = (page.get("inboxCursor") or {}).get("graph_snapshot_id")
+    pages = 1
+    while cursor and pages < 30:
+        await asyncio.sleep(1.0)
+        variables = json.dumps({"continue_cursor": {"cursor_id": cursor, "graph_snapshot_id": snapshot}})
+        more, _ = await client.get(XCHAT_PAGE, params={"variables": variables}, headers=client._base_headers)
+        box = (more or {}).get("data", {}).get("get_inbox_page") or (more or {}).get("data", {}).get("get_inbox_page_request") or {}
+        items = box.get("items") or []
+        if not items:
+            break
+        before = len(contacts)
+        contacts |= xchat_conversation_user_ids(items, me)
+        nxt = (box.get("inboxCursor") or {}).get("cursor_id")
+        pages += 1
+        if nxt == cursor or (len(contacts) == before and not nxt):
+            break
+        cursor = nxt
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "pages": pages, "contacts": sorted(contacts)}
+
+
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     action = spec["action"]
     raw = keep_create_answers(client)
@@ -473,6 +518,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
     if action == "followers":
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
+    if action == "xchatContacts":
+        return await xchat_contacts(client, cookies)
     if action == "inbox":
         limit = max(1, min(int(spec.get("limit") or 20), 200))
         if spec.get("conversationId"):

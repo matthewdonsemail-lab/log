@@ -1039,6 +1039,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     still apply. The answer says what it went past (`forcedPast`). The
     governor still counts the request.
 
+87. 2026-10-26 · matt: a cold dm never goes to someone he has already
+    spoken to. X's newer encrypted Chat is a separate inbox that `log
+    twitter dms` (twikit's legacy `dm/inbox_initial_state`) can't see, so a
+    "never messaged" filter built on it is wrong: on 2026-10-26 a 40-person
+    treg dm run reached 7 people matt already knew. `log twitter queue check`
+    on a dm queue now reads the account's own X Chat inbox
+    (`api.x.com/graphql` GetInitialXChatPageQuery, then paged with
+    GetInboxPageRequestQuery; the account's session, no PIN, who and when are
+    readable, the text isn't) and drops (status skipped, `priorConversation`)
+    every pending dm whose recipient the account already has a conversation
+    with. `--skipXChatCheck` bypasses it only when matt asks. The engine
+    action is `xchatContacts` (`python/twitterApi/engine.py`), read-only.
+    `docs/platforms/x/xchat` / `RESEARCH/X_CHAT_ENCRYPTED_INBOX_API_2026-10-26.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

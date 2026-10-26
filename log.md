@@ -7776,3 +7776,21 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter followers --account <a> [--limit <n>] [--json]` (MCP `twitterFollowers`, read only, no live twin) reads the account's own followers on the direct-API engine (twikit's `get_user_followers`, 100 a page, 1.5 s apart, no browser, no proxy, rule 80), newest first: user id, handle, name, bio, location, follower, following and post counts, whether X says they take DMs, and protected. It sends nothing. The engine's new `followers` read stops at `--limit` (default 200, at most 4000), at the end of the list, or after 40 pages, and says when the list was read to the end (`complete`). Route `twitterFollowers`, its rules, a row in docs/twitterPlatform.md, and the README rebuilt.
 Why: matt asked for 40 random followers he's never messaged, "from the mcp stuff". log could check whether named handles follow the account but couldn't list its followers.
 Checked: live on matthewsoldit: 400 followers read to the end in 9 pages. With `log twitter dms --limit 200` (65 conversations), 25 of them already had a DM thread, and 40 were picked at random from the other 375. `bun test` over cli/twitter, mcp, errors and surface: 260 pass, 0 fail (new test: one read, limit passed, a bad limit refused before X is called). `tsc --noEmit` clean.
+
+## 2026-10-26 04:04Z · feat/xchatPriorCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/x/xchat/README.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const XCHAT_INITIAL, const XCHAT_PAGE, def xchat_conversation_user_ids, def xchat_contacts · changed const READS, def act
+- `src/cli/twitter/families.test.ts`: added test "check on a dm queue drops anyone already in an X Chat conversation (rule 87)"
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE, const QUEUE_INPUT, const queueCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, interface TwitterSessionAnswer
+
+What changed: `log twitter queue check` on a dm queue now reads the account's own X Chat inbox and drops any pending dm whose recipient the account already has a conversation with (status skipped, `priorConversation`). X Chat is X's newer encrypted inbox, separate from the legacy DM inbox `log twitter dms` reads, so a 'never messaged' list built on the old read misses it. New engine action `xchatContacts` (`python/twitterApi/engine.py`, read-only): it calls `api.x.com/graphql` GetInitialXChatPageQuery and pages GetInboxPageRequestQuery with the account's session (no PIN; who and when are readable, the text isn't) and returns every counterpart user id. `--skipXChatCheck` bypasses it only when matt asks. New error `xChatCheckFailed`, rule 87, and docs/platforms/x/xchat.
+Why: matt: a 40-person 'never messaged' treg dm run reached 7 people he'd already spoken to in X Chat, because the filter only saw the legacy inbox. 'it let people who i have spoken to go through... it didn't do its job at all'. He asked to build the X Chat check into the dm queue.
+Checked: live on matthewsoldit: `queue check` on the 17 unsent treg targets read the X Chat inbox and dropped exactly the 3 with prior conversations (VladSmolyansky, DistinctLee, vincenzo_micale), leaving 14. `bun run check`: 1092 pass, 0 fail, incl. a new test (an existing X Chat contact is skipped, a new one stays, --skipXChatCheck bypasses). The full-inbox scan found 10 of the 40 had prior chats; 7 had already been sent before the run was stopped (noted to matt). The engine's key-recovery/decryption (reading the message text via the PIN) is not built; this change only needs who, not what.
