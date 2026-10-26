@@ -207,9 +207,24 @@ describe("log twitter queue", () => {
     expect(h.calls.filter((c) => c.tweetUrl === POST_C)).toHaveLength(2);
     expect(h.calls.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
     expect(r.err).toContain("cool-off 1 of 5");
+    expect(r.err).toMatch(/trying again at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
     expect(r.err).toMatch(/state +cooling/);
     expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("random run done: 2 replies sent, 1 skipped");
     expect(existsSync(f.queue.replace(/\.json$/, ".lock"))).toBe(false);
+  });
+
+  test("one 344 is a short wait and X is asked again; only three in a row is a day, and each line says what X answered and when", async () => {
+    const h = harness(() => ({ ok: false, event: "dailyLimit", code: "CouldNotTweet", detail: "(344) You have reached your daily limit" }));
+    const f = await builtAndPlanned(h);
+    const start = h.clockAt();
+    await h.run(["twitter", "queue", "run", f.queue, "--live"]);
+    const lines = readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8").split("\n").filter((l) => l.includes("[cooling]"));
+    expect(lines[0]).toMatch(/x answered at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: CouldNotTweet: \(344\)/);
+    expect(lines[0]).toContain("a short wait, then x is asked again");
+    expect(lines[1]).toContain("a short wait");
+    expect(lines[2]).toContain("x said its daily limit 3 times in a row, so a day");
+    const firstBack = /trying again at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC/.exec(lines[0])![1];
+    expect(Date.parse(`${firstBack.replace(" ", "T")}:00Z`) - start).toBeLessThan(3600_000);
   });
 
   test("a dead session halts the run with exit 5 and the rest stays pending", async () => {
