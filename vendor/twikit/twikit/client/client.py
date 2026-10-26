@@ -3208,6 +3208,81 @@ class Client:
             group_id
         )
 
+    async def get_xchat_conversations(
+        self, max_pages: int = 30
+    ) -> list[dict]:
+        """
+        Lists the viewer's X Chat (encrypted DM) conversations.
+
+        X Chat is a separate inbox from the legacy DM API
+        (:func:`.get_dm_history`); its conversations are invisible to that
+        API. This reads the account's own X Chat inbox and pages through it.
+        Each entry carries the conversation id and the other participants'
+        rest ids. Message text is end-to-end encrypted and is not returned
+        here; only who the account has a conversation with, and when, are
+        readable from the session.
+
+        Parameters
+        ----------
+        max_pages : :class:`int`, default=30
+            Safety cap on inbox pages to pull.
+
+        Returns
+        -------
+        list[:class:`dict`]
+            One dict per conversation: ``conversation_id`` and
+            ``participant_ids`` (rest ids other than the viewer).
+
+        Examples
+        --------
+        >>> convs = await client.get_xchat_conversations()
+        >>> {p for c in convs for p in c['participant_ids']}
+        """
+        try:
+            me = str(await self.user_id())
+        except Exception:
+            me = str(self._user_id_from_cookie() or '')
+
+        def collect(items):
+            out = []
+            for item in items or []:
+                detail = item.get('conversation_detail') or {}
+                cid = str(detail.get('conversation_id') or '')
+                ids = set()
+                for part in detail.get('participants_results') or []:
+                    rest = str(part.get('rest_id') or '')
+                    if rest:
+                        ids.add(rest)
+                for part in cid.split(':'):
+                    if part.isdigit():
+                        ids.add(part)
+                ids.discard(me)
+                out.append({'conversation_id': cid, 'participant_ids': sorted(ids)})
+            return out
+
+        response, _ = await self.gql.get_initial_xchat_page()
+        page = (response or {}).get('data', {}).get('get_initial_chat_page') or {}
+        convs = collect(page.get('items'))
+        cursor_obj = page.get('inboxCursor') or {}
+        cursor = cursor_obj.get('cursor_id')
+        snapshot = cursor_obj.get('graph_snapshot_id')
+        pages = 1
+        while cursor and pages < max_pages:
+            response, _ = await self.gql.get_xchat_inbox_page(cursor, snapshot)
+            data = (response or {}).get('data', {})
+            box = data.get('get_inbox_page') or data.get('get_inbox_page_request') or {}
+            items = box.get('items') or []
+            if not items:
+                break
+            convs += collect(items)
+            cursor_obj = box.get('inboxCursor') or {}
+            nxt = cursor_obj.get('cursor_id')
+            pages += 1
+            if nxt == cursor or not nxt:
+                break
+            cursor = nxt
+        return convs
+
     async def get_group_dm_history(
         self,
         group_id: str,

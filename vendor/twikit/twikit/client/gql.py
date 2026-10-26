@@ -38,6 +38,14 @@ class Endpoint:
     CREATE_SCHEDULED_TWEET = url('LCVzRQGxOaGnOnYH01NQXg/CreateScheduledTweet')
     DELETE_TWEET = url('VaenaVgh5q5ih7kvyVjgtg/DeleteTweet')
     USER_BY_SCREEN_NAME = url('NimuplG1OB7Fd2btCLdBOw/UserByScreenName')
+
+    XCHAT_HOST = f'https://api.{DOMAIN}/graphql/'
+    XCHAT_INITIAL_PAGE = XCHAT_HOST + 'Q4Mw0C6YcnjJac21wq-5NA/GetInitialXChatPageQuery'
+    XCHAT_INBOX_PAGE = XCHAT_HOST + 'txrXftx8RcSvw9jCjwRZWA/GetInboxPageRequestQuery'
+    XCHAT_CONVERSATION_PAGE = XCHAT_HOST + 'GX9ZijkxG8AqRMQVD7hMnQ/GetConversationPageQuery'
+    XCHAT_MESSAGE_EVENTS_PAGE = XCHAT_HOST + '8ds29Y40jrxh_MZDbqWy0A/GetMessageEventsPageQuery'
+    XCHAT_PUBLIC_KEYS = XCHAT_HOST + 'C-YphxeIcPLOGtFNGhkuOw/GetPublicKeysQuery'
+    XCHAT_GENERATE_TOKEN = XCHAT_HOST + 'Qh3fZRjPPtPoHYR_2sCZsA/GenerateXChatTokenMutation'
     USER_BY_REST_ID = url('tD8zKvQzwY3kdx5yz6YmOw/UserByRestId')
     TWEET_DETAIL = url('U0HTv-bAWTBYylwEMT7x5A/TweetDetail')
     TWEET_RESULT_BY_REST_ID = url('Xl5pC_lBk_gcO2ItU39DQw/TweetResultByRestId')
@@ -122,6 +130,13 @@ class GQLClient:
         if headers is None:
             headers = self.base._base_headers
         return await self.base.get(url, params=flatten_params(params), headers=headers, **kwargs)
+
+    async def get_initial_xchat_page(self):
+        return await self.gql_get(Endpoint.XCHAT_INITIAL_PAGE, {})
+
+    async def get_xchat_inbox_page(self, cursor_id: str, graph_snapshot_id: str | None):
+        variables = {'continue_cursor': {'cursor_id': cursor_id, 'graph_snapshot_id': graph_snapshot_id}}
+        return await self.gql_get(Endpoint.XCHAT_INBOX_PAGE, variables)
 
     async def gql_post(
         self,

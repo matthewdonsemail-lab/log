@@ -1049,8 +1049,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     GetInboxPageRequestQuery; the account's session, no PIN, who and when are
     readable, the text isn't) and drops (status skipped, `priorConversation`)
     every pending dm whose recipient the account already has a conversation
-    with. `--skipXChatCheck` bypasses it only when matt asks. The engine
-    action is `xchatContacts` (`python/twitterApi/engine.py`), read-only.
+    with. `--skipXChatCheck` bypasses it only when matt asks. The X Chat reads live in `vendor/twikit` (rule 81:
+    `client.get_xchat_conversations()`, endpoints in `twikit/client/gql.py`), so
+    the knowledge is in the client, not hand-rolled; the engine action
+    `xchatContacts` (`python/twitterApi/engine.py`) calls it, read-only.
     `docs/platforms/x/xchat` / `RESEARCH/X_CHAT_ENCRYPTED_INBOX_API_2026-10-26.md`.
 
 ## Checks
