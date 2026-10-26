@@ -1,5 +1,5 @@
 import { readGroupDirect } from "../read/helpers/directApi.ts";
-import { dmCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
+import { dmCommand, dmsCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
 import { runTwitterEngine } from "../../twitter/account/session/index.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
@@ -86,6 +86,7 @@ export const COMMANDS: Command[] = [
   whoamiCommand,
   sessionCommand,
   followsCommand,
+  dmsCommand,
   replyCommand,
   quoteCommand,
   likeCommand,

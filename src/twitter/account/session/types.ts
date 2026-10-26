@@ -9,7 +9,7 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'reply' | 'quote' | 'like' | 'dm'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'reply' | 'quote' | 'like' | 'dm'
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm']
 
@@ -23,6 +23,8 @@ export interface TwitterEngineSpec {
   tweetUrl?: string
   userId?: string
   handles?: string[]
+  limit?: number
+  conversationId?: string
 }
 
 export interface TwitterFollow {
@@ -31,6 +33,38 @@ export interface TwitterFollow {
   youFollow?: boolean
   error?: string
   event?: TwitterEvent
+}
+
+export interface TwitterDmPerson {
+  userId: string
+  handle?: string | null
+  name?: string | null
+  followsYou?: boolean | null
+  youFollow?: boolean | null
+}
+
+export interface TwitterDmThread {
+  conversationId: string
+  box: 'inbox' | 'request'
+  type: 'oneToOne' | 'group'
+  name?: string | null
+  with: TwitterDmPerson[]
+  lastAt?: string | null
+  lastFromMe: boolean
+  lastText?: string | null
+  unread: boolean
+  messagesLoaded: number
+}
+
+export interface TwitterDmMessage {
+  id: string
+  conversationId: string
+  time?: string | null
+  senderId: string
+  recipientId?: string | null
+  text: string
+  fromMe?: boolean
+  from?: string | null
 }
 
 export interface TwitterSessionAnswer {
@@ -53,6 +87,10 @@ export interface TwitterSessionAnswer {
   liked?: boolean
   already?: boolean
   limits?: Record<string, string>
+  pages?: number
+  threads?: TwitterDmThread[]
+  waitingOnYou?: number
+  messages?: TwitterDmMessage[]
 }
 
 export interface TwitterEngineRun {

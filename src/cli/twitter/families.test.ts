@@ -59,6 +59,33 @@ describe("log twitter follows", () => {
   });
 });
 
+describe("log twitter dms", () => {
+  const thread = (id: string, handle: string, lastFromMe: boolean, text: string) => ({ conversationId: id, box: "inbox" as const, type: "oneToOne" as const, with: [{ userId: id, handle }], lastAt: "2026-10-25T10:00:00Z", lastFromMe, lastText: text, unread: !lastFromMe, messagesLoaded: 1 });
+
+  test("reads the inbox once on the direct-API engine and --waiting keeps who is waiting on a reply", async () => {
+    const h = harness(() => ({ ok: true, screenName: "xtwo", waitingOnYou: 1, threads: [thread("1-2", "alice", false, "are you free"), thread("3-2", "bob", true, "talk soon")] }));
+    const all = await h.run(["twitter", "dms", "--account", "xTwo"]);
+    expect(all.code).toBe(0);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20 }]);
+    expect(all.out).toContain("@alice · 2026-10-25T10:00:00Z · unread, waiting on you");
+    expect(all.out).toContain("@bob");
+    const waiting = await h.run(["twitter", "dms", "--account", "xTwo", "--waiting", "--limit", "5"]);
+    expect(waiting.out).toContain("1 conversation waiting on a reply");
+    expect(waiting.out).not.toContain("@bob");
+    expect(h.calls[1]).toEqual({ action: "inbox", limit: 5 });
+  });
+
+  test("--conversation reads one thread, and bad input is refused before X is called", async () => {
+    const h = harness(() => ({ ok: true, conversationId: "1-2", messages: [{ id: "9", conversationId: "1-2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "hey", fromMe: false, from: "alice" }] }));
+    const r = await h.run(["twitter", "dms", "--account", "xTwo", "--conversation", "1-2"]);
+    expect(r.out).toContain("@alice: hey");
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, conversationId: "1-2" }]);
+    expect((await h.run(["twitter", "dms", "--account", "xTwo", "--limit", "0"])).err).toContain("limitInvalid");
+    expect((await h.run(["twitter", "dms", "--account", "xTwo", "--conversation", "alice"])).err).toContain("conversationInvalid");
+    expect(h.calls).toHaveLength(1);
+  });
+});
+
 describe("log twitter reply, quote, like, dm", () => {
   test("without --live it is a dry run: checked, X not contacted", async () => {
     const h = harness();

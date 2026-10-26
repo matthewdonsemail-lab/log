@@ -2,8 +2,10 @@ import { AGENT_HOOKS } from "../../agentHooks/registry/index.ts";
 import type { AgentHook } from "../../agentHooks/registry/index.ts";
 import { GLOBAL_FLAGS, sessionHooks } from "../catalog/index.ts";
 import type { CommandEntry, Flag, FlowEntry } from "../catalog/index.ts";
+import { countOf } from "../diagrams/index.ts";
 import type { Diagram } from "../diagrams/index.ts";
-import { engineLine } from "../../directApi/engine/index.ts";
+import { DIRECT_ROUTES, engineHead, platformEngineText } from "../../directApi/engine/index.ts";
+import { PLATFORM_LABELS, PLATFORM_SITES, PLATFORMS } from "../../cli/runner/helpers/platforms.ts";
 
 export const SURFACE_START = "<!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->";
 export const SURFACE_END = "<!-- surface:end -->";
@@ -35,43 +37,51 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     SURFACE_START,
     "## Commands, MCP tools and hooks",
     "",
-    "log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.",
-    "It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`), in every form; one that works on any platform takes none (the Platform column, rule 63).",
-    "Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool named for the command on the `log` server (a Facebook tool runs `log facebook <command>`).",
+    `log-cli is platform-agnostic: ${PLATFORMS.length} platforms so far, ${PLATFORMS.map((p) => `${PLATFORM_LABELS[p]} (${countOf(entries.filter((e) => e.platform === p).length, "command")} of its own)`).join(", ")}, and a new one is made by \`log new platform <name>\` (rule 83). A command that acts on one platform names it first, \`log <platform> <command> …\` (${PLATFORMS.map((p) => entries.find((e) => e.platform === p)).filter(Boolean).map((e) => `\`log ${e!.words}\``).join(", ")}), in every form; one that works on any platform takes none (the Platform column, rule 63).`,
+    "Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.",
+    "Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).",
     "The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.",
     "This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.",
     "`bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).",
     "",
   ];
+  const platforms = pick("platforms");
+  if (platforms) out.push(...diagramBlock(platforms));
   const browsers = pick("browsers");
   if (browsers) {
-    const on = (kind: CommandEntry["browser"]) => entries.filter((e) => e.browser === kind).map((e) => `\`${e.name}\``).join(", ");
+    const on = (kind: CommandEntry["browser"]) => entries.filter((e) => e.browser === kind).map((e) => `\`${e.words}\``).join(", ");
+    const without = PLATFORMS.filter((p) => !PLATFORM_SITES[p].browser).map((p) => PLATFORM_LABELS[p]);
     out.push(
       ...diagramBlock(browsers),
       `- **The account's browser, through the driver:** ${on("accountBrowser")}. They run on whichever browser the account uses: AdsPower when it has a linked profile (\`socialAccounts.adsPowerProfileId\`), Camoufox otherwise, or what \`socialAccounts.browserDriver\` says.`,
       `- **Camoufox only, not on the driver yet:** ${on("camoufoxOnly")}. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into \`OPENER_ACTIONS\` (\`src/browser/run\`).`,
       `- **No browser:** ${on("none")}.`,
+      ...(without.length ? [`- **No browser path at all:** ${without.join(", ")}. Its accounts run on the direct API only (rule 80).`] : []),
       "",
       "Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).",
       "",
     );
   }
   const direct = entries.filter((e) => e.engine === "directApiFirst" || e.engine === "directApiOnly");
+  const libraries = [...new Set(Object.values(DIRECT_ROUTES).map((r) => r.library))];
   out.push(
     "### Engines: the direct API first, the browser behind it",
     "",
-    "A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.",
-    "",
-    ...direct.map((e) => `- \`log ${e.words}\`: ${engineLine(e.key) ?? ""}`),
+    `A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: ${PLATFORMS.map((p) => [p, [...new Set(Object.values(DIRECT_ROUTES).filter((r) => r.platform === p).map((r) => r.library))]] as const).filter(([, l]) => l.length).map(([p, l]) => `${PLATFORM_LABELS[p]} through ${l.map((x) => `${x} (\`vendor/${x}\`)`).join(", ")}`).join(", ")}. Every one reaches the network through one curl_cffi session (\`check:twikitTransport\`, \`check:rdvwrTransport\`). Which engine runs each command is code (\`DIRECT_ROUTES\` and \`commandEngine\` in \`src/directApi/engine\`), and this section, the Engine column and every MCP tool's description are generated from it (${libraries.length} clients, ${direct.length} commands).`,
     "",
   );
+  for (const p of PLATFORMS) {
+    const own = direct.filter((e) => DIRECT_ROUTES[e.key]?.platform === p);
+    if (!own.length) continue;
+    out.push(`**${PLATFORM_LABELS[p]}.** ${platformEngineText(p)}`, "", ...own.map((e) => `- \`log ${e.words}\`: ${engineHead(DIRECT_ROUTES[e.key])}.`), "");
+  }
   const surface = pick("surface");
   if (surface) out.push(...diagramBlock(surface));
 
   out.push(
     "### Every command",
     "",
-    `Every command also takes ${GLOBAL_FLAGS.map(flagText).join(", ")} (this run's proxy speed limit, rule 33). \`--live\` acts on Facebook and over MCP needs \`confirmLive: true\`; \`--bypass\` needs \`confirmBypass: true\` (rules 8, 10, 20).`,
+    `Every command also takes ${GLOBAL_FLAGS.map(flagText).join(", ")} (this run's proxy speed limit, rule 33). \`--live\` acts on the platform and over MCP needs \`confirmLive: true\`; \`--bypass\` needs \`confirmBypass: true\` (rules 8, 10, 20).`,
     "",
     "| Command | What it does | Platform | Flags | Engine | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -100,7 +110,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "| --- | --- | --- | --- |",
     ...hooks.map(hookRow),
     "",
-    `Around every turn, whatever is called: ${sessionHooks(hooks).map((h) => h.event).join(", ")}.`,
+    `Around every turn, whatever is called: ${[...new Set(sessionHooks(hooks).map((h) => h.event))].map((ev) => `${ev} (${sessionHooks(hooks).filter((h) => h.event === ev).map((h) => h.script.split("/").pop()).join(", ")})`).join(", ")}.`,
     "",
   );
   const hooksD = pick("hooks");

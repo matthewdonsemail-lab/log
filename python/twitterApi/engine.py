@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows")
+READS = ("ping", "follows", "inbox")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -226,6 +226,155 @@ async def follows(client: Any, cookies: dict[str, str], handles: list[str]) -> d
     return {"ok": True, "loginState": "loggedIn", "screenName": me, "checked": checked}
 
 
+
+INBOX_PARAMS = {
+    "nsfw_filtering_enabled": "false",
+    "filter_low_quality": "true",
+    "include_quality": "all",
+    "include_profile_interstitial_type": "1",
+    "include_blocking": "1",
+    "include_blocked_by": "1",
+    "include_followed_by": "1",
+    "include_want_retweets": "1",
+    "include_mute_edge": "1",
+    "include_can_dm": "1",
+    "include_can_media_tag": "1",
+    "include_ext_is_blue_verified": "1",
+    "skip_status": "1",
+    "dm_secret_conversations_enabled": "false",
+    "krs_registration_enabled": "true",
+    "cards_platform": "Web-12",
+    "include_cards": "1",
+    "include_ext_alt_text": "true",
+    "include_quote_count": "true",
+    "include_reply_count": "1",
+    "tweet_mode": "extended",
+    "include_ext_collab_control": "true",
+    "dm_users": "true",
+    "include_groups": "true",
+    "include_inbox_timelines": "true",
+    "supports_reactions": "true",
+    "supports_edit": "true",
+}
+
+DM_INBOX = "https://x.com/i/api/1.1/dm/inbox_initial_state.json"
+DM_TIMELINE = "https://x.com/i/api/1.1/dm/inbox_timeline/{}.json"
+DM_CONVERSATION = "https://x.com/i/api/1.1/dm/conversation/{}.json"
+
+
+def iso_of(ms: Any) -> str | None:
+    from datetime import datetime, timezone
+
+    return datetime.fromtimestamp(int(ms) / 1000, timezone.utc).isoformat().replace("+00:00", "Z") if str(ms or "").isdigit() else None
+
+
+def id_key(value: Any) -> int:
+    text = str(value or "")
+    return int(text) if text.isdigit() else 0
+
+
+def messages_of(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    out = []
+    for entry in entries or []:
+        message = entry.get("message") if isinstance(entry, dict) else None
+        if not message:
+            continue
+        data = message.get("message_data") or {}
+        out.append({"id": str(message.get("id") or data.get("id") or ""), "conversationId": str(message.get("conversation_id") or ""), "time": iso_of(message.get("time") or data.get("time")), "senderId": str(data.get("sender_id") or ""), "recipientId": str(data.get("recipient_id") or "") or None, "text": data.get("text") or ""})
+    return out
+
+
+def merge_state(into: dict[str, Any], state: dict[str, Any], box: str | None) -> int:
+    added = 0
+    for cid, c in (state.get("conversations") or {}).items():
+        if cid not in into["conversations"]:
+            added += 1
+        into["conversations"][cid] = c
+        into["boxes"][cid] = box or ("request" if c.get("trusted") is False else "inbox")
+    into["users"].update(state.get("users") or {})
+    into["messages"].extend(messages_of(state.get("entries") or []))
+    return added
+
+
+def user_of(users: dict[str, Any], user_id: str) -> dict[str, Any]:
+    user = users.get(user_id) or {}
+    return {"userId": user_id, "handle": user.get("screen_name"), "name": user.get("name"), "followsYou": user.get("followed_by"), "youFollow": user.get("following")}
+
+
+def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], users: dict[str, Any], me: str, box: str) -> dict[str, Any]:
+    cid = str(conversation.get("conversation_id") or "")
+    mine = sorted((m for m in messages if m["conversationId"] == cid), key=lambda m: id_key(m["id"]))
+    last = mine[-1] if mine else None
+    participants = conversation.get("participants") or []
+    people = [user_of(users, str(p.get("user_id"))) for p in participants if str(p.get("user_id")) != me]
+    read_up_to = next((str(p.get("last_read_event_id") or "") for p in participants if str(p.get("user_id")) == me), "")
+    last_id = str(conversation.get("max_entry_id") or (last or {}).get("id") or "")
+    last_from_me = bool(last and last["senderId"] == me)
+    unread = id_key(last_id) > id_key(read_up_to) if read_up_to else bool(last and not last_from_me)
+    return {
+        "conversationId": cid,
+        "box": box,
+        "type": "group" if conversation.get("type") == "GROUP_DM" else "oneToOne",
+        "name": conversation.get("name"),
+        "with": people,
+        "lastAt": iso_of(conversation.get("sort_timestamp")) or (last or {}).get("time"),
+        "lastFromMe": last_from_me,
+        "lastText": (last or {}).get("text"),
+        "unread": bool(unread and not last_from_me),
+        "messagesLoaded": len(mine),
+    }
+
+
+async def inbox(client: Any, cookies: dict[str, str], limit: int) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    data, response = await client.get(DM_INBOX, params=INBOX_PARAMS, headers=client._base_headers)
+    state = (data or {}).get("inbox_initial_state") or {}
+    pool: dict[str, Any] = {"conversations": {}, "users": {}, "messages": [], "boxes": {}}
+    merge_state(pool, state, None)
+    timelines = state.get("inbox_timelines") or {}
+    pages = 1
+    for box, label in (("trusted", "inbox"), ("untrusted", "request")):
+        timeline = timelines.get(box) or {}
+        cursor = timeline.get("min_entry_id")
+        while timeline.get("status") == "HAS_MORE" and cursor and len(pool["conversations"]) < limit and pages < 8:
+            await asyncio.sleep(1.5)
+            page, _ = await client.get(DM_TIMELINE.format(box), params={**INBOX_PARAMS, "max_id": cursor}, headers=client._base_headers)
+            timeline = (page or {}).get("inbox_timeline") or {}
+            added = merge_state(pool, timeline, label)
+            cursor = timeline.get("min_entry_id")
+            pages += 1
+            if not added:
+                break
+    threads = [thread_of(c, pool["messages"], pool["users"], me, pool["boxes"].get(cid, "inbox")) for cid, c in pool["conversations"].items()]
+    threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
+    threads = threads[:limit]
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
+
+
+async def conversation(client: Any, cookies: dict[str, str], conversation_id: str, limit: int) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    params = {**INBOX_PARAMS, "context": "FETCH_DM_CONVERSATION_HISTORY", "include_conversation_info": "true"}
+    data, response = await client.get(DM_CONVERSATION.format(conversation_id), params=params, headers=client._base_headers)
+    timeline = (data or {}).get("conversation_timeline") or {}
+    users = dict(timeline.get("users") or {})
+    messages = messages_of(timeline.get("entries") or [])
+    while timeline.get("status") == "HAS_MORE" and timeline.get("min_entry_id") and len(messages) < limit:
+        await asyncio.sleep(1.5)
+        data, _ = await client.get(DM_CONVERSATION.format(conversation_id), params={**params, "max_id": timeline["min_entry_id"]}, headers=client._base_headers)
+        timeline = (data or {}).get("conversation_timeline") or {}
+        users.update(timeline.get("users") or {})
+        older = messages_of(timeline.get("entries") or [])
+        if not older:
+            break
+        messages.extend(older)
+    messages.sort(key=lambda m: id_key(m["id"]))
+    messages = messages[-limit:]
+    for m in messages:
+        m["fromMe"] = m["senderId"] == me
+        m["from"] = (users.get(m["senderId"]) or {}).get("screen_name")
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "limits": limits_of(response), "messages": messages}
+
+
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     action = spec["action"]
     raw = keep_create_answers(client)
@@ -284,6 +433,11 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return {"ok": False, "code": "sessionDead" if dead else "sessionUnknown", "event": "sessionDead" if dead else "failed", "detail": f"X answered HTTP {status} to the session check before the {action}", "loginState": state, "httpStatus": status}
     if action == "follows":
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
+    if action == "inbox":
+        limit = max(1, min(int(spec.get("limit") or 20), 200))
+        if spec.get("conversationId"):
+            return await conversation(client, cookies, str(spec["conversationId"]), limit)
+        return await inbox(client, cookies, limit)
     return {**(await send(client, spec)), "loginState": "loggedIn"}
 
 

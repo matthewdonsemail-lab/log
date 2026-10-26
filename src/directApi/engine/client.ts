@@ -16,6 +16,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
   twitterSession: { platform: 'twitter', library: 'twikit', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directTwitter' },
   twitterFollows: { platform: 'twitter', library: 'twikit', only: true, surface: 'friendships', method: 'show', when: 'follows read', seam: 'directTwitter' },
+  twitterDms: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'inbox', when: 'dms read (the inbox, or one conversation)', seam: 'directTwitter' },
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
@@ -30,15 +31,25 @@ export function commandEngine(command: string): CommandEngine {
   return commandBrowser(command) === 'none' ? 'none' : 'browser'
 }
 
+export function engineHead(route: DirectRoute): string {
+  if (route.platform === 'twitter') return `the direct-API engine only (twikit, vendored in vendor/twikit, ${route.surface}.${route.method} for the ${route.when}; no browser and no proxy: X accounts call X directly, rule 80)`
+  if (route.platform !== 'facebook') return `the direct-API engine only (${route.library}, vendored in vendor/${route.library}, ${route.surface}.${route.method} for the ${route.when}; no browser)`
+  return `the direct-API engine first (fbk ${route.surface}.${route.method}, no browser) for ${route.when}, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours)`
+}
+
+export function platformEngineText(platform: string): string {
+  if (platform === 'twitter') return `X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
+  if (platform !== 'facebook') {
+    const label = isPlatform(platform) ? PLATFORM_LABELS[platform] : platform
+    return `${label}'s own answer decides. Each account has its own governor under ~/.logCli/${platform}/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
+  }
+  return `Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.`
+}
+
 export function engineLine(command: string): string | null {
   const route = DIRECT_ROUTES[command]
   if (!route) return null
-  if (route.platform === 'twitter') return `Engine: the direct-API engine only (twikit, vendored in vendor/twikit, ${route.surface}.${route.method} for the ${route.when}; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
-  if (route.platform !== 'facebook') {
-    const label = isPlatform(route.platform) ? PLATFORM_LABELS[route.platform] : route.platform
-    return `Engine: the direct-API engine only (${route.library}, ${route.surface}.${route.method} for the ${route.when}; no browser). ${label}'s own answer decides. Each account has its own governor under ~/.logCli/${route.platform}/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
-  }
-  return `Engine: the direct-API engine first (fbk ${route.surface}.${route.method}, no browser) for ${route.when}, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours). Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.`
+  return `Engine: ${engineHead(route)}. ${platformEngineText(route.platform)}`
 }
 
 export function fbkStateRoot(): string {
