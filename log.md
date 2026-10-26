@@ -7741,3 +7741,14 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a queue run's cool-off line now says when it's back with the date and time ("back at 2026-10-27 02:07 UTC"), not just the time. A 24-hour wait read as "back at 02:07" looked like 20 minutes later.
 Why: after X's 344 on matthewsoldit the run said "1461 min, back at 02:07 UTC", which got reported to matt as later today. matt: "This isn't true".
 Checked: `bun test src/cli/twitter`: 23 pass, 0 fail. The cool-off test now checks the line carries a date.
+
+## 2026-10-26 02:07Z · fix/queueCoolOffDate
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/families.test.ts`: added test "one 344 is a short wait and X is asked again; only three in a row is a day, and each line says what X answered and when" · changed test "run --live walks the machine: sent, gone, a throttle cools off and is retried once at the end"
+- `src/twitter/queue/run/client.ts`: changed function runQueue
+- `src/twitter/queue/run/types.ts`: added const DAILY_AFTER
+
+What changed: a queue run no longer turns one X 344 into a day's wait. A 344 gets the same short, doubling cool-off as a throttle (15 min doubling to 4 h), and X is asked again on the retry. Only after 3 344s in a row (`DAILY_AFTER`) does the run wait a day. The cool-off line now says what X answered and at what time, why it waits that long, and the date and time it tries again ("x answered at 2026-10-26 01:46 UTC: … trying again at … (a short wait, then x is asked again, cool-off 1 of 5). nothing is known about x after that answer until the next try"). It no longer says "x made no tweet or throttled", which was a guess.
+Why: matt: "how can we stop the confusion if stuff is blocked, because it wasn't blocked, you just said it was when it wasn't". X answered 344 to one reply from matthewsoldit at 01:46 UTC. The run set a 24-hour wait and it was reported as a block, but X accepted the next reply at 02:04.
+Checked: `bun test src/cli/twitter src/mcp`: 83 pass, 0 fail. New test: with X answering 344 every time, the first two cool-offs are short waits (the first back within the hour), the third says the daily limit came 3 times in a row and waits a day, and each line carries X's answer and its time. Live, before this change: after the 344 a nudged reply to @loafofherlife posted at 02:04 and @MariluCarvallo's at 02:05.

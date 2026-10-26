@@ -7,6 +7,7 @@ export const COOL_BASE_SECONDS = 15 * 60
 export const COOL_CAP_SECONDS = 4 * 3600
 export const MAX_COOLS = 5
 export const DAY_SECONDS = 24 * 3600
+export const DAILY_AFTER = 3
 
 export type RunEvent =
   | { type: 'BEGIN' }

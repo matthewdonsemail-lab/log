@@ -5,7 +5,7 @@ import type { PlanEvent, Queue, QueueItem, Rng } from '../plan/index'
 import { approvalProblem } from '../plan/index'
 import { queueRunMachine } from './machine'
 import type { FailureKind, RunDeps, RunEvent, RunResult } from './types'
-import { COOL_BASE_SECONDS, COOL_CAP_SECONDS, DAY_SECONDS, LATE_SECONDS, MAX_COOLS, POLL_SECONDS } from './types'
+import { COOL_BASE_SECONDS, COOL_CAP_SECONDS, DAILY_AFTER, DAY_SECONDS, LATE_SECONDS, MAX_COOLS, POLL_SECONDS } from './types'
 
 const uniform = (rng: Rng, low: number, high: number) => low + rng() * (high - low)
 
@@ -108,6 +108,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
   send({ type: 'BEGIN' })
   let nudged = deps.takeNudge()
   let cools = 0
+  let dailies = 0
   while (todo.length) {
     const event = todo.shift()!
     const item = byN.get(event.n)
@@ -147,6 +148,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
         nudged = Math.max(nudged - 1, 0)
       }
       cools = 0
+      dailies = 0
       event.done = now
       send({ type: 'ACTED' })
       deps.save()
@@ -183,12 +185,15 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     }
     if (cools >= MAX_COOLS) return halt(`${what} still blocked after ${MAX_COOLS} cool-offs in a row with nothing out. ${said}`)
     const reset = answer.rateLimitReset ?? null
-    const seconds = coolSeconds(cools, deps.nowMs() / 1000, deps.rng, reset, answer.event === 'dailyLimit')
+    dailies = answer.event === 'dailyLimit' ? dailies + 1 : 0
+    const seconds = coolSeconds(cools, deps.nowMs() / 1000, deps.rng, reset, dailies >= DAILY_AFTER)
     cools += 1
     send({ type: 'COOL' })
     deps.save()
-    const back = new Date(deps.nowMs() + seconds * 1000).toISOString().slice(0, 16).replace('T', ' ')
-    deps.alert(`[cooling] ${what}: x made no tweet or throttled (${retry}). cool-off ${cools} of ${MAX_COOLS}: ${Math.round(seconds / 60)} min${reset ? ' (x reset time)' : ''}, back at ${back} UTC. x said: ${said.slice(0, 160)}`, false)
+    const stamp = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace('T', ' ')
+    const back = stamp(deps.nowMs() + seconds * 1000)
+    const why = dailies >= DAILY_AFTER ? `x said its daily limit ${dailies} times in a row, so a day` : reset ? "x's own reset time" : 'a short wait, then x is asked again'
+    deps.alert(`[cooling] ${what}: x answered at ${stamp(deps.nowMs())} UTC: ${said.slice(0, 160)}. ${retry}. trying again at ${back} UTC (${why}, cool-off ${cools} of ${MAX_COOLS}). nothing is known about x after that answer until the next try`, false)
     nudged = await waitUntil(deps, deps.nowMs() / 1000 + seconds)
     if (nudged === CANCELLED) return stop(`during cool-off ${cools}`)
     if (nudged) deps.log(`nudge ended the cool-off early (${nudged} replies)`)
