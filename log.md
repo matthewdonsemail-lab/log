@@ -7695,3 +7695,39 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: three X queue bugs fixed. (1) `log twitter queue plan --minGap`, `--limit`, `build --seed` and `nudge --replies` were ignored. The parser hands integer flags over as strings, and the queue only accepted a number, so `--minGap 600` planned 120 s apart. `wholeFlag` now reads them, and anything that isn't a whole number is refused. (2) A target can carry its own `text`, written for that person's post. `queue build` keeps it and draws only the other targets' lines from the variations, and `--variations` isn't needed when every target has its own. Two targets with the same text are refused. Before this, build shuffled every line across the targets, so personal lines had to be put back by hand. (3) A cancel stops a queue run during its waits and cool-offs, and before each send. `CommandContext.cancelled` comes from the MCP job (`jobCancel`). The run saves, says where it stopped, and resumes when run again. Before this, a cancel was only checked at a browser step, which a queue never has, so a cancelled run held the account until its next send.
 Why: matt: "fix the bugs, don't turn it into an MCP tool", after the cold-caller run hit all three: `--minGap 600` planned 2 min apart, the 6 personal replies had to be matched to people by hand, and a cancelled run kept matthewsoldit busy through its 15-minute cool-off.
 Checked: `bun test` over cli/twitter and mcp: 82 pass, 0 fail, with three new tests: minGap honoured and refused when not whole, own text kept with the rest drawn, a cancel stops a waiting run with nothing sent. `tsc --noEmit` clean. Live: `queue plan --window 75m --minGap 600` planned the 5 remaining cold-caller replies at least 600 s apart, and the run is sending them now.
+
+## 2026-10-26 01:34Z · docs/twitterUseCases
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: new file
+- `docs/useCases/twitter/dmInbox.md`: new file
+- `docs/useCases/twitter/engagementReplies.md`: new file
+- `docs/useCases/twitter/engagerDms.md`: new file
+- `docs/useCases/twitter/followers.md`: new file
+- `docs/useCases/twitter/recruiting.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: new file
+
+What changed: docs/useCases/twitter/ now holds every X job we've run from @matthewsoldit as its own page: recruiting (rewritten), topicReplies, engagementReplies, engagerDms, dmInbox and followers, plus twitter/README.md with the queue steps and the rules every X page shares. Each page opens with how to run it from a fresh context ("go on <page> for <what>"), then the steps as MCP tools in order, what decides each step, the real runs and what isn't built yet. Recruiting now has a roles table (job links, regions, languages), the five checks that make someone qualified, the search terms that worked, every run since 2026-10-09 and the recruitLoop that runs every 6 hours; DMs are out of it. The use cases index and the README link to all of them.
+Why: matt asked for the recruitment use case to be outlined so it's all there, for the DMs to be their own part rather than recruitment, and for a use case for each thing we've done on X across buzz, so a fresh context can be told to go and run one.
+Checked: every count and state on the pages was read from its source: the 10-24 recruitLoop queue (32 sent, 1 blocked) and the data brokering queue (35 sent, 115 pending) with twitterQueueStatus, the inbox with twitterDms --waiting (14 waiting, 6 requests), the rest from the RESEARCH and OUTBOX files each page names. Queue per-person copy checked against src/twitter/queue/plan/client.ts buildQueue. Docs only, no code changed.
+
+## 2026-10-26 01:47Z · docs/twitterUseCases
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/facebook/groups.md`: edited
+- `docs/useCases/facebook/marketplaceListings.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/engagementReplies.md`: edited
+- `docs/useCases/twitter/engagerDms.md`: edited
+- `docs/useCases/twitter/followers.md`: edited
+- `docs/useCases/twitter/recruiting.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: edited
+
+What changed: every use case page (docs/useCases, X and Facebook) now describes the method and leaves out the owner's own details. Out: the account's handle, other people's handles and names, real conversations, job and company links, prices and costs, listing and post ids, town names, run counts, the owner's file paths and private repos, the scheduled task and its thresholds, and channel names. Kept: each job's idea, how to run it from a fresh context, the steps with their command and MCP tool, what decides each step, and the lessons the runs taught, written without names (a work word in every search, check location first, one reply per person, personal lines go through where generic ones were dropped, the queue instead of a hand loop). Examples use placeholders (`<account>`, `<role link>`). The X README also covers per-target `text`, `--minGap`, `jobCancel` and `--force` (rule 86). The index says new pages follow the same line, and the README's link to the pages says what log-cli is built to do.
+Why: matt: the use cases "had stuff about my internals which shouldn't be inside" and "has to be seen by other people". Keep the general good idea and make them agnostic.
+Checked: a grep over docs/useCases for the owner's name and handle, @handles, company links, ~/.buzz paths (RESEARCH, OUTBOX, GUIDES, .scratch), the private repo and task names, town names, dollar amounts and long ids came back with none. `bun run check:docs`: README and 6 diagrams match the code. Docs only. This branch's earlier log.md entry is left as it was written (rule 5).
