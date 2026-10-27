@@ -208,8 +208,12 @@ interface Page<T> {
   pageInfo: { hasNextPage?: boolean | null; endCursor?: string | null }
 }
 
+export function twentyEnv(env: Record<string, string | undefined> = process.env): { baseUrl: string | undefined; apiKey: string | undefined } {
+  return { baseUrl: (env.LOG_TWENTY_BASE_URL || env.TWENTY_BASE_URL)?.trim(), apiKey: (env.LOG_TWENTY_API_KEY || env.TWENTY_API_KEY)?.trim() }
+}
+
 export function twentyGraphqlUrl(env: Record<string, string | undefined> = process.env): string | null {
-  const raw = env.TWENTY_BASE_URL?.trim()
+  const raw = twentyEnv(env).baseUrl
   return raw ? `${raw.replace(/\/+$/, '').replace(/\/rest$/, '')}/graphql` : null
 }
 
@@ -230,10 +234,10 @@ function toTwentyError(error: unknown, what: string): TwentyError {
 
 export function createTwentyClient(env: Record<string, string | undefined> = process.env, fetchImpl: typeof fetch = fetch, rateLimitWaitMs = 61_000): TwentyClient {
   const url = twentyGraphqlUrl(env)
-  const key = env.TWENTY_API_KEY?.trim()
+  const key = twentyEnv(env).apiKey
   let genql: Client | null = null
   const client = (): Client => {
-    if (!url || !key) throw new TwentyError('twentyNotConfigured', 'set TWENTY_BASE_URL and TWENTY_API_KEY in log-cli/.env.local')
+    if (!url || !key) throw new TwentyError('twentyNotConfigured', 'set LOG_TWENTY_BASE_URL and LOG_TWENTY_API_KEY (or TWENTY_BASE_URL and TWENTY_API_KEY) in log-cli/.env')
     genql ??= createClient({
       url,
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },

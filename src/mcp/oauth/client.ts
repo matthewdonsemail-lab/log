@@ -41,8 +41,9 @@ export function localOwnerUserId(): string | null {
 }
 
 export function twentyConfigFromEnv(env: Record<string, string | undefined> = process.env): TwentyOAuthConfig | null {
-  if (!env.TWENTY_BASE_URL) return null;
-  return { baseUrl: new URL(env.TWENTY_BASE_URL).origin, basicUser: env.TWENTY_BASIC_USER || null, basicPassword: env.TWENTY_BASIC_PASSWORD || null };
+  const base = env.LOG_TWENTY_BASE_URL || env.TWENTY_BASE_URL;
+  if (!base) return null;
+  return { baseUrl: new URL(base).origin, basicUser: env.TWENTY_BASIC_USER || null, basicPassword: env.TWENTY_BASIC_PASSWORD || null };
 }
 
 const json = (status: number, body: unknown, headers: Record<string, string> = {}) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store", ...headers } });
