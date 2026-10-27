@@ -11,9 +11,9 @@
 | Sends | `categoryID` |
 | Reads | `viewer.definitions` |
 | Called from | `MarketplacePDPC2CAttributesComponent.react`, `useMarketplaceComposerAttributes` |
-| rea | `ev_77c7779c2f652629c0ecb2787f18ef1624a32701bd6a431132af84b1503bb8df` |
+| rea | `ev_9f20c975b10f276f1dba103dc009881528dc011b0c4292d6d82a40791b31bf70` |
 
-Seen 14 time(s) in 10 run(s).
+Seen 16 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,12 +26,14 @@ Seen 14 time(s) in 10 run(s).
 | flow | scroll: container +87px in 3 steps | 1 | 200 | 640 ms | 953 ms | — |
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 510 ms | 7021 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 500 ms | 656908 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 176 ms | 8320 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 171 ms | 1826 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 13: goto /marketplace/create/item: 200, 414 ms
+**runs/host/20261026T180628_61594285317994**, step 12: goto /marketplace/create/item: 200, 176 ms
 
 Sent:
 
@@ -58,15 +60,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742254971,
-      "time_at_flush_ms": 1792742254997
+      "request_start_time_ms": 1793038087373,
+      "time_at_flush_ms": 1793038087398
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261024T222706_61593981307720**, step 40: goto /marketplace/create/item: 200, 510 ms
+**runs/host/20261026T180628_61594285317994**, step 28: goto /marketplace/create/item: 200, 171 ms
 
 Sent:
 
@@ -93,47 +95,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792881249837,
-      "time_at_flush_ms": 1792881249865
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/host/20261024T222706_61593981307720**, setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9: 200, 500 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "25305590",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "categoryID": null
-  },
-  "doc_id": "24482075174793922",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=25305590"
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "definitions": []
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792883427280,
-      "time_at_flush_ms": 1792883427302
+      "request_start_time_ms": 1793038278090,
+      "time_at_flush_ms": 1793038278113
     },
     "is_final": true
   }

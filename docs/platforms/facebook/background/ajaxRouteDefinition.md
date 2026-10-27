@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
+| rea | `ev_ad4faa4ee06f9f7047a83035e82226ea07cbd4cb203ef0b5d645187a3563ec94` |
 
-Seen 36 time(s) in 11 run(s).
+Seen 40 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,6 +37,9 @@ Seen 36 time(s) in 11 run(s).
 | host | step 32: goto /me | 2 | 200 | 538–1419 ms | 5716–5753 ms | — |
 | host | step 39: clickRole button "…" | 1 | 200 | 857 ms | 3823 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 2195–4545 ms | 5140–644742 ms | — |
+| host | step 5: goto /me | 2 | 200 | 375–393 ms | 4188 ms | — |
+| host | step 11: clickRole button "…" | 1 | 200 | 478 ms | 3971 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 1 | 200 | 3716 ms | 3333 ms | — |
 
 <!-- facts:end -->
 

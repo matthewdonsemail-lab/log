@@ -11,23 +11,23 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf` |
+| rea | `ev_8c0ff583050eb8ba627ebc33d1c3396e4d2397cd8c074453a9ba13afb8daafea` |
 
-Seen 93 time(s) in 10 run(s).
+Seen 152 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | step 1: goto /marketplace/selling/ | 22 | -1, 200 | -1–1415 ms | 4829–13611 ms | — |
+| host | step 1: goto /marketplace/selling/ | 42 | -1, 200 | -1–1415 ms | 3578–13611 ms | — |
 | host | GET 200 /nw/ (319 ms) | 1 | -1 | -1 ms | 2587 ms | — |
-| host | step 4: goto /login/ | 5 | -1, 200 | -1–373 ms | 37–5778 ms | — |
+| host | step 4: goto /login/ | 16 | -1, 200 | -1–373 ms | 37–12686 ms | — |
 | host | GET 200 /nw/ (344 ms) | 1 | -1 | -1 ms | 3711 ms | — |
 | host | step 7: signIn | 1 | -1 | -1 ms | 2322 ms | — |
-| host | signIn: email typed | 2 | -1, 200 | -1–1577 ms | 1896–1997 ms | — |
-| host | signIn: password typed; submitting with Enter | 9 | -1, 200 | -1–797 ms | 69–17116 ms | — |
+| host | signIn: email typed | 3 | -1, 200 | -1–1577 ms | 1896–2020 ms | — |
+| host | signIn: password typed; submitting with Enter | 15 | -1, 200 | -1–797 ms | 69–17116 ms | — |
 | host | GET 200 /nw/ (355 ms) | 3 | -1 | -1 ms | 392–2265 ms | — |
-| host | step 2: pageText | 1 | -1 | -1 ms | 835 ms | — |
+| host | step 2: pageText | 3 | -1 | -1 ms | 835–5356 ms | — |
 | host | step 4: goto /marketplace/selling/ | 6 | -1 | -1 ms | 58–2707 ms | — |
-| host | step 5: pageText | 2 | -1, 200 | -1–362 ms | 1313–1528 ms | — |
+| host | step 5: pageText | 4 | -1, 200 | -1–362 ms | 1313–5767 ms | — |
 | host | step 7: goto /marketplace/selling/ | 6 | -1 | -1 ms | 57–3042 ms | — |
 | host | step 8: pageText | 2 | -1, 200 | -1–353 ms | 1241–5159 ms | — |
 | connect | Opening Marketplace > Selling. | 7 | -1 | -1 ms | 7239–9789 ms | — |
@@ -42,94 +42,19 @@ Seen 93 time(s) in 10 run(s).
 | host | step 13: code | 1 | 200 | 360 ms | 8434 ms | — |
 | host | code failed: RuntimeError: controlMissing: no visible textbox "…" | 1 | 200 | 375 ms | 5140 ms | — |
 | host | step 20: code | 1 | 200 | 1542 ms | 6077 ms | — |
-| host | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 436 ms | 3103 ms | — |
+| host | code: typed the current authenticator code; submitting with Enter | 2 | 200, -1 | -1–436 ms | 2625–3103 ms | — |
 | inspect | step 1: goto /login/ | 5 | 200 | 506–2835 ms | 8286–17100 ms | — |
 | inspect | step 2: signIn | 1 | 200 | 3011 ms | 2117 ms | — |
 | inspect | signIn: email typed | 1 | 200 | 845 ms | 1847 ms | — |
 | inspect | signIn: password typed; submitting with Enter | 3 | 200, 0 | 0–840 ms | 1023–11159 ms | — |
-
-### What it sent and what came back (the newest 3 from our runs)
-
-Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
-
-**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 377 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "cquick": "_r_31_",
-    "cquick_token": "(taken out)",
-    "ctarget": "https://www.facebook.com"
-  },
-  "body": {
-    "------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792742541282\r\n------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"zgS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/eFwiOm51bGx9In0sMTc5Mjc0MjQ4MTI1NSwwLDg1XSz cQCmcQAELjT cwD cwD cwD cwCycwA4X2FjdGluZ19hY2NvdW50ptkBJC40LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSessio… (556 chars)"
-  }
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "A-enHRPtqdcp945eGeLpZG8",
-  "payload": null,
-  "lid": "7699770584893673991"
-}
-```
-
-**runs/inspect/20261025T063549_61594360734687**, step 1: goto /login/: 200, 1631 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "ph": "C3"
-  },
-  "body": {
-    "------WebKitFormBoundary4PRdgXhOgUmst6iA\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792910178572\r\n------WebKitFormBoundary4PRdgXhOgUmst6iA\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":[[\"falco:qe2_js_exposure\",{\"e\":\"{\\\"universe\\\":\\\"fblite_urs_comet_qr_codes\\\",\\\"unit_id\\\":\\\"\\\",\\\"unit_type\\\":5,\\\"param\\\":\\\"should_show_qr_on_login_page\\\"}\",\"r\":1,\"d\":\"fd.ARvwx6PlHSgHPk4FtNScsBxmYnJl74rt5Y7T0B6iaolABoKoxZqLm43SyuebGfLRhNxc9RBequFarFoc8xK4S… (717 chars)"
-  }
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AaKpakR_C1Hsgurdlm25k6o",
-  "payload": null,
-  "lid": "7700490584250620089"
-}
-```
-
-**runs/inspect/20261025T063549_61594360734687**, step 2: signIn: 200, 3011 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "ph": "C3",
-    "qpl_active_flow_ids": "175125627,516759801"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AbZBj6K3kh_6syLlZsuWs3I",
-  "payload": null,
-  "lid": "7700490671414194123"
-}
-```
+| host | step 6: saveState | 1 | -1 | -1 ms | 3280 ms | — |
+| host | signIn failed: RuntimeError: the element kept moving under the cursor: the point is on Por | 1 | -1 | -1 ms | 38521 ms | — |
+| host | POST 0 /ajax/bz (0 ms) | 1 | -1 | -1 ms | 4826 ms | — |
+| host | signIn failed: RuntimeError: the element kept moving under the cursor: the point is on DIV | 2 | -1 | -1 ms | 16493–29852 ms | — |
+| host | step 8: goto /marketplace/selling/ | 6 | -1 | -1 ms | 40–1783 ms | — |
+| host | step 10: saveState | 1 | -1 | -1 ms | 2007 ms | — |
+| host | step 11: goto /login/ | 3 | -1 | -1 ms | 663–1669 ms | — |
+| host | step 13: saveState | 1 | -1 | -1 ms | 1917 ms | — |
 
 <!-- facts:end -->
 

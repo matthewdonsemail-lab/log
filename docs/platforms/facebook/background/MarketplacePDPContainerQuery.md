@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28939900068975315` |
+| doc_id | `28624035420589679` |
 | Path | `/api/graphql/` |
 | Sends | `adId`, `enableJobEmployerActionBar`, `enableJobSeekerActionBar`, `feedLocation`, `feedbackSource`, `focusCommentID`, `imageContext`, `includePDPParityContent`, `referralCode`, `referralSurfaceString`, `scale`, `shouldFetchLoggedOutSimilarListings`, `targetId`, `useDefaultActor`, `__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider`, `__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowLoggedOutSellerTrustrelayprovider`, `__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider`, `__relay_internal__pv__MarketplacePDPIsLoggedOutrelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowBSGRecommendationsrelayprovider`, `__relay_internal__pv__MarketplacePDPJobShouldShowSharedGroupsSectionrelayprovider`, `__relay_internal__pv__MarketplacePDPJobIsShareToGroupsEnabledOnCometrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowFAQrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowRelatedCategoriesrelayprovider`, `__relay_internal__pv__MarketplacePDPShouldShowSupportFooterrelayprovider` |
 | Reads | `viewer....MarketplaceCometFeatureAccessProvider_viewer`, `viewer.marketplace_product_details_page` |
-| Called from | `MarketplacePDPContainer.react` |
-| rea | `ev_e0f3f569280c4ef4d202f378e4d477cf2cbc213bcf95eb510861821e9e1b57ee` |
+| Called from | `MarketplacePDPContainer.react`, `MarketplacePDPParityContent.react` |
+| rea | `ev_d46c0449b06376744e8d1c234ac3ed7b57f4b1083561934118027ae705d8043b` |
 
-Seen 13 time(s) in 6 run(s).
+Seen 15 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,12 +29,14 @@ Seen 13 time(s) in 6 run(s).
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 652 ms | 700 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 694 ms | 800 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 920 ms | 2045 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 479 ms | 609 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 361 ms | 838 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 10: openAny 2-4 x /marketplace/item/: 200, 2191 ms
+**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 479 ms
 
 Sent:
 
@@ -52,11 +54,11 @@ Sent:
     "referralSurfaceString": "browse_tab",
     "scale": 1,
     "shouldFetchLoggedOutSimilarListings": false,
-    "targetId": "1749699906261391",
+    "targetId": "1818774979262678",
     "useDefaultActor": false,
     "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
     "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": false,
+    "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": true,
     "__relay_internal__pv__MarketplacePDPShouldShowLoggedOutSellerTrustrelayprovider": false,
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false,
     "__relay_internal__pv__MarketplacePDPIsLoggedOutrelayprovider": false,
@@ -77,7 +79,7 @@ Sent:
     "__relay_internal__pv__MarketplacePDPShouldShowRelatedCategoriesrelayprovider": false,
     "__relay_internal__pv__MarketplacePDPShouldShowSupportFooterrelayprovider": false
   },
-  "doc_id": "28939900068975315"
+  "doc_id": "28624035420589679"
 }
 ```
 
@@ -104,19 +106,19 @@ Answered:
         "product_details_type": "FOR_SALE_ITEM",
         "__isMarketplaceProductDetailsPage": "MarketplaceForSaleItemProductDetailsPage",
         "marketplace_listing_renderable_target": "(13 fields)",
-        "target": "(123 fields)",
+        "target": "(124 fields)",
         "ufi_renderer": null,
         "viewer": "(4 fields)",
         "__module_operation_MarketplacePDP_page": "(1 fields)",
         "__module_component_MarketplacePDP_page": "(1 fields)",
-        "id": "66:1749699906261391:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:1818774979262678:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742062750,
-      "time_at_flush_ms": 1792742063127
+      "request_start_time_ms": 1793038228920,
+      "time_at_flush_ms": 1793038229137
     },
     "is_final": true,
     "sr_payload": {
@@ -131,7 +133,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 694 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 361 ms
 
 Sent:
 
@@ -145,15 +147,15 @@ Sent:
     "enableJobSeekerActionBar": false,
     "feedbackSource": 56,
     "feedLocation": "MARKETPLACE_MEGAMALL",
-    "referralCode": "marketplace_top_picks",
+    "referralCode": "marketplace_general",
     "referralSurfaceString": "browse_tab",
     "scale": 1,
     "shouldFetchLoggedOutSimilarListings": false,
-    "targetId": "1098292579663100",
+    "targetId": "2249546198922840",
     "useDefaultActor": false,
     "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
     "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": false,
+    "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": true,
     "__relay_internal__pv__MarketplacePDPShouldShowLoggedOutSellerTrustrelayprovider": false,
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false,
     "__relay_internal__pv__MarketplacePDPIsLoggedOutrelayprovider": false,
@@ -174,7 +176,7 @@ Sent:
     "__relay_internal__pv__MarketplacePDPShouldShowRelatedCategoriesrelayprovider": false,
     "__relay_internal__pv__MarketplacePDPShouldShowSupportFooterrelayprovider": false
   },
-  "doc_id": "28939900068975315"
+  "doc_id": "28624035420589679"
 }
 ```
 
@@ -201,116 +203,19 @@ Answered:
         "product_details_type": "FOR_SALE_ITEM",
         "__isMarketplaceProductDetailsPage": "MarketplaceForSaleItemProductDetailsPage",
         "marketplace_listing_renderable_target": "(13 fields)",
-        "target": "(123 fields)",
+        "target": "(124 fields)",
         "ufi_renderer": null,
         "viewer": "(4 fields)",
         "__module_operation_MarketplacePDP_page": "(1 fields)",
         "__module_component_MarketplacePDP_page": "(1 fields)",
-        "id": "66:1098292579663100:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:2249546198922840:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742073285,
-      "time_at_flush_ms": 1792742073580
-    },
-    "is_final": true,
-    "sr_payload": {
-      "ddd": {
-        "hsrp": "(1 fields)",
-        "jsmods": "(1 fields)",
-        "allResources": "(1 items)",
-        "tieredResources": "(3 fields)"
-      }
-    }
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 920 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplacePDPContainerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "enableJobEmployerActionBar": false,
-    "enableJobSeekerActionBar": false,
-    "feedbackSource": 56,
-    "feedLocation": "MARKETPLACE_MEGAMALL",
-    "referralCode": "marketplace_top_picks",
-    "referralSurfaceString": "browse_tab",
-    "scale": 1,
-    "shouldFetchLoggedOutSimilarListings": false,
-    "targetId": "2064512760864293",
-    "useDefaultActor": false,
-    "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowRelatedSearchesrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowLoggedOutSellerTrustrelayprovider": false,
-    "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPIsLoggedOutrelayprovider": false,
-    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
-    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
-    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
-    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
-    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
-    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
-    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
-    "__relay_internal__pv__IsWorkUserrelayprovider": false,
-    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
-    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
-    "__relay_internal__pv__MarketplacePDPShouldShowBSGRecommendationsrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPJobShouldShowSharedGroupsSectionrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPJobIsShareToGroupsEnabledOnCometrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowFAQrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowRelatedCategoriesrelayprovider": false,
-    "__relay_internal__pv__MarketplacePDPShouldShowSupportFooterrelayprovider": false
-  },
-  "doc_id": "28939900068975315"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_age_verification_banner": null,
-      "marketplace_feature_access_status": {
-        "checkout_on_marketplace": "ELIGIBLE",
-        "comment_on_bsg_listing": "ELIGIBLE",
-        "comment_on_marketplace_listing": "ELIGIBLE",
-        "message_seller_on_marketplace": "ELIGIBLE",
-        "react_on_bsg_listing": "ELIGIBLE",
-        "react_on_marketplace_listing": "ELIGIBLE",
-        "see_seller_surfaces": "ELIGIBLE",
-        "sell_on_marketplace": "ELIGIBLE",
-        "view_seller_on_marketplace": "ELIGIBLE"
-      },
-      "marketplace_product_details_page": {
-        "__typename": "MarketplaceForSaleItemProductDetailsPage",
-        "product_details_type": "FOR_SALE_ITEM",
-        "__isMarketplaceProductDetailsPage": "MarketplaceForSaleItemProductDetailsPage",
-        "marketplace_listing_renderable_target": "(13 fields)",
-        "target": "(123 fields)",
-        "ufi_renderer": null,
-        "viewer": "(4 fields)",
-        "__module_operation_MarketplacePDP_page": "(1 fields)",
-        "__module_component_MarketplacePDP_page": "(1 fields)",
-        "id": "66:2064512760864293:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742086009,
-      "time_at_flush_ms": 1792742086340
+      "request_start_time_ms": 1793038239703,
+      "time_at_flush_ms": 1793038239903
     },
     "is_final": true,
     "sr_payload": {

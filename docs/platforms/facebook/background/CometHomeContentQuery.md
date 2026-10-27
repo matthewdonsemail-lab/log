@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `CometHomeContent.react` |
-| rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
+| rea | `ev_459dbe6fc8392c5185df68a9768ec12e975c7619162cefba942b56b1aa56215a` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,12 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 624 ms | 219884 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 477 ms | 12033 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 475 ms | 9208 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 226 ms | 12646 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 210 ms | 17036 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 190 ms | 161 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 754 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 226 ms
 
 Sent:
 
@@ -72,15 +75,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742237951,
-      "time_at_flush_ms": 1792742237978
+      "request_start_time_ms": 1793038330984,
+      "time_at_flush_ms": 1793038331007
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 448 ms
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 210 ms
 
 Sent:
 
@@ -105,15 +108,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396554,
-      "time_at_flush_ms": 1792742396575
+      "request_start_time_ms": 1793038436446,
+      "time_at_flush_ms": 1793038436471
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 477 ms
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 190 ms
 
 Sent:
 
@@ -130,20 +133,7 @@ Sent:
 Answered:
 
 ```json
-{
-  "data": {
-    "viewer": {
-      "comet_top_of_home_feed_tabs_renderer": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792911375640,
-      "time_at_flush_ms": 1792911375770
-    },
-    "is_final": true
-  }
-}
+null
 ```
 
 <!-- facts:end -->

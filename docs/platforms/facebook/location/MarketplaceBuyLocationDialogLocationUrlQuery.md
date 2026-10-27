@@ -11,9 +11,9 @@
 | Sends | `buy_location` |
 | Reads | `viewer.marketplace_feed_stories` |
 | Called from | `MarketplaceBuyLocationDialog.react` |
-| rea | `ev_5c223465994e732643e6aa87f33963fe75a82b42cccf211f8169746b5944c30b` |
+| rea | `ev_95fd7e537f088c38f953af153bb28049a8689cb17a5dcc928459c2a5b68a0a8a` |
 
-Seen 8 time(s) in 6 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,12 +23,13 @@ Seen 8 time(s) in 6 run(s).
 | inspect | step 13: setLocation 18015 | 1 | 200 | 434 ms | 14917 ms | — |
 | flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 506–528 ms | 4500–6172 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 506–588 ms | 4540–644230 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 1 | 200 | 190 ms | 3139 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 10: click e1174: 200, 405 ms
+**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 190 ms
 
 Sent:
 
@@ -39,8 +40,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buy_location": {
-      "latitude": 40.6262,
-      "longitude": -75.3757
+      "latitude": 50.6759,
+      "longitude": -120.33898
     }
   },
   "doc_id": "9608405655935574"
@@ -55,102 +56,16 @@ Answered:
     "viewer": {
       "marketplace_feed_stories": {
         "buy_location": {
-          "marketplace_vanity_id": "112122412138421",
-          "id": "112122412138421"
+          "marketplace_vanity_id": "114995818516099",
+          "id": "114995818516099"
         }
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792667562812,
-      "time_at_flush_ms": 1792667562854
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T105341_61594063207669**, step 4: setLocation Bethlehem, PA: 200, 412 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceBuyLocationDialogLocationUrlQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "buy_location": {
-      "latitude": 31.7031,
-      "longitude": 35.1956
-    }
-  },
-  "doc_id": "9608405655935574"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_feed_stories": {
-        "buy_location": {
-          "marketplace_vanity_id": "101880973186304",
-          "id": "101880973186304"
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792666532972,
-      "time_at_flush_ms": 1792666532996
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T105341_61594063207669**, step 13: setLocation 18015: 200, 434 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceBuyLocationDialogLocationUrlQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "buy_location": {
-      "latitude": 37.193232725035,
-      "longitude": -3.6622435304279
-    }
-  },
-  "doc_id": "9608405655935574"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_feed_stories": {
-        "buy_location": {
-          "marketplace_vanity_id": "108263972541612",
-          "id": "108263972541612"
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792666806577,
-      "time_at_flush_ms": 1792666806614
+      "request_start_time_ms": 1793038114701,
+      "time_at_flush_ms": 1793038114747
     },
     "is_final": true
   }

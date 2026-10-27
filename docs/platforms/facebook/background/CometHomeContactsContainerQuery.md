@@ -11,9 +11,9 @@
 | Sends | `numContactsToFetch`, `scale` |
 | Reads | — |
 | Called from | `CometHomeContactsContainer.react` |
-| rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
+| rea | `ev_edd6229fed43c7c2a14f463d5a2826a2e5f0a94f2805081537efea9dcc02418a` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,12 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 1077 ms | 219899 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 562 ms | 12047 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 928 ms | 9220 ms | A server error field_exception occured. Check server logs for details. |
+| host | step 32: goto /marketplace/ | 1 | 200 | 277 ms | 12657 ms | A server error field_exception occured. Check server logs for details. |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 261 ms | 17039 ms | A server error field_exception occured. Check server logs for details. |
+| host | step 40: goto /messages/ | 1 | 200 | 306 ms | 165 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 747 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 277 ms
 
 Sent:
 
@@ -82,7 +85,7 @@ Answered:
           "__module_operation_CometHomeContactsContainerQuery": null,
           "__module_component_CometHomeContactsContainerQuery": null
         },
-        "id": "61594063207669"
+        "id": "61594285317994"
       }
     }
   },
@@ -118,15 +121,15 @@ Answered:
   ],
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742237966,
-      "time_at_flush_ms": 1792742238010
+      "request_start_time_ms": 1793038331026,
+      "time_at_flush_ms": 1793038331066
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 648 ms
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 261 ms
 
 Sent:
 
@@ -161,7 +164,7 @@ Answered:
           "__module_operation_CometHomeContactsContainerQuery": null,
           "__module_component_CometHomeContactsContainerQuery": null
         },
-        "id": "61594063207669"
+        "id": "61594285317994"
       }
     }
   },
@@ -197,15 +200,15 @@ Answered:
   ],
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396620,
-      "time_at_flush_ms": 1792742396653
+      "request_start_time_ms": 1793038436478,
+      "time_at_flush_ms": 1793038436509
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 562 ms
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 306 ms
 
 Sent:
 
@@ -225,63 +228,7 @@ Sent:
 Answered:
 
 ```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "contacts_home_renderer": {
-          "__typename": "XFBContactsHomeDefaultRenderer",
-          "viewer": {
-            "chat_sidebar_is_collapsed": false,
-            "messenger_inbox_tray_contacts": [],
-            "chat_visibility": true
-          },
-          "__module_operation_CometHomeContactsContainerQuery": null,
-          "__module_component_CometHomeContactsContainerQuery": null
-        },
-        "id": "61593939852820"
-      }
-    }
-  },
-  "errors": [
-    {
-      "message": "A server error field_exception occured. Check server logs for details.",
-      "severity": "ERROR",
-      "mids": [
-        "001189db2a4071a04b876426152dd738"
-      ],
-      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
-      "path": [
-        "viewer",
-        "actor",
-        "contacts_home_renderer",
-        "__module_operation_CometHomeContactsContainerQuery"
-      ]
-    },
-    {
-      "message": "A server error field_exception occured. Check server logs for details.",
-      "severity": "ERROR",
-      "mids": [
-        "38b7283558dc534b70b66c65fc1fcb18"
-      ],
-      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
-      "path": [
-        "viewer",
-        "actor",
-        "contacts_home_renderer",
-        "__module_component_CometHomeContactsContainerQuery"
-      ]
-    }
-  ],
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792911375721,
-      "time_at_flush_ms": 1792911375875
-    },
-    "is_final": true
-  }
-}
+null
 ```
 
 <!-- facts:end -->

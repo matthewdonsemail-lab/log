@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
+| rea | `ev_f49cb66e2c5325aef6651d08bb98af4d5040e3995189f1817cb221bdc9396d69` |
 
-Seen 1357 time(s) in 41 run(s).
+Seen 1498 time(s) in 46 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -370,8 +370,8 @@ Seen 1357 time(s) in 41 run(s).
 | flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 446–459 ms | 5568–7516 ms | — |
 | flow | scroll: container +87px in 3 steps | 1 | 200 | 582 ms | 1086 ms | — |
 | flow | step 15: clickRole button "…" | 5 | 200 | 390–765 ms | 14020–21637 ms | — |
-| host | step 1: goto /marketplace/selling/ | 4 | 200 | 347–508 ms | 5101–5522 ms | — |
-| host | signIn: password typed; submitting with Enter | 1 | 200 | 394 ms | 8350 ms | — |
+| host | step 1: goto /marketplace/selling/ | 21 | 200 | 193–508 ms | 2775–5522 ms | — |
+| host | signIn: password typed; submitting with Enter | 2 | 200 | 394–443 ms | 6998–8350 ms | — |
 | host | step 28: clickRole button "…" | 4 | 200 | 366–510 ms | 7317–8462 ms | — |
 | host | step 31: goto /marketplace/status | 3 | 200 | 576–650 ms | 5660–5715 ms | — |
 | host | step 32: goto /me | 5 | 200 | 388–850 ms | 3905–5771 ms | — |
@@ -379,6 +379,37 @@ Seen 1357 time(s) in 41 run(s).
 | host | step 41: sellLocation | 1 | 200 | 545 ms | 615875 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 6 | 200 | 439–509 ms | 4678–7934 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 23 | 200 | 446–1496 ms | 5219–658165 ms | — |
+| host | step 4: goto /marketplace/status | 8 | 200 | 229–467 ms | 2255–5747 ms | — |
+| host | step 5: goto /me | 6 | 200 | 200–278 ms | 3958–5093 ms | — |
+| host | step 12: goto /marketplace/create/item | 3 | 200 | 207–298 ms | 2742–8902 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 7 | 200 | 181–302 ms | 2246–2982 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 4 | 200 | 178–230 ms | 3360–5135 ms | — |
+| host | step 16: goto / | 7 | 200 | 164–302 ms | 4959–6071 ms | — |
+| host | step 18: scroll 4-7 x 300-600px | 3 | 200 | 184–256 ms | 930–988 ms | — |
+| host | scroll: +474px in 12 wheel steps, 939 ms | 2 | 200 | 221–506 ms | 535–821 ms | — |
+| host | scroll: +589px in 14 wheel steps, 950 ms | 1 | 200 | 229 ms | 2373 ms | — |
+| host | scroll: +560px in 12 wheel steps, 515 ms | 1 | 200 | 188 ms | 6104 ms | — |
+| host | step 19: goto /marketplace/ | 7 | 200 | 180–257 ms | 578–1467 ms | — |
+| host | step 22: goto /marketplace/ | 7 | 200 | 182–307 ms | 947–1900 ms | — |
+| host | scroll: +600px in 14 wheel steps, 715 ms | 2 | 200 | 207–249 ms | 1234–3564 ms | — |
+| host | scroll: +643px in 14 wheel steps, 528 ms | 1 | 200 | 201 ms | 3270 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 2 | 200 | 176–213 ms | 1155–2051 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 2 | 200 | 162–200 ms | 1227–1836 ms | — |
+| host | step 26: goto /marketplace/ | 7 | 200 | 197–237 ms | 526–1335 ms | — |
+| host | step 28: goto /marketplace/create/item | 5 | 200 | 189–236 ms | 679–2183 ms | — |
+| host | step 30: goto /marketplace/ | 7 | 200 | 191–289 ms | 588–1416 ms | — |
+| host | step 32: goto /marketplace/ | 7 | 200 | 204–238 ms | 530–1382 ms | — |
+| host | scroll: +548px in 12 wheel steps, 436 ms | 1 | 200 | 259 ms | 1927 ms | — |
+| host | step 34: goto /marketplace/you/selling | 3 | 200 | 217–338 ms | 3878–4851 ms | — |
+| host | step 36: goto /marketplace/ | 7 | 200 | 188–281 ms | 629–1356 ms | — |
+| host | scroll: +594px in 13 wheel steps, 541 ms | 2 | 200 | 194–435 ms | 1420–3127 ms | — |
+| host | scroll: +377px in 9 wheel steps, 342 ms | 1 | 200 | 212 ms | 3120 ms | — |
+| host | step 38: goto /marketplace/you/selling | 3 | 200 | 221–245 ms | 1790–2322 ms | — |
+| host | step 40: goto /messages/ | 3 | 200 | 184–648 ms | 3696–4262 ms | — |
+| host | step 8: goto /marketplace/selling/ | 3 | 200 | 159–294 ms | 946–953 ms | — |
+| host | step 18: clickRole button "…" | 6 | 200 | 178–287 ms | 5200–8114 ms | — |
+| host | step 21: goto /marketplace/status | 4 | 200 | 213–264 ms | 8061–9000 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 207 ms | 312191 ms | — |
 
 <!-- facts:end -->
 

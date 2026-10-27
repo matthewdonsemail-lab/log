@@ -11,9 +11,9 @@
 | Sends | `params` |
 | Reads | `city_street_search.street_results` |
 | Called from | `MarketplaceSearchAddressDataSource.query` |
-| rea | `ev_419a0ebcddf76c934d343c10ff391a0b746b3baeb9644f33bc1850a30093eb4e` |
+| rea | `ev_6b89dd01fee5c5a08e8c93273e5fb4867df9de4e9e89f1936ca56a4191f334d1` |
 
-Seen 239 time(s) in 8 run(s).
+Seen 266 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -31,12 +31,13 @@ Seen 239 time(s) in 8 run(s).
 | flow | step 2: setLocation Mountain Top, Pennsylvania | 82 | 200 | 439–3124 ms | 8700–15611 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 28 | 200 | 470–3016 ms | 10101–12820 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 27 | 200 | 453–721 ms | 634413–637145 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 27 | 200 | 178–533 ms | 9853–12426 ms | A server error field_exception occured. Check server logs for details. |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 5: setLocation Bethlehem, Pennsylvania: 200, 716 ms
+**runs/host/20261026T180628_61594285317994**, step 14: setLocation Kamloops, British Columbia: 200, 178 ms
 
 Sent:
 
@@ -56,11 +57,11 @@ Sent:
         "NEIGHBORHOOD",
         "POSTAL_CODE"
       ],
-      "query": "Maracena, Spain",
+      "query": "",
       "search_type": "PLACE_TYPEAHEAD",
       "viewer_coordinates": {
-        "latitude": 37.193232725035,
-        "longitude": -3.6622435304279
+        "latitude": 32.739,
+        "longitude": -97.1145
       }
     }
   },
@@ -75,377 +76,14 @@ Answered:
   "data": {
     "city_street_search": {
       "street_results": {
-        "edges": [
-          {
-            "node": {
-              "single_line_address": "Maracena, Spain",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "108263972541612"
-              },
-              "location": {
-                "latitude": 37.20537,
-                "longitude": -3.63734,
-                "reverse_geocode_detailed": {
-                  "city": "Maracena",
-                  "postal_code": "18200"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "Cerrillo De Maracena, Andalucia, Spain",
-              "multi_line_address": [],
-              "subtitle": "Cerrillo de Maracena, Spain · 1,061 people checked in here",
-              "page": {
-                "id": "107477972621413"
-              },
-              "location": {
-                "latitude": 37.2,
-                "longitude": -3.63333,
-                "reverse_geocode_detailed": {
-                  "city": "Granada",
-                  "postal_code": "18014"
-                }
-              }
-            }
-          }
-        ]
+        "edges": []
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792667459954,
-      "time_at_flush_ms": 1792667460300
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T110738_61594063207669**, step 6: press Backspace: 200, 1864 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceSearchAddressDataSourceQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "params": {
-      "caller": "MARKETPLACE",
-      "country_filter": null,
-      "integration_strategy": "STRING_MATCH",
-      "page_category": [
-        "CITY",
-        "SUBCITY",
-        "NEIGHBORHOOD",
-        "POSTAL_CODE"
-      ],
-      "query": "Bethlehem, Pennsylvani",
-      "search_type": "PLACE_TYPEAHEAD",
-      "viewer_coordinates": {
-        "latitude": 37.193232725035,
-        "longitude": -3.6622435304279
-      }
-    }
-  },
-  "doc_id": "9660140454040174"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "city_street_search": {
-      "street_results": {
-        "edges": [
-          {
-            "node": {
-              "single_line_address": "Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "112122412138421"
-              },
-              "location": {
-                "latitude": 40.6262,
-                "longitude": -75.3757,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-2846"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "West Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "West Bethlehem, PA, US · 8,917 people checked in here",
-              "page": {
-                "id": "106487812719927"
-              },
-              "location": {
-                "latitude": 40.633495,
-                "longitude": -75.40961,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-1515"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "South Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "South Bethlehem, PA, US · 8,314 people checked in here",
-              "page": {
-                "id": "522250254591818"
-              },
-              "location": {
-                "latitude": 40.604397,
-                "longitude": -75.349135,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18015"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "New Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "107987009229121"
-              },
-              "location": {
-                "latitude": 41.0033,
-                "longitude": -79.3308,
-                "reverse_geocode_detailed": {
-                  "city": "New Bethlehem",
-                  "postal_code": "16242-1114"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "South Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "112587042087177"
-              },
-              "location": {
-                "latitude": 41.00106,
-                "longitude": -79.33716,
-                "reverse_geocode_detailed": {
-                  "city": "New Bethlehem",
-                  "postal_code": "16242-1214"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "Central Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "Central Bethlehem, PA, US · 558 people checked in here",
-              "page": {
-                "id": "867728996597059"
-              },
-              "location": {
-                "latitude": 40.627606,
-                "longitude": -75.363761,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-3104"
-                }
-              }
-            }
-          },
-          "… 2 more"
-        ]
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792667509330,
-      "time_at_flush_ms": 1792667509592
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T110738_61594063207669**, step 7: press a: 200, 708 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceSearchAddressDataSourceQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "params": {
-      "caller": "MARKETPLACE",
-      "country_filter": null,
-      "integration_strategy": "STRING_MATCH",
-      "page_category": [
-        "CITY",
-        "SUBCITY",
-        "NEIGHBORHOOD",
-        "POSTAL_CODE"
-      ],
-      "query": "Bethlehem, Pennsylvania",
-      "search_type": "PLACE_TYPEAHEAD",
-      "viewer_coordinates": {
-        "latitude": 37.193232725035,
-        "longitude": -3.6622435304279
-      }
-    }
-  },
-  "doc_id": "9660140454040174"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "city_street_search": {
-      "street_results": {
-        "edges": [
-          {
-            "node": {
-              "single_line_address": "Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "112122412138421"
-              },
-              "location": {
-                "latitude": 40.6262,
-                "longitude": -75.3757,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-2846"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "New Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "107987009229121"
-              },
-              "location": {
-                "latitude": 41.0033,
-                "longitude": -79.3308,
-                "reverse_geocode_detailed": {
-                  "city": "New Bethlehem",
-                  "postal_code": "16242-1114"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "South Bethlehem, Pennsylvania",
-              "multi_line_address": [],
-              "subtitle": "City",
-              "page": {
-                "id": "112587042087177"
-              },
-              "location": {
-                "latitude": 41.00106,
-                "longitude": -79.33716,
-                "reverse_geocode_detailed": {
-                  "city": "New Bethlehem",
-                  "postal_code": "16242-1214"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "West Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "West Bethlehem, PA, US · 8,917 people checked in here",
-              "page": {
-                "id": "106487812719927"
-              },
-              "location": {
-                "latitude": 40.633495,
-                "longitude": -75.40961,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-1515"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "South Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "South Bethlehem, PA, US · 8,314 people checked in here",
-              "page": {
-                "id": "522250254591818"
-              },
-              "location": {
-                "latitude": 40.604397,
-                "longitude": -75.349135,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18015"
-                }
-              }
-            }
-          },
-          {
-            "node": {
-              "single_line_address": "Central Bethlehem",
-              "multi_line_address": [],
-              "subtitle": "Central Bethlehem, PA, US · 558 people checked in here",
-              "page": {
-                "id": "867728996597059"
-              },
-              "location": {
-                "latitude": 40.627606,
-                "longitude": -75.363761,
-                "reverse_geocode_detailed": {
-                  "city": "Bethlehem",
-                  "postal_code": "18018-3104"
-                }
-              }
-            }
-          },
-          "… 2 more"
-        ]
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792667515988,
-      "time_at_flush_ms": 1792667516104
+      "request_start_time_ms": 1793038108619,
+      "time_at_flush_ms": 1793038108656
     },
     "is_final": true
   }

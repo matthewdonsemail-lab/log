@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf` |
+| rea | `ev_90a57d5c6142e4e150d87311aac3c2ef5a81ae4f6485a6f9359f99af3f3367e4` |
 
-Seen 168 time(s) in 46 run(s).
+Seen 197 time(s) in 51 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -96,7 +96,7 @@ Seen 168 time(s) in 46 run(s).
 | inspect | step 1: goto /me | 1 | 200 | 533 ms | 2223 ms | — |
 | inspect | step 7: click e1395 | 1 | 200 | 1348 ms | 7448 ms | — |
 | inspect | step 8: wait 5s | 1 | 200 | 2507 ms | 1649309 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 346–388 ms | 1644–1974 ms | — |
+| host | step 1: goto /marketplace/selling/ | 7 | 200, -1 | -1–388 ms | 804–1974 ms | — |
 | host | step 3: clickRole button "…" | 2 | 200 | 367–3015 ms | 3836–8017 ms | — |
 | host | step 6: goto /marketplace/status | 1 | 200 | 1247 ms | 1819 ms | — |
 | host | step 7: goto /me | 1 | 200 | 6000 ms | 6610 ms | — |
@@ -104,8 +104,8 @@ Seen 168 time(s) in 46 run(s).
 | host | step 17: goto /me | 1 | 200 | 427 ms | 1101 ms | — |
 | flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 520–6407 ms | 742–6865 ms | — |
 | flow | step 15: clickRole button "…" | 1 | 200 | 892 ms | 10203 ms | — |
-| host | step 4: goto /login/ | 1 | 200 | 354 ms | 716 ms | — |
-| host | signIn: password typed; submitting with Enter | 1 | 200 | 3444 ms | 7794 ms | — |
+| host | step 4: goto /login/ | 2 | 200, -1 | -1–354 ms | 716–9430 ms | — |
+| host | signIn: password typed; submitting with Enter | 2 | 200, -1 | -1–3444 ms | 3986–7794 ms | — |
 | host | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 359 ms | 4355 ms | — |
 | host | step 28: clickRole button "…" | 2 | 200 | 365–9221 ms | 2882–12581 ms | — |
 | host | step 31: goto /marketplace/status | 1 | 200 | 462 ms | 1946 ms | — |
@@ -114,12 +114,32 @@ Seen 168 time(s) in 46 run(s).
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 431 ms | 771 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 442–538 ms | 613466–655198 ms | — |
 | inspect | step 1: goto /login/ | 1 | 200 | 1042 ms | 2296 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200, -1 | -1–188 ms | 374–506 ms | — |
+| host | step 5: goto /me | 1 | 200 | 191 ms | 427 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 254 ms | 393 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 281 ms | 301 ms | — |
+| host | step 16: goto / | 1 | 200 | 246 ms | 705 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 184 ms | 377 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 156 ms | 796 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 199 ms | 323 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 151 ms | 391 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 155 ms | 461 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 199 ms | 332 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 150 ms | 363 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 296 ms | 346 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 229 ms | 1374 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 259 ms | 817 ms | — |
+| host | step 8: goto /marketplace/selling/ | 1 | -1 | -1 ms | 673 ms | — |
+| host | step 11: goto /login/ | 1 | -1 | -1 ms | 352 ms | — |
+| host | step 17: pageText | 1 | -1 | -1 ms | 285 ms | — |
+| host | step 18: clickRole button "…" | 2 | -1 | -1 ms | 2077–2415 ms | — |
+| host | step 21: goto /marketplace/status | 1 | -1 | -1 ms | 5302 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 428 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 256 ms
 
 Sent:
 
@@ -132,13 +152,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AE_hGpcLbigag3LZeVRrnoz",
+  "rid": "AAFeCWoer68lEB-udEY8MOA",
   "payload": null,
-  "lid": "7699771399959004556"
+  "lid": "7701039559630703486"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 427 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 188 ms
 
 Sent:
 
@@ -151,13 +171,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AoYMt7cPblvYvwqc7u6-6N8",
+  "rid": "AMzJ4Q4lglLOcOzntzU2mjm",
   "payload": null,
-  "lid": "7699771611009940763"
+  "lid": "7701039671076200095"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 438 ms
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 191 ms
 
 Sent:
 
@@ -170,9 +190,9 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "APPS8iAlIj4WWLVggRZhioy",
+  "rid": "AYaRgUERnFH9xXPdOY13woU",
   "payload": null,
-  "lid": "7699771740668431251"
+  "lid": "7701039735331358729"
 }
 ```
 

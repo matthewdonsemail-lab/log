@@ -8024,3 +8024,72 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: New `log kb` command (`search`, `sync`, `remember`, `show`; MCP `kbSearch`, `kbSync`, `kbRemember`, `kbShow`) on the new `src/knowledge/base` domain. `syncKnowledge` collects AGENTS.md rules and sections, skills, docs (`docs/infra` as infra, never `docs/vendors`), every Claude memory file, the page states and log-cli's accounts (status and setup only), scrubs secrets (`scrubSecrets`: named keys, URLs with a login, JWTs, private keys, long random strings), writes new articles to ListeningKit's Twenty in batches of 60 (`twentyKbStore`, object `knowledgeArticles`, waits out the 100-a-minute rate limit) and re-indexes changed ones into Redis 8 (`redisKbIndex`, `kbIdx`: BM25 plus HNSW over all-MiniLM-L6-v2). `searchKnowledge` fuses keyword (every word first, then any) and meaning with reciprocal rank fusion, one hit per article. A SessionStart hook (`scripts/hooks/knowledge.ts`) tells every session the knowledge base is there. Rule 90, MCP instruction 24, `skills/knowledgeBase`, `docs/knowledgeBase.md`, `docs/infra/node02.md`.
 Why: matt asked for a knowledge base inside ListeningKit's Twenty holding all of it, agent memory included, with Redis for search.
 Checked: `bun run check` green (1113 pass, 0 fail) plus 11 new tests on in-memory stores. Live: the first sync wrote 610 articles to node02's Twenty and 3149 chunks to kb-redis in 268 s; a repeat sync wrote only the 2 new ones. Searches found the right article first or second ("why did the twenty tunnel go down", "messenger pin blocks the inbox" with `--kind pageState`, "where is the cloudflare api token", "launch budget opens per day"), and `kb remember` was searchable at once.
+
+## 2026-10-27 03:49Z · feat/knowledgeBase
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupport2FAChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/login/useCDSWebLoginMutation.md`: edited
+- `docs/platforms/facebook/login/useTwoFactorLoginValidateCodeMutation.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfilePromptQuickPromotionMutation.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+
+What changed: Rebuilt the Facebook request docs (`log facebook capture --docs`) from the 8 host runs of Kamloops account 61594285317994 on AdsPower (2026-10-24 to 2026-10-26): 60 requests across background, checkpoint, listingForm, location, login and profile, 48 code slices newly read by rea, the client map and clientFacts updated.
+Why: the pre-push docs gate (rule 27) refused the knowledge base push because 5 runs were newer than the docs.
+Checked: the build ended with 59 of 60 requests read by rea and 0 still needing their reasoning written; `check:facebookClientDocs` runs again on push.

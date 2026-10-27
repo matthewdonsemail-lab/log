@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `OhaiWebPublicKeyConfig` |
-| rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
+| rea | `ev_24d35f65a12b640e55c6addb556a955d9341add8f7bd85d37a21c496de1f9fdd` |
 
-Seen 150 time(s) in 41 run(s).
+Seen 170 time(s) in 44 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,12 +107,30 @@ Seen 150 time(s) in 41 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 439 ms | 7925 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 475 ms | 5963 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 438–503 ms | 616559–657136 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 207–387 ms | 3570–4840 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 162 ms | 2946–5631 ms | — |
+| host | step 5: goto /me | 1 | 200 | 159 ms | 5000 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 612 ms | 9248 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 164 ms | 6377 ms | — |
+| host | step 16: goto / | 1 | 200 | 305 ms | 5496 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 160 ms | 3446 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 161 ms | 2707 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 170 ms | 3331 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 161 ms | 1943 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 165 ms | 2826 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 363 ms | 2697 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 159 ms | 4771 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 159 ms | 2063 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 172 ms | 2269 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 231 ms | 3660 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 167 ms | 9747 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 175 ms | 8935 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 367 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 387 ms
 
 Sent:
 
@@ -154,28 +172,78 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742733098,
-      "time_at_flush_ms": 1792742733119
+      "request_start_time_ms": 1793037999878,
+      "time_at_flush_ms": 1793037999905
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 389 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 162 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "26996952523264441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_ohai_configurations": {
+      "ohai_configs": [
+        {
+          "key_id": 162,
+          "public_key": "11f2dd6638aa26bbbe773c077fb729b4a6188a8c698a24793c8c168f26e30a7c",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793139459"
+        },
+        {
+          "key_id": 163,
+          "public_key": "9c248a260f28ed05a9a47c8b75fb03c3ebc59d8e68fda6114c319082d3fbb231",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793751466"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038028304,
+      "time_at_flush_ms": 1793038028324
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 159 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
   "server_timestamps": "true",
   "variables": {},
   "doc_id": "26996952523264441",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=30613466"
+    "qpl_active_flow_ids=25305590"
   ]
 }
 ```
@@ -208,58 +276,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742782388,
-      "time_at_flush_ms": 1792742782407
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 583 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "26996952523264441"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "xfb_ohai_configurations": {
-      "ohai_configs": [
-        {
-          "key_id": 162,
-          "public_key": "11f2dd6638aa26bbbe773c077fb729b4a6188a8c698a24793c8c168f26e30a7c",
-          "kem_id": 32,
-          "kdf_id": 1,
-          "aead_id": 1,
-          "expiration_date": "1793139459"
-        },
-        {
-          "key_id": 163,
-          "public_key": "9c248a260f28ed05a9a47c8b75fb03c3ebc59d8e68fda6114c319082d3fbb231",
-          "kem_id": 32,
-          "kdf_id": 1,
-          "aead_id": 1,
-          "expiration_date": "1793751466"
-        }
-      ]
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742814264,
-      "time_at_flush_ms": 1792742814285
+      "request_start_time_ms": 1793038043541,
+      "time_at_flush_ms": 1793038043561
     },
     "is_final": true
   }

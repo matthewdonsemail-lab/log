@@ -11,9 +11,9 @@
 | Sends | `first` |
 | Reads | `viewer.bootstrap_keywords` |
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
-| rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
+| rea | `ev_b7f532040068a16e3c668bd85c781db5b1b919c472d2a3a709e878d30d5ecac6` |
 
-Seen 144 time(s) in 39 run(s).
+Seen 164 time(s) in 42 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -105,12 +105,30 @@ Seen 144 time(s) in 39 run(s).
 | host | step 32: goto /me | 1 | 200 | 691 ms | 4585 ms | — |
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 514 ms | 7201 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 420–479 ms | 616445–657874 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 190–226 ms | 3331–4369 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 198–269 ms | 2381–4753 ms | — |
+| host | step 5: goto /me | 1 | 200 | 185 ms | 4078 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 187 ms | 8428 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 269 ms | 4459 ms | — |
+| host | step 16: goto / | 1 | 200 | 221 ms | 5206 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 170 ms | 3432 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 162 ms | 2727 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 178 ms | 3352 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 162 ms | 1909 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 165 ms | 2849 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 354 ms | 2708 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 274 ms | 3945 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 174 ms | 2069 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 165 ms | 2198 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 209 ms | 3749 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 165 ms | 9238 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 199 ms | 8148 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 408 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 226 ms
 
 Sent:
 
@@ -136,58 +154,9 @@ Answered:
         "edges": [
           {
             "node": {
-              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
-              "item_logging_id": "2026-10-23:QMxCGy",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "-3162010204409643221"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem community",
-              "item_logging_id": "2026-10-23:trtp6x",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (583 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "8939710153396872416"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem pa community",
-              "item_logging_id": "2026-10-23:WR3iwm",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300125475709,\"91043\":1,\"90684\":1}}",
-              "sts_info": null,
-              "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "3016116816568602210"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem trash",
-              "item_logging_id": "2026-10-23:iGNYkq",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "keyword_text": "halima ndjzn",
+              "item_logging_id": "2026-10-26:o4TgY6",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594285317994,\"kwEntIds\":[61594285317994],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594285317994,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"-210641090… (577 chars)",
               "sts_info": {
                 "direct_nav_result": "(8 fields)",
                 "high_confidence_result": null,
@@ -197,58 +166,269 @@ Answered:
               "suggestion_keys": {
                 "tier": 200,
                 "keys": "(1 items)",
-                "default_key": "4479362200166425434"
+                "default_key": "7322689057260447613"
               }
             }
           },
           {
             "node": {
-              "keyword_text": "alexander karimanzira",
-              "item_logging_id": "2026-10-23:AUpjbj",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61579394997089,\"kwEntIds\":[61579394997089],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6894999857601872764\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059743219155,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
+              "keyword_text": "facebook marketplace",
+              "item_logging_id": "2026-10-26:tzzDyZ",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":706949656125688,\"kwEntIds\":[706949656125688],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":706949656125688,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (587 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
               "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "6894999857601872764"
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "-6993362429756454141"
               }
             }
           },
           {
             "node": {
-              "keyword_text": "theresa kariza",
-              "item_logging_id": "2026-10-23:jHAiO2",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590292814634,\"kwEntIds\":[61590292814634],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"-8327946932672748877\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059683034415,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
+              "keyword_text": "memories",
+              "item_logging_id": "2026-10-26:9SneZS",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":982333848445852,\"kwEntIds\":[982333848445852],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":982333848445852,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (588 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
               "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "-8327946932672748877"
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "-3946664757362902849"
               }
             }
           },
-          "… 196 more"
+          {
+            "node": {
+              "keyword_text": "groups",
+              "item_logging_id": "2026-10-26:9qtznc",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":1150859034959292,\"kwEntIds\":[1150859034959292],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":1150859034959292,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"ke… (589 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1251513559198754765"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "events",
+              "item_logging_id": "2026-10-26:HOo2Al",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":131778540208239,\"kwEntIds\":[131778540208239],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":131778540208239,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (586 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1596055195056384979"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "friends",
+              "item_logging_id": "2026-10-26:X6Uzm4",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":133395720146589,\"kwEntIds\":[133395720146589],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":133395720146589,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (578 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "262768803647041131"
+              }
+            }
+          },
+          "… 4 more"
         ]
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742733444,
-      "time_at_flush_ms": 1792742733476
+      "request_start_time_ms": 1793037999536,
+      "time_at_flush_ms": 1793037999590
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 382 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 198 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 2000
+  },
+  "doc_id": "27797631676573850"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "bootstrap_keywords": {
+        "edges": [
+          {
+            "node": {
+              "keyword_text": "halima ndjzn",
+              "item_logging_id": "2026-10-26:I93C2Q",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594285317994,\"kwEntIds\":[61594285317994],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594285317994,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"-210641090… (577 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "7322689057260447613"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "facebook marketplace",
+              "item_logging_id": "2026-10-26:HC8Mb5",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":706949656125688,\"kwEntIds\":[706949656125688],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":706949656125688,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (587 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "-6993362429756454141"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "memories",
+              "item_logging_id": "2026-10-26:2nwiIu",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":982333848445852,\"kwEntIds\":[982333848445852],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":982333848445852,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (588 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "-3946664757362902849"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "groups",
+              "item_logging_id": "2026-10-26:PsGCld",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":1150859034959292,\"kwEntIds\":[1150859034959292],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":1150859034959292,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"ke… (589 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1251513559198754765"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "events",
+              "item_logging_id": "2026-10-26:FihJLN",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":131778540208239,\"kwEntIds\":[131778540208239],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":131778540208239,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (586 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1596055195056384979"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "friends",
+              "item_logging_id": "2026-10-26:nfQCOq",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":133395720146589,\"kwEntIds\":[133395720146589],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":133395720146589,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (578 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "262768803647041131"
+              }
+            }
+          },
+          "… 4 more"
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038027426,
+      "time_at_flush_ms": 1793038027448
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 185 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
   "server_timestamps": "true",
@@ -257,7 +437,7 @@ Sent:
   },
   "doc_id": "27797631676573850",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=30613466"
+    "qpl_active_flow_ids=25305590"
   ]
 }
 ```
@@ -272,58 +452,9 @@ Answered:
         "edges": [
           {
             "node": {
-              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
-              "item_logging_id": "2026-10-23:NbwXmc",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "-3162010204409643221"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem community",
-              "item_logging_id": "2026-10-23:PXcHfL",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (583 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "8939710153396872416"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem pa community",
-              "item_logging_id": "2026-10-23:kxhXhU",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300125475709,\"91043\":1,\"90684\":1}}",
-              "sts_info": null,
-              "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "3016116816568602210"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem trash",
-              "item_logging_id": "2026-10-23:wWaB6N",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "keyword_text": "halima ndjzn",
+              "item_logging_id": "2026-10-26:ry9MCW",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594285317994,\"kwEntIds\":[61594285317994],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594285317994,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"-210641090… (577 chars)",
               "sts_info": {
                 "direct_nav_result": "(8 fields)",
                 "high_confidence_result": null,
@@ -333,129 +464,15 @@ Answered:
               "suggestion_keys": {
                 "tier": 200,
                 "keys": "(1 items)",
-                "default_key": "4479362200166425434"
+                "default_key": "7322689057260447613"
               }
             }
           },
           {
             "node": {
-              "keyword_text": "alexander karimanzira",
-              "item_logging_id": "2026-10-23:jLOQuP",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61579394997089,\"kwEntIds\":[61579394997089],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6894999857601872764\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059743219155,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
-              "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "6894999857601872764"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "theresa kariza",
-              "item_logging_id": "2026-10-23:Xyyhb6",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590292814634,\"kwEntIds\":[61590292814634],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"-8327946932672748877\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059683034415,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
-              "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "-8327946932672748877"
-              }
-            }
-          },
-          "… 196 more"
-        ]
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742782352,
-      "time_at_flush_ms": 1792742782377
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 501 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "first": 2000
-  },
-  "doc_id": "27797631676573850"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "bootstrap_keywords": {
-        "edges": [
-          {
-            "node": {
-              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
-              "item_logging_id": "2026-10-23:t8qzZ7",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "-3162010204409643221"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem community",
-              "item_logging_id": "2026-10-23:li6OUv",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (583 chars)",
-              "sts_info": {
-                "direct_nav_result": null,
-                "high_confidence_result": "(7 fields)",
-                "disambiguation_result": null,
-                "badge_info": null
-              },
-              "suggestion_keys": {
-                "tier": 100,
-                "keys": "(1 items)",
-                "default_key": "8939710153396872416"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem pa community",
-              "item_logging_id": "2026-10-23:f2gmIC",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300125475709,\"91043\":1,\"90684\":1}}",
-              "sts_info": null,
-              "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "3016116816568602210"
-              }
-            }
-          },
-          {
-            "node": {
-              "keyword_text": "bethlehem trash",
-              "item_logging_id": "2026-10-23:nLBmn4",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "keyword_text": "facebook marketplace",
+              "item_logging_id": "2026-10-26:oDFrWt",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":706949656125688,\"kwEntIds\":[706949656125688],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":706949656125688,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (587 chars)",
               "sts_info": {
                 "direct_nav_result": "(8 fields)",
                 "high_confidence_result": null,
@@ -465,45 +482,91 @@ Answered:
               "suggestion_keys": {
                 "tier": 200,
                 "keys": "(1 items)",
-                "default_key": "4479362200166425434"
+                "default_key": "-6993362429756454141"
               }
             }
           },
           {
             "node": {
-              "keyword_text": "alexander karimanzira",
-              "item_logging_id": "2026-10-23:M2vxF7",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61579394997089,\"kwEntIds\":[61579394997089],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6894999857601872764\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059743219155,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
+              "keyword_text": "memories",
+              "item_logging_id": "2026-10-26:Qzf5LU",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":982333848445852,\"kwEntIds\":[982333848445852],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":982333848445852,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (588 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
               "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "6894999857601872764"
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "-3946664757362902849"
               }
             }
           },
           {
             "node": {
-              "keyword_text": "theresa kariza",
-              "item_logging_id": "2026-10-23:zkrQyb",
-              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590292814634,\"kwEntIds\":[61590292814634],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"-8327946932672748877\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38059683034415,\"91043\":0,\"90684\":1}}",
-              "sts_info": null,
+              "keyword_text": "groups",
+              "item_logging_id": "2026-10-26:LTB6YM",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":1150859034959292,\"kwEntIds\":[1150859034959292],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":1150859034959292,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"ke… (589 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
               "suggestion_keys": {
-                "tier": 0,
-                "keys": "(0 items)",
-                "default_key": "-8327946932672748877"
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1251513559198754765"
               }
             }
           },
-          "… 196 more"
+          {
+            "node": {
+              "keyword_text": "events",
+              "item_logging_id": "2026-10-26:dPzwtH",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":131778540208239,\"kwEntIds\":[131778540208239],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":131778540208239,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (586 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "1596055195056384979"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "friends",
+              "item_logging_id": "2026-10-26:SbuMMj",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_app_suggestion\",\"kwEntConnected\":false,\"category\":\"shortcut\",\"kwEntId\":133395720146589,\"kwEntIds\":[133395720146589],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":1,\"direct_nav_id\":133395720146589,\"sts_is_connected\":false,\"sts_entity_type\":\"shortcut\",\"suggestion_keys\":{\"keys\"… (578 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "262768803647041131"
+              }
+            }
+          },
+          "… 4 more"
         ]
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742814367,
-      "time_at_flush_ms": 1792742814393
+      "request_start_time_ms": 1793038042631,
+      "time_at_flush_ms": 1793038042651
     },
     "is_final": true
   }
