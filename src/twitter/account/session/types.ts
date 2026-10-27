@@ -57,6 +57,8 @@ export interface TwitterDmThread {
   lastText?: string | null
   unread: boolean
   messagesLoaded: number
+  conversationIds?: string[]
+  boxes?: TwitterDmThread['box'][]
 }
 
 export interface TwitterDmConversation {

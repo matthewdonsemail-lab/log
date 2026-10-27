@@ -1,13 +1,14 @@
 import type { TwitterDmMessage, TwitterDmThread, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
+import { dropMirrors, mergeThreads, ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--json]",
   "Reads the account's X direct messages on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
-  "Without --conversation it reads the inbox and the message requests (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and lists the newest conversations first: who, when, the last message and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages (dm/conversation), oldest first.",
-  "--with <handle> reads everything with one person by their handle: their legacy thread and their X Chat thread merged into one timeline, oldest first. X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
+  "Without --conversation it reads the inbox and the message requests (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages (dm/conversation), oldest first.",
+  "--with <handle> reads everything with one person by their handle: their legacy thread and their X Chat thread merged into one timeline, oldest first, a message mirrored into both shown once. X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
 ].join("\n");
 
 export const DMS_INPUT: CommandInput = {
@@ -37,7 +38,7 @@ const whoOf = (thread: TwitterDmThread): string => thread.name || thread.with.ma
 
 function threadLine(thread: TwitterDmThread, index: number): string {
   const flags = [thread.box === "request" ? "request" : null, thread.unread ? "unread" : null, thread.lastFromMe ? "you sent last" : "waiting on you"].filter(Boolean).join(", ");
-  return `  ${index + 1}. ${whoOf(thread)} · ${thread.lastAt ?? "?"} · ${flags}\n     ${thread.lastFromMe ? "you" : "them"}: ${oneLine(thread.lastText) || "(no text)"}\n     conversation ${thread.conversationId}`;
+  return `  ${index + 1}. ${whoOf(thread)} · ${thread.lastAt ?? "?"} · ${flags}\n     ${thread.lastFromMe ? "you" : "them"}: ${oneLine(thread.lastText) || "(no text)"}\n     conversation ${(thread.conversationIds ?? [thread.conversationId]).join(" + ")}`;
 }
 
 function messageLine(message: TwitterDmMessage): string {
@@ -50,6 +51,11 @@ function render(account: string, answer: TwitterSessionAnswer, waiting: boolean)
   const threads = (answer.threads ?? []).filter((t) => !waiting || !t.lastFromMe);
   const head = `log twitter dms: @${answer.screenName ?? account}, ${threads.length} conversation${threads.length === 1 ? "" : "s"}${waiting ? " waiting on a reply" : `, ${answer.waitingOnYou ?? 0} waiting on a reply`}, newest first, via the direct-API engine (twikit, no browser):`;
   return [head, ...threads.map(threadLine)].join("\n");
+}
+
+function onePerPerson(answer: TwitterSessionAnswer): TwitterSessionAnswer {
+  const threads = mergeThreads(answer.threads ?? []);
+  return { ...answer, threads, waitingOnYou: threads.filter((t) => !t.lastFromMe).length };
 }
 
 export const dmsCommand: Command = {
@@ -87,7 +93,7 @@ export const dmsCommand: Command = {
         if (!index.answer.ok) return { code: 1, stdout: render(opened.account.accountName, index.answer, false) };
         const matches = (index.answer.conversations ?? []).filter((c) => c.with.some((p) => (p.handle ?? "").toLowerCase() === needle));
         if (!matches.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation in this account's inbox`);
-        const messages = matches.flatMap((c) => c.messages).sort((x, y) => (x.time ?? "").localeCompare(y.time ?? "")).slice(-limit);
+        const messages = dropMirrors(matches.flatMap((c) => c.messages)).slice(-limit);
         const answer = { ...index.answer, conversations: undefined, threads: undefined, ok: true, conversationId: matches.map((m) => m.conversationId).join(" + "), messages };
         const merged = { ...index, answer };
         if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer }, null, 2) };
@@ -95,7 +101,8 @@ export const dmsCommand: Command = {
         return { code: answer.ok ? 0 : 1, stdout: [render(opened.account.accountName, answer, false), ...(governor ? [governor] : [])].join("\n") };
       }
       context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine (twikit), X called directly${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
-      const run = await read({ limit, ...(typeof convoId === "string" ? { conversationId: convoId } : {}) });
+      const raw = await read({ limit, ...(typeof convoId === "string" ? { conversationId: convoId } : {}) });
+      const run = raw.answer.ok && raw.answer.threads ? { ...raw, answer: onePerPerson(raw.answer) } : raw;
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {
         const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter((t) => !t.lastFromMe) } : run.answer;
