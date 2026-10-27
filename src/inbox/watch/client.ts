@@ -3,6 +3,7 @@ import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSyn
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
+import { personKeyOf } from '../../twitter/dm/person/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -34,8 +35,9 @@ export function newMessages(platform: string, account: string, threads: InboxThr
   const messages: InboxMessage[] = []
   for (const t of threads) {
     if (!t.lastAt) continue
-    const before = seen[t.conversationId]
-    next[t.conversationId] = before && before > t.lastAt ? before : t.lastAt
+    const key = personKeyOf(t.conversationId)
+    const before = [next[key], seen[t.conversationId]].filter(Boolean).sort().pop()
+    next[key] = before && before > t.lastAt ? before : t.lastAt
     if (t.lastFromMe || (before && t.lastAt <= before)) continue
     messages.push({ platform, account, conversationId: t.conversationId, with: t.with, text: t.lastText ?? '', at: t.lastAt, box: t.box, seenAt: now.toISOString() })
   }
@@ -97,7 +99,7 @@ export function releasePoll(): void {
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
   const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
-  return [`>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account. Tell matt now, with what they said, and read everything with that person, the old DM thread and X Chat merged, with \`log ${messages[0].platform} dms --account ${messages[0].account} --with <handle>\` before answering anything.`, ...lines].join('\n')
+  return [`>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account. Tell matt now, with what they said, and read everything with that person, the old DM thread and X Chat merged (they are one conversation, whichever id a message names), with \`log ${messages[0].platform} dms --account ${messages[0].account} --with <handle>\` before answering anything.`, ...lines].join('\n')
 }
 
 export function twitterAccounts(root: string = twitterStateRoot()): string[] {

@@ -7989,3 +7989,24 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a new use case, `docs/useCases/twitter/affiliateMarketing.md`: read and index every conversation (X Chat included), search for the ones about a tool, read each person's merged history, sort them, reply with context and the affiliate credit only where it helps (never to a rival's founder), and book the partner program call, with the lessons from today's wrong replies. Indexed in both use-case READMEs. dmInbox.md and engagerDms.md no longer say X Chat can't be read. The inbox watcher's alert now says to read the person with `--with <handle>` (old thread and X Chat merged), and a reply that shows in both the old thread and its X Chat mirror alerts once.
 Why: matt asked for an affiliate marketing use case, and asked whether the inbox monitor now covers the unified X Chat inbox.
 Checked: `bun run check` with LOG_PYTHON: 1102 pass, 0 fail, every gate green.
+
+## 2026-10-27 12:39Z · fix/onePersonOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: added function onePerPerson · changed const DMS_USAGE, function threadLine, const dmsCommand
+- `src/cli/twitter/helpers/send.ts`: changed const SHAPES, function renderSent
+- `src/inbox/watch/client.ts`: changed function newMessages, function inboxContext
+- `src/search/conversations/client.ts`: changed function buildIndex, function linearScan
+- `src/search/conversations/helpers/index.ts`: added export from "./person"
+- `src/search/conversations/helpers/person.ts`: added function onePerPerson
+- `src/twitter/account/session/types.ts`: changed interface TwitterDmThread
+- `src/twitter/dm/index.ts`: added export from "./person/index.ts"
+- `src/twitter/dm/person/client.ts`: added const URL, function personKeyOf, const timeOf, const said, function isMirror, function mergeThreads, function dropMirrors
+- `src/twitter/dm/person/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/dm/person/person.test.ts`: added const thread, test "the old thread and its X Chat mirror have one key, either order", test "a mirrored pair is one row with the newest message from either thread", test "a message mirrored into both threads is shown once, even with its link rewritten", test "search indexes the pair as one conversation, so one hit", test "the watcher alerts once for one reply seen in both threads"
+- `src/twitter/dm/person/types.ts`: added interface MirrorMessage, const MIRROR_SECONDS, const ONE_INBOX_NOTE
+
+What changed: X's old DM thread (`<a>-<b>`) and its X Chat mirror (`<a>:<b>`) are one conversation everywhere (#59). New `src/twitter/dm/person`: `personKeyOf` gives both threads one key, `mergeThreads` makes them one row, `dropMirrors` shows a message mirrored into both once (same sender, same words with links ignored, within 5 s). `log twitter dms` lists one row per person with the newest message from either thread, and `--with` no longer shows a mirrored message twice. `log search index` merges each person's pair before chunking, so one hit, not two. The inbox watcher keys what it has seen per person, so one reply alerts once. The tool definitions carry it (`ONE_INBOX_NOTE`): `twitterDms` and `twitterDm` say the two threads are one inbox, a sent dm is delivered whichever id it names and is never resent, and a refusal before X (styleFailed, a dry run) sent nothing. A sent dm now says so in its answer.
+Why: matt: "they're one, it might say they're two but they're one". An agent told him a reply had gone to "the other inbox" and he thought it was about to send twice; he asked for it in the tool definitions so every agent has it when it calls them.
+Checked: `bun test src/twitter/dm src/search src/inbox`: 14 pass. `bun run check`: tsc clean, 1106 pass, 1 fail, `log reddit session check` > the engine runs on vendor/rdvwr, which fails the same on main without this change (run without LOG_PYTHON). Every lefthook gate green, docs rebuilt.

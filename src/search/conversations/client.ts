@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { BM25, tokenize } from 'bm25s'
 import { VectorDB } from 'verso-db'
 import type { Collection } from 'verso-db'
-import { chunksOf, percentiles, reciprocalRankFusion } from './helpers/index'
+import { chunksOf, onePerPerson, percentiles, reciprocalRankFusion } from './helpers/index'
 import { SEARCH_DEPTH } from './types'
 import type { Chunk, Conversation, Embedder, Latency, SearchHit, SearchOptions } from './types'
 
@@ -63,7 +63,8 @@ function queryTerms(query: string): string[][] {
 
 export async function buildIndex(conversations: Conversation[], embedder: Embedder, dir = join(searchRoot(), 'conversations'), batch = 64): Promise<{ chunks: number; conversations: number; ms: number }> {
   const started = performance.now()
-  const chunks = conversations.flatMap((c) => chunksOf(c))
+  const merged = onePerPerson(conversations)
+  const chunks = merged.flatMap((c) => chunksOf(c))
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'chunks.json'), JSON.stringify(chunks))
@@ -79,7 +80,7 @@ export async function buildIndex(conversations: Conversation[], embedder: Embedd
     await collection.insert(slice.map((c, i) => ({ id: c.id, vector: vectors[i], metadata: { platform: c.platform, account: c.account, conversationId: c.conversationId, at: c.at ?? '' } })))
   }
   await db.close()
-  return { chunks: chunks.length, conversations: conversations.length, ms: performance.now() - started }
+  return { chunks: chunks.length, conversations: merged.length, ms: performance.now() - started }
 }
 
 export async function openIndex(embedder: Embedder, dir = join(searchRoot(), 'conversations')): Promise<ConversationIndex> {
@@ -122,7 +123,7 @@ export async function search(index: ConversationIndex, query: string, options: S
 
 export function linearScan(conversations: Conversation[], query: string, limit = 10): Chunk[] {
   const words = query.toLowerCase().match(/\w+/g) ?? []
-  return conversations
+  return onePerPerson(conversations)
     .flatMap((c) => chunksOf(c))
     .map((chunk) => ({ chunk, hits: words.filter((w) => chunk.text.toLowerCase().includes(w)).length }))
     .filter((x) => x.hits > 0)
