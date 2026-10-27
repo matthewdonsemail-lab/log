@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { styleProblems } from './index'
+import { copyStyleOf, styleProblems } from './index'
 
 describe('the house style', () => {
   test('lowercase copy with no commas, full stops or dashes passes, and urls are exempt', () => {
@@ -8,5 +8,17 @@ describe('the house style', () => {
 
   test('each broken rule is named', () => {
     expect(styleProblems('Nice, really. Great — yes; ok – no')).toEqual(['uppercase characters: GN', 'comma (,)', 'semicolon (;)', 'full stop (.)', 'em dash (—)', 'en dash (–)'])
+  })
+})
+
+describe('copy styles per account', () => {
+  test('an empty style is the house style', () => {
+    expect(styleProblems('Nice', null)).toEqual(['uppercase characters: N'])
+    expect(copyStyleOf('')?.name).toBe('house')
+  })
+
+  test('an unknown style is a problem of its own', () => {
+    expect(styleProblems('fine', 'shouty')).toEqual(['unknown copy style "shouty" (known: house)'])
+    expect(copyStyleOf('shouty')).toBeNull()
   })
 })

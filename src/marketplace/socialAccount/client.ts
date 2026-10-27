@@ -49,7 +49,8 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
     warmupStartedAt: row.warmupStartedAt ?? null,
     warmedAt: row.warmedAt ?? null,
     adsPowerProfileId: row.adsPowerProfileId?.trim() || null,
-    browserDriver: row.browserDriver?.trim() || null
+    browserDriver: row.browserDriver?.trim() || null,
+    copyStyle: row.copyStyle?.trim() || null
   }
 }
 

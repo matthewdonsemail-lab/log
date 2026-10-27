@@ -74,6 +74,7 @@ export interface FacebookAccount {
   warmedAt: string | null
   adsPowerProfileId: string | null
   browserDriver: string | null
+  copyStyle?: string | null
 }
 
 export interface RunProxy {

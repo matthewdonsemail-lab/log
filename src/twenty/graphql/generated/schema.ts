@@ -66,9 +66,9 @@ export interface Address {
 export type ActorSourceEnum = 'EMAIL' | 'CALENDAR' | 'WORKFLOW' | 'AGENT' | 'API' | 'IMPORT' | 'MANUAL' | 'SYSTEM' | 'WEBHOOK' | 'APPLICATION'
 
 export interface Actor {
-    source: ActorSourceEnum
+    source?: ActorSourceEnum
     workspaceMemberId?: Scalars['UUID']
-    name: Scalars['String']
+    name?: Scalars['String']
     context?: ActorContext
     __typename: 'Actor'
 }
@@ -37618,6 +37618,8 @@ export interface SocialAccount {
     /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
     totpSecret?: Scalars['String']
     profileUrl?: Scalars['String']
+    /** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+    copyStyle?: Scalars['String']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Attachment */
@@ -38276,6 +38278,16 @@ export interface SocialAccountConnection {
     percentageEmptyProfileUrl?: Scalars['Float']
     /** Percentage of non-empty values for profileUrl */
     percentageNotEmptyProfileUrl?: Scalars['Float']
+    /** Number of unique values for copyStyle */
+    countUniqueValuesCopyStyle?: Scalars['Int']
+    /** Number of empty values for copyStyle */
+    countEmptyCopyStyle?: Scalars['Int']
+    /** Number of non-empty values for copyStyle */
+    countNotEmptyCopyStyle?: Scalars['Int']
+    /** Percentage of empty values for copyStyle */
+    percentageEmptyCopyStyle?: Scalars['Float']
+    /** Percentage of non-empty values for copyStyle */
+    percentageNotEmptyCopyStyle?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -38912,6 +38924,16 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyProfileUrl?: Scalars['Float']
     /** Percentage of non-empty values for profileUrl */
     percentageNotEmptyProfileUrl?: Scalars['Float']
+    /** Number of unique values for copyStyle */
+    countUniqueValuesCopyStyle?: Scalars['Int']
+    /** Number of empty values for copyStyle */
+    countEmptyCopyStyle?: Scalars['Int']
+    /** Number of non-empty values for copyStyle */
+    countNotEmptyCopyStyle?: Scalars['Int']
+    /** Percentage of empty values for copyStyle */
+    percentageEmptyCopyStyle?: Scalars['Float']
+    /** Percentage of non-empty values for copyStyle */
+    percentageNotEmptyCopyStyle?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -43792,7 +43814,7 @@ export interface ActorContextGenqlSelection{
     __scalar?: boolean | number
 }
 
-export interface ActorCreateInput {source: ActorSourceEnum,context?: (ActorContextInput | null)}
+export interface ActorCreateInput {source?: (ActorSourceEnum | null),context?: (ActorContextInput | null)}
 
 export interface ActorContextInput {provider?: (Scalars['String'] | null)}
 
@@ -117181,6 +117203,8 @@ export interface SocialAccountGenqlSelection{
     /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
     totpSecret?: boolean | number
     profileUrl?: boolean | number
+    /** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+    copyStyle?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Attachment */
@@ -117841,6 +117865,16 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyProfileUrl?: boolean | number
     /** Percentage of non-empty values for profileUrl */
     percentageNotEmptyProfileUrl?: boolean | number
+    /** Number of unique values for copyStyle */
+    countUniqueValuesCopyStyle?: boolean | number
+    /** Number of empty values for copyStyle */
+    countEmptyCopyStyle?: boolean | number
+    /** Number of non-empty values for copyStyle */
+    countNotEmptyCopyStyle?: boolean | number
+    /** Percentage of empty values for copyStyle */
+    percentageEmptyCopyStyle?: boolean | number
+    /** Percentage of non-empty values for copyStyle */
+    percentageNotEmptyCopyStyle?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -118478,6 +118512,16 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyProfileUrl?: boolean | number
     /** Percentage of non-empty values for profileUrl */
     percentageNotEmptyProfileUrl?: boolean | number
+    /** Number of unique values for copyStyle */
+    countUniqueValuesCopyStyle?: boolean | number
+    /** Number of empty values for copyStyle */
+    countEmptyCopyStyle?: boolean | number
+    /** Number of non-empty values for copyStyle */
+    countNotEmptyCopyStyle?: boolean | number
+    /** Percentage of empty values for copyStyle */
+    percentageEmptyCopyStyle?: boolean | number
+    /** Percentage of non-empty values for copyStyle */
+    percentageNotEmptyCopyStyle?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -118597,7 +118641,9 @@ adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['String'] | null),password?: (Scalars['String'] | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (Scalars['String'] | null),profileUrl?: (Scalars['String'] | null)}
+totpSecret?: (Scalars['String'] | null),profileUrl?: (Scalars['String'] | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -118695,7 +118741,9 @@ adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['String'] | null),password?: (Scalars['String'] | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (Scalars['String'] | null),profileUrl?: (Scalars['String'] | null)}
+totpSecret?: (Scalars['String'] | null),profileUrl?: (Scalars['String'] | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -118793,7 +118841,9 @@ adsPowerProfileId?: (StringFilter | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (StringFilter | null),password?: (StringFilter | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (StringFilter | null),profileUrl?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+totpSecret?: (StringFilter | null),profileUrl?: (StringFilter | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -118895,7 +118945,9 @@ adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (OrderByDirection | null),password?: (OrderByDirection | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (OrderByDirection | null),profileUrl?: (OrderByDirection | null)}
+totpSecret?: (OrderByDirection | null),profileUrl?: (OrderByDirection | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -118995,7 +119047,9 @@ adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (OrderByDirection | null),password?: (OrderByDirection | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (OrderByDirection | null),profileUrl?: (OrderByDirection | null)}
+totpSecret?: (OrderByDirection | null),profileUrl?: (OrderByDirection | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -119627,7 +119681,17 @@ countNotEmptyProfileUrl?: (OrderByDirection | null),
 /** Percentage of empty values for profileUrl */
 percentageEmptyProfileUrl?: (OrderByDirection | null),
 /** Percentage of non-empty values for profileUrl */
-percentageNotEmptyProfileUrl?: (OrderByDirection | null)}
+percentageNotEmptyProfileUrl?: (OrderByDirection | null),
+/** Number of unique values for copyStyle */
+countUniqueValuesCopyStyle?: (OrderByDirection | null),
+/** Number of empty values for copyStyle */
+countEmptyCopyStyle?: (OrderByDirection | null),
+/** Number of non-empty values for copyStyle */
+countNotEmptyCopyStyle?: (OrderByDirection | null),
+/** Percentage of empty values for copyStyle */
+percentageEmptyCopyStyle?: (OrderByDirection | null),
+/** Percentage of non-empty values for copyStyle */
+percentageNotEmptyCopyStyle?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -119711,7 +119775,9 @@ adsPowerProfileId?: (Scalars['Boolean'] | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['Boolean'] | null),password?: (Scalars['Boolean'] | null),
 /** log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it */
-totpSecret?: (Scalars['Boolean'] | null),profileUrl?: (Scalars['Boolean'] | null)}
+totpSecret?: (Scalars['Boolean'] | null),profileUrl?: (Scalars['Boolean'] | null),
+/** log-cli: the writing style the account's X copy is checked against before a send (COPY_STYLES in src/twitter/copy/style; empty: house). Set by log twitter cookies save --style or here */
+copyStyle?: (Scalars['Boolean'] | null)}
 
 
 /** log-cli: a Facebook group, on one socialAccount */

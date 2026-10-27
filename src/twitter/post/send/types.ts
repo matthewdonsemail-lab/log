@@ -9,6 +9,7 @@ export interface SendRequest {
   text?: string
   approvedBy?: string
   skipStyleCheck?: boolean
+  style?: string | null
   live: boolean
 }
 

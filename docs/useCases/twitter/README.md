@@ -18,10 +18,11 @@ DMs are their own pages. Recruiting is public replies only.
 
 | Part | What | Where |
 | --- | --- | --- |
-| The account | a TWITTER row in Twenty `socialAccounts`. Its cookies live there and nowhere else | Twenty |
+| The account | a TWITTER row in Twenty `socialAccounts`. Its cookies live there and nowhere else. A new account is added with `bun bin/log.ts twitter cookies save --account <handle>` in a terminal (`skills/xPosting/SKILL.md`) | Twenty |
+| Copy style | the account's `copyStyle` (empty: house). Every send and queue check holds the copy to it | `src/twitter/copy/style` |
 | Session check | first call of every run, sends nothing | `twitterSessionCheck` / `log twitter session check --account <account>` |
 | Finding people and posts | an outside search, never X itself (rule 53). Say the price before a big sweep | treg's X search, profile, posts and comments reads |
-| House style | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
+| House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
 | The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Nudge`, `Status` |
 | Pacing | 40 writes a day per account, random gaps between sends, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |

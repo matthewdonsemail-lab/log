@@ -112,7 +112,7 @@ How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 3 platforms so far, Facebook (23 commands of its own), X (10 commands of its own), Reddit (1 command of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 3 platforms so far, Facebook (23 commands of its own), X (11 commands of its own), Reddit (1 command of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -134,9 +134,9 @@ flowchart LR
   e_fbk --> api
   p_facebook -->|"browser: facebook doctor, facebook connect, facebook profile, facebook host, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"| b_facebook["Facebook's browser path: its proxy in the account's home country (rule 12)"]
   b_facebook --> drivers
-  p_twitter["X (TWITTER): 10 commands of its own"]
+  p_twitter["X (TWITTER): 11 commands of its own"]
   twenty --> p_twitter
-  p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter followers, twitter reply, twitter quote, twitter like, twitter dm, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
+  p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter cookies, twitter followers, twitter reply, twitter quote, twitter like, twitter dm, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
   e_twikit --> api
   p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
   p_reddit["Reddit (REDDIT): 1 command of its own"]
@@ -184,14 +184,14 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `search`, `kb`, `twitter followers`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `search`, `kb`, `twitter followers`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (3 clients, 12 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (3 clients, 13 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -203,6 +203,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter follows`: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.show for the follows read; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter dms`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.inbox for the dms read (the inbox, or one conversation); no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter chat`: the direct-API engine only (twikit, vendored in vendor/twikit, xchat.unlock_xchat for the chat pin (the PIN is checked against Juicebox before it is saved); no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter cookies`: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping for the cookies save (the cookies are checked with X before they are saved); no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter followers`: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.followers for the followers read; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter reply`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the reply; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter quote`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the quote; no browser and no proxy: X accounts call X directly, rule 80).
@@ -225,7 +226,7 @@ flowchart LR
   shell["Bash / PowerShell / Monitor"]
   mcp["MCP server log: 99 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 52 commands (COMMANDS)"]
+  runCli["runCli: 53 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr (vendor/), the account's saved session, a governor per account"]
@@ -313,6 +314,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter follows`](#log-twitter-follows) | Read whether handles follow an X account and it follows them, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--handles <handle,handle…>` `--json` | direct API only | none | `twitterFollows` | PreToolUse, PostToolUse · PostToolUse | no | 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter dms`](#log-twitter-dms) | Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--waiting` `--with <handle>` `--conversation <id>` `--json` | direct API only | none | `twitterDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 88, 30, 38, 39, 40, 41 |
 | [`log twitter chat`](#log-twitter-chat) | X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in Twenty, never printed | `twitter` first | `--account <accountName>` `--show` | direct API only | none | terminal only: asks matt for the X Chat PIN in a Clack prompt (masked). He runs `bun bin/log.ts twitter chat pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 80, 81, 88, 30, 38, 39, 40, 41 |
+| [`log twitter cookies`](#log-twitter-cookies) | Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style | `twitter` first | `--account <handle>` `--style <copyStyle>` `--name <label>` | direct API only | none | terminal only: asks for an X account's auth_token and ct0 in a Clack prompt (masked) and checks them with X before saving. Run `bun bin/log.ts twitter cookies save --account <handle>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 30, 90, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--json` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
@@ -410,6 +412,7 @@ flowchart TB
     c_twitterFollows["follows"]
     c_twitterDms["dms"]
     c_twitterChat["chat"]
+    c_twitterCookies["cookies"]
     c_twitterFollowers["followers"]
     c_twitterReply["reply"]
     c_twitterQuote["quote"]
@@ -521,6 +524,8 @@ flowchart TB
   mcp --> c_twitterDms
   cli --> c_twitterChat
   c_twitterChat -.- terminal
+  cli --> c_twitterCookies
+  c_twitterCookies -.- terminal
   cli --> c_search
   mcp --> c_search
   cli --> c_kb
@@ -1171,6 +1176,15 @@ X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in T
 ```text
 log twitter chat pin --account <accountName> [--show]
 Saves the account's X Chat PIN (the 4-digit code X asks for to open encrypted DMs) to Twenty, asked twice in a masked Clack prompt and never printed or passed as a flag. It is checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) unlocks the account's keys with it through Juicebox (a wrong PIN uses one of X's limited guesses), and only a PIN that opens them is saved. `log twitter dms` uses it to recover the account's X Chat keys through Juicebox (vendor/chatXdk) and read the encrypted messages. --show says only whether one is set.
+```
+
+#### log twitter cookies
+
+Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style Terminal only: asks for an X account's auth_token and ct0 in a Clack prompt (masked) and checks them with X before saving. Run `bun bin/log.ts twitter cookies save --account <handle>` in a terminal.
+
+```text
+log twitter cookies save --account <handle> [--style <copyStyle>] [--name <label>]
+Saves an X account's session to Twenty from a masked Clack prompt: its auth_token and ct0 cookies, copied from a browser signed in to x.com, never passed as flags or printed. They are checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) pings X with them, and only cookies X accepts for that same handle are saved. A handle Twenty doesn't have yet gets a new TWITTER socialAccounts row (rule 13); one it has gets its cookies replaced. --style sets the account's copyStyle, the writing style every send and queue check holds its copy to (empty: house). The account's governor starts under ~/.logCli/twitter/<handle>.
 ```
 
 #### log search

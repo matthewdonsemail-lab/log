@@ -121813,6 +121813,9 @@ export default {
             "profileUrl": [
                 1
             ],
+            "copyStyle": [
+                1
+            ],
             "timelineActivities": [
                 609,
                 {
@@ -122987,6 +122990,21 @@ export default {
             "percentageNotEmptyProfileUrl": [
                 71
             ],
+            "countUniqueValuesCopyStyle": [
+                73
+            ],
+            "countEmptyCopyStyle": [
+                73
+            ],
+            "countNotEmptyCopyStyle": [
+                73
+            ],
+            "percentageEmptyCopyStyle": [
+                71
+            ],
+            "percentageNotEmptyCopyStyle": [
+                71
+            ],
             "edges": [
                 1189
             ],
@@ -123940,6 +123958,21 @@ export default {
             "percentageNotEmptyProfileUrl": [
                 71
             ],
+            "countUniqueValuesCopyStyle": [
+                73
+            ],
+            "countEmptyCopyStyle": [
+                73
+            ],
+            "countNotEmptyCopyStyle": [
+                73
+            ],
+            "percentageEmptyCopyStyle": [
+                71
+            ],
+            "percentageNotEmptyCopyStyle": [
+                71
+            ],
             "edges": [
                 1189
             ],
@@ -124149,6 +124182,9 @@ export default {
             "profileUrl": [
                 1
             ],
+            "copyStyle": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -124319,6 +124355,9 @@ export default {
             "profileUrl": [
                 1
             ],
+            "copyStyle": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -124487,6 +124526,9 @@ export default {
                 7
             ],
             "profileUrl": [
+                7
+            ],
+            "copyStyle": [
                 7
             ],
             "and": [
@@ -124738,6 +124780,9 @@ export default {
             "profileUrl": [
                 11
             ],
+            "copyStyle": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -124909,6 +124954,9 @@ export default {
                 11
             ],
             "profileUrl": [
+                11
+            ],
+            "copyStyle": [
                 11
             ],
             "__typename": [
@@ -125858,6 +125906,21 @@ export default {
             "percentageNotEmptyProfileUrl": [
                 11
             ],
+            "countUniqueValuesCopyStyle": [
+                11
+            ],
+            "countEmptyCopyStyle": [
+                11
+            ],
+            "countNotEmptyCopyStyle": [
+                11
+            ],
+            "percentageEmptyCopyStyle": [
+                11
+            ],
+            "percentageNotEmptyCopyStyle": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -126005,6 +126068,9 @@ export default {
                 13
             ],
             "profileUrl": [
+                13
+            ],
+            "copyStyle": [
                 13
             ],
             "__typename": [

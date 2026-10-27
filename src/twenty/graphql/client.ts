@@ -53,7 +53,8 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   warmupStartedAt: true,
   warmedAt: true,
   adsPowerProfileId: true,
-  browserDriver: true
+  browserDriver: true,
+  copyStyle: true
 } satisfies SocialAccountGenqlSelection
 
 export const AGENCY_LISTING_FIELDS = {

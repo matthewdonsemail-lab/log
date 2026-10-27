@@ -28,6 +28,7 @@ import { createInspector, formatTraceLine } from "../../../observability/trace/i
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec, PositionalSpec } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
+import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
 
 const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, description: "The queue file (.json)" };
 
@@ -156,9 +157,9 @@ function dryRunLines(queue: Queue): string[] {
   });
 }
 
-function specFor(item: QueueItem, kind: EventKind, approvedBy: string) {
+function specFor(item: QueueItem, kind: EventKind, approvedBy: string, style: string | null | undefined) {
   if (kind === "like") return planSend({ action: "like", tweetUrl: item.tweetUrl, approvedBy, live: true });
-  return planSend({ action: item.action as QueueAction, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, approvedBy, live: true });
+  return planSend({ action: item.action as QueueAction, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, approvedBy, style, live: true });
 }
 
 async function runCommand(context: CommandContext, path: string, flags: Record<string, unknown>): Promise<CommandResult> {
@@ -191,7 +192,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
       queue,
       {
         send: async (item, kind): Promise<TwitterSessionAnswer> => {
-          const plan = specFor(item, kind, approvedBy);
+          const plan = specFor(item, kind, approvedBy, opened.account.copyStyle);
           if (!plan.ok) return { ok: false, code: plan.problem.code, detail: plan.problem.detail };
           return (await opened.engine(flags["force"] === true ? { ...plan.spec, force: true } : plan.spec)).answer;
         },
@@ -277,7 +278,8 @@ export const queueCommand: Command = {
       }
       if (word === "check") {
         const queue = load(file);
-        const problems = itemProblems(queue);
+        const styleAccount = await findTwitterAccount(context.twenty, queue.account).catch(() => null);
+        const problems = itemProblems(queue, styleAccount?.copyStyle);
         let priorSkipped: { handle: string | null; n: number }[] = [];
         if (queue.items.some((i) => i.action === "dm" && i.status === "pending") && flags["skipXChatCheck"] !== true) {
           const opened = await openTwitterAccount(context, "twitter queue check", queue.account);
