@@ -21,6 +21,7 @@ flowchart TB
     c_logout["logout"]
     c_whoami["whoami"]
     c_search["search"]
+    c_kb["kb"]
     c_new["new"]
   end
   subgraph g_byArgument["Platform named first"]
@@ -169,6 +170,8 @@ flowchart TB
   c_twitterChat -.- terminal
   cli --> c_search
   mcp --> c_search
+  cli --> c_kb
+  mcp --> c_kb
   cli --> c_twitterFollowers
   mcp --> c_twitterFollowers
   cli --> c_twitterReply

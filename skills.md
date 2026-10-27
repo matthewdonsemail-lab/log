@@ -29,6 +29,7 @@ skill in the same commit.
 | [`agentHooks`](skills/agentHooks/SKILL.md) | Keep the CLI, MCP tools, agent hooks (Claude Code, Codex) and the live log in step (rule 55): add a hook, a command or a page state |
 | [`surfaceDocs`](skills/surfaceDocs/SKILL.md) | Keep the README command table (flags, MCP tool, hooks) and the Mermaid `.mmd` diagrams generated from the code (rule 56) |
 | [`layout`](skills/layout/SKILL.md) | Where a new file goes: every file in a domain folder, never loose in `python/` or `scripts/` (rule 58) |
+| [`knowledgeBase`](skills/knowledgeBase/SKILL.md) | Search the knowledge base before guessing, save what a session learned, and refresh it from every source (rule 90) |
 
 These three files stay in step:
 

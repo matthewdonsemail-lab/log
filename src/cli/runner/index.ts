@@ -27,6 +27,7 @@ import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
+import { kbCommand } from "../kb/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
@@ -90,6 +91,7 @@ export const COMMANDS: Command[] = [
   dmsCommand,
   chatCommand,
   searchCommand,
+  kbCommand,
   followersCommand,
   replyCommand,
   quoteCommand,

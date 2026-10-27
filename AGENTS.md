@@ -1083,6 +1083,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     p50, p95 and p99, cold and warm, beside a linear scan.
     `src/search/conversations`.
 
+90. 2026-10-27 · matt: "we need to build a knowledge base inside of it",
+    all of it, agent memory too, with Redis. The knowledge base lives in
+    ListeningKit's Twenty on node02 (`knowledgeArticles`: key, kind, body,
+    source, tags, author, content hash; reached over the tailnet at
+    `node02.tail4fcf85.ts.net`, never through the public login gate) and is
+    searched through Redis 8 on node02 (`kb-redis`, the search module's
+    `kbIdx`: BM25 keyword and HNSW meaning over local all-MiniLM-L6-v2,
+    fused with reciprocal rank fusion). `log kb sync` collects AGENTS.md's
+    rules and sections, every skill, every doc (`docs/infra/` as infra, never
+    `docs/vendors`), every Claude memory file, the known page states and the
+    accounts from log-cli's Twenty (no credential, proxy URL or cookie),
+    writes what changed to Twenty and re-indexes what changed into Redis; an
+    article a person writes or edits in Twenty is indexed on the next sync.
+    `log kb search "<query>" [--kind]` is how an agent finds context, `log kb
+    remember "<text>"` saves an agent memory to both at once, `log kb show
+    <key>` reads one in full. Secrets are scrubbed before anything is written
+    (named keys, URLs with a login, JWTs, private keys, long random strings).
+    The logins are files in `~/.config/listeningkit/`, never in the repo or
+    the knowledge base. `src/knowledge/base`, `docs/knowledgeBase.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

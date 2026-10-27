@@ -7989,3 +7989,38 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a new use case, `docs/useCases/twitter/affiliateMarketing.md`: read and index every conversation (X Chat included), search for the ones about a tool, read each person's merged history, sort them, reply with context and the affiliate credit only where it helps (never to a rival's founder), and book the partner program call, with the lessons from today's wrong replies. Indexed in both use-case READMEs. dmInbox.md and engagerDms.md no longer say X Chat can't be read. The inbox watcher's alert now says to read the person with `--with <handle>` (old thread and X Chat merged), and a reply that shows in both the old thread and its X Chat mirror alerts once.
 Why: matt asked for an affiliate marketing use case, and asked whether the inbox monitor now covers the unified X Chat inbox.
 Checked: `bun run check` with LOG_PYTHON: 1102 pass, 0 fail, every gate green.
+
+## 2026-10-27 03:44Z · feat/knowledgeBase
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/infra/node02.md`: new file
+- `docs/knowledgeBase.md`: new file
+- `scripts/hooks/knowledge.ts`: added const raw, const event, function chunkCount, const config, const count, const reach, const text
+- `skills.md`: edited
+- `skills/knowledgeBase/SKILL.md`: new file
+- `src/agentHooks/registry/index.ts`: added const KNOWLEDGE · changed const AGENT_HOOKS
+- `src/cli/kb/index.ts`: added const KB_USAGE, const KIND_FLAG, const KB_INPUT, const kbDeps, function hitLines, const SUBS, const kbCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/knowledge/base/client.test.ts`: added function memoryStore, function memoryIndex, const note, test "secrets are scrubbed before anything is written", test "long text is split on breaks with overlap, short text stays whole", test "AGENTS.md rules become one article each", test "collects skills, docs, memory files and page states, never vendor files", test "Twenty select values round-trip", test "sync writes only what changed and indexes only what changed", test "an article written in Twenty by a person is indexed too, and a gone one dropped", test "search fuses keyword and meaning and returns each article once", test "remember saves a scrubbed note in both stores", test "config comes from the env or the private files, and says what is missing", test "article hash and chunks are stable"
+- `src/knowledge/base/client.ts`: added const CONFIG_DIR, function fromFile, function kbConfig, const embedText, function indexArticle, interface SyncOptions, function syncKnowledge, interface KbSearchOptions, function searchKnowledge, interface RememberInput, function noteArticle, function rememberKnowledge
+- `src/knowledge/base/helpers/chunk.ts`: added function articleHash, function chunkKey, function splitText, function chunksOf
+- `src/knowledge/base/helpers/collect.ts`: added const SKIPPED_DOCS, function article, function slug, function firstSentence, function frontmatter, function walk, const posix, function collectRules, function collectSkills, function collectDocs, function collectMemories, function collectPageStates, function collectAccounts, function collectAll
+- `src/knowledge/base/helpers/index.ts`: added export from "./chunk", export from "./collect", export from "./redisIndex", export from "./scrub", export from "./twentyStore"
+- `src/knowledge/base/helpers/redisIndex.ts`: added interface Reply, interface RedisLike, const STOP, function queryWords, function keywordQuery, const kindFilter, const vectorBlob, function redisKbIndex
+- `src/knowledge/base/helpers/scrub.ts`: added const PATTERNS, function entropy, function looksRandom, const core, function secretLike, function scrubSecrets
+- `src/knowledge/base/helpers/twentyStore.ts`: added type Fetch, function kindValue, function kindOf, const COLORS, const FIELDS, interface Row, function toStored, interface TwentyKbOptions, function twentyKbStore
+- `src/knowledge/base/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/knowledge/base/types.ts`: added const KB_KINDS, type KbKind, const KB_OBJECT, const KB_OBJECT_PLURAL, const KB_INDEX, const KB_CHUNK_PREFIX, const KB_ARTICLE_PREFIX, const KB_CHUNK_CHARS, const KB_CHUNK_OVERLAP, const KB_SEARCH_DEPTH, const KB_DEFAULT_TWENTY_URL, interface KbArticle, interface KbStoredArticle, interface KbChunk, interface KbHit, interface KbConfig, interface KbStore, interface KbIndex, interface KbSources, interface KbSyncReport
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+
+What changed: New `log kb` command (`search`, `sync`, `remember`, `show`; MCP `kbSearch`, `kbSync`, `kbRemember`, `kbShow`) on the new `src/knowledge/base` domain. `syncKnowledge` collects AGENTS.md rules and sections, skills, docs (`docs/infra` as infra, never `docs/vendors`), every Claude memory file, the page states and log-cli's accounts (status and setup only), scrubs secrets (`scrubSecrets`: named keys, URLs with a login, JWTs, private keys, long random strings), writes new articles to ListeningKit's Twenty in batches of 60 (`twentyKbStore`, object `knowledgeArticles`, waits out the 100-a-minute rate limit) and re-indexes changed ones into Redis 8 (`redisKbIndex`, `kbIdx`: BM25 plus HNSW over all-MiniLM-L6-v2). `searchKnowledge` fuses keyword (every word first, then any) and meaning with reciprocal rank fusion, one hit per article. A SessionStart hook (`scripts/hooks/knowledge.ts`) tells every session the knowledge base is there. Rule 90, MCP instruction 24, `skills/knowledgeBase`, `docs/knowledgeBase.md`, `docs/infra/node02.md`.
+Why: matt asked for a knowledge base inside ListeningKit's Twenty holding all of it, agent memory included, with Redis for search.
+Checked: `bun run check` green (1113 pass, 0 fail) plus 11 new tests on in-memory stores. Live: the first sync wrote 610 articles to node02's Twenty and 3149 chunks to kb-redis in 268 s; a repeat sync wrote only the 2 new ones. Searches found the right article first or second ("why did the twenty tunnel go down", "messenger pin blocks the inbox" with `--kind pageState`, "where is the cloudflare api token", "launch budget opens per day"), and `kb remember` was searchable at once.

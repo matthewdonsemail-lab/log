@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 89;
+export const RULES_REVIEWED_THROUGH = 90;
 
 export const AGENTS_URI = "log://agents";
 
@@ -28,6 +28,7 @@ export const SERVER_INSTRUCTIONS = [
   "21. X (Twitter) is a platform of its own, `log twitter <command>`, on the direct-API engine only: twikit (vendor/twikit) with the account's saved cookies from Twenty, no browser and no proxy. X accounts call X directly, as twitter-controller does. X's own answer decides (`socialAccounts.sessionState`), each account has its own governor, and refreshed cookies are merged back (rule 80). We maintain vendor/twikit ourselves: its transport is curl_cffi (impersonating Safari), never httpx (`check:twikitTransport`, rule 81). When matt says to send anyway, `force` goes past the account's governor (its pause and caps) for that call or run only; X's answer still decides (rule 86).",
   "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
+  "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 90).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -64,6 +65,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDms: [13, 63, 64, 73, 80, 81, 88],
   twitterChat: [13, 21, 63, 64, 80, 81, 88],
   search: [13, 26, 63, 64, 88, 89],
+  kb: [13, 26, 30, 90],
   twitterFollowers: [13, 63, 64, 73, 80, 81],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86],
   twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86],

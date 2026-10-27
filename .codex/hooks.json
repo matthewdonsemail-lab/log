@@ -37,6 +37,16 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/knowledge.ts\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
             "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/inbox.ts\"",
             "timeout": 15
           }
