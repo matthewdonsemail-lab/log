@@ -137,8 +137,41 @@ export function startTwitterWatch(account: string, repo: string): number | null 
   }
 }
 
+export function startDiscordWatch(account: string, repo: string): number | null {
+  const dir = join(inboxRoot(), 'discord', account)
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'discord', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
+function discordContext(messages: readonly InboxMessage[]): string {
+  const lines = messages.map((m) => `  ${m.with} on discord ${m.account} (${m.box === 'dm' ? 'DM or group' : m.box === 'mention' ? 'mentioned you in a server channel' : 'replied to you in a server channel'}) at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (channel ${m.conversationId})`)
+  const { account } = messages[0]
+  return [
+    `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said. Then, for each one:`,
+    `  1. Read the chat around it: \`log discord read --account ${account} --channel <channel> --limit 20\`.`,
+    '  2. Before writing a word, pull how matt really writes in that chat: `log voice --to <who> --with <channel> --context "<what they said>"` (no --text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    '  3. Gate it against the same chat: `log voice --to <who> --with <channel> --context "<what they said>" --text "<draft>"`. Rewrite until it passes.',
+    `  4. Show matt the draft and send only when he says (\`log discord send --account ${account} --channel <channel> --text "<draft>" --approvedBy matt --live\`).`,
+    ...lines,
+  ].join('\n')
+}
+
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
+  const discord = messages.filter((m) => m.platform === 'discord')
+  const rest = messages.filter((m) => m.platform !== 'discord')
+  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : [])]
+  return parts.join('\n\n')
+}
+
+function twitterContext(messages: readonly InboxMessage[]): string {
   const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
   const { platform, account } = messages[0]
   return [

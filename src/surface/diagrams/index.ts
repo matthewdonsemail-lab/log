@@ -51,7 +51,9 @@ export function platformsDiagram(entries: readonly CommandEntry[]): Diagram {
     const own = entries.filter((e) => e.platform === p || (e.platform === "byArgument" && p === PLATFORMS[0]));
     lines.push(`  p_${p}["${label(`${PLATFORM_LABELS[p]} (${PLATFORM_SITES[p].twenty}): ${countOf(entries.filter((e) => e.platform === p).length, "command")} of its own`)}"]`, `  twenty --> p_${p}`);
     for (const lib of platformLibraries(p)) {
-      lines.push(`  p_${p} -->|"${label(`direct API: ${names(own.filter(isDirect))}`)}"| e_${lib}["${label(`${lib} (vendor/${lib}): the saved session, a governor per account`)}"]`, `  e_${lib} --> api`);
+      const node = `e_${lib.replace(/[^A-Za-z0-9_]/g, "_")}`;
+      const vendored = /^[A-Za-z0-9_.-]+$/.test(lib);
+      lines.push(`  p_${p} -->|"${label(`direct API: ${names(own.filter(isDirect))}`)}"| ${node}["${label(vendored ? `${lib} (vendor/${lib}): the saved session, a governor per account` : lib)}"]`, `  ${node} --> api`);
     }
     if (PLATFORM_SITES[p].browser) {
       const via = own.filter((e) => e.browser !== "none" && e.engine !== "directApiOnly");

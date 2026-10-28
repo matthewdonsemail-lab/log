@@ -10209,7 +10209,7 @@ export interface KnowledgeEntryGroupByConnection {
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
 export type SocialAccountAccountStatusEnum = 'ACTIVE' | 'WARMING' | 'LIMITED' | 'PAUSED' | 'NEEDS_LOGIN' | 'CHECKPOINT' | 'RESTRICTED' | 'BANNED' | 'DEAD' | 'DEACTIVATED'
 
-export type SocialAccountPlatformEnum = 'YOUTUBE' | 'TIKTOK' | 'INSTAGRAM' | 'LINKEDIN' | 'TWITTER' | 'FACEBOOK' | 'UPWORK' | 'REDDIT'
+export type SocialAccountPlatformEnum = 'YOUTUBE' | 'TIKTOK' | 'INSTAGRAM' | 'LINKEDIN' | 'TWITTER' | 'FACEBOOK' | 'UPWORK' | 'REDDIT' | 'DISCORD'
 
 
 /** Social media accounts */
@@ -135419,7 +135419,8 @@ export const enumSocialAccountPlatformEnum = {
    TWITTER: 'TWITTER' as const,
    FACEBOOK: 'FACEBOOK' as const,
    UPWORK: 'UPWORK' as const,
-   REDDIT: 'REDDIT' as const
+   REDDIT: 'REDDIT' as const,
+   DISCORD: 'DISCORD' as const
 }
 
 export const enumCalendarEventParticipantResponseStatusEnum = {

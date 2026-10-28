@@ -82,6 +82,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   logout: [],
   whoami: [],
   redditSession: [13, 63, 64, 73, 83],
+  discordSession: [13, 63, 64, 73, 83],
+  discordChats: [13, 63, 64, 73, 83],
+  discordRead: [13, 63, 64, 73, 83],
+  discordWatch: [13, 26, 63, 64, 73, 83],
+  discordSend: [8, 13, 63, 64, 73, 83],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

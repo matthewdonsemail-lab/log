@@ -77,6 +77,8 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
     if action in writes and not str(spec.get("approvedBy") or "").strip():
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
     cookies = normalize_cookies(json.loads(Path(spec["cookiesPath"]).read_text(encoding="utf-8")))
+    if spec.get("storagePath"):
+        cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
     governor = governor_for(spec["stateRoot"], spec["account"])
     try:
         governor.before_request(is_mutation=action in writes, quiet=True)

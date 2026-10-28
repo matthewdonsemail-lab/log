@@ -12,13 +12,14 @@ export function commandWordOfKey(key: string, platform: string): string {
   return rest[0].toLowerCase() + rest.slice(1);
 }
 
-export const PLATFORMS = ["facebook", "twitter", "reddit"] as const;
+export const PLATFORMS = ["facebook", "twitter", "reddit", "discord"] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
 export const PLATFORM_LABELS: Readonly<Record<Platform, string>> = {
   facebook: "Facebook",
   twitter: "X",
   reddit: "Reddit",
+  discord: "Discord",
 };
 
 export interface PlatformSite {
@@ -34,6 +35,7 @@ export const PLATFORM_SITES: Readonly<Record<Platform, PlatformSite>> = {
   facebook: { twenty: "FACEBOOK", domain: ".facebook.com", hosts: ["facebook.com"], home: "https://www.facebook.com/marketplace/", proxy: "required", browser: true },
   twitter: { twenty: "TWITTER", domain: ".x.com", hosts: ["x.com", "twitter.com"], home: "https://x.com/home", proxy: "none", browser: false },
   reddit: { twenty: "REDDIT", domain: ".reddit.com", hosts: ["reddit.com", "redd.it", "redditmedia.com"], home: "https://www.reddit.com/", proxy: "none", browser: true },
+  discord: { twenty: "DISCORD", domain: ".discord.com", hosts: ["discord.com", "discord.gg"], home: "https://discord.com/login", proxy: "none", browser: true },
 };
 
 export function platformOfAccount(account: { platform?: string | null }): Platform {
