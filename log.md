@@ -8339,3 +8339,17 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `src/discord/chat/match`: a chat is found the way matt says it. `normalizedName` lowercases, strips accents and punctuation and drops filler words (the, group, chat, gc, dm, with, community, and...); `matchChat` takes an id as it is, else scores each DM and group by its name, or for a DM or unnamed group by who is in it: the whole phrase (exact), every word (words), or the start of every word (prefix). The best score wins only when one chat has it; equal fits are refused with the candidates (`chatAmbiguous`), none with `chatNotFound` (both in the error catalog). `log discord send --channel` takes the chat as said: it reads the chats, matches, says which it picked, and sends by the id; the dry run says which too.
 Why: matt: make a normalized name version so he can say a chat and log understands which one he means.
 Checked: on the account's 177 chats, dry runs: "the log community group chat" is log (group 1547936265436012645), "jilly" is Jilly (dm 1555254123148873869), "listaro" is InferenceSaver x Listaro, and "john" is refused with the three chats it fits. match.test.ts 8 pass, a CLI test sends by the matched id. `bun run check`: 1131 pass, 0 fail.
+
+## 2026-10-28 08:30Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/platforms/discord/README.md`: edited
+- `python/discordApi/engine.py`: added def history_of, def export_of, def export · changed const ACTIONS
+- `src/cli/search/index.ts`: added interface DiscordExported, function discordConversationOf, function indexDiscord · changed const SEARCH_USAGE, const FILTERS, const SEARCH_INPUT, function indexAll, const searchCommand
+- `src/cli/search/search.test.ts`: added const dir, const kept, const embedder, function fixture, const EXPORTED, test "every Discord DM and group with messages is read through the engine, kept and searchable"
+- `src/platformKit/session/client.ts`: changed function runPlatformEngine
+
+What changed: Discord's conversations are in `log search` (rule 89), read through endcord. The engine's `export` reads every DM and group DM (`get_dms`) and pages each one's messages back with `before`, 100 at a time up to 200, waiting out a 429's `retry_after`, and writes one progress line per chat as it goes. `log search index` reads every signed-in Discord account (its `~/.logCli/discord/<account>/session.json`) beside X's, keeps each conversation in `~/.logCli/conversations/discord/<account>` (who it was with, whether a DM or which group), and builds one keyword and meaning index over both; `--platform twitter|discord` reads only one. `runPlatformEngine` streams the engine's progress when asked and takes up to 512 MB of answer. The Discord README lists every Discord command with its MCP tool.
+Why: matt: give Discord the same logic that lets us look over the conversations at p99, through the vendor, now its MCP is done.
+Checked: live: `log search index --platform discord` read 176 conversations, 13,666 messages, and indexed 4,819 chunks with X's in 169 s; `log search "inference saver deal" --platform discord` found the Dr. Ishh and Cornell Sneed chats; `log search bench`: warm p50 4.7 ms, p99 8.1 ms, against 66.7 ms for a linear scan. New search.test.ts (export, kept, searchable). `bun run check`: 1132 pass, 0 fail.

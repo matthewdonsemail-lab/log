@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 import sys
 from pathlib import Path
 from typing import Any
@@ -93,6 +94,67 @@ def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
     return {"ok": True, "loginState": "loggedIn", "event": "sent", "channelId": sent["channel_id"], "messageId": sent["id"], "timestamp": sent["timestamp"], "content": sent["content"]}
 
 
+def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[list[dict[str, Any]], str | None]:
+    from endcord.message import prepare_messages
+
+    out: list[dict[str, Any]] = []
+    before = None
+    while len(out) < limit:
+        url = f"/api/v9/channels/{channel_id}/messages?limit={min(100, limit - len(out))}" + (f"&before={before}" if before else "")
+        for _ in range(4):
+            data, status = client.request("GET", url, None, client.header)
+            if status != 429:
+                break
+            try:
+                wait = float(json.loads(data).get("retry_after", 2))
+            except Exception:
+                wait = 2.0
+            time.sleep(min(wait, 30) + 0.2)
+        if status != 200:
+            return out, f"messages answered {status}"
+        page = prepare_messages(json.loads(data))
+        out.extend(page)
+        if len(page) < 100 or not page:
+            break
+        before = page[-1]["id"]
+        time.sleep(pause)
+    return out, None
+
+
+def export_of(token: str, per_chat: int, pause: float) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    got = client.get_dms()
+    if got is None:
+        return {"ok": False, "code": "platformError", "detail": "Discord didn't answer /users/@me/channels", "loginState": "unknown"}
+    dms, _ = got
+    me = str(client.my_id)
+    kinds = {1: "dm", 3: "group"}
+    conversations, problems = [], []
+    for index, d in enumerate(dms, 1):
+        messages, problem = history_of(client, d["id"], per_chat, pause)
+        if problem:
+            problems.append({"id": d["id"], "problem": problem})
+        conversations.append({
+            "id": d["id"],
+            "kind": kinds.get(d["type"], str(d["type"])),
+            "name": d["name"],
+            "members": [r.get("global_name") or r["username"] for r in d["recipients"]],
+            "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": m["content"] or ""} for m in reversed(messages)],
+        })
+        print(json.dumps({"liveEvent": "progress", "line": f"discord export {index}/{len(dms)}: {len(messages)} message(s)"}), file=sys.stderr, flush=True)
+        time.sleep(pause)
+    return {"ok": True, "loginState": "loggedIn", "conversations": conversations, "problems": problems}
+
+
+async def export(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    return await asyncio.to_thread(export_of, token, int(spec.get("limit") or 200), float(spec.get("pause") or 0.4))
+
+
 async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     token = cookies.get("token")
     if not token:
@@ -110,7 +172,7 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await asyncio.to_thread(send_of, token, channel, text)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "send": send}
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "send": send}
 
 
 if __name__ == "__main__":

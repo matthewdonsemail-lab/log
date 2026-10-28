@@ -71,6 +71,17 @@ So a Discord watch is the X Chat watch again (`docs/platforms/x/xchat/live.md`):
 
 `log inspect` now records every WebSocket frame, sent and received, into each step's `network.har` (`_webSocketMessages` on a `101` entry, the browser's own HAR shape; `python/browser/harRecorder.py` `SocketTap`, which inflates `zlib-stream` and redacts a token in the socket URL). Each frame is an exchange named for its event (`RECV ws MESSAGE_CREATE`) in `exchanges.json` / `exchanges.md`, beside the HTTP calls. A step's SubQ reading keeps the first 3 frames of each event and folds the rest into one count (`foldSocketFrames`), so Discord's hundreds of presence events don't drown it.
 
+## Commands on endcord
+
+| Command | MCP | What it does |
+| --- | --- | --- |
+| `log discord session check --account <a>` | `discordSessionCheck` | `GET /api/v9/users/@me`: is the saved token still signed in |
+| `log discord chats --account <a>` | `discordChats` | Every DM and group DM with its id, name and members (`get_dms`) |
+| `log discord send --account <a> --channel "<as matt says it>" --text "…"` | `discordSend`, `discordSendLive` | One message; the chat is matched the way matt says it (`src/discord/chat/match`: "the log group", "jilly", "listaro"), refused with the candidates when two fit; a dry run unless `--live --approvedBy` |
+| `log search index --platform discord` | `searchIndex` | Every DM and group's last 200 messages (paged 100 at a time with `before`, waiting out a 429's `retry_after`), kept in `~/.logCli/conversations/discord/<account>` and indexed with X's for `log search` (rule 89) |
+
+First full read, 2026-10-28: 176 conversations, 13,666 messages; with X's, 4,819 chunks. `log search bench`: warm p50 4.7 ms, p99 8.1 ms, against 66.7 ms for a plain scan.
+
 ## On GitHub
 
 Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md`. All of them are known there; `discord-userdoccers/discord-userdoccers` documents most, and chojs23/concord, sparklost/endcord and Discord-S.C.U.M already run the gateway watch and the send. Each of the 7 clients was cloned and counted against the 66 things we found: `clients.md`.
