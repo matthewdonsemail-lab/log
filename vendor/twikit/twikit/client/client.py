@@ -5,6 +5,7 @@ import io
 import json
 import os
 import re
+import time
 
 import warnings
 from functools import partial
@@ -3415,6 +3416,146 @@ class Client:
         for messages in out.values():
             messages.sort(key=lambda m: m.get('time_ms') or 0)
         return out
+
+    async def get_xchat_token(self) -> str:
+        """
+        Asks X for a chat-ws token (``GenerateXChatTokenMutation``).
+
+        X's own chat app opens ``wss://chat-ws.x.com/ws?token=`` with this
+        JWT. It lives about five minutes; a socket already open stays open
+        past it.
+        """
+        from ..xchat import token_of
+
+        response, _ = await self.gql.generate_xchat_token()
+        token = token_of(response)
+        if not token:
+            raise ValueError('GenerateXChatTokenMutation answered without a token')
+        return token
+
+    async def _xchat_signers(self, sender_ids: set[str]) -> None:
+        from ..xchat import signing_key_entry
+
+        known = getattr(self, '_xchat_signing', None)
+        if known is None:
+            known = self._xchat_signing = {}
+        missing = sorted(i for i in sender_ids if i and i not in known)
+        if not missing:
+            return
+        for key in await self.get_xchat_public_keys(missing):
+            entry = signing_key_entry(key)
+            if all(isinstance(v, str) and v for v in entry.values()):
+                known[key['user_id']] = entry
+        for user_id in missing:
+            known.setdefault(user_id, None)
+        self._xchat.set_signing_keys([e for e in known.values() if e])
+        self._xchat.set_reject_unverified(False)
+
+    async def _xchat_prime_keys(self, pages: int = 30) -> None:
+        """Caches every conversation's key from the inbox's key-change events,
+        so pushed messages decrypt one at a time."""
+        items = await self._xchat_inbox_items(pages)
+        events, people = [], {self._xchat_me}
+        for item in items:
+            events += item.get('latest_conversation_key_change_events') or []
+            cid = str((item.get('conversation_detail') or {}).get('conversation_id') or '')
+            for part in (item.get('conversation_detail') or {}).get('participants_results') or []:
+                if part.get('rest_id'):
+                    people.add(str(part['rest_id']))
+            people.update(p for p in cid.split(':') if p.isdigit())
+        await self._xchat_signers(people)
+        if events:
+            self._xchat.decrypt_events(events)
+
+    async def _xchat_open(self, encoded: str) -> dict:
+        from ..xchat import decode_event, message_of
+
+        head = decode_event(encoded)
+        chat = getattr(self, '_xchat', None)
+        if chat is None:
+            return {**head, 'type': None, 'text': None, 'encrypted': True}
+        await self._xchat_signers({head.get('sender_id') or ''})
+        try:
+            event = chat.decrypt_event(encoded)
+        except Exception as error:
+            if 'no matching key' not in str(error):
+                return {**head, 'type': None, 'text': None, 'error': str(error)[:200]}
+            self._xchat_items = None
+            try:
+                await self._xchat_prime_keys(pages=1)
+                event = chat.decrypt_event(encoded)
+            except Exception as again:
+                return {**head, 'type': None, 'text': None, 'error': str(again)[:200]}
+        return message_of({'event': event, 'original_b64': encoded})
+
+    async def watch_xchat(self, seconds: float | None = None, keepalive: float = 30):
+        """
+        Streams the viewer's X Chat as X pushes it, the way X's own app does.
+
+        Opens one socket to ``wss://chat-ws.x.com/ws`` with a token from
+        :func:`get_xchat_token`, sends the 30-second KeepAlive X's app sends,
+        and yields each event X pushes, decrypted when :func:`unlock_xchat`
+        has run (``type``, ``conversation_id``, ``sender_id``, ``time_ms``,
+        ``text``). When the socket drops it takes a fresh token and opens
+        again, waiting longer after each failure. Nothing is polled.
+
+        Parameters
+        ----------
+        seconds : :class:`float` | None, default=None
+            Stop after this long; None keeps watching.
+        keepalive : :class:`float`, default=30
+            Seconds between KeepAlive frames.
+
+        Examples
+        --------
+        >>> await client.unlock_xchat(pin)
+        >>> async for event in client.watch_xchat():
+        ...     if event['type'] == 'Message':
+        ...         print(event['sender_id'], event['text'])
+        """
+        from ..xchat import KEEPALIVE, frame_of
+
+        end = time.time() + seconds if seconds else None
+        wait = 2
+        if getattr(self, '_xchat', None) is not None:
+            try:
+                await self._xchat_prime_keys()
+            except Exception as error:
+                yield {'type': 'socket', 'state': 'keysNotPrimed', 'error': str(error)[:200]}
+        while end is None or time.time() < end:
+            try:
+                token = await self.get_xchat_token()
+                ws = await self.http.ws_connect(f'wss://chat-ws.{DOMAIN}/ws?token={token}', headers={'Origin': f'https://{DOMAIN}'})
+            except Exception as error:
+                yield {'type': 'socket', 'state': 'connectFailed', 'error': str(error)[:200]}
+                await asyncio.sleep(wait)
+                wait = min(wait * 2, 60)
+                continue
+            yield {'type': 'socket', 'state': 'open'}
+            wait = 2
+            ping = time.time() + keepalive
+            try:
+                while end is None or time.time() < end:
+                    if time.time() >= ping:
+                        await ws.send(KEEPALIVE, 2)
+                        ping = time.time() + keepalive
+                    limit = min(ping, end) if end else ping
+                    try:
+                        raw, _ = await asyncio.wait_for(ws.recv(), timeout=max(0.1, limit - time.time()))
+                    except asyncio.TimeoutError:
+                        continue
+                    frame = frame_of(raw if isinstance(raw, (bytes, bytearray)) else bytes(raw))
+                    if frame.get('instruction'):
+                        yield {'type': 'instruction', 'instruction': frame['instruction'], 'sequence_start': frame.get('sequence_start')}
+                    for encoded in frame['events']:
+                        yield await self._xchat_open(encoded)
+            except Exception as error:
+                yield {'type': 'socket', 'state': 'closed', 'error': str(error)[:200]}
+            finally:
+                try:
+                    await ws.close()
+                except Exception:
+                    pass
 
     async def get_group_dm_history(
         self,

@@ -44,6 +44,101 @@ def _read_fields(data: bytes) -> dict[int, object]:
     return fields
 
 
+KEEPALIVE = bytes.fromhex('0c00020c0002000000')
+"""Message{messageInstruction{keepAliveInstruction{}}}, the frame X's own
+chat app sends every 30 seconds to hold the chat-ws socket open."""
+
+_INSTRUCTIONS = {
+    1: 'pullMessages', 2: 'keepAlive', 3: 'pullMessagesFinished', 4: 'pinReminder',
+    5: 'switchToHybridPull', 6: 'displayTemporaryPasscode', 7: 'deviceEnrollment',
+}
+_FIXED = {2: 1, 3: 1, 4: 8, 6: 2, 8: 4, 10: 8}
+
+
+def _skip(data: bytes, i: int, ftype: int) -> int:
+    """Returns the offset just past one Thrift binary value of ``ftype``."""
+    if ftype in _FIXED:
+        return i + _FIXED[ftype]
+    if ftype == 11:
+        return i + 4 + struct.unpack(">i", data[i:i + 4])[0]
+    if ftype == 12:
+        while True:
+            inner = data[i]
+            i += 1
+            if inner == 0:
+                return i
+            i = _skip(data, i + 2, inner)
+    if ftype in (14, 15):
+        etype, size = data[i], struct.unpack(">i", data[i + 1:i + 5])[0]
+        i += 5
+        for _ in range(size):
+            i = _skip(data, i, etype)
+        return i
+    if ftype == 13:
+        ktype, vtype, size = data[i], data[i + 1], struct.unpack(">i", data[i + 2:i + 6])[0]
+        i += 6
+        for _ in range(size):
+            i = _skip(data, _skip(data, i, ktype), vtype)
+        return i
+    raise ValueError(f'unknown thrift type {ftype}')
+
+
+def frame_of(raw: bytes) -> dict:
+    """Reads one chat-ws socket frame, a Thrift binary ``Message`` union.
+
+    Returns ``kind`` (``messageEvent``, ``messageInstruction``,
+    ``batchedMessageEvents`` or ``unknown``), the frame's message events as
+    base64 ``MessageEvent`` structs in ``events`` (what chat-xdk's
+    ``decrypt_event`` takes), and for an instruction its ``instruction``
+    name and, on a pull, the ``sequence_start`` X says to pull from.
+    """
+    out: dict = {'kind': 'unknown', 'events': []}
+    if len(raw) < 4 or raw[0] != 12:
+        return out
+    fid = struct.unpack(">h", raw[1:3])[0]
+    if fid == 1:
+        end = _skip(raw, 3, 12)
+        out.update(kind='messageEvent', events=[base64.b64encode(raw[3:end]).decode()])
+    elif fid == 2:
+        out['kind'] = 'messageInstruction'
+        if raw[3] == 12:
+            which = struct.unpack(">h", raw[4:6])[0]
+            out['instruction'] = _INSTRUCTIONS.get(which, f'instruction{which}')
+            if which == 1:
+                start = _read_fields(raw[6:]).get(1)
+                out['sequence_start'] = _as_text(start)
+    elif fid == 3:
+        out['kind'] = 'batchedMessageEvents'
+        i = 3
+        while i < len(raw) and raw[i] != 0:
+            ftype, inner = raw[i], struct.unpack(">h", raw[i + 1:i + 3])[0]
+            i += 3
+            if ftype == 15 and inner == 1 and raw[i] == 12:
+                size = struct.unpack(">i", raw[i + 1:i + 5])[0]
+                i += 5
+                for _ in range(size):
+                    end = _skip(raw, i, 12)
+                    out['events'].append(base64.b64encode(raw[i:end]).decode())
+                    i = end
+            else:
+                i = _skip(raw, i, ftype)
+    return out
+
+
+def token_of(response: dict) -> str | None:
+    """Finds the chat-ws JWT in a ``GenerateXChatTokenMutation`` answer."""
+    stack = [response]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, dict):
+            stack.extend(item.values())
+        elif isinstance(item, list):
+            stack.extend(item)
+        elif isinstance(item, str) and item.count('.') == 2 and len(item) > 100:
+            return item
+    return None
+
+
 def _as_text(value: object) -> str | None:
     if isinstance(value, (bytes, bytearray)):
         try:

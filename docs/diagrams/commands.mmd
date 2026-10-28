@@ -20,6 +20,7 @@ flowchart TB
     c_login["login"]
     c_logout["logout"]
     c_whoami["whoami"]
+    c_voice["voice"]
     c_search["search"]
     c_new["new"]
   end
@@ -167,6 +168,8 @@ flowchart TB
   mcp --> c_twitterDms
   cli --> c_twitterChat
   c_twitterChat -.- terminal
+  cli --> c_voice
+  mcp --> c_voice
   cli --> c_search
   mcp --> c_search
   cli --> c_twitterFollowers

@@ -148,7 +148,7 @@ flowchart LR
   anyB["Any platform with a browser path: inspect, flow"]
   anyB --> b_facebook
   anyB --> b_reddit
-  anyN["Any platform, no browser: launch, adsPower, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, search, new"]
+  anyN["Any platform, no browser: launch, adsPower, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -184,7 +184,7 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `search`, `twitter followers`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `voice`, `search`, `twitter followers`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
@@ -202,7 +202,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter session`: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping for the session check; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter follows`: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.show for the follows read; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter dms`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.inbox for the dms read (the inbox, or one conversation); no browser and no proxy: X accounts call X directly, rule 80).
-- `log twitter chat`: the direct-API engine only (twikit, vendored in vendor/twikit, xchat.unlock_xchat for the chat pin (the PIN is checked against Juicebox before it is saved); no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter chat`: the direct-API engine only (twikit, vendored in vendor/twikit, xchat.unlock_xchat for the chat pin (the PIN is checked against Juicebox before it is saved), chat watch (X pushes each message over wss://chat-ws.x.com, nothing polled); no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter followers`: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.followers for the followers read; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter reply`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the reply; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter quote`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the quote; no browser and no proxy: X accounts call X directly, rule 80).
@@ -223,9 +223,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 95 command tools + saved flows"]
+  mcp["MCP server log: 96 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 51 commands (COMMANDS)"]
+  runCli["runCli: 52 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr (vendor/), the account's saved session, a governor per account"]
@@ -311,7 +311,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter session`](#log-twitter-session) | Check that X still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `twitter` first | `--account <accountName>` `--json` | direct API only | none | `twitterSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 21, 26, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter follows`](#log-twitter-follows) | Read whether handles follow an X account and it follows them, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--handles <handle,handle…>` `--json` | direct API only | none | `twitterFollows` | PreToolUse, PostToolUse · PostToolUse | no | 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter dms`](#log-twitter-dms) | Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--waiting` `--with <handle>` `--conversation <id>` `--json` | direct API only | none | `twitterDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 88, 30, 38, 39, 40, 41 |
-| [`log twitter chat`](#log-twitter-chat) | X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in Twenty, never printed | `twitter` first | `--account <accountName>` `--show` | direct API only | none | terminal only: asks matt for the X Chat PIN in a Clack prompt (masked). He runs `bun bin/log.ts twitter chat pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 80, 81, 88, 30, 38, 39, 40, 41 |
+| [`log twitter chat`](#log-twitter-chat) | X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in Twenty, never printed | `twitter` first | `--account <accountName>` `--show` `--seconds <n>` `--inbox` `--json` | direct API only | none | terminal only: asks matt for the X Chat PIN in a Clack prompt (masked). He runs `bun bin/log.ts twitter chat pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 26, 63, 64, 73, 80, 81, 88, 30, 38, 39, 40, 41 |
+| [`log voice`](#log-voice) | Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing | any (none) | `--to <handle>` `--text` `--context` `--json` | none | none | `voice` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 63, 64, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--json` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter reply`](#log-twitter-reply) | Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterReply`, `twitterReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 30, 38, 39, 40, 41 |
@@ -371,6 +372,7 @@ flowchart TB
     c_login["login"]
     c_logout["logout"]
     c_whoami["whoami"]
+    c_voice["voice"]
     c_search["search"]
     c_new["new"]
   end
@@ -518,6 +520,8 @@ flowchart TB
   mcp --> c_twitterDms
   cli --> c_twitterChat
   c_twitterChat -.- terminal
+  cli --> c_voice
+  mcp --> c_voice
   cli --> c_search
   mcp --> c_search
   cli --> c_twitterFollowers
@@ -1163,7 +1167,19 @@ X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in T
 
 ```text
 log twitter chat pin --account <accountName> [--show]
+log twitter chat watch --account <accountName> [--seconds <n>] [--inbox] [--json]
 Saves the account's X Chat PIN (the 4-digit code X asks for to open encrypted DMs) to Twenty, asked twice in a masked Clack prompt and never printed or passed as a flag. It is checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) unlocks the account's keys with it through Juicebox (a wrong PIN uses one of X's limited guesses), and only a PIN that opens them is saved. `log twitter dms` uses it to recover the account's X Chat keys through Juicebox (vendor/chatXdk) and read the encrypted messages. --show says only whether one is set.
+watch keeps one socket open to X Chat, the way X's own chat app does (read with rea from X's shipped code, issue #68): a token from GenerateXChatTokenMutation, wss://chat-ws.x.com/ws, a KeepAlive every 30 s, a fresh token and a new socket when it drops. X pushes each message the moment it lands, so nothing is polled and no inbox read can hit X's 429. Each message is decrypted with the saved PIN and printed as it arrives (who, when, what they said). --inbox also hands each new message from someone else to the inbox hook, which puts it in front of the agent with what to do next. --seconds stops it after that long; without it, it watches until stopped.
+```
+
+#### log voice
+
+Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing MCP tools: `voice`, one per form, with named fields.
+
+```text
+log voice --to <handle> --text "<draft>" [--context "<what they said>"] [--json]
+Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, and whether it reads like a mate texting. A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
+Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
 ```
 
 #### log search

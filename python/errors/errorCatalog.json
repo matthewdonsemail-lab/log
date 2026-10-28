@@ -138,6 +138,25 @@
     ],
     "action": "Give --limit as a whole number from 1 to 200, or leave it out for 20."
   },
+  "voiceGuideMissing": {
+    "layer": "twitter",
+    "meaning": "matt's writing guide (GUIDES/MATT_WRITING_STYLE.md) isn't where log voice looks, so a draft can't be gated against it.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter/voice",
+      "cli/voice"
+    ],
+    "action": "Put the guide back in the Buzz workspace GUIDES folder, or point LOG_VOICE_GUIDE at it."
+  },
+  "secondsInvalid": {
+    "layer": "twitter",
+    "meaning": "The --seconds given to log twitter chat watch is not a number of seconds of at least 5.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter/chat"
+    ],
+    "action": "Give --seconds as a number of seconds, at least 5, or leave it out to watch until stopped."
+  },
   "conversationInvalid": {
     "layer": "twitter",
     "meaning": "The --conversation given to log twitter dms isn't an X conversation id (digits, or two user ids joined by a dash).",
