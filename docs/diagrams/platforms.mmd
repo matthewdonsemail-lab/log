@@ -21,9 +21,9 @@ flowchart LR
   e_rdvwr --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 3 commands of its own"]
+  p_discord["Discord (DISCORD): 5 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord send"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers

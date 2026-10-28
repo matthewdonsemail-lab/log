@@ -7,6 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
+import { toInboxOf } from "./index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -108,5 +109,41 @@ describe("log discord session check", () => {
     });
     expect(code).toBe(0);
     expect(sent).toMatchObject([{ action: "chats" }, { action: "send", channel: "1547936265436012645" }]);
+  });
+  test("watch prints each message Discord pushes, only the chat asked for, and polls nothing", async () => {
+    const err: string[] = [];
+    const out: string[] = [];
+    const code = await runCli(["discord", "watch", "--account", "discordOne", "--channel", "1316963626611118161", "--seconds", "30"], {
+      twenty: fixture(),
+      out: (l) => out.push(l),
+      err: (l) => err.push(l),
+      directDiscord: () => ({ answer: { ok: false, code: "notExpected" }, refreshed: null }),
+      directDiscordLive: async (_account, spec, onLive) => {
+        expect(spec).toMatchObject({ action: "watch", seconds: 30 });
+        onLive({ kind: "open", at: "08:41:44Z", detail: "open" });
+        onLive({ kind: "message", channelId: "1316963626611118161", guildId: "1", id: "2", at: "08:43:11Z", from: "VIBE BOT", bot: true, fromMe: false, replyTo: "1", text: "qualified opportunities delivered" });
+        onLive({ kind: "message", channelId: "999999999999999999", id: "3", from: "someone", text: "elsewhere" });
+        return { answer: { ok: true, messages: 2, seconds: 30 }, refreshed: null };
+      },
+    });
+    expect(code).toBe(0);
+    expect(err.join("\n")).toContain("VIBE BOT [bot] replying to 1 · 2: qualified opportunities delivered");
+    expect(err.join("\n")).not.toContain("elsewhere");
+    expect(out.join("\n")).toContain("1 message(s) pushed in 30 s, nothing polled");
+  });
+
+  test("read shows a channel's messages after ours", async () => {
+    const r = await run(["discord", "read", "--account", "discordOne", "--channel", "1316963626611118161", "--after", "1"], { answer: { ok: true, channelId: "1316963626611118161", messages: [{ id: "2", at: "08:37:46Z", from: "VIBE BOT", bot: true, fromMe: false, replyTo: "1", text: "you are building ListeningKit", embeds: [] }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["discordOne:read"]);
+    expect(r.out).toContain("VIBE BOT [bot] replying to 1");
+  });
+  test("only DMs, groups, mentions and replies to the account go to the inbox, never a bot's Thinking...", () => {
+    expect(toInboxOf({ kind: "message", channelId: "1", text: "hey" })).toBe(true);
+    expect(toInboxOf({ kind: "message", channelId: "1", guildId: "9", text: "weidian link" })).toBe(false);
+    expect(toInboxOf({ kind: "message", channelId: "1", guildId: "9", mentionsMe: true, text: "yo" })).toBe(true);
+    expect(toInboxOf({ kind: "message", channelId: "1", guildId: "9", repliesToMe: true, bot: true, text: "Thinking..." })).toBe(false);
+    expect(toInboxOf({ kind: "message", channelId: "1", guildId: "9", repliesToMe: true, bot: true, text: "look beyond x" })).toBe(true);
+    expect(toInboxOf({ kind: "message", channelId: "1", fromMe: true, text: "mine" })).toBe(false);
   });
 });

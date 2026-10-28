@@ -78,7 +78,11 @@ So a Discord watch is the X Chat watch again (`docs/platforms/x/xchat/live.md`):
 | `log discord session check --account <a>` | `discordSessionCheck` | `GET /api/v9/users/@me`: is the saved token still signed in |
 | `log discord chats --account <a>` | `discordChats` | Every DM and group DM with its id, name and members (`get_dms`) |
 | `log discord send --account <a> --channel "<as matt says it>" --text "…"` | `discordSend`, `discordSendLive` | One message; the chat is matched the way matt says it (`src/discord/chat/match`: "the log group", "jilly", "listaro"), refused with the candidates when two fit; a dry run unless `--live --approvedBy` |
+| `log discord read --account <a> --channel <id or name> [--after <id>]` | `discordRead` | A chat or channel's latest messages, oldest first: who, when, bot or not, what it replies to, text and embeds; `--after` keeps what came after a message (a bot's answer to ours) |
+| `log discord watch --account <a> [--channel …] [--seconds <s>] [--inbox]` | `discordWatch` | endcord's gateway (`wss://gateway.discord.gg`): every message printed the moment Discord pushes it, nothing polled. `--inbox` hands each DM, group message, mention of the account or reply to it (never a bot's "Thinking..." placeholder) to the inbox hook |
 | `log search index --platform discord` | `searchIndex` | Every DM and group's last 200 messages (paged 100 at a time with `before`, waiting out a 429's `retry_after`), kept in `~/.logCli/conversations/discord/<account>` and indexed with X's for `log search` (rule 89) |
+
+The inbox hook (`scripts/hooks/inbox.ts`) keeps one `log discord watch --inbox` running for every signed-in Discord account, as it does `log twitter chat watch --inbox` for X, and puts each new message in front of the agent as `>>> NEW DISCORD MESSAGE`, with how to read the chat, draft from matt's guide, gate it with `log voice` and send only when matt says. Tested 2026-10-28: VIBE BOT's answer in #bot-help reached the agent through the hook with no read.
 
 First full read, 2026-10-28: 176 conversations, 13,666 messages; with X's, 4,819 chunks. `log search bench`: warm p50 4.7 ms, p99 8.1 ms, against 66.7 ms for a plain scan.
 

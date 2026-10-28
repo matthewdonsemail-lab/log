@@ -8353,3 +8353,30 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Discord's conversations are in `log search` (rule 89), read through endcord. The engine's `export` reads every DM and group DM (`get_dms`) and pages each one's messages back with `before`, 100 at a time up to 200, waiting out a 429's `retry_after`, and writes one progress line per chat as it goes. `log search index` reads every signed-in Discord account (its `~/.logCli/discord/<account>/session.json`) beside X's, keeps each conversation in `~/.logCli/conversations/discord/<account>` (who it was with, whether a DM or which group), and builds one keyword and meaning index over both; `--platform twitter|discord` reads only one. `runPlatformEngine` streams the engine's progress when asked and takes up to 512 MB of answer. The Discord README lists every Discord command with its MCP tool.
 Why: matt: give Discord the same logic that lets us look over the conversations at p99, through the vendor, now its MCP is done.
 Checked: live: `log search index --platform discord` read 176 conversations, 13,666 messages, and indexed 4,819 chunks with X's in 169 s; `log search "inference saver deal" --platform discord` found the Dr. Ishh and Cornell Sneed chats; `log search bench`: warm p50 4.7 ms, p99 8.1 ms, against 66.7 ms for a linear scan. New search.test.ts (export, kept, searchable). `bun run check`: 1132 pass, 0 fail.
+
+## 2026-10-28 08:51Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/discord/README.md`: edited
+- `python/discordApi/engine.py`: added def read_of, def read, def live, def watch_of, def watch · changed const ACTIONS
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/inbox.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/discord/discord.test.ts`: added test "watch prints each message Discord pushes, only the chat asked for, and polls nothing", test "read shows a channel's messages after ours", test "only DMs, groups, mentions and replies to the account go to the inbox, never a bot's Thinking..."
+- `src/cli/discord/index.ts`: added const DISCORD_READ_USAGE, const DISCORD_READ_INPUT, interface DiscordRead, const discordReadCommand, const DISCORD_WATCH_USAGE, const DISCORD_WATCH_INPUT, function watchLine, function toInboxOf, function discordInboxMessageOf, const discordWatchCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/discord/account/session/client.ts`: added function runDiscordEngineLive
+- `src/inbox/watch/client.ts`: added function startDiscordWatch, function discordContext, function twitterContext · changed function inboxContext
+- `src/inbox/watch/watch.test.ts`: added test "a Discord message pushed by the gateway is told with the Discord steps, beside X's"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/platformKit/session/client.ts`: added function runPlatformEngineLive
+
+What changed: Discord on the inbox hook, by push. `log discord read` (MCP `discordRead`) reads a chat or channel's latest messages, oldest first, with who, when, bot or not, what each replies to, text and embeds, `--after` keeping what came after a message. `log discord watch` (MCP `discordWatch`) opens endcord's gateway (wss://gateway.discord.gg) and prints every message the moment Discord pushes it, nothing polled; the engine flags a mention of the account and a reply to it. `--inbox` hands each DM, group message, mention or reply from someone else to the inbox hook, never a bot's "Thinking..." placeholder, and logs only those. The inbox hook keeps one `log discord watch --inbox` running per signed-in Discord account beside X's (`startDiscordWatch`), and words a Discord note with Discord's own read, draft, gate and send steps (`>>> NEW DISCORD MESSAGE`). `runPlatformEngineLive` streams any platform engine's live lines. The docs check keys each command by its platform-qualified name (rule 83), so Discord's read and watch no longer mix with Facebook's read and log watch.
+Why: matt: get a notification rather than reading the channel every 15 seconds, through the websocket the vendor already has, and set up the Claude hooks so the agent doesn't have to read the context again.
+Checked: live in vibe coders #bot-help: the watch pushed our message and VIBE BOT's reply 8.4 s later; with the hook's watcher open, VIBE BOT's answer reached the agent as >>> NEW DISCORD MESSAGE with no read. New tests: watch, read, toInboxOf, the Discord inbox note. `bun run check`: 1136 pass, 0 fail.

@@ -112,7 +112,7 @@ How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 4 platforms so far, Facebook (23 commands of its own), X (10 commands of its own), Reddit (1 command of its own), Discord (3 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 4 platforms so far, Facebook (23 commands of its own), X (10 commands of its own), Reddit (1 command of its own), Discord (5 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -145,9 +145,9 @@ flowchart LR
   e_rdvwr --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 3 commands of its own"]
+  p_discord["Discord (DISCORD): 5 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord send"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
@@ -180,8 +180,8 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check"]
-  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"]
+  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
   nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick
@@ -189,8 +189,8 @@ flowchart LR
 
 Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
-- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
 - **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `voice`, `search`, `twitter followers`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
@@ -198,7 +198,7 @@ Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (4 clients, 15 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (4 clients, 17 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -225,6 +225,8 @@ A command on the direct-API engine calls the platform's internal API with the ac
 
 - `log discord session`: the direct-API engine only (endcord, vendored in vendor/endcord, account.ping for the session check; no browser).
 - `log discord chats`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_dms for the chats (the DMs and group DMs); no browser).
+- `log discord read`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_messages for the read (a chat or channel, paged with before); no browser).
+- `log discord watch`: the direct-API engine only (endcord, vendored in vendor/endcord, gateway.Gateway for the watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled); no browser).
 - `log discord send`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.send_message for the send --live; no browser).
 
 ### How a call reaches log-cli
@@ -236,9 +238,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 100 command tools + saved flows"]
+  mcp["MCP server log: 102 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 55 commands (COMMANDS)"]
+  runCli["runCli: 57 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord (vendor/), the account's saved session, a governor per account"]
@@ -337,6 +339,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 | [`log discord session`](#log-discord-session) | Check that Discord still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 | [`log discord chats`](#log-discord-chats) | List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordChats` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
+| [`log discord read`](#log-discord-read) | Read a Discord chat or channel's latest messages, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--limit <n>` `--after <messageId>` `--json` | direct API only | the account's | `discordRead` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
+| [`log discord watch`](#log-discord-watch) | Watch the account's Discord messages as Discord pushes them over its gateway, nothing polled, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `discordWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 | [`log discord send`](#log-discord-send) | Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--text` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordSend`, `discordSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
@@ -438,6 +442,8 @@ flowchart TB
   subgraph g_discord["Discord"]
     c_discordSession["session"]
     c_discordChats["chats"]
+    c_discordRead["read"]
+    c_discordWatch["watch"]
     c_discordSend["send"]
   end
   cli --> c_launch
@@ -566,6 +572,12 @@ flowchart TB
   mcp --> c_discordSession
   cli --> c_discordChats
   mcp --> c_discordChats
+  cli --> c_discordRead
+  mcp --> c_discordRead
+  c_discordRead --> live
+  cli --> c_discordWatch
+  mcp --> c_discordWatch
+  c_discordWatch --> live
   cli --> c_discordSend
   mcp --> c_discordSend
   f_deletePost["flowDeletePost: flow run deletePost"]
@@ -1329,6 +1341,24 @@ List the account's DMs and group DMs with their ids, on the direct-API engine, s
 ```text
 log discord chats --account <accountName> [--json]
 Lists the account's DMs and group DMs with their ids, names and members, on the direct-API engine (vendor/endcord, no browser). Sends nothing.
+```
+
+#### log discord read
+
+Read a Discord chat or channel's latest messages, on the direct-API engine, sending nothing MCP tools: `discordRead`, one per form, with named fields.
+
+```text
+log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--json]
+Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (vendor/endcord, no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
+```
+
+#### log discord watch
+
+Watch the account's Discord messages as Discord pushes them over its gateway, nothing polled, sending nothing MCP tools: `discordWatch`, one per form, with named fields.
+
+```text
+log discord watch --account <accountName> [--channel <channelId|chat name>] [--seconds <s>] [--inbox] [--json]
+Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, through vendor/endcord, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.
 ```
 
 #### log discord send

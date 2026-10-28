@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { claimPoll, inboxContext, newMessages, pollReaders, releasePoll, takePending } from "./index.ts";
+import { addPending, claimPoll, inboxContext, newMessages, pollReaders, releasePoll, takePending } from "./index.ts";
 import type { InboxReader, InboxThread } from "./index.ts";
 
 const thread = (id: string, who: string, at: string, fromMe: boolean, box = "inbox", text: string | null = "hey"): InboxThread => ({ conversationId: id, with: who, lastAt: at, lastFromMe: fromMe, lastText: text, box });
@@ -52,5 +52,14 @@ describe("inbox watch", () => {
     releasePoll();
     process.env.LOG_INBOX_POLL = "off";
     expect(claimPoll(new Date(t0.getTime() + 60 * 60_000))).toBe(false);
+  });
+  test("a Discord message pushed by the gateway is told with the Discord steps, beside X's", () => {
+    addPending([{ platform: "discord", account: "sourcedandsoldtothehighestbidder", conversationId: "1316963626611118161", with: "VIBE BOT", text: "look beyond x", at: "2026-10-28T08:48:50Z", box: "reply", seenAt: "2026-10-28T08:48:51Z" }]);
+    addPending([{ platform: "twitter", account: "matthewsoldit", conversationId: "1-2", with: "alice", text: "hey", at: "2026-10-28T08:49:00Z", box: "xchat", seenAt: "2026-10-28T08:49:01Z" }]);
+    const text = inboxContext(takePending())!;
+    expect(text).toContain(">>> NEW MESSAGE (1)");
+    expect(text).toContain(">>> NEW DISCORD MESSAGE (1)");
+    expect(text).toContain("VIBE BOT on discord sourcedandsoldtothehighestbidder (replied to you in a server channel)");
+    expect(text).toContain("log discord send --account sourcedandsoldtothehighestbidder --channel <channel>");
   });
 });

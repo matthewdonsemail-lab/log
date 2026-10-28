@@ -42,8 +42,8 @@ import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
-import { discordChatsCommand, discordSendCommand, discordSessionCommand } from "../discord/index.ts";
-import { runDiscordEngine } from "../../discord/account/session/index.ts";
+import { discordChatsCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
+import { runDiscordEngine, runDiscordEngineLive } from "../../discord/account/session/index.ts";
 
 export * from "./helpers/index.ts";
 export type { Command, CommandContext, CommandResult, MarketplaceData } from "./types.ts";
@@ -103,6 +103,8 @@ export const COMMANDS: Command[] = [
   redditSessionCommand,
   discordSessionCommand,
   discordChatsCommand,
+  discordReadCommand,
+  discordWatchCommand,
   discordSendCommand,
 ];
 
@@ -136,6 +138,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     directTwitterLive: overrides.directTwitterLive ?? runTwitterEngineLive,
     directReddit: overrides.directReddit ?? runRedditEngine,
     directDiscord: overrides.directDiscord ?? runDiscordEngine,
+    directDiscordLive: overrides.directDiscordLive ?? runDiscordEngineLive,
   };
 }
 

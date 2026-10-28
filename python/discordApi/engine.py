@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import threading
 import time
 import sys
 from pathlib import Path
@@ -155,6 +156,75 @@ async def export(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     return await asyncio.to_thread(export_of, token, int(spec.get("limit") or 200), float(spec.get("pause") or 0.4))
 
 
+def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    messages, problem = history_of(client, channel, limit, 0.4)
+    if problem and not messages:
+        return {"ok": False, "code": "platformError", "detail": f"channel {channel}: {problem}", "loginState": "loggedIn"}
+    me = str(client.my_id)
+    picked = [m for m in reversed(messages) if not after or int(m["id"]) > int(after)]
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
+
+
+async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel = str(spec.get("channel") or "").strip()
+    if not channel.isdigit():
+        return {"ok": False, "code": "sendInvalid", "detail": "read needs a channel id"}
+    after = str(spec.get("after") or "").strip() or None
+    return await asyncio.to_thread(read_of, token, channel, int(spec.get("limit") or 20), after)
+
+
+def live(event: dict[str, Any]) -> None:
+    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+
+
+def watch_of(token: str, seconds: float) -> dict[str, Any]:
+    from endcord import client_properties as props
+    from endcord import gateway
+
+    gateway.is_relevant_message = lambda *args, **kwargs: True
+    agent = props.get_user_agent()
+    properties = props.add_user_agent(props.get_default_properties(), agent)
+    socket = gateway.Gateway(token, None, props.add_for_gateway(properties), agent)
+    threading.Thread(target=socket.connect, daemon=True).start()
+    started = time.time()
+    while not socket.get_ready():
+        if time.time() - started > 45:
+            return {"ok": False, "code": "platformError", "detail": "Discord's gateway didn't send READY within 45 s", "loginState": "unknown"}
+        if socket.get_state() == 0 and time.time() - started > 10:
+            return {"ok": False, "code": "sessionDead", "detail": "Discord's gateway closed before READY", "loginState": "loggedOut"}
+        time.sleep(0.2)
+    me = str(socket.get_my_id())
+    live({"kind": "open", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "detail": "wss://gateway.discord.gg open, every message pushed as it lands"})
+    count = 0
+    while not seconds or time.time() - started < seconds:
+        event = socket.get_messages()
+        if event is None:
+            if socket.get_state() == 0:
+                live({"kind": "closed", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "detail": "the gateway closed"})
+                break
+            time.sleep(0.05)
+            continue
+        if event.get("op") != "MESSAGE_CREATE":
+            continue
+        d = event.get("d") or {}
+        count += 1
+        live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), "id": d.get("id"), "at": d.get("timestamp"), "from": d.get("global_name") or d.get("username"), "fromId": str(d.get("user_id")), "fromMe": str(d.get("user_id")) == me, "bot": bool(d.get("bot")), "replyTo": (d.get("referenced_message") or {}).get("id"), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me, "text": d.get("content") or ""})
+    return {"ok": True, "loginState": "loggedIn", "messages": count, "seconds": round(time.time() - started)}
+
+
+async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    return await asyncio.to_thread(watch_of, token, float(spec.get("seconds") or 0))
+
+
 async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     token = cookies.get("token")
     if not token:
@@ -172,7 +242,7 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await asyncio.to_thread(send_of, token, channel, text)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "send": send}
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "watch": watch}
 
 
 if __name__ == "__main__":

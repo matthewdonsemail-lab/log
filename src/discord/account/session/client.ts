@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { findPlatformAccount, platformGate, recordPlatformSession, runPlatformEngine } from '../../../platformKit/session/index'
+import { findPlatformAccount, platformGate, recordPlatformSession, runPlatformEngine, runPlatformEngineLive } from '../../../platformKit/session/index'
 import type { PlatformAccount, PlatformEngineRun, PlatformEngineSpec, PlatformGate, PlatformShape } from '../../../platformKit/session/index'
 import type { TwentyClient } from '../../../twenty/graphql/index'
 
@@ -24,6 +24,10 @@ export function discordGate(account: PlatformAccount): PlatformGate {
 
 export function runDiscordEngine(account: PlatformAccount, spec: PlatformEngineSpec): PlatformEngineRun {
   return runPlatformEngine(DISCORD_PLATFORM, account, spec)
+}
+
+export function runDiscordEngineLive(account: PlatformAccount, spec: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void): Promise<PlatformEngineRun> {
+  return runPlatformEngineLive(DISCORD_PLATFORM, account, spec, onLive)
 }
 
 export function recordDiscordSession(twenty: TwentyClient, account: PlatformAccount, run: PlatformEngineRun, now: Date): Promise<string[]> {

@@ -84,6 +84,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   redditSession: [13, 63, 64, 73, 83],
   discordSession: [13, 63, 64, 73, 83],
   discordChats: [13, 63, 64, 73, 83],
+  discordRead: [13, 63, 64, 73, 83],
+  discordWatch: [13, 26, 63, 64, 73, 83],
   discordSend: [8, 13, 63, 64, 73, 83],
 };
 

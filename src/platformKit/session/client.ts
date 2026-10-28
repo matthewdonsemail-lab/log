@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -114,6 +114,56 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }
+}
+
+export function runPlatformEngineLive(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void): Promise<PlatformEngineRun> {
+  const dir = mkdtempSync(join(tmpdir(), `${shape.platform}Api`))
+  const cookiesPath = join(dir, 'cookies.json')
+  const refreshedPath = join(dir, 'refreshed.json')
+  writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
+  const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
+  if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
+  const spec = join(dir, 'spec.json')
+  writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
+  return new Promise((resolve) => {
+    const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', shape.engine, spec], { windowsHide: true })
+    let buffer = ''
+    let last = ''
+    let stderr = ''
+    child.stdout.setEncoding('utf8')
+    child.stdout.on('data', (chunk: string) => {
+      buffer += chunk
+      let cut = buffer.indexOf('\n')
+      while (cut >= 0) {
+        const line = buffer.slice(0, cut).trim()
+        buffer = buffer.slice(cut + 1)
+        if (line) {
+          try {
+            const parsed = JSON.parse(line) as { liveEvent?: Record<string, unknown> }
+            if (parsed.liveEvent) onLive(parsed.liveEvent)
+            else last = line
+          } catch {
+            last = line
+          }
+        }
+        cut = buffer.indexOf('\n')
+      }
+    })
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr = (stderr + chunk.toString()).slice(-2000)
+    })
+    child.on('close', () => {
+      let answer: PlatformAnswer
+      try {
+        answer = JSON.parse(last || buffer.trim()) as PlatformAnswer
+      } catch {
+        answer = { ok: false, code: 'engineNoAnswer', detail: (stderr || 'no output').slice(-300) }
+      }
+      const refreshed = existsSync(refreshedPath) ? (JSON.parse(readFileSync(refreshedPath, 'utf8')) as Record<string, string>) : null
+      rmSync(dir, { recursive: true, force: true })
+      resolve({ answer, refreshed })
+    })
+  })
 }
 
 export async function recordPlatformSession(twenty: TwentyClient, shape: PlatformShape, account: PlatformAccount, run: PlatformEngineRun, now: Date, cookieDomain: string): Promise<string[]> {
