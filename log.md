@@ -8087,3 +8087,66 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Discord is log's next platform (`log new platform discord --noProxy`, like Reddit): its session, `log discord session check`, engine stub and docs, `DISCORD` added to Twenty's socialAccounts.platform (twentySetup keeps the 8 existing options), and the first account `sourcedandsoldtothehighestbidder` with its own AdsPower profile. `log inspect` now records WebSocket frames: `harRecorder.SocketTap` watches every page's sockets, inflates a `zlib-stream` socket with one context, redacts a token in the socket URL, and writes the frames into each step's network.har as `_webSocketMessages` on a 101 entry. `exchangesOf` turns each frame into a `socket` exchange named for its event (`RECV ws MESSAGE_CREATE`), in time order with the HTTP calls, and `fitBundle` folds repeated frames (first 3 of each kind) so SubQ can still read a step. The platforms diagram no longer breaks on a platform with no vendored client. docs/platforms/discord/README.md has what the inspect found: discord.gg is the invite domain (404 Unknown Invite), sign-in, Ctrl+K, history paging (`before` + `limit=20`), sending, and the gateway round trip with Jilly.
 Why: matt: make Discord a new platform with no proxy, sign in step by step through log inspect, and since the reply came by push and the recording couldn't see it, fix inspect so it captures WebSocket frames, and roll every finding into the Discord platform's docs.
 Checked: live on sourcedandsoldtothehighestbidder, 28 Oct: sign-in `POST /api/v9/auth/login` 200; scroll-up paging seen; two messages sent (log group chat, vibe coders #bot-help) and one to Jilly, whose reply came as `RECV ws MESSAGE_CREATE` 4.2 s after our POST, with TYPING_START, MESSAGE_REACTION_ADD and MESSAGE_ACK around it; step 02's reading went from 607222 tokens (SubQ 400) to 72311 after the fold, finding written and fixed. New tests: socketExchanges.test.ts 3 pass, python/browser/socketTapTest.py 4 pass. `bun run check`: 1117 pass, 0 fail, every gate green.
+
+## 2026-10-28 07:20Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/README.md`: edited
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: new file
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: new file
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: new file
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: new file
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: new file
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: new file
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: new file
+- `docs/platforms/discord/background/discordApiExperiments.md`: new file
+- `docs/platforms/discord/background/discordApiGames.md`: new file
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: new file
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: new file
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: new file
+- `docs/platforms/discord/background/discordApiMetrics.md`: new file
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: new file
+- `docs/platforms/discord/background/discordApiPromotions.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: new file
+- `docs/platforms/discord/background/discordApiScience.md`: new file
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: new file
+- `docs/platforms/discord/background/discordApiTokens.md`: new file
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: new file
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: new file
+- `docs/platforms/discord/background/discordAssets.md`: new file
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: new file
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: new file
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: new file
+- `docs/platforms/discord/githubSearch.md`: new file
+- `docs/platforms/discord/operations.json`: new file
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `capture --docs` documented the Discord runs' 51 internal calls under `docs/platforms/discord/background/`, each read by rea from its code in Discord's bundles, and each doc's What it does, What our machine does with it and What can go wrong is written for Discord. `docs/platforms/discord/githubSearch.md` holds what GitHub has on every Discord call and gateway event we found: 49 code searches (37 by path), the repos that come up most (discord-userdoccers, moonlight, meowcord, spacebarchat), and the user-account clients that already do the gateway watch and the send (concord, endcord, Discord-S.C.U.M). The Discord README links it.
+Why: the push was refused by check:facebookClientDocs (a run newer than the docs); and matt: search the GitHub API for everything we found, Discord only.
+Checked: `bun run check:facebookClientDocs`: 235 requests documented, rea read every slice; no `toWrite` left in docs/platforms/discord; the searches ran on /search/code two at a time with backoff, stars and last push from /repos the same day.

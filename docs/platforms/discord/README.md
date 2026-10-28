@@ -69,6 +69,10 @@ So a Discord watch is the X Chat watch again (`docs/platforms/x/xchat/live.md`):
 
 `log inspect` now records every WebSocket frame, sent and received, into each step's `network.har` (`_webSocketMessages` on a `101` entry, the browser's own HAR shape; `python/browser/harRecorder.py` `SocketTap`, which inflates `zlib-stream` and redacts a token in the socket URL). Each frame is an exchange named for its event (`RECV ws MESSAGE_CREATE`) in `exchanges.json` / `exchanges.md`, beside the HTTP calls. A step's SubQ reading keeps the first 3 frames of each event and folds the rest into one count (`foldSocketFrames`), so Discord's hundreds of presence events don't drown it.
 
+## On GitHub
+
+Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md`. All of them are known there; `discord-userdoccers/discord-userdoccers` documents most, and chojs23/concord, sparklost/endcord and Discord-S.C.U.M already run the gateway watch and the send.
+
 ## Next
 
 1. A watch on the gateway: `log discord chat watch --account <a>` in the account's open browser (or a vendored client), each `MESSAGE_CREATE` to someone else handed to the inbox hook, as `log twitter chat watch --inbox` does.
