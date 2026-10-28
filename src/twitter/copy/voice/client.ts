@@ -24,16 +24,18 @@ export async function readVoice(draft: VoiceDraft, guide: string, decide: Decisi
   const neverSays = neverSaysIn(draft.text)
   const response = await decide({
     model: VOICE_MODEL,
-    state: { howMattWrites: guide, dmsMattWroteHimself: MATT_DMS, phrasesMattNeverSays: NEVER_SAYS, recipient: draft.to, whatTheySaid: draft.context ?? null, dm: draft.text },
+    state: { howMattWrites: guide, dmsMattWroteHimself: MATT_DMS, phrasesMattNeverSays: NEVER_SAYS, recipient: draft.to, whatTheySaid: draft.context ?? null, dm: draft.text, ...(draft.evidence ? { thisChat: draft.evidence.chat, howMattWritesInThisChat: draft.evidence.profile, mattsRealRepliesHere: draft.evidence.replies } : {}) },
     questions: {
       voice: { type: 'noul', instructions: 'Going by howMattWrites and dmsMattWroteHimself, does this dm sound like matt typed it himself: his words, plain about what he does, no clever phrasing, no praise-then-question, no yap?', criteria: { true: 'It sounds like matt typed it', false: 'It sounds like ai or a copywriter wrote it for him' } },
       inContext: { type: 'noul', instructions: 'Does the dm answer what they actually said or asked (whatTheySaid)? With nothing given, does it pick up on something specific about them?', criteria: { true: 'It answers them specifically', false: 'It is generic and could go to anyone' } },
       friendLike: { type: 'noul', instructions: 'Does this dm read like matt messaging someone he is friendly with: casual, natural and human, not a sales template or a bot?', criteria: { true: 'It reads like a mate texting', false: 'It reads like a template, a pitch or a bot' } },
+      ...(draft.evidence ? { toThem: { type: 'noul', instructions: 'Going by mattsRealRepliesHere (what they said and how matt really replied, the same chat first) and howMattWritesInThisChat (counted from his own messages there), does this dm read like matt writing to them in this chat: the same length, case, punctuation, words and register he uses here?', criteria: { true: 'It reads like his real replies here', false: 'It reads like how he writes somewhere else, or like nobody' } } } : {}),
     },
   })
   const answers = response.answers as Record<string, { noul?: number }>
   const voice = answers.voice?.noul ?? 0
   const inContext = answers.inContext?.noul ?? 0
   const friendLike = answers.friendLike?.noul ?? 0
-  return { to: draft.to, voice, inContext, friendLike, neverSays, pass: !neverSays.length && voice >= VOICE_PASS && inContext >= CONTEXT_PASS && friendLike >= CONTEXT_PASS, model: response.model ?? null }
+  const toThem = draft.evidence ? answers.toThem?.noul ?? 0 : null
+  return { to: draft.to, voice, inContext, friendLike, toThem, neverSays, pass: !neverSays.length && voice >= VOICE_PASS && inContext >= CONTEXT_PASS && friendLike >= CONTEXT_PASS && (toThem === null || toThem >= CONTEXT_PASS), model: response.model ?? null }
 }

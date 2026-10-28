@@ -1,7 +1,14 @@
+export interface VoiceEvidence {
+  chat: string
+  profile: unknown
+  replies: { said: string; reply: string; chat: string; tier: string }[]
+}
+
 export interface VoiceDraft {
   to: string
   text: string
   context?: string
+  evidence?: VoiceEvidence
 }
 
 export interface VoiceReading {
@@ -9,6 +16,7 @@ export interface VoiceReading {
   voice: number
   inContext: number
   friendLike: number
+  toThem: number | null
   neverSays: string[]
   pass: boolean
   model: string | null

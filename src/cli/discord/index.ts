@@ -1,6 +1,8 @@
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending } from "../../inbox/watch/index.ts";
+import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
+import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
@@ -61,6 +63,8 @@ export const discordSessionCommand: Command = {
     }
   },
 };
+
+export const discordDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void> } = { profiles: () => readProfiles(), wait: (ms) => new Promise((done) => setTimeout(done, ms)) };
 
 const DISCORD_ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The DISCORD socialAccount's accountName (its handle)" };
 
@@ -277,9 +281,9 @@ export const discordWatchCommand: Command = {
 };
 
 export const DISCORD_SEND_USAGE = [
-  'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--approvedBy <who>] [--live] [--json]',
+  'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
   "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (vendor/endcord, no browser).",
-  "Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write.",
+  "It is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write.",
 ].join("\n");
 
 export const DISCORD_SEND_INPUT: CommandInput = {
@@ -294,6 +298,7 @@ export const DISCORD_SEND_INPUT: CommandInput = {
         { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"jilly\", \"listaro\"), matched to one DM or group; or a channel id" },
         { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
         { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
+        { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
         { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
@@ -308,7 +313,7 @@ export const discordSendCommand: Command = {
   effect: "write",
   input: DISCORD_SEND_INPUT,
   summary: "Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live",
-  args: '--account <a> --channel <id|name> --text "<message>" [--approvedBy <who>] [--live] [--json]',
+  args: '--account <a> --channel <id|name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEND_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord send: ${parsed.error}\n${DISCORD_SEND_USAGE}` };
@@ -335,14 +340,27 @@ export const discordSendCommand: Command = {
         label = `${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`;
         context.err(`"${channel}" is ${label}`);
       }
-      if (!live) return { code: 0, stdout: `log discord send: dry run: ${account.accountName} would send "${text}" to ${label}. Nothing was sent. --live --approvedBy <who> sends it (rule 8).` };
+      const profiles = discordDeps.profiles();
+      const profile = profileFor({ profiles }, { platform: "discord", conversationId: target });
+      const plan = splitPlan(text, profile?.key === `chat:discord:${target}` ? profile : null, parsed.flags["asOne"] === true, profiles.everyone?.startRates ?? {});
+      const planLine = `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
+      if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: send to ${label} on the direct-API engine (vendor/endcord), approved by ${approvedBy}`);
-      const run = context.directDiscord(account, { action: "send", channel: target, text, live: true, approvedBy });
-      const code = run.answer.ok && run.answer.event === "sent" ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
-      if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent message ${run.answer.messageId} to channel ${run.answer.channelId} at ${run.answer.timestamp}.` };
-      return { code, stdout: `log discord send: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
+      context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine (vendor/endcord), approved by ${approvedBy}`);
+      const sent: PlatformAnswer[] = [];
+      for (const [i, part] of plan.parts.entries()) {
+        if (i) await discordDeps.wait(plan.gapSeconds * 1000);
+        const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
+        sent.push(run.answer);
+        if (!run.answer.ok || run.answer.event !== "sent") break;
+        context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
+      }
+      const last = sent[sent.length - 1];
+      const done = sent.filter((a) => a.ok && a.event === "sent");
+      const code = done.length === plan.parts.length ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, sent }, null, 2) };
+      if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent ${done.length === 1 ? `message ${last.messageId}` : `${done.length} messages (${done.map((a) => a.messageId).join(", ")})`} to channel ${last.channelId}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}, the last at ${last.timestamp}.` };
+      return { code, stdout: `log discord send: ${account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried.` };
     } catch (error) {
       return refuseError("discord send", error);
     }
