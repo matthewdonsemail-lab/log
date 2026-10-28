@@ -8291,3 +8291,15 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the Discord request docs rebuilt from the run that saved the account's session: 52 calls, the new one `GET /api/v9/users/@me` (the call `log discord session check` makes through endcord), with its reasoning written.
 Why: the pre-push docs gate refused a run newer than the docs (rule 27).
 Checked: `log facebook capture --docs`: 52 Discord requests, all read by rea; `bun run check:facebookClientDocs` passes.
+
+## 2026-10-28 07:56Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+
+What changed: Discord's DIRECT_ROUTES library is `endcord`, the bare vendor name the other routes use (`fbk`, `twikit`), so the MCP tool, README and diagrams say vendor/endcord once, not vendor/vendor/endcord.
+Why: the restarted MCP's `discordSessionCheck` description read vendor/vendor/endcord.
+Checked: `discordSessionCheck` over MCP answered loggedIn as sourcedandsoldtothehighestbidder; `bun run docs:build` then `check:docs` match; the directApi, discord and scaffold tests pass.
