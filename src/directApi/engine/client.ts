@@ -24,7 +24,8 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
   twitterDm: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'send_dm', when: 'dm', seam: 'directTwitter' },
   twitterQueue: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'queue run --live (each like and reply)', seam: 'directTwitter' },
-  redditSession: { platform: 'reddit', library: 'rdvwr', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directReddit' }
+  redditSession: { platform: 'reddit', library: 'rdvwr', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directReddit' },
+  discordSession: { platform: 'discord', library: 'no client vendored yet', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directDiscord' }
 }
 
 export function commandEngine(command: string): CommandEngine {

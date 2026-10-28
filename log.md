@@ -8051,3 +8051,39 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: X Chat replies come by push, the way X's own chat app gets them (read with rea from X's shipped code, issue #68), instead of reading the whole inbox again and again. vendor/twikit: `generate_xchat_token` (GenerateXChatTokenMutation), `Client.watch_xchat` (one socket to wss://chat-ws.x.com/ws through the pinned curl_cffi session, a KeepAlive every 30 s, a fresh token and reconnect when it drops), `xchat.frame_of` (the Thrift binary Message union), and key priming so each pushed message decrypts (every conversation's key-change events once at start, the newest inbox page again for a key it doesn't have). Engine action `xchatWatch` prints one liveEvent line per message; `runTwitterEngineLive` streams them. New `log twitter chat watch --account <a> [--seconds] [--inbox] [--json]`. The inbox hook no longer polls: it keeps one `chat watch --inbox` per signed-in X account (pid file) and puts each new message in front of the agent with what to do: read the thread, draft from matt's guide, gate it, show matt, send only when he says. New `log voice --to --text [--context]` (src/twitter/copy/voice): SubQ reads a draft against GUIDES/MATT_WRITING_STYLE.md and dms matt wrote himself, and a phrase he never says fails it. Docs: docs/platforms/x/xchat/live.md (how it works, what was seen live, how to check it again when X changes), vendor/twikit/docs/xchat_live.md, skills/xchatReplies.
 Why: matt: the polling kept hitting X's 429 (27 Oct 14:57 to 15:38, 28 Oct 03:2x and 05:15 UTC) and a 14-DM batch never went out; he asked for the notification system X's client uses, found with rea, built so the hooks act on what happens the way we did by hand (read, draft in his voice, SubQ gate, send), and written into vendored twikit so it's understood in future.
 Checked: live on matthewsoldit, 28 Oct: the probe saw 40 messageEvent frames pushed in ~85 s; `log twitter chat watch --seconds 90` 8 messages pushed, nothing polled, exit 0; after key priming the 05:49:45 message opened live ('Ok wait let ai reply now'); the hook started the watchers and delivered each message with its steps; `log voice` gated three replies that were sent. `tests/test_xchat_frames.py` 6 pass, `src/twitter/copy/voice` 4 pass. `bun run check`: 1111 pass, 0 fail, every gate green, docs rebuilt.
+
+## 2026-10-28 07:00Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/discord/README.md`: new file
+- `python/browser/harRecorder.py`: added const MAX_FRAME, const ZLIB_FLUSH, const SECRET_QUERY, def socket_url, class SocketTap · changed class Recorder
+- `python/browser/socketTapTest.py`: added class SocketTapTests
+- `python/discordApi/__init__.py`: new file, no top-level declarations
+- `python/discordApi/engine.py`: added const ROOT, const PLATFORM, const LIBRARY, def ping, const ACTIONS
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/twenty/twentySetup.mjs`: added const PLATFORM_ADDITIONS, const accountPlatform, const platformExisting, const platformMissing
+- `src/cli/discord/discord.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/cli/discord/index.ts`: added const DISCORD_SESSION_USAGE, const DISCORD_SESSION_INPUT, function render, const discordSessionCommand
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/discord/account/index.ts`: added export from "./session/index.ts"
+- `src/discord/account/session/client.ts`: added const DISCORD_PLATFORM, const DISCORD_COOKIE_DOMAIN, function findDiscordAccount, function discordGate, function runDiscordEngine, function recordDiscordSession
+- `src/discord/account/session/index.ts`: added export from "./client"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/subq/stepReading/helpers/collate.ts`: added function foldSocketFrames · changed function fitBundle
+- `src/subq/stepReading/helpers/exchangesOf.ts`: added interface SocketFrame, function frameNameOf, function socketExchangesOf · changed interface HarEntry, function exchangesOf
+- `src/subq/stepReading/socketExchanges.test.ts`: added const at, const har, test "each frame is an exchange named for its event, in time order with the http calls", test "a frame that could not be decoded says so instead of pretending", test "a frame is named by t, then type, then op"
+- `src/subq/stepReading/types.ts`: added const SOCKET_FRAMES_KEPT · changed type ExchangeKind
+- `src/surface/diagrams/index.ts`: changed function platformsDiagram
+- `src/twenty/graphql/generated/schema.ts`: changed type SocialAccountPlatformEnum, const enumSocialAccountPlatformEnum
+
+What changed: Discord is log's next platform (`log new platform discord --noProxy`, like Reddit): its session, `log discord session check`, engine stub and docs, `DISCORD` added to Twenty's socialAccounts.platform (twentySetup keeps the 8 existing options), and the first account `sourcedandsoldtothehighestbidder` with its own AdsPower profile. `log inspect` now records WebSocket frames: `harRecorder.SocketTap` watches every page's sockets, inflates a `zlib-stream` socket with one context, redacts a token in the socket URL, and writes the frames into each step's network.har as `_webSocketMessages` on a 101 entry. `exchangesOf` turns each frame into a `socket` exchange named for its event (`RECV ws MESSAGE_CREATE`), in time order with the HTTP calls, and `fitBundle` folds repeated frames (first 3 of each kind) so SubQ can still read a step. The platforms diagram no longer breaks on a platform with no vendored client. docs/platforms/discord/README.md has what the inspect found: discord.gg is the invite domain (404 Unknown Invite), sign-in, Ctrl+K, history paging (`before` + `limit=20`), sending, and the gateway round trip with Jilly.
+Why: matt: make Discord a new platform with no proxy, sign in step by step through log inspect, and since the reply came by push and the recording couldn't see it, fix inspect so it captures WebSocket frames, and roll every finding into the Discord platform's docs.
+Checked: live on sourcedandsoldtothehighestbidder, 28 Oct: sign-in `POST /api/v9/auth/login` 200; scroll-up paging seen; two messages sent (log group chat, vibe coders #bot-help) and one to Jilly, whose reply came as `RECV ws MESSAGE_CREATE` 4.2 s after our POST, with TYPING_START, MESSAGE_REACTION_ADD and MESSAGE_ACK around it; step 02's reading went from 607222 tokens (SubQ 400) to 72311 after the fold, finding written and fixed. New tests: socketExchanges.test.ts 3 pass, python/browser/socketTapTest.py 4 pass. `bun run check`: 1117 pass, 0 fail, every gate green.

@@ -67,6 +67,9 @@ flowchart TB
   subgraph g_reddit["Reddit"]
     c_redditSession["session"]
   end
+  subgraph g_discord["Discord"]
+    c_discordSession["session"]
+  end
   cli --> c_launch
   c_launch -.- terminal
   cli --> c_listings
@@ -189,6 +192,8 @@ flowchart TB
   mcp --> c_new
   cli --> c_redditSession
   mcp --> c_redditSession
+  cli --> c_discordSession
+  mcp --> c_discordSession
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

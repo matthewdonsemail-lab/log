@@ -41,6 +41,7 @@ export interface CommandContext {
   directTwitterLive?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec, onLive: (event: import("../../twitter/account/session/index.ts").XChatLiveEvent) => void) => Promise<import("../../twitter/account/session/index.ts").TwitterEngineRun>;
   directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
   directReddit?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
+  directDiscord?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
 }
 
 export interface FlagSpec {

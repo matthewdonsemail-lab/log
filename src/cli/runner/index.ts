@@ -42,6 +42,8 @@ import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
+import { discordSessionCommand } from "../discord/index.ts";
+import { runDiscordEngine } from "../../discord/account/session/index.ts";
 
 export * from "./helpers/index.ts";
 export type { Command, CommandContext, CommandResult, MarketplaceData } from "./types.ts";
@@ -99,6 +101,7 @@ export const COMMANDS: Command[] = [
   queueCommand,
   newCommand,
   redditSessionCommand,
+  discordSessionCommand,
 ];
 
 const ALIASES: Record<string, string> = {
@@ -130,6 +133,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
     directTwitterLive: overrides.directTwitterLive ?? runTwitterEngineLive,
     directReddit: overrides.directReddit ?? runRedditEngine,
+    directDiscord: overrides.directDiscord ?? runDiscordEngine,
   };
 }
 

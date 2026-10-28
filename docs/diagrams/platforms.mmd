@@ -21,9 +21,16 @@ flowchart LR
   e_rdvwr --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
+  p_discord["Discord (DISCORD): 1 command of its own"]
+  twenty --> p_discord
+  p_discord -->|"direct API: discord session"| e_no_client_vendored_yet["no client vendored yet"]
+  e_no_client_vendored_yet --> api
+  p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
+  b_discord --> drivers
   anyB["Any platform with a browser path: inspect, flow"]
   anyB --> b_facebook
   anyB --> b_reddit
+  anyB --> b_discord
   anyN["Any platform, no browser: launch, adsPower, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
