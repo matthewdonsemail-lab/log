@@ -1,4 +1,6 @@
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
+import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
+import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
@@ -70,13 +72,6 @@ export const DISCORD_CHATS_INPUT: CommandInput = {
   forms: [{ words: [], summary: "The account's DMs and group DMs, with their ids", positionals: [], flags: [DISCORD_ACCOUNT, JSON_FLAG] }],
 };
 
-interface DiscordChat {
-  id: string;
-  kind: string;
-  name: string | null;
-  members: string[];
-}
-
 export const discordChatsCommand: Command = {
   usage: DISCORD_CHATS_USAGE,
   platform: "discord",
@@ -122,7 +117,7 @@ export const DISCORD_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The channel id, or a DM or group's name from log discord chats" },
+        { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"jilly\", \"listaro\"), matched to one DM or group; or a channel id" },
         { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
         { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
         { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
@@ -154,10 +149,22 @@ export const discordSendCommand: Command = {
       const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));
       const gate = discordGate(account);
       if (!gate.ok) return refuse("discord send", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
-      if (!live) return { code: 0, stdout: `log discord send: dry run: ${account.accountName} would send "${text}" to ${channel}. Discord was not contacted. --live --approvedBy <who> sends it (rule 8).` };
+      let target = channel;
+      let label = channel;
+      if (!/^\d{15,22}$/.test(channel)) {
+        if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
+        const listed = context.directDiscord(account, { action: "chats" });
+        if (!listed.answer.ok) return { code: 1, stdout: `log discord send: ${account.accountName}: reading its chats to find "${channel}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+        const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], channel);
+        if (!found.ok) return refuse("discord send", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
+        target = found.chat.id;
+        label = `${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`;
+        context.err(`"${channel}" is ${label}`);
+      }
+      if (!live) return { code: 0, stdout: `log discord send: dry run: ${account.accountName} would send "${text}" to ${label}. Nothing was sent. --live --approvedBy <who> sends it (rule 8).` };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: send to ${channel} on the direct-API engine (vendor/endcord), approved by ${approvedBy}`);
-      const run = context.directDiscord(account, { action: "send", channel, text, live: true, approvedBy });
+      context.err(`${account.accountName}: send to ${label} on the direct-API engine (vendor/endcord), approved by ${approvedBy}`);
+      const run = context.directDiscord(account, { action: "send", channel: target, text, live: true, approvedBy });
       const code = run.answer.ok && run.answer.event === "sent" ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
       if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent message ${run.answer.messageId} to channel ${run.answer.channelId} at ${run.answer.timestamp}.` };

@@ -148,6 +148,24 @@
     ],
     "action": "Put the guide back in the Buzz workspace GUIDES folder, or point LOG_VOICE_GUIDE at it."
   },
+  "chatNotFound": {
+    "layer": "runtime",
+    "meaning": "None of the Discord account's DMs or groups matches the chat as it was said.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/discord"
+    ],
+    "action": "Say it another way (a word of its name, or who it is with), or list them with log discord chats and give its id."
+  },
+  "chatAmbiguous": {
+    "layer": "runtime",
+    "meaning": "More than one of the Discord account's DMs or groups matches the chat as it was said, equally well.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/discord"
+    ],
+    "action": "Pick one of the chats listed and give its id, or say more of its name."
+  },
   "secondsInvalid": {
     "layer": "twitter",
     "meaning": "The --seconds given to log twitter chat watch is not a number of seconds of at least 5.",

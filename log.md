@@ -8321,3 +8321,21 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: two Discord commands on endcord, each an MCP tool: `log discord chats --account` (MCP `discordChats`) lists the account's DMs and group DMs with their ids, names and members (endcord `get_dms`), and `log discord send --account --channel <id|name> --text` (MCP `discordSend`, and `discordSendLive` with --live) sends one message (endcord `send_message`), a dry run unless --live, which needs --approvedBy (rule 8); Discord's message id decides. Their routes are in DIRECT_ROUTES and their rules in the MCP's agentRules; the engine's `send` is a write, so the governor counts it.
 Why: matt: send "Yo, this is Stump from the MCP" to the log group chat.
 Checked: live: `log discord chats` listed 177 DMs and groups, the log group is 1547936265436012645 (QuadScorpion, Kennedy, John, deepman); `log discord send --channel 1547936265436012645 --text "Yo, this is Stump from the MCP" --approvedBy matt --live` sent message 1564911647925997649 at 08:00:11 UTC. New tests for chats, the dry run, --approvedBy and the send. `bun run check`: 1122 pass, 0 fail.
+
+## 2026-10-28 08:12Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `src/cli/discord/discord.test.ts`: added test "send finds the chat the way matt says it, then sends by its id" · changed test "send without --live is a dry run and calls nothing"
+- `src/cli/discord/index.ts`: changed const DISCORD_SEND_INPUT, const discordSendCommand · removed interface DiscordChat
+- `src/discord/chat/index.ts`: added export from "./match/index.ts"
+- `src/discord/chat/match/client.ts`: added const FILLER, function wordsOf, function normalizedName, function labelOf, function namesOf, function scoreOf, function matchChat
+- `src/discord/chat/match/index.ts`: added export from "./client", export from "./types"
+- `src/discord/chat/match/match.test.ts`: added const CHATS, test "filler words go, the name stays", test "the log group, however it is said", test "a DM with no name is found by who it is with", test "one word of a longer name finds it when only one chat has it", test "the start of a word is enough", test "two chats that fit equally are refused with both, never guessed", test "an unnamed group is found by its members", test "an id is taken as it is, and nothing matching is said so"
+- `src/discord/chat/match/types.ts`: added interface DiscordChat, type ChatMatch, const FILLER_WORDS
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: `src/discord/chat/match`: a chat is found the way matt says it. `normalizedName` lowercases, strips accents and punctuation and drops filler words (the, group, chat, gc, dm, with, community, and...); `matchChat` takes an id as it is, else scores each DM and group by its name, or for a DM or unnamed group by who is in it: the whole phrase (exact), every word (words), or the start of every word (prefix). The best score wins only when one chat has it; equal fits are refused with the candidates (`chatAmbiguous`), none with `chatNotFound` (both in the error catalog). `log discord send --channel` takes the chat as said: it reads the chats, matches, says which it picked, and sends by the id; the dry run says which too.
+Why: matt: make a normalized name version so he can say a chat and log understands which one he means.
+Checked: on the account's 177 chats, dry runs: "the log community group chat" is log (group 1547936265436012645), "jilly" is Jilly (dm 1555254123148873869), "listaro" is InferenceSaver x Listaro, and "john" is refused with the three chats it fits. match.test.ts 8 pass, a CLI test sends by the matched id. `bun run check`: 1131 pass, 0 fail.

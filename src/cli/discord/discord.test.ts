@@ -75,7 +75,7 @@ describe("log discord session check", () => {
   });
 
   test("send without --live is a dry run and calls nothing", async () => {
-    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "log", "--text", "yo"]);
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo"]);
     expect(r.code).toBe(0);
     expect(r.out).toContain("dry run");
     expect(r.calls).toEqual([]);
@@ -92,5 +92,21 @@ describe("log discord session check", () => {
     expect(r.code).toBe(0);
     expect(r.calls).toEqual(["discordOne:send"]);
     expect(r.out).toContain("sent message 1564911647925997649");
+  });
+  test("send finds the chat the way matt says it, then sends by its id", async () => {
+    const twenty = fixture();
+    const sent: unknown[] = [];
+    const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "the log community group chat", "--text", "yo", "--approvedBy", "matt", "--live"], {
+      twenty,
+      out: () => {},
+      err: () => {},
+      directDiscord: (_account, spec) => {
+        sent.push(spec);
+        if (spec.action === "chats") return { answer: { ok: true, chats: [{ id: "1547936265436012645", kind: "group", name: "log", members: ["John"] }, { id: "1555254123148873869", kind: "dm", name: null, members: ["Jilly"] }] }, refreshed: null };
+        return { answer: { ok: true, event: "sent", messageId: "1", channelId: String(spec.channel), timestamp: "t" }, refreshed: null };
+      },
+    });
+    expect(code).toBe(0);
+    expect(sent).toMatchObject([{ action: "chats" }, { action: "send", channel: "1547936265436012645" }]);
   });
 });
