@@ -1089,6 +1089,13 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     one, and only when matt asks for that. A one-line draft is still split
     the way he writes in that chat.
 
+91. 2026-10-28 · matt: "make it 60." A Discord account sends up to 60
+    messages a day, not 40 (`WRITES_PER_DAY`, `src/directApi/engine`,
+    handed to the engine's governor in each run's spec). Every other
+    platform keeps 40. `FBK_GOVERNOR_MUTATION_DAILY` still overrides it for
+    one run when matt asks. The hook's status line shows each account's own
+    limit.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

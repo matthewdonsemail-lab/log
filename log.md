@@ -8457,3 +8457,19 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `splitPlan` now sends a draft written on several lines as one message per line, in every chat. Before, a chat where matt mostly sends one message (A's DM, 51%) collapsed the whole draft into one. A one-line draft is still split from his habit in that chat, and `--asOne` still sends one. `log discord send`'s usage says so, AGENTS.md has it as rule 90, and the MCP `discordSend` tool cites it (rules reviewed through 90).
 Why: matt, 2026-10-28: "stop sending as one", after the reply to A went out as a single message (rule 90).
 Checked: the dry run of the Alpha Bear reply plans 4 messages, one per line, 8 s apart. src/voice/pairs 7 pass and src/mcp pass. src/cli/discord's endcord import test fails the same way on main without this change: this machine's Python doesn't load vendor/endcord.
+
+## 2026-10-28 13:23Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/platformKit/engine.py`: changed def governor_for, def run
+- `src/directApi/engine/client.ts`: changed function allEngineStates, function engineContext
+- `src/directApi/engine/engine.test.ts`: added test "discord gets 60 writes a day, every other platform 40, and the hook says each one"
+- `src/directApi/engine/types.ts`: added const WRITES_PER_DAY_DEFAULT, const WRITES_PER_DAY, function writesPerDayOf · changed interface LocalEngineState
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/platformKit/session/client.ts`: changed function runPlatformEngine, function runPlatformEngineLive
+
+What changed: a Discord account now sends up to 60 messages a day, and every other platform keeps 40. The limit per platform is in one place, `WRITES_PER_DAY` (`writesPerDayOf`, `src/directApi/engine`). Both platform engine runs pass it in the spec as `writesPerDay`, and `governor_for` builds the governor's config with that write cap, unless `FBK_GOVERNOR_MUTATION_DAILY` is set (that still wins for a single run). The hook's status line shows each account's own limit ("45/60 writes today" on Discord) instead of a fixed 40. AGENTS.md has it as rule 91, cited on the MCP `discordSend` tool.
+Why: matt, 2026-10-28: "make it 60", after the update to kewlkid stopped 3 messages in at Discord's 40-a-day limit (rule 91).
+Checked: `governor_for` gives 60 with writesPerDay 60, 40 without it, and 25 when `FBK_GOVERNOR_MUTATION_DAILY=25` is set. The new engine test passes. src/mcp, src/directApi and src/voice: 71 pass. tsc is clean and the README was rebuilt.

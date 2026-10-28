@@ -11,6 +11,7 @@ import { setStatusAndReplace } from '../../marketplace/replacement/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } from './helpers/index'
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
+import { WRITES_PER_DAY_DEFAULT, writesPerDayOf } from './types'
 
 export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
@@ -72,7 +73,7 @@ export function platformStateRoot(platform: string): string {
 }
 
 export function allEngineStates(now: Date = new Date()): LocalEngineState[] {
-  const others = PLATFORMS.filter((p) => p !== 'facebook' && p !== 'twitter').flatMap((p) => localEngineStates(platformStateRoot(p), now).map((s) => ({ ...s, account: `${p} ${s.account}` })))
+  const others = PLATFORMS.filter((p) => p !== 'facebook' && p !== 'twitter').flatMap((p) => localEngineStates(platformStateRoot(p), now).map((s) => ({ ...s, account: `${p} ${s.account}`, writesPerDay: writesPerDayOf(p) })))
   return [...localEngineStates(fbkStateRoot(), now), ...localEngineStates(twitterStateRoot(), now).map((s) => ({ ...s, account: `twitter ${s.account}` })), ...others]
 }
 
@@ -111,7 +112,7 @@ export function engineContext(states: LocalEngineState[] = allEngineStates(), no
   ]
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
-    const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/40 writes today` : 'no requests today'
+    const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'
     lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${s.checkedAt.slice(0, 16)}Z)` : ''}, ${used}${pause}`)
   }
   return lines.join('\n')
