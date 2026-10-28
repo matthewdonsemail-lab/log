@@ -8443,3 +8443,17 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: on X, `log voice --with <handle>` uses matt's whole history, not only X's: an X chat is keyed by the person, so the old DM thread and its X Chat mirror are one chat (no chatAmbiguous between them, as in #59), and its tiers skip the platform, so after that person's own messages the nearest replies come from all 20,074 of his (mostly Discord), and the profile falls back to the one over everything he has written. The X inbox hook now says to pull his real messages to that person with `log voice --with` before drafting and to gate against the same person, as Discord's does.
 Why: matt: use the voice with more of how he writes (Discord) for his Twitter too, then follow up the open X messages and turn on the monitoring.
 Checked: `log voice --with thesmitpatel` found the one conversation and drew on his whole history; the reply to Smit passed (voice 0.97, like his replies there 0.99) and was delivered; the X and Discord watchers are running and the X one pushed the sent message back at once. src/inbox and src/voice tests 10 pass.
+
+## 2026-10-28 13:08Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `src/cli/discord/index.ts`: changed const DISCORD_SEND_USAGE
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/voice/pairs/helpers/split.ts`: changed function splitPlan
+- `src/voice/pairs/pairs.test.ts`: added test "a draft written on several lines goes out one message per line, even where he mostly sends one"
+
+What changed: `splitPlan` now sends a draft written on several lines as one message per line, in every chat. Before, a chat where matt mostly sends one message (A's DM, 51%) collapsed the whole draft into one. A one-line draft is still split from his habit in that chat, and `--asOne` still sends one. `log discord send`'s usage says so, AGENTS.md has it as rule 90, and the MCP `discordSend` tool cites it (rules reviewed through 90).
+Why: matt, 2026-10-28: "stop sending as one", after the reply to A went out as a single message (rule 90).
+Checked: the dry run of the Alpha Bear reply plans 4 messages, one per line, 8 s apart. src/voice/pairs 7 pass and src/mcp pass. src/cli/discord's endcord import test fails the same way on main without this change: this machine's Python doesn't load vendor/endcord.

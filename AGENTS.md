@@ -1083,6 +1083,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     p50, p95 and p99, cold and warm, beside a linear scan.
     `src/search/conversations`.
 
+90. 2026-10-28 · matt: "stop sending as one." A message drafted on several
+    lines goes out one message per line, in every chat, whatever matt's
+    habit there (`splitPlan`, `src/voice/pairs`). Only `--asOne` sends it as
+    one, and only when matt asks for that. A one-line draft is still split
+    the way he writes in that chat.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
