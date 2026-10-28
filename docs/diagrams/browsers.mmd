@@ -3,7 +3,7 @@
 flowchart LR
   twenty["Twenty socialAccounts: platform, browserDriver, adsPowerProfileId"]
   pick{"driverNameOf"}
-  gates["Every driver: the proxy gate (Facebook: a proxy in the home country, rule 12. Reddit: no proxy, rule 84), self-check, HAR, human mouse (rules 17, 22, 32)"]
+  gates["Every driver: the proxy gate (Facebook: a proxy in the home country, rule 12. Reddit, Discord: no proxy, rule 84), self-check, HAR, human mouse (rules 17, 22, 32)"]
   session["One Playwright context: python/browser/browserDriver.py"]
   twenty --> pick
   pick -->|"browserDriver camoufox, or no profile"| d_camoufox["camoufox"]
@@ -12,8 +12,8 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check"]
-  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"]
+  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
   nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick

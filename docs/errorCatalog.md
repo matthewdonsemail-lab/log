@@ -246,6 +246,8 @@ stateDiagram-v2
 
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
+| `chatNotFound` | no | `cli/discord` | command exits | None of the Discord account's DMs or groups matches the chat as it was said. | Say it another way (a word of its name, or who it is with), or list them with log discord chats and give its id. |
+| `chatAmbiguous` | no | `cli/discord` | command exits | More than one of the Discord account's DMs or groups matches the chat as it was said, equally well. | Pick one of the chats listed and give its id, or say more of its name. |
 | `engineNotBuilt` | no | `platformKit/session` | command exits | The platform's direct-API engine was made by log new platform and has no client wired in yet, so it can't call the platform. | Vendor the platform's client under vendor/<library>, then fill in its actions in python/<platform>Api/engine.py. |
 | `workerNotStarted` | no | `worker`, `session` | publish→failed, monitor→failed | The Python interpreter could not be started. | Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`). |
 | `workerNoOutput` | yes | `worker` | monitor→failed | The worker exited without printing a result. | Read the stderr above it. Usually the browser died. |

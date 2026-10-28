@@ -51,8 +51,17 @@ export interface DirectRoute {
   seam: string
 }
 
+export const WRITES_PER_DAY_DEFAULT = 40
+
+export const WRITES_PER_DAY: Record<string, number> = { discord: 60 }
+
+export function writesPerDayOf(platform: string): number {
+  return WRITES_PER_DAY[platform] ?? WRITES_PER_DAY_DEFAULT
+}
+
 export interface LocalEngineState {
   account: string
+  writesPerDay?: number
   sessionState: string | null
   checkedAt: string | null
   day: string | null

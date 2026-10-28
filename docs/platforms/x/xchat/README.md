@@ -44,3 +44,7 @@ Why: `log twitter dms` (twikit, X's older `dm/inbox_initial_state`) never shows 
 
 1. **Who replied and when** can be read now with the session alone: sender id and time are in the clear.
 2. **What they said** needs the account's X Chat private key: the PIN recovers it through Juicebox (realms above, auth token from `GenerateXChatTokenMutation`), it opens the conversation key from the key-change events, and that opens the message payload.
+
+## Live
+
+New messages arrive by push, not by reading the inbox: one socket to `wss://chat-ws.x.com`, a KeepAlive every 30 s, each message decrypted as it lands. How it works, what was seen live and how to check it again: [live.md](live.md).

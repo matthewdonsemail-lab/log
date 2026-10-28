@@ -1,6 +1,6 @@
 ---
 name: knowledgeBase
-description: Find and keep context in the knowledge base (rule 90). `log kb search "<query>"` searches every rule, skill, doc, infra note, Claude memory file, page state, account and agent note by keyword and meaning at once; `log kb remember "<text>"` saves what a session learned; `log kb sync` refreshes it. Use before guessing at how something works, where a login lives, what an account is doing or what an earlier session found, and at the end of a session that learned something new.
+description: Find and keep context in the knowledge base (rule 93). `log kb search "<query>"` searches every rule, skill, doc, infra note, Claude memory file, page state, account and agent note by keyword and meaning at once; `log kb remember "<text>"` saves what a session learned; `log kb sync` refreshes it. Use before guessing at how something works, where a login lives, what an account is doing or what an earlier session found, and at the end of a session that learned something new.
 ---
 
 # knowledgeBase

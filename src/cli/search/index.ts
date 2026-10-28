@@ -1,4 +1,6 @@
 import { twitterAccounts } from "../../inbox/watch/client.ts";
+import { platformStateRoot } from "../../directApi/engine/index.ts";
+import { discordGate, findDiscordAccount } from "../../discord/account/session/index.ts";
 import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search } from "../../search/conversations/index.ts";
 import type { Conversation, Embedder, SearchHit } from "../../search/conversations/index.ts";
 import type { TwitterDmConversation } from "../../twitter/account/session/index.ts";
@@ -8,13 +10,13 @@ import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
 export const SEARCH_USAGE = [
   "Usage: log search \"<query>\" [--limit <n>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--json]",
-  "       log search index [--account <a>] [--saved]   (--saved rebuilds from the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine, X Chat decrypted with the saved PIN, keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
+  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved]   (--saved rebuilds from the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group through vendor/endcord (its whole history, up to 20,000 messages each), keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
   "       log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)",
   "Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.",
 ].join("\n");
 
 const FILTERS = [
-  { name: "platform", kind: "string", description: "Only this platform's conversations (twitter)" },
+  { name: "platform", kind: "string", description: "Only this platform's conversations (twitter, discord)" },
   { name: "account", kind: "string", description: "Only this account's conversations" },
   { name: "with", kind: "string", description: "Only conversations with this handle" },
   { name: "after", kind: "string", description: "Only chunks from this day on, YYYY-MM-DD" },
@@ -30,9 +32,9 @@ export const SEARCH_INPUT: CommandInput = {
     },
     {
       words: ["index"],
-      summary: "Read every conversation through the platform's engine (X Chat decrypted with the saved PIN) and build the search indexes",
+      summary: "Read every conversation through the platform's engine (X Chat decrypted with the saved PIN, Discord DMs and groups through endcord) and build the search indexes",
       positionals: [],
-      flags: [{ name: "account", kind: "string", description: "Only this account (default: every signed-in X account)" }, { name: "saved", kind: "boolean", description: "Rebuild from the conversations already saved, reading nothing from the platforms" }, JSON_FLAG],
+      flags: [{ name: "platform", kind: "string", description: "Only this platform (twitter or discord; default both)" }, { name: "account", kind: "string", description: "Only this account (default: every signed-in X and Discord account)" }, { name: "saved", kind: "boolean", description: "Rebuild from the conversations already saved, reading nothing from the platforms" }, JSON_FLAG],
     },
     {
       words: ["bench"],
@@ -58,15 +60,62 @@ function conversationOf(account: string, c: TwitterDmConversation): Conversation
   };
 }
 
+interface DiscordExported {
+  id: string;
+  kind: string;
+  name: string | null;
+  members: string[];
+  messages: { id: string; at: string | null; from: string | null; fromMe: boolean; text: string }[];
+}
+
+function discordConversationOf(account: string, c: DiscordExported): Conversation {
+  return {
+    platform: "discord",
+    account,
+    conversationId: c.id,
+    box: c.name ? `${c.kind} ${c.name}` : c.kind,
+    with: c.members,
+    messages: c.messages.map((m) => ({ id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text })),
+  };
+}
+
+async function indexDiscord(context: CommandContext, only: string | undefined, lines: string[], conversations: Conversation[]): Promise<void> {
+  for (const name of only ? [only] : twitterAccounts(platformStateRoot("discord"))) {
+    const account = await findDiscordAccount(context.twenty, name).catch(() => null);
+    if (!account) {
+      if (!only) lines.push(`discord ${name}: skipped, no DISCORD socialAccount`);
+      continue;
+    }
+    const gate = discordGate(account);
+    if (!gate.ok || !context.directDiscord) {
+      lines.push(`discord ${name}: skipped, ${gate.ok ? "the direct-API engine isn't wired" : gate.detail}`);
+      continue;
+    }
+    context.err(`discord ${name}: reading every DM and group through vendor/endcord`);
+    const run = context.directDiscord(account, { action: "export", limit: 20000, streamProgress: true });
+    if (!run.answer.ok) {
+      lines.push(`discord ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}`);
+      continue;
+    }
+    const found = ((run.answer.conversations as DiscordExported[] | undefined) ?? []).filter((c) => c.messages.length).map((c) => discordConversationOf(account.accountName, c));
+    saveConversations(found);
+    conversations.push(...found);
+    const problems = (run.answer.problems as unknown[] | undefined)?.length ?? 0;
+    lines.push(`discord ${name}: ${found.length} conversations, ${found.reduce((n, c) => n + c.messages.length, 0)} messages${problems ? `, ${problems} chat(s) not fully read` : ""}`);
+  }
+}
+
 function hitLine(hit: SearchHit): string {
   const c = hit.chunk;
   const ranks = [hit.keywordRank ? `keyword #${hit.keywordRank}` : null, hit.meaningRank ? `meaning #${hit.meaningRank}` : null].filter(Boolean).join(", ");
   return [`  ${hit.rank}. ${c.platform} ${c.account} with @${c.with.join(", @")} · ${c.at ?? "?"} · ${ranks} · conversation ${c.conversationId}`, ...c.text.split("\n").map((l) => `     ${l.slice(0, 220)}`)].join("\n");
 }
 
-async function indexAll(context: CommandContext, only: string | undefined): Promise<{ lines: string[]; conversations: Conversation[] }> {
+async function indexAll(context: CommandContext, only: string | undefined, platform: string | undefined): Promise<{ lines: string[]; conversations: Conversation[] }> {
   const lines: string[] = [];
   const conversations: Conversation[] = [];
+  if (!platform || platform === "discord") await indexDiscord(context, only, lines, conversations);
+  if (platform && platform !== "twitter") return { lines, conversations };
   for (const account of only ? [only] : twitterAccounts()) {
     const opened = await openTwitterAccount(context, "search index", account);
     if (!opened.ok) {
@@ -108,7 +157,7 @@ export const searchCommand: Command = {
     try {
       if (sub === "index") {
         const account = typeof parsed.flags["account"] === "string" ? parsed.flags["account"] : undefined;
-        const { lines } = parsed.flags["saved"] === true ? { lines: [] as string[] } : await indexAll(context, account);
+        const { lines } = parsed.flags["saved"] === true ? { lines: [] as string[] } : await indexAll(context, account, typeof parsed.flags["platform"] === "string" ? parsed.flags["platform"] : undefined);
         const all = loadConversations();
         context.err(`search: embedding and indexing ${all.length} conversations with ${embedder.model}`);
         const built = await buildIndex(all, embedder);

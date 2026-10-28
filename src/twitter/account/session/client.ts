@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -7,7 +7,7 @@ import type { TwentyClient } from '../../../twenty/graphql/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../../marketplace/socialAccount/index'
 import { twitterStateRoot, writeLocalSession } from '../../../directApi/engine/index'
-import type { TwitterEngineRun, TwitterEngineSpec, TwitterGate, TwitterSessionAnswer } from './types'
+import type { TwitterEngineRun, TwitterEngineSpec, TwitterGate, TwitterSessionAnswer, XChatLiveEvent } from './types'
 
 const ENGINE = join(import.meta.dir, '..', '..', '..', '..', 'python', 'twitterApi', 'engine.py')
 
@@ -92,6 +92,57 @@ export function runTwitterEngine(account: TwitterAccount, request: TwitterEngine
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }
+}
+
+export function runTwitterEngineLive(account: TwitterAccount, request: TwitterEngineSpec, onLive: (event: XChatLiveEvent) => void): Promise<TwitterEngineRun> {
+  const dir = mkdtempSync(join(tmpdir(), 'twitterApi'))
+  const cookiesPath = join(dir, 'cookies.json')
+  const refreshedPath = join(dir, 'refreshed.json')
+  writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
+  const { chatPin, ...rest } = request
+  const pinPath = chatPin ? join(dir, 'chatPin.txt') : undefined
+  if (pinPath) writeFileSync(pinPath, chatPin!, { mode: 0o600 })
+  const spec = join(dir, 'spec.json')
+  writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
+  return new Promise((resolve) => {
+    const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', ENGINE, spec], { windowsHide: true })
+    let buffer = ''
+    let last = ''
+    let stderr = ''
+    child.stdout.setEncoding('utf8')
+    child.stdout.on('data', (chunk: string) => {
+      buffer += chunk
+      let cut = buffer.indexOf('\n')
+      while (cut >= 0) {
+        const line = buffer.slice(0, cut).trim()
+        buffer = buffer.slice(cut + 1)
+        if (line) {
+          try {
+            const parsed = JSON.parse(line) as { liveEvent?: XChatLiveEvent }
+            if (parsed.liveEvent) onLive(parsed.liveEvent)
+            else last = line
+          } catch {
+            last = line
+          }
+        }
+        cut = buffer.indexOf('\n')
+      }
+    })
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr = (stderr + chunk.toString()).slice(-2000)
+    })
+    child.on('close', () => {
+      let answer: TwitterSessionAnswer
+      try {
+        answer = JSON.parse(last || buffer.trim()) as TwitterSessionAnswer
+      } catch {
+        answer = { ok: false, code: 'engineNoAnswer', detail: (stderr || 'no output').slice(-300) }
+      }
+      const refreshed = existsSync(refreshedPath) ? (JSON.parse(readFileSync(refreshedPath, 'utf8')) as Record<string, string>) : null
+      rmSync(dir, { recursive: true, force: true })
+      resolve({ answer, refreshed })
+    })
+  })
 }
 
 export async function recordTwitterSession(twenty: TwentyClient, account: TwitterAccount, run: TwitterEngineRun, now: Date): Promise<string[]> {

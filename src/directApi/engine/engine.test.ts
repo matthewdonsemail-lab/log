@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { toolsFromCommands } from '../../mcp/server/helpers/toolsFromCommands'
 import { COMMANDS } from '../../cli/runner/index'
-import { commandEngine, directGate, engineContext, engineLine, localEngineStates, outcomeOf, writeLocalSession } from './index'
+import { commandEngine, directGate, engineContext, engineLine, localEngineStates, outcomeOf, writeLocalSession, writesPerDayOf } from './index'
 import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 
 const account = {
@@ -67,5 +67,13 @@ describe('the hook context comes from each account folder', () => {
     expect(text).toContain('fbk groups.feed_read')
     expect(text).toContain('a1: session loggedIn')
     expect(text).toContain('a2: session not read yet, 12/500 requests, 1/40 writes today, PAUSED 10 min')
+  })
+
+  test('discord gets 60 writes a day, every other platform 40, and the hook says each one', () => {
+    expect(writesPerDayOf('discord')).toBe(60)
+    expect(writesPerDayOf('reddit')).toBe(40)
+    const now = new Date('2026-10-25T10:00:00Z')
+    const text = engineContext([{ account: 'discord d1', writesPerDay: writesPerDayOf('discord'), sessionState: 'loggedIn', checkedAt: null, day: '2026-10-25', today: 50, mutations: 45, cooldownSeconds: 0, softBlocks: 0 }], now)
+    expect(text).toContain('discord d1: session loggedIn, 50/500 requests, 45/60 writes today')
   })
 })

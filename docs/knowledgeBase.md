@@ -1,7 +1,7 @@
 # Knowledge base
 
 `log kb` keeps everything log-cli knows in one place that people and agents
-both use (rule 90). ListeningKit's Twenty on node02 holds the articles, so
+both use (rule 93). ListeningKit's Twenty on node02 holds the articles, so
 matt can read and edit them there. A Redis 8 on node02 searches them for
 agents in milliseconds.
 

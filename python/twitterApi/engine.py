@@ -16,7 +16,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock")
+READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
 WRITES = ("reply", "quote", "like", "dm")
 ACTIONS = READS + WRITES
 
@@ -510,6 +510,43 @@ async def xchat_contacts(client: Any, cookies: dict[str, str]) -> dict[str, Any]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversations": len(convs), "contacts": sorted(contacts)}
 
 
+def live_line(event: dict[str, Any]) -> None:
+    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+
+
+async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -> str | None:
+    if user_id and user_id not in handles:
+        try:
+            handles[user_id] = getattr(await client.get_user_by_id(user_id), "screen_name", None)
+        except Exception:
+            handles[user_id] = None
+    return handles.get(user_id)
+
+
+async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    unlocked = False
+    if spec.get("pinPath"):
+        try:
+            await xchat_read_keys(client, spec)
+            unlocked = True
+        except Exception as e:
+            live_line({"type": "socket", "state": "locked", "error": redact(e, cookies)[:200]})
+    seconds = spec.get("seconds")
+    handles: dict[str, str | None] = {}
+    messages = 0
+    async for event in client.watch_xchat(seconds=float(seconds) if seconds else None):
+        if event.get("type") == "socket":
+            live_line({**event, "error": redact(event["error"], cookies)[:200]} if event.get("error") else event)
+            continue
+        if event.get("type") not in ("Message", None):
+            continue
+        sender = str(event.get("sender_id") or "")
+        messages += 1
+        live_line({**xchat_message(event, me, {sender: await handle_of(client, sender, handles) or ""}), "box": "xchat", "encrypted": not unlocked})
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "messages": messages, "unlocked": unlocked}
+
+
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     action = spec["action"]
     raw = keep_create_answers(client)
@@ -580,6 +617,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         except Exception as e:
             return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with that PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
         return {"ok": True, "loginState": "loggedIn", "userId": own_user_id(cookies)}
+    if action == "xchatWatch":
+        return await xchat_watch(client, cookies, spec)
     if action == "inbox":
         limit = max(1, min(int(spec.get("limit") or 20), 200))
         try:

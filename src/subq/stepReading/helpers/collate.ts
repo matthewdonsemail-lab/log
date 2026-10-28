@@ -1,5 +1,5 @@
 import { exchangeTimeline } from './exchangeLines'
-import { MAX_PAGE_TEXT_CHARS, MAX_STATE_CHARS } from '../types'
+import { MAX_PAGE_TEXT_CHARS, MAX_STATE_CHARS, SOCKET_FRAMES_KEPT } from '../types'
 import type { EarlierStep, GoalSoFar, StepAccount, StepBundle, StepExchange, StepTaken } from '../types'
 
 export interface CollateInput {
@@ -44,7 +44,29 @@ export function bundleChars(bundle: StepBundle): number {
   return JSON.stringify(bundle).length
 }
 
+export function foldSocketFrames(exchanges: readonly StepExchange[], keep = SOCKET_FRAMES_KEPT): StepExchange[] {
+  const seen = new Map<string, number>()
+  const out: StepExchange[] = []
+  for (const e of exchanges) {
+    if (e.kind !== 'socket') {
+      out.push(e)
+      continue
+    }
+    const key = `${e.method} ${e.name}`
+    const count = (seen.get(key) ?? 0) + 1
+    seen.set(key, count)
+    if (count <= keep) out.push(e)
+  }
+  for (const [key, count] of seen) {
+    if (count <= keep) continue
+    const first = exchanges.find((e) => e.kind === 'socket' && `${e.method} ${e.name}` === key)!
+    out.push({ ...first, answer: `(${count - keep} more ${key} frames in this step, left out to fit)`, sent: null })
+  }
+  return out
+}
+
 export function fitBundle(bundle: StepBundle, limit = MAX_STATE_CHARS): StepBundle {
+  if (bundle.exchanges.some((e) => e.kind === 'socket')) bundle = { ...bundle, exchanges: foldSocketFrames(bundle.exchanges) }
   if (bundleChars(bundle) <= limit) return bundle
   const size = (e: StepExchange) => JSON.stringify(e.answer).length
   let exchanges = bundle.exchanges.slice()

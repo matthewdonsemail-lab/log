@@ -8112,6 +8112,28 @@ Why: matt asked to move all the agency work from the legacy Twenty to node02 and
 Checked: every agency object copied with its ids (schema through the metadata API, data table to table): row counts match the legacy server for all 31 objects (socialListenings 25,521, agencyProspects 1,255, socialAccounts 36…), note links 212. `log facebook accounts` lists the 31 Facebook accounts from node02, `bun run check` green (1113 pass, 0 fail), the 402 legacy knowledge entries are searchable through `log kb search`, and the Buzz bridge is healthy with its new key.
 
 ## 2026-10-27 23:04Z · feat/xAccountSetup
+## 2026-10-27 12:39Z · fix/onePersonOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: added function onePerPerson · changed const DMS_USAGE, function threadLine, const dmsCommand
+- `src/cli/twitter/helpers/send.ts`: changed const SHAPES, function renderSent
+- `src/inbox/watch/client.ts`: changed function newMessages, function inboxContext
+- `src/search/conversations/client.ts`: changed function buildIndex, function linearScan
+- `src/search/conversations/helpers/index.ts`: added export from "./person"
+- `src/search/conversations/helpers/person.ts`: added function onePerPerson
+- `src/twitter/account/session/types.ts`: changed interface TwitterDmThread
+- `src/twitter/dm/index.ts`: added export from "./person/index.ts"
+- `src/twitter/dm/person/client.ts`: added const URL, function personKeyOf, const timeOf, const said, function isMirror, function mergeThreads, function dropMirrors
+- `src/twitter/dm/person/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/dm/person/person.test.ts`: added const thread, test "the old thread and its X Chat mirror have one key, either order", test "a mirrored pair is one row with the newest message from either thread", test "a message mirrored into both threads is shown once, even with its link rewritten", test "search indexes the pair as one conversation, so one hit", test "the watcher alerts once for one reply seen in both threads"
+- `src/twitter/dm/person/types.ts`: added interface MirrorMessage, const MIRROR_SECONDS, const ONE_INBOX_NOTE
+
+What changed: X's old DM thread (`<a>-<b>`) and its X Chat mirror (`<a>:<b>`) are one conversation everywhere (#59). New `src/twitter/dm/person`: `personKeyOf` gives both threads one key, `mergeThreads` makes them one row, `dropMirrors` shows a message mirrored into both once (same sender, same words with links ignored, within 5 s). `log twitter dms` lists one row per person with the newest message from either thread, and `--with` no longer shows a mirrored message twice. `log search index` merges each person's pair before chunking, so one hit, not two. The inbox watcher keys what it has seen per person, so one reply alerts once. The tool definitions carry it (`ONE_INBOX_NOTE`): `twitterDms` and `twitterDm` say the two threads are one inbox, a sent dm is delivered whichever id it names and is never resent, and a refusal before X (styleFailed, a dry run) sent nothing. A sent dm now says so in its answer.
+Why: matt: "they're one, it might say they're two but they're one". An agent told him a reply had gone to "the other inbox" and he thought it was about to send twice; he asked for it in the tool definitions so every agent has it when it calls them.
+Checked: `bun test src/twitter/dm src/search src/inbox`: 14 pass. `bun run check`: tsc clean, 1106 pass, 1 fail, `log reddit session check` > the engine runs on vendor/rdvwr, which fails the same on main without this change (run without LOG_PYTHON). Every lefthook gate green, docs rebuilt.
+
+## 2026-10-28 06:01Z · feat/xchatLiveWatch
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
 - `README.md`: edited
@@ -8151,3 +8173,486 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: any X account can now be set up the way @matthewsoldit is. `log twitter cookies save --account <handle> [--style] [--name]` (terminal only, `TERMINAL_ONLY.cookies`) asks for auth_token and ct0 in a masked Clack prompt, pings X with them on the direct-API engine, and only when X answers loggedIn for that same handle creates the TWITTER socialAccounts row (or replaces an existing row's cookies), with sessionState and the local governor state. The house style became one entry of `COPY_STYLES`, and each account picks its style through the new Twenty field `socialAccounts.copyStyle` (empty: house), which every send and queue check now uses. New error codes `twitterCookiesRefused`, `twitterCookiesWrongAccount`, `copyStyleUnknown`. `skills/xPosting` is the one page for an X account: setup, original posts by the social posting playbook (listeningkit-frontend docs/okf/operations/social-posting-playbook.md and its Twenty note), `log twitter` outreach, copy styles, and where the next agent adds a style, workflow or editing rule.
 Why: asked for an X account of its own with matt's whole setup ready in Twenty and locally, open for another agent to add more X posting workflows and the editing style. matt's row had been made by hand and the style was hard-coded as his.
 Checked: `copyStyle` created on node02's Twenty (`twentySetup.mjs --apply`), client regenerated; `bun run check` green (1121 pass, 0 fail) with 4 new cookie-save tests (new row, replaced cookies, refused and wrong-account pastes save nothing, nothing secret printed) and 2 style tests; `log kb sync` wrote the skill and the docs to Twenty and Redis; matt's session check still loggedIn.
+- `docs/platforms/x/xchat/README.md`: edited
+- `docs/platforms/x/xchat/live.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def live_line, def handle_of, def xchat_watch · changed const READS, def act
+- `scripts/hooks/inbox.ts`: no declaration changed (comments, formatting or line endings)
+- `skills.md`: edited
+- `skills/xchatReplies/SKILL.md`: new file
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/twitter/helpers/chat.ts`: added function liveLine, function inboxMessageOf, function watchChat · changed const CHAT_USAGE, const CHAT_INPUT, const chatCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./voice.ts"
+- `src/cli/twitter/helpers/voice.ts`: added const VOICE_USAGE, const VOICE_INPUT, const voiceDeps, function renderVoice, const voiceCommand
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/inbox/watch/client.ts`: added const watchPidPath, function addPending, function processAlive, function ensureLiveWatchers, function startTwitterWatch · changed function pollReaders, function inboxContext
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/twitter/account/session/client.ts`: added function runTwitterEngineLive
+- `src/twitter/account/session/types.ts`: added interface XChatLiveEvent · changed type TwitterAction, interface TwitterEngineSpec
+- `src/twitter/copy/index.ts`: added export from "./voice/index.ts"
+- `src/twitter/copy/voice/client.ts`: added function guidePath, function readGuide, function neverSaysIn, function readVoice
+- `src/twitter/copy/voice/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/copy/voice/types.ts`: added interface VoiceDraft, interface VoiceReading, const VOICE_PASS, const CONTEXT_PASS, const VOICE_MODEL, const NEVER_SAYS, const MATT_DMS
+- `src/twitter/copy/voice/voice.test.ts`: added const answering, test "a draft in matt's voice that answers them passes, and SubQ is given his guide, his own dms and what they said", test "a draft that sounds like ai fails on voice", test "a phrase matt never says fails it whatever SubQ thinks", test "the never-says list is matched without case"
+- `vendor/twikit/docs/xchat_live.md`: new file
+- `vendor/twikit/tests/test_xchat_frames.py`: added def _string, def _event, class FrameTests
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class GQLClient
+- `vendor/twikit/twikit/xchat.py`: added const KEEPALIVE, const _INSTRUCTIONS, const _FIXED, def _skip, def frame_of, def token_of
+
+What changed: X Chat replies come by push, the way X's own chat app gets them (read with rea from X's shipped code, issue #68), instead of reading the whole inbox again and again. vendor/twikit: `generate_xchat_token` (GenerateXChatTokenMutation), `Client.watch_xchat` (one socket to wss://chat-ws.x.com/ws through the pinned curl_cffi session, a KeepAlive every 30 s, a fresh token and reconnect when it drops), `xchat.frame_of` (the Thrift binary Message union), and key priming so each pushed message decrypts (every conversation's key-change events once at start, the newest inbox page again for a key it doesn't have). Engine action `xchatWatch` prints one liveEvent line per message; `runTwitterEngineLive` streams them. New `log twitter chat watch --account <a> [--seconds] [--inbox] [--json]`. The inbox hook no longer polls: it keeps one `chat watch --inbox` per signed-in X account (pid file) and puts each new message in front of the agent with what to do: read the thread, draft from matt's guide, gate it, show matt, send only when he says. New `log voice --to --text [--context]` (src/twitter/copy/voice): SubQ reads a draft against GUIDES/MATT_WRITING_STYLE.md and dms matt wrote himself, and a phrase he never says fails it. Docs: docs/platforms/x/xchat/live.md (how it works, what was seen live, how to check it again when X changes), vendor/twikit/docs/xchat_live.md, skills/xchatReplies.
+Why: matt: the polling kept hitting X's 429 (27 Oct 14:57 to 15:38, 28 Oct 03:2x and 05:15 UTC) and a 14-DM batch never went out; he asked for the notification system X's client uses, found with rea, built so the hooks act on what happens the way we did by hand (read, draft in his voice, SubQ gate, send), and written into vendored twikit so it's understood in future.
+Checked: live on matthewsoldit, 28 Oct: the probe saw 40 messageEvent frames pushed in ~85 s; `log twitter chat watch --seconds 90` 8 messages pushed, nothing polled, exit 0; after key priming the 05:49:45 message opened live ('Ok wait let ai reply now'); the hook started the watchers and delivered each message with its steps; `log voice` gated three replies that were sent. `tests/test_xchat_frames.py` 6 pass, `src/twitter/copy/voice` 4 pass. `bun run check`: 1111 pass, 0 fail, every gate green, docs rebuilt.
+
+## 2026-10-28 07:00Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/discord/README.md`: new file
+- `python/browser/harRecorder.py`: added const MAX_FRAME, const ZLIB_FLUSH, const SECRET_QUERY, def socket_url, class SocketTap · changed class Recorder
+- `python/browser/socketTapTest.py`: added class SocketTapTests
+- `python/discordApi/__init__.py`: new file, no top-level declarations
+- `python/discordApi/engine.py`: added const ROOT, const PLATFORM, const LIBRARY, def ping, const ACTIONS
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/twenty/twentySetup.mjs`: added const PLATFORM_ADDITIONS, const accountPlatform, const platformExisting, const platformMissing
+- `src/cli/discord/discord.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/cli/discord/index.ts`: added const DISCORD_SESSION_USAGE, const DISCORD_SESSION_INPUT, function render, const discordSessionCommand
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/discord/account/index.ts`: added export from "./session/index.ts"
+- `src/discord/account/session/client.ts`: added const DISCORD_PLATFORM, const DISCORD_COOKIE_DOMAIN, function findDiscordAccount, function discordGate, function runDiscordEngine, function recordDiscordSession
+- `src/discord/account/session/index.ts`: added export from "./client"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/subq/stepReading/helpers/collate.ts`: added function foldSocketFrames · changed function fitBundle
+- `src/subq/stepReading/helpers/exchangesOf.ts`: added interface SocketFrame, function frameNameOf, function socketExchangesOf · changed interface HarEntry, function exchangesOf
+- `src/subq/stepReading/socketExchanges.test.ts`: added const at, const har, test "each frame is an exchange named for its event, in time order with the http calls", test "a frame that could not be decoded says so instead of pretending", test "a frame is named by t, then type, then op"
+- `src/subq/stepReading/types.ts`: added const SOCKET_FRAMES_KEPT · changed type ExchangeKind
+- `src/surface/diagrams/index.ts`: changed function platformsDiagram
+- `src/twenty/graphql/generated/schema.ts`: changed type SocialAccountPlatformEnum, const enumSocialAccountPlatformEnum
+
+What changed: Discord is log's next platform (`log new platform discord --noProxy`, like Reddit): its session, `log discord session check`, engine stub and docs, `DISCORD` added to Twenty's socialAccounts.platform (twentySetup keeps the 8 existing options), and the first account `sourcedandsoldtothehighestbidder` with its own AdsPower profile. `log inspect` now records WebSocket frames: `harRecorder.SocketTap` watches every page's sockets, inflates a `zlib-stream` socket with one context, redacts a token in the socket URL, and writes the frames into each step's network.har as `_webSocketMessages` on a 101 entry. `exchangesOf` turns each frame into a `socket` exchange named for its event (`RECV ws MESSAGE_CREATE`), in time order with the HTTP calls, and `fitBundle` folds repeated frames (first 3 of each kind) so SubQ can still read a step. The platforms diagram no longer breaks on a platform with no vendored client. docs/platforms/discord/README.md has what the inspect found: discord.gg is the invite domain (404 Unknown Invite), sign-in, Ctrl+K, history paging (`before` + `limit=20`), sending, and the gateway round trip with Jilly.
+Why: matt: make Discord a new platform with no proxy, sign in step by step through log inspect, and since the reply came by push and the recording couldn't see it, fix inspect so it captures WebSocket frames, and roll every finding into the Discord platform's docs.
+Checked: live on sourcedandsoldtothehighestbidder, 28 Oct: sign-in `POST /api/v9/auth/login` 200; scroll-up paging seen; two messages sent (log group chat, vibe coders #bot-help) and one to Jilly, whose reply came as `RECV ws MESSAGE_CREATE` 4.2 s after our POST, with TYPING_START, MESSAGE_REACTION_ADD and MESSAGE_ACK around it; step 02's reading went from 607222 tokens (SubQ 400) to 72311 after the fold, finding written and fixed. New tests: socketExchanges.test.ts 3 pass, python/browser/socketTapTest.py 4 pass. `bun run check`: 1117 pass, 0 fail, every gate green.
+
+## 2026-10-28 07:20Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/README.md`: edited
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: new file
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: new file
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: new file
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: new file
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: new file
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: new file
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: new file
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: new file
+- `docs/platforms/discord/background/discordApiExperiments.md`: new file
+- `docs/platforms/discord/background/discordApiGames.md`: new file
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: new file
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: new file
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: new file
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: new file
+- `docs/platforms/discord/background/discordApiMetrics.md`: new file
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: new file
+- `docs/platforms/discord/background/discordApiPromotions.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: new file
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: new file
+- `docs/platforms/discord/background/discordApiScience.md`: new file
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: new file
+- `docs/platforms/discord/background/discordApiTokens.md`: new file
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: new file
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: new file
+- `docs/platforms/discord/background/discordAssets.md`: new file
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: new file
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: new file
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: new file
+- `docs/platforms/discord/githubSearch.md`: new file
+- `docs/platforms/discord/operations.json`: new file
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `capture --docs` documented the Discord runs' 51 internal calls under `docs/platforms/discord/background/`, each read by rea from its code in Discord's bundles, and each doc's What it does, What our machine does with it and What can go wrong is written for Discord. `docs/platforms/discord/githubSearch.md` holds what GitHub has on every Discord call and gateway event we found: 49 code searches (37 by path), the repos that come up most (discord-userdoccers, moonlight, meowcord, spacebarchat), and the user-account clients that already do the gateway watch and the send (concord, endcord, Discord-S.C.U.M). The Discord README links it.
+Why: the push was refused by check:facebookClientDocs (a run newer than the docs); and matt: search the GitHub API for everything we found, Discord only.
+Checked: `bun run check:facebookClientDocs`: 235 requests documented, rea read every slice; no `toWrite` left in docs/platforms/discord; the searches ran on /search/code two at a time with backoff, stars and last push from /repos the same day.
+
+## 2026-10-28 07:27Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/README.md`: edited
+- `docs/platforms/discord/clients.md`: new file
+
+What changed: `docs/platforms/discord/clients.md`: the 7 user-account Discord clients the GitHub search found (Discord-S.C.U.M, concord, endcord, hata, DiscordMessenger/dm, abaddon, DiscordUserAPI) were shallow-cloned outside the repo and each counted against the 66 things our inspect runs found, in four areas (watch, read and send, sign in, background calls), with what each of the three Python ones has and lacks. The Discord README links it from The client row and On GitHub.
+Why: matt: clone the ones that would fit the vendor area, document them, and look at how many areas each already exposes, so we use that; the licence doesn't matter.
+Checked: `coverage.py` over each clone (`~/.buzz/RESEARCH/DISCORD_CLIENT_VENDOR_MATRIX/coverage.json`); the gaps it reported for the leading clients checked by hand in their code (S.C.U.M `getMessages` pages with before, endcord `resume()` and READY `private_channels`), and the table corrected.
+
+## 2026-10-28 07:47Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/discord/README.md`: edited
+- `python/discordApi/engine.py`: added const VENDOR, def client_of, def me_of · changed const LIBRARY, def ping
+- `python/platformKit/engine.py`: changed def run
+- `src/cli/discord/discord.test.ts`: added test "an account with no Discord token saved is refused before the engine is called", test "the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing" · changed function fixture · removed test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/cli/discord/index.ts`: changed const DISCORD_SESSION_USAGE, function render, const discordSessionCommand
+- `src/cli/live/index.ts`: changed function keepSession
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/discord/account/session/client.ts`: changed const DISCORD_PLATFORM
+- `src/marketplace/socialAccount/client.ts`: added function savePlatformSession
+- `src/platformKit/session/client.ts`: added function sessionStorageOf · changed function platformGate, function runPlatformEngine
+- `src/platformKit/session/types.ts`: changed interface PlatformShape
+- `vendor/endcord/LICENSE`: new file
+- `vendor/endcord/README.md`: new file
+- `vendor/endcord/UPSTREAM`: new file
+- `vendor/endcord/endcord/acs.py`: new file
+- `vendor/endcord/endcord/app.py`: new file
+- `vendor/endcord/endcord/arg.py`: added class VersionAction, def parser
+- `vendor/endcord/endcord/assist_data.py`: added const SEARCH_HELP_TEXT, const COMMAND_ASSISTS, const ABOUT
+- `vendor/endcord/endcord/auth.py`: added const DISCORD_HOST, const DISCORD_HOST_GATEWY, const DISCORD_CDN_HOST, const DYN_DISCORD_CDN_HOST, const logger, const status_unpacker, def log_api_error, class Discord, class Gateway
+- `vendor/endcord/endcord/client_properties.py`: added const CLIENT_BUILD_NUMBER, const CLIENT_VERSION, const USER_AGENT_WEB, const USER_AGENT_DESKTOP, const LINUX_UA_STRING, const WINDOWS_UA_STRING, const MACOS_UA_STRING, const WINDOWS_VER, const MACOS_VER, const locale, def get_os_version, def get_anonymous_properties, def get_default_properties, def generate_launch_signature, def add_for_gateway, def add_user_agent, def add_client_version, def adjust_user_agent_os, def encode_properties, def get_user_agent
+- `vendor/endcord/endcord/color.py`: added const colors, def argmin, def closest_color, def int_to_rgb, def hex_to_rgb, def parse_color, def convert_role_colors, def check_color, def check_color_formatted, def extract_colors, def extract_colors_formatted, def draw_border, def color_palette_internal, def color_palette
+- `vendor/endcord/endcord/config.py`: added const logger, const XTERM_LIKE_BINDINGS_TERMS, def save_config, def load_config, def get_themes, def merge_configs, def update_config, def load_keybindings, def normalize_keybindings, def deduplicate_keybindings, def merge_keybindings
+- `vendor/endcord/endcord/debug.py`: added def hash_none, def save_json, def load_json, def anonymize_guilds, def anonymize_guild_folders
+- `vendor/endcord/endcord/defaults.py`: new file
+- `vendor/endcord/endcord/discord.py`: added const DISCORD_HOST, const DISCORD_CDN_HOST, const DYN_DISCORD_CDN_HOST, const DISCORD_EPOCH, const MAX_CONNECTION_POOL, const MAX_CONNECTION_AGE, const CONNECTION_TIMEOUT, const RETRY_DELAY, const SEARCH_PARAMS, const SEARCH_HAS_OPTS, const PING_OPTIONS, const SUPPRESS_OPTIONS, const logger, def ceil, def log_api_error, def generate_nonce, def build_multipart_body, def safe_read, class Discord
+- `vendor/endcord/endcord/downloader.py`: added const CHUNK_SIZE, const logger, def get_tenor_gif, def extract_file_name, class Downloader
+- `vendor/endcord/endcord/emoji.json`: new file
+- `vendor/endcord/endcord/formatter.py`: added const logger, const uses_gtkcurses, const DAY_MS, const DISCORD_EPOCH_MS, const TREE_EMOJI_REPLACE, const TIME_DIVS, const TIME_UNITS, const SPLIT_AFTER_TIME, const ALT_SPACE, const MIN_TAB_LEN, const ACTIVITY_VERBS, const LOG_LELVELS, const match_d_emoji, const match_mention, const match_role, const match_channel, const match_timestamp, const match_escaped_md, const match_md_spoiler, const match_md_code_snippet, const match_md_code_block, const match_md_url, const match_url, const match_discord_channel_url, const match_sticker_id, const match_plain_mention, const match_md_all, const MARKER, def ceil, def lazy_replace, def trim_string, def normalize_int_str, def demojize, def demojize_message, def is_substring_before, def discord_timestamp, def generate_timestamp, def unix_from_snowflake, def timestamp_from_snowflake, def day_from_snowflake, def generate_relative_time, def format_seconds, def generate_discord_timestamp, def find_timestamp, def format_kilo, def move_by_indexes, def emoji_name, def replace_wide, def binary_search, def limit_width_wch, def len_wch, def split_index_wch, def fix_line_format_py, def fix_line_format_extended, def fix_map_ranges, def normalize_string, def normalize_string_with_suffix, def shift_ranges, def shift_ranges_all, def delete_ranges, def shift_formats, def replace_formatted, def replace_discord_emoji, def replace_mentions, def reverse_replace_mentions, def replace_roles, def replace_discord_url, def replace_channels, def replace_timestamps, def replace_code_snippets, def replace_code_blocks, def replace_bracketed_urls, def replace_markdown_urls, def replace_spoilers, def replace_escaped_md, def is_unseen, def generate_count, def format_md_all, def format_multiline_one_line, def format_multiline_one_line_format, def format_multiline_one_line_end, def ranges_multiline_one_line, def urls_multiline_one_line, def split_long_line, def clean_type, def get_global_name, def replace_backreferences, def substitute, def format_poll, class ChatGenerator, def generate_status_line, def generate_tab_string, def generate_prompt, def generate_custom_prompt, def generate_timestamp_assist, def generate_log, def generate_about, def generate_extra_line_upload, def generate_extra_line_ring, def generate_extra_line_guild_start_call, def generate_extra_line_call, def generate_extra_window_call, def generate_extra_window_profile, def generate_extra_window_channel, def generate_extra_window_guild, def generate_extra_window_summaries, def generate_extra_window_search, def generate_extra_window_search_ext, def generate_extra_window_text, def generate_extra_window_assist, def generate_extra_window_reactions, def generate_extra_window_whkey, def generate_extra_window_stats, def generate_forum, def generate_member_list, def generate_message_notification, def generate_tree
+- `vendor/endcord/endcord/game_detection.py`: added const GAME_DETECTION_DELAY, const MAX_CACHE_AGE, const logger, const proc_cache, def get_user_processes_diff_linux, def get_user_processes_diff_windows, def get_user_processes_diff_darwin, def find_detectable_apps_file, def delete_detectable_apps_files, def find_app, class GameDetection
+- `vendor/endcord/endcord/gateway.py`: added const DISCORD_HOST, const DISCORD_HOST_GATEWY, const LOCAL_MEMBER_COUNT, const LOCAL_VOICE_PRESENCE_LIMIT, const LIMIT_SUBSCRIBED, const LIMIT_SUBSCRIBED_THREADS, const LIMIT_MENTION_CACHE, const VOICE_FLAGS, const DEFAULT_CAPABILITIES, const DEFAULT_INTENTS, const QOS_HEARTBEAT, const QOS_PAYLOAD, const ZLIB_SUFFIX, const inflator, const logger, const status_unpacker, def zlib_decompress, def reset_inflator, def double_get, def extract_activities, class Gateway
+- `vendor/endcord/endcord/git.py`: added const logger, const APP_NAME, const HEADER, def install_extension, def setup_extension, def ver_to_tuple, def check_for_update, def search_gh_repos, def download_gh_repo
+- `vendor/endcord/endcord/gtkcurses.py`: new file
+- `vendor/endcord/endcord/keybinding.py`: added const logger, const uses_gtkcurses, const MESSAGE, const ARROW_MAP, const MODIFIER_MAP, def get_key, def get_key_code, def decode_bstate_flag, def get_key_fallback, def get_key_passthrough, const KEY_ESCAPE, const KEY_PASTE_START, const KEY_PASTE_END, const KEY_ENTER, const KEY_RESIZE, const KEY_FOCUS_IN, const KEY_FOCUS_OUT, const KEY_BACKSPACE, const KEY_DEL, const KEY_HOME, const KEY_END, const KEY_TAB, def build_key_map, def find_chainable, def patch_texts, def draw_border, def picker_internal, def picker
+- `vendor/endcord/endcord/log_queue.py`: added class QueueHandler, class LogQueueManager, def read_log_file
+- `vendor/endcord/endcord/media.py`: added const BASE_SOUND_GAIN, const ESC, const RESET, const logger, const match_youtube, def get_mime, def volume_to_gain, def img_to_term, def img_to_term_block, def img_to_term_block_truecolor, class TerminalMedia, def runner
+- `vendor/endcord/endcord/media_inline.py`: added const logger, const ESC, const RESET, def freed_vertical_segments, class InlineMedia, def img_to_term, def img_to_term_block, def draw_image_bounding_box, def img_to_term_block_truecolor
+- `vendor/endcord/endcord/message.py`: added const PLATFORM_TYPES, const CONTENT_TYPES, const DISCORDAPP_CDN_ATTACHMENTS, const GIF_PROVIDERS, const match_discord_attachment_url, const match_url, def generate_timestamp, def quote, def prepare_embeds, def content_to_attachment, def prepare_message, def prepare_messages, def prepare_components, def prepare_special_message_types, def prepare_poll, def is_relevant_message
+- `vendor/endcord/endcord/minimagic.py`: added const IMAGE, const VIDEO, const AUDIO, def guess
+- `vendor/endcord/endcord/opus.py`: added const OPUS_APPS, def load_libopus, class OpusEncoder, class OpusDecoder
+- `vendor/endcord/endcord/parser.py`: added const logger, const DISCORD_EPOCH_MS, const STATUS_STRINGS, const TIME_FORMATS, const TIME_UNITS, const NOTIFICATION_VALUES, const PAST_WORDS, const FUTURE_WORDS, const MONTHS, const match_from, const match_mentions, const match_has, const match_before, const match_after, const match_in, const match_pinned, const match_time, const match_time_zero, const match_time_clock, const match_duration, const match_setting, const match_channel, const match_profile, const match_command_arguments, const match_string_select, const match_time_with_unit, def date_to_snowflake, def date_to_timestamp, def time_string_seconds, def rel_months_to_seconds, def parse_time, def read_value, def search_string, def check_start_command, def verify_option_type, def app_command_string, def split_command_binding, def command_string
+- `vendor/endcord/endcord/peripherals.py`: added const logger, const REPO_OWNER, const VERSION, const NO_NOTIFY_SOUND_DE, const RUNTIME_TEMP, const have_termux_notify, const have_pipewire, const have_pulseaudio, const have_afplay, def import_soundcard, def notify_send, def notify_remove, def copy_to_clipboard, def copy_file_to_clipboard, def paste_clipboard, def paste_clipboard_win, def pillow_paste_image, def native_select_files, def play_audio, def native_open, def get_connection, def find_aspell, class SpellCheck, def get_audio_input_devices, class Recorder, class Player, def make_round_image_pillow, def make_round_image_imagemagick, def make_round_image_graphicsmagick, def make_round_image, def resize_image, const TOKEN_MAP, const HTML_REPLACEMENTS, const match_html_code_block, const match_span, def unescape_html, def tokenize_code_srchl, const PYGMENTS_TOKEN_MAP, def tokenize_code_pygments
+- `vendor/endcord/endcord/perms.py`: added def decode_flag, def decode_permission, def compute_permissions, def compute_command_permissions, def compute_member_list_id, def murmurhash3
+- `vendor/endcord/endcord/profile_manager.py`: added const uses_gtkcurses, const bordered, const border_corners, const PART_HINT, const FULL_HINT, const CHECK_LOG, const MANAGER_TEXT, const NO_KEYRING_TEXT, const NAME_PROMPT_TEXT, const TOKEN_PROMPT_TEXT, const SOURCE_PROMPT_TEXT, const SOURCE_PROMPT_OPTIONS, const SELECT_LOGIN_TEXT, const LOGIN_OPTIONS, const EMAIL_LOGIN_TEXT, const UNABLE_LOGIN_TEXT, const ANY_KEY_TEXT, const SMS_PROMPT_TEXT, const EMAIL_PROMPT_TEXT, const FAILED_AUTH_IP_TEXT, const NETWORK_ERROR_TEXT, const SELECT_MFA_TEXT, const TOTP_PROMPT_TEXT, const CAPTCHA_REQUIRED_TEXT, const FAILED_AUTH_INIT_TEXT, const logger, def patch_texts, def setup_secret_service, def load_secret, def save_secret, def remove_secret, def load_plain, def save_plain, def remove_plain, def get_prompt_y, def pad_name, def convert_time, def init_auth, def main_tui, def manage_profile, def delete_profile, def text_prompt, def select_prompt, def key_prompt, def draw_text, def draw_buttons, def draw_border, def update_time, def manage, def refresh_token
+- `vendor/endcord/endcord/protobuf.py`: added def read_varint, def make_varint, def make_tag, def parse_message, def serialize_message
+- `vendor/endcord/endcord/protobuf_schemata.py`: added const DEFAULT_REACTION_EMOJI, const TEXT_AND_IMAGES_SETTINGS, const CUSTOM_STATUS, const STATUS_SETTINGS, const GUILD_FOLDER, const GUILD_FOLDERS, const USER_SETTINGS, const FAVORITE_GIF, const FAVORITE_GIFS, const FAVORITE_EMOJIS, const USER_FRECENCY
+- `vendor/endcord/endcord/qr_code.py`: added const ERROR_CORRECTION, const ERROR_CORRECTION_BITS, const QR_PAD_BYTES, const ALPHA_NUM, const PATTERN_POSITION_TABLE, const REED_SOLO_BLOCK_TABLE, const EXP_TABLE, const LOG_TABLE, def init_gf_tables, def get_reed_solo_blocks, def gf_log, def gf_gexp, def gf_poly_mul, def gf_poly_mod, def bit_str, def bch_encode, def generate_qr, def make_qr, def generate_qr_data, def apply_mask, def calculate_total_penalty, def calculate_line_penalty, def gen_qr_terminal_string, def draw_qr_curses
+- `vendor/endcord/endcord/rnnoise.py`: added class RNNoise
+- `vendor/endcord/endcord/rpc.py`: added const GATEWAY_RATE_LIMIT, const GATEWAY_RATE_LIMIT_SAME, const REQUEST_DELAY, const logger, const DISCORD_WIN_PIPE, const DISCORD_ASSETS_WHITELIST, def receive_data_linux, def send_data_linux, def receive_data_win, def send_data_win, class RPC
+- `vendor/endcord/endcord/search.py`: added const COMMAND_OPT_TYPE, def fuzzy_match_score_single, def fuzzy_match_score, def search_options, def search_channels_guild, def search_channels_all, def search_usernames_roles, def search_emojis, def search_stickers, def search_settings, def search_string_selects, def search_set_notifications, def search_client_commands, def search_games, def search_tabs, def search_mics, def search_profiles, def search_call_users, def search_gifs, def search_app_commands
+- `vendor/endcord/endcord/socks.py`: added class Socks5UDPSocket
+- `vendor/endcord/endcord/terminal_utils.py`: added const not_terminal, const KEY_CODES, const KEY_CODES_WIN, const width, const height, const run_esc_detector, def enter_tui, def leave_tui, def enter_tui_win, def leave_tui_win, def get_size, def draw, def draw_over_curses, def draw_over_curses_slow, def read_key, def read_key_win, def esc_detector, def esc_detector_win, def stop_esc_detector, def query_terminal, def get_font_size
+- `vendor/endcord/endcord/tui.py`: new file
+- `vendor/endcord/endcord/utils.py`: added const logger, const match_youtube, const match_emoji, const EMOJI_DATA, const THREAD_EXCEPTION, def get_executable, def ensure_terminal, def ensure_ssl_certificates, def wait_term, def thread_exception_handler, def collapseuser, def detect_runtime, def get_build_level, def get_build_info, def remove_args, def get_extensions, def find_linux_sound, def load_json, def save_json, def get_file_size, def get_dir_size, def get_mime, def get_is_clip, def get_can_play, def get_media_type, def get_audio_waveform, def complete_path, def search_pfp_cache, def json_array_objects, def delete_old_files, def convert_gif_type, def get_base_path, def load_emoji, def emojize, def is_potential_emoji, const SKIN_TONES, def next_emoji_cluster, def demojize, def is_emoji, def split_emoji
+- `vendor/endcord/endcord/voice.py`: added const DISCORD_HOST, const BASE_INPUT_GAIN, const BASE_OUTPUT_GAIN, const VOICE_FLAGS, const UDP_TIMEOUT, const OPUS_SILENCE, const SILENCE_BUFFER, const MAX_SILENCE, const MAX_LATENCY_FRAMES, const TRANSMITTER_QUEUE_TIMEOUT, const MIXER_BUFFER, const RTCP_SR_SEND_DELAY, const RTCP_RR_SEND_DELAY, const RTCP_PLI_SEND_DELAY, const CODECS, const VIDEO_HEIGHT, const VIDEO_FPS, const VIDEO_BITRATE, const VIDEO_QUEUE_SIZE, const ANNEXB_START, const ANNEXB_START_RE, const logger, const rtp_unpacker, def init_microphone, def volume_to_gain, def detect_silence, def split_annex_b, class Gateway, class CallHandler
+- `vendor/endcord/endcord/vumeter.py`: added const BAR_WIDTH, const MIN_DB, const MAX_DB, const CONTROLS_TEXT, const HOWTO_TEXT, def detect_silence, def patch_texts, def draw_border, class VUMeter, def vumeter_runner
+- `vendor/endcord/endcord/wide_ranges.py`: added const WIDE_RANGES
+- `vendor/endcord/endcord/xterm256.py`: added const palette, const palette_short, const colors
+- `vendor/endcord/pyproject.toml`: new file
+
+What changed: endcord (sparklost/endcord at d6765b0) is vendored at `vendor/endcord`, and Discord's direct-API engine runs on it: `ping` builds endcord's REST client with its own client properties and user agent and reads `GET /api/v9/users/@me` (a 401 from endcord's constructor, which exits, is caught and answered as sessionDead). Discord signs in with a localStorage token, not a cookie, so a platform's shape can now name localStorage keys (`sessionStorage`): the gate looks for them in the row's `storageOrigins`, and the engine gets them beside the cookies (`storagePath`). A browser run on any platform but Facebook now saves its cookies and origins back to Twenty when it closes (`savePlatformSession`). DIRECT_ROUTES, the command's text, the README and diagrams say vendor/endcord. The Discord tests cover the token gate and the engine loading endcord.
+Why: matt picked endcord from the client count (`clients.md`): vendor it and use it.
+Checked: live: the account's browser opened and closed (11 cookies, 1 origin saved), then `log discord session check --account sourcedandsoldtothehighestbidder` answered loggedIn as sourcedandsoldtothehighestbidder from Discord's own answer, with no browser; a fake token answers 401 sessionDead. `bun run check`: 1118 pass, 0 fail, every gate green.
+
+## 2026-10-28 07:51Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: edited
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: edited
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: edited
+- `docs/platforms/discord/background/discordApiExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiGames.md`: edited
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: edited
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: edited
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: edited
+- `docs/platforms/discord/background/discordApiMetrics.md`: edited
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: edited
+- `docs/platforms/discord/background/discordApiPromotions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: edited
+- `docs/platforms/discord/background/discordApiScience.md`: edited
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: edited
+- `docs/platforms/discord/background/discordApiTokens.md`: edited
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMe.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: edited
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: edited
+- `docs/platforms/discord/background/discordAssets.md`: edited
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: edited
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: edited
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: edited
+- `docs/platforms/discord/operations.json`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: the Discord request docs rebuilt from the run that saved the account's session: 52 calls, the new one `GET /api/v9/users/@me` (the call `log discord session check` makes through endcord), with its reasoning written.
+Why: the pre-push docs gate refused a run newer than the docs (rule 27).
+Checked: `log facebook capture --docs`: 52 Discord requests, all read by rea; `bun run check:facebookClientDocs` passes.
+
+## 2026-10-28 07:56Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+
+What changed: Discord's DIRECT_ROUTES library is `endcord`, the bare vendor name the other routes use (`fbk`, `twikit`), so the MCP tool, README and diagrams say vendor/endcord once, not vendor/vendor/endcord.
+Why: the restarted MCP's `discordSessionCheck` description read vendor/vendor/endcord.
+Checked: `discordSessionCheck` over MCP answered loggedIn as sourcedandsoldtothehighestbidder; `bun run docs:build` then `check:docs` match; the directApi, discord and scaffold tests pass.
+
+## 2026-10-28 08:02Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `python/discordApi/engine.py`: added def open_client, def chats_of, def send_of, def chats, def send · changed const ACTIONS
+- `src/cli/discord/discord.test.ts`: added test "chats lists the account's DMs and groups from the engine", test "send without --live is a dry run and calls nothing", test "send --live needs --approvedBy", test "send --live goes to the engine and Discord's message id decides" · changed test "the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing"
+- `src/cli/discord/index.ts`: added const DISCORD_ACCOUNT, const DISCORD_CHATS_USAGE, const DISCORD_CHATS_INPUT, interface DiscordChat, const discordChatsCommand, const DISCORD_SEND_USAGE, const DISCORD_SEND_INPUT, const discordSendCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+
+What changed: two Discord commands on endcord, each an MCP tool: `log discord chats --account` (MCP `discordChats`) lists the account's DMs and group DMs with their ids, names and members (endcord `get_dms`), and `log discord send --account --channel <id|name> --text` (MCP `discordSend`, and `discordSendLive` with --live) sends one message (endcord `send_message`), a dry run unless --live, which needs --approvedBy (rule 8); Discord's message id decides. Their routes are in DIRECT_ROUTES and their rules in the MCP's agentRules; the engine's `send` is a write, so the governor counts it.
+Why: matt: send "Yo, this is Stump from the MCP" to the log group chat.
+Checked: live: `log discord chats` listed 177 DMs and groups, the log group is 1547936265436012645 (QuadScorpion, Kennedy, John, deepman); `log discord send --channel 1547936265436012645 --text "Yo, this is Stump from the MCP" --approvedBy matt --live` sent message 1564911647925997649 at 08:00:11 UTC. New tests for chats, the dry run, --approvedBy and the send. `bun run check`: 1122 pass, 0 fail.
+
+## 2026-10-28 08:12Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `src/cli/discord/discord.test.ts`: added test "send finds the chat the way matt says it, then sends by its id" · changed test "send without --live is a dry run and calls nothing"
+- `src/cli/discord/index.ts`: changed const DISCORD_SEND_INPUT, const discordSendCommand · removed interface DiscordChat
+- `src/discord/chat/index.ts`: added export from "./match/index.ts"
+- `src/discord/chat/match/client.ts`: added const FILLER, function wordsOf, function normalizedName, function labelOf, function namesOf, function scoreOf, function matchChat
+- `src/discord/chat/match/index.ts`: added export from "./client", export from "./types"
+- `src/discord/chat/match/match.test.ts`: added const CHATS, test "filler words go, the name stays", test "the log group, however it is said", test "a DM with no name is found by who it is with", test "one word of a longer name finds it when only one chat has it", test "the start of a word is enough", test "two chats that fit equally are refused with both, never guessed", test "an unnamed group is found by its members", test "an id is taken as it is, and nothing matching is said so"
+- `src/discord/chat/match/types.ts`: added interface DiscordChat, type ChatMatch, const FILLER_WORDS
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: `src/discord/chat/match`: a chat is found the way matt says it. `normalizedName` lowercases, strips accents and punctuation and drops filler words (the, group, chat, gc, dm, with, community, and...); `matchChat` takes an id as it is, else scores each DM and group by its name, or for a DM or unnamed group by who is in it: the whole phrase (exact), every word (words), or the start of every word (prefix). The best score wins only when one chat has it; equal fits are refused with the candidates (`chatAmbiguous`), none with `chatNotFound` (both in the error catalog). `log discord send --channel` takes the chat as said: it reads the chats, matches, says which it picked, and sends by the id; the dry run says which too.
+Why: matt: make a normalized name version so he can say a chat and log understands which one he means.
+Checked: on the account's 177 chats, dry runs: "the log community group chat" is log (group 1547936265436012645), "jilly" is Jilly (dm 1555254123148873869), "listaro" is InferenceSaver x Listaro, and "john" is refused with the three chats it fits. match.test.ts 8 pass, a CLI test sends by the matched id. `bun run check`: 1131 pass, 0 fail.
+
+## 2026-10-28 08:30Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/platforms/discord/README.md`: edited
+- `python/discordApi/engine.py`: added def history_of, def export_of, def export · changed const ACTIONS
+- `src/cli/search/index.ts`: added interface DiscordExported, function discordConversationOf, function indexDiscord · changed const SEARCH_USAGE, const FILTERS, const SEARCH_INPUT, function indexAll, const searchCommand
+- `src/cli/search/search.test.ts`: added const dir, const kept, const embedder, function fixture, const EXPORTED, test "every Discord DM and group with messages is read through the engine, kept and searchable"
+- `src/platformKit/session/client.ts`: changed function runPlatformEngine
+
+What changed: Discord's conversations are in `log search` (rule 89), read through endcord. The engine's `export` reads every DM and group DM (`get_dms`) and pages each one's messages back with `before`, 100 at a time up to 200, waiting out a 429's `retry_after`, and writes one progress line per chat as it goes. `log search index` reads every signed-in Discord account (its `~/.logCli/discord/<account>/session.json`) beside X's, keeps each conversation in `~/.logCli/conversations/discord/<account>` (who it was with, whether a DM or which group), and builds one keyword and meaning index over both; `--platform twitter|discord` reads only one. `runPlatformEngine` streams the engine's progress when asked and takes up to 512 MB of answer. The Discord README lists every Discord command with its MCP tool.
+Why: matt: give Discord the same logic that lets us look over the conversations at p99, through the vendor, now its MCP is done.
+Checked: live: `log search index --platform discord` read 176 conversations, 13,666 messages, and indexed 4,819 chunks with X's in 169 s; `log search "inference saver deal" --platform discord` found the Dr. Ishh and Cornell Sneed chats; `log search bench`: warm p50 4.7 ms, p99 8.1 ms, against 66.7 ms for a linear scan. New search.test.ts (export, kept, searchable). `bun run check`: 1132 pass, 0 fail.
+
+## 2026-10-28 08:51Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/discord/README.md`: edited
+- `python/discordApi/engine.py`: added def read_of, def read, def live, def watch_of, def watch · changed const ACTIONS
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/inbox.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/discord/discord.test.ts`: added test "watch prints each message Discord pushes, only the chat asked for, and polls nothing", test "read shows a channel's messages after ours", test "only DMs, groups, mentions and replies to the account go to the inbox, never a bot's Thinking..."
+- `src/cli/discord/index.ts`: added const DISCORD_READ_USAGE, const DISCORD_READ_INPUT, interface DiscordRead, const discordReadCommand, const DISCORD_WATCH_USAGE, const DISCORD_WATCH_INPUT, function watchLine, function toInboxOf, function discordInboxMessageOf, const discordWatchCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/discord/account/session/client.ts`: added function runDiscordEngineLive
+- `src/inbox/watch/client.ts`: added function startDiscordWatch, function discordContext, function twitterContext · changed function inboxContext
+- `src/inbox/watch/watch.test.ts`: added test "a Discord message pushed by the gateway is told with the Discord steps, beside X's"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/platformKit/session/client.ts`: added function runPlatformEngineLive
+
+What changed: Discord on the inbox hook, by push. `log discord read` (MCP `discordRead`) reads a chat or channel's latest messages, oldest first, with who, when, bot or not, what each replies to, text and embeds, `--after` keeping what came after a message. `log discord watch` (MCP `discordWatch`) opens endcord's gateway (wss://gateway.discord.gg) and prints every message the moment Discord pushes it, nothing polled; the engine flags a mention of the account and a reply to it. `--inbox` hands each DM, group message, mention or reply from someone else to the inbox hook, never a bot's "Thinking..." placeholder, and logs only those. The inbox hook keeps one `log discord watch --inbox` running per signed-in Discord account beside X's (`startDiscordWatch`), and words a Discord note with Discord's own read, draft, gate and send steps (`>>> NEW DISCORD MESSAGE`). `runPlatformEngineLive` streams any platform engine's live lines. The docs check keys each command by its platform-qualified name (rule 83), so Discord's read and watch no longer mix with Facebook's read and log watch.
+Why: matt: get a notification rather than reading the channel every 15 seconds, through the websocket the vendor already has, and set up the Claude hooks so the agent doesn't have to read the context again.
+Checked: live in vibe coders #bot-help: the watch pushed our message and VIBE BOT's reply 8.4 s later; with the hook's watcher open, VIBE BOT's answer reached the agent as >>> NEW DISCORD MESSAGE with no read. New tests: watch, read, toInboxOf, the Discord inbox note. `bun run check`: 1136 pass, 0 fail.
+
+## 2026-10-28 09:28Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/voice/perPersonVoice.md`: new file
+- `src/cli/discord/index.ts`: added const discordDeps · changed const DISCORD_SEND_USAGE, const DISCORD_SEND_INPUT, const discordSendCommand
+- `src/cli/twitter/helpers/voice.ts`: added function chatsOf, function profileLine, function nearLines, function evidenceFor · changed const VOICE_USAGE, const VOICE_INPUT, const voiceDeps, function renderVoice, const voiceCommand
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: added interface VoiceEvidence · changed interface VoiceDraft, interface VoiceReading
+- `src/voice/index.ts`: added export from "./pairs/index.ts"
+- `src/voice/pairs/client.ts`: added type PairMeta, interface VoiceIndex, function voiceDir, function chatOf, function pairsOf, function profilesOf, function situationOf, function buildVoiceIndex, function openVoiceIndex, function tierOf, function nearestPairs, function readProfiles, function profileFor
+- `src/voice/pairs/helpers/index.ts`: added export from "./profile", export from "./split"
+- `src/voice/pairs/helpers/profile.ts`: added const EMOJI, function share, function median, function wordsOf, function profileOf, function startRatesOf, function wordCounts
+- `src/voice/pairs/helpers/split.ts`: added interface SplitPlan, function partsFor, function nextWord, function cutAt, function splitDraft, function splitPlan
+- `src/voice/pairs/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/voice/pairs/pairs.test.ts`: added const msg, const LOG_GROUP, const JILLY, const dir, test "a pair is what they said just before, with matt's reply, his back-to-back messages joined", test "how he writes is counted per chat, and differs between the log group and Jilly", test "the nearest pairs come from the same chat first, then anywhere", test "a send is split the way he sends in that chat, at a word he starts messages with, never in a chat where he sends one"
+- `src/voice/pairs/types.ts`: added interface VoicePair, interface VoiceProfile, interface VoiceTarget, interface NearPair, const SAID_MESSAGES, const MAX_SPLIT, const START_MIN_SEEN, const START_WORDS, const SPLIT_GAP, const NEAR_PAIRS, const PROFILE_WORDS, const VOICE_DEPTH, const TIER_ORDER
+
+What changed: matt's voice per person and per chat, on log's own pieces (no new model). `src/voice/pairs` pairs each of matt's replies (his back-to-back messages joined) with what was said just before it, from the conversations log search saved; embeds what was said with log search's own embedder into verso-db and bm25s (`~/.logCli/search/voice`); and counts a profile per chat, person and platform from his own messages (length, case, punctuation, emoji, openers, his words there by lift over everywhere, and bursts: how many in a row, how many words each, the gap). `log voice index` builds it. `log voice --with <chat as said>` gives his nearest real replies there (same chat, same person, same platform, anywhere) and the profile; with --text the SubQ gate also asks whether the draft reads like his real replies there (toThem). `log discord send` splits a draft the way he sends in that chat, cutting at the draft's own line breaks or punctuation, else before a word matt really starts messages with (start rates learned from his 3,213 replies), sent his usual gap apart; one message where he mostly sends one, `--asOne` always one. The hand-written common-word list is gone: distinctive words come from lift alone.
+Why: matt: vectorise every message he's sent in DMs and groups so the voice has the nuance per person and per group, on what log already has, no new models; and split sends predictably the way he sends bursts, sometimes as one.
+Checked: `log voice index`: 3,213 pairs, 551 profiles in about a minute. Kennedy against Jilly: the log group gets short bursts (median 14 words, 2 in a row, 6.2 s apart), Jilly one longer message (28 words, one every time). Live in the log group: the session summary and the answer to Kennedy each passed the gate with toThem 0.97 and 0.99 and went as 2 messages 6.2 s apart, cut before "so". pairs.test.ts 4 pass. `bun run check`: 1140 pass, 0 fail.
+
+## 2026-10-28 09:35Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed function renderVoice, const voiceCommand
+- `src/voice/pairs/helpers/index.ts`: added export from "./offProfile"
+- `src/voice/pairs/helpers/offProfile.ts`: added const EMOJI, const RARE, const SEEN, const FEATURES, function offProfile
+- `src/voice/pairs/pairs.test.ts`: added test "a draft doing what he never does in that chat fails, the emoji Kennedy caught first"
+
+What changed: `offProfile` (`src/voice/pairs`): a draft that does something matt does in 2% or fewer of his messages in that chat (over at least 10 of them) fails `log voice --with` outright: an emoji, an exclamation or question mark, a comma, a full stop, capital letters. It says which, and how often he does it there.
+Why: in the log group Kennedy caught the AI from one 😭 ("u dont usually use 😭"); matt's profile there says emoji 0 of 26, but the SubQ gate passed it at 0.99.
+Checked: the message Kennedy caught now fails ("he never writes it here: an emoji (he uses it in 0 of his 26 messages here)"), the same words without it pass; pairs.test.ts 5 pass. `bun run check`: 1141 pass, 0 fail.
+
+## 2026-10-28 11:00Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/discord/discord.test.ts`: changed test "the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing"
+- `src/cli/search/index.ts`: changed const SEARCH_USAGE, function indexDiscord
+- `src/cli/search/search.test.ts`: changed test "every Discord DM and group with messages is read through the engine, kept and searchable"
+- `src/cli/twitter/helpers/voice.ts`: changed function evidenceFor, const voiceCommand
+- `src/inbox/watch/client.ts`: changed function discordContext
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: changed interface VoiceEvidence
+- `src/voice/pairs/client.ts`: added function closestWording, function recentInChat · changed interface VoiceIndex, function profilesOf, function buildVoiceIndex, function openVoiceIndex
+- `src/voice/pairs/helpers/profile.ts`: changed function profileOf
+
+What changed: the voice reads every message matt has sent, and judges a draft on his own messages in that chat. `log search index` now reads each Discord chat's whole history (up to 20,000 messages each, was 200). The voice index embeds matt's own wording as well as what was said (a second vector collection, `wording`), and `log voice --with` hands SubQ his closest real wording to the draft and his latest messages in the chat beside his nearest real replies; with a chat, the gate judges on those alone (the tweet guide and his tweet-era DMs only when no chat is named). Each chat's distinctive words are ranked against his whole history correctly (they compared against the wrong total). The inbox hook tells the agent to pull his real messages in the chat before drafting, and to gate against the same chat. One slow test that starts Python and imports endcord's gateway gets 20 s.
+Why: matt: Kennedy could tell it was AI because it wasn't going through all of his conversations; it was using the twitter guide and not understanding him from what he really writes.
+Checked: the full read: 109,545 Discord messages, 62,831 of them matt's (7,464 before); `log voice index`: 20,074 of his replies paired (3,213 before), 551 profiles, 1,450 s; the log group profile is now 529 of his messages (26 before), with his own messages to Kennedy today among the latest. The group post passed the gate on his messages there (voice 0.95, like his replies there 0.97) and went as 2 messages 8 s apart. `bun run check`: 1138 pass; the 3 failures were the search test's old 200 (fixed) and two tests that start Python timing out at 5 s while the search index was embedding; both pass on their own.
+
+## 2026-10-28 11:16Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed function chatsOf
+- `src/inbox/watch/client.ts`: changed function twitterContext
+
+What changed: on X, `log voice --with <handle>` uses matt's whole history, not only X's: an X chat is keyed by the person, so the old DM thread and its X Chat mirror are one chat (no chatAmbiguous between them, as in #59), and its tiers skip the platform, so after that person's own messages the nearest replies come from all 20,074 of his (mostly Discord), and the profile falls back to the one over everything he has written. The X inbox hook now says to pull his real messages to that person with `log voice --with` before drafting and to gate against the same person, as Discord's does.
+Why: matt: use the voice with more of how he writes (Discord) for his Twitter too, then follow up the open X messages and turn on the monitoring.
+Checked: `log voice --with thesmitpatel` found the one conversation and drew on his whole history; the reply to Smit passed (voice 0.97, like his replies there 0.99) and was delivered; the X and Discord watchers are running and the X one pushed the sent message back at once. src/inbox and src/voice tests 10 pass.
+
+## 2026-10-28 13:08Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `src/cli/discord/index.ts`: changed const DISCORD_SEND_USAGE
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/voice/pairs/helpers/split.ts`: changed function splitPlan
+- `src/voice/pairs/pairs.test.ts`: added test "a draft written on several lines goes out one message per line, even where he mostly sends one"
+
+What changed: `splitPlan` now sends a draft written on several lines as one message per line, in every chat. Before, a chat where matt mostly sends one message (A's DM, 51%) collapsed the whole draft into one. A one-line draft is still split from his habit in that chat, and `--asOne` still sends one. `log discord send`'s usage says so, AGENTS.md has it as rule 90, and the MCP `discordSend` tool cites it (rules reviewed through 90).
+Why: matt, 2026-10-28: "stop sending as one", after the reply to A went out as a single message (rule 90).
+Checked: the dry run of the Alpha Bear reply plans 4 messages, one per line, 8 s apart. src/voice/pairs 7 pass and src/mcp pass. src/cli/discord's endcord import test fails the same way on main without this change: this machine's Python doesn't load vendor/endcord.
+
+## 2026-10-28 13:23Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/platformKit/engine.py`: changed def governor_for, def run
+- `src/directApi/engine/client.ts`: changed function allEngineStates, function engineContext
+- `src/directApi/engine/engine.test.ts`: added test "discord gets 60 writes a day, every other platform 40, and the hook says each one"
+- `src/directApi/engine/types.ts`: added const WRITES_PER_DAY_DEFAULT, const WRITES_PER_DAY, function writesPerDayOf · changed interface LocalEngineState
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/platformKit/session/client.ts`: changed function runPlatformEngine, function runPlatformEngineLive
+
+What changed: a Discord account now sends up to 60 messages a day, and every other platform keeps 40. The limit per platform is in one place, `WRITES_PER_DAY` (`writesPerDayOf`, `src/directApi/engine`). Both platform engine runs pass it in the spec as `writesPerDay`, and `governor_for` builds the governor's config with that write cap, unless `FBK_GOVERNOR_MUTATION_DAILY` is set (that still wins for a single run). The hook's status line shows each account's own limit ("45/60 writes today" on Discord) instead of a fixed 40. AGENTS.md has it as rule 91, cited on the MCP `discordSend` tool.
+Why: matt, 2026-10-28: "make it 60", after the update to kewlkid stopped 3 messages in at Discord's 40-a-day limit (rule 91).
+Checked: `governor_for` gives 60 with writesPerDay 60, 40 without it, and 25 when `FBK_GOVERNOR_MUTATION_DAILY=25` is set. The new engine test passes. src/mcp, src/directApi and src/voice: 71 pass. tsc is clean and the README was rebuilt.
+
+## 2026-10-28 13:32Z · fix/languagesPrefixCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `python/browser/proxyGate.py`: changed def compare
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+
+What changed: the launch self-check (`compare` in `python/browser/proxyGate.py`) passes `navigator.languages` when it starts with the pinned languages, in page and worker, not only when it equals them. A list that doesn't start with them is still `browserLocaleMismatch`, and `navigator.language`, Intl and the number locale are still exact. This is PR #48's change on today's main. Its rule was 86, which main had since given to the X `--force`, so it is rule 92 here. The MCP instructions' gate line cites it.
+Why: the first Canadian account on AdsPower (Kamloops) was refused three times on 2026-10-24: SunBrowser 154 reports `en-CA, en, en-US, en-GB` with the profile set to `en-CA, en`. matt chose to check the order only. matt, 2026-10-28: fold the relevant open PRs into main.
+Checked: `compare` by hand: `en-CA, en, en-US, en-GB` passes, and `en-US, en-CA, en` and `en-CA` alone are refused. `bun test src/mcp`: 59 pass. The docs are already up to date.
+## 2026-10-26 02:31Z · docs/coldDmMethod
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/twitter/engagerDms.md`: edited
+
+What changed: the DM use case page says how a cold DM opens. Find one of the person's own relevant recent tweets and forward it first (its link, so X shows the card). Then one informal line: "saw this", how you're really connected (mutual follow, or they follow you, checked with `twitterFollows`), something brief about their tweet, then the ask. With no usable tweet, send the plain opener instead. Never a bio-based "saw you're…", their name, made-up camaraderie or "thanks for following". Step 5 points at it, and the old bio-based example lines are gone.
+Why: matt read 40 bio-based treg DMs and said they were really bad: "this is how I dm… build the context of the convo, that's how we cold dm", and asked for it to be written into the use cases.
+Checked: docs only. The 40 treg DMs were rewritten this way (17 with their own tweet forwarded, 23 with the plain opener, mutual follows checked live: 23 mutual, 17 follow only one way), and the dm queue checks clean, nothing sent.
+
+## 2026-10-26 03:06Z · docs/coldDmMethod
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/useCases/twitter/README.md`: edited
+
+What changed: the X use cases' queue steps now plan sends 2 minutes apart (`minGap` 120, the code's default), with a window of about 2 minutes per person (20 people: 40m), and only longer when the owner asks. Before, step 6 said `window: "75m", minGap: 600`, which made 10-minute gaps look like the norm.
+Why: matt: the time between messages was too long and he wants it faster, and the line that made the long gap look acceptable has to change. The 40 treg DMs had been planned 10 minutes apart over 7 hours.
+Checked: docs only. The running DM queue was re-planned live: the 37 left over 80 minutes at 2 minutes apart, and the first DM after the change went out at 03:05.

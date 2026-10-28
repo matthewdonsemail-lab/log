@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-import { spawn } from 'node:child_process'
 import { join } from 'node:path'
-import { claimPoll, inboxContext, inboxReaders, pollReaders, releasePoll, takePending } from '../../src/inbox/watch/index'
+import { platformStateRoot } from '../../src/directApi/engine/index'
+import { ensureLiveWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startTwitterWatch, takePending, twitterAccounts } from '../../src/inbox/watch/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -20,10 +20,8 @@ try {
   event = (JSON.parse(raw || '{}') as { hook_event_name?: string }).hook_event_name ?? event
 } catch {}
 
-if (claimPoll()) {
-  const child = spawn('bun', [import.meta.path, 'poll'], { cwd: repo, detached: true, stdio: 'ignore', windowsHide: true, env: process.env })
-  child.unref()
-}
+ensureLiveWatchers('twitter', twitterAccounts(), (account) => startTwitterWatch(account, repo))
+ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')), (account) => startDiscordWatch(account, repo))
 
 const text = inboxContext(takePending())
 if (text) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))

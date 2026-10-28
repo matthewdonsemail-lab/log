@@ -1,8 +1,8 @@
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { platformStateRoot, writeLocalSession } from '../../directApi/engine/index'
+import { platformStateRoot, writeLocalSession, writesPerDayOf } from '../../directApi/engine/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../marketplace/socialAccount/index'
 import { TwentyError } from '../../twenty/graphql/index'
@@ -41,11 +41,34 @@ export function sessionCookiesOf(raw: unknown): Record<string, string> {
   return {}
 }
 
+export function sessionStorageOf(origins: unknown, wanted: PlatformShape['sessionStorage']): Record<string, string> {
+  if (!wanted || !Array.isArray(origins)) return {}
+  const origin = origins.find((o) => o && typeof o === 'object' && (o as { origin?: unknown }).origin === wanted.origin) as { localStorage?: unknown } | undefined
+  const out: Record<string, string> = {}
+  for (const item of Array.isArray(origin?.localStorage) ? origin!.localStorage : []) {
+    const { name, value } = item as { name?: unknown; value?: unknown }
+    if (typeof name !== 'string' || typeof value !== 'string' || !wanted.keys.includes(name)) continue
+    let text = value
+    try {
+      const parsed = JSON.parse(value)
+      if (typeof parsed === 'string') text = parsed
+    } catch {}
+    if (text) out[name] = text
+  }
+  return out
+}
+
 export function platformGate(account: PlatformAccount, shape: PlatformShape): PlatformGate {
   if (String(account.platform) !== shape.twentyPlatform) return { ok: false, code: 'accountNotOnPlatform', detail: `${account.accountName} is ${account.platform ?? 'no platform'}, not ${shape.twentyPlatform}` }
   if (account.status === 'deactivated') return { ok: false, code: 'accountDeactivated', detail: `${account.accountName} is deactivated` }
   const cookies = sessionCookiesOf(account.cookies)
   const missing = shape.sessionCookies.filter((name) => !cookies[name])
+  if (shape.sessionStorage) {
+    const stored = sessionStorageOf(account.storageOrigins, shape.sessionStorage)
+    const absent = shape.sessionStorage.keys.filter((key) => !stored[key])
+    if (missing.length || absent.length) return { ok: false, code: 'noPlatformSession', detail: `${account.accountName} has no saved ${[...missing, ...absent.map((k) => `${shape.sessionStorage!.origin} localStorage ${k}`)].join(' + ')} in Twenty` }
+    return { ok: true }
+  }
   if (missing.length || Object.keys(cookies).length === 0) return { ok: false, code: 'noPlatformSession', detail: `${account.accountName} has no saved ${missing.length ? missing.join(' + ') : 'cookies'} in Twenty` }
   return { ok: true }
 }
@@ -74,9 +97,11 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
     const cookiesPath = join(dir, 'cookies.json')
     const refreshedPath = join(dir, 'refreshed.json')
     writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
+    const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
+    if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), cookiesPath, refreshedPath }), { mode: 0o600 })
-    const run = spawnSync(process.env.LOG_PYTHON || 'python', [shape.engine, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })
+    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', [shape.engine, spec], { encoding: 'utf8', maxBuffer: 512 * 1024 * 1024, stdio: ['ignore', 'pipe', request.streamProgress ? 'inherit' : 'pipe'] })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: PlatformAnswer
     try {
@@ -89,6 +114,56 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
   } finally {
     rmSync(dir, { recursive: true, force: true })
   }
+}
+
+export function runPlatformEngineLive(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void): Promise<PlatformEngineRun> {
+  const dir = mkdtempSync(join(tmpdir(), `${shape.platform}Api`))
+  const cookiesPath = join(dir, 'cookies.json')
+  const refreshedPath = join(dir, 'refreshed.json')
+  writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
+  const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
+  if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
+  const spec = join(dir, 'spec.json')
+  writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
+  return new Promise((resolve) => {
+    const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', shape.engine, spec], { windowsHide: true })
+    let buffer = ''
+    let last = ''
+    let stderr = ''
+    child.stdout.setEncoding('utf8')
+    child.stdout.on('data', (chunk: string) => {
+      buffer += chunk
+      let cut = buffer.indexOf('\n')
+      while (cut >= 0) {
+        const line = buffer.slice(0, cut).trim()
+        buffer = buffer.slice(cut + 1)
+        if (line) {
+          try {
+            const parsed = JSON.parse(line) as { liveEvent?: Record<string, unknown> }
+            if (parsed.liveEvent) onLive(parsed.liveEvent)
+            else last = line
+          } catch {
+            last = line
+          }
+        }
+        cut = buffer.indexOf('\n')
+      }
+    })
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr = (stderr + chunk.toString()).slice(-2000)
+    })
+    child.on('close', () => {
+      let answer: PlatformAnswer
+      try {
+        answer = JSON.parse(last || buffer.trim()) as PlatformAnswer
+      } catch {
+        answer = { ok: false, code: 'engineNoAnswer', detail: (stderr || 'no output').slice(-300) }
+      }
+      const refreshed = existsSync(refreshedPath) ? (JSON.parse(readFileSync(refreshedPath, 'utf8')) as Record<string, string>) : null
+      rmSync(dir, { recursive: true, force: true })
+      resolve({ answer, refreshed })
+    })
+  })
 }
 
 export async function recordPlatformSession(twenty: TwentyClient, shape: PlatformShape, account: PlatformAccount, run: PlatformEngineRun, now: Date, cookieDomain: string): Promise<string[]> {

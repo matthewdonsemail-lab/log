@@ -9,7 +9,7 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'xchatContacts' | 'xchatUnlock' | 'reply' | 'quote' | 'like' | 'dm'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'dm'
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm']
 
@@ -28,6 +28,22 @@ export interface TwitterEngineSpec {
   force?: boolean
   chatPin?: string
   export?: boolean
+  seconds?: number
+}
+
+export interface XChatLiveEvent {
+  type?: string
+  state?: string
+  error?: string
+  id?: string
+  conversationId?: string
+  time?: string | null
+  senderId?: string
+  text?: string
+  fromMe?: boolean
+  from?: string | null
+  box?: string
+  encrypted?: boolean
 }
 
 export interface TwitterFollow {
@@ -57,6 +73,8 @@ export interface TwitterDmThread {
   lastText?: string | null
   unread: boolean
   messagesLoaded: number
+  conversationIds?: string[]
+  boxes?: TwitterDmThread['box'][]
 }
 
 export interface TwitterDmConversation {

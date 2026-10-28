@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 90;
+export const RULES_REVIEWED_THROUGH = 93;
 
 export const AGENTS_URI = "log://agents";
 
@@ -11,7 +11,7 @@ export const SERVER_INSTRUCTIONS = [
   "4. Never mention or discuss Meta's or Facebook's rules, terms or account ownership with matt unless he raises them (rule 38).",
   "5. Read-only on Facebook unless matt asked: anything that posts, joins, answers, clicks or edits is its own `…Live` tool (`publishLive`, `inspectDoLive`, `hostStartLive`, `joinLive`, `warmupLive`, `flow…Live`), annotated destructive, and needs confirmLive: true; every other tool never acts on Facebook and refuses live (rules 8, 10). Outside an account's local hours only with --bypass and confirmBypass: true, when matt asked (rules 18, 20).",
   "6. One browser per account for its day, every action a step in it: open it with `inspectStart` (account, detach: true), never a launch per action; at most 8 opens a day, 10 minutes apart (rules 24, 35).",
-  "7. Every browser opens through its gates: proxy in the account's country, the self-check, headed, recorded (rules 11, 12, 17, 22).",
+  "7. Every browser opens through its gates: proxy in the account's country, the self-check (its languages must start with the pinned ones; extras after them are allowed), headed, recorded (rules 11, 12, 17, 22, 92).",
   "8. A run that fails is fixed from its own recording (its HAR read with rea), never by guessing; code that clicks a page is written from a recording of that page (rules 25, 29).",
   "9. matt sees everything as it happens (rule 26). Before any call that takes more than a few seconds (a browser open, a join, a fill, a publish, a capture), start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log` (UTC day, `YYYY-MM-DD`), so every line shows in the client while it runs, and say in plain words what each stage means. Never wait silently for the result. A client without a shell (a claude.ai connector, Duet) reads each result's `progress` (every streamed line, timed) instead. Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, do not stop, rule 54) and what only matt can clear (`needsMatt`); `browsers` is a tool too. A long run that outlasts its call's wait (`waitMs`, default 20 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine } until it ends, stop it with `jobCancel` (at its next browser step, never past Publish, rule 10); one job holds an account at a time (`accountBusy`, rule 35).",
   "10. What a platform's client sends is documented per platform, then domain: `docs/platforms/<platform>/<domain>/<request>.md` (Facebook: `docs/platforms/facebook/`, groups in `groups/`), built by `capture --docs` from the runs' recordings (rule 27). A new platform or domain is explored with `inspect` first and gets its own folder (rule 29). Every platform's calls go through rea, their code as well as their network: `capture --docs` finds each call's code in that platform's own bundles by syntax tree and rea reads it, never Facebook's alone (rule 85).",
@@ -28,7 +28,7 @@ export const SERVER_INSTRUCTIONS = [
   "21. X (Twitter) is a platform of its own, `log twitter <command>`, on the direct-API engine only: twikit (vendor/twikit) with the account's saved cookies from Twenty, no browser and no proxy. X accounts call X directly, as twitter-controller does. X's own answer decides (`socialAccounts.sessionState`), each account has its own governor, and refreshed cookies are merged back (rule 80). We maintain vendor/twikit ourselves: its transport is curl_cffi (impersonating Safari), never httpx (`check:twikitTransport`, rule 81). When matt says to send anyway, `force` goes past the account's governor (its pause and caps) for that call or run only; X's answer still decides (rule 86).",
   "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
-  "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 90).",
+  "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -63,10 +63,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81],
   twitterDms: [13, 63, 64, 73, 80, 81, 88],
-  twitterChat: [13, 21, 63, 64, 80, 81, 88],
+  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81],
+  voice: [30, 39, 41, 63, 64],
   search: [13, 26, 63, 64, 88, 89],
-  kb: [13, 26, 30, 90],
+  kb: [13, 26, 30, 93],
   twitterFollowers: [13, 63, 64, 73, 80, 81],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86],
   twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86],
@@ -84,6 +85,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   logout: [],
   whoami: [],
   redditSession: [13, 63, 64, 73, 83],
+  discordSession: [13, 63, 64, 73, 83],
+  discordChats: [13, 63, 64, 73, 83],
+  discordRead: [13, 63, 64, 73, 83],
+  discordWatch: [13, 26, 63, 64, 73, 83],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

@@ -25,7 +25,7 @@ DMs are their own pages. Recruiting is public replies only.
 | House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
 | The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Nudge`, `Status` |
-| Pacing | 40 writes a day per account, random gaps between sends, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
+| Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 40 writes a day per account, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
 
 ## The queue, step by step
 
@@ -36,7 +36,7 @@ The same calls on every sending page.
 3. `twitterQueueBuild` { targets, variations, out, account, action: reply | dm }. Writes the queue, never overwrites one.
 4. `twitterQueueShow` and `twitterQueueCheck`: house style and targets, contacts nothing. Show the table to the owner.
 5. `twitterQueueApprove` { by: "<owner>" } only after the owner says yes. Any edit afterwards voids it.
-6. `twitterQueuePlan` { window: "75m", minGap: 600, like: true } then `twitterQueueRun` (dry run) then `twitterQueueRunLive` { confirmLive: true } when the owner asked for the live send. Follow it with `jobStatus`, and start a Monitor on `~/.logCli/mcp/<UTC day>.log` first (rule 26). `jobCancel` stops it at its next wait.
+6. `twitterQueuePlan` { window, minGap: 120, like: true }, with the window about 2 minutes per person (20 people: "40m"), then `twitterQueueRun` (dry run) then `twitterQueueRunLive` { confirmLive: true } when the owner asked for the live send. Follow it with `jobStatus`, and start a Monitor on `~/.logCli/mcp/<UTC day>.log` first (rule 26). `jobCancel` stops it at its next wait.
 
 What the run does when X pushes back: no tweet created or throttled waits 15 min doubling to 4 h, then retries once at the end. Daily limit (344) waits 24 h. Deleted post or replies off (385/433) is skipped. Dead session, or 5 waits in a row, stops and alerts the owner. Running it again resumes.
 

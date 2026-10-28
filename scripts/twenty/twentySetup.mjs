@@ -400,6 +400,17 @@ if (accountMissing.length) {
   })
 }
 
+const PLATFORM_ADDITIONS = [option('DISCORD', 'Discord', 'purple', 0)]
+const accountPlatform = objects.get('socialAccount').fields.get('platform')
+const platformExisting = Array.isArray(accountPlatform?.options) ? accountPlatform.options : []
+const platformMissing = accountPlatform ? PLATFORM_ADDITIONS.filter((add) => !platformExisting.some((o) => o.value === add.value)) : []
+if (platformMissing.length) {
+  plan.push({
+    what: `socialAccount.platform + ${platformMissing.map((o) => o.value).join(', ')} (keeps ${platformExisting.length} existing options and their ids)`,
+    run: () => gql(UPDATE_FIELD, { input: { id: accountPlatform.id, update: { options: [...platformExisting, ...platformMissing.map((o, i) => ({ ...o, position: platformExisting.length + i }))] } } })
+  })
+}
+
 if (!plan.length) {
   console.log('Twenty already has everything log-cli needs.')
   process.exit(0)

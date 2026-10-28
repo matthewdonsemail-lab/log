@@ -1,6 +1,6 @@
 import { readGroupDirect } from "../read/helpers/directApi.ts";
-import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
-import { runTwitterEngine } from "../../twitter/account/session/index.ts";
+import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
+import { runTwitterEngine, runTwitterEngineLive } from "../../twitter/account/session/index.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
@@ -43,6 +43,8 @@ import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
+import { discordChatsCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
+import { runDiscordEngine, runDiscordEngineLive } from "../../discord/account/session/index.ts";
 
 export * from "./helpers/index.ts";
 export type { Command, CommandContext, CommandResult, MarketplaceData } from "./types.ts";
@@ -91,6 +93,7 @@ export const COMMANDS: Command[] = [
   dmsCommand,
   chatCommand,
   cookiesCommand,
+  voiceCommand,
   searchCommand,
   kbCommand,
   followersCommand,
@@ -101,6 +104,11 @@ export const COMMANDS: Command[] = [
   queueCommand,
   newCommand,
   redditSessionCommand,
+  discordSessionCommand,
+  discordChatsCommand,
+  discordReadCommand,
+  discordWatchCommand,
+  discordSendCommand,
 ];
 
 const ALIASES: Record<string, string> = {
@@ -130,7 +138,10 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     cancelled: overrides.cancelled,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
+    directTwitterLive: overrides.directTwitterLive ?? runTwitterEngineLive,
     directReddit: overrides.directReddit ?? runRedditEngine,
+    directDiscord: overrides.directDiscord ?? runDiscordEngine,
+    directDiscordLive: overrides.directDiscordLive ?? runDiscordEngineLive,
   };
 }
 
