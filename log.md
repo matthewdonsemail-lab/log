@@ -8110,6 +8110,8 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: log-cli now uses ListeningKit's Twenty on node02. `twentyEnv` (and the Twenty scripts' `loadEnv`, and `twentyConfigFromEnv`) read `LOG_TWENTY_BASE_URL` and `LOG_TWENTY_API_KEY` first, then `TWENTY_BASE_URL` and `TWENTY_API_KEY`; the scripts also read `.env`, not only `.env.local`. The generated GraphQL client was regenerated from node02's schema. `.env.example` names the new pair, and `docs/infra/node02.md` records the move.
 Why: matt asked to move all the agency work from the legacy Twenty to node02 and reconnect Buzz and the knowledge base. The Windows `TWENTY_API_KEY` is the legacy key and blaster still needs it, so log-cli gets names of its own that win over it.
 Checked: every agency object copied with its ids (schema through the metadata API, data table to table): row counts match the legacy server for all 31 objects (socialListenings 25,521, agencyProspects 1,255, socialAccounts 36…), note links 212. `log facebook accounts` lists the 31 Facebook accounts from node02, `bun run check` green (1113 pass, 0 fail), the 402 legacy knowledge entries are searchable through `log kb search`, and the Buzz bridge is healthy with its new key.
+
+## 2026-10-27 23:04Z · feat/xAccountSetup
 ## 2026-10-27 12:39Z · fix/onePersonOneConversation
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
@@ -8138,6 +8140,39 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 - `docs/diagrams/commands.mmd`: edited
 - `docs/diagrams/platforms.mmd`: edited
 - `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `scripts/twenty/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/xPosting/SKILL.md`: new file
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/cookies.test.ts`: added const realDeps, function typed, function run, const TOKEN, const CT0, const LOGGED_IN, test "a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", test "an existing handle has its cookies replaced, not a second row", test "cookies X refuses, or for another handle, save nothing", test "an unknown style and a missing terminal are refused before anything is asked"
+- `src/cli/twitter/helpers/cookies.ts`: added const COOKIES_USAGE, interface CookiePrompts, const cookiesDeps, const COOKIES_INPUT, function isCookieValue, function existing, const cookiesCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./cookies.ts"
+- `src/cli/twitter/helpers/queue.ts`: changed function specFor, function runCommand, const queueCommand
+- `src/cli/twitter/helpers/send.ts`: changed const SKIP_STYLE, function sendCommand
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/socialAccount/client.ts`: changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface Actor, interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface ActorCreateInput, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twitter/copy/style/client.ts`: added function houseProblems, const DEFAULT_COPY_STYLE, const COPY_STYLES, function copyStyleOf, function styleHint · changed function styleProblems, const STYLE_HINT
+- `src/twitter/copy/style/index.ts`: added export from "./types"
+- `src/twitter/copy/style/style.test.ts`: added test "an empty style is the house style", test "an unknown style is a problem of its own"
+- `src/twitter/copy/style/types.ts`: added interface CopyStyle
+- `src/twitter/post/send/client.ts`: changed function planSend
+- `src/twitter/post/send/types.ts`: changed interface SendRequest
+- `src/twitter/queue/plan/client.ts`: changed function itemProblems
+
+What changed: any X account can now be set up the way @matthewsoldit is. `log twitter cookies save --account <handle> [--style] [--name]` (terminal only, `TERMINAL_ONLY.cookies`) asks for auth_token and ct0 in a masked Clack prompt, pings X with them on the direct-API engine, and only when X answers loggedIn for that same handle creates the TWITTER socialAccounts row (or replaces an existing row's cookies), with sessionState and the local governor state. The house style became one entry of `COPY_STYLES`, and each account picks its style through the new Twenty field `socialAccounts.copyStyle` (empty: house), which every send and queue check now uses. New error codes `twitterCookiesRefused`, `twitterCookiesWrongAccount`, `copyStyleUnknown`. `skills/xPosting` is the one page for an X account: setup, original posts by the social posting playbook (listeningkit-frontend docs/okf/operations/social-posting-playbook.md and its Twenty note), `log twitter` outreach, copy styles, and where the next agent adds a style, workflow or editing rule.
+Why: asked for an X account of its own with matt's whole setup ready in Twenty and locally, open for another agent to add more X posting workflows and the editing style. matt's row had been made by hand and the style was hard-coded as his.
+Checked: `copyStyle` created on node02's Twenty (`twentySetup.mjs --apply`), client regenerated; `bun run check` green (1121 pass, 0 fail) with 4 new cookie-save tests (new row, replaced cookies, refused and wrong-account pastes save nothing, nothing secret printed) and 2 style tests; `log kb sync` wrote the skill and the docs to Twenty and Redis; matt's session check still loggedIn.
 - `docs/platforms/x/xchat/README.md`: edited
 - `docs/platforms/x/xchat/live.md`: new file
 - `python/errors/errorCatalog.json`: edited

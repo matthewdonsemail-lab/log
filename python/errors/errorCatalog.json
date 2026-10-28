@@ -90,7 +90,39 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Save the account's cookies from a normal manual login into its socialAccounts row."
+    "action": "Save the account's cookies from a normal manual login: `bun bin/log.ts twitter cookies save --account <handle>` in a terminal."
+  },
+  "twitterCookiesRefused": {
+    "layer": "account",
+    "meaning": "X didn't accept the cookies typed into log twitter cookies save, so nothing was saved to Twenty.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Copy auth_token and ct0 again from a browser where the account is signed in to x.com, and run it again."
+  },
+  "twitterCookiesWrongAccount": {
+    "layer": "account",
+    "meaning": "The cookies typed into log twitter cookies save are signed in to a different X account than --account names, so nothing was saved.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Copy the cookies from a browser signed in to that handle, or give --account the handle the cookies belong to."
+  },
+  "copyStyleUnknown": {
+    "layer": "twitter",
+    "meaning": "The copy style named for an X account is not one of COPY_STYLES (src/twitter/copy/style).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter",
+      "twitter/copy/style"
+    ],
+    "action": "Pick a style COPY_STYLES has, or add the new style there with its test and its skill (skills/xPosting)."
   },
   "targetMissing": {
     "layer": "twitter",

@@ -140,14 +140,14 @@ export function linesOf(raw: unknown): string[] {
   throw new Error('variations must be a list of lines, or an object with messages')
 }
 
-export function itemProblems(queue: Queue): { n: number; detail: string }[] {
+export function itemProblems(queue: Queue, style?: string | null): { n: number; detail: string }[] {
   const out: { n: number; detail: string }[] = []
   for (const it of queue.items.filter((i) => i.status === 'pending')) {
     if (!QUEUE_ACTIONS.includes(it.action)) {
       out.push({ n: it.n, detail: `action ${it.action} isn't one of ${QUEUE_ACTIONS.join(', ')}` })
       continue
     }
-    const plan = planSend({ action: it.action, tweetUrl: it.tweetUrl, userId: it.userId, text: it.text, live: false })
+    const plan = planSend({ action: it.action, tweetUrl: it.tweetUrl, userId: it.userId, text: it.text, style, live: false })
     if (!plan.ok) out.push({ n: it.n, detail: `${plan.problem.code}: ${plan.problem.detail}` })
   }
   return out

@@ -1,4 +1,4 @@
-import { STYLE_HINT, styleProblems } from '../../copy/style/index'
+import { DEFAULT_COPY_STYLE, styleHint, styleProblems } from '../../copy/style/index'
 import type { SendAction, SendPlan, SendRequest } from './types'
 
 export const TWEET_URL = /^https?:\/\/(?:www\.)?(?:x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/
@@ -17,8 +17,9 @@ export function planSend(request: SendRequest): SendPlan {
   const text = request.text?.trim()
   if (WITH_TEXT.includes(request.action) && !text) return { ok: false, problem: { code: 'textMissing', detail: `${request.action} needs --text` } }
   if (text && !request.skipStyleCheck) {
-    const problems = styleProblems(text)
-    if (problems.length) return { ok: false, problem: { code: 'styleFailed', detail: `the house style check failed: ${problems.join(', ')} (${STYLE_HINT})` } }
+    const style = request.style?.trim() || DEFAULT_COPY_STYLE
+    const problems = styleProblems(text, style)
+    if (problems.length) return { ok: false, problem: { code: 'styleFailed', detail: `the ${style} style check failed: ${problems.join(', ')} (${styleHint(style)})` } }
   }
   const approvedBy = request.approvedBy?.trim()
   if (request.live && !approvedBy) return { ok: false, problem: { code: 'notApproved', detail: `${request.action} sends on X: --approvedBy <who approved it> is needed with --live` } }

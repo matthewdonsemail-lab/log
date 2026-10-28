@@ -64,6 +64,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterFollows: [13, 53, 63, 64, 73, 80, 81],
   twitterDms: [13, 63, 64, 73, 80, 81, 88],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88],
+  twitterCookies: [13, 21, 63, 64, 73, 80, 81],
   voice: [30, 39, 41, 63, 64],
   search: [13, 26, 63, 64, 88, 89],
   kb: [13, 26, 30, 93],

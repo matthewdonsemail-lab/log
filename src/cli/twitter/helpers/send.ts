@@ -11,7 +11,7 @@ const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, descrip
 const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, description: "The recipient's numeric X user id, from treg research" };
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
-const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the house style check, only when matt asked" };
+const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
 export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when matt asked (rule 86)" };
 const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when matt asked (rule 8); without it a dry run checks it and contacts nothing" };
 
@@ -78,12 +78,15 @@ function sendCommand(shape: SendShape): Command {
       if (typeof ref !== "string") return { code: 1, stderr: `log ${label}: --account is needed\n${usage}` };
       const str = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
       const live = parsed.flags["live"] === true;
-      const plan = planSend({ action: shape.action, tweetUrl: str("tweet"), userId: str("userId"), text: str("text"), approvedBy: str("approvedBy"), skipStyleCheck: parsed.flags["skipStyleCheck"] === true, live });
-      if (!plan.ok) return refuse(label, plan.problem.code, plan.problem.detail);
+      const request = { action: shape.action, tweetUrl: str("tweet"), userId: str("userId"), text: str("text"), approvedBy: str("approvedBy"), skipStyleCheck: parsed.flags["skipStyleCheck"] === true, live };
+      const early = planSend({ ...request, skipStyleCheck: true });
+      if (!early.ok) return refuse(label, early.problem.code, early.problem.detail);
       try {
         const opened = await openTwitterAccount(context, label, ref);
         if (!opened.ok) return opened.result;
         const { account, engine } = opened;
+        const plan = planSend({ ...request, style: account.copyStyle });
+        if (!plan.ok) return refuse(label, plan.problem.code, plan.problem.detail);
         if (!live) {
           const dry = { engine: "directApi", library: "twikit", account: account.accountName, ok: true, dryRun: true, action: shape.action, target: plan.target, text: plan.spec.text ?? null, style: shape.text ? (parsed.flags["skipStyleCheck"] ? "skipped" : "pass") : null, approvedBy: plan.spec.approvedBy ?? null };
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify(dry, null, 2) };
