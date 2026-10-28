@@ -4,9 +4,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 103 command tools + saved flows"]
+  mcp["MCP server log: 107 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 57 commands (COMMANDS)"]
+  runCli["runCli: 58 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord (vendor/), the account's saved session, a governor per account"]
@@ -37,7 +37,8 @@ flowchart LR
   turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
   turn4{{"SessionStart: engines.ts"}} -.-> agent
   turn5{{"UserPromptSubmit: engines.ts"}} -.-> agent
-  turn6{{"SessionStart: inbox.ts"}} -.-> agent
-  turn7{{"UserPromptSubmit: inbox.ts"}} -.-> agent
-  turn8{{"Stop: pageState.ts"}} -.-> agent
+  turn6{{"SessionStart: knowledge.ts"}} -.-> agent
+  turn7{{"SessionStart: inbox.ts"}} -.-> agent
+  turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
+  turn9{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0

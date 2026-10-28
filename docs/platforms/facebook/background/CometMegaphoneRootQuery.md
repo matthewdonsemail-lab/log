@@ -11,9 +11,9 @@
 | Sends | `first`, `scale` |
 | Reads | `viewer.megaphonePromotions` |
 | Called from | `CometMegaphoneRoot.react` |
-| rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
+| rea | `ev_07965c7ee3ae520c7059b7c63745dab54a0aa1ce3d5596f3777cd22f2bc2f028` |
 
-Seen 24 time(s) in 17 run(s).
+Seen 26 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -40,12 +40,14 @@ Seen 24 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 861 ms | 219888 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 851 ms | 12037 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 723 ms | 9213 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 362 ms | 12648 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 273 ms | 17036 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 789 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 362 ms
 
 Sent:
 
@@ -69,21 +71,217 @@ Answered:
   "data": {
     "viewer": {
       "megaphonePromotions": {
-        "edges": []
+        "edges": [
+          {
+            "node": {
+              "id": "1012732625523263",
+              "user_interaction_info": "(1 fields)",
+              "comet_qp_sections": "(1 fields)"
+            }
+          }
+        ]
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742237952,
-      "time_at_flush_ms": 1792742238144
+      "request_start_time_ms": 1793038331000,
+      "time_at_flush_ms": 1793038331133
     },
-    "is_final": true
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "clpData": {
+              "1743465": "(1 fields)"
+            },
+            "gkxData": {
+              "5070": "(2 fields)",
+              "5279": "(2 fields)",
+              "10188": "(2 fields)",
+              "22681": "(2 fields)"
+            },
+            "ixData": {
+              "671882": "(7 fields)",
+              "869053": "(7 fields)",
+              "1521755": "(7 fields)",
+              "1669083": "(7 fields)",
+              "1876411": "(4 fields)",
+              "1876412": "(4 fields)",
+              "1876413": "(4 fields)",
+              "1876414": "(4 fields)",
+              "1876415": "(4 fields)",
+              "1876416": "(4 fields)",
+              "1876418": "(4 fields)",
+              "1876419": "(4 fields)",
+              "1876420": "(4 fields)",
+              "1876421": "(4 fields)",
+              "1876422": "(4 fields)",
+              "1876423": "(4 fields)",
+              "1876424": "(4 fields)",
+              "1876426": "(4 fields)",
+              "1876427": "(4 fields)",
+              "1876428": "(4 fields)",
+              "1876429": "(4 fields)",
+              "1876430": "(4 fields)",
+              "1876431": "(4 fields)",
+              "1876432": "(4 fields)",
+              "1876434": "(4 fields)",
+              "1876435": "(4 fields)",
+              "1876436": "(4 fields)",
+              "1876437": "(4 fields)",
+              "1876438": "(4 fields)",
+              "1876439": "(4 fields)",
+              "1876440": "(4 fields)",
+              "1876442": "(4 fields)",
+              "1876443": "(4 fields)",
+              "1876444": "(4 fields)",
+              "1876445": "(4 fields)",
+              "1876446": "(4 fields)",
+              "1876447": "(4 fields)",
+              "1876448": "(4 fields)",
+              "1876450": "(4 fields)",
+              "1876451": "(4 fields)",
+              "1876452": "(4 fields)",
+              "1876453": "(4 fields)",
+              "1876454": "(4 fields)",
+              "1876455": "(4 fields)",
+              "1876456": "(4 fields)",
+              "1876458": "(4 fields)",
+              "1940508": "(4 fields)",
+              "1940509": "(4 fields)",
+              "1940510": "(4 fields)",
+              "1940511": "(4 fields)",
+              "1940512": "(4 fields)",
+              "1940513": "(4 fields)",
+              "1960581": "(7 fields)",
+              "1960583": "(7 fields)",
+              "1969816": "(7 fields)",
+              "1969818": "(7 fields)",
+              "1988479": "(7 fields)",
+              "1988481": "(7 fields)"
+            },
+            "justknobxData": {
+              "6778": "(1 fields)"
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051718708
+            },
+            "rsrcMap": {
+              "MFf1moB": "(5 fields)",
+              "csr:_16_0_i2": "(3 fields)",
+              "csr:_16_1_Zo": "(3 fields)",
+              "AD4wloP": "(5 fields)",
+              "2hYTLuM": "(5 fields)",
+              "csr:_16_2_H/": "(3 fields)",
+              "pTwdKAI": "(5 fields)",
+              "csr:_16_3_s0": "(3 fields)",
+              "VucoS4V": "(5 fields)",
+              "csr:_16_4_qZ": "(3 fields)",
+              "goo34vO": "(5 fields)",
+              "csr:_16_5_pg": "(3 fields)"
+            },
+            "compMap": {
+              "CometFeedStoryMenu.react": "(4 fields)",
+              "HideXoutAction": "(3 fields)"
+            },
+            "indexUpgrades": {
+              "__hblp": ":4691,2412",
+              "__hsdp": ":3136,3137,461,462,2482"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:564",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:619",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:686",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:734",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:755",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            "… 56 more"
+          ],
+          "require": [
+            [
+              "CometMegaphoneWWWDeviceBasedLoginRendererStrategy.react"
+            ],
+            [
+              "CometMegaphoneWWWDeviceBasedLoginRendererStrategy_quickPromotion$normalization.graphql"
+            ],
+            [
+              "emptyFunction",
+              "thatReturns",
+              "(1 items)",
+              "(1 items)"
+            ],
+            [
+              "QpActionFalcoEvent"
+            ],
+            [
+              "QpImpressionFalcoEvent"
+            ],
+            [
+              "bumpVultureJSHash"
+            ],
+            "… 10 more"
+          ],
+          "phd2_indexes": ":3136,3137,461,462,2482"
+        },
+        "allResources": [
+          "MFf1moB",
+          "csr:_16_0_i2",
+          "csr:_16_1_Zo"
+        ],
+        "tieredResources": {
+          "r": [
+            "MFf1moB",
+            "csr:_16_0_i2"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_16_1_Zo"
+          ]
+        }
+      }
+    }
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 622 ms
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 273 ms
 
 Sent:
 
@@ -107,54 +305,212 @@ Answered:
   "data": {
     "viewer": {
       "megaphonePromotions": {
-        "edges": []
+        "edges": [
+          {
+            "node": {
+              "id": "1012732625523263",
+              "user_interaction_info": "(1 fields)",
+              "comet_qp_sections": "(1 fields)"
+            }
+          }
+        ]
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396554,
-      "time_at_flush_ms": 1792742396610
+      "request_start_time_ms": 1793038436448,
+      "time_at_flush_ms": 1793038436497
     },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 851 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "first": 1,
-    "scale": 1
-  },
-  "doc_id": "28541893478753857"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "megaphonePromotions": {
-        "edges": []
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "clpData": {
+              "1743465": "(1 fields)"
+            },
+            "gkxData": {
+              "5070": "(2 fields)",
+              "5279": "(2 fields)",
+              "10188": "(2 fields)",
+              "22681": "(2 fields)"
+            },
+            "ixData": {
+              "671882": "(7 fields)",
+              "869053": "(7 fields)",
+              "1521755": "(7 fields)",
+              "1669083": "(7 fields)",
+              "1876411": "(4 fields)",
+              "1876412": "(4 fields)",
+              "1876413": "(4 fields)",
+              "1876414": "(4 fields)",
+              "1876415": "(4 fields)",
+              "1876416": "(4 fields)",
+              "1876418": "(4 fields)",
+              "1876419": "(4 fields)",
+              "1876420": "(4 fields)",
+              "1876421": "(4 fields)",
+              "1876422": "(4 fields)",
+              "1876423": "(4 fields)",
+              "1876424": "(4 fields)",
+              "1876426": "(4 fields)",
+              "1876427": "(4 fields)",
+              "1876428": "(4 fields)",
+              "1876429": "(4 fields)",
+              "1876430": "(4 fields)",
+              "1876431": "(4 fields)",
+              "1876432": "(4 fields)",
+              "1876434": "(4 fields)",
+              "1876435": "(4 fields)",
+              "1876436": "(4 fields)",
+              "1876437": "(4 fields)",
+              "1876438": "(4 fields)",
+              "1876439": "(4 fields)",
+              "1876440": "(4 fields)",
+              "1876442": "(4 fields)",
+              "1876443": "(4 fields)",
+              "1876444": "(4 fields)",
+              "1876445": "(4 fields)",
+              "1876446": "(4 fields)",
+              "1876447": "(4 fields)",
+              "1876448": "(4 fields)",
+              "1876450": "(4 fields)",
+              "1876451": "(4 fields)",
+              "1876452": "(4 fields)",
+              "1876453": "(4 fields)",
+              "1876454": "(4 fields)",
+              "1876455": "(4 fields)",
+              "1876456": "(4 fields)",
+              "1876458": "(4 fields)",
+              "1940508": "(4 fields)",
+              "1940509": "(4 fields)",
+              "1940510": "(4 fields)",
+              "1940511": "(4 fields)",
+              "1940512": "(4 fields)",
+              "1940513": "(4 fields)",
+              "1960581": "(7 fields)",
+              "1960583": "(7 fields)",
+              "1969816": "(7 fields)",
+              "1969818": "(7 fields)",
+              "1988479": "(7 fields)",
+              "1988481": "(7 fields)"
+            },
+            "justknobxData": {
+              "6778": "(1 fields)"
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051718708
+            },
+            "rsrcMap": {
+              "MFf1moB": "(5 fields)",
+              "csr:_v_0_4f": "(3 fields)",
+              "csr:_v_1_J2": "(3 fields)",
+              "VucoS4V": "(5 fields)",
+              "csr:_v_2_n8": "(3 fields)",
+              "goo34vO": "(5 fields)",
+              "csr:_v_3_MF": "(3 fields)",
+              "AD4wloP": "(5 fields)",
+              "2hYTLuM": "(5 fields)",
+              "csr:_v_4_u7": "(3 fields)",
+              "pTwdKAI": "(5 fields)",
+              "csr:_v_5_gp": "(3 fields)"
+            },
+            "compMap": {
+              "HideXoutAction": "(3 fields)",
+              "CometFeedStoryMenu.react": "(4 fields)"
+            },
+            "indexUpgrades": {
+              "__hblp": ":4691,2412",
+              "__hsdp": ":3136,3137,461,462,2482"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:619",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:686",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:734",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:755",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:1078",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            "… 56 more"
+          ],
+          "require": [
+            [
+              "CometMegaphoneWWWDeviceBasedLoginRendererStrategy.react"
+            ],
+            [
+              "CometMegaphoneWWWDeviceBasedLoginRendererStrategy_quickPromotion$normalization.graphql"
+            ],
+            [
+              "emptyFunction",
+              "thatReturns",
+              "(1 items)",
+              "(1 items)"
+            ],
+            [
+              "QpActionFalcoEvent"
+            ],
+            [
+              "QpImpressionFalcoEvent"
+            ],
+            [
+              "bumpVultureJSHash"
+            ],
+            "… 10 more"
+          ],
+          "phd2_indexes": ":3136,3137,461,462,2482"
+        },
+        "allResources": [
+          "MFf1moB",
+          "csr:_v_0_4f",
+          "csr:_v_1_J2"
+        ],
+        "tieredResources": {
+          "r": [
+            "MFf1moB",
+            "csr:_v_0_4f"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_v_1_J2"
+          ]
+        }
       }
     }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792911375700,
-      "time_at_flush_ms": 1792911376157
-    },
-    "is_final": true
   }
 }
 ```

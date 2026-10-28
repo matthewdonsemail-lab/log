@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29004938205805573` |
+| doc_id | `28707202452242216` |
 | Path | `/api/graphql/` |
 | Sends | `RELAY_INCREMENTAL_DELIVERY`, `clientQueryId`, `clientSession`, `connectionClass`, `count`, `cursor`, `experimentalValues`, `feedLocation`, `feedStyle`, `feedbackSource`, `focusCommentID`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `referringStoryRenderLocation`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `viewer....CometNewsFeed_viewerConnection` |
 | Called from | `CometNewsFeed_viewerConnection.graphql` |
-| rea | `ev_a36e85543eafc370ea8ce289e6a9dc08eec82e2d8c0f005ad248568f7e8d2b05` |
+| rea | `ev_9fe96aa2843381662dbfa2cba3a667341cea74488d2b81cb77afaa655da4ec32` |
 
-Seen 29 time(s) in 9 run(s).
+Seen 30 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,12 +41,13 @@ Seen 29 time(s) in 9 run(s).
 | inspect | step 11: nextPost | 1 | 200 | 3464 ms | 1020 ms | — |
 | inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 1708 ms | 964 ms | — |
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 2937 ms | 302 ms | — |
+| host | step 18: scroll 4-7 x 300-600px | 1 | 200 | 1756 ms | 994 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 3: scroll 4-7 x 300-600px: 200, 2548 ms
+**runs/host/20261026T180628_61594285317994**, step 18: scroll 4-7 x 300-600px: 200, 1756 ms
 
 Sent:
 
@@ -57,11 +58,11 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "RELAY_INCREMENTAL_DELIVERY": true,
-    "clientQueryId": "0c0cde08-7bc3-465b-99b7-9eff2660f24d",
+    "clientQueryId": "e6ba5581-faed-4ee4-9013-0fd5e1f4c14e",
     "clientSession": null,
     "connectionClass": "EXCELLENT",
     "count": 5,
-    "cursor": "FQgVAhsBXAIVCBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qUTZMVFF6T1RRM05UWTRNVGc1TWprNU9UTTNNVFE2TURvdE5Ua3pNRGt6TVRFeE9EVTFNelUyT1RBd01Ebz0AGwNVHAIYBAIIFQAA",
+    "cursor": "FQgVAhsBXAIVCBhYTVRjNU16QXpPREV5TlRveE56a3pNRE00TVRJMU9qTTZOVGczTlRVeU9ETTJOekV4TVRBd016ZzNPakE2TFRVNU1UQTFOalkzT1Rjd01EZzFNalF6TVRZNgAbA1UcCAgEGAYVAAA=",
     "experimentalValues": null,
     "feedLocation": "NEWSFEED",
     "feedStyle": "DEFAULT",
@@ -73,26 +74,15 @@ Sent:
     "privacySelectorRenderLocation": "COMET_STREAM",
     "recentVPVs": [
       {
-        "client_vpv_token": "68a91a67-9edd-4b17-9adc-62acee6c0cdf",
+        "client_vpv_token": "(taken out)",
         "evt": "vpv",
-        "feed_backend_data_serialized_payloads": "GwtGsgMGGszp0cTi8JGyA8YB8KsB7AEmbgLwAwKeAaABALrgl4K3/xv8Axy0AwYiuuCXgrf/GxsBSMABA2ZvZhsAAA==",
+        "feed_backend_data_serialized_payloads": "GwpGsgMOGo6UmfG78O5j7AEm8AMAngHeAQCc5LiHBPwDHMIB6AS0Aw4inOS4hwQbAUjAAQVncm91cBsDSbbmAwbe5gMWup39rc703QOE5wMWup39rc703QMA",
         "fetch_tracking": false,
-        "original_qid": "-5930931118553569000",
-        "qid": "-5930931118553569000",
-        "timestamp": 1792741789722,
-        "vsid": "1741057011017077865",
+        "original_qid": "-5910566797008524316",
+        "qid": "-5910566797008524316",
+        "timestamp": 1793038130728,
+        "vsid": "4836613144453713975",
         "vspos": 1
-      },
-      {
-        "client_vpv_token": "1959b343-04db-4faf-9b94-39a1790b9e6d",
-        "evt": "vpv",
-        "feed_backend_data_serialized_payloads": "GwZGGuz44sSeic4DxgGw5APsATL8AxjCAcoWtAMGGwFIwAEEbm9uZRsDSbbmAwbe5gMGhOcDBgA=",
-        "fetch_tracking": false,
-        "original_qid": "-5930931118553569000",
-        "qid": "-5930931118553569000",
-        "timestamp": 1792741819557,
-        "vsid": "6447435482739151293",
-        "vspos": 2
       }
     ],
     "referringStoryRenderLocation": null,
@@ -134,9 +124,9 @@ Sent:
     "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
     "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
     "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
-    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": true
   },
-  "doc_id": "29004938205805573"
+  "doc_id": "28707202452242216"
 }
 ```
 
@@ -147,21 +137,73 @@ Answered:
   "first": {
     "data": {
       "viewer": {
-        "news_feed": "(1 fields)"
+        "news_feed": {
+          "edges": "(1 items)"
+        }
       }
     },
     "extensions": {
+      "prefetch_uris_v2": [
+        {
+          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.99422-6/844965894_1429526252613333_6972818291109462005_n.png (479 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/730397906_122118253569274842_7831749617363640922_n.jpg (484 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.99422-6/842466353_2855839078119996_8288012466051692383_n.png (481 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/837569983_1752234870243301_7157932580893354678_n.jpg (479 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/734505683_1012598714805185_3184065509239216370_n.jpg (483 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/717419339_1446454694182915_1583599819979607512_n.jpg (481 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        "… 4 more"
+      ],
       "server_metadata": {
-        "request_start_time_ms": 1792741820491,
-        "time_at_flush_ms": 1792741821983
+        "request_start_time_ms": 1793038145484,
+        "time_at_flush_ms": 1793038145951
       },
       "is_final": false,
       "sr_payload": {
-        "ddd": "(4 fields)"
+        "ddd": {
+          "hsrp": "(1 fields)",
+          "jsmods": "(1 fields)",
+          "allResources": "(1 items)",
+          "tieredResources": "(3 fields)"
+        }
       }
     }
   },
-  "followingParts": 5,
+  "followingParts": 37,
   "parts": [
     {
       "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
@@ -172,72 +214,133 @@ Answered:
         1
       ],
       "data": {
-        "brs_content_label": 70,
-        "cat_sensitive": "(2 fields)",
-        "deduplication_key": "-5242790742967911516",
-        "min_gap_type_index_string": "1",
+        "brs_content_label": 80,
+        "cat_sensitive": {
+          "enc": "0c993732c6e3161cf58d896f5f9e180b29aba26b452d0156832b3c30bf29a422",
+          "cat": null
+        },
+        "deduplication_key": "-1300334411570316459",
+        "min_gap_type_index_string": "14",
         "sposnsor_new_distac_action": null,
-        "top_story_cache_score": 15040.642578125,
+        "top_story_cache_score": 1990.7341308594,
         "is_ad_eligible_for_ad_pod": false,
-        "node": "(37 fields)",
-        "feed_backend_data": "(6 fields)",
-        "cursor": "FQwVAhsBXAIVDBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qWTZMVFV5TkRJM09UQTNOREk1TmpjNU1URTFNVFk2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwRVHAIYBAIMHgoVAigSbW9yZ2Fud2FsdG9uY291bnR5GARtd2cyAA=="
+        "node": {
+          "__typename": "Story",
+          "th_dat_spo": null,
+          "__isNode": "Story",
+          "id": "UzpfSUZTOjE6LTU5MTA1NjY3OTcwMDg1MjQzMTY6ZUp3VHV6cnB6ZG9ERjI1M3EyaktpSDJiY21aUDErL0piS0pzWXRmK2R0eThzVjlYN01EVXlXdDR4VGJjK2JPVzExSkdwSUZKamNFVUxHVEdJTWFRQmxXMG1zbnRpampUUGFaTjM3NHRPdmo5R0pzMG84ZVVCaVltWFVPNGdkSU1EQXppam52c1B6Z3dNRENvQ2trenVrbkJwTXpnRGtobEVHWFJrV1pzNU1zc2ppOU9MWW5Qekl0UFMwMU5ZWlJtd0E0WmVMekVHR0tFaEJnWWtrd1pHQUNOMzBqSA==",
+          "__isFeedUnit": "Story",
+          "post_id": "1732745831744827",
+          "debug_info": null,
+          "feedback": "(3 fields)",
+          "is_story_civic": null,
+          "cache_id": "-7371411713136734489",
+          "matched_terms": "(0 items)",
+          "creation_time": 1791124832,
+          "cix_screen": null,
+          "attachments": "(1 items)",
+          "future_of_feed_info": "(4 fields)",
+          "attached_story": null,
+          "bumpers": null,
+          "comet_sections": "(14 fields)",
+          "encrypted_tracking": "AZhNE83gGsROEAwcm0LTVPv7GlqR9r7lGqGxiYNrIf67KtL8PnK5p8ibBP7vV6HK5xI_-V7zD14B6MJnTHc_G9-ztV0rNxhvzdbLD3I9iQpoZYiYCYlvhB1leKrSx8oaCaHjuYfTNQmEXjzje6XexakTEprIIb8VIYoBeUO6z5rORzlaAD40wqCc-AshALH1hxfICDUHLf-v2wrOvzdJ_c5huZGO4TixpiDLbZKc7SJOH4vY0sfek7aI6SsZ1Cc_Kp1DQkdnLW3fDjqL_EVa14nEv3w_OInm2OUY4R3iMvWTz6xPqSTVahsSQTQ5VIEoKUd2pWwR46hROVgFSyzPc9XD81VnPf5M5IEmC6YD9q7wQFVNcv8gPG_XHbdKpaNJL0iTu-ZfQ9XVk3Ux… (1934 chars)",
+          "should_host_actor_link_in_watch": false,
+          "permalink_url": "https://www.facebook.com/reel/1844834653363609/",
+          "whatsapp_ad_context": null,
+          "schema_context": null,
+          "click_tracking_linkshim_cb": "AUBmQq1lBPgLRWGJTSdIJN-mG0hQZFtbmVfe2_VsDy7btW4ryFCgeIbsGrio99P6MebY5f53NnmVhwZte5S3Z4Ox-mMqTMVBfORbJhsGMfHVRSfeunzQ6b8yqoo5xj4kS8N-XbVDHCD0cm1CHHM5pQERZEGC3lN6SSNnQkcwEzICEPZ7QSkc6gK8uR5nI4cr2d3aKvk3eMdRj8jqS1iNTx9zUNbkKd-sd_K5KnC8YA",
+          "encrypted_click_tracking": "AZh8g7pOpTfq2wEKm-99Spdv6Cm0pBodJeZd-66FkzRWpilYL_cN5QrWNtX6eTuJbiLJZ-l65oJ6BFBI9nekGWIOXn8nHL2O0atO_ikpDSO4XJtgXjWwo3f0N8yauoF42ysjzp3HPaW8nraef5w1XOAKIFVpLKQbSObfvyZCqwBDAxECJt3HNGgrIA6qX7DMtF9pk8GH6FE",
+          "serialized_frtp_identifiers": null,
+          "can_viewer_see_menu": true,
+          "actors": "(1 items)",
+          "to": null,
+          "work_is_repost": null,
+          "work_reposted_story": null,
+          "__module_operation_CometFeedUnitContainerSection_feedUnit": "(1 fields)",
+          "__module_component_CometFeedUnitContainerSection_feedUnit": "(1 fields)",
+          "__isTrackableFeedUnit": "Story",
+          "trackingdata": "(1 fields)",
+          "viewability_config": "(2 items)",
+          "client_view_config": "(3 fields)"
+        },
+        "feed_backend_data": {
+          "qid": "-5910566797008524316",
+          "original_qid": "-5910566797008524316",
+          "vsid": "-1300334411570316459",
+          "vspos": 4,
+          "should_recent_vpv_fetch_tracking_data": false,
+          "serialized_payloads": "Gw5GsgMGGvaUzLyK+5MGxgGgmQLsASZuAvADAp4BoAEA1v2I2di/LfwDHMIBgAK0AwYi1v2I2di/Lf4DIoAEABsBSMABA2ZvZhsDSbbmA1a87K6R+uuEAYL2zpLx8MECzof9r/mM4wnStIO119L5A+jz+JDG1YgB3uYDNqiCmo3R6MYBgOLcuKGGmQqQzc/K4vyuA4TnAyaogpqN0ejGAYDi3LihhpkKAA=="
+        },
+        "cursor": "FQwVAhsCXAIVDBhcTVRjNU16QXpPREV5TlRveE56a3pNRE00TVRJMU9qUTZMVEV6TURBek16UTBNVEUxTnpBek1UWTBOVGs2TURvdE5Ua3hNRFUyTmpjNU56QXdPRFV5TkRNeE5qbz0ABhUKGA9wMXxGZ0ltMnR6OHJRMEEAGwNVHAwIChgGFQIVChgGb3JlZ29uGARwcm4yAA=="
       },
       "extensions": {
-        "prefetch_uris_v2": "(6 items)",
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
         "is_final": false,
-        "sr_payload": "(1 fields)"
+        "sr_payload": {
+          "ddd": "(4 fields)"
+        }
       }
     },
     {
-      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "label": "VideoPlayerCometFeedStoryControlsImplNotLive_video$defer$CometAudioLanguageUtils_dubtrackMapping",
       "path": [
         "viewer",
         "news_feed",
         "edges",
-        2
+        1,
+        "node",
+        "attachments",
+        "… 4 more"
       ],
       "data": {
-        "brs_content_label": null,
-        "cat_sensitive": "(2 fields)",
-        "deduplication_key": "-6898518268077340537",
-        "min_gap_type_index_string": "10",
-        "sposnsor_new_distac_action": null,
-        "top_story_cache_score": 0,
-        "is_ad_eligible_for_ad_pod": false,
-        "node": "(11 fields)",
-        "feed_backend_data": "(6 fields)",
-        "cursor": "FQ4VAhsBXAIVDhhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qYzZMVFk0T1RnMU1UZ3lOamd3Tnpjek5EQTFNemM2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwVVHAIYBAIMHgoUDhUCKBJtb3JnYW53YWx0b25jb3VudHkYBG13ZzIA"
+        "dubbed_track_mapping": []
       },
       "extensions": {
-        "is_final": false,
-        "sr_payload": "(1 fields)"
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
       }
     },
     {
-      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "label": "VideoPlayerCometFeedStoryControlsImplNotLive_video$defer$CometAudioLanguageUtils_dubtrackMapping",
       "path": [
         "viewer",
         "news_feed",
         "edges",
-        3
+        1,
+        "node",
+        "attachments",
+        "… 9 more"
       ],
       "data": {
-        "brs_content_label": 60,
-        "cat_sensitive": "(2 fields)",
-        "deduplication_key": "-9213527991209954566",
-        "min_gap_type_index_string": "1",
-        "sposnsor_new_distac_action": null,
-        "top_story_cache_score": 14063.990234375,
-        "is_ad_eligible_for_ad_pod": false,
-        "node": "(37 fields)",
-        "feed_backend_data": "(6 fields)",
-        "cursor": "FRAVAhsBXAIVEBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qZzZMVGt5TVRNMU1qYzVPVEV5TURrNU5UUTFOalk2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwVVHAIYBAIQHgoUDhUCKBJtb3JnYW53YWx0b25jb3VudHkYBG13ZzIA"
+        "dubbed_track_mapping": []
       },
       "extensions": {
-        "prefetch_uris_v2": "(3 items)",
-        "is_final": false,
-        "sr_payload": "(1 fields)"
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
       }
     }
   ]

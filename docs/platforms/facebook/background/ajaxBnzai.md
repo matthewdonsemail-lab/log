@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_95f39d92db8680f6d825cf32ff4b82771362ce9522cc7ee4a68c07394ab73d39` |
+| rea | `ev_a73c636a4be191a62be6cb3e8850ef16ec9b8ec521e96b40198d921b5981f4f0` |
 
-Seen 955 time(s) in 44 run(s).
+Seen 1112 time(s) in 47 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -258,8 +258,8 @@ Seen 955 time(s) in 44 run(s).
 | inspect | step 4: click e1211 | 1 | 200 | 419 ms | 3852 ms | — |
 | inspect | step 7: click e1395 | 6 | 200 | 371–411 ms | 6089–15238 ms | — |
 | inspect | step 8: wait 5s | 14 | 200 | 380–498 ms | 20915–1787348 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 339–1303 ms | 8402–9399 ms | — |
-| host | step 2: pageText | 2 | 200 | 346–626 ms | 1419–8922 ms | — |
+| host | step 1: goto /marketplace/selling/ | 14 | 200 | 152–1303 ms | 6055–17131 ms | — |
+| host | step 2: pageText | 12 | 200 | 150–626 ms | 1419–15793 ms | — |
 | host | step 3: clickRole button "…" | 1 | 200 | 392 ms | 3097 ms | — |
 | host | step 4: pageText | 1 | 200 | 778 ms | 3692 ms | — |
 | host | step 6: goto /marketplace/status | 2 | 200 | 364–653 ms | 43–6344 ms | — |
@@ -288,12 +288,42 @@ Seen 955 time(s) in 44 run(s).
 | flow | step 6: uploadRole button "…" | 1 | 200 | 437 ms | 104 ms | — |
 | flow | step 7: fillRole textbox "…" | 2 | 200 | 433–485 ms | 622–1628 ms | — |
 | flow | step 8: fillRole textbox "…" | 1 | 200 | 456 ms | 5732 ms | — |
+| host | step 4: goto /marketplace/status | 13 | 200 | 153–302 ms | 20–11967 ms | — |
+| host | step 5: goto /me | 1 | 200 | 160 ms | 7 ms | — |
+| host | step 8: clickRole button "…" | 1 | 200 | 173 ms | 2678 ms | — |
+| host | step 9: clickRole menuitem "…" | 1 | 200 | 157 ms | 1212 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 295 ms | 10271 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 2 | 200 | 166–169 ms | 7–10803 ms | — |
+| host | step 16: goto / | 2 | 200 | 161–164 ms | 390–6706 ms | — |
+| host | step 19: goto /marketplace/ | 2 | 200 | 159–298 ms | 25–4447 ms | — |
+| host | scroll: +675px in 19 wheel steps, 1246 ms | 1 | 200 | 157 ms | 14032 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 157 ms | 3767 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 155 ms | 1368 ms | — |
+| host | openAny: read /marketplace/item/<id>/ | 1 | 200 | 162 ms | 5637 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 154 ms | 4343 ms | — |
+| host | step 28: goto /marketplace/create/item | 2 | 200 | 150 ms | 36–2976 ms | — |
+| host | step 30: goto /marketplace/ | 2 | 200 | 154–163 ms | 36–3834 ms | — |
+| host | step 32: goto /marketplace/ | 2 | 200 | 161–310 ms | 5–3709 ms | — |
+| host | step 34: goto /marketplace/you/selling | 2 | 200 | 158–300 ms | 36–6771 ms | — |
+| host | step 36: goto /marketplace/ | 2 | 200 | 202–282 ms | 6–3113 ms | — |
+| host | scroll: +448px in 10 wheel steps, 434 ms | 1 | 200 | 165 ms | 4460 ms | — |
+| host | step 38: goto /marketplace/you/selling | 2 | 200 | 157–319 ms | 3300–4185 ms | — |
+| host | step 40: goto /messages/ | 3 | 200 | 157–197 ms | 101–35045 ms | — |
+| host | step 41: dwell 2-3s | 1 | 200 | 165 ms | 22047 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 44 | 200 | 146–423 ms | 46–442791 ms | — |
+| host | step 3: saveState | 11 | 200 | 151–182 ms | 1217–17252 ms | — |
+| host | Stopping after 4 step(s). | 2 | 200 | 153–164 ms | 250–1172 ms | — |
+| host | step 17: pageText | 1 | 200 | 171 ms | 5852 ms | — |
+| host | step 18: clickRole button "…" | 8 | 200 | 155–199 ms | 1539–14461 ms | — |
+| host | step 19: pageText | 9 | 200 | 156–188 ms | 3252–17943 ms | — |
+| host | step 20: saveState | 4 | 200 | 162–176 ms | 1231–5139 ms | — |
+| host | step 21: goto /marketplace/status | 11 | 200 | 152–303 ms | 4854–21280 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, scroll: +314px in 8 wheel steps, 422 ms: 200, 595 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 322 ms
 
 Sent:
 
@@ -311,13 +341,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AE0EtWPif8Qi0qnG9W8FRRe",
+  "rid": "Aay1cQO7nXuC7vAvEm0boBx",
   "payload": null,
-  "lid": "7699771538125504221"
+  "lid": "7701039581027463234"
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 826 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 162 ms
 
 Sent:
 
@@ -333,15 +363,10 @@ Sent:
 Answered:
 
 ```json
-{
-  "__ar": 1,
-  "rid": "Aa_ULgZohJ9NhH3xEsi4cIc",
-  "payload": null,
-  "lid": "7699771636854660104"
-}
+null
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 371 ms
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 160 ms
 
 Sent:
 

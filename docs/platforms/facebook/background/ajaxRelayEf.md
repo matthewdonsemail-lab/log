@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
+| rea | `ev_c01acd1ee37b1a380662f7aa23070c00f4f268c732f222235c7f9a4978b059eb` |
 
-Seen 1162 time(s) in 42 run(s).
+Seen 1265 time(s) in 45 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -274,20 +274,55 @@ Seen 1162 time(s) in 42 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 27 | 200 | 411–2412 ms | 5253–697845 ms | — |
 | flow | upload: photo1.jpg handed to the file chooser | 1 | 200 | 448 ms | 4121 ms | — |
 | flow | upload: photo2.jpg handed to the file chooser | 3 | 200 | 421–489 ms | 6185–8982 ms | — |
+| host | step 1: goto /marketplace/selling/ | 12 | 200 | 165–287 ms | 3387–12259 ms | — |
+| host | step 2: pageText | 3 | 200 | 160–435 ms | 1103–2132 ms | — |
+| host | step 5: goto /me | 1 | 200 | 169 ms | 4859 ms | — |
+| host | step 6: press Escape | 3 | 200 | 155–190 ms | 83–350 ms | — |
+| host | step 9: clickRole menuitem "…" | 1 | 200 | 155 ms | 482 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 160 ms | 8524 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 2 | 200 | 171–172 ms | 3416–6418 ms | — |
+| host | step 16: goto / | 2 | 200 | 161–177 ms | 9387–9707 ms | — |
+| host | step 17: dwell 3-5s | 1 | 200 | 162 ms | 33 ms | — |
+| host | step 18: scroll 4-7 x 300-600px | 2 | 200 | 233–664 ms | 356–1167 ms | — |
+| host | scroll: +474px in 12 wheel steps, 939 ms | 2 | 200 | 186–216 ms | 2558–3079 ms | — |
+| host | scroll: +589px in 14 wheel steps, 950 ms | 1 | 200 | 189 ms | 2058 ms | — |
+| host | step 19: goto /marketplace/ | 2 | 200 | 159–185 ms | 3722–5300 ms | — |
+| host | step 20: dwell 3-5s | 2 | 200 | 156–173 ms | 5176–5314 ms | — |
+| host | scroll: +675px in 19 wheel steps, 1246 ms | 7 | 200 | 157–210 ms | 3882–14790 ms | — |
+| host | step 22: goto /marketplace/ | 5 | 200 | 154–160 ms | 2849–5108 ms | — |
+| host | scroll: +632px in 14 wheel steps, 575 ms | 4 | 200 | 155–170 ms | 6189–6986 ms | — |
+| host | openAny: read /marketplace/item/<id>/ | 3 | 200 | 161–192 ms | 4048–7169 ms | — |
+| host | step 26: goto /marketplace/ | 3 | 200 | 153–157 ms | 5493–5681 ms | — |
+| host | step 27: dwell 2-4s | 1 | 200 | 160 ms | 3813 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 178 ms | 2257 ms | — |
+| host | step 30: goto /marketplace/ | 4 | 200 | 149–161 ms | 2949–4590 ms | — |
+| host | step 31: scroll 1 x 300-600px | 1 | 200 | 167 ms | 145 ms | — |
+| host | scroll: +574px in 17 wheel steps, 1313 ms | 4 | 200 | 156–272 ms | 8319–13169 ms | — |
+| host | step 32: goto /marketplace/ | 4 | 200 | 161–200 ms | 2874–12601 ms | — |
+| host | step 34: goto /marketplace/you/selling | 3 | 200 | 158–261 ms | 5194–12103 ms | — |
+| host | step 35: dwell 2-4s | 2 | 200 | 165–189 ms | 4614–4741 ms | — |
+| host | step 36: goto /marketplace/ | 5 | 200 | 152–171 ms | 2244–7287 ms | — |
+| host | step 37: scroll 4-7 x 300-600px | 5 | 200 | 153–196 ms | 55–569 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 276 ms | 17047 ms | — |
+| host | step 39: dwell 2-4s | 1 | 200 | 199 ms | 5177 ms | — |
+| host | step 41: dwell 2-3s | 1 | 200 | 462 ms | 6394 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 5 | 200 | 164–438 ms | 1655–369024 ms | — |
+| host | step 4: goto /marketplace/status | 3 | 200 | 166–175 ms | 3609–10129 ms | — |
+| host | step 18: clickRole button "…" | 4 | 200 | 161–178 ms | 9113–15781 ms | — |
+| host | step 19: pageText | 1 | 200 | 164 ms | 8418 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 373 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 254 ms
 
 Sent:
 
 ```json
 {
-  "queries[0]": "MarketplacePDPC2CMediaViewerWithImagesQuery",
-  "queries[1]": "MarketplacePDPContainerQuery",
-  "queries[2]": "MarketplacePDPRightColumnAdsQuery"
+  "queries[0]": "CometMarketplaceSellingRootContentQuery",
+  "queries[1]": "CometMarketplaceYouSellingFastContentContainerQuery"
 }
 ```
 
@@ -297,31 +332,11 @@ Answered:
 {
   "payload": {
     "predictions": {
-      "MarketplacePDPC2CMediaViewerWithImagesQuery": {},
-      "MarketplacePDPContainerQuery": {
-        "TmyrEVZ": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i-2u4/yk/l/en_GB-j/I7TPmm1DWQP.js",
-          "c": 1,
-          "p": ":112",
-          "m": "1051444067_main"
-        },
-        "csr:_c_1_Th": {
-          "type": "csr",
-          "src": ":76,2,1,26,192,24,18,141,30,654,315,643,99,121,82,570,3,65,184,128,255,542,139,5,29,140,206,39,269,27,527,75,107,47,216,376,657,227,106,32,31,79,60,122,85,68,14,9,69,8,148,197,541,146,35,295,90,19,96,208,70,598,532,64,61,186,63,207,23,435,41,168,6,34,62,59,243,114,209,7,83,44,12,391,456,10,4,297,86,78,178,190,187,66,16,544,20,11,25,55,45,274,7630",
-          "c": 1
-        }
-      },
-      "MarketplacePDPRightColumnAdsQuery": {
-        "csr:_c_0_VI": {
-          "type": "csr",
-          "src": ":2,1,3,5,8,73,6,7,10,460,4",
-          "c": 1
-        }
-      }
+      "CometMarketplaceSellingRootContentQuery": {},
+      "CometMarketplaceYouSellingFastContentContainerQuery": {}
     },
     "consistency": {
-      "rev": 1051444067
+      "rev": 1051718708
     }
   },
   "dtsgAsyncGetToken": null,
@@ -329,18 +344,13 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 552 ms
+**runs/host/20261026T180628_61594285317994**, step 2: pageText: 200, 435 ms
 
 Sent:
 
 ```json
 {
-  "queries[0]": "CometMarketplaceLeftRailNavigationContainerQuery",
-  "queries[1]": "CometMarketplaceRootQuery",
-  "queries[2]": "MarketplaceCometBrowseFeedLightContainerQuery",
-  "queries[3]": "CometMarketplaceNotificationsListContainerQuery",
-  "queries[4]": "MarketplaceBannerContainerQuery",
-  "qpl_active_flow_ids": "30613466"
+  "queries[0]": "CometMarketplaceComposerCreateComponentQuery"
 }
 ```
 
@@ -350,14 +360,10 @@ Answered:
 {
   "payload": {
     "predictions": {
-      "CometMarketplaceLeftRailNavigationContainerQuery": {},
-      "CometMarketplaceRootQuery": {},
-      "MarketplaceCometBrowseFeedLightContainerQuery": {},
-      "CometMarketplaceNotificationsListContainerQuery": {},
-      "MarketplaceBannerContainerQuery": {}
+      "CometMarketplaceComposerCreateComponentQuery": {}
     },
     "consistency": {
-      "rev": 1051444067
+      "rev": 1051718708
     }
   },
   "dtsgAsyncGetToken": null,
@@ -365,23 +371,15 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 368 ms
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 169 ms
 
 Sent:
 
 ```json
 {
-  "queries[0]": "CometFeedInlineComposerQuery",
-  "queries[1]": "CometModernHomeFeedQuery",
-  "queries[2]": "CometHomeContentQuery",
-  "queries[3]": "CometClassicHomeLeftRailContainerQuery",
-  "queries[4]": "CometMegaphoneRootQuery",
-  "queries[5]": "CometRightSideHeaderCardsQuery",
-  "queries[6]": "CometHomeContactChannelsContainerQuery",
-  "queries[7]": "CometHomeContactCommunityChatsContainerQuery",
-  "queries[8]": "CometHomeContactGroupsContainerQuery",
-  "queries[9]": "CometHomeContactsContainerQuery",
-  "queries[10]": "StoriesTrayRectangularRootQuery"
+  "queries[0]": "ProfileCometHeaderQuery",
+  "queries[1]": "ProfileCometTopAppSectionQuery",
+  "qpl_active_flow_ids": "25305590"
 }
 ```
 
@@ -391,125 +389,23 @@ Answered:
 {
   "payload": {
     "predictions": {
-      "CometFeedInlineComposerQuery": {
-        "csr:_j_0_As": {
+      "ProfileCometHeaderQuery": {
+        "csr:_h_0_fL": {
           "type": "csr",
-          "src": ":2,1,192,3,5,8,40,419,6,7,10,4,50",
+          "src": ":58,9,31,25,27,18,50,71,12,41,59,35,26,177,16,235,60,14,19,22,57,8,224,2,74,7,349,24,30,170,37,61,23,358,10,350,11,21,4,128,17,53,13,136,293,195,29,1,32,40",
           "c": 1
         }
       },
-      "CometModernHomeFeedQuery": {
-        "2Ohn6eO": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuel4/y8/l/en_GB-j/wDaY0ZY8qrm.js",
-          "c": 1,
-          "p": ":88",
-          "m": "1051444067_main"
-        },
-        "+pZJFVd": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iC6m4/yB/l/en_GB-j/RruxgiIDmeb.js",
-          "c": 1,
-          "p": ":109",
-          "m": "1051444067_main"
-        },
-        "UBlgEOC": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
-          "c": 1,
-          "p": ":108",
-          "m": "1051444067_main"
-        },
-        "6C2g8f2": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i8LW4/yd/l/en_GB-j/EAYGKqai5Lt.js",
-          "c": 1,
-          "p": ":484",
-          "m": "1051444067_main"
-        },
-        "N43HXXk": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iNh74/yr/l/en_GB-j/9bnlLdjWdKv.js",
-          "c": 1,
-          "p": ":136",
-          "m": "1051444067_main"
-        },
-        "csr:_j_5_dc": {
+      "ProfileCometTopAppSectionQuery": {
+        "csr:_h_1_97": {
           "type": "csr",
-          "src": ":2,1,26,54,24,30,72,33,52,37,21,3,281,5,203,27,75,43,115,57,32,31,283,60,13,122,14,9,120,69,8,40,19,70,382,15,73,41,6,114,132,158,174,51,7,74,12,149,10,4,124,150,103,66,16,20,11,104,45",
-          "c": 1
-        }
-      },
-      "CometHomeContentQuery": {
-        "L5QJ1cR": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iHD64/yN/l/en_GB-j/u-ibXh_Gm62.js",
-          "c": 1,
-          "p": ":2499",
-          "m": "1051444067_main"
-        },
-        "csr:_j_6_Ho": {
-          "type": "csr",
-          "src": ":2,1,3,5,29,206,9,8,23,6,7,10,4,11,327",
-          "c": 1
-        }
-      },
-      "CometClassicHomeLeftRailContainerQuery": {},
-      "CometMegaphoneRootQuery": {
-        "MFf1moB": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iIAn4/yO/l/en_GB-j/GSKlZ0dhdnO.js",
-          "c": 1,
-          "p": ":1253",
-          "m": "1051444067_main"
-        },
-        "csr:_j_2_3j": {
-          "type": "csr",
-          "src": ":2,1,26,54,24,30,37,3,184,5,29,770,32,31,68,9,8,40,73,41,6,7,149,10,4,150,11",
-          "c": 1
-        }
-      },
-      "CometRightSideHeaderCardsQuery": {
-        "ALlW4R7": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4ipnM4/yR/l/en_GB-j/STMnz9_3OIA.js",
-          "c": 1,
-          "p": ":236",
-          "m": "1051444067_main"
-        },
-        "csr:_j_3_xa": {
-          "type": "csr",
-          "src": ":2,1,3,5,32,9,118,8,171,70,73,6,7,12,10,22,4,16,20,11",
-          "c": 1
-        }
-      },
-      "CometHomeContactChannelsContainerQuery": {},
-      "CometHomeContactCommunityChatsContainerQuery": {},
-      "CometHomeContactGroupsContainerQuery": {},
-      "CometHomeContactsContainerQuery": {
-        "csr:_j_1_5f": {
-          "type": "csr",
-          "src": ":2,1,26,3,65,5,9,8,208,7338,73,402,98,41,6,330,7,10,4,78,11,25,364",
-          "c": 1
-        }
-      },
-      "StoriesTrayRectangularRootQuery": {
-        "UBlgEOC": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
-          "c": 1,
-          "p": ":108",
-          "m": "1051444067_main"
-        },
-        "csr:_j_4_HZ": {
-          "type": "csr",
-          "src": ":2,1,33,15",
+          "src": ":9,31,25,12,80,56,35,81,39,419,22,8,2,7,24,61,23,10,11,21,4,53,13,136,294,1,40",
           "c": 1
         }
       }
     },
     "consistency": {
-      "rev": 1051444067
+      "rev": 1051718708
     }
   },
   "dtsgAsyncGetToken": null,

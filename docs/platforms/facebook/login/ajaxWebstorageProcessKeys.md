@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_480e657f62d9cc46e2cb52f5ec556694f73a87efb2ee8ee60688328ce58faaa5` |
+| rea | `ev_7f8ea80f4e34452669ec0cdfcb3903f390f53a34d7b406c129b026fb925639cb` |
 
-Seen 51 time(s) in 21 run(s).
+Seen 59 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,94 +51,34 @@ Seen 51 time(s) in 21 run(s).
 | flow | expected useCometMarketplaceListingCreateMutation: sent | 1 | 200 | 527 ms | 6018 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 490 ms | 727989 ms | — |
 | flow | step 8: fillRole textbox "…" | 1 | 200 | 490 ms | 15750 ms | — |
+| host | signIn failed: RuntimeError: the element kept moving under the cursor: the point is on Por | 2 | 200 | 164–585 ms | 3071–63079 ms | — |
+| host | step 7: signIn | 1 | 200 | 162 ms | 22853 ms | — |
+| host | signIn failed: RuntimeError: the element kept moving under the cursor: the point is on DIV | 1 | 200 | 168 ms | 50950 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 163 ms | 19002 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 3 | 200 | 153–170 ms | 57423–167437 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 697 ms
-
-Sent:
-
-```json
-{
-  "query": "(1 fields)",
-  "body": "(103 fields)"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AJadCUsA8-Z_m7Ojh23Y1uC",
-  "payload": {
-    "keys": []
-  },
-  "lid": "7699771676156232819"
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 458 ms
-
-Sent:
-
-```json
-{
-  "query": "(1 fields)",
-  "body": "(103 fields)"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AfnT1JphJydAbnHt8nr4Gck",
-  "payload": {
-    "keys": []
-  },
-  "lid": "7699770246374084873"
-}
-```
-
-**runs/inspect/20261025T065539_61593939852820**, step 2: goto /marketplace/you/selling: 200, 462 ms
+**runs/host/20261026T164654_61594285317994**, step 7: signIn: 200, 162 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "state": "0"
+    "state": "1"
   },
   "body": {
-    "local_storage[armadillo_msgr_data_loss_stats]": "2",
-    "local_storage[ps:61593939852820:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[CacheStorageVersion]": "2",
-    "local_storage[mw_encrypted_backups_restore_upsell_first_impression_time_key]": "13",
-    "local_storage[ps:61563581811736:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[Session]": "20",
-    "local_storage[ps:100090230649272:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[ps:61556607222082:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[ps:61589618765496:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[banzai:last_storage_flush]": "15",
-    "local_storage[screen_time_period_logging_facebook]": "333",
-    "local_storage[RSTData]": "2",
-    "local_storage[bdz_playback_state]": "45",
     "local_storage[hb_timestamp]": "13",
-    "local_storage[ares_last_signal_flush]": "13",
+    "local_storage[banzai:last_storage_flush]": "13",
+    "local_storage[bz:6ae9d1:fy0yv2:l3wb2w.1793033270608]": "4696",
+    "local_storage[Session]": "20",
     "local_storage[signal_flush_timestamp]": "13",
-    "local_storage[ps:61590753790542:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "local_storage[ps:61582320523522:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
-    "session_storage[alcei]": "1",
-    "session_storage[alcsid]": "9",
     "session_storage[TabId]": "6",
     "logtime": "1",
-    "cquick": "_r_32_",
-    "cquick_token": "(taken out)",
-    "ctarget": "https://www.facebook.com"
+    "qpl_active_flow_ids": "516759801"
   }
 }
 ```
@@ -148,11 +88,90 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "Ao-0zgnAroJqz0_T11b6xaj",
+  "rid": "AuNoSRPF_HQmZRwYpNKkHni",
   "payload": {
     "keys": []
   },
-  "lid": "7700495845213303004"
+  "lid": "7701019420335494123"
+}
+```
+
+**runs/host/20261026T164654_61594285317994**, signIn failed: RuntimeError: the element kept moving under the cursor: the point is on DIV: 200, 168 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "state": "1"
+  },
+  "body": {
+    "local_storage[hb_timestamp]": "13",
+    "local_storage[banzai:last_storage_flush]": "13",
+    "local_storage[bz:6ae9d1:fy0yv2:l3wb2w.1793033270608]": "4696",
+    "local_storage[Session]": "20",
+    "local_storage[signal_flush_timestamp]": "13",
+    "session_storage[TabId]": "6",
+    "logtime": "1",
+    "qpl_active_flow_ids": "516759801"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AuRWpQcvEtWJcd_k_MMWPJc",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7701019680696822971"
+}
+```
+
+**runs/host/20261026T164654_61594285317994**, step 21: goto /marketplace/status: 200, 163 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "state": "0"
+  },
+  "body": {
+    "local_storage[screen_time_period_logging_facebook]": "267",
+    "local_storage[RSTData]": "2",
+    "local_storage[hb_timestamp]": "13",
+    "local_storage[mw_encrypted_backups_restore_upsell_first_impression_time_key]": "13",
+    "local_storage[signal_flush_timestamp]": "13",
+    "local_storage[Session]": "20",
+    "local_storage[bdz_playback_state]": "45",
+    "local_storage[_oz_bandwidthAndTTFBSamples]": "15",
+    "local_storage[last_headload_time]": "13",
+    "local_storage[armadillo_msgr_data_loss_stats]": "2",
+    "local_storage[ares_last_signal_flush]": "13",
+    "local_storage[_oz_bandwidthEstimate]": "7",
+    "local_storage[banzai:last_storage_flush]": "13",
+    "session_storage[alcei]": "1",
+    "session_storage[alcsid]": "9",
+    "session_storage[TabId]": "6",
+    "logtime": "1"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AR4Gwfw1mBXxYtKte-6c8yh",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7701020339141554825"
 }
 ```
 

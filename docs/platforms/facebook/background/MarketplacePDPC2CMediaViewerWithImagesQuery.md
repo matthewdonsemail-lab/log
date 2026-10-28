@@ -11,9 +11,9 @@
 | Sends | `imageContext`, `targetId` |
 | Reads | `viewer.marketplace_product_details_page` |
 | Called from | `MarketplacePDPC2CMediaViewerWithImagesQuery.react` |
-| rea | `ev_d19547c947d1ed9edc723be26989de28ee93ca5425cd34a5443cfad49621a338` |
+| rea | `ev_973273180452da6f44ade5a5f3f9f5998b8e65b8d0aa52faecab494a361da4d7` |
 
-Seen 13 time(s) in 6 run(s).
+Seen 15 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,12 +29,14 @@ Seen 13 time(s) in 6 run(s).
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 413 ms | 697 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 448 ms | 797 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 392 ms | 2043 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 203 ms | 609 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 206 ms | 837 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 10: openAny 2-4 x /marketplace/item/: 200, 1316 ms
+**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 203 ms
 
 Sent:
 
@@ -44,7 +46,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
   "server_timestamps": "true",
   "variables": {
-    "targetId": "1749699906261391"
+    "targetId": "1818774979262678"
   },
   "doc_id": "10059604367394414"
 }
@@ -67,9 +69,9 @@ Answered:
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/768619641_1057517433421271_9174067096337490809_n.jpg"
+                "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.84726-6/855448898_1421077280172348_2873785854566912774_n.jpg (445 chars)"
               },
-              "id": "1057517430087938"
+              "id": "1421077270172349"
             },
             {
               "__typename": "ProductImage",
@@ -77,9 +79,9 @@ Answered:
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/768715248_5496111047280974_7182241363307184005_n.jpg (414 chars)"
+                "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t45.5328-4/857046196_29377760378485960_3157780051967267521_n.jpg (445 chars)"
               },
-              "id": "5496111043947641"
+              "id": "29377760315152633"
             },
             {
               "__typename": "ProductImage",
@@ -87,9 +89,9 @@ Answered:
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770866969_28078030368499852_1934565581453334933_n.jpg"
+                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/851274169_1129910819474335_5860864701841281720_n.jpg (444 chars)"
               },
-              "id": "28078030325166523"
+              "id": "1129910812807669"
             },
             {
               "__typename": "ProductImage",
@@ -97,96 +99,60 @@ Answered:
               "image": {
                 "height": 960,
                 "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770619664_974414908946396_7242425030356117315_n.jpg"
+                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/856807717_1148625574267539_2258126879260274518_n.jpg (444 chars)"
               },
-              "id": "974414902279730"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770670350_1682206309550353_4572782277848664106_n.jpg (414 chars)"
-              },
-              "id": "1682206302883687"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 720,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770612525_1075252588508856_8276743356773276114_n.jpg (414 chars)"
-              },
-              "id": "1075252585175523"
-            },
-            "… 4 more"
+              "id": "1148625567600873"
+            }
           ],
           "pre_recorded_videos": [],
           "is_hidden": false,
-          "id": "1749699906261391"
+          "id": "1818774979262678"
         },
-        "id": "66:1749699906261391:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:1818774979262678:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770619664_974414908946396_7242425030356117315_n.jpg",
+        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.84726-6/855448898_1421077280172348_2873785854566912774_n.jpg (445 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770670350_1682206309550353_4572782277848664106_n.jpg (414 chars)",
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/851274169_1129910819474335_5860864701841281720_n.jpg (444 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770612525_1075252588508856_8276743356773276114_n.jpg (414 chars)",
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t45.5328-4/856807717_1148625574267539_2258126879260274518_n.jpg (444 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/770777608_1367886091495159_5326362888680084766_n.jpg",
+        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t45.5328-4/857046196_29377760378485960_3157780051967267521_n.jpg (445 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/768619641_1057517433421271_9174067096337490809_n.jpg",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/768715248_5496111047280974_7182241363307184005_n.jpg (414 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      "… 4 more"
+      }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792742062535,
-      "time_at_flush_ms": 1792742062595
+      "request_start_time_ms": 1793038228900,
+      "time_at_flush_ms": 1793038228957
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 448 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 206 ms
 
 Sent:
 
@@ -196,7 +162,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
   "server_timestamps": "true",
   "variables": {
-    "targetId": "1098292579663100"
+    "targetId": "2249546198922840"
   },
   "doc_id": "10059604367394414"
 }
@@ -218,92 +184,24 @@ Answered:
               "accessibility_caption": "No photo description available.",
               "image": {
                 "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/863321065_1805641050757238_9191728837683688869_n.jpg (415 chars)"
+                "width": 720,
+                "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/859392018_962932573103703_1200915558473180130_n.jpg (444 chars)"
               },
-              "id": "1805641044090572"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/852199788_1818170166176511_6332940943688572560_n.jpg (414 chars)"
-              },
-              "id": "1818170156176512"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/858565145_2167458307200733_2205409977563994826_n.jpg (414 chars)"
-              },
-              "id": "2167458300534067"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856779067_28865898363065039_8632367148021348374_n.jpg (415 chars)"
-              },
-              "id": "28865898319731710"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856567148_1766478451715128_6054089362771249869_n.jpg (414 chars)"
-              },
-              "id": "1766478445048462"
+              "id": "962932556437038"
             }
           ],
           "pre_recorded_videos": [],
           "is_hidden": false,
-          "id": "1098292579663100"
+          "id": "2249546198922840"
         },
-        "id": "66:1098292579663100:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:2249546198922840:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856567148_1766478451715128_6054089362771249869_n.jpg (414 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/852199788_1818170166176511_6332940943688572560_n.jpg (414 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/863321065_1805641050757238_9191728837683688869_n.jpg (415 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856779067_28865898363065039_8632367148021348374_n.jpg (415 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/858565145_2167458307200733_2205409977563994826_n.jpg (414 chars)",
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.84726-6/859392018_962932573103703_1200915558473180130_n.jpg (444 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -311,107 +209,8 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792742073284,
-      "time_at_flush_ms": 1792742073339
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 392 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "targetId": "2064512760864293"
-  },
-  "doc_id": "10059604367394414"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_product_details_page": {
-        "__typename": "MarketplaceForSaleItemProductDetailsPage",
-        "target": {
-          "__typename": "GroupCommerceProductItem",
-          "listing_photos": [
-            {
-              "__typename": "CatalogMarketplaceEnhancementTransformedImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/837537840_1093936243621753_7243842029990663344_n.jpg (415 chars)"
-              },
-              "id": "1093936236955087"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 960,
-                "width": 442,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/838682278_1155897076871141_7443226950860978315_n.jpg (414 chars)"
-              },
-              "id": "1155897073537808"
-            },
-            {
-              "__typename": "ProductImage",
-              "accessibility_caption": "No photo description available.",
-              "image": {
-                "height": 786,
-                "width": 960,
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/838851478_3347913328734145_1126666561798692254_n.jpg (414 chars)"
-              },
-              "id": "3347913325400812"
-            }
-          ],
-          "pre_recorded_videos": [],
-          "is_hidden": false,
-          "id": "2064512760864293"
-        },
-        "id": "66:2064512760864293:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/838682278_1155897076871141_7443226950860978315_n.jpg (414 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/838851478_3347913328734145_1126666561798692254_n.jpg (414 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/837537840_1093936243621753_7243842029990663344_n.jpg (415 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792742085780,
-      "time_at_flush_ms": 1792742085828
+      "request_start_time_ms": 1793038239684,
+      "time_at_flush_ms": 1793038239750
     },
     "is_final": true
   }

@@ -11,9 +11,9 @@
 | Sends | `scale` |
 | Reads | — |
 | Called from | `CometFeedInlineComposer.react` |
-| rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
+| rea | `ev_1da32d964859622ea061fac1c53fbd421740bac3b2982b94e6b35b9d9a4055ec` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,12 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 592 ms | 219879 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 389 ms | 12028 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 479 ms | 9204 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 248 ms | 12645 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 256 ms | 17034 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 196 ms | 156 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 536 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 248 ms
 
 Sent:
 
@@ -71,16 +74,16 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669",
+        "id": "61594285317994",
         "__isActor": "User",
-        "short_name": "Bethlehem",
+        "short_name": "Halima",
         "__isProfile": "User",
         "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61594063207669",
+        "url": "https://www.facebook.com/profile.php?id=61594285317994",
         "profile_picture": {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
         },
-        "name": "Bethlehem Trash",
+        "name": "Halima Ndjzn",
         "has_professional_features_for_watch": false
       },
       "feed_comet_composer": {
@@ -156,7 +159,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
+        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -164,486 +167,8 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792742237728,
-      "time_at_flush_ms": 1792742237910
-    },
-    "is_final": true,
-    "sr_payload": {
-      "ddd": {
-        "hsrp": {
-          "hsdp": {
-            "qexData": {
-              "4917": "(2 fields)",
-              "5648": "(2 fields)",
-              "5702": "(2 fields)"
-            }
-          },
-          "hblp": {
-            "consistency": {
-              "rev": 1051444067
-            },
-            "rsrcMap": {
-              "csr:_18_0_6y": "(3 fields)",
-              "csr:_18_1_M8": "(3 fields)",
-              "4ELVBtO": "(5 fields)",
-              "cKshYeT": "(5 fields)",
-              "4aRLxJj": "(5 fields)",
-              "/mTsGG6": "(5 fields)",
-              "nWze+I9": "(5 fields)",
-              "csr:_18_2_jL": "(3 fields)",
-              "csr:_18_3_El": "(3 fields)",
-              "hJy9YfN": "(5 fields)",
-              "csr:_18_4_Kw": "(3 fields)"
-            },
-            "compMap": {
-              "CometComposerMediaAttachmentArea.react": "(4 fields)"
-            },
-            "indexUpgrades": {
-              "__hblp": ":3206",
-              "__hsdp": ":995,994,972,973,1252,1251"
-            }
-          }
-        },
-        "jsmods": {
-          "define": [
-            [
-              "cr:310",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:564",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:619",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:686",
-              "(0 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:734",
-              "(0 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:755",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            "… 56 more"
-          ],
-          "require": [
-            [
-              "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
-            ],
-            [
-              "InlineComposerLiveProducerSprout.react"
-            ],
-            [
-              "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
-            ],
-            [
-              "FeedInlineComposerMediaSprout.react"
-            ],
-            [
-              "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
-            ],
-            [
-              "FeedInlineComposerFeelingSprout.react"
-            ],
-            "… 10 more"
-          ],
-          "phd2_indexes": ":995,994,972,973,1252,1251"
-        },
-        "allResources": [
-          "csr:_18_0_6y",
-          "csr:_18_1_M8"
-        ],
-        "tieredResources": {
-          "r": [
-            "csr:_18_0_6y"
-          ],
-          "rdfds": [],
-          "rds": [
-            "csr:_18_1_M8"
-          ]
-        }
-      }
-    }
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 616 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "scale": 1
-  },
-  "doc_id": "38525622117053498"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "id": "61594063207669",
-        "__isActor": "User",
-        "short_name": "Bethlehem",
-        "__isProfile": "User",
-        "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61594063207669",
-        "profile_picture": {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
-        },
-        "name": "Bethlehem Trash",
-        "has_professional_features_for_watch": false
-      },
-      "feed_comet_composer": {
-        "__isICometComposer": "FeedCometComposer",
-        "inline_sprouts": [
-          {
-            "__typename": "FeedCometComposerLiveProducerSprout",
-            "__isICometComposerSprout": "FeedCometComposerLiveProducerSprout",
-            "inline_label": "Live video",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "InlineComposerLiveProducerSprout.react"
-            }
-          },
-          {
-            "__typename": "CometComposerUploadMediaSprout",
-            "__isICometComposerSprout": "CometComposerUploadMediaSprout",
-            "inline_label": "Photo/video",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerMediaSprout.react"
-            }
-          },
-          {
-            "__typename": "CometComposerMinutiaeSprout",
-            "__isICometComposerSprout": "CometComposerMinutiaeSprout",
-            "inline_label": "Feeling/activity",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerFeelingSprout.react"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792742396551,
-      "time_at_flush_ms": 1792742396580
-    },
-    "is_final": true,
-    "sr_payload": {
-      "ddd": {
-        "hsrp": {
-          "hsdp": {
-            "qexData": {
-              "4917": "(2 fields)",
-              "5648": "(2 fields)",
-              "5702": "(2 fields)"
-            }
-          },
-          "hblp": {
-            "consistency": {
-              "rev": 1051444067
-            },
-            "rsrcMap": {
-              "csr:_t_0_5j": "(3 fields)",
-              "csr:_t_1_ce": "(3 fields)",
-              "4ELVBtO": "(5 fields)",
-              "cKshYeT": "(5 fields)",
-              "4aRLxJj": "(5 fields)",
-              "/mTsGG6": "(5 fields)",
-              "nWze+I9": "(5 fields)",
-              "csr:_t_2_3/": "(3 fields)",
-              "csr:_t_3_F7": "(3 fields)",
-              "hJy9YfN": "(5 fields)",
-              "csr:_t_4_iA": "(3 fields)"
-            },
-            "compMap": {
-              "CometComposerMediaAttachmentArea.react": "(4 fields)"
-            },
-            "indexUpgrades": {
-              "__hblp": ":3206",
-              "__hsdp": ":995,994,972,973,1252,1251"
-            }
-          }
-        },
-        "jsmods": {
-          "define": [
-            [
-              "cr:310",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:564",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:619",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:686",
-              "(0 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:734",
-              "(0 items)",
-              "(1 fields)",
-              -1
-            ],
-            [
-              "cr:755",
-              "(1 items)",
-              "(1 fields)",
-              -1
-            ],
-            "… 56 more"
-          ],
-          "require": [
-            [
-              "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
-            ],
-            [
-              "InlineComposerLiveProducerSprout.react"
-            ],
-            [
-              "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
-            ],
-            [
-              "FeedInlineComposerMediaSprout.react"
-            ],
-            [
-              "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
-            ],
-            [
-              "FeedInlineComposerFeelingSprout.react"
-            ],
-            "… 10 more"
-          ],
-          "phd2_indexes": ":995,994,972,973,1252,1251"
-        },
-        "allResources": [
-          "csr:_t_0_5j",
-          "csr:_t_1_ce"
-        ],
-        "tieredResources": {
-          "r": [
-            "csr:_t_0_5j"
-          ],
-          "rdfds": [],
-          "rds": [
-            "csr:_t_1_ce"
-          ]
-        }
-      }
-    }
-  }
-}
-```
-
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 389 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "scale": 1
-  },
-  "doc_id": "38525622117053498"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "id": "61593939852820",
-        "__isActor": "User",
-        "short_name": "Uski",
-        "__isProfile": "User",
-        "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61593939852820",
-        "profile_picture": {
-          "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)"
-        },
-        "name": "Uski Guvh",
-        "has_professional_features_for_watch": false
-      },
-      "feed_comet_composer": {
-        "__isICometComposer": "FeedCometComposer",
-        "inline_sprouts": [
-          {
-            "__typename": "FeedCometComposerLiveProducerSprout",
-            "__isICometComposerSprout": "FeedCometComposerLiveProducerSprout",
-            "inline_label": "Live video",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "InlineComposerLiveProducerSprout.react"
-            }
-          },
-          {
-            "__typename": "CometComposerUploadMediaSprout",
-            "__isICometComposerSprout": "CometComposerUploadMediaSprout",
-            "inline_label": "Photo/video",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerMediaSprout.react"
-            }
-          },
-          {
-            "__typename": "CometComposerMinutiaeSprout",
-            "__isICometComposerSprout": "CometComposerMinutiaeSprout",
-            "inline_label": "Feeling/activity",
-            "icon": {
-              "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp"
-            },
-            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
-            },
-            "__module_component_CometFeedInlineComposerSproutsList_composer": {
-              "__dr": "FeedInlineComposerFeelingSprout.react"
-            }
-          }
-        ]
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792911375622,
-      "time_at_flush_ms": 1792911375669
+      "request_start_time_ms": 1793038330962,
+      "time_at_flush_ms": 1793038331015
     },
     "is_final": true,
     "sr_payload": {
@@ -653,95 +178,95 @@ Answered:
             "qexData": {
               "4917": {
                 "r": false,
-                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5648": {
                 "r": null,
-                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5702": {
                 "r": null,
-                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               }
             }
           },
           "hblp": {
             "consistency": {
-              "rev": 1051645477
+              "rev": 1051718708
             },
             "rsrcMap": {
-              "csr:_p_0_Jo": {
+              "csr:_12_0_dQ": {
                 "type": "csr",
-                "src": ":1,398,11,8,203,7,2,9,24,4,6,5,63,10,58,47,29,50,3,22,15,27,13",
+                "src": ":1,372,9,168,12,8,2,7,30,10,11,13,41,22,49,54,18,68,6,20,14,28,5",
                 "c": 1
               },
-              "csr:_p_1_ct": {
+              "csr:_12_1_rw": {
                 "type": "csr",
-                "src": ":23",
+                "src": ":36",
                 "c": 1
               },
               "4ELVBtO": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_US-j/-sekXR_lQTM.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_GB-j/-sekXR_lQTM.js",
                 "c": 1,
-                "p": ":816",
-                "m": "1051645477_main"
+                "p": ":944",
+                "m": "1051718708_main"
               },
               "FI4g3/A": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iMzS4/yW/l/en_US-j/I32hMZJHio9.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iMzS4/yT/l/en_GB-j/I32hMZJHio9.js",
                 "c": 1,
-                "p": ":486",
-                "m": "1051645477_main"
+                "p": ":542",
+                "m": "1051718708_main"
               },
               "cKshYeT": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4imXC4/yi/l/en_US-j/wQUTfrWFlVq.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4imXC4/yT/l/en_GB-j/wQUTfrWFlVq.js",
                 "c": 1,
-                "p": ":966",
-                "m": "1051645477_main"
+                "p": ":868",
+                "m": "1051718708_main"
               },
               "nWze+I9": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/y-/l/en_US-j/KXk65ncraD7.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/yM/l/en_GB-j/KXk65ncraD7.js",
                 "c": 1,
-                "p": ":335",
-                "m": "1051645477_main"
+                "p": ":396",
+                "m": "1051718708_main"
               },
               "4aRLxJj": {
                 "type": "css",
                 "src": "https://static.xx.fbcdn.net/rsrc.php/v5/yV/l/0,cross/gJvYo_zF64n.css",
                 "c": 1,
-                "p": ":934",
-                "m": "1051645477_main"
+                "p": ":852",
+                "m": "1051718708_main"
               },
               "/mTsGG6": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iu_P4/y6/l/en_US-j/ZwSR1BLUZvv.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iu_P4/yA/l/en_GB-j/ZwSR1BLUZvv.js",
                 "c": 1,
-                "p": ":763",
-                "m": "1051645477_main"
+                "p": ":796",
+                "m": "1051718708_main"
               },
-              "csr:_p_2_IR": {
+              "csr:_12_2_HI": {
                 "type": "csr",
-                "src": ":11,8,203,139,276,51,16,196,364,278,22,15,10,7,2,427,199,9,175,24,154,27,338,282,189,12,157,37,136,386,4,6,5,242,155,99,23,97,174,205,13,1,41,58,179,50,47,29,3,90,162,96,112,108,44,14,83,30,206,20",
+                "src": ":9,168,12,100,259,122,33,203,326,306,20,14,22,8,2,395,160,7,187,30,148,28,322,347,174,3,162,23,114,363,10,11,245,292,128,36,13,75,185,283,5,1,40,49,308,68,54,18,6,124,145,83,104,135,92,43,4,29,197,32",
                 "c": 1
               },
-              "csr:_p_3_WI": {
+              "csr:_12_3_7J": {
                 "type": "csr",
-                "src": ":40,171,36,133,119,138,129,142,132,210",
+                "src": ":35,229,24,90,89,91,84,119,86,151",
                 "c": 1
               },
               "hJy9YfN": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuLy4/yf/l/en_US-j/xzXdfiV9Kbz.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuLy4/yj/l/en_GB-j/xzXdfiV9Kbz.js",
                 "c": 1,
-                "p": ":972",
-                "m": "1051645477_main"
+                "p": ":1105",
+                "m": "1051718708_main"
               },
-              "csr:_p_4_Qf": {
+              "csr:_12_4_NW": {
                 "type": "csr",
-                "src": ":217,116,76,125,366,101,198,528,71,223,167,250",
+                "src": ":166,115,94,76,353,123,538,244,64,298,179,319",
                 "c": 1
               }
             },
@@ -786,8 +311,8 @@ Answered:
               }
             },
             "indexUpgrades": {
-              "__hblp": ":3203",
-              "__hsdp": ":1046,1045,974,973,1208,1207"
+              "__hblp": ":3189",
+              "__hsdp": ":998,997,974,975,1230,1229"
             }
           }
         },
@@ -890,25 +415,423 @@ Answered:
             ],
             "… 10 more"
           ],
-          "phd2_indexes": ":1046,1045,974,973,1208,1207"
+          "phd2_indexes": ":998,997,974,975,1230,1229"
         },
         "allResources": [
-          "csr:_p_0_Jo",
-          "csr:_p_1_ct"
+          "csr:_12_0_dQ",
+          "csr:_12_1_rw"
         ],
         "tieredResources": {
           "r": [
-            "csr:_p_0_Jo"
+            "csr:_12_0_dQ"
           ],
           "rdfds": [],
           "rds": [
-            "csr:_p_1_ct"
+            "csr:_12_1_rw"
           ]
         }
       }
     }
   }
 }
+```
+
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 256 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1
+  },
+  "doc_id": "38525622117053498"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61594285317994",
+        "__isActor": "User",
+        "short_name": "Halima",
+        "__isProfile": "User",
+        "__isEntity": "User",
+        "url": "https://www.facebook.com/profile.php?id=61594285317994",
+        "profile_picture": {
+          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+        },
+        "name": "Halima Ndjzn",
+        "has_professional_features_for_watch": false
+      },
+      "feed_comet_composer": {
+        "__isICometComposer": "FeedCometComposer",
+        "inline_sprouts": [
+          {
+            "__typename": "FeedCometComposerLiveProducerSprout",
+            "__isICometComposerSprout": "FeedCometComposerLiveProducerSprout",
+            "inline_label": "Live video",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "InlineComposerLiveProducerSprout.react"
+            }
+          },
+          {
+            "__typename": "CometComposerUploadMediaSprout",
+            "__isICometComposerSprout": "CometComposerUploadMediaSprout",
+            "inline_label": "Photo/video",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerMediaSprout.react"
+            }
+          },
+          {
+            "__typename": "CometComposerMinutiaeSprout",
+            "__isICometComposerSprout": "CometComposerMinutiaeSprout",
+            "inline_label": "Feeling/activity",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerFeelingSprout.react"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1793038436445,
+      "time_at_flush_ms": 1793038436478
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "qexData": {
+              "4917": {
+                "r": false,
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              },
+              "5648": {
+                "r": null,
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              },
+              "5702": {
+                "r": null,
+                "l": "J{\"qeid\":\"61594285317994\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              }
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051718708
+            },
+            "rsrcMap": {
+              "csr:_r_0_0D": {
+                "type": "csr",
+                "src": ":1,372,9,168,12,8,2,7,30,10,11,13,41,22,49,54,18,68,6,20,14,28,5",
+                "c": 1
+              },
+              "csr:_r_1_wE": {
+                "type": "csr",
+                "src": ":36",
+                "c": 1
+              },
+              "4ELVBtO": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_GB-j/-sekXR_lQTM.js",
+                "c": 1,
+                "p": ":944",
+                "m": "1051718708_main"
+              },
+              "FI4g3/A": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iMzS4/yT/l/en_GB-j/I32hMZJHio9.js",
+                "c": 1,
+                "p": ":542",
+                "m": "1051718708_main"
+              },
+              "cKshYeT": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4imXC4/yT/l/en_GB-j/wQUTfrWFlVq.js",
+                "c": 1,
+                "p": ":868",
+                "m": "1051718708_main"
+              },
+              "nWze+I9": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/yM/l/en_GB-j/KXk65ncraD7.js",
+                "c": 1,
+                "p": ":396",
+                "m": "1051718708_main"
+              },
+              "/mTsGG6": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iu_P4/yA/l/en_GB-j/ZwSR1BLUZvv.js",
+                "c": 1,
+                "p": ":796",
+                "m": "1051718708_main"
+              },
+              "csr:_r_2_lY": {
+                "type": "csr",
+                "src": ":9,168,12,100,259,122,33,203,326,306,20,14,22,8,2,395,160,7,187,30,148,852,28,322,347,174,3,162,23,114,363,10,11,245,292,128,36,13,75,185,283,5,1,40,49,308,68,54,18,6,124,145,83,104,135,92,43,4,29,197,32",
+                "c": 1
+              },
+              "csr:_r_3_1f": {
+                "type": "csr",
+                "src": ":35,229,24,90,89,91,84,119,86,151",
+                "c": 1
+              },
+              "hJy9YfN": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuLy4/yj/l/en_GB-j/xzXdfiV9Kbz.js",
+                "c": 1,
+                "p": ":1105",
+                "m": "1051718708_main"
+              },
+              "csr:_r_4_s/": {
+                "type": "csr",
+                "src": ":166,115,94,76,353,123,538,244,64,298,179,319",
+                "c": 1
+              }
+            },
+            "compMap": {
+              "CometComposerMediaAttachmentArea.react": {
+                "r": [
+                  "4ELVBtO",
+                  "FI4g3/A",
+                  "cKshYeT",
+                  "nWze+I9",
+                  "/mTsGG6",
+                  "csr:_r_2_lY"
+                ],
+                "rdfds": {
+                  "m": [
+                    "…",
+                    "…",
+                    "…",
+                    "…"
+                  ],
+                  "r": [
+                    "…"
+                  ]
+                },
+                "rds": {
+                  "m": [
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "… 10 more"
+                  ],
+                  "r": [
+                    "…",
+                    "…"
+                  ]
+                },
+                "be": 1
+              }
+            },
+            "indexUpgrades": {
+              "__hblp": ":3189",
+              "__hsdp": ":998,997,974,975,1230,1229"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              [
+                "RunWWW"
+              ],
+              {
+                "__rc": [
+                  "RunWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:619",
+              [
+                "setTimeoutCometLoggingPriWWW"
+              ],
+              {
+                "__rc": [
+                  "setTimeoutCometLoggingPriWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:686",
+              [],
+              {
+                "__rc": [
+                  null,
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:734",
+              [],
+              {
+                "__rc": [
+                  null,
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:755",
+              [
+                "warningWWW"
+              ],
+              {
+                "__rc": [
+                  "warningWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:945",
+              [],
+              {
+                "__rc": [
+                  null,
+                  null
+                ]
+              },
+              -1
+            ],
+            "… 56 more"
+          ],
+          "require": [
+            [
+              "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
+            ],
+            [
+              "InlineComposerLiveProducerSprout.react"
+            ],
+            [
+              "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
+            ],
+            [
+              "FeedInlineComposerMediaSprout.react"
+            ],
+            [
+              "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
+            ],
+            [
+              "FeedInlineComposerFeelingSprout.react"
+            ],
+            "… 10 more"
+          ],
+          "phd2_indexes": ":998,997,974,975,1230,1229"
+        },
+        "allResources": [
+          "csr:_r_0_0D",
+          "csr:_r_1_wE"
+        ],
+        "tieredResources": {
+          "r": [
+            "csr:_r_0_0D"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_r_1_wE"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 196 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1
+  },
+  "doc_id": "38525622117053498"
+}
+```
+
+Answered:
+
+```json
+null
 ```
 
 <!-- facts:end -->

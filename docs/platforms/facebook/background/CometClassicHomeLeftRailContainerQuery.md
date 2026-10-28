@@ -11,9 +11,9 @@
 | Sends | `isEligibleForProfessionalTools`, `numExploreBookmarks`, `numShortcutBookmarks`, `scale`, `useNucleusIcon` |
 | Reads | `viewer....CometHomeLeftRailWithBlueRanking_viewer` |
 | Called from | `CometClassicHomeLeftRailContainer.react` |
-| rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
+| rea | `ev_6974a375c6b8366d220d2e06f3f9202666345bc1b74afdc52cd0b7a429167530` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,332 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 774 ms | 219886 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 685 ms | 12035 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 725 ms | 9211 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 376 ms | 12647 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 260 ms | 17037 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 284 ms | 162 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 813 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "isEligibleForProfessionalTools": false,
-    "numExploreBookmarks": 10,
-    "numShortcutBookmarks": 5,
-    "scale": 1,
-    "useNucleusIcon": false
-  },
-  "doc_id": "37551561817767907"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_classic_identity": {
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(15 fields)"
-            }
-          ]
-        },
-        "id": "370399423318783"
-      },
-      "shortcut_bookmarks": {
-        "shortcut_bookmark": {
-          "count": 3,
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            }
-          ]
-        },
-        "id": "1592249071005526",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            }
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
-            "has_next_page": false
-          }
-        }
-      },
-      "explore_bookmarks": {
-        "explore_bookmark": {
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            "… 4 more"
-          ]
-        },
-        "id": "644715445650924",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            "… 4 more"
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
-            "has_next_page": true
-          }
-        }
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792742237952,
-      "time_at_flush_ms": 1792742238170
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 657 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "isEligibleForProfessionalTools": false,
-    "numExploreBookmarks": 10,
-    "numShortcutBookmarks": 5,
-    "scale": 1,
-    "useNucleusIcon": false
-  },
-  "doc_id": "37551561817767907"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_classic_identity": {
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(15 fields)"
-            }
-          ]
-        },
-        "id": "370399423318783"
-      },
-      "shortcut_bookmarks": {
-        "shortcut_bookmark": {
-          "count": 3,
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            }
-          ]
-        },
-        "id": "1592249071005526",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            }
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
-            "has_next_page": false
-          }
-        }
-      },
-      "explore_bookmarks": {
-        "explore_bookmark": {
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            "… 4 more"
-          ]
-        },
-        "id": "644715445650924",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            "… 4 more"
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
-            "has_next_page": true
-          }
-        }
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792742396554,
-      "time_at_flush_ms": 1792742396637
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 685 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 376 ms
 
 Sent:
 
@@ -488,7 +171,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yD/r/gx8cUEKrUN7.webp",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yD/r/GROEnPFit1s.webp",
         "label": null,
         "width": null,
         "height": null,
@@ -496,12 +179,175 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792911375698,
-      "time_at_flush_ms": 1792911375985
+      "request_start_time_ms": 1793038330987,
+      "time_at_flush_ms": 1793038331164
     },
     "is_final": true
   }
 }
+```
+
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 260 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_classic_identity": {
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(15 fields)"
+            }
+          ]
+        },
+        "id": "370399423318783"
+      },
+      "shortcut_bookmarks": {
+        "shortcut_bookmark": {
+          "count": 0,
+          "edges": []
+        },
+        "id": "1592249071005526",
+        "bookmarks": {
+          "edges": [],
+          "page_info": {
+            "end_cursor": null,
+            "has_next_page": false
+          }
+        }
+      },
+      "explore_bookmarks": {
+        "explore_bookmark": {
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            "… 4 more"
+          ]
+        },
+        "id": "644715445650924",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            "… 4 more"
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
+            "has_next_page": true
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yD/r/GROEnPFit1s.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1793038436448,
+      "time_at_flush_ms": 1793038436505
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 284 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+null
 ```
 
 <!-- facts:end -->

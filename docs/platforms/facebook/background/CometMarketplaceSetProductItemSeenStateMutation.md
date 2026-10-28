@@ -11,9 +11,9 @@
 | Sends | `input` |
 | Reads | `marketplace_set_product_item_seen_state.product_item` |
 | Called from | `CometMarketplaceSetProductItemSeenStateMutation` |
-| rea | `ev_d3844ff3ba89d42ce8912082c4735babb8314eb664819e8300eecce66eb73b01` |
+| rea | `ev_03793df18e41b21e22c0bbfc18c4a5180529ced4aa3304f1a89f09366f312d6d` |
 
-Seen 13 time(s) in 6 run(s).
+Seen 15 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -30,12 +30,14 @@ Seen 13 time(s) in 6 run(s).
 | warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 920 ms | 297 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 652 ms | 1576 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 570 ms | 3054 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 328 ms | 1145 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 506 ms | 1221 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: +213px in 7 wheel steps, 453 ms: 200, 920 ms
+**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 328 ms
 
 Sent:
 
@@ -47,8 +49,8 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "1749699906261391",
-      "actor_id": "61594063207669",
+      "product_item_id": "1818774979262678",
+      "actor_id": "61594285317994",
       "client_mutation_id": "2"
     }
   },
@@ -64,21 +66,21 @@ Answered:
     "marketplace_set_product_item_seen_state": {
       "product_item": {
         "has_viewer_previously_seen": true,
-        "id": "1749699906261391"
+        "id": "1818774979262678"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742066013,
-      "time_at_flush_ms": 1792742066387
+      "request_start_time_ms": 1793038229458,
+      "time_at_flush_ms": 1793038229616
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 652 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 506 ms
 
 Sent:
 
@@ -90,8 +92,8 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "1098292579663100",
-      "actor_id": "61594063207669",
+      "product_item_id": "2249546198922840",
+      "actor_id": "61594285317994",
       "client_mutation_id": "5"
     }
   },
@@ -107,57 +109,14 @@ Answered:
     "marketplace_set_product_item_seen_state": {
       "product_item": {
         "has_viewer_previously_seen": true,
-        "id": "1098292579663100"
+        "id": "2249546198922840"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742074014,
-      "time_at_flush_ms": 1792742074314
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 570 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMarketplaceSetProductItemSeenStateMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "has_seen": true,
-      "product_item_id": "2064512760864293",
-      "actor_id": "61594063207669",
-      "client_mutation_id": "8"
-    }
-  },
-  "doc_id": "9680593255390206"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "marketplace_set_product_item_seen_state": {
-      "product_item": {
-        "has_viewer_previously_seen": true,
-        "id": "2064512760864293"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742086793,
-      "time_at_flush_ms": 1792742087009
+      "request_start_time_ms": 1793038240088,
+      "time_at_flush_ms": 1793038240434
     },
     "is_final": true
   }

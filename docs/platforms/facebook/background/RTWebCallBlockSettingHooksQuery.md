@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `RTWebCallBlockSettingHooks` |
-| rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
+| rea | `ev_212505a12678e9df8cf64ad1c030a8e6dafd152a9544dc7cdc34a67c239a6967` |
 
-Seen 150 time(s) in 41 run(s).
+Seen 170 time(s) in 44 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,12 +107,30 @@ Seen 150 time(s) in 41 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 533 ms | 8058 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 467 ms | 6258 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 439–499 ms | 616776–657879 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 191–473 ms | 3625–4922 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 175–213 ms | 3038–5711 ms | — |
+| host | step 5: goto /me | 1 | 200 | 177 ms | 5055 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 160 ms | 9280 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 176 ms | 6406 ms | — |
+| host | step 16: goto / | 1 | 200 | 421 ms | 5621 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 164 ms | 3467 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 170 ms | 2744 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 183 ms | 3353 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 167 ms | 2181 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 164 ms | 2850 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 326 ms | 2736 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 160 ms | 4816 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 165 ms | 2100 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 169 ms | 2293 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 179 ms | 4094 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 190 ms | 9809 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 161 ms | 8994 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 387 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 473 ms
 
 Sent:
 
@@ -137,52 +155,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742733444,
-      "time_at_flush_ms": 1792742733466
+      "request_start_time_ms": 1793037999959,
+      "time_at_flush_ms": 1793037999983
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 425 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "30613466",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9989124061109700",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=30613466"
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "call_blocked_until": 0
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742782510,
-      "time_at_flush_ms": 1792742782528
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 375 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 175 ms
 
 Sent:
 
@@ -207,8 +188,41 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742814814,
-      "time_at_flush_ms": 1792742814832
+      "request_start_time_ms": 1793038028391,
+      "time_at_flush_ms": 1793038028412
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 177 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9989124061109700"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "call_blocked_until": 0
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038043609,
+      "time_at_flush_ms": 1793038043638
     },
     "is_final": true
   }

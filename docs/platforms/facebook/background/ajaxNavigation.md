@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
+| rea | `ev_ad4faa4ee06f9f7047a83035e82226ea07cbd4cb203ef0b5d645187a3563ec94` |
 
-Seen 58 time(s) in 19 run(s).
+Seen 62 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -61,19 +61,23 @@ Seen 58 time(s) in 19 run(s).
 | flow | step 14: clickRole button "…" | 1 | 200 | 2852 ms | 1138 ms | — |
 | host | step 39: clickRole button "…" | 1 | 200 | 483 ms | 4414 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 462–709 ms | 7053–645275 ms | — |
+| host | step 11: clickRole button "…" | 1 | 200 | 172 ms | 4201 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 1 | 200 | 202 ms | 3595 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 212 ms | 761 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 189 ms | 937 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 10: openAny 2-4 x /marketplace/item/: 200, 1113 ms
+**runs/host/20261026T180628_61594285317994**, step 11: clickRole button "…": 200, 172 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594063207669",
-  "route_url": "/marketplace/item/1749699906261391/?ref=browse_tab&referral_code=marketplace_top_picks&referral_story_type=top_picks&__tn__=!%3AD",
+  "client_previous_actor_id": "61594285317994",
+  "route_url": "/me",
   "routing_namespace": "fb_comet"
 }
 ```
@@ -88,217 +92,185 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594063207669",
+          "actorID": "61594285317994",
           "rootView": {
             "allResources": [
+              "(1 fields)",
               "(1 fields)",
               "(1 fields)"
             ],
             "resource": {
-              "__jsr": "CometMarketplacePermalinkRoot.react"
+              "__jsr": "ProfileCometTimelineListViewRoot.react"
             },
             "props": {
-              "isCrawler": false,
-              "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/1749699906261391/",
-              "shouldFetchLoggedOutSimilarListings": false
+              "viewerID": "61594285317994",
+              "userVanity": "",
+              "userID": "61594285317994",
+              "eligibleForProfilePlusEntityMenu": false,
+              "trackingCode": null
             },
             "entryPoint": {
-              "__dr": "MarketplacePermalinkRoot.entrypoint"
+              "__dr": "ProfileCometTimelineListViewRouteRoot.entrypoint"
             }
           },
-          "tracePolicy": "comet.marketplace.item",
+          "tracePolicy": "comet.profile.timeline.list",
           "meta": {
-            "title": "Marketplace – 24x24 Two Story Amish Crafted Two Car Garage w/Loft Financing Available",
+            "title": null,
             "accessory": null,
             "favicon": null
           },
           "prefetchable": true,
-          "canonicalRouteName": "comet.fbweb.CometMarketplacePermalinkRoute",
+          "canonicalRouteName": "comet.fbweb.CometProfileTimelineListViewRoute",
+          "timeSpentConfig": {
+            "has_profile_session_id": true
+          },
           "entityKeyConfig": {
             "entity_type": {
               "source": "constant",
-              "value": "mp_listing"
+              "value": "profile"
             },
             "entity_id": {
-              "source": "param",
-              "value": "listing_id"
+              "source": "prop",
+              "value": "userID"
+            },
+            "section": {
+              "source": "constant",
+              "value": "timeline"
             }
           },
           "hostableView": {
             "allResources": [
               "(1 fields)",
+              "(1 fields)",
               "(1 fields)"
             ],
             "resource": {
-              "__jsr": "CometMarketplacePermalinkRoot.react"
+              "__jsr": "ProfileCometTimelineListViewRoot.react"
             },
             "props": {
-              "isCrawler": false,
-              "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/1749699906261391/",
-              "shouldFetchLoggedOutSimilarListings": false
+              "viewerID": "61594285317994",
+              "userVanity": "",
+              "userID": "61594285317994",
+              "eligibleForProfilePlusEntityMenu": false,
+              "trackingCode": null
             },
             "entryPoint": {
-              "__dr": "MarketplacePermalinkRoot.entrypoint"
+              "__dr": "ProfileCometTimelineListViewRouteRoot.entrypoint"
             }
           },
-          "useCloseButton": true,
-          "tabKey": "marketplace",
-          "label": "Marketplace listing viewer",
-          "hideNotificationToasts": true,
-          "isNavigationEligibleForForcedRefresh": false,
-          "canBePushView": true,
-          "showMessengerJewel": true,
-          "blockUnloadHooks": true,
-          "enableFullPageAutoYOverflow": true,
-          "concurrentSafe": true,
           "stripParams": [
-            "token",
-            "hoisted_story_ids",
-            "hoisted_story_optimistic_data"
+            "modal",
+            "modal_param"
           ],
-          "productAttributionId": "1606854132932955",
-          "canonicalUrl": null
+          "productAttributionId": "190055527696468",
+          "canonicalUrl": "/profile.php?id=61594285317994"
         },
         "route_match_infos": [
           {
+            "instanceParams": {},
+            "routeConflicts": null,
+            "routeParams": {},
+            "routePath": "/me/"
+          },
+          {
             "instanceParams": {
-              "availability": null,
-              "npSellerType": null,
-              "minPrice": null,
-              "maxPrice": null,
-              "catFriendly": null,
-              "carfaxHistory": null,
-              "daysSinceListed": null,
-              "dealerBranch": null,
-              "deliveryMethod": null,
-              "dogFriendly": null,
-              "isC2CListingOnly": null,
-              "isFurnished": null,
-              "headerOverride": null,
-              "maxBathrooms": null,
-              "maxBedrooms": null,
-              "maxAreaSize": null,
-              "maxMileage": null,
-              "maxRooms": null,
-              "maxYear": null,
-              "minBathrooms": null,
-              "minBedrooms": null,
-              "minAreaSize": null,
-              "minMileage": null,
-              "minMPG": null,
-              "minRooms": null,
-              "minSafetyRating": null,
-              "minSeatingCapacity": null,
-              "minYear": null,
-              "prefilledRating": null,
-              "privateRoomBathroomType": null,
-              "propertyType": null,
-              "pivots": null,
-              "sortBy": null,
-              "make": null,
-              "model": null,
-              "carType": null,
-              "topLevelVehicleType": null,
-              "transmissionType": null,
-              "rentalRoomType": null,
-              "saleType": null,
-              "sellerType": null,
-              "itemCondition": null,
-              "constructionStatus": null,
-              "contextual": null,
-              "vehicleExteriorColors": null,
-              "vehicleInteriorColors": null,
-              "query": null,
-              "notif_id": null,
-              "notif_t": null,
-              "referral_code": "marketplace_top_picks",
-              "referral_story_type": "top_picks",
-              "merchantId": null,
-              "ref": "browse_tab",
-              "ad_id": null,
-              "listing_id": "1749699906261391",
-              "hoisted": false,
-              "ref_id": null,
-              "view_public_for": null,
-              "tracking": null,
-              "dynamicUrlInfo": null,
-              "token": null,
-              "is_background": false,
-              "hoisted_story_ids": null,
-              "hoisted_story_optimistic_data": null,
-              "slug": null
+              "viewas": null,
+              "ad_account_id": null,
+              "collection_token": null,
+              "comment_id": null,
+              "id": null,
+              "log_filter": null,
+              "reply_comment_id": null,
+              "ref": null,
+              "set": null,
+              "sk": null,
+              "section": null,
+              "slug": null,
+              "boosted_auto_open": null,
+              "boost_post_id": null,
+              "target_id": null,
+              "boost_id": null,
+              "boost_ref": null,
+              "so": null,
+              "request_data": null,
+              "show_switched_toast": false,
+              "show_switched_tooltip": false,
+              "is_tour_dismissed": false,
+              "is_tour_completed": false,
+              "show_podcast_settings": false,
+              "show_community_review_changes": false,
+              "podcast_id": null,
+              "modal": null,
+              "modal_param": null,
+              "delegate_page_id": null,
+              "profile_header_chips_fbid": null,
+              "show_advanced_protection_interstitial": null,
+              "filter": null,
+              "post": null,
+              "story_id": null,
+              "open_field": null,
+              "multi_permalinks": null,
+              "should_open_composer": false,
+              "event_id": null,
+              "sorting_setting": null,
+              "badge_type": "NEW_MEMBER",
+              "show_community_rollback_toast": false,
+              "show_community_rollback": false,
+              "show_follower_visibility_disclosure": false,
+              "referral_source": null,
+              "__cft__": null,
+              "fb_profile_edit_entry_point": null
             },
             "routeConflicts": null,
             "routeParams": {
-              "availability": "(5 fields)",
-              "npSellerType": "(5 fields)",
-              "minPrice": "(5 fields)",
-              "maxPrice": "(5 fields)",
-              "catFriendly": "(5 fields)",
-              "carfaxHistory": "(5 fields)",
-              "daysSinceListed": "(5 fields)",
-              "dealerBranch": "(5 fields)",
-              "deliveryMethod": "(5 fields)",
-              "dogFriendly": "(5 fields)",
-              "isC2CListingOnly": "(5 fields)",
-              "isFurnished": "(5 fields)",
-              "headerOverride": "(5 fields)",
-              "maxBathrooms": "(5 fields)",
-              "maxBedrooms": "(5 fields)",
-              "maxAreaSize": "(5 fields)",
-              "maxMileage": "(5 fields)",
-              "maxRooms": "(5 fields)",
-              "maxYear": "(5 fields)",
-              "minBathrooms": "(5 fields)",
-              "minBedrooms": "(5 fields)",
-              "minAreaSize": "(5 fields)",
-              "minMileage": "(5 fields)",
-              "minMPG": "(5 fields)",
-              "minRooms": "(5 fields)",
-              "minSafetyRating": "(5 fields)",
-              "minSeatingCapacity": "(5 fields)",
-              "minYear": "(5 fields)",
-              "prefilledRating": "(5 fields)",
-              "privateRoomBathroomType": "(5 fields)",
-              "propertyType": "(5 fields)",
-              "pivots": "(5 fields)",
-              "sortBy": "(5 fields)",
-              "make": "(5 fields)",
-              "model": "(5 fields)",
-              "carType": "(5 fields)",
-              "topLevelVehicleType": "(5 fields)",
-              "transmissionType": "(5 fields)",
-              "rentalRoomType": "(5 fields)",
-              "saleType": "(5 fields)",
-              "sellerType": "(5 fields)",
-              "itemCondition": "(5 fields)",
-              "constructionStatus": "(5 fields)",
-              "contextual": "(5 fields)",
-              "vehicleExteriorColors": "(5 fields)",
-              "vehicleInteriorColors": "(5 fields)",
-              "query": "(5 fields)",
-              "notif_id": "(5 fields)",
-              "notif_t": "(5 fields)",
-              "referral_code": "(5 fields)",
-              "referral_story_type": "(6 fields)",
-              "merchantId": "(5 fields)",
-              "ref": "(6 fields)",
-              "ad_id": "(5 fields)",
-              "listing_id": "(5 fields)",
-              "hoisted": "(5 fields)",
-              "ref_id": "(5 fields)",
-              "view_public_for": "(5 fields)",
-              "tracking": "(5 fields)",
-              "dynamicUrlInfo": "(5 fields)",
-              "token": "(taken out)",
-              "is_background": "(5 fields)",
-              "hoisted_story_ids": "(5 fields)",
-              "hoisted_story_optimistic_data": "(5 fields)",
-              "slug": "(5 fields)"
+              "viewas": "(5 fields)",
+              "ad_account_id": "(5 fields)",
+              "collection_token": "(taken out)",
+              "comment_id": "(5 fields)",
+              "id": "(4 fields)",
+              "log_filter": "(5 fields)",
+              "reply_comment_id": "(5 fields)",
+              "ref": "(5 fields)",
+              "set": "(5 fields)",
+              "sk": "(5 fields)",
+              "section": "(6 fields)",
+              "slug": "(5 fields)",
+              "boosted_auto_open": "(5 fields)",
+              "boost_post_id": "(5 fields)",
+              "target_id": "(5 fields)",
+              "boost_id": "(5 fields)",
+              "boost_ref": "(5 fields)",
+              "so": "(5 fields)",
+              "request_data": "(5 fields)",
+              "show_switched_toast": "(5 fields)",
+              "show_switched_tooltip": "(5 fields)",
+              "is_tour_dismissed": "(5 fields)",
+              "is_tour_completed": "(5 fields)",
+              "show_podcast_settings": "(5 fields)",
+              "show_community_review_changes": "(5 fields)",
+              "podcast_id": "(5 fields)",
+              "modal": "(5 fields)",
+              "modal_param": "(5 fields)",
+              "delegate_page_id": "(5 fields)",
+              "profile_header_chips_fbid": "(5 fields)",
+              "show_advanced_protection_interstitial": "(5 fields)",
+              "filter": "(5 fields)",
+              "post": "(5 fields)",
+              "story_id": "(5 fields)",
+              "open_field": "(6 fields)",
+              "multi_permalinks": "(5 fields)",
+              "should_open_composer": "(5 fields)",
+              "event_id": "(5 fields)",
+              "sorting_setting": "(6 fields)",
+              "badge_type": "(6 fields)",
+              "show_community_rollback_toast": "(5 fields)",
+              "show_community_rollback": "(5 fields)",
+              "show_follower_visibility_disclosure": "(5 fields)",
+              "referral_source": "(5 fields)",
+              "__cft__": "(5 fields)",
+              "fb_profile_edit_entry_point": "(5 fields)"
             },
-            "routePath": "/marketplace/item/{?slug}/{listing_id}/"
+            "routePath": "/profile.php"
           }
         ]
       }
@@ -307,12 +279,12 @@ Answered:
       "hsrp": {
         "hblp": {
           "consistency": {
-            "rev": 1051444067
+            "rev": 1051718708
           },
           "rsrcMap": {
-            "csr:_1g_0_/f": {
+            "csr:_1a_0_R1": {
               "type": "csr",
-              "src": ":1,2,216",
+              "src": ":1,15,2,38",
               "c": 1
             }
           },
@@ -328,11 +300,11 @@ Answered:
               "JSResourceReferenceImpl"
             ],
             [
-              "(2 items)"
+              "(3 items)"
             ]
           ],
           [
-            "MarketplacePermalinkRoot.entrypoint"
+            "ProfileCometTimelineListViewRouteRoot.entrypoint"
           ],
           [
             "emptyFunction",
@@ -365,18 +337,18 @@ Answered:
         ]
       },
       "allResources": [
-        "csr:_1g_0_/f"
+        "csr:_1a_0_R1"
       ],
       "tieredResources": {
         "r": [
-          "csr:_1g_0_/f"
+          "csr:_1a_0_R1"
         ],
         "rdfds": [],
         "rds": []
       }
     },
     "log_roots": [
-      "CometRouteMarketplacePermalinkJSRoot"
+      "CometRouteProfileTimelineListViewJSRoot"
     ],
     "enable_bulk_route_fetch": true
   },
@@ -385,14 +357,14 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 450 ms
+**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 202 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594063207669",
-  "route_url": "/marketplace/item/1098292579663100/?ref=browse_tab&referral_code=marketplace_top_picks&referral_story_type=top_picks&__tn__=!%3AD",
+  "client_previous_actor_id": "61594285317994",
+  "route_url": "/marketplace/114995818516099",
   "routing_namespace": "fb_comet"
 }
 ```
@@ -407,76 +379,55 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594063207669",
+          "actorID": "61594285317994",
           "rootView": {
             "allResources": [
+              "(1 fields)",
               "(1 fields)",
               "(1 fields)"
             ],
             "resource": {
-              "__jsr": "CometMarketplacePermalinkRoot.react"
+              "__jsr": "CometMarketplaceHomeRoot.react"
             },
             "props": {
-              "isCrawler": false,
               "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/1098292579663100/",
-              "shouldFetchLoggedOutSimilarListings": false
+              "isCrawler": false,
+              "hoisted": false,
+              "seoPagePath": "facebook.com/marketplace/114995818516099/"
             },
             "entryPoint": {
-              "__dr": "MarketplacePermalinkRoot.entrypoint"
+              "__dr": "CometMarketplaceHomeRoot.entrypoint"
             }
           },
-          "tracePolicy": "comet.marketplace.item",
+          "tracePolicy": "comet.marketplace.home",
           "meta": {
-            "title": "Marketplace – Taylor 514CE Builders Edition -\nPlayed Twice",
+            "title": "Facebook Marketplace",
             "accessory": null,
             "favicon": null
           },
           "prefetchable": true,
-          "canonicalRouteName": "comet.fbweb.CometMarketplacePermalinkRoute",
-          "entityKeyConfig": {
-            "entity_type": {
-              "source": "constant",
-              "value": "mp_listing"
-            },
-            "entity_id": {
-              "source": "param",
-              "value": "listing_id"
-            }
-          },
+          "canonicalRouteName": "comet.fbweb.CometMarketplaceHomeRoute",
           "hostableView": {
             "allResources": [
+              "(1 fields)",
               "(1 fields)",
               "(1 fields)"
             ],
             "resource": {
-              "__jsr": "CometMarketplacePermalinkRoot.react"
+              "__jsr": "CometMarketplaceHomeRoot.react"
             },
             "props": {
-              "isCrawler": false,
               "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/1098292579663100/",
-              "shouldFetchLoggedOutSimilarListings": false
+              "isCrawler": false,
+              "hoisted": false,
+              "seoPagePath": "facebook.com/marketplace/114995818516099/"
             },
             "entryPoint": {
-              "__dr": "MarketplacePermalinkRoot.entrypoint"
+              "__dr": "CometMarketplaceHomeRoot.entrypoint"
             }
           },
-          "useCloseButton": true,
           "tabKey": "marketplace",
-          "label": "Marketplace listing viewer",
-          "hideNotificationToasts": true,
-          "isNavigationEligibleForForcedRefresh": false,
-          "canBePushView": true,
-          "showMessengerJewel": true,
-          "blockUnloadHooks": true,
-          "enableFullPageAutoYOverflow": true,
           "concurrentSafe": true,
-          "stripParams": [
-            "token",
-            "hoisted_story_ids",
-            "hoisted_story_optimistic_data"
-          ],
           "productAttributionId": "1606854132932955",
           "canonicalUrl": null
         },
@@ -532,22 +483,17 @@ Answered:
               "query": null,
               "notif_id": null,
               "notif_t": null,
-              "referral_code": "marketplace_top_picks",
-              "referral_story_type": "top_picks",
+              "referral_code": null,
+              "referral_story_type": null,
               "merchantId": null,
-              "ref": "browse_tab",
-              "ad_id": null,
-              "listing_id": "1098292579663100",
-              "hoisted": false,
-              "ref_id": null,
-              "view_public_for": null,
-              "tracking": null,
-              "dynamicUrlInfo": null,
-              "token": null,
-              "is_background": false,
-              "hoisted_story_ids": null,
-              "hoisted_story_optimistic_data": null,
-              "slug": null
+              "ref": null,
+              "location_id": "114995818516099",
+              "hoisted_items": null,
+              "for_sale_item_id": null,
+              "seller_profile": null,
+              "unavailable_product": null,
+              "radius_in_km": null,
+              "unavailable_content_type": null
             },
             "routeConflicts": null,
             "routeParams": {
@@ -603,21 +549,16 @@ Answered:
               "referral_code": "(5 fields)",
               "referral_story_type": "(6 fields)",
               "merchantId": "(5 fields)",
-              "ref": "(6 fields)",
-              "ad_id": "(5 fields)",
-              "listing_id": "(5 fields)",
-              "hoisted": "(5 fields)",
-              "ref_id": "(5 fields)",
-              "view_public_for": "(5 fields)",
-              "tracking": "(5 fields)",
-              "dynamicUrlInfo": "(5 fields)",
-              "token": "(taken out)",
-              "is_background": "(5 fields)",
-              "hoisted_story_ids": "(5 fields)",
-              "hoisted_story_optimistic_data": "(5 fields)",
-              "slug": "(5 fields)"
+              "ref": "(5 fields)",
+              "location_id": "(5 fields)",
+              "hoisted_items": "(5 fields)",
+              "for_sale_item_id": "(5 fields)",
+              "seller_profile": "(5 fields)",
+              "unavailable_product": "(5 fields)",
+              "radius_in_km": "(5 fields)",
+              "unavailable_content_type": "(5 fields)"
             },
-            "routePath": "/marketplace/item/{?slug}/{listing_id}/"
+            "routePath": "/marketplace/{location_id}/"
           }
         ]
       }
@@ -626,12 +567,12 @@ Answered:
       "hsrp": {
         "hblp": {
           "consistency": {
-            "rev": 1051444067
+            "rev": 1051718708
           },
           "rsrcMap": {
-            "csr:_1q_0_jT": {
+            "csr:_1w_0_1K": {
               "type": "csr",
-              "src": ":1,2,216",
+              "src": ":1,248,143,2,78",
               "c": 1
             }
           },
@@ -647,11 +588,11 @@ Answered:
               "JSResourceReferenceImpl"
             ],
             [
-              "(2 items)"
+              "(3 items)"
             ]
           ],
           [
-            "MarketplacePermalinkRoot.entrypoint"
+            "CometMarketplaceHomeRoot.entrypoint"
           ],
           [
             "emptyFunction",
@@ -684,18 +625,18 @@ Answered:
         ]
       },
       "allResources": [
-        "csr:_1q_0_jT"
+        "csr:_1w_0_1K"
       ],
       "tieredResources": {
         "r": [
-          "csr:_1q_0_jT"
+          "csr:_1w_0_1K"
         ],
         "rdfds": [],
         "rds": []
       }
     },
     "log_roots": [
-      "CometRouteMarketplacePermalinkJSRoot"
+      "CometRouteMarketplaceHomeJSRoot"
     ],
     "enable_bulk_route_fetch": true
   },
@@ -704,14 +645,14 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 465 ms
+**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 212 ms
 
 Sent:
 
 ```json
 {
-  "client_previous_actor_id": "61594063207669",
-  "route_url": "/marketplace/item/2064512760864293/?ref=browse_tab&referral_code=marketplace_top_picks&referral_story_type=top_picks&__tn__=!%3AD",
+  "client_previous_actor_id": "61594285317994",
+  "route_url": "/marketplace/item/1818774979262678/?ref=browse_tab&referral_code=marketplace_top_picks&referral_story_type=top_picks&__tn__=!%3AD",
   "routing_namespace": "fb_comet"
 }
 ```
@@ -726,7 +667,7 @@ Answered:
       "result": {
         "type": "route_definition",
         "exports": {
-          "actorID": "61594063207669",
+          "actorID": "61594285317994",
           "rootView": {
             "allResources": [
               "(1 fields)",
@@ -738,7 +679,7 @@ Answered:
             "props": {
               "isCrawler": false,
               "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/2064512760864293/",
+              "seoPagePath": "facebook.com/marketplace/item/1818774979262678/",
               "shouldFetchLoggedOutSimilarListings": false
             },
             "entryPoint": {
@@ -747,7 +688,7 @@ Answered:
           },
           "tracePolicy": "comet.marketplace.item",
           "meta": {
-            "title": "Marketplace – Large Indoor Catio Pet Enclosure",
+            "title": "Marketplace – Beautiful Ring with heart pattern on side",
             "accessory": null,
             "favicon": null
           },
@@ -774,7 +715,7 @@ Answered:
             "props": {
               "isCrawler": false,
               "location": "(4 fields)",
-              "seoPagePath": "facebook.com/marketplace/item/2064512760864293/",
+              "seoPagePath": "facebook.com/marketplace/item/1818774979262678/",
               "shouldFetchLoggedOutSimilarListings": false
             },
             "entryPoint": {
@@ -856,7 +797,7 @@ Answered:
               "merchantId": null,
               "ref": "browse_tab",
               "ad_id": null,
-              "listing_id": "2064512760864293",
+              "listing_id": "1818774979262678",
               "hoisted": false,
               "ref_id": null,
               "view_public_for": null,
@@ -866,7 +807,8 @@ Answered:
               "is_background": false,
               "hoisted_story_ids": null,
               "hoisted_story_optimistic_data": null,
-              "slug": null
+              "slug": null,
+              "loja_share": null
             },
             "routeConflicts": null,
             "routeParams": {
@@ -934,7 +876,8 @@ Answered:
               "is_background": "(5 fields)",
               "hoisted_story_ids": "(5 fields)",
               "hoisted_story_optimistic_data": "(5 fields)",
-              "slug": "(5 fields)"
+              "slug": "(5 fields)",
+              "loja_share": "(5 fields)"
             },
             "routePath": "/marketplace/item/{?slug}/{listing_id}/"
           }
@@ -945,12 +888,12 @@ Answered:
       "hsrp": {
         "hblp": {
           "consistency": {
-            "rev": 1051444067
+            "rev": 1051718708
           },
           "rsrcMap": {
-            "csr:_20_0_EG": {
+            "csr:_1m_0_Ou": {
               "type": "csr",
-              "src": ":1,2,216",
+              "src": ":1,143,2",
               "c": 1
             }
           },
@@ -1003,11 +946,11 @@ Answered:
         ]
       },
       "allResources": [
-        "csr:_20_0_EG"
+        "csr:_1m_0_Ou"
       ],
       "tieredResources": {
         "r": [
-          "csr:_20_0_EG"
+          "csr:_1m_0_Ou"
         ],
         "rdfds": [],
         "rds": []

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `...EBFetchBackupIdsSharedFragment` |
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
-| rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
+| rea | `ev_d959bacd44309f0582dcc518b28bd1aad89b10a3d712a3d167a132109105edb6` |
 
-Seen 150 time(s) in 41 run(s).
+Seen 170 time(s) in 44 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,12 +107,30 @@ Seen 150 time(s) in 41 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 456 ms | 8021 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 509 ms | 6140 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 431–511 ms | 616691–657848 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 196–476 ms | 3612–4899 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 205–206 ms | 3021–5695 ms | — |
+| host | step 5: goto /me | 1 | 200 | 166 ms | 5043 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 177 ms | 9273 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 185 ms | 6397 ms | — |
+| host | step 16: goto / | 1 | 200 | 433 ms | 5611 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 177 ms | 3458 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 187 ms | 2728 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 181 ms | 3342 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 225 ms | 1997 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 159 ms | 2838 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 342 ms | 2720 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 172 ms | 4806 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 176 ms | 2074 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 173 ms | 2280 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 174 ms | 4091 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 187 ms | 9753 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 163 ms | 8981 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 441 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 476 ms
 
 Sent:
 
@@ -131,112 +149,20 @@ Answered:
 ```json
 {
   "data": {
-    "xfb_backup": {
-      "id": "1127653843075648",
-      "backup_tenancy": "PRODUCTION",
-      "is_user_opted_out": false,
-      "has_otc_eligible_devices": false,
-      "encryption_management_delegator_id": null,
-      "virtual_devices": [
-        {
-          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
-          "device_type": "HSM",
-          "device_created_on": "Chrome",
-          "creation_time": 1792663635,
-          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
-        }
-      ],
-      "devices": {
-        "edges": [
-          {
-            "node": {
-              "id": "1127653846408981"
-            }
-          }
-        ]
-      }
-    },
-    "xfb_eb_user_preferences": {
-      "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
-    }
+    "xfb_backup": null,
+    "xfb_eb_user_preferences": null
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742733443,
-      "time_at_flush_ms": 1792742733475
+      "request_start_time_ms": 1793037999955,
+      "time_at_flush_ms": 1793037999981
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 386 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "30613466",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "25220416984279164",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=30613466"
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "xfb_backup": {
-      "id": "1127653843075648",
-      "backup_tenancy": "PRODUCTION",
-      "is_user_opted_out": false,
-      "has_otc_eligible_devices": false,
-      "encryption_management_delegator_id": null,
-      "virtual_devices": [
-        {
-          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
-          "device_type": "HSM",
-          "device_created_on": "Chrome",
-          "creation_time": 1792663635,
-          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
-        }
-      ],
-      "devices": {
-        "edges": [
-          {
-            "node": {
-              "id": "1127653846408981"
-            }
-          }
-        ]
-      }
-    },
-    "xfb_eb_user_preferences": {
-      "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742782428,
-      "time_at_flush_ms": 1792742782449
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 376 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 205 ms
 
 Sent:
 
@@ -255,41 +181,45 @@ Answered:
 ```json
 {
   "data": {
-    "xfb_backup": {
-      "id": "1127653843075648",
-      "backup_tenancy": "PRODUCTION",
-      "is_user_opted_out": false,
-      "has_otc_eligible_devices": false,
-      "encryption_management_delegator_id": null,
-      "virtual_devices": [
-        {
-          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
-          "device_type": "HSM",
-          "device_created_on": "Chrome",
-          "creation_time": 1792663635,
-          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
-          "id": "1127653853075647"
-        }
-      ],
-      "devices": {
-        "edges": [
-          {
-            "node": {
-              "id": "1127653846408981"
-            }
-          }
-        ]
-      }
-    },
-    "xfb_eb_user_preferences": {
-      "onboarding_decision": "BACKUP_CREATED",
-      "id": "1616100223633369"
-    }
+    "xfb_backup": null,
+    "xfb_eb_user_preferences": null
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742814804,
-      "time_at_flush_ms": 1792742814826
+      "request_start_time_ms": 1793038028389,
+      "time_at_flush_ms": 1793038028420
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 166 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "25220416984279164"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": null,
+    "xfb_eb_user_preferences": null
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038043587,
+      "time_at_flush_ms": 1793038043611
     },
     "is_final": true
   }

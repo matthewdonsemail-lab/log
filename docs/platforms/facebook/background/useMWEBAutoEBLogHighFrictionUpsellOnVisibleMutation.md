@@ -11,20 +11,21 @@
 | Sends | `is_new_user_soft_block`, `is_new_user_upsell` |
 | Reads | `xfb_mw_eb_log_auto_eb_high_friction_upsell_impression.did_log_impression`, `xfb_mw_eb_log_auto_eb_high_friction_upsell_impression.next_evergreen_pin_upsell_display_timestamp` |
 | Called from | `useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation` |
-| rea | `ev_698131f96ef00c75e52d40f021e3ab9fac9385e20bd3b94a6386aa30c6efd891` |
+| rea | `ev_062b90cc4064c410414e9804fa5d824221bb0d2a4d78d7648b090ef9987bac68` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 25: goto /messages/ | 2 | 200 | 390–498 ms | 2688–3681 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3318 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 344 ms | 4643 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T100521_61594063207669**, step 1: goto /messages/: 200, 357 ms
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 344 ms
 
 Sent:
 
@@ -53,8 +54,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792663538664,
-      "time_at_flush_ms": 1792663538693
+      "request_start_time_ms": 1793038455289,
+      "time_at_flush_ms": 1793038455488
     },
     "is_final": true
   }

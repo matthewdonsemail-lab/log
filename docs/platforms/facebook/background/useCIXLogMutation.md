@@ -11,9 +11,9 @@
 | Sends | `input` |
 | Reads | `cix_log.__typename` |
 | Called from | `useCIXLogMutation` |
-| rea | `ev_861b046d2fca8f66f0fb54a8cbcb72051f984ac968338f63fa57bbc89194bb2d` |
+| rea | `ev_0ca36e9f0272f54d6efc377d69610c37c2f02cb2d73b8dde56b76160adbc8ead` |
 
-Seen 12 time(s) in 6 run(s).
+Seen 14 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,12 +29,14 @@ Seen 12 time(s) in 6 run(s).
 | warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 445 ms | 290 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 384 ms | 1573 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 392 ms | 3051 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 194 ms | 1144 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 172 ms | 1220 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: +213px in 7 wheel steps, 453 ms: 200, 445 ms
+**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 194 ms
 
 Sent:
 
@@ -46,11 +48,11 @@ Sent:
   "variables": {
     "input": {
       "frx": {
-        "context": "{\"session_id\":\"adffeb56-4cac-4a66-b463-dc2a9d952d19\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"27743469221988791\"}",
+        "context": "{\"session_id\":\"a3c99675-e371-4f34-9bbe-c54b4e7989b5\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"29987156274207440\"}",
         "frx_menu_item_loaded": null,
-        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742061111,904453,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1749699906261391"
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038230014,797264,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,1606854132932955,494,1818774979262678"
       },
-      "actor_id": "61594063207669",
+      "actor_id": "61594285317994",
       "client_mutation_id": "1"
     }
   },
@@ -69,15 +71,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742065852,
-      "time_at_flush_ms": 1792742065904
+      "request_start_time_ms": 1793038229438,
+      "time_at_flush_ms": 1793038229468
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 384 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 172 ms
 
 Sent:
 
@@ -89,11 +91,11 @@ Sent:
   "variables": {
     "input": {
       "frx": {
-        "context": "{\"session_id\":\"d4362e68-8642-4c20-894a-0cfc7a92525d\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"28849178441364999\"}",
+        "context": "{\"session_id\":\"b3d92a3a-357f-4d8c-a7a1-1ac47fe02e73\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"29436407615976563\"}",
         "frx_menu_item_loaded": null,
-        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742072683,373102,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1098292579663100"
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038240744,92809,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,1606854132932955,494,2249546198922840"
       },
-      "actor_id": "61594063207669",
+      "actor_id": "61594285317994",
       "client_mutation_id": "4"
     }
   },
@@ -112,51 +114,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742074008,
-      "time_at_flush_ms": 1792742074054
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 392 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useCIXLogMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "frx": {
-        "context": "{\"session_id\":\"5d0d97ca-9b93-4243-bb01-56693cf1b52b\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"28993031653624601\"}",
-        "frx_menu_item_loaded": null,
-        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742085256,781319,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,2064512760864293"
-      },
-      "actor_id": "61594063207669",
-      "client_mutation_id": "7"
-    }
-  },
-  "doc_id": "24438951589125380"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "cix_log": {
-      "__typename": "CIXLoggerOutput"
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742086778,
-      "time_at_flush_ms": 1792742086838
+      "request_start_time_ms": 1793038240068,
+      "time_at_flush_ms": 1793038240094
     },
     "is_final": true
   }

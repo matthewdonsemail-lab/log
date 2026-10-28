@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `fetchMWChatVideoAutoplaySetting` |
-| rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
+| rea | `ev_280efdfff44b1be4745a38bc69b5dc0974ce7ce8c19b35e99da09e09d981cf4e` |
 
-Seen 151 time(s) in 41 run(s).
+Seen 171 time(s) in 44 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,12 +107,30 @@ Seen 151 time(s) in 41 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 432 ms | 4233 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 452 ms | 5757 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 452–590 ms | 614845–656151 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 234–380 ms | 2922–3798 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 211–241 ms | 2247–4649 ms | — |
+| host | step 5: goto /me | 1 | 200 | 253 ms | 4169 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 179 ms | 2703 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 209 ms | 2350 ms | — |
+| host | step 16: goto / | 1 | 200 | 254 ms | 5076 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 164 ms | 837 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 155 ms | 1240 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 176 ms | 785 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 169 ms | 973 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 164 ms | 859 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 158 ms | 788 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 218 ms | 3830 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 285 ms | 818 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 165 ms | 1750 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 217 ms | 3653 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 157 ms | 5275 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 161 ms | 7952 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 425 ms
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 380 ms
 
 Sent:
 
@@ -139,28 +157,63 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742732007,
-      "time_at_flush_ms": 1792742732028
+      "request_start_time_ms": 1793037999160,
+      "time_at_flush_ms": 1793037999178
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 241 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9713919638685405"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "video_settings": {
+        "autoplay_setting_www": "default_autoplay"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038027385,
+      "time_at_flush_ms": 1793038027408
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 253 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
   "server_timestamps": "true",
   "variables": {},
   "doc_id": "9713919638685405",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=30613466"
+    "qpl_active_flow_ids=25305590"
   ]
 }
 ```
@@ -178,43 +231,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742782111,
-      "time_at_flush_ms": 1792742782130
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 367 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9713919638685405"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "video_settings": {
-        "autoplay_setting_www": "default_autoplay"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792742814035,
-      "time_at_flush_ms": 1792742814052
+      "request_start_time_ms": 1793038042727,
+      "time_at_flush_ms": 1793038042745
     },
     "is_final": true
   }

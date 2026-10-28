@@ -11,9 +11,9 @@
 | Sends | `callerName`, `customPartnerParams`, `hasStory`, `isBizWeb`, `isLinksInPostEnabled`, `privacySelectorRenderLocation`, `privacyWriteID`, `profileID`, `scale`, `serviceNames`, `storyID`, `__relay_internal__pv__ShouldEnableSimplifiedComposerIconsrelayprovider`, `__relay_internal__pv__CometUnifiedVideoCreation_showPrivacyMergerelayprovider`, `__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider`, `__relay_internal__pv__FeedComposerCometRoot_shouldFetchCrosspostMetadatarelayprovider` |
 | Reads | `viewer.actor`, `viewer.feed_comet_composer`, `viewer....FeedComposerComet_viewer` |
 | Called from | `FeedComposerCometRoot.react` |
-| rea | `ev_a7cba304334bc4e14c20455ee7a779e8ff76be7fa130500c1daa6ddab11f6589` |
+| rea | `ev_0e89bb5e3f80e56e66926a82eec59bff1bee6c59b8efb6615e6313f18cee3eb9` |
 
-Seen 10 time(s) in 7 run(s).
+Seen 11 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -24,12 +24,13 @@ Seen 10 time(s) in 7 run(s).
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 3856 ms | 70245 ms | — |
 | inspect | step 3: likePost Like | 1 | 200 | 422 ms | 21003 ms | — |
 | warmup | expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent | 1 | 200 | 729 ms | 4376 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 612 ms | 9359 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent: 200, 729 ms
+**runs/host/20261026T164654_61594285317994**, step 18: clickRole button "…": 200, 612 ms
 
 Sent:
 
@@ -58,7 +59,7 @@ Sent:
     "isBizWeb": false,
     "isLinksInPostEnabled": false,
     "privacySelectorRenderLocation": "COMET_COMPOSER",
-    "profileID": "61594063207669",
+    "profileID": "61594285317994",
     "scale": 1,
     "serviceNames": [
       "CROSS_POSTING_SETTING"
@@ -66,7 +67,7 @@ Sent:
     "storyID": "",
     "__relay_internal__pv__ShouldEnableSimplifiedComposerIconsrelayprovider": false,
     "__relay_internal__pv__CometUnifiedVideoCreation_showPrivacyMergerelayprovider": true,
-    "__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider": false,
+    "__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider": true,
     "__relay_internal__pv__FeedComposerCometRoot_shouldFetchCrosspostMetadatarelayprovider": false
   },
   "doc_id": "29266302386340694"
@@ -82,19 +83,19 @@ Answered:
       "actor": {
         "__typename": "User",
         "__isProfile": "User",
-        "id": "61594063207669",
+        "id": "61594285317994",
         "has_professional_features_for_watch": false,
-        "name": "Bethlehem Trash",
+        "name": "Halima Ndjzn",
         "profile_picture": {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
         },
-        "url": "https://www.facebook.com/profile.php?id=61594063207669",
-        "short_name": "Bethlehem",
+        "url": "https://www.facebook.com/profile.php?id=61594285317994",
+        "short_name": "Halima",
         "viewer": {
           "is_additional_profile_plus": false,
           "is_primary_profile_plus": false,
           "is_eligible_imagine_with_ai_regular_advertiser": false,
-          "is_in_imagine_tier_3_privacy_jurisdiction": true
+          "is_in_imagine_tier_3_privacy_jurisdiction": false
         },
         "profile_plus_category_display_name": null,
         "can_viewer_see_biz_intercept": false,
@@ -118,21 +119,18 @@ Answered:
           "(8 fields)",
           "(8 fields)",
           "(8 fields)",
-          "… 1 more"
+          "… 2 more"
         ],
         "__isICometComposer": "FeedCometComposer",
         "auxiliary_footer_buttons": [],
         "footer_primary_buttons": []
       },
+      "__typename": "Viewer",
       "eligible_promotions": {
         "nodes": []
       },
       "has_outstanding_conflicts_for_privacy_merge": true,
-      "privacy_merge_metadata": {
-        "id": "122126854887468773",
-        "has_seen_privacy_merge_disclaimer": false,
-        "has_resolved_conflicting_privacy_settings": false
-      },
+      "privacy_merge_metadata": null,
       "privacy_conflict_ui_to_display": "DEFAULT_RESOLUTION_TOAST",
       "privacy_merge_conflict_resolution_suggested_selected_option": {
         "name": "Friends",
@@ -144,7 +142,7 @@ Answered:
           "tag_expansion_state": "UNSPECIFIED"
         },
         "post_param": "291667064279714",
-        "id": "edddefcfe1b499ec9b1a11e02944e2b0"
+        "id": "6fd40d63d0bf2d4cc43cc6dbbbf675d1"
       },
       "format_merge_milestone_for_user": "M1"
     },
@@ -198,28 +196,21 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yr/r/rN7eVi60iUg.webp",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yO/r/UnRgJelt7Mg.webp",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yd/r/R9lJq0bdBk6.webp",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yC/r/glLNpLPayUm.webp",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
         "label": null,
         "width": null,
         "height": null,
@@ -232,11 +223,18 @@ Answered:
         "height": null,
         "surface": null
       },
-      "… 2 more"
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yC/r/glLNpLPayUm.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 3 more"
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792741807579,
-      "time_at_flush_ms": 1792741807701
+      "request_start_time_ms": 1793033467412,
+      "time_at_flush_ms": 1793033467813
     },
     "is_final": true,
     "sr_payload": {
@@ -248,16 +246,19 @@ Answered:
         "jsmods": {
           "define": "(7 items)",
           "require": "(7 items)",
-          "phd2_indexes": ":1070,1821,1822,1069,2023,2026,2030,2031,2022,2021,2020,2024,2025,2027,2070,2069,2204,2205,1214,1277"
+          "phd2_indexes": ":1078,1830,1829,1079,2021,2022,2026,2027,2024,2019,2018,2025,2023,2020,2065,2066,2218,2219,2506,2507,1259,2465,1289"
         },
         "allResources": [
+          "+xUmRzs",
           "lK6C1kY",
+          "M7M7EqZ",
           "vnVZghq",
-          "csr:_1b_0_t7",
-          "csr:_1b_1_Rp"
+          "FzYCNQe",
+          "KC6XPea",
+          "… 3 more"
         ],
         "tieredResources": {
-          "r": "(3 items)",
+          "r": "(7 items)",
           "rdfds": "(0 items)",
           "rds": "(1 items)"
         }

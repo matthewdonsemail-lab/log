@@ -11,9 +11,9 @@
 | Sends | `hostVideoId`, `instreamVideoAdType`, `isSponsorHostVideo`, `playerFormat`, `playerSubOrigin`, `storyIdentifier`, `tracePolicy` |
 | Reads | `scrubber.instream_video_ad_breaks`, `scrubber.post_roll_ad_break` |
 | Called from | `useInstreamAdsHaloFetcher` |
-| rea | `ev_e7620b6c51456bc6b623bec8542b1055bc076498c78ecf1fa117dea1dd373822` |
+| rea | `ev_053f102eaa709365ee2ffe9d1f1c5ec72176e347b62b56a02a25b08f003f9c30` |
 
-Seen 71 time(s) in 10 run(s).
+Seen 72 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -74,12 +74,13 @@ Seen 71 time(s) in 10 run(s).
 | inspect | step 83: clickRole button "…" | 1 | 200 | 507 ms | 3016 ms | — |
 | inspect | step 4: clickRole button "…" | 1 | 200 | 444 ms | 2031 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 406 ms | 6929 ms | — |
+| host | scroll: +589px in 14 wheel steps, 950 ms | 1 | 200 | 348 ms | 2415 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 4: clickRole button "…": 200, 444 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +589px in 14 wheel steps, 950 ms: 200, 348 ms
 
 Sent:
 
@@ -89,10 +90,10 @@ Sent:
   "fb_api_req_friendly_name": "useInstreamAdsHaloFetcherQuery",
   "server_timestamps": "true",
   "variables": {
-    "hostVideoId": "1607183873661381",
-    "playerSubOrigin": "fb_shorts_viewer",
-    "playerFormat": "full_screen",
-    "tracePolicy": "comet.reels.tab",
+    "hostVideoId": "2140038816719447",
+    "playerSubOrigin": "fb_reels_video_preview",
+    "playerFormat": "inline",
+    "tracePolicy": "comet.home",
     "instreamVideoAdType": "NONLIVE",
     "storyIdentifier": null,
     "isSponsorHostVideo": false
@@ -113,92 +114,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742959407,
-      "time_at_flush_ms": 1792742959482
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T080801_61594063207669**, step 8: goto /reel/<id>: 200, 406 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useInstreamAdsHaloFetcherQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "hostVideoId": "1607183873661381",
-    "playerSubOrigin": "fb_shorts_viewer",
-    "playerFormat": "full_screen",
-    "tracePolicy": "comet.reels.unified.player",
-    "instreamVideoAdType": "NONLIVE",
-    "storyIdentifier": null,
-    "isSponsorHostVideo": false
-  },
-  "doc_id": "27513705568291109"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "scrubber": {
-      "instream_video_ad_breaks": [],
-      "post_roll_ad_break": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792743022606,
-      "time_at_flush_ms": 1792743022654
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T080801_61594063207669**, step 11: clickRole button "…": 200, 415 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useInstreamAdsHaloFetcherQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "hostVideoId": "1369485747896897",
-    "playerSubOrigin": "fb_shorts_viewer",
-    "playerFormat": "full_screen",
-    "tracePolicy": "comet.reels.unified.player",
-    "instreamVideoAdType": "NONLIVE",
-    "storyIdentifier": null,
-    "isSponsorHostVideo": false
-  },
-  "doc_id": "27513705568291109"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "scrubber": {
-      "instream_video_ad_breaks": [],
-      "post_roll_ad_break": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792743073275,
-      "time_at_flush_ms": 1792743073339
+      "request_start_time_ms": 1793038151833,
+      "time_at_flush_ms": 1793038151950
     },
     "is_final": true
   }

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `viewer....CometHomeContactChannels_viewer` |
 | Called from | `CometHomeContactChannelsContainer.react` |
-| rea | `ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8` |
+| rea | `ev_35fa410287a9c85c64f494708caa3c6ad948b08d7f44bd23aecf36f42d15c87d` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,12 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 808 ms | 219892 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 465 ms | 12042 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 511 ms | 9217 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 244 ms | 12650 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 216 ms | 17038 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 260 ms | 163 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 750 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 244 ms
 
 Sent:
 
@@ -71,21 +74,21 @@ Answered:
       "actor": {
         "__typename": "User",
         "recent_broadcast_channels": [],
-        "id": "61594063207669"
+        "id": "61594285317994"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742237966,
-      "time_at_flush_ms": 1792742237985
+      "request_start_time_ms": 1793038331010,
+      "time_at_flush_ms": 1793038331030
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 612 ms
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 216 ms
 
 Sent:
 
@@ -109,21 +112,21 @@ Answered:
       "actor": {
         "__typename": "User",
         "recent_broadcast_channels": [],
-        "id": "61594063207669"
+        "id": "61594285317994"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396587,
-      "time_at_flush_ms": 1792742396608
+      "request_start_time_ms": 1793038436456,
+      "time_at_flush_ms": 1793038436478
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 465 ms
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 260 ms
 
 Sent:
 
@@ -140,25 +143,7 @@ Sent:
 Answered:
 
 ```json
-{
-  "data": {
-    "viewer": {
-      "is_eligible_for_broadcast_channel_creation": false,
-      "actor": {
-        "__typename": "User",
-        "recent_broadcast_channels": [],
-        "id": "61593939852820"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792911375708,
-      "time_at_flush_ms": 1792911375760
-    },
-    "is_final": true
-  }
-}
+null
 ```
 
 <!-- facts:end -->

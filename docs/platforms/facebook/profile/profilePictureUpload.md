@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_77f49a499f9c045a2c0a4763fb2749925e8804774203e978a1a8c47464af4aa1` |
+| rea | `ev_3c0e039b950ea3ccd4fa079004a699ee91d09da4a883e0592a6634df910dc3f8` |
 
-Seen 6 time(s) in 6 run(s).
+Seen 7 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,12 +22,13 @@ Seen 6 time(s) in 6 run(s).
 | inspect | step 5: upload e1313 | 1 | 200 | 4784 ms | 1954 ms | — |
 | host | step 20: uploadRole button "…" | 1 | 200 | 4065 ms | 2509 ms | — |
 | host | step 38: uploadRole button "…" | 1 | 200 | 1924 ms | 1887 ms | — |
+| host | step 10: uploadRole button "…" | 1 | 200 | 1643 ms | 1182 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T164523_61593843527201**, step 5: upload e1313: 200, 4784 ms
+**runs/host/20261026T180628_61594285317994**, step 10: uploadRole button "…": 200, 1643 ms
 
 Sent:
 
@@ -35,7 +36,7 @@ Sent:
 {
   "query": {
     "photo_source": "57",
-    "profile_id": "61593843527201"
+    "profile_id": "61594285317994"
   },
   "body": null
 }
@@ -46,77 +47,15 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "A1qhsdjdXmm7IML6dhW4wjI",
+  "rid": "AC4AlGD_QTNVdD2wMcSbQTA",
   "payload": {
-    "fbid": "122123515989461450",
-    "profileID": "61593843527201",
-    "imageURI": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/863613843_122123515995461450_843471129485614990_n.jpg (441 chars)",
-    "imageHeight": 1200,
-    "imageWidth": 896
+    "fbid": "122127009279476177",
+    "profileID": "61594285317994",
+    "imageURI": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/861826748_122127009285476177_3116611628911920417_n.jpg (468 chars)",
+    "imageHeight": 1059,
+    "imageWidth": 803
   },
-  "lid": "7700276948195363920"
-}
-```
-
-**runs/host/20261024T222706_61593981307720**, step 38: uploadRole button "…": 200, 1924 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "photo_source": "57",
-    "profile_id": "61593981307720"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "A1EZzlb4YhcsUHjOuD5GoYV",
-  "payload": {
-    "fbid": "122128629399466043",
-    "profileID": "61593981307720",
-    "imageURI": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/864257525_122128629405466043_8971047615363713674_n.jpg (442 chars)",
-    "imageHeight": 1110,
-    "imageWidth": 815
-  },
-  "lid": "7700366227710634764"
-}
-```
-
-**runs/host/20261024T211541_61593939852820**, step 20: uploadRole button "…": 200, 4065 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "photo_source": "57",
-    "profile_id": "61593939852820"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AEO8zV-F3ra8ArVdAATpOt-",
-  "payload": {
-    "fbid": "122127029205464661",
-    "profileID": "61593939852820",
-    "imageURI": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-6/863325433_122127029211464661_923216486577496458_n.jpg (467 chars)",
-    "imageHeight": 1078,
-    "imageWidth": 817
-  },
-  "lid": "7700347597428916364"
+  "lid": "7701039855905876932"
 }
 ```
 

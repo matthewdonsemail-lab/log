@@ -11,9 +11,9 @@
 | Sends | `excludeBroadcastChannelThreads`, `excludeCmThreads`, `__relay_internal__pv__WebPixelRatiorelayprovider` |
 | Reads | `viewer....CometHomeContactGroups_viewer` |
 | Called from | `CometHomeContactGroupsContainer.react` |
-| rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
+| rea | `ev_6df47e5ce7b8b96b6eae3fe990c854e65a99edc6f046a5fac22235541c94a540` |
 
-Seen 28 time(s) in 17 run(s).
+Seen 31 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,12 +42,15 @@ Seen 28 time(s) in 17 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 869 ms | 219896 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 737 ms | 12045 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 691 ms | 9219 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 528 ms | 12655 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 470 ms | 17039 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 523 ms | 164 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 970 ms
+**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 528 ms
 
 Sent:
 
@@ -74,7 +77,7 @@ Answered:
       "actor": {
         "__typename": "User",
         "should_hide_group_conversations_list": false,
-        "id": "61594063207669"
+        "id": "61594285317994"
       },
       "chat_sidebar_is_collapsed": false,
       "chat_visibility": true,
@@ -85,15 +88,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742237966,
-      "time_at_flush_ms": 1792742238183
+      "request_start_time_ms": 1793038331021,
+      "time_at_flush_ms": 1793038331322
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 787 ms
+**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 470 ms
 
 Sent:
 
@@ -120,7 +123,7 @@ Answered:
       "actor": {
         "__typename": "User",
         "should_hide_group_conversations_list": false,
-        "id": "61594063207669"
+        "id": "61594285317994"
       },
       "chat_sidebar_is_collapsed": false,
       "chat_visibility": true,
@@ -131,15 +134,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396611,
-      "time_at_flush_ms": 1792742396928
+      "request_start_time_ms": 1793038436472,
+      "time_at_flush_ms": 1793038436732
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 737 ms
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 523 ms
 
 Sent:
 
@@ -160,29 +163,7 @@ Sent:
 Answered:
 
 ```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "should_hide_group_conversations_list": false,
-        "id": "61593939852820"
-      },
-      "chat_sidebar_is_collapsed": false,
-      "chat_visibility": true,
-      "message_threads": {
-        "edges": []
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792911375716,
-      "time_at_flush_ms": 1792911376049
-    },
-    "is_final": true
-  }
-}
+null
 ```
 
 <!-- facts:end -->

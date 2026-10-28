@@ -11,9 +11,9 @@
 | Sends | `input` |
 | Reads | `screen_time_sync.aggs` |
 | Called from | `FBScreenTimeLogger.react` |
-| rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
+| rea | `ev_68e9ef803913efd9a768f3bca0ebdc2e2449065f0d511e1716262b1ed86b31d2` |
 
-Seen 103 time(s) in 29 run(s).
+Seen 107 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -63,12 +63,16 @@ Seen 103 time(s) in 29 run(s).
 | flow | step 13: fillRole textbox "…" | 1 | 200 | 615 ms | 12276 ms | — |
 | host | step 41: sellLocation | 5 | 200 | 543–621 ms | 149464–1350100 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 567–622 ms | 150003–450500 ms | — |
+| host | step 31: scroll 1 x 300-600px | 1 | 200 | 261 ms | 517 ms | — |
+| host | scroll: +270px in 8 wheel steps, 7023 ms | 1 | 200 | 300 ms | 66765 ms | — |
+| host | step 3: saveState | 1 | 200 | 327 ms | 15797 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 285 ms | 241632 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 420 ms
+**runs/host/20261026T180628_61594285317994**, step 31: scroll 1 x 300-600px: 200, 261 ms
 
 Sent:
 
@@ -79,47 +83,27 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "61594285317994",
       "client_mutation_id": "1",
-      "device_time_iso": "2026-10-23T07:54:52.628Z",
+      "device_time_iso": "2026-10-26T18:11:41.793Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792742092",
-        "device_timezone": "America/New_York",
+        "device_timestamp": "1793038301",
+        "device_timezone": "America/Vancouver",
         "intervals": [
           {
-            "end_timestamp": "1792731798",
-            "start_timestamp": "1792731337"
-          },
-          {
-            "end_timestamp": "1792732767",
-            "start_timestamp": "1792732562"
-          },
-          {
-            "end_timestamp": "1792737847",
-            "start_timestamp": "1792737807"
-          },
-          {
-            "end_timestamp": "1792740565",
-            "start_timestamp": "1792740545"
-          },
-          {
-            "end_timestamp": "1792740809",
-            "start_timestamp": "1792740691"
-          },
-          {
-            "end_timestamp": "1792742092",
-            "start_timestamp": "1792741789"
+            "end_timestamp": "1793038301",
+            "start_timestamp": "1793038000"
           }
         ],
-        "local_storage_id": "2159989",
+        "local_storage_id": "69249927",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792741789,
-        "today_s": 300
+        "last_sync_timestamp": 1793038000,
+        "today_s": 0
       },
-      "trigger_reason": "REGULAR"
+      "trigger_reason": "EMPTY_STATE"
     }
   },
   "doc_id": "28969188822673160"
@@ -134,56 +118,60 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 1147,
+        "today_s": 875,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742093258,
-      "time_at_flush_ms": 1792742093338
+      "request_start_time_ms": 1793038300805,
+      "time_at_flush_ms": 1793038300916
     },
     "is_final": true
   }
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 806 ms
+**runs/host/20261026T180628_61594285317994**, scroll: +270px in 8 wheel steps, 7023 ms: 200, 300 ms
 
 Sent:
 
 ```json
 {
+  "qpl_active_flow_ids": "521482085",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
-      "client_mutation_id": "1",
-      "device_time_iso": "2026-10-23T07:59:55.380Z",
+      "actor_id": "61594285317994",
+      "client_mutation_id": "2",
+      "device_time_iso": "2026-10-26T18:16:45.552Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792742395",
-        "device_timezone": "America/New_York",
+        "device_timestamp": "1793038605",
+        "device_timezone": "America/Vancouver",
         "intervals": [
           {
-            "end_timestamp": "1792742395",
-            "start_timestamp": "1792741789"
+            "end_timestamp": "1793038605",
+            "start_timestamp": "1793038000"
           }
         ],
-        "local_storage_id": "53504705",
+        "local_storage_id": "37892307",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792742092,
-        "today_s": 1147
+        "last_sync_timestamp": 1793038301,
+        "today_s": 875
       },
       "trigger_reason": "REGULAR"
     }
   },
-  "doc_id": "28969188822673160"
+  "doc_id": "28969188822673160",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=521482085"
+  ]
 }
 ```
 
@@ -195,22 +183,22 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 1450,
+        "today_s": 1179,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792742396315,
-      "time_at_flush_ms": 1792742396414
+      "request_start_time_ms": 1793038604595,
+      "time_at_flush_ms": 1793038604706
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 430 ms
+**runs/host/20261026T170006_61594285317994**, step 3: saveState: 200, 327 ms
 
 Sent:
 
@@ -221,29 +209,29 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61593981307720",
+      "actor_id": "61594285317994",
       "client_mutation_id": "1",
-      "device_time_iso": "2026-10-25T06:52:22.337Z",
+      "device_time_iso": "2026-10-26T17:01:11.176Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792911142",
-        "device_timezone": "America/New_York",
+        "device_timestamp": "1793034071",
+        "device_timezone": "America/Vancouver",
         "intervals": [
           {
-            "end_timestamp": "1792884967",
-            "start_timestamp": "1792884675"
+            "end_timestamp": "1793033988",
+            "start_timestamp": "1793033464"
           },
           {
-            "end_timestamp": "1792911142",
-            "start_timestamp": "1792910839"
+            "end_timestamp": "1793034071",
+            "start_timestamp": "1793034021"
           }
         ],
-        "local_storage_id": "68236101",
+        "local_storage_id": "87908900",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792910839,
-        "today_s": 2619
+        "last_sync_timestamp": 1793033767,
+        "today_s": 303
       },
       "trigger_reason": "REGULAR"
     }
@@ -260,15 +248,15 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 303,
+        "today_s": 574,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792911142327,
-      "time_at_flush_ms": 1792911142364
+      "request_start_time_ms": 1793034070391,
+      "time_at_flush_ms": 1793034070505
     },
     "is_final": true
   }

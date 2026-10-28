@@ -11,9 +11,9 @@
 | Sends | `input` |
 | Reads | `marketplace_set_browse_radius.viewer` |
 | Called from | `CometMarketplaceSetBrowseRadiusMutation` |
-| rea | `ev_de8df333d384b2ad1cb2aac17072e4f280e3ef041a7fecc4615138d38c3313f9` |
+| rea | `ev_0d16bb2d253cbbe06ed0969670f3303b16981024abd36781b1541146bcdaeddf` |
 
-Seen 8 time(s) in 6 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,12 +23,13 @@ Seen 8 time(s) in 6 run(s).
 | inspect | step 13: setLocation 18015 | 1 | 200 | 558 ms | 15364 ms | — |
 | flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 685–687 ms | 5017–6713 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 685–724 ms | 5144–644747 ms | — |
+| host | setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9 | 1 | 200 | 281 ms | 3335 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 10: click e1174: 200, 680 ms
+**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 281 ms
 
 Sent:
 
@@ -41,7 +42,7 @@ Sent:
     "input": {
       "browse_radius": 65,
       "use_suggested_radius": false,
-      "actor_id": "61594063207669",
+      "actor_id": "61594285317994",
       "client_mutation_id": "2"
     }
   },
@@ -58,105 +59,15 @@ Answered:
       "viewer": {
         "marketplace_settings": {
           "browse_radius": 65,
-          "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
+          "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDI4NTMxNzk5NA=="
         }
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792667563493,
-      "time_at_flush_ms": 1792667563550
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T105341_61594063207669**, step 4: setLocation Bethlehem, PA: 200, 751 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMarketplaceSetBrowseRadiusMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "browse_radius": 65,
-      "use_suggested_radius": false,
-      "actor_id": "61594063207669",
-      "client_mutation_id": "2"
-    }
-  },
-  "doc_id": "27350813454583510"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "marketplace_set_browse_radius": {
-      "viewer": {
-        "marketplace_settings": {
-          "browse_radius": 65,
-          "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792666533515,
-      "time_at_flush_ms": 1792666533613
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T105341_61594063207669**, step 13: setLocation 18015: 200, 558 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMarketplaceSetBrowseRadiusMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "browse_radius": 65,
-      "use_suggested_radius": false,
-      "actor_id": "61594063207669",
-      "client_mutation_id": "2"
-    }
-  },
-  "doc_id": "27350813454583510"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "marketplace_set_browse_radius": {
-      "viewer": {
-        "marketplace_settings": {
-          "browse_radius": 65,
-          "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792666806995,
-      "time_at_flush_ms": 1792666807027
+      "request_start_time_ms": 1793038114895,
+      "time_at_flush_ms": 1793038115023
     },
     "is_final": true
   }
