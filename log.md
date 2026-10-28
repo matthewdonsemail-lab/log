@@ -8229,3 +8229,65 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: endcord (sparklost/endcord at d6765b0) is vendored at `vendor/endcord`, and Discord's direct-API engine runs on it: `ping` builds endcord's REST client with its own client properties and user agent and reads `GET /api/v9/users/@me` (a 401 from endcord's constructor, which exits, is caught and answered as sessionDead). Discord signs in with a localStorage token, not a cookie, so a platform's shape can now name localStorage keys (`sessionStorage`): the gate looks for them in the row's `storageOrigins`, and the engine gets them beside the cookies (`storagePath`). A browser run on any platform but Facebook now saves its cookies and origins back to Twenty when it closes (`savePlatformSession`). DIRECT_ROUTES, the command's text, the README and diagrams say vendor/endcord. The Discord tests cover the token gate and the engine loading endcord.
 Why: matt picked endcord from the client count (`clients.md`): vendor it and use it.
 Checked: live: the account's browser opened and closed (11 cookies, 1 origin saved), then `log discord session check --account sourcedandsoldtothehighestbidder` answered loggedIn as sourcedandsoldtothehighestbidder from Discord's own answer, with no browser; a fake token answers 401 sessionDead. `bun run check`: 1118 pass, 0 fail, every gate green.
+
+## 2026-10-28 07:51Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: edited
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: edited
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: edited
+- `docs/platforms/discord/background/discordApiExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiGames.md`: edited
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: edited
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: edited
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: edited
+- `docs/platforms/discord/background/discordApiMetrics.md`: edited
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: edited
+- `docs/platforms/discord/background/discordApiPromotions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: edited
+- `docs/platforms/discord/background/discordApiScience.md`: edited
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: edited
+- `docs/platforms/discord/background/discordApiTokens.md`: edited
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMe.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: edited
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: edited
+- `docs/platforms/discord/background/discordAssets.md`: edited
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: edited
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: edited
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: edited
+- `docs/platforms/discord/operations.json`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: the Discord request docs rebuilt from the run that saved the account's session: 52 calls, the new one `GET /api/v9/users/@me` (the call `log discord session check` makes through endcord), with its reasoning written.
+Why: the pre-push docs gate refused a run newer than the docs (rule 27).
+Checked: `log facebook capture --docs`: 52 Discord requests, all read by rea; `bun run check:facebookClientDocs` passes.

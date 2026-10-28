@@ -10,10 +10,10 @@
 | Path | `discord.com/api/quests/decision` |
 | Sends | — |
 | Reads | `request_id`, `quest`, `creative.creative_type`, `creative.creative_content`, `creative.starts_at`, `creative.ends_at`, `ad_identifiers`, `ad_context`, `response_ttl_seconds`, `metadata_sealed`, `traffic_metadata_raw`, `traffic_metadata_sealed` and 1 more |
-| Called from | `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script892.js:1 parse`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script1090.js:2 anonymous`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_174e329475ebab1777caf4a27080c9e4d23b3acd54f7d6fbccf702a17d3d6988` |
+| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
+| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,10 +21,51 @@ Seen 4 time(s) in 2 run(s).
 | inspect | step 5: click e40 | 1 | 200 | 783 ms | 8359 ms | — |
 | inspect | step 9: goto /channels/@me | 1 | 200 | 607 ms | 3121 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 580 ms | 2467 ms | — |
+| inspect | step 1: goto /login | 1 | 200 | 887 ms | 13524 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 887 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "placement": "1",
+    "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
+    "client_ad_session_id": "8b8ce89d-11bc-4e79-b242-5c10647e14f5",
+    "visible_guild_ids": "1514320796837875834"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "request_id": "19366263-b934-4150-a562-410d493413cb",
+  "quest": null,
+  "creative": {
+    "creative_type": 4,
+    "creative_content": {
+      "ad_content_id": "0"
+    },
+    "starts_at": null,
+    "ends_at": null
+  },
+  "ad_identifiers": null,
+  "ad_context": null,
+  "response_ttl_seconds": 2649,
+  "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLMTRjSDBZV28zYlNsQXQ3NHNYTUlTSnVadzJyaGc0WkFpOVM1RFR4T1ZPQm5ib2dkdURHa21obFVnYU1RbmZCNGZETk55YnVSM0J6RXVuQVNFb2p3bVdxZGlvOXRuZUUwa1htemh1TWxUbHNyOE4yUFdzM09OeG1pZUNaZHNOUmxpcVE3TVBzUmFCWWtOdWw0R3ZRZmhwTVNzSGVEU0pRcFVLUmhYZlpHazNKUE1OTzFKTWwwQmxCNyt6NUlzaUhxdk1LSkhBR0d1MnlVdmQyaWxhK0ZuQWF1cEtnRDVHM1V6aUtJLzdVaGVraEtBdTJFdjNmVFFFT3Y0aDhZ… (740 chars)",
+  "traffic_metadata_raw": "EAIYAQ==",
+  "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMcFNhN1prazcvTVhOTGFSNnZnOElUYitQZXdmKzhaRm1wb3ZtQmdkZGNMZ3ZsUGJ3N0F1REh6UWZFWnpycEN6VHFjc05XaGRvV2pUOGVoZUZVSC9qOFFMdGU3UmtzT0Jxb29hMEdNdGJMV3N4OVlhREFlbUoxQkRVMzQ1M1UifQ==",
+  "provenance_metadata_sealed": null
+}
+```
 
 **runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 644 ms
 
@@ -101,45 +142,6 @@ Answered:
   "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJd0szVzJ1ZkxsREQ1cmZSUEMrb2hoaDNIVVNjcWZqVmsvVENQdFJ3TmhhbWxvaG00WXJhWWxwVmlicWNyQW1PTVZiTThQWUxVUlcyOWw1dTlPM0QwRlJuTDk1ODNmRm5BNVpNV01yS1NEanY0dHQvUjFwVDI4QkwvQ1dGTTNpSG9BVThQNzBxdFhvYjdVY1ViV3ZsUzdmRUNDelo4bDRaVm1ObTQwTVdzRG81RGY1MGVGTkFjLzdZWG1XOXVRa0VEU01HL1JvOUs0L3F2M09DUkF6b3dsVWxPaFFsazhCaFBvekJpWXdXZnBqT1RxTGg1NmxEa0swTGp6YXV3… (740 chars)",
   "traffic_metadata_raw": "EAIYAQ==",
   "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLanU0QzhSeEVDRjMrSWVsQmhBSFhXdmtIQ1R2VlVvVnNRYW1ZbHVXL3d2b1VWYTVNUE5Id2puSjNJVlpJemI0Q0xpaXRDZFFzc0VPc1VDclJLUjZQcUJ5Y05NUlNSSHlFNEcxMUFSNzg1NWFnd3I1RGRISS94enBjTTRJTDgifQ==",
-  "provenance_metadata_sealed": null
-}
-```
-
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 9: goto /channels/@me: 200, 607 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "placement": "1",
-    "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-    "client_ad_session_id": "516ae459-ad26-487e-9f8b-c9bb40b202c1"
-  },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-{
-  "request_id": "192d0d84-f88c-4843-8100-c8c7d0b08e60",
-  "quest": null,
-  "creative": {
-    "creative_type": 4,
-    "creative_content": {
-      "ad_content_id": "0"
-    },
-    "starts_at": null,
-    "ends_at": null
-  },
-  "ad_identifiers": null,
-  "ad_context": null,
-  "response_ttl_seconds": 2624,
-  "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJOTB6VUkxM1FZVVVsS2JtclpMa3lORWJndGIrMkdTdTRtSTRsSFdNM1hDSmNMY056SHNZbk1qckh1d2FQcjFSa21TRmRHR0ZjN2owZkRuOWMrTHlxbWg3bzhmNnBZQnAvMkUxWmcvc1BwUlJnak9EZ28ydHhDNFNwYk9Qd3NnRmFKdEVMUDFwSUNIaHArUm5ia1BLU2kxZnZ3TUhnYWRzdFR3WjIrVHFSQnFuVXJncFlmMkdHOU8vMEJCclJUN3ZrSCthWkJKMFZNUnhGWUhobGtMQTFtaVZQb3NLNTJIS1FCdzU5bmVaWHRRN0ZmK1IweVdySUtFT21OZENI… (740 chars)",
-  "traffic_metadata_raw": "EAIYAQ==",
-  "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLUWxOM25XczVBaHNkM3ZPaGtPUDJqekY2MGN2R0FVQUk5OUgwSVlicS9DTy8xcUdRYzgrNG5MeHZzbWNueHpNMzgxUW9vNEVLczZkeWlQTnNWR3lZUkhnN213VDNTMHNwQmFKSEZreHhlcm5WNHZjMjladVMxVExFdjVKaCsifQ==",
   "provenance_metadata_sealed": null
 }
 ```

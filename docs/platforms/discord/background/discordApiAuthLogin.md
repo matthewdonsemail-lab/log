@@ -10,8 +10,8 @@
 | Path | `discord.com/api/auth/login` |
 | Sends | `login`, `undelete`, `login_source`, `gift_code_sku_id` |
 | Reads | `user_id`, `token`, `user_settings.locale`, `user_settings.theme` |
-| Called from | `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script892.js:1 parse`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script1090.js:2 anonymous`, `runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_e9984540555074550eaec31a6bcdd72393235b2161c6174f5efd88515b43dc15` |
+| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
+| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
 
 Seen 1 time(s) in 1 run(s).
 
