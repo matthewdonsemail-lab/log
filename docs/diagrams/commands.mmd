@@ -20,6 +20,7 @@ flowchart TB
     c_login["login"]
     c_logout["logout"]
     c_whoami["whoami"]
+    c_voice["voice"]
     c_search["search"]
     c_kb["kb"]
     c_new["new"]
@@ -66,6 +67,13 @@ flowchart TB
   end
   subgraph g_reddit["Reddit"]
     c_redditSession["session"]
+  end
+  subgraph g_discord["Discord"]
+    c_discordSession["session"]
+    c_discordChats["chats"]
+    c_discordRead["read"]
+    c_discordWatch["watch"]
+    c_discordSend["send"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -168,6 +176,8 @@ flowchart TB
   mcp --> c_twitterDms
   cli --> c_twitterChat
   c_twitterChat -.- terminal
+  cli --> c_voice
+  mcp --> c_voice
   cli --> c_search
   mcp --> c_search
   cli --> c_kb
@@ -189,6 +199,18 @@ flowchart TB
   mcp --> c_new
   cli --> c_redditSession
   mcp --> c_redditSession
+  cli --> c_discordSession
+  mcp --> c_discordSession
+  cli --> c_discordChats
+  mcp --> c_discordChats
+  cli --> c_discordRead
+  mcp --> c_discordRead
+  c_discordRead --> live
+  cli --> c_discordWatch
+  mcp --> c_discordWatch
+  c_discordWatch --> live
+  cli --> c_discordSend
+  mcp --> c_discordSend
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

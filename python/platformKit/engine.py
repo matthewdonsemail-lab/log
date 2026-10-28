@@ -54,12 +54,17 @@ def redact(text: Any, cookies: dict[str, str]) -> str:
     return out
 
 
-def governor_for(state_root: str, account: str) -> Any:
-    from governor import RequestGovernor
+def governor_for(state_root: str, account: str, writes_per_day: int | None = None) -> Any:
+    from dataclasses import replace
+
+    from governor import GovernorConfig, RequestGovernor
 
     folder = Path(state_root) / account
     folder.mkdir(parents=True, exist_ok=True)
-    return RequestGovernor(state_path=folder / "governor_state.json")
+    config = GovernorConfig.from_env()
+    if writes_per_day and "FBK_GOVERNOR_MUTATION_DAILY" not in os.environ:
+        config = replace(config, mutation_daily_cap=int(writes_per_day))
+    return RequestGovernor(config=config, state_path=folder / "governor_state.json")
 
 
 def not_built(platform: str, action: str) -> dict[str, Any]:
@@ -77,7 +82,9 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
     if action in writes and not str(spec.get("approvedBy") or "").strip():
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
     cookies = normalize_cookies(json.loads(Path(spec["cookiesPath"]).read_text(encoding="utf-8")))
-    governor = governor_for(spec["stateRoot"], spec["account"])
+    if spec.get("storagePath"):
+        cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
+    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"))
     try:
         governor.before_request(is_mutation=action in writes, quiet=True)
     except GovernorBlockedError as e:

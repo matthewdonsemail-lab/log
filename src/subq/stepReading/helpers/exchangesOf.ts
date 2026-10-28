@@ -12,6 +12,15 @@ interface HarEntry {
   time: number
   request: { method: string; url: string; headers: HarHeader[]; postData?: { mimeType?: string; text?: string } }
   response: { status: number; content: { mimeType?: string; text?: string } }
+  _webSocketMessages?: SocketFrame[]
+}
+
+interface SocketFrame {
+  type: 'send' | 'receive'
+  time: number
+  opcode: number
+  data: string
+  _encoding?: string
 }
 
 const SKIPPED_DESTS = new Set(['image', 'script', 'style', 'font', 'video', 'audio', 'track', 'worker', 'sharedworker', 'serviceworker', 'manifest', 'object', 'embed'])
@@ -134,12 +143,49 @@ export function kindOf(entry: HarEntry): 'api' | 'document' | null {
   return /json/i.test(mime) ? 'api' : null
 }
 
+export function frameNameOf(data: unknown, host: string): string {
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const frame = data as Record<string, unknown>
+    if (typeof frame.t === 'string' && frame.t) return `ws ${frame.t}`
+    if (typeof frame.type === 'string' && frame.type) return `ws ${frame.type}`
+    if (typeof frame.op === 'number' || typeof frame.op === 'string') return `ws op${frame.op}`
+  }
+  return `ws ${host}`
+}
+
+export function socketExchangesOf(entry: HarEntry, t0: number, known: ReadonlySet<string>): StepExchange[] {
+  const url = new URL(entry.request.url)
+  return (entry._webSocketMessages ?? []).map((frame) => {
+    const data = frame._encoding ? null : parseJson(frame.data)
+    const name = frameNameOf(data, url.host)
+    const value = data ?? (frame._encoding ? `(${frame._encoding} frame, ${frame.data.length} chars)` : frame.data)
+    return {
+      offsetMs: Math.round(frame.time * 1000) - t0,
+      kind: 'socket' as const,
+      name,
+      method: frame.type === 'send' ? 'SEND' : 'RECV',
+      host: url.host,
+      path: url.pathname,
+      status: 101,
+      ms: 0,
+      sent: frame.type === 'send' ? trimValue(value) : null,
+      answer: frame.type === 'receive' ? trimValue(value) : null,
+      errors: [],
+      known: known.has(name),
+    }
+  })
+}
+
 export function exchangesOf(har: unknown, known: ReadonlySet<string>, documentFields: readonly string[]): StepExchange[] {
   const entries = ((har as { log?: { entries?: HarEntry[] } })?.log?.entries ?? []).slice().sort((a, b) => Date.parse(a.startedDateTime) - Date.parse(b.startedDateTime))
   if (!entries.length) return []
   const t0 = Date.parse(entries[0].startedDateTime)
   const out: StepExchange[] = []
   for (const entry of entries) {
+    if (entry._webSocketMessages?.length) {
+      out.push(...socketExchangesOf(entry, t0, known))
+      continue
+    }
     const kind = kindOf(entry)
     if (!kind) continue
     const url = new URL(entry.request.url)
@@ -159,5 +205,5 @@ export function exchangesOf(har: unknown, known: ReadonlySet<string>, documentFi
       known: kind === 'document' || known.has(name)
     })
   }
-  return out
+  return out.sort((a, b) => a.offsetMs - b.offsetMs)
 }

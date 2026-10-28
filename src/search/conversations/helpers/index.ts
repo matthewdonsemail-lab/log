@@ -1,3 +1,4 @@
 export * from './chunk'
 export * from './embed'
 export * from './fuse'
+export * from './person'

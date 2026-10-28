@@ -11,20 +11,26 @@ import { setStatusAndReplace } from '../../marketplace/replacement/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } from './helpers/index'
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
+import { WRITES_PER_DAY_DEFAULT, writesPerDayOf } from './types'
 
 export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
   twitterSession: { platform: 'twitter', library: 'twikit', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directTwitter' },
   twitterFollows: { platform: 'twitter', library: 'twikit', only: true, surface: 'friendships', method: 'show', when: 'follows read', seam: 'directTwitter' },
   twitterFollowers: { platform: 'twitter', library: 'twikit', only: true, surface: 'friendships', method: 'followers', when: 'followers read', seam: 'directTwitter' },
-  twitterChat: { platform: 'twitter', library: 'twikit', only: true, surface: 'xchat', method: 'unlock_xchat', when: 'chat pin (the PIN is checked against Juicebox before it is saved)', seam: 'directTwitter' },
+  twitterChat: { platform: 'twitter', library: 'twikit', only: true, surface: 'xchat', method: 'unlock_xchat', when: 'chat pin (the PIN is checked against Juicebox before it is saved), chat watch (X pushes each message over wss://chat-ws.x.com, nothing polled)', seam: 'directTwitter' },
   twitterDms: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'inbox', when: 'dms read (the inbox, or one conversation)', seam: 'directTwitter' },
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
   twitterDm: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'send_dm', when: 'dm', seam: 'directTwitter' },
   twitterQueue: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'queue run --live (each like and reply)', seam: 'directTwitter' },
-  redditSession: { platform: 'reddit', library: 'rdvwr', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directReddit' }
+  redditSession: { platform: 'reddit', library: 'rdvwr', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directReddit' },
+  discordSession: { platform: 'discord', library: 'endcord', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directDiscord' },
+  discordChats: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_dms', when: 'chats (the DMs and group DMs)', seam: 'directDiscord' },
+  discordRead: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_messages', when: 'read (a chat or channel, paged with before)', seam: 'directDiscord' },
+  discordWatch: { platform: 'discord', library: 'endcord', only: true, surface: 'gateway', method: 'Gateway', when: 'watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled)', seam: 'directDiscordLive' },
+  discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' }
 }
 
 export function commandEngine(command: string): CommandEngine {
@@ -67,7 +73,7 @@ export function platformStateRoot(platform: string): string {
 }
 
 export function allEngineStates(now: Date = new Date()): LocalEngineState[] {
-  const others = PLATFORMS.filter((p) => p !== 'facebook' && p !== 'twitter').flatMap((p) => localEngineStates(platformStateRoot(p), now).map((s) => ({ ...s, account: `${p} ${s.account}` })))
+  const others = PLATFORMS.filter((p) => p !== 'facebook' && p !== 'twitter').flatMap((p) => localEngineStates(platformStateRoot(p), now).map((s) => ({ ...s, account: `${p} ${s.account}`, writesPerDay: writesPerDayOf(p) })))
   return [...localEngineStates(fbkStateRoot(), now), ...localEngineStates(twitterStateRoot(), now).map((s) => ({ ...s, account: `twitter ${s.account}` })), ...others]
 }
 
@@ -106,7 +112,7 @@ export function engineContext(states: LocalEngineState[] = allEngineStates(), no
   ]
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
-    const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/40 writes today` : 'no requests today'
+    const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'
     lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${s.checkedAt.slice(0, 16)}Z)` : ''}, ${used}${pause}`)
   }
   return lines.join('\n')

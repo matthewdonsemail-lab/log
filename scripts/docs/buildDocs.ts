@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
+import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
@@ -53,10 +54,13 @@ const cliDir = join(root, "src/cli");
 for (const dir of readdirSync(cliDir)) {
   const index = join(cliDir, dir, "index.ts");
   if (dir === "runner" || !existsSync(index)) continue;
-  const names = [...readFileSync(index, "utf8").matchAll(/Command: Command = \{\s*usage: \w+,\s*(?:platform: "\w+",\s*)?name: "(\w+)"/g)].map((m) => m[1]);
-  const usage = new Set(entries.filter((e) => names.includes(e.name)).flatMap((e) => flagsOf(e.usage.join("\n")).map((f) => f.name)));
+  const declared = [...readFileSync(index, "utf8").matchAll(/Command: Command = \{\s*usage: \w+,\s*(?:platform: "(\w+)",\s*)?name: "(\w+)"/g)].map((m) => ({ platform: m[1], name: m[2] }));
+  const names = declared.map((d) => d.name);
+  const owned = COMMANDS.filter((c) => declared.some((d) => d.name === c.name && (!d.platform || d.platform === c.platform)));
+  const keys = new Set(owned.map((c) => commandKey(c)));
+  const usage = new Set(entries.filter((e) => keys.has(e.key)).flatMap((e) => flagsOf(e.usage.join("\n")).map((f) => f.name)));
   const parsed = new Set<string>();
-  for (const command of COMMANDS) if (names.includes(command.name) && command.input) inputFlagNames(command.input).forEach((f) => parsed.add(f));
+  for (const command of owned) if (command.input) inputFlagNames(command.input).forEach((f) => parsed.add(f));
   for (const file of filesUnder(join(cliDir, dir))) {
     for (const m of readFileSync(file, "utf8").matchAll(/parseArgs\([^,]+,\s*\{([^}]*)\}\)/g)) {
       const spec = m[1];
@@ -88,7 +92,7 @@ for (const dir of readdirSync(cliDir)) {
 
 for (const command of COMMANDS) {
   if (!command.input) continue;
-  const entry = entries.find((e) => e.name === command.name);
+  const entry = entries.find((e) => e.key === commandKey(command));
   for (const form of command.input.forms) {
     const head = `${entry?.words ?? command.name}${form.words.length ? ` ${form.words.join(" ")}` : ""}`;
     if (!entry?.usage.some((line) => line === `log ${head}` || line.startsWith(`log ${head} `) || (form.words[0] === "list" && line.startsWith(`log ${entry.words} [list]`)))) problems.push(`log ${command.name}: its input form "${form.words.join(" ") || "(no words)"}" has no usage line starting \`log ${head}\` (rule 56)`);

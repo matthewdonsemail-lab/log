@@ -38,8 +38,11 @@ export interface CommandContext {
   sleep?: (ms: number) => Promise<void>;
   cancelled?: () => boolean;
   directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec) => import("../../twitter/account/session/index.ts").TwitterEngineRun;
+  directTwitterLive?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec, onLive: (event: import("../../twitter/account/session/index.ts").XChatLiveEvent) => void) => Promise<import("../../twitter/account/session/index.ts").TwitterEngineRun>;
   directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
   directReddit?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
+  directDiscord?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
+  directDiscordLive?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void) => Promise<import("../../platformKit/session/index.ts").PlatformEngineRun>;
 }
 
 export interface FlagSpec {

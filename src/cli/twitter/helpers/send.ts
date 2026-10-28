@@ -3,6 +3,7 @@ import type { SendAction } from "../../../twitter/post/send/index.ts";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
+import { ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) that sends it" };
@@ -27,7 +28,7 @@ const SHAPES: Record<SendAction, SendShape> = {
   reply: { action: "reply", verb: "reply to", target: "tweet", text: true, summary: "Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits)" },
   quote: { action: "quote", verb: "quote", target: "tweet", text: true, summary: "Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop" },
   like: { action: "like", verb: "like", target: "tweet", text: false, summary: "Like one post on X, on the direct-API engine; a dry run unless --live", says: "X's favorite answer decides: Done (or already liked, code 139) is sent" },
-  dm: { action: "dm", verb: "dm", target: "userId", text: true, summary: "Send one approved direct message on X, on the direct-API engine; a dry run unless --live", says: "X's answer decides: a conversation id is sent, none is a drop" },
+  dm: { action: "dm", verb: "dm", target: "userId", text: true, summary: "Send one approved direct message on X, on the direct-API engine; a dry run unless --live", says: `X's answer decides: a conversation id is sent, none is a drop. ${ONE_INBOX_NOTE} A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed` },
 };
 
 function usageOf(shape: SendShape): string {
@@ -50,7 +51,7 @@ function inputOf(shape: SendShape): CommandInput {
 export function renderSent(label: string, account: string, answer: TwitterSessionAnswer): string {
   if (answer.ok && answer.event === "sent") {
     if (answer.liked) return `log ${label}: ${account} liked ${answer.tweetId}${answer.already ? " (it was already liked)" : ""}.`;
-    if (answer.conversationId) return `log ${label}: ${account} sent the dm (conversation ${answer.conversationId}).`;
+    if (answer.conversationId) return `log ${label}: ${account} sent the dm (conversation ${answer.conversationId}): delivered, it shows in their X Chat too, so it is never resent.`;
     return `log ${label}: ${account} posted https://x.com/${account}/status/${answer.tweetId}.${answer.forcedPast ? ` Forced past the governor: ${answer.forcedPast}.` : ""}`;
   }
   const reset = answer.rateLimitReset ? `, X's limit resets at ${new Date(answer.rateLimitReset * 1000).toISOString()}` : "";

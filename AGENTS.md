@@ -1083,7 +1083,29 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     p50, p95 and p99, cold and warm, beside a linear scan.
     `src/search/conversations`.
 
-90. 2026-10-27 · matt: "we need to build a knowledge base inside of it",
+90. 2026-10-28 · matt: "stop sending as one." A message drafted on several
+    lines goes out one message per line, in every chat, whatever matt's
+    habit there (`splitPlan`, `src/voice/pairs`). Only `--asOne` sends it as
+    one, and only when matt asks for that. A one-line draft is still split
+    the way he writes in that chat.
+
+91. 2026-10-28 · matt: "make it 60." A Discord account sends up to 60
+    messages a day, not 40 (`WRITES_PER_DAY`, `src/directApi/engine`,
+    handed to the engine's governor in each run's spec). Every other
+    platform keeps 40. `FBK_GOVERNOR_MUTATION_DAILY` still overrides it for
+    one run when matt asks. The hook's status line shows each account's own
+    limit.
+
+92. 2026-10-25 · matt: the self-check's languages are checked by order.
+    AdsPower's browser (SunBrowser 154) adds `en-US, en-GB` after the
+    profile's own languages, whatever the profile says (Kamloops,
+    2026-10-24: `en-CA, en, en-US, en-GB`, three starts refused). The
+    self-check passes when `navigator.languages` starts with the pinned
+    languages (`en-CA, en`), in page and worker, so the account's language
+    still comes first; extras after them are allowed. `language`, Intl and
+    the number locale are still exactly the pinned locale (rules 16-17).
+
+93. 2026-10-27 · matt: "we need to build a knowledge base inside of it",
     all of it, agent memory too, with Redis. The knowledge base lives in
     ListeningKit's Twenty on node02 (`knowledgeArticles`: key, kind, body,
     source, tags, author, content hash; reached over the tailnet at

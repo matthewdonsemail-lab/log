@@ -5,6 +5,7 @@ export const EXCHANGES_FILE = 'exchanges.json'
 export const READING_FILE = 'reading.json'
 export const MAX_QUESTIONS = 128
 export const MAX_STATE_CHARS = 1_000_000
+export const SOCKET_FRAMES_KEPT = 3
 export const MAX_STRING_CHARS = 400
 export const MAX_LIST_ITEMS = 6
 export const MAX_DEPTH = 10
@@ -21,7 +22,7 @@ export const DOCUMENT_FIELDS: Record<string, readonly string[]> = {
 
 export const CODE_LOADING_PATHS = /^\/(static_resources|ajax\/bootloader-endpoint|ajax\/bulk-route-definitions|ajax\/route-definition|btmanifest|rsrc\.php)(\/|$)/i
 
-export type ExchangeKind = 'api' | 'document'
+export type ExchangeKind = 'api' | 'document' | 'socket'
 
 export interface StepExchange {
   offsetMs: number

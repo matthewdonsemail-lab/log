@@ -427,8 +427,9 @@ def compare(observed: dict[str, Any], want: dict[str, Any]) -> tuple[str, str] |
         for key in ("language", "intlLocale", "numberLocale"):
             if values.get(key) != want["locale"]:
                 return "browserLocaleMismatch", f"{realm} {key} is {values.get(key)}, the account's locale is {want['locale']}"
-        if list(values.get("languages") or []) != list(want["languages"]):
-            return "browserLocaleMismatch", f"{realm} navigator.languages is {values.get('languages')}, pinned {want['languages']}"
+        pinned = list(want["languages"])
+        if list(values.get("languages") or [])[: len(pinned)] != pinned:
+            return "browserLocaleMismatch", f"{realm} navigator.languages is {values.get('languages')}, must start with {pinned}"
     ip = observed.get("ip")
     if not ip:
         return "selfCheckFailed", "no IP echo answered through the browser"

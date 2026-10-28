@@ -1,0 +1,1187 @@
+# endcord - Copyright (C) 2025-2026 SparkLost. All Rights Reserved.
+# Source-available under the Endcord License. See LICENSE for terms.
+# Redistribution of modified versions is not permitted.
+
+import ast
+import ctypes
+import http.client
+import importlib.util
+import logging
+import os
+import re
+import shutil
+import ssl
+import struct
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import urllib.parse
+import webbrowser
+from ctypes import wintypes
+
+if sys.platform.startswith("android"):
+    sys.platform = "linux"
+if "bsd" in sys.platform:
+    sys.platform = "linux"
+
+logger = logging.getLogger(__name__)
+REPO_OWNER = "sparklost"
+try:
+    import __main__
+    APP_NAME = __main__.APP_NAME   # set in main.py
+except (AttributeError, NameError):
+    APP_NAME = "endcord"
+VERSION = "1.6.0"
+NO_NOTIFY_SOUND_DE = ("kde", "plasma")   # linux desktops without notification sound
+RUNTIME_TEMP = False   # forces all temp files to be written to runtime dir
+
+# windows specific init
+have_termux_notify = False
+if sys.platform == "win32":
+    import win32clipboard
+    try:
+        from windows_toasts import (
+            AudioSource,
+            Toast,
+            ToastAudio,
+            ToastDisplayImage,
+            WindowsToaster,
+        )
+        toaster = WindowsToaster(APP_NAME)
+    except OSError:
+        toaster = None
+        logger.warn("Failed initializing notification system")
+    # for pasting
+    user32 = ctypes.windll.user32
+    user32.OpenClipboard.argtypes = [wintypes.HWND]
+    user32.IsClipboardFormatAvailable.argtypes = [wintypes.UINT]
+    user32.IsClipboardFormatAvailable.restype = wintypes.BOOL
+    user32.GetClipboardData.argtypes = [wintypes.UINT]
+    user32.GetClipboardData.restype = wintypes.HANDLE
+    kernel32 = ctypes.windll.kernel32
+    kernel32.GlobalLock.argtypes = [wintypes.HANDLE]
+    kernel32.GlobalLock.restype = wintypes.LPVOID
+    kernel32.GlobalUnlock.argtypes = [wintypes.HANDLE]
+    shell32 = ctypes.windll.shell32
+    shell32.DragQueryFileW.argtypes = [wintypes.HANDLE, wintypes.UINT, wintypes.LPWSTR, wintypes.UINT]
+
+# linux specific init
+elif sys.platform == "linux":
+    have_gdbus = shutil.which("gdbus")
+    have_notify_send = shutil.which("notify-send")
+    have_termux_notify = shutil.which("termux-notification")
+    # if this DE has no notification sound, try to get fallback sound
+    no_notify_sound = False
+    fallback_notification_sound = None
+    desktop = os.environ.get("XDG_CURRENT_DESKTOP", "") or os.environ.get("DESKTOP_SESSION", "")
+    if desktop.lower() in NO_NOTIFY_SOUND_DE:
+        no_notify_sound = True
+        path = "/usr/share/sounds/freedesktop/stereo"
+        for keyword in ["message", "notification", "bell"]:
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if keyword in file.lower():
+                        fallback_notification_sound = os.path.join(root, file)
+                        break
+                if fallback_notification_sound:
+                    break
+            if fallback_notification_sound:
+                break
+
+# get platform specific paths
+if sys.platform == "linux":
+    path = os.environ.get("XDG_CONFIG_HOME", "").strip()
+    if path:
+        config_path = os.path.join(path, APP_NAME)
+    else:
+        config_path = f"~/.config/{APP_NAME}"
+    log_path = config_path
+    path = os.environ.get("XDG_RUNTIME_DIR", "").strip()
+    if path:
+        runtime_path = os.path.join(path, APP_NAME)
+    else:
+        # per-user temp dir
+        runtime_path = f"/run/user/{os.getuid()}/{APP_NAME}"
+        # fallback to .cache
+        if not os.access(f"/run/user/{os.getuid()}", os.W_OK):
+            runtime_path = f"~/.cache/{APP_NAME}/runtime"
+    os.makedirs(os.path.expanduser(runtime_path), mode=0o700, exist_ok=True)
+    temp_path = os.path.join(tempfile.gettempdir(), APP_NAME)
+    os.makedirs(os.path.expanduser(temp_path), mode=0o700, exist_ok=True)
+    path = os.environ.get("XDG_CACHE_HOME", "").strip()
+    if path:
+        cache_path = os.path.join(path, APP_NAME)
+    else:
+        cache_path = f"~/.cache/{APP_NAME}"
+    downloads_path = "~/Downloads"
+elif sys.platform == "win32":
+    config_path = os.path.join(os.environ["LOCALAPPDATA"], APP_NAME)
+    log_path = config_path
+    runtime_path = os.path.join(os.environ["LOCALAPPDATA"], "Temp", APP_NAME)
+    temp_path = os.path.join(tempfile.gettempdir(), APP_NAME)
+    cache_path = os.path.join(os.environ["LOCALAPPDATA"], APP_NAME, "Cache")
+    downloads_path = os.path.join(os.environ["USERPROFILE"], "Downloads")
+elif sys.platform == "darwin":
+    config_path = f"~/Library/Application Support/{APP_NAME}"
+    log_path = config_path
+    runtime_path = f"~/Library/Caches/TemporaryItems/{APP_NAME}"
+    temp_path = os.path.join(tempfile.gettempdir(), APP_NAME)
+    cache_path = f"~/Library/Caches/{APP_NAME}"
+    downloads_path = "~/Downloads"
+else:
+    print(f"Unsupported platform: {sys.platform}", file=sys.stderr)
+    sys.exit(1)
+if RUNTIME_TEMP:
+    temp_path = runtime_path
+
+# ensure paths exists
+for app_path in (config_path, log_path, runtime_path, temp_path, cache_path, downloads_path):
+    if not os.path.exists(os.path.expanduser(app_path)):
+        os.makedirs(os.path.expanduser(app_path), exist_ok=True)
+
+
+# platform specific commands
+if sys.platform == "linux":
+    if shutil.which("xdg-open"):
+        runner = "xdg-open"
+    else:
+        runner = None
+    if shutil.which("zenity"):
+        filedialog = "zenity"
+    elif shutil.which("kdialog"):
+        filedialog = "kdialog"
+    else:
+        filedialog = None
+elif sys.platform == "win32":
+    runner = "explorer"
+    import win32con
+    import win32gui
+    filedialog = "windows"
+elif sys.platform == "darwin":
+    runner = "open"
+    filedialog = "mac"
+
+
+# check for audio systems
+have_pipewire = (sys.platform == "linux" and shutil.which("pw-cat") and "pipewire" in subprocess.check_output(["ps", "-A"], text=True))
+have_pulseaudio = (sys.platform == "linux" and shutil.which("paplay") and "pulseaudio" in subprocess.check_output(["ps", "-A"], text=True))
+have_afplay = (sys.platform == "darwin" and shutil.which("afplay"))
+
+
+# create notification channel on termux
+if have_termux_notify:
+    proc = subprocess.Popen(
+        ["termux-notification-channel", "1000", APP_NAME],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def import_soundcard():
+    """Safely import soundcard"""
+    try:
+        if importlib.util.find_spec("soundcard") is not None:
+            import soundcard
+            return soundcard
+        logger.warning("Soundcard library not found, use endcord level=LITE or above")
+        return None
+    except (AssertionError, RuntimeError):
+        logger.warning("Soundcard failed connecting to sound system")
+        return None
+
+
+def notify_send(title, message, sound="message", image_path=None, custom_sound=None):
+    """Send simple notification containing title, message and optionally image, with optional custom notification sound"""
+    if image_path:
+        image_path = os.path.expanduser(image_path)
+    image_path = make_round_image(image_path)
+
+    if sys.platform == "linux":
+        include_sound = []
+        if custom_sound:
+            threading.Thread(target=play_audio, daemon=True, args=(custom_sound, )).start()
+        elif sound:
+            if no_notify_sound and fallback_notification_sound and have_notify_send:
+                threading.Thread(target=play_audio, daemon=True, args=(fallback_notification_sound, )).start()
+            else:
+                include_sound = ["-h", f"string:sound-name:{sound}"]
+        if have_termux_notify:
+            command = ["termux-notification", "--icon=chat", "--sound", "--channel=1000", "-t", title, "-c", message]
+            # if image_path:   # adds it as a large image
+            #     command.insert(2, "--image-path")
+            #     command.insert(3, image_path)
+            proc = subprocess.Popen(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+        elif have_notify_send:
+            command = ["notify-send", "-p", "--app-name", APP_NAME, *include_sound, title, message]
+            if image_path:
+                command.insert(4, "-i")
+                command.insert(5, image_path)
+            proc = subprocess.Popen(
+                command,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            try:
+                return int(proc.communicate()[0].decode().strip("\n"))   # return notification id
+            except ValueError:
+                return None
+        return None
+
+    if sys.platform == "win32" and toaster:
+        notification = Toast()
+        notification.text_fields = [message]
+        if custom_sound:
+            threading.Thread(target=play_audio, daemon=True, args=(custom_sound, )).start()
+        elif sound:
+            notification.audio = ToastAudio(AudioSource.IM)
+        if image_path:
+            notification.AddImage(ToastDisplayImage.fromPath(image_path))
+        toaster.show_toast(notification)
+
+    elif sys.platform == "darwin":
+        if custom_sound:
+            threading.Thread(target=play_audio, daemon=True, args=(custom_sound, )).start()
+        command = ["osascript", "-e", f"'display notification \"{message}\" with title \"{title}\"'"]
+        # osascript cant display image in notification
+        subprocess.Popen(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    return None
+
+
+def notify_remove(notification_id):
+    """Remove notification by its id, linux only"""
+    if sys.platform != "linux" or not have_gdbus:
+        return
+    command = ["gdbus", "call", "--session", "--dest", "org.freedesktop.Notifications", "--object-path", "/org/freedesktop/Notifications", "--method", "org.freedesktop.Notifications.CloseNotification", str(notification_id)]
+    subprocess.Popen(
+        command,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def copy_to_clipboard(text):
+    """Copy text to clipboard, cross-platform"""
+    text = str(text)
+
+    if sys.platform == "linux":
+        if os.getenv("WAYLAND_DISPLAY"):
+            try:
+                proc = subprocess.Popen(
+                    ["wl-copy"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                proc.communicate(input=text.encode("utf-8"))
+            except FileNotFoundError:
+                logger.warning("Cant copy: wl-clipboard not found on system")
+        else:
+            try:
+                proc = subprocess.Popen(
+                    ["xclip", "-selection", "clipboard"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                proc.communicate(input=text.encode("utf-8"))
+            except FileNotFoundError:
+                logger.warning("Cant copy: xclip not found on system")
+
+    elif sys.platform == "win32":
+        win32clipboard.OpenClipboard()
+        try:
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardText(text)
+        except Exception:
+            pass
+        win32clipboard.CloseClipboard()
+
+    elif sys.platform == "darwin":
+        proc = subprocess.Popen(
+            ["pbcopy", "w"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        proc.communicate(input=text.encode("utf-8"))
+
+
+def copy_file_to_clipboard(path):
+    """Copy file from specified path to clipboard, without loading file in RAM"""
+    path = os.path.expanduser(path)
+
+    if sys.platform == "linux":
+        if os.getenv("WAYLAND_DISPLAY"):
+            try:
+                proc = subprocess.Popen(
+                    ["wl-copy", "--type", "text/uri-list"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                proc.communicate(input=f"file://{urllib.parse.quote(path)}\n".encode("utf-8"))
+            except FileNotFoundError:
+                logger.warning("Cant copy: wl-clipboard not found on system")
+        else:
+            try:
+                proc = subprocess.Popen(
+                    ["xclip", "-selection", "clipboard", "-t", "text/uri-list"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                proc.communicate(input=f"file://{urllib.parse.quote(path)}\n".encode("utf-8"))
+            except FileNotFoundError:
+                logger.warning("Cant copy: xclip not found on system")
+
+    elif sys.platform == "win32":
+        path_utf16 = path.encode("utf-16le") + b"\x00\x00"
+        header = struct.pack("<Illii", 20, 0, 0, 0, 1)   # pFiles, pt_x, pt_y, fNC, fWide (utf16)
+        data = header + path_utf16
+        win32clipboard.OpenClipboard()
+        try:
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32con.CF_HDROP, data)
+        except Exception:
+            pass
+        win32clipboard.CloseClipboard()
+
+    elif sys.platform == "darwin":
+        proc = subprocess.Popen(
+            ["pbcopy"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        proc.communicate(input=f"file://{urllib.parse.quote(path)}".encode("utf-8"))
+
+
+def paste_clipboard(save_path=None):
+    """Get files paths, images, or text from clipboard, linux only, needs xclip or wl-clipboard"""
+    if save_path:
+        save_path = os.path.expanduser(save_path)
+    if sys.platform == "linux":
+
+        if os.getenv("WAYLAND_DISPLAY"):
+            list_command = ["wl-paste", "-l"]
+            query_command = ["wl-paste", "-t"]
+            list_types = ""
+            suffix = ""
+        else:
+            list_command = ["xclip", "-selection", "clipboard", "-t"]
+            query_command = list_command
+            list_types = "TARGETS"
+            suffix = "-o"
+
+        try:
+            # get types
+            proc = subprocess.Popen(
+                list_command[:] + ([list_types, suffix] if suffix else []),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            types_list = proc.communicate()[0].decode().split("\n")
+
+            # binary image
+            for num, data_type in enumerate(types_list):
+                if data_type.startswith("image/"):
+                    if not save_path:
+                        return []
+                    file_path = os.path.join(save_path, f"clipboard_image_{int(time.time())}." + types_list[num].split("/")[1])
+                    with open(file_path, "wb") as f:
+                        proc = subprocess.run(
+                            query_command[:] + [types_list[num]] + ([suffix] if suffix else []),
+                            stdout=f,
+                            stderr=subprocess.DEVNULL,
+                            check=False,
+                        )
+                    return [file_path]
+
+            # file path
+            if "text/uri-list" in types_list:
+                proc = subprocess.Popen(
+                    query_command[:] + ["text/uri-list"] + ([suffix] if suffix else []),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL,
+                )
+                data = urllib.parse.unquote(proc.communicate()[0].decode().strip("\n"))
+                return [line[7:] for line in data.splitlines() if line.startswith("file://")]
+
+            # plain text or nothing
+            for data_type in types_list:
+                if "text/plain" in data_type:
+                    proc = subprocess.Popen(
+                        query_command[:] + [data_type] + ([suffix] if suffix else []),
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    return proc.communicate()[0].decode().strip("\n")
+            return []
+
+        except FileNotFoundError:
+            logger.warning("Cant paste: wl-clipboard or xclip not found on system")
+    return []
+
+
+def paste_clipboard_win(save_path=None):
+    """Paste list of file paths text from clipboard"""
+    if sys.platform != "win32" or not user32.OpenClipboard(0):
+        return []
+    try:
+        # file paths
+        if user32.IsClipboardFormatAvailable(15):
+            hdrop = user32.GetClipboardData(15)
+            paths = []
+            if hdrop:
+                count = shell32.DragQueryFileW(hdrop, 0xFFFFFFFF, None, 0)
+                for i in range(count):
+                    length = shell32.DragQueryFileW(hdrop, i, None, 0)
+                    buf = ctypes.create_unicode_buffer(length + 1)
+                    shell32.DragQueryFileW(hdrop, i, buf, length + 1)
+                    paths.append(buf.value)
+            return paths
+        # text
+        if user32.IsClipboardFormatAvailable(13):
+            handle = user32.GetClipboardData(13)
+            if handle:
+                ptr = kernel32.GlobalLock(handle)
+                if ptr:
+                    try:
+                        return ctypes.wstring_at(ptr)
+                    finally:
+                        kernel32.GlobalUnlock(handle)
+    finally:
+        user32.CloseClipboard()   # must be closed
+    return pillow_paste_image(save_path)
+
+
+def pillow_paste_image(save_path):
+    """If there is image in clipboard, save it to temp path using pillow"""
+    try:
+        from PIL import Image, ImageGrab
+        img = ImageGrab.grabclipboard()
+        if isinstance(img, Image.Image):
+            file_path = os.path.join(os.path.expanduser(save_path), f"clipboard_image_{int(time.time())}.png")
+            img.save(file_path)
+            return [file_path]
+        return []
+    except Exception:
+        return []
+
+
+def native_select_files(file_filter=None, multiple=True, auto=False):
+    """Get one or more file paths with native dialog"""
+    if filedialog == "windows":
+        init_dir = os.path.join(os.environ["USERPROFILE"], "Desktop")
+    else:
+        init_dir = os.path.expanduser("~") + "/"
+
+    if sys.platform == "linux" and auto:
+        cmd = ["yazi", "--chooser-file=/dev/stdout", "~"]
+        data = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        paths = []
+        if data.returncode == 0 and data.stdout.strip():
+            paths = [line.strip() for line in data.stdout.strip().split("\n") if line.strip()]
+        return paths
+
+    if filedialog == "zenity":
+        command = [
+            "zenity", "--file-selection",
+            "--title", "Import File",
+            "--filename", init_dir,
+        ]
+        if multiple:
+            command.append("--multiple")
+        if file_filter:
+            for one_filter in file_filter:
+                command.append("--file-filter")
+                command.append(one_filter)
+        data = subprocess.run(command, capture_output=True, text=True, check=False)
+        result = data.stdout.strip()
+        if not result:
+            return []
+        if multiple:
+            return result.split("|")
+        return [result]
+
+    if filedialog == "kdialog":
+        command = [
+            "kdialog", "--getopenfilename",
+            init_dir,
+            "--title", "Import File",
+        ]
+        if multiple:
+            command.append("--multiple")
+            command.append("--separate-output")
+        if file_filter:
+            command.append('"' + "|".join(file_filter) + '"')
+        data = subprocess.run(command, capture_output=True, text=True, check=False)
+        result = data.stdout.strip()
+        if not result:
+            return []
+        if multiple:
+            return result.splitlines()
+        return [result]
+
+    if filedialog == "windows":
+        flags = win32con.OFN_FILEMUSTEXIST | win32con.OFN_EXPLORER
+        if multiple:
+            flags |= win32con.OFN_ALLOWMULTISELECT
+        try:
+            foreground = win32gui.GetForegroundWindow()
+            result = win32gui.GetOpenFileNameW(
+                hwndOwner=foreground,
+                InitialDir=init_dir,
+                Title="Upload Files",
+                Flags=flags,
+            )[0].split("\x00")
+            if not result:
+                return []
+            if len(result) == 1:
+                return result
+            dir_path, *files = result   # first is directory rest are file names
+            return [f"{dir_path}\\{f}" for f in files]
+        except Exception:
+            return []
+
+    elif filedialog == "mac":
+        command = f"""
+        set files to choose file default location "{init_dir}" with prompt "Import File" with multiple selections allowed
+        set out to ""
+        repeat with f in files
+            set out to out & (POSIX path of f) & linefeed
+        end repeat
+        out
+        """
+        result = subprocess.run(
+            ["osascript", "-"],
+            input=command,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        return [p for p in result.stdout.splitlines() if p]
+
+    else:
+        return "ERROR"
+
+    return []
+
+
+def play_audio(path):
+    """Play audio file with various methods on different systems"""
+    if not path:
+        return
+    path = os.path.expanduser(path)
+    if not os.path.exists(path):
+        logger.warn(f"Audio file not found at path: {path}")
+        return
+
+    if sys.platform == "linux":
+        if have_pipewire:
+            try:
+                result = subprocess.run(["pw-cat", "-p", path], capture_output=True, text=True, check=False)
+                if result.returncode == 0:
+                    return
+                logger.error("pw-cat error:", result.stderr.strip() or result.stdout.strip())
+            except Exception as e:
+                logger.error(f"Failed to run pw-cat: {e}")
+        elif have_pulseaudio:
+            try:
+                result = subprocess.run(["paplay", path], capture_output=True, text=True, check=False)
+                if result.returncode == 0:
+                    return
+                logger.error("paplay error:", result.stderr.strip() or result.stdout.strip())
+            except Exception as e:
+                logger.error(f"Failed to run paplay: {e}")
+    elif sys.platform == "darwin" and have_afplay:
+        try:
+            result = subprocess.run(["afplay", path], capture_output=True, text=True, check=False)
+            if result.returncode == 0:
+                return
+            logger.error("afplay error:", result.stderr.strip() or result.stdout.strip())
+        except Exception as e:
+            logger.error(f"Failed to run afplay: {e}")
+        return
+    elif sys.platform == "win32":
+        # no simple windows implementation
+        pass
+
+    # fallback to soundcard
+    import soundfile
+    try:
+        data, samplerate = soundfile.read(path, dtype="float32")
+    except Exception as e:
+        logger.error(f"Error loading sound file: {e}")
+    if not data:
+        return
+    soundcard = import_soundcard()
+    if soundcard:
+        speaker = soundcard.default_speaker()
+        speaker.play(data, samplerate=samplerate)
+
+
+def native_open(path, mpv_path="", yt_in_mpv=True):
+    """Open media file in native application, cross-platform"""
+    if not path:
+        return
+    if path.startswith("https://") and "youtu" in path:
+        if mpv_path and yt_in_mpv:
+            current_runner = mpv_path
+        else:
+            webbrowser.open(path, new=0, autoraise=True)
+            return
+    elif runner:
+        current_runner = runner
+    else:
+        logger.warning("Could not find runner on this platform")
+        return
+    subprocess.Popen(
+        [current_runner, path],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def get_connection(host, port=443, timeout=2, proxy=None):
+    """Get connection object and handle proxying"""
+    if sys.platform == "darwin":
+        import certifi
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+    else:
+        ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    if not proxy:
+        return http.client.HTTPSConnection(host, port, timeout=timeout, context=ssl_context)
+    try:
+        if proxy.startswith("http://") or proxy.startswith("http://"):
+            proxy = urllib.parse.urlsplit(proxy)
+            if proxy.startswith("http://"):
+                connection = http.client.HTTPConnection(proxy.hostname, proxy.port, timeout=timeout, context=ssl_context)
+            else:
+                connection = http.client.HTTPSConnection(proxy.hostname, proxy.port, timeout=timeout, context=ssl_context)
+            connection.set_tunnel(host, port=port)
+        elif proxy.startswith("socks5://"):
+            from python_socks.sync import Proxy
+            proxy = Proxy.from_url(proxy)
+            raw_sock = proxy.connect(dest_host=host, dest_port=port, timeout=10)
+            ssl_context = ssl.create_default_context()
+            proxy_sock = ssl_context.wrap_socket(raw_sock, server_hostname=host)
+            connection = http.client.HTTPSConnection(host, port, timeout=timeout + 5)   # extra time for tor
+            connection.sock = proxy_sock
+        else:
+            logger.warn(f"Invalid proxy: {proxy}")
+            connection = http.client.HTTPSConnection(host, port, timeout=timeout, context=ssl_context)
+    except Exception as e:
+        logger.warn(f"Error connecting to proxy {proxy}: {e}")
+        connection = http.client.HTTPSConnection(host, port, timeout=timeout, context=ssl_context)
+    return connection
+
+
+def find_aspell():
+    """Find aspell executable"""
+    if sys.platform == "linux":
+        if shutil.which("aspell"):
+            return "aspell"
+        return None
+    if sys.platform == "win32":
+        aspell_path = None
+        for name in os.listdir(os.environ.get("ProgramFiles(x86)")):
+            if "Aspell" in name:
+                aspell_path = os.path.join(os.environ.get("ProgramFiles(x86)"), name, "bin\\aspell.exe")
+                if not os.path.exists(aspell_path):
+                    aspell_path = None
+                break
+        return aspell_path
+    logger.info("Spellchecking not supported on this platform")
+
+
+class SpellCheck():
+    """Sentence and word spellchecker"""
+
+    def __init__(self, aspell_mode, aspell_language):
+        self.aspell = None
+        self.aspell_mode = aspell_mode
+        self.aspell_language = aspell_language
+        self.enable = False
+        self.first_run = True
+        self.lock = threading.Lock()
+        if aspell_mode:
+            aspell_path = find_aspell()
+            if aspell_path:
+                self.aspell_path = aspell_path
+                self.enable = True
+                self.start_aspell()
+            else:
+                logger.info("Spellchecking disabled: Aspell not found")
+        else:
+            logger.info("Spellchecking disabled in config")
+
+
+    def start_aspell(self):
+        """Start aspell with selected mode and language"""
+        if self.aspell:
+            return
+        try:
+            start = time.monotonic()
+            self.aspell = subprocess.Popen(
+                [self.aspell_path, "-a", "--sug-mode", self.aspell_mode, "--lang", self.aspell_language],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                bufsize=1,
+            )
+            self.aspell.stdout.readline()
+            logger.info(f"Aspell initialized in {round((time.monotonic() - start)*1000, 3)} ms")
+        except Exception as e:
+            if self.aspell.poll() is not None:
+                aspell_error = self.aspell.stderr.read()
+            else:
+                aspell_error = ""
+            logger.error(f"Aspell initialization error: {e}\n  {aspell_error}")
+            self.enable = False
+
+
+    def check_word(self, word):
+        """Spellcheck single word using aspell"""
+        if not self.aspell:
+            return False
+        if word.isdigit():
+            return False   # dont spellcheck numbers
+        try:
+            with self.lock:
+                self.aspell.stdin.write(word + "\n")
+                self.aspell.stdin.flush()
+                result = self.aspell.stdout.readline().strip()
+                next_line = result
+                while next_line and next_line != "\n":   # read until it prints empty line
+                    next_line = self.aspell.stdout.readline()
+                if result.startswith("*"):
+                    return False
+                return True
+        except Exception as e:
+            if self.aspell.poll() is not None:
+                aspell_error = self.aspell.stderr.read()
+            else:
+                aspell_error = ""
+            logger.error(f"Spellchecker error: {e}\n  {aspell_error}")
+            if self.first_run:   # a fuse if it fails on first word
+                self.enable = False
+            if self.enable:
+                self.stop_aspell()
+                self.start_aspell()
+            return False
+        self.first_run = False
+
+
+    def stop_aspell(self):
+        """Nicely stop aspell process"""
+        if not self.aspell:
+            return
+        self.aspell.stdin.close()
+        self.aspell.terminate()
+        self.aspell.wait()
+        self.aspell = None
+
+
+    def check_list(self, words):
+        """
+        Spellcheck a list of words with aspell.
+        Return list of bools representing whether each word is misspelled or not.
+        """
+        misspelled = []
+        if self.enable:
+            for word in words:
+                if word == "":
+                    misspelled.append(False)
+                else:
+                    misspelled.append(self.check_word(word))
+        else:
+            return [False] * len(words)
+        return misspelled
+
+
+def get_audio_input_devices():
+    """Get all available audio input devices, physical and virtual"""
+    soundcard = import_soundcard()
+    if soundcard:
+        devices = []
+        for mic in soundcard.all_microphones():
+            devices.append(mic.name)
+        return devices
+    return []
+
+
+class Recorder():
+    """Sound recorder"""
+
+    def __init__(self):
+        self.recording = False
+        self.audio_data = []
+
+
+    def record(self):
+        """Continuously record audio"""
+        timer = 0
+        soundcard = import_soundcard()
+        if soundcard:
+            try:
+                os.environ["PULSE_LATENCY_MSEC"] = "20"
+                microphone = soundcard.default_microphone()
+            except Exception as e:
+                logger.warning(f"No microphone found. Error: {e}")
+                self.recording = False
+                return False
+        else:
+            logger.warning("Failed connecting to sound system")
+            self.recording = False
+            return False
+        with microphone.recorder(samplerate=48000, channels=1) as rec:
+            while self.recording:
+                if timer >= 600:   # 10min limit
+                    del self.audio_data
+                    self.recording = False
+                    break
+                audio_data = rec.record(numframes=48000)
+                self.audio_data.append(audio_data)
+                timer += 1
+        return True
+
+
+    def start(self):
+        """Start continuously recording audio"""
+        if not self.recording:
+            self.recording = True
+            self.audio_data = []
+            self.record_thread = threading.Thread(target=self.record, daemon=True)
+            self.record_thread.start()
+            time.sleep(0.1)   # time for thread to try to import soundcard
+            return self.recording
+
+
+    def stop(self):
+        """Stop recording audio and return file path"""
+        import numpy as np
+        import soundfile
+        if self.recording:
+            self.recording = False
+            self.record_thread.join()
+            self.record_thread = None
+            self.audio_data = np.concatenate(self.audio_data, axis=0)
+            save_path = os.path.join(os.path.expanduser(temp_path), "rec-audio-message.ogg")
+            soundfile.write(save_path, self.audio_data, 48000, format="OGG", subtype="OPUS")
+            del self.audio_data
+            return save_path
+
+
+class Player():
+    """Sound loop player"""
+
+    def __init__(self):
+        self.playing = False
+        self.play_thread = None
+
+
+    def play_loop(self, file_path, loop, loop_delay, loop_max):
+        """Play sound file in a loop"""
+        try:
+            soundcard = import_soundcard()
+            if soundcard:
+                import soundfile
+                with soundfile.SoundFile(file_path) as sound:
+                    sample_rate = sound.samplerate
+                    channels = sound.channels
+                    block_size = sample_rate // 20
+                    speaker = soundcard.default_speaker()
+                    start = time.monotonic()
+                    sleep_time = block_size / sample_rate
+                    with speaker.player(samplerate=sample_rate, channels=channels) as stream:
+                        sound.seek(0)
+                        while self.playing:
+                            read_start = time.perf_counter()
+                            if time.monotonic() - start >= loop_max:
+                                self.playing = False
+                                break
+                            if sound.tell() >= len(sound):
+                                if loop:
+                                    sound.seek(0)
+                                    time.sleep(loop_delay)
+                                    read_start = time.perf_counter()
+                                else:
+                                    break
+                            frames = sound.read(block_size, dtype="float32")
+                            read_time = time.perf_counter() - read_start
+                            stream.play(frames)
+                            time.sleep(sleep_time - read_time)
+        except Exception as e:
+            logger.error(f"Playback error: {e}")
+            self.playing = False
+
+
+    def start(self, file_path, loop=False, loop_delay=1, loop_max=60):
+        """Start playing from beginning on loop"""
+        if not self.playing:
+            self.playing = True
+            self.play_thread = threading.Thread(target=self.play_loop, daemon=True, args=(file_path, loop, loop_delay, loop_max))
+            self.play_thread.start()
+
+
+    def stop_playback(self):
+        """Stop playback immediately"""
+        if self.playing:
+            self.playing = False
+        if self.play_thread:
+            self.play_thread.join()
+
+
+def make_round_image_pillow(input_path, output_path, antialias=False):
+    """Create new image with circular shape using pillow"""
+    from PIL import Image, ImageDraw
+    img = Image.open(input_path)
+    source_format = img.format
+    w, h = img.size
+    if img.mode != "RGBA":
+        img = img.convert("RGBA")
+    if antialias:
+        mask = Image.new("L", (w * 4, h * 4), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0, w * 4, h * 4), fill=255)
+        mask = mask.resize((w, h), Image.Resampling.LANCZOS)
+    else:
+        mask = Image.new("L", (w, h), 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0, w, h), fill=255)
+    result = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    result.paste(img, mask=mask)
+    if source_format == "JPEG":
+        output_path = os.path.splitext(output_path)[0] + ".png"
+        result.save(output_path, "PNG")
+    else:
+        result.save(output_path, source_format)
+    return output_path
+
+
+def make_round_image_imagemagick(input_path, output_path, antialias=False):
+    """Create new image with circular shape using imagemagick"""
+    subprocess.run([
+        "magick", input_path,
+        "(",
+            "+clone",
+            "-alpha", "transparent",
+            "-fill", "white",
+            "-antialias" if antialias else "+antialias",
+            "-draw", "circle %[fx:w/2],%[fx:h/2] %[fx:w/2],0",
+        ")",
+        "-alpha", "set",
+        "-compose", "DstIn",
+        "-composite",
+        output_path,
+    ], check=True)
+
+
+def make_round_image_graphicsmagick(input_path, output_path, antialias=False):
+    """Create new image with circular shape using graphicsmagick"""
+    result = subprocess.run(["gm", "identify", "-format", "%w %h", input_path], capture_output=True, text=True, check=True)
+    width, height = map(int, result.stdout.strip().split())
+    mask_path = output_path + "_mask.png"
+    subprocess.run([
+        "gm", "convert",
+        "-size", f"{width}x{height}",
+        "xc:transparent",
+        "-fill", "white",
+        "-antialias" if antialias else "+antialias",
+        "-draw", f"circle {width // 2},{height // 2} {width // 2},0",
+        mask_path,
+    ], check=True)
+    subprocess.run(["gm", "composite", "-compose", "In", input_path, mask_path, output_path], check=True)
+    os.remove(mask_path)
+
+
+def make_round_image(image_path, antialias=False):
+    """
+    Convert image to round image and delete old one, if possible.
+    Use pillow if available, fallback to imagemagick or graphicsmagick if available.
+    Save image as _round and delete original, and dont re-edit same image.
+    """
+    try:
+        if not image_path or not os.path.exists(image_path):
+            return None
+        if "_round" in image_path:
+            return image_path
+        if importlib.util.find_spec("PIL") is not None:
+            base, ext = os.path.splitext(image_path)
+            save_path = base + "_round" + ext
+            make_round_image_pillow(image_path, save_path, antialias)
+            os.remove(image_path)
+            return save_path
+        if shutil.which("magick"):
+            try:
+                base, ext = os.path.splitext(image_path)
+                save_path = base + "_round" + ext
+                make_round_image_imagemagick(image_path, save_path, antialias)
+                os.remove(image_path)
+                return save_path
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                pass
+        elif shutil.which("gm"):
+            try:
+                base, ext = os.path.splitext(image_path)
+                save_path = base + "_round" + ext
+                make_round_image_graphicsmagick(image_path, save_path, antialias)
+                os.remove(image_path)
+                return save_path
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                pass
+        return image_path
+    except FileNotFoundError:   # failsafe in case file was deleted mid-conversion
+        return None
+
+
+def resize_image(image_path, h, w):
+    """Resize image inplace, use pillow if available, fallback to imagemagick if available"""
+    try:
+        if not image_path or not os.path.exists(image_path):
+            return None
+        if importlib.util.find_spec("PIL") is not None:
+            from PIL import Image
+            img = Image.open(image_path)
+            source_format = img.format
+            if img.mode != "RGBA":
+                img = img.convert("RGBA")
+            result = img.resize((w, h), resample=Image.Resampling.LANCZOS)
+            result.save(image_path, source_format)
+            return image_path
+        if shutil.which("magick"):
+            try:
+                subprocess.run(["magick", image_path, "-filter", "Lanczos", "-resize", f"{w}x{h}!", image_path], check=True)
+                return image_path
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                pass
+        elif shutil.which("gm"):
+            try:
+                subprocess.run(["gm", "convert", image_path, "-filter", "Lanczos", "-resize", f"{w}x{h}!", image_path], check=True)
+                return image_path
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                pass
+        return image_path
+    except FileNotFoundError:
+        return None
+
+
+TOKEN_MAP = ("keyword", "string", "comment", "number", "type", "classname", "function", "variable", "preproc", "specialchar", "symbol", "cbracket")
+HTML_REPLACEMENTS = (("&lt;", "<"), ("&gt;", ">"), ("&quot;", '"'), ("&#39;", "'"), ("&nbsp;", " "), ("&amp;", "&"))
+match_html_code_block = re.compile(r"<pre><tt>(.*?)</tt></pre>", re.DOTALL)
+match_span = re.compile(r'<span class="([^"]+)">([^<]*)</span>|([^<]+)')
+
+
+def unescape_html(text):
+    """Decode standard HTML entities"""
+    for entity, char in HTML_REPLACEMENTS:
+        text = text.replace(entity, char)
+    return text
+
+
+def tokenize_code_srchl(code_text, lang, initial_idx=0):
+    """Get token locations for specified language, using GNU source-highlight, return [[start_idx, end_idx, token_id]...]"""
+    cmd = ["source-highlight", f"--src-lang={lang}", "--out-format=html", "--css=style.css"]
+    try:
+        result = subprocess.run(cmd, input=code_text, text=True, capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return []
+    html_output = result.stdout
+    code_block_match = re.search(match_html_code_block, html_output)
+    if not code_block_match:
+        return []
+    html_lines = code_block_match.group(1).splitlines()
+
+    tokens = []
+    start_idx = initial_idx
+    for line in html_lines:
+        for match in match_span.finditer(line):
+            if match.group(1):
+                text = unescape_html(match.group(2))
+                end_idx = start_idx + len(text)
+                try:
+                    token_id = TOKEN_MAP.index(match.group(1))
+                except ValueError:
+                    token_id = None
+                if token_id is not None:
+                    tokens.append([start_idx, end_idx, token_id])
+                start_idx = end_idx
+            elif match.group(3):
+                text = unescape_html(match.group(3))
+                start_idx += len(text)
+        start_idx += 1
+
+    return tokens
+
+
+PYGMENTS_TOKEN_MAP = [
+    "Keyword",
+    "Literal.String",
+    "Comment",
+    "Literal.Number",
+    "Keyword.Type",
+    "Name.Class",
+    "Name.Function",
+    "Name.Variable",
+    "Name.Builtin",
+    "Literal.String.Escape",
+    "Operator",
+    "Punctuation",
+]
+
+
+def tokenize_code_pygments(code_text, lang, initial_idx=0):
+    """Get token locations for specified language using Pygments, return [[start_idx, end_idx, token_id]...]"""
+    cmd = ["pygmentize", f"-l={lang}", "-f=raw"]
+    try:
+        result = subprocess.run(cmd, input=code_text, text=True, capture_output=True, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return []
+
+    tokens = []
+    current_idx = initial_idx
+
+    # line: Token.Keyword\t'def'\n
+    for line in result.stdout.splitlines():
+        if not line:
+            continue
+        parts = line.split("\t", 1)
+        if len(parts) != 2:
+            continue
+        token_type, token_repr = parts
+        token_type = token_type[6:]
+        try:
+            text = ast.literal_eval(token_repr)
+        except (ValueError, SyntaxError):
+            continue
+        end_idx = current_idx + len(text)
+        try:
+            token_id = PYGMENTS_TOKEN_MAP.index(token_type)
+        except ValueError:   # fallback: search for broader token group
+            token_id = None
+            for idx, mapped_type in enumerate(PYGMENTS_TOKEN_MAP):
+                if token_type.startswith(mapped_type):
+                    token_id = idx
+                    break
+        if token_id is not None:
+            tokens.append([current_idx, end_idx, token_id])
+        current_idx = end_idx
+
+    return tokens
