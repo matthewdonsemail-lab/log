@@ -8433,3 +8433,43 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the voice reads every message matt has sent, and judges a draft on his own messages in that chat. `log search index` now reads each Discord chat's whole history (up to 20,000 messages each, was 200). The voice index embeds matt's own wording as well as what was said (a second vector collection, `wording`), and `log voice --with` hands SubQ his closest real wording to the draft and his latest messages in the chat beside his nearest real replies; with a chat, the gate judges on those alone (the tweet guide and his tweet-era DMs only when no chat is named). Each chat's distinctive words are ranked against his whole history correctly (they compared against the wrong total). The inbox hook tells the agent to pull his real messages in the chat before drafting, and to gate against the same chat. One slow test that starts Python and imports endcord's gateway gets 20 s.
 Why: matt: Kennedy could tell it was AI because it wasn't going through all of his conversations; it was using the twitter guide and not understanding him from what he really writes.
 Checked: the full read: 109,545 Discord messages, 62,831 of them matt's (7,464 before); `log voice index`: 20,074 of his replies paired (3,213 before), 551 profiles, 1,450 s; the log group profile is now 529 of his messages (26 before), with his own messages to Kennedy today among the latest. The group post passed the gate on his messages there (voice 0.95, like his replies there 0.97) and went as 2 messages 8 s apart. `bun run check`: 1138 pass; the 3 failures were the search test's old 200 (fixed) and two tests that start Python timing out at 5 s while the search index was embedding; both pass on their own.
+
+## 2026-10-28 11:16Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed function chatsOf
+- `src/inbox/watch/client.ts`: changed function twitterContext
+
+What changed: on X, `log voice --with <handle>` uses matt's whole history, not only X's: an X chat is keyed by the person, so the old DM thread and its X Chat mirror are one chat (no chatAmbiguous between them, as in #59), and its tiers skip the platform, so after that person's own messages the nearest replies come from all 20,074 of his (mostly Discord), and the profile falls back to the one over everything he has written. The X inbox hook now says to pull his real messages to that person with `log voice --with` before drafting and to gate against the same person, as Discord's does.
+Why: matt: use the voice with more of how he writes (Discord) for his Twitter too, then follow up the open X messages and turn on the monitoring.
+Checked: `log voice --with thesmitpatel` found the one conversation and drew on his whole history; the reply to Smit passed (voice 0.97, like his replies there 0.99) and was delivered; the X and Discord watchers are running and the X one pushed the sent message back at once. src/inbox and src/voice tests 10 pass.
+
+## 2026-10-28 13:08Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `src/cli/discord/index.ts`: changed const DISCORD_SEND_USAGE
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/voice/pairs/helpers/split.ts`: changed function splitPlan
+- `src/voice/pairs/pairs.test.ts`: added test "a draft written on several lines goes out one message per line, even where he mostly sends one"
+
+What changed: `splitPlan` now sends a draft written on several lines as one message per line, in every chat. Before, a chat where matt mostly sends one message (A's DM, 51%) collapsed the whole draft into one. A one-line draft is still split from his habit in that chat, and `--asOne` still sends one. `log discord send`'s usage says so, AGENTS.md has it as rule 90, and the MCP `discordSend` tool cites it (rules reviewed through 90).
+Why: matt, 2026-10-28: "stop sending as one", after the reply to A went out as a single message (rule 90).
+Checked: the dry run of the Alpha Bear reply plans 4 messages, one per line, 8 s apart. src/voice/pairs 7 pass and src/mcp pass. src/cli/discord's endcord import test fails the same way on main without this change: this machine's Python doesn't load vendor/endcord.
+
+## 2026-10-28 13:23Z · feat/xVoiceWholeHistory
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/platformKit/engine.py`: changed def governor_for, def run
+- `src/directApi/engine/client.ts`: changed function allEngineStates, function engineContext
+- `src/directApi/engine/engine.test.ts`: added test "discord gets 60 writes a day, every other platform 40, and the hook says each one"
+- `src/directApi/engine/types.ts`: added const WRITES_PER_DAY_DEFAULT, const WRITES_PER_DAY, function writesPerDayOf · changed interface LocalEngineState
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/platformKit/session/client.ts`: changed function runPlatformEngine, function runPlatformEngineLive
+
+What changed: a Discord account now sends up to 60 messages a day, and every other platform keeps 40. The limit per platform is in one place, `WRITES_PER_DAY` (`writesPerDayOf`, `src/directApi/engine`). Both platform engine runs pass it in the spec as `writesPerDay`, and `governor_for` builds the governor's config with that write cap, unless `FBK_GOVERNOR_MUTATION_DAILY` is set (that still wins for a single run). The hook's status line shows each account's own limit ("45/60 writes today" on Discord) instead of a fixed 40. AGENTS.md has it as rule 91, cited on the MCP `discordSend` tool.
+Why: matt, 2026-10-28: "make it 60", after the update to kewlkid stopped 3 messages in at Discord's 40-a-day limit (rule 91).
+Checked: `governor_for` gives 60 with writesPerDay 60, 40 without it, and 25 when `FBK_GOVERNOR_MUTATION_DAILY=25` is set. The new engine test passes. src/mcp, src/directApi and src/voice: 71 pass. tsc is clean and the README was rebuilt.

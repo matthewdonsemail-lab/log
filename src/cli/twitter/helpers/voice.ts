@@ -53,9 +53,15 @@ export function renderVoice(reading: VoiceReading & { notHere?: string[] }): str
 }
 
 function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {
-  return conversations.map((c) => {
+  const seen = new Set<string>();
+  return conversations.filter((c) => {
+    const key = c.platform === "twitter" ? `twitter:${[...c.with].sort().join(",").toLowerCase()}` : `${c.platform}:${c.conversationId}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map((c) => {
     const named = /^group (.+)$/.exec(c.box)?.[1] ?? null;
-    return { id: `${c.platform}:${c.conversationId}`, kind: c.with.length > 1 || c.box.startsWith("group") ? "group" : "dm", name: named, members: c.with, platform: c.platform, target: { platform: c.platform, conversationId: c.conversationId, with: c.with } };
+    return { id: c.platform === "twitter" ? `twitter:${[...c.with].sort().join(",").toLowerCase()}` : `${c.platform}:${c.conversationId}`, kind: c.with.length > 1 || c.box.startsWith("group") ? "group" : "dm", name: named, members: c.with, platform: c.platform, target: c.platform === "twitter" ? { with: c.with } : { platform: c.platform, conversationId: c.conversationId, with: c.with } };
   });
 }
 

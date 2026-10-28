@@ -52,6 +52,8 @@ export function splitDraft(text: string, count: number, startRates: Record<strin
 export function splitPlan(text: string, profile: VoiceProfile | null, asOne = false, startRates: Record<string, number> = {}): SplitPlan {
   const gap = Math.min(SPLIT_GAP.max, Math.max(SPLIT_GAP.min, profile?.burst?.gapSeconds || 3))
   if (asOne) return { parts: [text.trim()], gapSeconds: gap, why: 'sent as one, as asked' }
+  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean)
+  if (lines.length > 1) return { parts: lines, gapSeconds: gap, why: `one message per line of the draft (${lines.length} lines)` }
   const { count, why } = partsFor(text, profile)
   return { parts: splitDraft(text, count, startRates), gapSeconds: gap, why }
 }

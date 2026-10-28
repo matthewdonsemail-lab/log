@@ -177,8 +177,8 @@ function twitterContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said. Then, for each person:`,
     `  1. Read everything with them, the old DM thread and X Chat merged (one conversation, whichever id a message names): \`log ${platform} dms --account ${account} --with <handle>\`.`,
-    '  2. Draft the reply from matt\'s own writing guide, C:/Users/0/.buzz/GUIDES/MATT_WRITING_STYLE.md, using only facts matt has said, answering what they actually asked.',
-    `  3. Gate it: \`log voice --to <handle> --text "<draft>" --context "<what they said>"\` (SubQ against matt's guide and his own messages). Rewrite until it passes.`,
+    '  2. Before writing a word, pull how matt really writes to them: `log voice --to <handle> --with <handle> --context "<what they said>"` (no --text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    `  3. Gate it against the same person: \`log voice --to <handle> --with <handle> --context "<what they said>" --text "<draft>"\`. Rewrite until it passes.`,
     `  4. Show matt the draft and send only when he says (\`log ${platform} dm --account ${account} --userId <id> --text "<draft>" --approvedBy matt --live\`).`,
     ...lines,
   ].join('\n')

@@ -92,6 +92,14 @@ describe('matt\'s voice, per person and per chat', () => {
     expect(splitPlan(draft, profiles['chat:discord:1547936265436012645'], true, starts).parts).toEqual([draft])
   })
 
+  test('a draft written on several lines goes out one message per line, even where he mostly sends one', () => {
+    const profiles = profilesOf(pairsOf([LOG_GROUP]))
+    const lines = 'im sound lad\nappreciate that a lot man\n\nglad the new place is decent'
+    expect(splitPlan(lines, profiles['chat:discord:1555254123148873869'], false).parts).toEqual(['im sound lad', 'appreciate that a lot man', 'glad the new place is decent'])
+    expect(splitPlan(lines, null, false).parts).toHaveLength(3)
+    expect(splitPlan(lines, null, true).parts).toEqual([lines])
+  })
+
   test('a draft doing what he never does in that chat fails, the emoji Kennedy caught first', () => {
     const profile = { ...profilesOf(pairsOf([LOG_GROUP]))['chat:discord:1547936265436012645'], replies: 26, emoji: 0, exclamations: 0.08, lowercase: 0.69 }
     expect(offProfile('haha the 60 year olds are cooked 😭', profile)).toEqual(['an emoji (he uses it in 0 of his 26 messages here)'])

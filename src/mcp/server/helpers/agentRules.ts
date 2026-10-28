@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 89;
+export const RULES_REVIEWED_THROUGH = 91;
 
 export const AGENTS_URI = "log://agents";
 
@@ -86,7 +86,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordChats: [13, 63, 64, 73, 83],
   discordRead: [13, 63, 64, 73, 83],
   discordWatch: [13, 26, 63, 64, 73, 83],
-  discordSend: [8, 13, 63, 64, 73, 83],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];
