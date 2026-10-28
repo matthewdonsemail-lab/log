@@ -23,8 +23,8 @@ flowchart LR
   b_reddit --> drivers
   p_discord["Discord (DISCORD): 1 command of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session"| e_no_client_vendored_yet["no client vendored yet"]
-  e_no_client_vendored_yet --> api
+  p_discord -->|"direct API: discord session"| e_vendor_endcord["vendor/endcord"]
+  e_vendor_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
   anyB["Any platform with a browser path: inspect, flow"]

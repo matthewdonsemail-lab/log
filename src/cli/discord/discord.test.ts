@@ -10,7 +10,7 @@ import { runCli } from "../runner/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
-  twenty.rows.socialAccounts!.push({ id: "discordOne", accountName: "discordOne", platform: "DISCORD", cookies: { session: "x".repeat(20) }, proxy: null } as never);
+  twenty.rows.socialAccounts!.push({ id: "discordOne", accountName: "discordOne", platform: "DISCORD", cookies: [], storageOrigins: [{ origin: "https://discord.com", localStorage: [{ name: "token", value: JSON.stringify("x".repeat(30)) }] }], proxy: null } as never);
   return twenty;
 }
 
@@ -46,14 +46,25 @@ describe("log discord session check", () => {
     expect(r.calls).toEqual([]);
   });
 
-  test("the generated engine answers engineNotBuilt until its client is wired in", () => {
+  test("an account with no Discord token saved is refused before the engine is called", async () => {
+    const twenty = fixture();
+    (twenty.rows.socialAccounts!.find((r) => r.accountName === "discordOne") as unknown as { storageOrigins: unknown }).storageOrigins = [];
+    const r = await run(["discord", "session", "check", "--account", "discordOne"], undefined, twenty);
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("localStorage token");
+    expect(r.calls).toEqual([]);
+  });
+
+  test("the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing", () => {
     const dir = mkdtempSync(join(tmpdir(), "discordEngine"));
     const cookiesPath = join(dir, "cookies.json");
-    writeFileSync(cookiesPath, JSON.stringify({ session: "x" }));
+    writeFileSync(cookiesPath, JSON.stringify({}));
     const spec = join(dir, "spec.json");
-    writeFileSync(spec, JSON.stringify({ action: "ping", account: "discordOne", platform: "discord", stateRoot: join(dir, "state"), cookiesPath }));
+    writeFileSync(spec, JSON.stringify({ action: "send", account: "discordOne", platform: "discord", stateRoot: join(dir, "state"), cookiesPath }));
     const engine = spawnSync(process.env.LOG_PYTHON || "python", [DISCORD_PLATFORM.engine, spec], { encoding: "utf8" });
     if (engine.error) return;
-    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "engineNotBuilt" });
+    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "actionUnknown" });
+    const loads = spawnSync(process.env.LOG_PYTHON || "python", ["-c", "import sys; sys.path.insert(0, 'vendor/endcord'); from endcord import discord, gateway; print(discord.Discord.__name__)"], { encoding: "utf8" });
+    expect(loads.stdout.trim()).toBe("Discord");
   });
 });

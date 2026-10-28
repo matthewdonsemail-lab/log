@@ -8,7 +8,8 @@ export const DISCORD_PLATFORM: PlatformShape = {
   twentyPlatform: 'DISCORD',
   label: 'Discord',
   engine: join(import.meta.dir, '..', '..', '..', '..', 'python', 'discordApi', 'engine.py'),
-  sessionCookies: []
+  sessionCookies: [],
+  sessionStorage: { origin: 'https://discord.com', keys: ['token'] }
 }
 
 export const DISCORD_COOKIE_DOMAIN = '.discord.com'

@@ -41,11 +41,34 @@ export function sessionCookiesOf(raw: unknown): Record<string, string> {
   return {}
 }
 
+export function sessionStorageOf(origins: unknown, wanted: PlatformShape['sessionStorage']): Record<string, string> {
+  if (!wanted || !Array.isArray(origins)) return {}
+  const origin = origins.find((o) => o && typeof o === 'object' && (o as { origin?: unknown }).origin === wanted.origin) as { localStorage?: unknown } | undefined
+  const out: Record<string, string> = {}
+  for (const item of Array.isArray(origin?.localStorage) ? origin!.localStorage : []) {
+    const { name, value } = item as { name?: unknown; value?: unknown }
+    if (typeof name !== 'string' || typeof value !== 'string' || !wanted.keys.includes(name)) continue
+    let text = value
+    try {
+      const parsed = JSON.parse(value)
+      if (typeof parsed === 'string') text = parsed
+    } catch {}
+    if (text) out[name] = text
+  }
+  return out
+}
+
 export function platformGate(account: PlatformAccount, shape: PlatformShape): PlatformGate {
   if (String(account.platform) !== shape.twentyPlatform) return { ok: false, code: 'accountNotOnPlatform', detail: `${account.accountName} is ${account.platform ?? 'no platform'}, not ${shape.twentyPlatform}` }
   if (account.status === 'deactivated') return { ok: false, code: 'accountDeactivated', detail: `${account.accountName} is deactivated` }
   const cookies = sessionCookiesOf(account.cookies)
   const missing = shape.sessionCookies.filter((name) => !cookies[name])
+  if (shape.sessionStorage) {
+    const stored = sessionStorageOf(account.storageOrigins, shape.sessionStorage)
+    const absent = shape.sessionStorage.keys.filter((key) => !stored[key])
+    if (missing.length || absent.length) return { ok: false, code: 'noPlatformSession', detail: `${account.accountName} has no saved ${[...missing, ...absent.map((k) => `${shape.sessionStorage!.origin} localStorage ${k}`)].join(' + ')} in Twenty` }
+    return { ok: true }
+  }
   if (missing.length || Object.keys(cookies).length === 0) return { ok: false, code: 'noPlatformSession', detail: `${account.accountName} has no saved ${missing.length ? missing.join(' + ') : 'cookies'} in Twenty` }
   return { ok: true }
 }
@@ -74,8 +97,10 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
     const cookiesPath = join(dir, 'cookies.json')
     const refreshedPath = join(dir, 'refreshed.json')
     writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
+    const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
+    if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), cookiesPath, refreshedPath }), { mode: 0o600 })
+    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
     const run = spawnSync(process.env.LOG_PYTHON || 'python', [shape.engine, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: PlatformAnswer

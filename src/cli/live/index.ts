@@ -12,7 +12,7 @@ import { connectMachine } from "../../marketplace/connect/index.ts";
 import type { ActOutput, ConnectActorInputs, ConnectOutput, ReadOutput, SaveOutput, SolveOutput } from "../../marketplace/connect/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
+import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, savePlatformSession, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import { settleInBackground } from "../../rea/capture/index.ts";
@@ -72,7 +72,8 @@ export async function keepNewDevice(context: CommandContext, account: FacebookAc
 export async function keepSession(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
   const state = run.readStorageState();
   try {
-    return (await saveSession(context.twenty, account.id, state))
+    const save = !account.platform || account.platform === "FACEBOOK" ? saveSession : savePlatformSession;
+    return (await save(context.twenty, account.id, state))
       ? `Saved ${account.accountName}'s browser session (${state.cookies.length} cookies, ${state.origins.length} origin(s)) to Twenty.`
       : null;
   } catch (error) {

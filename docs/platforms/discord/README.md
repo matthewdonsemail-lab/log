@@ -10,7 +10,9 @@ Made by `log new platform discord`. Discord is a platform of its own: every comm
 | The session (find the account, its gate, its engine, the answer back to Twenty) | `src/discord/account/session`, on the shared `src/platformKit/session` |
 | The commands | `src/cli/discord/index.ts`: `log discord session check` (MCP `discordSessionCheck`) |
 | The engine | `python/discordApi/engine.py`, on the shared `python/platformKit/engine.py`; each account's governor is under `~/.logCli/discord/<account>` |
-| The client | not vendored yet; the candidates and how much each covers: `clients.md` |
+| The client | `vendor/endcord` (sparklost/endcord at `d6765b0`, matt's pick 2026-10-28 from `clients.md`): its `endcord/discord.py` REST client, `gateway.py` gateway and `auth.py` sign-in |
+| The session | the account's discord.com localStorage `token`, saved to Twenty (`storageOrigins`) when its browser closes (`savePlatformSession`, for every platform but Facebook) and handed to the engine with the cookies (`sessionStorage` on the platform's shape). Never printed |
+| The session | the account's discord.com localStorage `token`, saved to Twenty (`storageOrigins`) when its browser closes (`savePlatformSession`, for every platform but Facebook) and handed to the engine with the cookies (`sessionStorage` on the platform's shape). Never printed |
 | Proxy | none, like Reddit (matt, 2026-10-28): the gate reads this machine's own exit and the profile's timezone follows it |
 
 ## What the inspect found (2026-10-28, `log inspect` on `sourcedandsoldtothehighestbidder`)
@@ -77,5 +79,5 @@ Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md
 
 1. A watch on the gateway: `log discord chat watch --account <a>` in the account's open browser (or a vendored client), each `MESSAGE_CREATE` to someone else handed to the inbox hook, as `log twitter chat watch --inbox` does.
 2. Read and send as commands, on the two calls above, each in the account's open browser (rule 35), sending only with `--live`.
-3. Vendor a client under `vendor/<library>` and fill in `ping` in `python/discordApi/engine.py` for a direct-API path, if matt wants one.
+3. Done 2026-10-28: endcord is vendored and `ping` (`GET /api/v9/users/@me`) runs on it: `log discord session check` answered loggedIn as sourcedandsoldtothehighestbidder. Next on it: the gateway watch from `endcord/gateway.py`, then read and send from `endcord/discord.py`.
 4. A `discordLogin` page state, so the hook stops offering Facebook's auto sign-in on Discord's login page.

@@ -39,6 +39,7 @@ export interface PlatformShape {
   label: string
   engine: string
   sessionCookies: readonly string[]
+  sessionStorage?: { origin: string; keys: readonly string[] }
 }
 
 export type PlatformGate = { ok: true } | { ok: false; code: 'accountNotOnPlatform' | 'accountDeactivated' | 'noPlatformSession'; detail: string }

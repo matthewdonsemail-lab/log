@@ -121,6 +121,15 @@ export async function saveSession(twenty: TwentyClient, accountId: string, state
   return true
 }
 
+export async function savePlatformSession(twenty: TwentyClient, accountId: string, state: { cookies: PlaywrightCookie[]; origins: unknown[] }): Promise<boolean> {
+  if (!state.cookies.length && !state.origins.length) return false
+  await twenty.update(SOCIAL_ACCOUNTS, accountId, {
+    cookies: state.cookies as unknown as AccountUpdate['cookies'],
+    storageOrigins: state.origins as unknown as AccountUpdate['storageOrigins']
+  })
+  return true
+}
+
 export async function markProfileSet(twenty: TwentyClient, accountId: string, at: Date): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { profileSetAt: at.toISOString() })
 }

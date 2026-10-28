@@ -147,8 +147,8 @@ flowchart LR
   b_reddit --> drivers
   p_discord["Discord (DISCORD): 1 command of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session"| e_no_client_vendored_yet["no client vendored yet"]
-  e_no_client_vendored_yet --> api
+  p_discord -->|"direct API: discord session"| e_vendor_endcord["vendor/endcord"]
+  e_vendor_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
   anyB["Any platform with a browser path: inspect, flow"]
@@ -198,7 +198,7 @@ Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through no client vendored yet (`vendor/no client vendored yet`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (4 clients, 13 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through vendor/endcord (`vendor/vendor/endcord`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (4 clients, 13 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -223,7 +223,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 
 **Discord.** Discord's own answer decides. Each account has its own governor under ~/.logCli/discord/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
-- `log discord session`: the direct-API engine only (no client vendored yet, vendored in vendor/no client vendored yet, account.ping for the session check; no browser).
+- `log discord session`: the direct-API engine only (vendor/endcord, vendored in vendor/vendor/endcord, account.ping for the session check; no browser).
 
 ### How a call reaches log-cli
 
@@ -239,7 +239,7 @@ flowchart LR
   runCli["runCli: 53 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
-  direct["Direct-API engine: fbk, twikit, rdvwr, no client vendored yet (vendor/), the account's saved session, a governor per account"]
+  direct["Direct-API engine: fbk, twikit, rdvwr, vendor/endcord (vendor/), the account's saved session, a governor per account"]
   browser["The account's browser (one per day, rule 35)"]
   api["The platform's internal API: its answer decides (rule 73)"]
   twenty[("Twenty: socialAccounts.sessionState, refreshed cookies")]
@@ -1308,7 +1308,7 @@ Check that Discord still accepts an account's saved session, on the direct-API e
 
 ```text
 log discord session check --account <accountName> [--json]
-Checks that Discord still accepts the account's saved session, on the direct-API engine (no client vendored yet, no browser). Sends nothing.
+Checks that Discord still accepts the account's saved session, on the direct-API engine (vendor/endcord, no browser). Sends nothing.
 Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 ```
 

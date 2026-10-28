@@ -5,7 +5,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const DISCORD_SESSION_USAGE = [
   "Usage: log discord session check --account <accountName> [--json]",
-  "Checks that Discord still accepts the account's saved session, on the direct-API engine (no client vendored yet, no browser). Sends nothing.",
+  "Checks that Discord still accepts the account's saved session, on the direct-API engine (vendor/endcord, no browser). Sends nothing.",
   "Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.",
 ].join("\n");
 
@@ -24,7 +24,7 @@ export const DISCORD_SESSION_INPUT: CommandInput = {
 };
 
 function render(accountName: string, answer: PlatformAnswer): string {
-  if (answer.ok) return `log discord session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (no client vendored yet, no browser).`;
+  if (answer.ok) return `log discord session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (vendor/endcord, no browser).`;
   return `log discord session check: ${accountName}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
 }
 
@@ -47,7 +47,7 @@ export const discordSessionCommand: Command = {
       const gate = discordGate(account);
       if (!gate.ok) return refuse("discord session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directDiscord) return { code: 1, stderr: "log discord session check: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: session check on the direct-API engine (no client vendored yet)`);
+      context.err(`${account.accountName}: session check on the direct-API engine (vendor/endcord)`);
       const run = context.directDiscord(account, { action: "ping" });
       for (const line of await recordDiscordSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       const code = run.answer.ok ? 0 : 1;
