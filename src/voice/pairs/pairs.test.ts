@@ -15,8 +15,8 @@ const LOG_GROUP: Conversation = {
   box: 'group log',
   with: ['QuadScorpion', 'Kennedy', 'John', 'deepman'],
   messages: [
-    msg('1', false, 'this week im pushing the outreach', 'Kennedy'),
-    msg('2', false, 'timing matters and i gotta learn about their past life lol', 'Kennedy'),
+    msg('1', false, 'this week im sorting the leads', 'Kennedy'),
+    msg('2', false, 'need to read up on each of them first and their old posts lol', 'Kennedy'),
     msg('3', true, 'thats the next bit lad it pulls the whole history with them'),
     msg('4', true, 'so the stalking is done for you'),
     msg('5', false, 'when is the outreach thing ready', 'John'),
@@ -49,7 +49,7 @@ describe('matt\'s voice, per person and per chat', () => {
     const pairs = pairsOf([LOG_GROUP])
     expect(pairs).toHaveLength(2)
     expect(pairs[0]).toMatchObject({ chat: 'log', kind: 'group', saidBy: 'Kennedy', reply: 'thats the next bit lad it pulls the whole history with them\nso the stalking is done for you' })
-    expect(pairs[0].said).toBe('this week im pushing the outreach\ntiming matters and i gotta learn about their past life lol')
+    expect(pairs[0].said).toBe('this week im sorting the leads\nneed to read up on each of them first and their old posts lol')
     expect(pairs[1]).toMatchObject({ said: 'when is the outreach thing ready', saidBy: 'John' })
   })
 

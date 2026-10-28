@@ -8656,3 +8656,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the X use cases' queue steps now plan sends 2 minutes apart (`minGap` 120, the code's default), with a window of about 2 minutes per person (20 people: 40m), and only longer when the owner asks. Before, step 6 said `window: "75m", minGap: 600`, which made 10-minute gaps look like the norm.
 Why: matt: the time between messages was too long and he wants it faster, and the line that made the long gap look acceptable has to change. The 40 treg DMs had been planned 10 minutes apart over 7 hours.
 Checked: docs only. The running DM queue was re-planned live: the 37 left over 80 minutes at 2 minutes apart, and the first DM after the change went out at 03:05.
+
+## 2026-10-28 13:55Z · chore/keepMessagesLocal
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.gitignore`: edited
+- `src/voice/pairs/pairs.test.ts`: changed const LOG_GROUP, test "a pair is what they said just before, with matt's reply, his back-to-back messages joined"
+
+What changed: `.gitignore` now keeps matt's messages and everything built from them out of git: `.logCli/`, `pairs.json`, `profiles.json`, `readings.jsonl`, any conversation `.json`, the voice index folder and the communication map. They live in `~/.logCli` and `~/.buzz/RESEARCH`, outside the repo, and nothing like them was tracked. The voice test's log-group fixture used two real lines Kennedy sent, and they are now made up.
+Why: matt: "it's not in the repo on GitHub, it can't be there, we need to gitignore it, it's fine locally."
+Checked: `git check-ignore` matches `pairs.json`, a conversation `.json` and a communication-map file. `git ls-files` tracks no message data, and no line from today's chats is in any tracked file. src/voice: 6 pass.
