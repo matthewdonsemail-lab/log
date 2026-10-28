@@ -1,6 +1,6 @@
 import { readGroupDirect } from "../read/helpers/directApi.ts";
-import { chatCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
-import { runTwitterEngine } from "../../twitter/account/session/index.ts";
+import { chatCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
+import { runTwitterEngine, runTwitterEngineLive } from "../../twitter/account/session/index.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
@@ -89,6 +89,7 @@ export const COMMANDS: Command[] = [
   followsCommand,
   dmsCommand,
   chatCommand,
+  voiceCommand,
   searchCommand,
   followersCommand,
   replyCommand,
@@ -127,6 +128,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     cancelled: overrides.cancelled,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
+    directTwitterLive: overrides.directTwitterLive ?? runTwitterEngineLive,
     directReddit: overrides.directReddit ?? runRedditEngine,
   };
 }

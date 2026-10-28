@@ -146,6 +146,9 @@ class GQLClient:
         variables = {'continue_cursor': {'max_local_sequence_id': max_local_sequence_id}} if max_local_sequence_id else {}
         return await self.gql_get(Endpoint.XCHAT_MESSAGE_EVENTS_PAGE, variables)
 
+    async def generate_xchat_token(self):
+        return await self.gql_post(Endpoint.XCHAT_GENERATE_TOKEN, {})
+
     async def gql_post(
         self,
         url: str,

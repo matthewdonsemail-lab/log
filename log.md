@@ -8010,3 +8010,44 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: X's old DM thread (`<a>-<b>`) and its X Chat mirror (`<a>:<b>`) are one conversation everywhere (#59). New `src/twitter/dm/person`: `personKeyOf` gives both threads one key, `mergeThreads` makes them one row, `dropMirrors` shows a message mirrored into both once (same sender, same words with links ignored, within 5 s). `log twitter dms` lists one row per person with the newest message from either thread, and `--with` no longer shows a mirrored message twice. `log search index` merges each person's pair before chunking, so one hit, not two. The inbox watcher keys what it has seen per person, so one reply alerts once. The tool definitions carry it (`ONE_INBOX_NOTE`): `twitterDms` and `twitterDm` say the two threads are one inbox, a sent dm is delivered whichever id it names and is never resent, and a refusal before X (styleFailed, a dry run) sent nothing. A sent dm now says so in its answer.
 Why: matt: "they're one, it might say they're two but they're one". An agent told him a reply had gone to "the other inbox" and he thought it was about to send twice; he asked for it in the tool definitions so every agent has it when it calls them.
 Checked: `bun test src/twitter/dm src/search src/inbox`: 14 pass. `bun run check`: tsc clean, 1106 pass, 1 fail, `log reddit session check` > the engine runs on vendor/rdvwr, which fails the same on main without this change (run without LOG_PYTHON). Every lefthook gate green, docs rebuilt.
+
+## 2026-10-28 06:01Z · feat/xchatLiveWatch
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/x/xchat/README.md`: edited
+- `docs/platforms/x/xchat/live.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def live_line, def handle_of, def xchat_watch · changed const READS, def act
+- `scripts/hooks/inbox.ts`: no declaration changed (comments, formatting or line endings)
+- `skills.md`: edited
+- `skills/xchatReplies/SKILL.md`: new file
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/twitter/helpers/chat.ts`: added function liveLine, function inboxMessageOf, function watchChat · changed const CHAT_USAGE, const CHAT_INPUT, const chatCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./voice.ts"
+- `src/cli/twitter/helpers/voice.ts`: added const VOICE_USAGE, const VOICE_INPUT, const voiceDeps, function renderVoice, const voiceCommand
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/inbox/watch/client.ts`: added const watchPidPath, function addPending, function processAlive, function ensureLiveWatchers, function startTwitterWatch · changed function pollReaders, function inboxContext
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/twitter/account/session/client.ts`: added function runTwitterEngineLive
+- `src/twitter/account/session/types.ts`: added interface XChatLiveEvent · changed type TwitterAction, interface TwitterEngineSpec
+- `src/twitter/copy/index.ts`: added export from "./voice/index.ts"
+- `src/twitter/copy/voice/client.ts`: added function guidePath, function readGuide, function neverSaysIn, function readVoice
+- `src/twitter/copy/voice/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/copy/voice/types.ts`: added interface VoiceDraft, interface VoiceReading, const VOICE_PASS, const CONTEXT_PASS, const VOICE_MODEL, const NEVER_SAYS, const MATT_DMS
+- `src/twitter/copy/voice/voice.test.ts`: added const answering, test "a draft in matt's voice that answers them passes, and SubQ is given his guide, his own dms and what they said", test "a draft that sounds like ai fails on voice", test "a phrase matt never says fails it whatever SubQ thinks", test "the never-says list is matched without case"
+- `vendor/twikit/docs/xchat_live.md`: new file
+- `vendor/twikit/tests/test_xchat_frames.py`: added def _string, def _event, class FrameTests
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class GQLClient
+- `vendor/twikit/twikit/xchat.py`: added const KEEPALIVE, const _INSTRUCTIONS, const _FIXED, def _skip, def frame_of, def token_of
+
+What changed: X Chat replies come by push, the way X's own chat app gets them (read with rea from X's shipped code, issue #68), instead of reading the whole inbox again and again. vendor/twikit: `generate_xchat_token` (GenerateXChatTokenMutation), `Client.watch_xchat` (one socket to wss://chat-ws.x.com/ws through the pinned curl_cffi session, a KeepAlive every 30 s, a fresh token and reconnect when it drops), `xchat.frame_of` (the Thrift binary Message union), and key priming so each pushed message decrypts (every conversation's key-change events once at start, the newest inbox page again for a key it doesn't have). Engine action `xchatWatch` prints one liveEvent line per message; `runTwitterEngineLive` streams them. New `log twitter chat watch --account <a> [--seconds] [--inbox] [--json]`. The inbox hook no longer polls: it keeps one `chat watch --inbox` per signed-in X account (pid file) and puts each new message in front of the agent with what to do: read the thread, draft from matt's guide, gate it, show matt, send only when he says. New `log voice --to --text [--context]` (src/twitter/copy/voice): SubQ reads a draft against GUIDES/MATT_WRITING_STYLE.md and dms matt wrote himself, and a phrase he never says fails it. Docs: docs/platforms/x/xchat/live.md (how it works, what was seen live, how to check it again when X changes), vendor/twikit/docs/xchat_live.md, skills/xchatReplies.
+Why: matt: the polling kept hitting X's 429 (27 Oct 14:57 to 15:38, 28 Oct 03:2x and 05:15 UTC) and a 14-DM batch never went out; he asked for the notification system X's client uses, found with rea, built so the hooks act on what happens the way we did by hand (read, draft in his voice, SubQ gate, send), and written into vendored twikit so it's understood in future.
+Checked: live on matthewsoldit, 28 Oct: the probe saw 40 messageEvent frames pushed in ~85 s; `log twitter chat watch --seconds 90` 8 messages pushed, nothing polled, exit 0; after key priming the 05:49:45 message opened live ('Ok wait let ai reply now'); the hook started the watchers and delivered each message with its steps; `log voice` gated three replies that were sent. `tests/test_xchat_frames.py` 6 pass, `src/twitter/copy/voice` 4 pass. `bun run check`: 1111 pass, 0 fail, every gate green, docs rebuilt.
