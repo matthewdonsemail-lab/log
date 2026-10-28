@@ -16,7 +16,7 @@ from platformKit import engine as kit
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
-WRITES: tuple[str, ...] = ()
+WRITES: tuple[str, ...] = ("send",)
 
 
 def client_of(token: str) -> Any:
@@ -53,7 +53,64 @@ async def ping(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return {"ok": True, "loginState": "loggedIn", "httpStatus": 200, "screenName": me.get("username"), "userId": me.get("id"), "globalName": me.get("global_name"), "verified": me.get("verified"), "mfaEnabled": me.get("mfa_enabled")}
 
 
-ACTIONS = {"ping": ping}
+def open_client(token: str) -> tuple[Any, dict[str, Any] | None]:
+    try:
+        return client_of(token), None
+    except SystemExit as e:
+        if str(e).startswith("Unauthorized"):
+            return None, {"ok": False, "code": "sessionDead", "detail": "Discord answered 401 to the session", "loginState": "loggedOut", "httpStatus": 401}
+        return None, {"ok": False, "code": "platformError", "detail": str(e).splitlines()[0], "loginState": "unknown"}
+
+
+def chats_of(token: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    got = client.get_dms()
+    if got is None:
+        return {"ok": False, "code": "platformError", "detail": "Discord didn't answer /users/@me/channels", "loginState": "unknown"}
+    dms, _ = got
+    kinds = {1: "dm", 3: "group"}
+    chats = [{"id": d["id"], "kind": kinds.get(d["type"], str(d["type"])), "name": d["name"], "members": [r.get("global_name") or r["username"] for r in d["recipients"]]} for d in dms]
+    return {"ok": True, "loginState": "loggedIn", "chats": chats}
+
+
+def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    target = channel
+    if not channel.isdigit():
+        got = client.get_dms()
+        dms = got[0] if got else []
+        named = [d for d in dms if (d["name"] or "").strip().lower() == channel.strip().lower()]
+        if len(named) != 1:
+            return {"ok": False, "code": "chatNotFound" if not named else "chatAmbiguous", "detail": f"{len(named)} of the account's DMs and groups are called {channel!r}", "loginState": "loggedIn"}
+        target = named[0]["id"]
+    sent = client.send_message(target, text)
+    if not sent:
+        return {"ok": False, "code": "sendFailed", "detail": f"Discord didn't take the message in channel {target}", "loginState": "loggedIn", "event": "dropped", "channelId": target}
+    return {"ok": True, "loginState": "loggedIn", "event": "sent", "channelId": sent["channel_id"], "messageId": sent["id"], "timestamp": sent["timestamp"], "content": sent["content"]}
+
+
+async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    return await asyncio.to_thread(chats_of, token)
+
+
+async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel, text = str(spec.get("channel") or "").strip(), str(spec.get("text") or "")
+    if not channel or not text.strip():
+        return {"ok": False, "code": "sendInvalid", "detail": "send needs a channel and text"}
+    return await asyncio.to_thread(send_of, token, channel, text)
+
+
+ACTIONS = {"ping": ping, "chats": chats, "send": send}
 
 
 if __name__ == "__main__":

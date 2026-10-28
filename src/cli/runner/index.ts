@@ -42,7 +42,7 @@ import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
-import { discordSessionCommand } from "../discord/index.ts";
+import { discordChatsCommand, discordSendCommand, discordSessionCommand } from "../discord/index.ts";
 import { runDiscordEngine } from "../../discord/account/session/index.ts";
 
 export * from "./helpers/index.ts";
@@ -102,6 +102,8 @@ export const COMMANDS: Command[] = [
   newCommand,
   redditSessionCommand,
   discordSessionCommand,
+  discordChatsCommand,
+  discordSendCommand,
 ];
 
 const ALIASES: Record<string, string> = {

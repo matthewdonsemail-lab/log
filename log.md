@@ -8303,3 +8303,21 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Discord's DIRECT_ROUTES library is `endcord`, the bare vendor name the other routes use (`fbk`, `twikit`), so the MCP tool, README and diagrams say vendor/endcord once, not vendor/vendor/endcord.
 Why: the restarted MCP's `discordSessionCheck` description read vendor/vendor/endcord.
 Checked: `discordSessionCheck` over MCP answered loggedIn as sourcedandsoldtothehighestbidder; `bun run docs:build` then `check:docs` match; the directApi, discord and scaffold tests pass.
+
+## 2026-10-28 08:02Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `python/discordApi/engine.py`: added def open_client, def chats_of, def send_of, def chats, def send · changed const ACTIONS
+- `src/cli/discord/discord.test.ts`: added test "chats lists the account's DMs and groups from the engine", test "send without --live is a dry run and calls nothing", test "send --live needs --approvedBy", test "send --live goes to the engine and Discord's message id decides" · changed test "the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing"
+- `src/cli/discord/index.ts`: added const DISCORD_ACCOUNT, const DISCORD_CHATS_USAGE, const DISCORD_CHATS_INPUT, interface DiscordChat, const discordChatsCommand, const DISCORD_SEND_USAGE, const DISCORD_SEND_INPUT, const discordSendCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+
+What changed: two Discord commands on endcord, each an MCP tool: `log discord chats --account` (MCP `discordChats`) lists the account's DMs and group DMs with their ids, names and members (endcord `get_dms`), and `log discord send --account --channel <id|name> --text` (MCP `discordSend`, and `discordSendLive` with --live) sends one message (endcord `send_message`), a dry run unless --live, which needs --approvedBy (rule 8); Discord's message id decides. Their routes are in DIRECT_ROUTES and their rules in the MCP's agentRules; the engine's `send` is a write, so the governor counts it.
+Why: matt: send "Yo, this is Stump from the MCP" to the log group chat.
+Checked: live: `log discord chats` listed 177 DMs and groups, the log group is 1547936265436012645 (QuadScorpion, Kennedy, John, deepman); `log discord send --channel 1547936265436012645 --text "Yo, this is Stump from the MCP" --approvedBy matt --live` sent message 1564911647925997649 at 08:00:11 UTC. New tests for chats, the dry run, --approvedBy and the send. `bun run check`: 1122 pass, 0 fail.
