@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hashEmbedder } from '../../search/conversations/index'
 import type { Conversation } from '../../search/conversations/index'
-import { buildVoiceIndex, nearestPairs, openVoiceIndex, pairsOf, profileFor, profilesOf, splitPlan, startRatesOf } from './index'
+import { buildVoiceIndex, nearestPairs, openVoiceIndex, pairsOf, offProfile, profileFor, profilesOf, splitPlan, startRatesOf } from './index'
 
 const msg = (id: string, fromMe: boolean, text: string, from = fromMe ? 'matt' : 'them') => ({ id, at: `2026-10-28T08:${id.padStart(2, '0')}:00Z`, from, fromMe, text })
 
@@ -90,5 +90,13 @@ describe('matt\'s voice, per person and per chat', () => {
     expect(group.parts).toEqual(['thats the next bit lad it reads every message ive sent in dms and groups', 'so the stalking is done for you'])
     expect(splitPlan(draft, profiles['chat:discord:1555254123148873869'], false, starts).parts).toHaveLength(1)
     expect(splitPlan(draft, profiles['chat:discord:1547936265436012645'], true, starts).parts).toEqual([draft])
+  })
+
+  test('a draft doing what he never does in that chat fails, the emoji Kennedy caught first', () => {
+    const profile = { ...profilesOf(pairsOf([LOG_GROUP]))['chat:discord:1547936265436012645'], replies: 26, emoji: 0, exclamations: 0.08, lowercase: 0.69 }
+    expect(offProfile('haha the 60 year olds are cooked 😭', profile)).toEqual(['an emoji (he uses it in 0 of his 26 messages here)'])
+    expect(offProfile('haha the 60 year olds are cooked', profile)).toEqual([])
+    expect(offProfile('Haha the 60 year olds are cooked!', profile)).toEqual([])
+    expect(offProfile('haha 😭', { ...profile, replies: 4 })).toEqual([])
   })
 })

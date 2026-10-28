@@ -6,7 +6,7 @@ import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
 import { guidePath, readGuide, readVoice } from "../../../twitter/copy/voice/index.ts";
 import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/index.ts";
-import { buildVoiceIndex, nearestPairs, openVoiceIndex, profileFor, voiceDir } from "../../../voice/pairs/index.ts";
+import { buildVoiceIndex, nearestPairs, offProfile, openVoiceIndex, profileFor, voiceDir } from "../../../voice/pairs/index.ts";
 import type { NearPair, VoiceProfile, VoiceTarget } from "../../../voice/pairs/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
@@ -44,10 +44,11 @@ export const VOICE_INPUT: CommandInput = {
 
 export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder() };
 
-export function renderVoice(reading: VoiceReading): string {
+export function renderVoice(reading: VoiceReading & { notHere?: string[] }): string {
   const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
-  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
+  const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
+  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
 }
 
 function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {
@@ -129,7 +130,9 @@ export const voiceCommand: Command = {
         }
       }
       context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")} against matt's writing guide${evidence ? ` and his real replies in ${evidence.chat}` : ""}`);
-      const reading = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}) }, guide, voiceDeps.decisions());
+      const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}) }, guide, voiceDeps.decisions());
+      const notHere = evidence ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
+      const reading = { ...scored, notHere, pass: scored.pass && !notHere.length };
       if (parsed.flags["json"]) return { code: reading.pass ? 0 : 1, stdout: JSON.stringify(reading, null, 2) };
       return { code: reading.pass ? 0 : 1, stdout: renderVoice(reading) };
     } catch (error) {
