@@ -6,7 +6,8 @@ import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
 import { guidePath, readGuide, readVoice } from "../../../twitter/copy/voice/index.ts";
 import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/index.ts";
-import { buildVoiceIndex, nearestPairs, offProfile, openVoiceIndex, profileFor, voiceDir } from "../../../voice/pairs/index.ts";
+import { buildVoiceIndex, closestWording, nearestPairs, offProfile, openVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
+import type { VoicePair } from "../../../voice/pairs/index.ts";
 import type { NearPair, VoiceProfile, VoiceTarget } from "../../../voice/pairs/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
@@ -67,7 +68,7 @@ function nearLines(near: readonly NearPair[]): string[] {
   return near.flatMap((n) => [`  [${n.tier}] ${n.pair.chat} (${n.pair.platform}, ${String(n.pair.at ?? "").slice(0, 10)})`, ...(n.pair.said ? [`    ${n.pair.saidBy ?? "them"}: ${n.pair.said.replace(/\n/g, " / ").slice(0, 200)}`] : []), `    matt: ${n.pair.reply.replace(/\n/g, " / ").slice(0, 240)}`]);
 }
 
-async function evidenceFor(context: CommandContext, said: string, chat: string): Promise<{ ok: true; evidence: VoiceEvidence; near: NearPair[]; profile: VoiceProfile | null; label: string } | { ok: false; result: CommandResult }> {
+async function evidenceFor(context: CommandContext, said: string, chat: string, draft = ""): Promise<{ ok: true; evidence: VoiceEvidence; near: NearPair[]; wording: NearPair[]; recent: VoicePair[]; profile: VoiceProfile | null; label: string } | { ok: false; result: CommandResult }> {
   const chats = chatsOf(loadConversations());
   const found = matchChat(chats, chat);
   if (!found.ok) return { ok: false, result: refuse("voice", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n")) };
@@ -77,8 +78,24 @@ async function evidenceFor(context: CommandContext, said: string, chat: string):
   const index = await openVoiceIndex(voiceDeps.embedder());
   try {
     const near = await nearestPairs(index, said, picked.target);
+    const wording = draft.trim() ? await closestWording(index, draft, picked.target) : [];
+    const recent = recentInChat(index, picked.target);
     const profile = profileFor(index, picked.target);
-    return { ok: true, near, profile, label, evidence: { chat: label, profile, replies: near.map((n) => ({ said: n.pair.said, reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })) } };
+    return {
+      ok: true,
+      near,
+      wording,
+      recent,
+      profile,
+      label,
+      evidence: {
+        chat: label,
+        profile,
+        replies: near.map((n) => ({ said: n.pair.said, reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
+        wording: wording.map((n) => ({ reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
+        recent: recent.map((p) => ({ said: p.said, reply: p.reply })),
+      },
+    };
   } finally {
     await index.close();
   }
@@ -121,12 +138,12 @@ export const voiceCommand: Command = {
     try {
       let evidence: VoiceEvidence | undefined;
       if (chat) {
-        const found = await evidenceFor(context, said || text, chat);
+        const found = await evidenceFor(context, said || text, chat, text);
         if (!found.ok) return found.result;
         evidence = found.evidence;
         if (!text.trim()) {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ chat: found.label, profile: found.profile, replies: found.near }, null, 2) };
-          return { code: 0, stdout: [`log voice: how matt writes in ${found.label}`, `  ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, `his real replies, nearest first (same chat, same person, same platform, anywhere):`, ...nearLines(found.near), "Draft from these, then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
+          return { code: 0, stdout: [`log voice: how matt writes in ${found.label}`, `  ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, `his latest messages here:`, ...found.recent.map((p) => `    matt: ${p.reply.replace(/\n/g, " / ").slice(0, 240)}`), `his real replies to things like this, nearest first (same chat, same person, same platform, anywhere):`, ...nearLines(found.near), "Draft from these, then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
         }
       }
       context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")} against matt's writing guide${evidence ? ` and his real replies in ${evidence.chat}` : ""}`);

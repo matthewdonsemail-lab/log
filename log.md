@@ -8415,3 +8415,21 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `offProfile` (`src/voice/pairs`): a draft that does something matt does in 2% or fewer of his messages in that chat (over at least 10 of them) fails `log voice --with` outright: an emoji, an exclamation or question mark, a comma, a full stop, capital letters. It says which, and how often he does it there.
 Why: in the log group Kennedy caught the AI from one 😭 ("u dont usually use 😭"); matt's profile there says emoji 0 of 26, but the SubQ gate passed it at 0.99.
 Checked: the message Kennedy caught now fails ("he never writes it here: an emoji (he uses it in 0 of his 26 messages here)"), the same words without it pass; pairs.test.ts 5 pass. `bun run check`: 1141 pass, 0 fail.
+
+## 2026-10-28 11:00Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/discord/discord.test.ts`: changed test "the engine runs on vendor/endcord and refuses an action it doesn't have, sending nothing"
+- `src/cli/search/index.ts`: changed const SEARCH_USAGE, function indexDiscord
+- `src/cli/search/search.test.ts`: changed test "every Discord DM and group with messages is read through the engine, kept and searchable"
+- `src/cli/twitter/helpers/voice.ts`: changed function evidenceFor, const voiceCommand
+- `src/inbox/watch/client.ts`: changed function discordContext
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: changed interface VoiceEvidence
+- `src/voice/pairs/client.ts`: added function closestWording, function recentInChat · changed interface VoiceIndex, function profilesOf, function buildVoiceIndex, function openVoiceIndex
+- `src/voice/pairs/helpers/profile.ts`: changed function profileOf
+
+What changed: the voice reads every message matt has sent, and judges a draft on his own messages in that chat. `log search index` now reads each Discord chat's whole history (up to 20,000 messages each, was 200). The voice index embeds matt's own wording as well as what was said (a second vector collection, `wording`), and `log voice --with` hands SubQ his closest real wording to the draft and his latest messages in the chat beside his nearest real replies; with a chat, the gate judges on those alone (the tweet guide and his tweet-era DMs only when no chat is named). Each chat's distinctive words are ranked against his whole history correctly (they compared against the wrong total). The inbox hook tells the agent to pull his real messages in the chat before drafting, and to gate against the same chat. One slow test that starts Python and imports endcord's gateway gets 20 s.
+Why: matt: Kennedy could tell it was AI because it wasn't going through all of his conversations; it was using the twitter guide and not understanding him from what he really writes.
+Checked: the full read: 109,545 Discord messages, 62,831 of them matt's (7,464 before); `log voice index`: 20,074 of his replies paired (3,213 before), 551 profiles, 1,450 s; the log group profile is now 529 of his messages (26 before), with his own messages to Kennedy today among the latest. The group post passed the gate on his messages there (voice 0.95, like his replies there 0.97) and went as 2 messages 8 s apart. `bun run check`: 1138 pass; the 3 failures were the search test's old 200 (fixed) and two tests that start Python timing out at 5 s while the search index was embedding; both pass on their own.

@@ -2,6 +2,8 @@ export interface VoiceEvidence {
   chat: string
   profile: unknown
   replies: { said: string; reply: string; chat: string; tier: string }[]
+  wording?: { reply: string; chat: string; tier: string }[]
+  recent?: { said: string; reply: string }[]
 }
 
 export interface VoiceDraft {

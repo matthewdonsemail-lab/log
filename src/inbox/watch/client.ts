@@ -156,8 +156,8 @@ function discordContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said. Then, for each one:`,
     `  1. Read the chat around it: \`log discord read --account ${account} --channel <channel> --limit 20\`.`,
-    '  2. Draft the reply from matt\'s own writing guide, C:/Users/0/.buzz/GUIDES/MATT_WRITING_STYLE.md, using only facts matt has said, answering what they actually asked.',
-    '  3. Gate it: `log voice --to <who> --text "<draft>" --context "<what they said>"`. Rewrite until it passes.',
+    '  2. Before writing a word, pull how matt really writes in that chat: `log voice --to <who> --with <channel> --context "<what they said>"` (no --text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    '  3. Gate it against the same chat: `log voice --to <who> --with <channel> --context "<what they said>" --text "<draft>"`. Rewrite until it passes.',
     `  4. Show matt the draft and send only when he says (\`log discord send --account ${account} --channel <channel> --text "<draft>" --approvedBy matt --live\`).`,
     ...lines,
   ].join('\n')

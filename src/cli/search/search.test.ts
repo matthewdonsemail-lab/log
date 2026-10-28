@@ -53,7 +53,7 @@ describe("log search index on Discord", () => {
       },
     };
     expect(await runCli(["search", "index", "--platform", "discord"], context as never)).toBe(0);
-    expect(calls).toMatchObject([{ action: "export", limit: 200 }]);
+    expect(calls).toMatchObject([{ action: "export", limit: 20000 }]);
     expect(out.join("\n")).toContain("discord discordOne: 1 conversations, 2 messages");
     const saved = loadConversations();
     expect(saved).toMatchObject([{ platform: "discord", account: "discordOne", conversationId: "1547936265436012645", box: "group log", with: ["QuadScorpion", "John"] }]);

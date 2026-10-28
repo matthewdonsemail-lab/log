@@ -17,11 +17,11 @@ function wordsOf(text: string): string[] {
   return text.toLowerCase().match(/[\p{L}\p{N}']+/gu) ?? []
 }
 
-export function profileOf(key: string, pairs: readonly VoicePair[], everyone: Map<string, number> = new Map()): VoiceProfile {
+export function profileOf(key: string, pairs: readonly VoicePair[], everyone: Map<string, number> = new Map(), everywhere = 0): VoiceProfile {
   const replies = pairs.map((p) => p.reply).filter((r) => r.trim())
   const counts = new Map<string, number>()
   for (const reply of replies) for (const word of new Set(wordsOf(reply))) if (!/^\d+$/.test(word)) counts.set(word, (counts.get(word) ?? 0) + 1)
-  const total = [...everyone.values()].reduce((a, b) => a + b, 0) || 1
+  const total = Math.max(1, everywhere || pairs.length)
   const here = Math.max(1, replies.length)
   const lift = ([word, n]: [string, number]) => n / here - (everyone.get(word) ?? 0) / total
   const words = [...counts.entries()]

@@ -19,6 +19,7 @@ export interface VoiceIndex {
   keyword: BM25
   embedder: Embedder
   vectors: Collection<PairMeta>
+  wording: Collection<PairMeta>
   close(): Promise<void>
 }
 
@@ -74,7 +75,7 @@ export function profilesOf(pairs: readonly VoicePair[]): Record<string, VoicePro
     add(`platform:${pair.platform}`, pair)
     add('everyone', pair)
   }
-  const profiles = Object.fromEntries([...groups.entries()].map(([key, list]) => [key, profileOf(key, list, everyone)]))
+  const profiles = Object.fromEntries([...groups.entries()].map(([key, list]) => [key, profileOf(key, list, everyone, pairs.length)]))
   if (profiles.everyone) profiles.everyone.startRates = startRatesOf(pairs)
   return profiles
 }
@@ -97,10 +98,14 @@ export async function buildVoiceIndex(conversations: readonly Conversation[], em
   await keyword.save(join(dir, 'bm25'))
   const db = await VectorDB.open({ path: join(dir, 'vectors') })
   const collection = await db.createCollection<PairMeta>('pairs', { vector: { dimensions: embedder.dimensions, metric: 'cosine' }, index: { type: 'hnsw', profile: 'balanced' } })
+  const wording = await db.createCollection<PairMeta>('wording', { vector: { dimensions: embedder.dimensions, metric: 'cosine' }, index: { type: 'hnsw', profile: 'balanced' } })
   for (let start = 0; start < pairs.length; start += batch) {
     const slice = pairs.slice(start, start + batch)
-    const vectors = await embedder.embed(slice.map(situationOf))
-    await collection.insert(slice.map((p, i) => ({ id: p.id, vector: vectors[i], metadata: { platform: p.platform, conversationId: p.conversationId } })))
+    const situations = await embedder.embed(slice.map(situationOf))
+    const replies = await embedder.embed(slice.map((p) => p.reply))
+    const meta = (p: VoicePair) => ({ platform: p.platform, conversationId: p.conversationId })
+    await collection.insert(slice.map((p, i) => ({ id: p.id, vector: situations[i], metadata: meta(p) })))
+    await wording.insert(slice.map((p, i) => ({ id: p.id, vector: replies[i], metadata: meta(p) })))
   }
   await db.close()
   return { pairs: pairs.length, profiles: Object.keys(profiles).length, ms: performance.now() - started }
@@ -113,7 +118,8 @@ export async function openVoiceIndex(embedder: Embedder, dir = voiceDir()): Prom
   const keyword = await BM25.load(join(dir, 'bm25'))
   const db = await VectorDB.open({ path: join(dir, 'vectors') })
   const vectors = await db.collection<PairMeta>('pairs')
-  return { dir, pairs, byId: new Map(pairs.map((p) => [p.id, p])), profiles, keyword, embedder, vectors, close: () => db.close() }
+  const wording = await db.collection<PairMeta>('wording')
+  return { dir, pairs, byId: new Map(pairs.map((p) => [p.id, p])), profiles, keyword, embedder, vectors, wording, close: () => db.close() }
 }
 
 export function tierOf(pair: VoicePair, target: VoiceTarget): NearPair['tier'] {
@@ -143,6 +149,25 @@ export async function nearestPairs(index: VoiceIndex, situation: string, target:
   const seen = new Set(ranked.map((r) => r.pair.id))
   const recent = inChat.filter((p) => !seen.has(p.id)).sort((a, b) => String(b.at ?? '').localeCompare(String(a.at ?? ''))).map((pair, i) => ({ pair, rank: ranked.length + i + 1, tier: 'sameChat' as const }))
   return [...ranked, ...recent].sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier) || a.rank - b.rank).slice(0, limit)
+}
+
+export async function closestWording(index: VoiceIndex, draft: string, target: VoiceTarget, limit = NEAR_PAIRS): Promise<NearPair[]> {
+  const depth = Math.min(index.pairs.length, VOICE_DEPTH)
+  if (!depth || !draft.trim()) return []
+  const [vector] = await index.embedder.embed([draft])
+  const found = (await index.wording.search({ vector, limit: depth })).matches.map((m: { id: string | number }) => String(m.id)).filter((id) => index.byId.has(id))
+  return found
+    .map((id, i) => ({ pair: index.byId.get(id)!, rank: i + 1 }))
+    .map((r) => ({ ...r, tier: tierOf(r.pair, target) }))
+    .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier) || a.rank - b.rank)
+    .slice(0, limit)
+}
+
+export function recentInChat(index: Pick<VoiceIndex, 'pairs'>, target: VoiceTarget, limit = NEAR_PAIRS): VoicePair[] {
+  return index.pairs
+    .filter((p) => tierOf(p, target) === 'sameChat')
+    .sort((a, b) => String(b.at ?? '').localeCompare(String(a.at ?? '')))
+    .slice(0, limit)
 }
 
 export function readProfiles(dir = voiceDir()): Record<string, VoiceProfile> {
