@@ -8473,3 +8473,14 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a Discord account now sends up to 60 messages a day, and every other platform keeps 40. The limit per platform is in one place, `WRITES_PER_DAY` (`writesPerDayOf`, `src/directApi/engine`). Both platform engine runs pass it in the spec as `writesPerDay`, and `governor_for` builds the governor's config with that write cap, unless `FBK_GOVERNOR_MUTATION_DAILY` is set (that still wins for a single run). The hook's status line shows each account's own limit ("45/60 writes today" on Discord) instead of a fixed 40. AGENTS.md has it as rule 91, cited on the MCP `discordSend` tool.
 Why: matt, 2026-10-28: "make it 60", after the update to kewlkid stopped 3 messages in at Discord's 40-a-day limit (rule 91).
 Checked: `governor_for` gives 60 with writesPerDay 60, 40 without it, and 25 when `FBK_GOVERNOR_MUTATION_DAILY=25` is set. The new engine test passes. src/mcp, src/directApi and src/voice: 71 pass. tsc is clean and the README was rebuilt.
+
+## 2026-10-28 13:32Z · fix/languagesPrefixCheck
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `python/browser/proxyGate.py`: changed def compare
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+
+What changed: the launch self-check (`compare` in `python/browser/proxyGate.py`) passes `navigator.languages` when it starts with the pinned languages, in page and worker, not only when it equals them. A list that doesn't start with them is still `browserLocaleMismatch`, and `navigator.language`, Intl and the number locale are still exact. This is PR #48's change on today's main. Its rule was 86, which main had since given to the X `--force`, so it is rule 92 here. The MCP instructions' gate line cites it.
+Why: the first Canadian account on AdsPower (Kamloops) was refused three times on 2026-10-24: SunBrowser 154 reports `en-CA, en, en-US, en-GB` with the profile set to `en-CA, en`. matt chose to check the order only. matt, 2026-10-28: fold the relevant open PRs into main.
+Checked: `compare` by hand: `en-CA, en, en-US, en-GB` passes, and `en-US, en-CA, en` and `en-CA` alone are refused. `bun test src/mcp`: 59 pass. The docs are already up to date.
