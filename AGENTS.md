@@ -1096,6 +1096,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     one run when matt asks. The hook's status line shows each account's own
     limit.
 
+92. 2026-10-25 · matt: the self-check's languages are checked by order.
+    AdsPower's browser (SunBrowser 154) adds `en-US, en-GB` after the
+    profile's own languages, whatever the profile says (Kamloops,
+    2026-10-24: `en-CA, en, en-US, en-GB`, three starts refused). The
+    self-check passes when `navigator.languages` starts with the pinned
+    languages (`en-CA, en`), in page and worker, so the account's language
+    still comes first; extras after them are allowed. `language`, Intl and
+    the number locale are still exactly the pinned locale (rules 16-17).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
