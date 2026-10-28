@@ -8150,3 +8150,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `capture --docs` documented the Discord runs' 51 internal calls under `docs/platforms/discord/background/`, each read by rea from its code in Discord's bundles, and each doc's What it does, What our machine does with it and What can go wrong is written for Discord. `docs/platforms/discord/githubSearch.md` holds what GitHub has on every Discord call and gateway event we found: 49 code searches (37 by path), the repos that come up most (discord-userdoccers, moonlight, meowcord, spacebarchat), and the user-account clients that already do the gateway watch and the send (concord, endcord, Discord-S.C.U.M). The Discord README links it.
 Why: the push was refused by check:facebookClientDocs (a run newer than the docs); and matt: search the GitHub API for everything we found, Discord only.
 Checked: `bun run check:facebookClientDocs`: 235 requests documented, rea read every slice; no `toWrite` left in docs/platforms/discord; the searches ran on /search/code two at a time with backoff, stars and last push from /repos the same day.
+
+## 2026-10-28 07:27Z · feat/discordPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/README.md`: edited
+- `docs/platforms/discord/clients.md`: new file
+
+What changed: `docs/platforms/discord/clients.md`: the 7 user-account Discord clients the GitHub search found (Discord-S.C.U.M, concord, endcord, hata, DiscordMessenger/dm, abaddon, DiscordUserAPI) were shallow-cloned outside the repo and each counted against the 66 things our inspect runs found, in four areas (watch, read and send, sign in, background calls), with what each of the three Python ones has and lacks. The Discord README links it from The client row and On GitHub.
+Why: matt: clone the ones that would fit the vendor area, document them, and look at how many areas each already exposes, so we use that; the licence doesn't matter.
+Checked: `coverage.py` over each clone (`~/.buzz/RESEARCH/DISCORD_CLIENT_VENDOR_MATRIX/coverage.json`); the gaps it reported for the leading clients checked by hand in their code (S.C.U.M `getMessages` pages with before, endcord `resume()` and READY `private_channels`), and the table corrected.

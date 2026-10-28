@@ -10,7 +10,7 @@ Made by `log new platform discord`. Discord is a platform of its own: every comm
 | The session (find the account, its gate, its engine, the answer back to Twenty) | `src/discord/account/session`, on the shared `src/platformKit/session` |
 | The commands | `src/cli/discord/index.ts`: `log discord session check` (MCP `discordSessionCheck`) |
 | The engine | `python/discordApi/engine.py`, on the shared `python/platformKit/engine.py`; each account's governor is under `~/.logCli/discord/<account>` |
-| The client | not vendored yet |
+| The client | not vendored yet; the candidates and how much each covers: `clients.md` |
 | Proxy | none, like Reddit (matt, 2026-10-28): the gate reads this machine's own exit and the profile's timezone follows it |
 
 ## What the inspect found (2026-10-28, `log inspect` on `sourcedandsoldtothehighestbidder`)
@@ -71,7 +71,7 @@ So a Discord watch is the X Chat watch again (`docs/platforms/x/xchat/live.md`):
 
 ## On GitHub
 
-Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md`. All of them are known there; `discord-userdoccers/discord-userdoccers` documents most, and chojs23/concord, sparklost/endcord and Discord-S.C.U.M already run the gateway watch and the send.
+Every call and event above was searched on GitHub (2026-10-28): `githubSearch.md`. All of them are known there; `discord-userdoccers/discord-userdoccers` documents most, and chojs23/concord, sparklost/endcord and Discord-S.C.U.M already run the gateway watch and the send. Each of the 7 clients was cloned and counted against the 66 things we found: `clients.md`.
 
 ## Next
 
