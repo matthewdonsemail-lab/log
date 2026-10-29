@@ -25,6 +25,7 @@ export interface TwitterEngineSpec {
   handles?: string[]
   limit?: number
   conversationId?: string
+  withHandle?: string
   force?: boolean
   chatPin?: string
   export?: boolean

@@ -48,3 +48,13 @@ Why: `log twitter dms` (twikit, X's older `dm/inbox_initial_state`) never shows 
 ## Live
 
 New messages arrive by push, not by reading the inbox: one socket to `wss://chat-ws.x.com`, a KeepAlive every 30 s, each message decrypted as it lands. How it works, what was seen live and how to check it again: [live.md](live.md).
+
+## Opening one chat, and what X's app does on a 429 (2026-10-29)
+
+Read from X's shipped chat code (`assets/dm-core-DNH_F-Zu.js`, 11.7 MB, from `https://chat.x.com/embed-v1.json`). rea's whole-bundle read timed out at 240 s (partial Evidence `ev_f21c68f1…`), so these come from the bundle's own bytes:
+
+- **Opening a chat** is `GetInboxPageConversationDataQuery` (`4T3Z2Rwf_1SdOA6b-Oi5-w`) with `conversation_ids: [<id>]` and `include_user_public_keys: false`. It returns that conversation's `latest_message_events` and `latest_conversation_key_change_events`. It never reads the whole inbox.
+- **Older messages** come from `GetConversationPageQuery` (`GX9ZijkxG8AqRMQVD7hMnQ`), which the app logs as `fetchOlderMessages … from <sequence id> oldestCKey=<key version>`. Its variables are `conversation_id`, `min_local_sequence_id` (the oldest `MessageEvent.sequence_id` held, Thrift field 1) and `min_conversation_key_version` (the oldest key version held: `MessageCreateEvent.conversation_key_version`, field 101 of `detail.messageCreateEvent`). It answers with `encoded_message_events`, `missing_conversation_key_change_events` and `has_more`. `0` for either variable is refused (`BadRequest`, code 214).
+- **On a 429** the app does not retry. Its only automatic retry is Ktor's `HttpRequestRetry`, whose condition is `500 <= status <= 599`. A 429 becomes `TooManyRequests` (an `HttpException` carrying `retryAfterSeconds` from `Retry-After`) and the request ends there.
+
+log does the same. `log twitter dms --with <handle>` and `--conversation <a:b>` open one chat with `GetInboxPageConversationDataQuery`, then page back with `GetConversationPageQuery` up to 5 times, 1.5 s apart, while X says `has_more` (`client.get_xchat_conversation`). A 429 stops the read and pauses the account's governor, with nothing retried (rule 94). Checked live on 2026-10-29: @ricardoampudiar's thread took 4 requests in total (the legacy thread, the chat, two older pages), where the old path pulled up to 30 inbox pages back to back.

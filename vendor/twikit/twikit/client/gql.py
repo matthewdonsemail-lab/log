@@ -43,6 +43,7 @@ class Endpoint:
     XCHAT_INITIAL_PAGE = XCHAT_HOST + 'Q4Mw0C6YcnjJac21wq-5NA/GetInitialXChatPageQuery'
     XCHAT_INBOX_PAGE = XCHAT_HOST + 'txrXftx8RcSvw9jCjwRZWA/GetInboxPageRequestQuery'
     XCHAT_CONVERSATION_PAGE = XCHAT_HOST + 'GX9ZijkxG8AqRMQVD7hMnQ/GetConversationPageQuery'
+    XCHAT_CONVERSATION_DATA = XCHAT_HOST + '4T3Z2Rwf_1SdOA6b-Oi5-w/GetInboxPageConversationDataQuery'
     XCHAT_MESSAGE_EVENTS_PAGE = XCHAT_HOST + '8ds29Y40jrxh_MZDbqWy0A/GetMessageEventsPageQuery'
     XCHAT_PUBLIC_KEYS = XCHAT_HOST + 'C-YphxeIcPLOGtFNGhkuOw/GetPublicKeysQuery'
     XCHAT_GENERATE_TOKEN = XCHAT_HOST + 'Qh3fZRjPPtPoHYR_2sCZsA/GenerateXChatTokenMutation'
@@ -137,6 +138,14 @@ class GQLClient:
     async def get_xchat_inbox_page(self, cursor_id: str, graph_snapshot_id: str | None):
         variables = {'continue_cursor': {'cursor_id': cursor_id, 'graph_snapshot_id': graph_snapshot_id}}
         return await self.gql_get(Endpoint.XCHAT_INBOX_PAGE, variables)
+
+    async def get_xchat_conversation_data(self, conversation_ids: list[str]):
+        variables = {'conversation_ids': [str(i) for i in conversation_ids], 'include_user_public_keys': False}
+        return await self.gql_get(Endpoint.XCHAT_CONVERSATION_DATA, variables)
+
+    async def get_xchat_conversation_page(self, conversation_id: str, min_local_sequence_id: str, min_conversation_key_version: str):
+        variables = {'conversation_id': conversation_id, 'min_local_sequence_id': min_local_sequence_id, 'min_conversation_key_version': min_conversation_key_version}
+        return await self.gql_get(Endpoint.XCHAT_CONVERSATION_PAGE, variables)
 
     async def get_xchat_public_keys(self, user_ids: list[str], include_juicebox_tokens: bool = False):
         variables = {'ids': [str(i) for i in user_ids], 'include_juicebox_tokens': include_juicebox_tokens}

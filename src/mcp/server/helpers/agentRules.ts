@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 93;
+export const RULES_REVIEWED_THROUGH = 94;
 
 export const AGENTS_URI = "log://agents";
 
@@ -29,6 +29,7 @@ export const SERVER_INSTRUCTIONS = [
   "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
   "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
+  "25. Never act on an account in quick succession: every platform call goes through log-cli's own commands and their governor, never a hand-rolled script with an account's token or cookies; a 429 or a failed send stops the run with nothing retried and the next action waits for matt; a bulk read of a server, group or member list is its own session, never in the same one as sending; cold DMs go out a few a day, minutes apart, each new DM channel counted as a write; after a block, disable, captcha or cooldown nothing resumes on that account until matt says so. One person's X Chat is opened as X's app opens it (`twitterDms` with `with`), never by reading the whole inbox (rule 94).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -62,18 +63,18 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   check: [8, 13, 18, 22, 29, 35, 69, 73],
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88],
-  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94],
+  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81],
   voice: [30, 39, 41, 63, 64],
   search: [13, 26, 63, 64, 88, 89],
   kb: [13, 26, 30, 93],
   twitterFollowers: [13, 63, 64, 73, 80, 81],
-  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87],
+  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
@@ -85,11 +86,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   logout: [],
   whoami: [],
   redditSession: [13, 63, 64, 73, 83],
-  discordSession: [13, 63, 64, 73, 83],
-  discordChats: [13, 63, 64, 73, 83],
-  discordRead: [13, 63, 64, 73, 83],
-  discordWatch: [13, 26, 63, 64, 73, 83],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91],
+  discordSession: [13, 63, 64, 73, 83, 94],
+  discordChats: [13, 63, 64, 73, 83, 94],
+  discordRead: [13, 63, 64, 73, 83, 94],
+  discordWatch: [13, 26, 63, 64, 73, 83, 94],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

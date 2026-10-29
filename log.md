@@ -8666,3 +8666,23 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `.gitignore` now keeps matt's messages and everything built from them out of git: `.logCli/`, `pairs.json`, `profiles.json`, `readings.jsonl`, any conversation `.json`, the voice index folder and the communication map. They live in `~/.logCli` and `~/.buzz/RESEARCH`, outside the repo, and nothing like them was tracked. The voice test's log-group fixture used two real lines Kennedy sent, and they are now made up.
 Why: matt: "it's not in the repo on GitHub, it can't be there, we need to gitignore it, it's fine locally."
 Checked: `git check-ignore` matches `pairs.json`, a conversation `.json` and a communication-map file. `git ls-files` tracks no message data, and no line from today's chats is in any tracked file. src/voice: 6 pass.
+
+## 2026-10-29 01:46Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: added def with_person · changed def xchat_conversation, def act
+- `src/cli/twitter/families.test.ts`: added test "--with <handle> reads only that person's legacy and X Chat threads, never the whole inbox, and merges them by time" · removed test "--with <handle> reads both the legacy and the X Chat thread in one export read and merges them by time"
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, const dmsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed interface TwitterEngineSpec
+- `vendor/twikit/tests/test_xchat.py`: added def thrift_string, def message_event, def test_key_version_of_reads_the_message_create_event, def test_get_xchat_conversation_reads_one_chat_then_older_pages
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class Endpoint, class GQLClient
+- `vendor/twikit/twikit/xchat.py`: added def _struct_at, def key_version_of
+
+What changed: `log twitter dms --with <handle>` and `--conversation <a:b>` now open one person's X Chat the way X's own chat app does: `GetInboxPageConversationDataQuery` for that conversation id alone (`client.get_xchat_conversation`), then `GetConversationPageQuery` (its fetchOlderMessages) from the oldest sequence id and key version held, up to 5 pages 1.5 s apart while X says `has_more`. `--with` looks up the person's id and reads only their legacy thread and their X Chat, never the whole inbox (`with_person`). `xchat.key_version_of` reads a message event's conversation key version from its Thrift. A 429 inside the inbox read is no longer swallowed as `xchatReadFailed`: it reaches the engine's `rateLimited` answer, which pauses the governor, with nothing retried. AGENTS.md gains rule 94 (never act on an account in quick succession), distilled into the MCP instructions and cited on the X and Discord commands. The X Chat doc records what dm-core does.
+Why: matt, after his Discord account was disabled: "a rate limit or failed send stops the run", look at the bundle with rea and make it work. Every `dms --with` used to pull the legacy inbox and up to 30 X Chat inbox pages back to back, and three run at once got 429s from X on 2026-10-29. X's app (dm-core) opens a chat with one query and retries only 5xx, never a 429.
+Checked: live on matthewsoldit: `--conversation 1974596626342686720:2003675882351919106` and `--with ricardoampudiar` decrypted the X Chat thread in 4 requests (legacy, chat, 2 older pages until `has_more` false). The first try with `0` sequence ids was refused (BadRequest 214), which is how the fetchOlderMessages variables were confirmed. bun test: 1162 pass (with LOG_PYTHON set to the engine's Python). vendor/twikit tests: 24 pass. tsc clean.

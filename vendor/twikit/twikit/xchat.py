@@ -83,6 +83,44 @@ def _skip(data: bytes, i: int, ftype: int) -> int:
     raise ValueError(f'unknown thrift type {ftype}')
 
 
+def _struct_at(data: bytes, i: int) -> dict[int, tuple[int, int]]:
+    """Maps each field of the Thrift struct starting at ``i`` to its type and
+    the offset its value starts at."""
+    fields: dict[int, tuple[int, int]] = {}
+    while i < len(data):
+        ftype = data[i]
+        if ftype == 0:
+            break
+        fid = struct.unpack(">h", data[i + 1:i + 3])[0]
+        fields[fid] = (ftype, i + 3)
+        i = _skip(data, i + 3, ftype)
+    return fields
+
+
+def key_version_of(encoded: str) -> str | None:
+    """The conversation key version a message event was encrypted under
+    (``MessageEvent.detail.messageCreateEvent.conversation_key_version``,
+    ``vendor/chatXdk/thrift/event.thrift``), or the version a key-change
+    event sets (``conversationKeyChangeEvent.conversation_key_version``)."""
+    try:
+        data = base64.b64decode(encoded)
+        detail = _struct_at(data, 0).get(7)
+        if not detail or detail[0] != 12:
+            return None
+        union = _struct_at(data, detail[1])
+        for fid, version_field in ((1, 101), (3, 1)):
+            inner = union.get(fid)
+            if inner and inner[0] == 12:
+                found = _struct_at(data, inner[1]).get(version_field)
+                if found and found[0] == 11:
+                    start = found[1]
+                    length = struct.unpack(">i", data[start:start + 4])[0]
+                    return data[start + 4:start + 4 + length].decode("utf-8", "replace")
+    except (ValueError, struct.error, IndexError):
+        return None
+    return None
+
+
 def frame_of(raw: bytes) -> dict:
     """Reads one chat-ws socket frame, a Thrift binary ``Message`` union.
 

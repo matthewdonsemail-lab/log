@@ -1125,6 +1125,30 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     The logins are files in `~/.config/listeningkit/`, never in the repo or
     the knowledge base. `src/knowledge/base`, `docs/knowledgeBase.md`.
 
+94. 2026-10-29 · matt: "whatever you did in such quick succession lead to
+    my account getting disabled, never do that again." Never act on an
+    account in quick succession. What happened (matt's Discord,
+    `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in
+    about 13 minutes an agent replied in 3 chats, read 1,400 messages
+    from a server (Finn Automated) with a scratch script that went
+    around log-cli (`.scratch/finn/dc.ts`: its own fetch to
+    `discord.com/api/v9` with the session token, pages back to back,
+    retrying straight through 429s), pulled the account's
+    relationships, then opened new DMs to strangers from that server
+    30 s apart. Discord disabled the account. From now on:
+    - Every call to a platform goes through log-cli's own commands and
+      their governor. Never a hand-rolled script with an account's
+      token or cookies.
+    - A 429 or a failed send stops the run. It is never retried
+      through, and the next action waits for matt.
+    - Reading a server, group or member list in bulk is its own session.
+      It never runs in the same session as sending.
+    - Cold DMs to people the account has never talked to go out at most
+      a few a day, minutes apart, never back to back. Each new DM
+      channel opened counts as a write.
+    - After a block, disable, captcha or cooldown, nothing resumes on
+      that account until matt says so.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

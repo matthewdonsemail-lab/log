@@ -426,15 +426,53 @@ def conversations_of(threads: list[dict[str, Any]], pool: dict[str, Any], opened
     return out
 
 
-async def xchat_conversation(client: Any, cookies: dict[str, str], conversation_id: str, limit: int, opened: dict[str, list[dict[str, Any]]] | None) -> dict[str, Any]:
+async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[str, Any], conversation_id: str, limit: int) -> dict[str, Any]:
     me = own_user_id(cookies) or ""
-    if opened is None:
+    if not spec.get("pinPath"):
         return {"ok": False, "code": "xchatPinMissing", "detail": "this is an X Chat conversation and its text is encrypted: save the account's X Chat PIN with `log twitter chat pin --account <a>` (a masked prompt, kept in Twenty)", "loginState": "loggedIn"}
-    handles: dict[str, str] = {}
-    for conv in await client.get_xchat_conversations():
-        handles.update(conv.get("handles") or {})
-    messages = [xchat_message(m, me, handles) for m in opened.get(conversation_id, [])][-limit:]
-    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "messages": messages}
+    try:
+        await xchat_read_keys(client, spec)
+    except Exception as e:
+        return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
+    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)))
+    handles: dict[str, str | None] = {}
+    for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
+        await handle_of(client, user_id, handles)
+    messages = [xchat_message(m, me, handles) for m in page["messages"]][-limit:]
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "messages": messages}
+
+
+async def with_person(client: Any, cookies: dict[str, str], spec: dict[str, Any], handle: str, limit: int) -> dict[str, Any]:
+    from twikit.errors import TooManyRequests
+    me = own_user_id(cookies) or ""
+    user = await client.get_user_by_screen_name(handle)
+    them = str(getattr(user, "id", "") or "")
+    if not them:
+        return {"ok": False, "code": "targetMissing", "detail": f"@{handle} wasn't found on X", "loginState": "loggedIn"}
+    pair = sorted([them, me], key=lambda i: int(i) if i.isdigit() else 0)
+    ids, messages, limits = [], [], None
+    try:
+        legacy = await conversation(client, cookies, "-".join(pair), limit)
+        ids.append(legacy["conversationId"])
+        messages += legacy["messages"]
+        limits = legacy.get("limits")
+    except TooManyRequests:
+        raise
+    except Exception:
+        pass
+    chat = await xchat_conversation(client, cookies, spec, ":".join(pair), limit)
+    older_pages = chat.get("olderPages") or []
+    if chat.get("ok"):
+        if chat["messages"]:
+            ids.append(chat["conversationId"])
+        messages += chat["messages"]
+    elif chat.get("code") != "xchatPinMissing":
+        return chat
+    for m in messages:
+        m["fromMe"] = m["senderId"] == me
+        m["from"] = m.get("from") or (handle if m["senderId"] == them else None)
+    messages.sort(key=lambda m: m.get("time") or "")
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "with": {"userId": them, "handle": handle}, "conversationId": " + ".join(ids), "limits": limits, "olderPages": older_pages, "messages": messages[-limit:]}
 
 
 async def conversation(client: Any, cookies: dict[str, str], conversation_id: str, limit: int) -> dict[str, Any]:
@@ -620,18 +658,23 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
     if action == "xchatWatch":
         return await xchat_watch(client, cookies, spec)
     if action == "inbox":
+        from twikit.errors import TooManyRequests
         limit = max(1, min(int(spec.get("limit") or 20), 200))
+        conversation_id = str(spec.get("conversationId") or "")
+        if ":" in conversation_id:
+            return await xchat_conversation(client, cookies, spec, conversation_id, limit)
+        if conversation_id:
+            return await conversation(client, cookies, conversation_id, limit)
+        if str(spec.get("withHandle") or "").strip():
+            return await with_person(client, cookies, spec, str(spec["withHandle"]).strip().lstrip("@"), limit)
         try:
             opened = await xchat_read(client, spec)
         except XChatLocked as e:
             return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
+        except TooManyRequests:
+            raise
         except Exception as e:
             return {"ok": False, "code": "xchatReadFailed", "detail": f"X Chat unlocked but its messages didn't open: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
-        conversation_id = str(spec.get("conversationId") or "")
-        if ":" in conversation_id:
-            return await xchat_conversation(client, cookies, conversation_id, limit, opened)
-        if conversation_id:
-            return await conversation(client, cookies, conversation_id, limit)
         return await inbox(client, cookies, limit, opened, spec.get("export") is True)
     return {**(await send(client, spec)), "loginState": "loggedIn"}
 

@@ -3382,8 +3382,6 @@ class Client:
             could not be opened are listed with ``text`` None and an
             ``error``.
         """
-        from ..xchat import decode_event, message_of, signing_key_entry
-
         chat = getattr(self, '_xchat', None)
         if chat is None:
             raise ValueError('call unlock_xchat(pin) first')
@@ -3397,6 +3395,72 @@ class Client:
                 if part.get('rest_id'):
                     people.add(str(part['rest_id']))
             people.update(p for p in cid.split(':') if p.isdigit())
+        return await self._xchat_decrypt(events, people)
+
+    async def get_xchat_conversation(self, conversation_id: str, older_pages: int = 1) -> dict:
+        """
+        Reads and decrypts one X Chat conversation, the way X's own chat app
+        opens a chat: one ``GetInboxPageConversationDataQuery`` for that
+        conversation id alone, never the whole inbox.
+
+        It answers with the conversation's latest message events and the
+        key-change events that open them. X's app reaches further back only
+        when scrolled, with ``GetConversationPageQuery`` from the oldest
+        sequence id and key version it holds (its ``fetchOlderMessages``);
+        this does the same for up to ``older_pages`` pages, 1.5 s apart,
+        while X says ``has_more``.
+
+        Returns
+        -------
+        :class:`dict`
+            ``messages``, oldest first, as :func:`get_xchat_messages` gives
+            them, and ``has_more``.
+        """
+        from ..xchat import decode_event, key_version_of
+
+        chat = getattr(self, '_xchat', None)
+        if chat is None:
+            raise ValueError('call unlock_xchat(pin) first')
+        response, _ = await self.gql.get_xchat_conversation_data([conversation_id])
+        box = ((response or {}).get('data') or {}).get('get_inbox_page_conversation_data')
+        if box is None:
+            raise ValueError(f"GetInboxPageConversationDataQuery answered without data: {json.dumps((response or {}).get('errors'))[:300]}")
+        events, people = [], {self._xchat_me} | {p for p in conversation_id.split(':') if p.isdigit()}
+        for item in box.get('items') or []:
+            events += item.get('latest_conversation_key_change_events') or []
+            events += item.get('latest_message_events') or []
+            for part in (item.get('conversation_detail') or {}).get('participants_results') or []:
+                if part.get('rest_id'):
+                    people.add(str(part['rest_id']))
+        if not events:
+            return {'messages': [], 'has_more': False}
+        has_more, pages = True, []
+        for _ in range(max(0, min(older_pages, 10))):
+            heads = [(decode_event(e).get('event_id') or '', key_version_of(e) or '') for e in events]
+            sequences = [int(q) for q, _ in heads if q.isdigit()]
+            versions = [int(v) for _, v in heads if v.isdigit()]
+            if not sequences or not versions:
+                pages.append({'skipped': 'no sequence id or key version in the latest events'})
+                break
+            await asyncio.sleep(1.5)
+            response, _ = await self.gql.get_xchat_conversation_page(conversation_id, str(min(sequences)), str(min(versions)))
+            page = ((response or {}).get('data') or {}).get('get_conversation_page')
+            if page is None:
+                raise ValueError(f"GetConversationPageQuery answered without a page: {json.dumps((response or {}).get('errors'))[:300]}")
+            older = list(page.get('missing_conversation_key_change_events') or []) + list(page.get('encoded_message_events') or [])
+            has_more = bool(page.get('has_more'))
+            pages.append({'from': str(min(sequences)), 'keyVersion': str(min(versions)), 'events': len(older), 'hasMore': has_more})
+            known = set(events)
+            events = [e for e in older if e not in known] + events
+            if not has_more or not older:
+                break
+        opened = await self._xchat_decrypt(events, people)
+        return {'messages': opened.get(conversation_id, []), 'has_more': has_more, 'older_pages': pages}
+
+    async def _xchat_decrypt(self, events: list, people: set) -> dict[str, list[dict]]:
+        from ..xchat import decode_event, message_of, signing_key_entry
+
+        chat = self._xchat
         keys = await self.get_xchat_public_keys(sorted(people))
         chat.set_signing_keys([e for e in (signing_key_entry(k) for k in keys) if all(isinstance(v, str) and v for v in e.values())])
         chat.set_reject_unverified(False)

@@ -98,21 +98,21 @@ describe("log twitter dms", () => {
     expect(h.calls).toHaveLength(1);
   });
 
-  test("--with <handle> reads both the legacy and the X Chat thread in one export read and merges them by time", async () => {
-    const h = harness(() => ({
-      ok: true,
-      threads: [],
-      conversations: [
-        { conversationId: "xchat1", box: "xchat", with: [{ userId: "1", handle: "alex" }], messages: [{ id: "8", conversationId: "xchat1", time: "2026-10-25T11:00:00Z", senderId: "1", text: "let me talk to the team", fromMe: false, from: "alex" }] },
-        { conversationId: "1-2", box: "inbox", with: [{ userId: "1", handle: "alex" }], messages: [{ id: "9", conversationId: "1-2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "very cool", fromMe: false, from: "alex" }] },
-        { conversationId: "3-2", box: "inbox", with: [{ userId: "3", handle: "bob" }], messages: [{ id: "7", conversationId: "3-2", time: "2026-10-25T09:00:00Z", senderId: "3", text: "not alex", fromMe: false, from: "bob" }] },
-      ],
-    }));
+  test("--with <handle> reads only that person's legacy and X Chat threads, never the whole inbox, and merges them by time", async () => {
+    const h = harness((spec) => spec.withHandle === "alex"
+      ? {
+        ok: true,
+        conversationId: "1-2 + 1:2",
+        messages: [
+          { id: "8", conversationId: "1:2", time: "2026-10-25T11:00:00Z", senderId: "1", text: "let me talk to the team", fromMe: false, from: "alex" },
+          { id: "9", conversationId: "1-2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "very cool", fromMe: false, from: "alex" },
+        ],
+      }
+      : { ok: true, conversationId: "", messages: [] });
     const r = await h.run(["twitter", "dms", "--account", "xTwo", "--with", "@alex"]);
     expect(r.code).toBe(0);
     expect(r.out.indexOf("@alex: very cool")).toBeLessThan(r.out.indexOf("@alex: let me talk to the team"));
-    expect(r.out).not.toContain("not alex");
-    expect(h.calls).toEqual([{ action: "inbox", limit: 200, export: true }]);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, withHandle: "alex" }]);
     expect((await h.run(["twitter", "dms", "--account", "xTwo", "--with", "nobody"])).err).toContain("targetMissing");
   });
 });

@@ -7,8 +7,8 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--json]",
   "Reads the account's X direct messages on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
-  "Without --conversation it reads the inbox and the message requests (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages (dm/conversation), oldest first.",
-  "--with <handle> reads everything with one person by their handle: their legacy thread and their X Chat thread merged into one timeline, oldest first, a message mirrored into both shown once. X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
+  "Without --conversation it reads the inbox and the message requests (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.",
+  "--with <handle> reads everything with one person by their handle and nobody else: their user id, their legacy thread (dm/conversation) and their X Chat thread (read the way X's own chat app opens a chat, from its dm-core: GetInboxPageConversationDataQuery for that one conversation, then GetConversationPageQuery from the oldest message held, its fetchOlderMessages, up to 5 pages 1.5 s apart while X says there is more), merged into one timeline, oldest first, a message mirrored into both shown once. It never reads the whole inbox. A 429 stops the read with nothing retried, as X's app does (it retries only 5xx), and pauses the account's governor (rule 94). X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
 ].join("\n");
 
 export const DMS_INPUT: CommandInput = {
@@ -84,18 +84,16 @@ export const dmsCommand: Command = {
       if (!opened.ok) return opened.result;
       const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
       const chatPin = secrets?.messengerPin ?? undefined;
-      const read = (spec: { limit: number; conversationId?: string; export?: boolean }) => opened.engine({ action: "inbox", ...spec, ...(chatPin ? { chatPin } : {}) });
+      const read = (spec: { limit: number; conversationId?: string; withHandle?: string }) => opened.engine({ action: "inbox", ...spec, ...(chatPin ? { chatPin } : {}) });
       let convoId = typeof conversation === "string" ? conversation : undefined;
       if (typeof withHandle === "string") {
-        const needle = withHandle.trim().replace(/^@/, "").toLowerCase();
-        context.err(`${opened.account.accountName}: finding @${needle}'s conversations${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
-        const index = await read({ limit: 200, export: true });
-        if (!index.answer.ok) return { code: 1, stdout: render(opened.account.accountName, index.answer, false) };
-        const matches = (index.answer.conversations ?? []).filter((c) => c.with.some((p) => (p.handle ?? "").toLowerCase() === needle));
-        if (!matches.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation in this account's inbox`);
-        const messages = dropMirrors(matches.flatMap((c) => c.messages)).slice(-limit);
-        const answer = { ...index.answer, conversations: undefined, threads: undefined, ok: true, conversationId: matches.map((m) => m.conversationId).join(" + "), messages };
-        const merged = { ...index, answer };
+        const needle = withHandle.trim().replace(/^@/, "");
+        context.err(`${opened.account.accountName}: reading @${needle}'s conversations only (their DM thread, then their X Chat the way X's app opens a chat: GetInboxPageConversationDataQuery, then older pages)${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
+        const person = await read({ limit, withHandle: needle });
+        if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
+        if (!person.answer.messages?.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation with this account`);
+        const answer = { ...person.answer, messages: dropMirrors(person.answer.messages).slice(-limit) };
+        const merged = { ...person, answer };
         if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer }, null, 2) };
         const governor = governorLine(merged);
         return { code: answer.ok ? 0 : 1, stdout: [render(opened.account.accountName, answer, false), ...(governor ? [governor] : [])].join("\n") };
