@@ -12,7 +12,9 @@ export function subqKeyFile(home = homedir()): string {
 export function subqKey(env: Record<string, string | undefined> = process.env, keyFile = subqKeyFile()): string | null {
   if (env.SUBQ_API_KEY) return env.SUBQ_API_KEY
   if (existsSync(keyFile)) {
-    const fromFile = readFileSync(keyFile, 'utf8').trim()
+    const text = readFileSync(keyFile, 'utf8')
+    const named = /^\s*SUBQ_API_KEY\s*=\s*(.*)$/m.exec(text)?.[1]?.trim().replace(/^"|"$/g, '')
+    const fromFile = named ?? (text.includes('=') ? '' : text.trim())
     if (fromFile) return fromFile
   }
   const repo = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
