@@ -35,6 +35,8 @@ Never in the repo, the knowledge base or chat. On matt's PC, in
 - `kb-redis-url.txt`: the kb-redis URL with its password.
 - `cloudflare-api-token.txt`: the Cloudflare API token (zones, DNS, tunnels).
 
+Every key file, the SubQ and treg keys included: `docs/infra/apiKeys.md`.
+
 On node02 the stack's secrets are in `.env` (mode 600, owner deepman).
 
 ## 2026-10-23 breakage and the 2026-10-26/27 fix

@@ -8688,3 +8688,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `skills/xPosting` gains the growth loop matt runs on @matthewsoldit, in order: one original post by the playbook, every comment answered in the first 2 hours, a trend quoted an hour later, DMs to the likers and reposters the cold DM way, topic replies every day inside 40 writes, the inbox answered (never a cold template to someone already talked to), followers scored weekly with treg, leads into Twenty. Each step names its use-case page and commands. It also says `log voice` judges by matt's own writing, so another account writes in its `copyStyle`, and it gives the playbook's Twenty note ids (node02 and legacy).
 Why: asked to find through log how matt connects and grows on X, and how to do it the same way from @deepman_1.
 Checked: read from the knowledge base (`log kb search`: engagerDms, engagementReplies, topicReplies, perPersonVoice, xchatReplies, the matt X memory note); treg 0.25.0 installed here; the playbook note created in node02's Twenty (201).
+
+## 2026-10-29 02:17Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: new file
+- `docs/infra/node02.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/subq/decisions/client.ts`: added function subqKeyFile · changed function subqKey, function createDecisionsClient
+- `src/subq/decisions/decisions.test.ts`: added test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads `~/.config/listeningkit/subq-api-key.txt` after `SUBQ_API_KEY` and before `.env.local` (`subqKeyFile`), with a test. `docs/infra/apiKeys.md` lists every key file in `~/.config/listeningkit` (SubQ, treg, Twenty, kb-redis, Cloudflare, the X cookie how-to): what each one is and what reads it, never its value. `docs/infra/node02.md` links to it. `skills/xPosting` gets an account-plan table: @matthewsoldit's from his memory note, and @deepman_1's Mandeep + InferenceSaver Social Growth Plan (inferencesaver `docs/project/social-growth-plan.md`), with where it gives way to the X discipline.
+Why: asked to keep the treg and SubQ keys in a text file that log uses and that is findable from Twenty for every future session, and whether the small-founder growth plan had been used (it hadn't).
+Checked: `bun run check` green (1163 pass, 0 fail), with the new key-file test. `treg-api-key.txt` was copied from `~/.treg/config.json` without printing it. `subq-api-key.txt` was created empty for the key to be pasted in.
