@@ -13,7 +13,7 @@ one to open, and where a new workflow or style goes.
 
 | Step | Command | Where it lands |
 | --- | --- | --- |
-| Copy `auth_token` and `ct0` from a browser signed in to x.com (DevTools → Application → Cookies → `https://x.com`) | none | your clipboard only |
+| Copy `auth_token`, `ct0` and `twid` from a browser signed in to x.com (DevTools → Application → Cookies → `https://x.com`) | none | your clipboard only |
 | Save them, checked with X first | `bun bin/log.ts twitter cookies save --account <handle> [--style house] [--name "<label>"]` in a terminal (a masked Clack prompt; never a flag, never over MCP) | Twenty `socialAccounts`: a TWITTER row with `accountName` = handle, `cookies`, `sessionState`, `copyStyle` |
 | Check it any time | `log twitter session check --account <handle>` (MCP `twitterSession`) | `sessionState` in Twenty, and the governor in `~/.logCli/twitter/<handle>` |
 | X Chat PIN, to read encrypted DMs | `bun bin/log.ts twitter chat pin --account <handle>` in a terminal | `socialAccounts.messengerPin` |

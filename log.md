@@ -8666,3 +8666,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `.gitignore` now keeps matt's messages and everything built from them out of git: `.logCli/`, `pairs.json`, `profiles.json`, `readings.jsonl`, any conversation `.json`, the voice index folder and the communication map. They live in `~/.logCli` and `~/.buzz/RESEARCH`, outside the repo, and nothing like them was tracked. The voice test's log-group fixture used two real lines Kennedy sent, and they are now made up.
 Why: matt: "it's not in the repo on GitHub, it can't be there, we need to gitignore it, it's fine locally."
 Checked: `git check-ignore` matches `pairs.json`, a conversation `.json` and a communication-map file. `git ls-files` tracks no message data, and no line from today's chats is in any tracked file. src/voice: 6 pass.
+
+## 2026-10-29 02:05Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/cookies.test.ts`: added const TWID · changed test "a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", test "an existing handle has its cookies replaced, not a second row", test "cookies X refuses, or for another handle, save nothing"
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const COOKIES_INPUT, const cookiesCommand
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+
+What changed: `log twitter cookies save` asks for a third cookie, twid, after auth_token and ct0, and saves it with them. The usage, the terminal-only note and `skills/xPosting` name all three.
+Why: the first real save (@deepman_1) was refused with twidMissing: X accepted auth_token and ct0, but the engine reads the account's id from twid, so the ping can't finish without it.
+Checked: @deepman_1 saved to Twenty with the three cookies, loggedIn as 2039389784808853504, and `log twitter session check --account deepman_1` answers loggedIn; the cookie-save tests pass with twid (31 pass in src/cli/twitter).

@@ -13,7 +13,7 @@ import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const COOKIES_USAGE = [
   "Usage: log twitter cookies save --account <handle> [--style <copyStyle>] [--name <label>]",
-  "Saves an X account's session to Twenty from a masked Clack prompt: its auth_token and ct0 cookies, copied from a browser signed in to x.com, never passed as flags or printed. They are checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) pings X with them, and only cookies X accepts for that same handle are saved. A handle Twenty doesn't have yet gets a new TWITTER socialAccounts row (rule 13); one it has gets its cookies replaced. --style sets the account's copyStyle, the writing style every send and queue check holds its copy to (empty: house). The account's governor starts under ~/.logCli/twitter/<handle>.",
+  "Saves an X account's session to Twenty from a masked Clack prompt: its auth_token, ct0 and twid cookies (twid carries the account's id), copied from a browser signed in to x.com, never passed as flags or printed. They are checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) pings X with them, and only cookies X accepts for that same handle are saved. A handle Twenty doesn't have yet gets a new TWITTER socialAccounts row (rule 13); one it has gets its cookies replaced. --style sets the account's copyStyle, the writing style every send and queue check holds its copy to (empty: house). The account's governor starts under ~/.logCli/twitter/<handle>.",
 ].join("\n");
 
 interface CookiePrompts {
@@ -32,7 +32,7 @@ export const COOKIES_INPUT: CommandInput = {
   forms: [
     {
       words: ["save"],
-      summary: "Save an X account's auth_token and ct0 to Twenty from a masked prompt, checked against X first",
+      summary: "Save an X account's auth_token, ct0 and twid to Twenty from a masked prompt, checked against X first",
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account's X handle, saved as its accountName" },
@@ -87,11 +87,12 @@ export const cookiesCommand: Command = {
       };
       const authToken = await ask("auth_token (x.com cookie)");
       const ct0 = authToken ? await ask("ct0 (x.com cookie)") : null;
-      if (!authToken || !ct0) {
+      const twid = ct0 ? await ask("twid (x.com cookie, u%3D followed by the account id)") : null;
+      if (!authToken || !ct0 || !twid) {
         prompts.cancel("Nothing saved.");
         return { code: 1, stderr: "log twitter cookies save: cancelled, nothing saved" };
       }
-      const cookies = { auth_token: authToken, ct0 };
+      const cookies = { auth_token: authToken, ct0, twid };
       const probe = toFacebookAccount({ id: found?.id ?? "new", accountName: handle, name: handle, platform: "TWITTER", cookies } as SocialAccountRow);
       context.err(`@${handle}: checking the cookies with X on the direct-API engine (twikit) before saving`);
       const run = context.directTwitter(probe, { action: "ping" });
