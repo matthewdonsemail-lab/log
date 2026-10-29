@@ -8679,3 +8679,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter cookies save` asks for a third cookie, twid, after auth_token and ct0, and saves it with them. The usage, the terminal-only note and `skills/xPosting` name all three.
 Why: the first real save (@deepman_1) was refused with twidMissing: X accepted auth_token and ct0, but the engine reads the account's id from twid, so the ping can't finish without it.
 Checked: @deepman_1 saved to Twenty with the three cookies, loggedIn as 2039389784808853504, and `log twitter session check --account deepman_1` answers loggedIn; the cookie-save tests pass with twid (31 pass in src/cli/twitter).
+
+## 2026-10-29 02:13Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills/xPosting/SKILL.md`: edited
+
+What changed: `skills/xPosting` gains the growth loop matt runs on @matthewsoldit, in order: one original post by the playbook, every comment answered in the first 2 hours, a trend quoted an hour later, DMs to the likers and reposters the cold DM way, topic replies every day inside 40 writes, the inbox answered (never a cold template to someone already talked to), followers scored weekly with treg, leads into Twenty. Each step names its use-case page and commands. It also says `log voice` judges by matt's own writing, so another account writes in its `copyStyle`, and it gives the playbook's Twenty note ids (node02 and legacy).
+Why: asked to find through log how matt connects and grows on X, and how to do it the same way from @deepman_1.
+Checked: read from the knowledge base (`log kb search`: engagerDms, engagementReplies, topicReplies, perPersonVoice, xchatReplies, the matt X memory note); treg 0.25.0 installed here; the playbook note created in node02's Twenty (201).

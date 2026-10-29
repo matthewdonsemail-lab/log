@@ -33,7 +33,9 @@ comment, the quote an hour later).
 
 - Repo: `listeningkit-frontend`, `docs/okf/operations/social-posting-playbook.md`
   (branch `docs/social-posting-playbook`).
-- Twenty: Notes → "Social posting playbook (ListeningKit)".
+- Twenty: Notes → "Social posting playbook (ListeningKit)", in node02's
+  Twenty (`a9afec1f-50e0-45a7-a51f-0f1bbf70e94c`) and the legacy one
+  (`a41908eb-adc7-4b40-a0c5-b8fa31c522e5`).
 - Knowledge base: `log kb search "social posting playbook"`.
 
 log-cli doesn't post originals yet. They go out by hand from the X app or
@@ -57,6 +59,35 @@ The parts every page uses:
   talked to on X Chat (rule 87).
 - **Pacing:** 40 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86).
+
+## 3b. The growth loop (how matt grows @matthewsoldit)
+
+What worked for matt (`log kb show memory:-buzz/listeningkit-real-state`): a
+text post about treg ("$10 -> 30 conversations") did 205K views and 1,182
+likes, and his followers went from 308 to 352 in four days. He then turned
+the attention into conversations. Every account runs the same loop, in this
+order:
+
+| # | When | What | How |
+| --- | --- | --- | --- |
+| 1 | Post day | One original post. The text carries it (a video open counts almost nothing). One best post per feed window, when the audience is online, never several in a row | the social posting playbook (section 2), sent by hand |
+| 2 | The first 2 hours | Answer every comment. Unanswered questions are the best openers. Replies between mutuals score highest | `docs/useCases/twitter/engagementReplies.md`: treg comments read, then a queue of replies |
+| 3 | About 1 hour after | Quote a matching trend, never before your own post | playbook "Riding a trend", `log twitter quote` |
+| 4 | The next days | DM the people who liked or reposted it, opening with one of their own tweets, then one informal line | `docs/useCases/twitter/engagerDms.md` (the cold DM way), queue `action: dm` |
+| 5 | Every day | Reply to people posting about your topic, one line about their post backed by your own fact, inside 40 writes a day | `docs/useCases/twitter/topicReplies.md`, the queue's `limit` |
+| 6 | Always | Answer whoever writes back. Never send a cold template to someone you already talk to | `log twitter dms --account <a> [--with <handle>]`, `chat watch` (needs the X Chat PIN), rule 87 |
+| 7 | Weekly | Score the followers (treg profiles and their posts), and talk to the best ones by hand | `docs/useCases/twitter/followers.md`, treg `anyapi.x.user.profile` |
+| 8 | Always | Leads from posts and DMs go into Twenty | `agencyProspects` |
+
+Finding people and posts is always treg (`treg call anyapi.x.search.posts
+--file q.json`, `anyapi.x.user.profile`, `treg.x.user.posts`). On Windows,
+pass `--file` rather than `--data`, and set `PYTHONUTF8=1`. A big treg sweep
+costs money: say the price first.
+
+**Voice.** `log voice` gates drafts against matt's own writing. Its guide
+and his saved conversations are on matt's machine, so on any other account it
+judges by matt's voice. For an account of your own, write in its
+`copyStyle`, and keep each line about the other person's post.
 
 ## 4. Copy styles
 
