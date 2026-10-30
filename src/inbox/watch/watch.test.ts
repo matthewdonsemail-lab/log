@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { addPending, claimPoll, inboxContext, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
+import { addPending, claimPoll, ensureLiveWatchers, inboxContext, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
@@ -89,3 +89,15 @@ describe("who is waiting, read from the local inbox store with no network", () =
   });
 });
 
+
+describe("an inbox watcher for an account gone from Twenty", () => {
+  test("is not started again once its own log ends on accountNotFound", () => {
+    const root = process.env.LOG_INBOX_STATE as string;
+    mkdirSync(join(root, "discord", "gone"), { recursive: true });
+    writeFileSync(join(root, "discord", "gone", "watch.log"), "log discord watch: accountNotFound: No socialAccount with that accountName or id in Twenty.\nlog facebook accounts lists the Facebook accounts.\n");
+    const started: string[] = [];
+    const out = ensureLiveWatchers("discord", ["gone", "live"], (account) => (started.push(account), 4242), () => false);
+    expect(started).toEqual(["live"]);
+    expect(out).toEqual(["live"]);
+  });
+});

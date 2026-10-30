@@ -23,6 +23,9 @@ Who wrote last is already in context at the start of a session: the SessionStart
 
 - `twitterDms` reads the inbox, the message requests and X's encrypted Chat. X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`); without it X Chat threads show who and when, not what.
 - A person can have both an old DM thread and an X Chat thread. Read them together with `twitterDms` { account, with: "<handle>" } before answering, so nothing they said in X Chat is missed.
+- Every X Chat message opens with the saved PIN: a reaction shows as `(reacted 🔥)`, an edit as `(edited) …`, a photo as `(image: name.jpg)`, a shared post or link as its URL, and a read marker is hidden, so "they read it and haven't answered" never looks like a message waiting on you. A message still showing "could not open" is reopened the next time its chat is read, and each sync reopens a few on its own. Group chats are read with `twitterDms` { account, conversation: "g…" }.
+- Before answering, check who actually wrote last: a thread where the owner's message is the newest real one isn't waiting on him, even if the list put it there.
+- X has its own daily limit on tweets and messages (code 344, about 40 writes a day on matthewsoldit, likes and follows included), and going past the governor doesn't get past it. Spend the day's writes on people who answered first. After a 344 nothing more goes out until the owner says so.
 - To find something said in any conversation, search instead of reading every thread: `search` { query, with, after } after `searchIndex`.
 - A DM send counts as a write against the account's 40 a day.
 

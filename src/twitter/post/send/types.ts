@@ -1,6 +1,6 @@
 import type { TwitterEngineSpec } from '../../account/session/index'
 
-export type SendAction = 'reply' | 'quote' | 'like' | 'dm'
+export type SendAction = 'reply' | 'quote' | 'like' | 'dm' | 'follow'
 
 export interface SendRequest {
   action: SendAction

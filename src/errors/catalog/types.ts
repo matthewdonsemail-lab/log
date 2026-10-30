@@ -182,9 +182,9 @@ export const ERROR_CATALOG = {
   },
   chatNotFound: {
     layer: 'runtime',
-    meaning: "None of the Discord account's DMs or groups matches the chat as it was said.",
+    meaning: "None of the saved chats (X, Discord or any other platform) matches the chat as it was said.",
     retryable: false,
-    raisedIn: ['cli/discord'],
+    raisedIn: ['cli/discord', 'cli/twitter/voice'],
     action: 'Say it another way (a word of its name, or who it is with), or list them with log discord chats and give its id.'
   },
   chatAmbiguous: {
@@ -1373,7 +1373,7 @@ export const ERROR_CATALOG = {
     meaning: 'No socialAccount with that accountName or id in Twenty.',
     retryable: false,
     raisedIn: ['marketplace/socialAccount'],
-    action: 'log facebook accounts lists the Facebook accounts.'
+    action: 'Check the accountName in Twenty (log facebook accounts lists the Facebook ones). An inbox watcher for an account gone from Twenty is not restarted.'
   },
 
   twoCaptchaNotConfigured: {

@@ -8895,3 +8895,70 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter dms --with <handle>` (and `twitterDms` with `with`) now shows every X Chat message the account's local inbox store holds for that chat, merged by event id with what X answers, oldest first. Before, it showed only what X's `GetInboxPageConversationDataQuery` answered, which is the chat's newest few events, because the older-page read is skipped when the latest events carry no key version. The skip now names which was missing (sequence id or key version) and how many events it looked at. The test preload takes `LOG_PYTHON` from `.env.local` when it isn't set, since `bun test` doesn't load `.env.local` and the bare `python` has no twikit packages, which had been failing the inbox sync tests.
 Why: replying to @shaw_gtm, `--with shaw_gtm` showed only his last line ("Read only access should be fine") and hid the 9 messages before it that answered matt's pricing question. Only a search found them. matt: fix it.
 Checked: new test, X answering with only the newest message while the store holds three: all four come back in order, with handles. Inbox sync tests 6 pass (0 before, the Python import failing). Live on @shaw_gtm: 15 messages, his whole answer, where it was 2.
+
+## 2026-10-30 06:05Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: added def is_xchat_id, const REOPEN_PER_SYNC, const REOPEN_AGAIN_MS, def reopen_unopened, def inboxSync_shown, def keep_opened, def stored_handles · changed def synced_inbox, def xchat_conversation, def act
+- `python/twitterApi/inboxSync.py`: added def shown · changed def add_messages, def seed_xchat, def merge_xchat, def xchat_threads, def push_message, def opened_of
+- `src/cli/twitter/helpers/dms.ts`: changed function syncLine, function keepForSearch
+- `src/twitter/account/session/inboxSync.test.ts`: added test "a read marker is never the last message: the thread still shows what was said, and a group id reads as X Chat" · changed const SCRIPT, test "one person's chat shows every message the store holds, even when X answers with only the newest"
+- `src/twitter/account/session/types.ts`: changed interface TwitterInboxSync
+- `vendor/twikit/tests/test_xchat.py`: added def decrypted, def test_message_of_reads_every_content_type, def test_missing_keys_are_read_from_chat_xdks_own_error, class FakeChat, def test_decrypt_fetches_the_missing_key_changes_and_opens_again, def test_get_xchat_conversation_reopens_held_messages_x_left_out
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/xchat.py`: added const EVENT_KINDS, def event_kind_of, def is_marker, def attachment_text · changed def message_of
+
+What changed: X Chat messages that showed as "(could not decrypt)" open. Four causes, each read from chat-xdk's own answer. (1) A catch-up read brought messages without the key changes that open them: chat-xdk's error names the version needed, and `_xchat_decrypt` now asks `GetConversationPageQuery` for that conversation's `missing_conversation_key_change_events`, as X's app does, and decrypts again (`_xchat_missing_keys`, `_xchat_fetch_key_changes`). (2) chat-xdk drops a key change whose signer's signature it can't verify (`enforce_ckey_signatures`), and in a group the signer isn't always a current participant: every event's sender is now in the public-key lookup. (3) Reactions, edits, photos, shared posts and read markers decrypted fine but only `content.text` was read: `message_of` reads chat-xdk's `content_type` (`(reacted 🔥)`, `(edited) …`, `(image: name.jpg)`, the post's URL) and read markers are hidden everywhere (`is_marker`, `inboxSync.shown`), never counted as a chat's last message. (4) `--conversation g…` went to the old DM path: `is_xchat_id`. Messages held from before are opened again when their chat is read (`reopen`, up to 5) and by each inbox sync (`reopen_unopened`, 3 conversations a sync, once a day each), and the sync line says how many. The older-page read takes the key version from chat-xdk when the Thrift doesn't give it (`_xchat_versions`), and `--with` writes what it opened back into the store. Written up in `docs/platforms/x/xchat/README.md`.
+Why: matt: the "could not decrypt" messages (Shaw's first line, Jash's latest, RVA's replies, the group chat) can't be an issue, since we go through X's own client: find the cause and fix it.
+Checked: live on matthewsoldit, each read once: RVA 25 of 25 open (his three replies this morning, both photos, two reactions), Jash 7 of 7 (his 'could not decrypt' was an edit), the group 141 of 142 (the one left is from 12 July, under a key older than the oldest page X answers), Shaw's 21:30:01 now opens. twikit X Chat tests 12 pass (4 new: every content type, the missing key read from the error, the key changes fetched then opened again with the signers' keys, a held message reopened). Inbox sync tests 7 pass (new: a read marker is never the last message, group ids route to X Chat).
+
+## 2026-10-30 06:13Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: new file
+- `python/twitterApi/engine.py`: changed const WRITES, def reopen_unopened, def send, def refusal_of
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/send.ts`: added const followCommand · changed const SHAPES, function renderSent
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, const TWITTER_WRITES, interface TwitterSessionAnswer
+- `src/twitter/post/send/client.ts`: added const BY_USER · changed function targetOf, function planSend
+- `src/twitter/post/send/types.ts`: changed type SendAction
+
+What changed: `log twitter follow --account <a> --userId <id> [--approvedBy <who>] [--live]` (MCP `twitterFollow`, `twitterFollowLive`) follows one person on the direct-API engine, a dry run unless `--live`, counted by the governor as a write like a like or a dm. X's answer decides: the followed user back is sent; already following is sent too, with nothing called. A new use case, `twitter/networkMaxing`: everyone who messaged the owner gets something nice back that asks for nothing, and new people get followed first, then a like on the tweet the message is about, then the message. The X Chat sync now counts a reopened read marker as opened, so its line says what it fixed, and the entry for 76f7327 says RVA 25 of 25 (it said 20 of 20, from a read capped at 20).
+Why: matt: 'all them people messaging me, just message them something nice, get the ball moving with the networking... we're not even trying to get anything out of these people', 'if you're going to do cold outbound make sure part of the playbook is that you follow them', 'if we're going to send a tweet to someone at least leave a like on the tweet', 'we need to outline this as a play'. log could like and dm but not follow. The pre-commit use case review flagged the play as repeatable work no page covered (80%).
+Checked: `bun run check`: 1185 pass, every gate green (docs, guides, rules, naming, typecheck). The follow command plans by user id like a dm and refuses a non-numeric id. The inbox sync live: '1 older message opened that couldn't be before'.
+
+## 2026-10-30 06:27Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed const voiceCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/inbox/watch/client.ts`: added function watcherGone · changed function ensureLiveWatchers
+- `src/inbox/watch/watch.test.ts`: added test "is not started again once its own log ends on accountNotFound"
+
+What changed: `log voice --with <handle>` for someone matt has never chatted with no longer refuses with `chatNotFound`: it says there's no saved chat yet and gates the draft on matt's writing guide alone, the way it does without `--with`. With no `--text` it still refuses, since there's nothing of his to show. `chatNotFound`'s meaning names every platform, not only Discord. The inbox hook no longer starts a watcher again for an account whose own watch log ends on `accountNotFound` (`watcherGone`): the Discord account disabled on 29 Oct is gone from Twenty, and the hook had started a dead watcher for it on every prompt, 821 times. `accountNotFound`'s action no longer points every platform at `log facebook accounts`.
+Why: matt's networking run: gating drafts for new people from his niche map failed with `chatNotFound` from the Discord account, and the Discord check he asked for found the watcher restarting for an account Twenty no longer has.
+Checked: inbox watch tests 7 pass (new: a gone account's watcher isn't started, a live one is). Typecheck clean. Gating new people without a chat passed for 15 drafts live.
+
+## 2026-10-30 07:08Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `python/errors/errorCatalog.json`: edited
+
+What changed: `docs/errorCatalog.md` and `python/errors/errorCatalog.json` are regenerated from the catalog (`bun run errors:export`) after ce676d2 changed `chatNotFound` and `accountNotFound`. `docs/useCases/twitter/dmInbox.md` now says how X Chat shows reactions, edits, photos and links, that read markers are hidden and messages that couldn't be opened are reopened, that group chats are read by their `g…` id, to check who really wrote last before answering, and that X's own daily limit (code 344, about 40 writes on matthewsoldit) stops a run whatever the governor says.
+Why: the pre-push test refused a catalog export older than the catalog, and the pre-commit use case review found `twitter/dmInbox` stale (77%) against this session's inbox work.
+Checked: `bun run errors:export` and the errors test; the use case review again.

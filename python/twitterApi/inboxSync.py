@@ -8,6 +8,10 @@ from typing import Any
 VERSION = 1
 
 
+def shown(m: dict[str, Any]) -> bool:
+    return m.get("type", "Message") == "Message" and not (m.get("text") is None and not m.get("error") and m.get("kind") not in (None, "Text"))
+
+
 def empty_state() -> dict[str, Any]:
     return {"version": VERSION, "maxSequenceId": "0", "syncedAt": None, "xchat": {}, "legacy": {"conversations": {}, "users": {}, "messages": [], "boxes": {}}}
 
@@ -61,7 +65,8 @@ def add_messages(conv: dict[str, Any], messages: list[dict[str, Any]]) -> int:
         if not key:
             continue
         if key in held:
-            if m.get("text") is not None and conv["messages"][held[key]].get("text") is None:
+            old = conv["messages"][held[key]]
+            if old.get("text") is None and (m.get("text") is not None or (m.get("kind") and not old.get("kind"))):
                 conv["messages"][held[key]] = m
             continue
         held[key] = len(conv["messages"])
@@ -95,6 +100,9 @@ def seed_xchat(state: dict[str, Any], conversations: list[dict[str, Any]], opene
     for cid, messages in (opened or {}).items():
         conv = state["xchat"].setdefault(cid, {"participants": [], "handles": {}, "lastMs": None, "lastSender": None, "messages": []})
         add_messages(conv, [m for m in messages if m.get("type", "Message") == "Message"])
+        for m in messages:
+            if shown(m) and m.get("text") is not None:
+                mark_last(conv, m.get("time_ms"), m.get("sender_id"))
 
 
 def merge_xchat(state: dict[str, Any], me: str, heads: list[dict[str, Any]], opened: dict[str, list[dict[str, Any]]], details: dict[str, dict[str, Any]], decrypted: bool) -> int:
@@ -108,7 +116,8 @@ def merge_xchat(state: dict[str, Any], me: str, heads: list[dict[str, Any]], ope
         said = [m for m in messages if m.get("type", "Message") == "Message"]
         added += add_messages(conv, said)
         for m in said:
-            mark_last(conv, m.get("time_ms"), m.get("sender_id"))
+            if shown(m):
+                mark_last(conv, m.get("time_ms"), m.get("sender_id"))
     if not decrypted:
         for head in heads:
             cid = str(head.get("conversation_id") or "")
@@ -149,9 +158,13 @@ def xchat_threads(state: dict[str, Any], me: str, decrypted: bool) -> list[dict[
     out = []
     for cid, conv in state["xchat"].items():
         people = [{"userId": uid, "handle": conv["handles"].get(uid)} for uid in conv.get("participants") or []]
-        said = [m for m in conv["messages"] if m.get("text") is not None]
+        visible = [m for m in conv["messages"] if shown(m)]
+        said = [m for m in visible if m.get("text") is not None]
         last_ms, sender = conv.get("lastMs"), conv.get("lastSender")
-        newest = conv["messages"][-1] if conv["messages"] else None
+        newest = visible[-1] if visible else None
+        markers = {m.get("time_ms") for m in conv["messages"] if not shown(m)}
+        if newest is not None and last_ms in markers:
+            last_ms, sender = newest.get("time_ms"), newest.get("sender_id")
         if said and (last_ms is None or (said[-1].get("time_ms") or 0) >= int(last_ms)):
             last_ms, sender = said[-1].get("time_ms"), said[-1].get("sender_id")
         from_me = str(sender or "") == me
@@ -187,11 +200,13 @@ def push_message(path: Path | None, me: str, event: dict[str, Any], handle: str 
     sender = str(event.get("sender_id") or "")
     if handle and sender and sender != me:
         conv["handles"].setdefault(sender, handle)
-    added = add_messages(conv, [{k: event.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id")}])
-    mark_last(conv, event.get("time_ms"), sender)
+    kept = {k: event.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id")} | {k: event[k] for k in ("kind", "error") if event.get(k) is not None}
+    added = add_messages(conv, [kept])
+    if shown(kept):
+        mark_last(conv, event.get("time_ms"), sender)
     write_state(path, state)
     return bool(added)
 
 
 def opened_of(state: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    return {cid: conv["messages"] for cid, conv in state["xchat"].items()}
+    return {cid: [m for m in conv["messages"] if shown(m)] for cid, conv in state["xchat"].items()}

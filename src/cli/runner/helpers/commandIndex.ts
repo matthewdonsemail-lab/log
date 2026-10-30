@@ -56,6 +56,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "reply", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "replyCommand" },
   { name: "quote", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "quoteCommand" },
   { name: "like", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "likeCommand" },
+  { name: "follow", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "followCommand" },
   { name: "dm", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "dmCommand" },
   { name: "queue", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "queueCommand" },
   { name: "new", platform: "any", module: "src/cli/new/index.ts", exportName: "newCommand" },

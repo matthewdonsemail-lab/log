@@ -18,6 +18,7 @@ This is how the owner works. Each use case is something the owner asks for again
 | `getGuide({ useCase: "twitter/engagerDms" })` | DMing the people who liked or reposted your post | see the page |
 | `getGuide({ useCase: "twitter/followUps" })` | Following up in your own voice | "follow up with these, not for anything in particular, just warming up the relationship", "say it was cool to meet him", "ask him for some advice on what he's doing", "take him up on the doc he offered". |
 | `getGuide({ useCase: "twitter/followers" })` | Checking who really follows you | see the page |
+| `getGuide({ useCase: "twitter/networkMaxing" })` | Network maxing: warm everyone up, then bring new people in | "all them people messaging me, just message them something nice, get the ball moving with the networking", "we're not even trying to get anything out of these people, network max", "throw some new people in the mixer", "follow them before you cold message them, and like the tweet you send them". |
 | `getGuide({ useCase: "twitter/recruiting" })` | Recruiting on X with a reply queue | see the page |
 | `getGuide({ useCase: "twitter/topicReplies" })` | Replying to everyone posting about one topic | see the page |
 | `getGuide({ useCase: "twitter/whoNeedsYou" })` | Finding who needs something from you, or who matters | "look through my messages and find someone who clearly needs something off me", "summarise everything on my twitter, how likely is it we make money", "who's worth following up". |
@@ -124,7 +125,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `facebookMarketplace` | Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations |
 | `facebookGroups` | Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls |
 | `xInbox` | Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live |
-| `xSending` | Sending as an X account: dms one message per line, replies, quotes, likes, queues, and matt's voice gate before every send |
+| `xSending` | Sending as an X account: dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send |
 | `xAccount` | An X account's session: saving and checking its cookies, and who follows whom |
 | `discord` | A Discord account: its session, chats, reading, the live gateway watch and sending |
 | `reddit` | A Reddit account's session |

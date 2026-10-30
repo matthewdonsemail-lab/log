@@ -18,7 +18,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "dm")
+WRITES = ("reply", "quote", "like", "dm", "follow")
 ACTIONS = READS + WRITES
 
 
@@ -398,6 +398,45 @@ async def legacy_pool(client: Any, limit: int, max_pages: int = 8) -> tuple[dict
     return pool, response, pages
 
 
+def is_xchat_id(conversation_id: str) -> bool:
+    return ":" in conversation_id or bool(re.fullmatch(r"g\d+", conversation_id))
+
+
+REOPEN_PER_SYNC = 3
+REOPEN_AGAIN_MS = 24 * 3600 * 1000
+
+
+async def reopen_unopened(client: Any, spec: dict[str, Any], state: dict[str, Any], unlocked: bool) -> dict[str, Any]:
+    from twitterApi import inboxSync
+
+    now = int(time.time() * 1000)
+    due = []
+    for cid, conv in state["xchat"].items():
+        ids = [str(m["event_id"]) for m in conv["messages"] if m.get("event_id") and m.get("text") is None and inboxSync.shown(m) and now - int(m.get("retriedAt") or 0) > REOPEN_AGAIN_MS]
+        if ids:
+            due.append((int(conv.get("lastMs") or 0), cid, ids[-5:]))
+    due.sort(reverse=True)
+    out = {"opened": 0, "conversations": []}
+    if not due:
+        return out
+    if not unlocked:
+        await xchat_read_keys(client, spec)
+    for _, cid, ids in due[:REOPEN_PER_SYNC]:
+        conv = state["xchat"][cid]
+        try:
+            page = await client.get_xchat_conversation(cid, older_pages=0, reopen=ids)
+        except Exception:
+            continue
+        before = sum(1 for m in conv["messages"] if m.get("text") is None and inboxSync.shown(m))
+        inboxSync.add_messages(conv, [{k: m.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id", "kind", "error") if m.get(k) is not None} | {"conversation_id": cid} for m in page["messages"]])
+        for m in conv["messages"]:
+            if str(m.get("event_id")) in ids and m.get("text") is None:
+                m["retriedAt"] = now
+        out["opened"] += before - sum(1 for m in conv["messages"] if m.get("text") is None and inboxSync.shown(m))
+        out["conversations"].append(cid)
+    return out
+
+
 def sync_path(spec: dict[str, Any]) -> Path:
     return state_dir(str(spec["account"])) / "inboxSync.json"
 
@@ -444,6 +483,10 @@ async def synced_inbox(client: Any, cookies: dict[str, str], spec: dict[str, Any
         state["maxSequenceId"] = updates["max_sequence_id"]
         inboxSync.merge_pool(state["legacy"], pool)
         sync = {"mode": "delta", "newEvents": len(updates["events"]), "newMessages": added, "xchatPages": updates["pages"], "legacyPages": pages, "since": since}
+        if decrypted:
+            repaired = await reopen_unopened(client, spec, state, bool(updates["events"]))
+            touched |= set(repaired["conversations"])
+            sync["reopened"] = repaired["opened"]
     from datetime import datetime, timezone
 
     state["syncedAt"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -506,19 +549,52 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
         await xchat_read_keys(client, spec)
     except Exception as e:
         return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
-    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)))
-    handles: dict[str, str | None] = {}
+    unopened = [str(m.get("event_id")) for m in stored_xchat(spec, conversation_id) if m.get("text") is None and m.get("event_id") and inboxSync_shown(m)][-5:]
+    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=unopened)
+    handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
     for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
         await handle_of(client, user_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
+    keep_opened(spec, conversation_id, page["messages"])
     held = stored_xchat(spec, conversation_id)
     for m in held:
         key = str(m.get("event_id") or "")
         if key and (key not in fetched or (fetched[key].get("text") is None and m.get("text") is not None)):
             fetched[key] = m
     merged = sorted(fetched.values(), key=lambda m: int(m.get("time_ms") or 0))
-    messages = [xchat_message(m, me, handles) for m in merged][-limit:]
+    from twitterApi import inboxSync
+
+    messages = [xchat_message(m, me, handles) for m in merged if inboxSync.shown(m)][-limit:]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages}
+
+
+def inboxSync_shown(m: dict[str, Any]) -> bool:
+    from twitterApi import inboxSync
+
+    return inboxSync.shown(m)
+
+
+def keep_opened(spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]]) -> None:
+    from twitterApi import inboxSync
+
+    if not spec.get("account") or not messages:
+        return
+    path = sync_path(spec)
+    state = inboxSync.read_state(path)
+    conv = (state or {}).get("xchat", {}).get(conversation_id)
+    if conv is None:
+        return
+    inboxSync.add_messages(conv, [{k: m.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id", "kind", "error") if m.get(k) is not None} | {"conversation_id": conversation_id} for m in messages])
+    inboxSync.write_state(path, state)
+
+
+def stored_handles(spec: dict[str, Any], conversation_id: str) -> dict[str, str]:
+    from twitterApi import inboxSync
+
+    if not spec.get("account"):
+        return {}
+    state = inboxSync.read_state(sync_path(spec))
+    return dict(((state or {}).get("xchat", {}).get(conversation_id) or {}).get("handles") or {})
 
 
 def stored_xchat(spec: dict[str, Any], conversation_id: str) -> list[dict[str, Any]]:
@@ -691,6 +767,15 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if errors or ((data or {}).get("data") or {}).get("favorite_tweet") != "Done":
             raise RuntimeError(f"x did not like the post: {json.dumps(data)[:300]}")
         return {"ok": True, "event": "sent", "liked": True, "tweetId": tweet_id}
+    if action == "follow":
+        user_id = str(spec["userId"])
+        before = await client.get_user_by_id(user_id)
+        if getattr(before, "following", False):
+            return {"ok": True, "event": "sent", "followed": True, "already": True, "userId": user_id, "handle": getattr(before, "screen_name", None)}
+        user = await client.follow_user(user_id)
+        if not str(getattr(user, "id", "") or ""):
+            return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the follow with no user: nobody was followed"}
+        return {"ok": True, "event": "sent", "followed": True, "userId": user_id, "handle": getattr(user, "screen_name", None) or getattr(before, "screen_name", None)}
     if action == "dm":
         message = await client.send_dm(str(spec["userId"]), spec["text"])
         message_id = str(getattr(message, "id", "") or "") or None
@@ -717,8 +802,8 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
     if action in ("reply", "quote", "like") and not spec.get("tweetUrl"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
-    if action == "dm" and not spec.get("userId"):
-        return {"ok": False, "code": "targetMissing", "detail": "dm needs the recipient's user id"}
+    if action in ("dm", "follow") and not spec.get("userId"):
+        return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action in ("reply", "quote", "dm") and not str(spec.get("text") or "").strip():
         return {"ok": False, "code": "textMissing", "detail": f"{action} needs its text"}
     if action == "follows" and not spec.get("handles"):
@@ -755,7 +840,7 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         from twikit.errors import TooManyRequests
         limit = max(1, min(int(spec.get("limit") or 20), 200))
         conversation_id = str(spec.get("conversationId") or "")
-        if ":" in conversation_id:
+        if is_xchat_id(conversation_id):
             return await xchat_conversation(client, cookies, spec, conversation_id, limit)
         if conversation_id:
             return await conversation(client, cookies, conversation_id, limit)

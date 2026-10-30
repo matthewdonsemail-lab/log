@@ -100,6 +100,13 @@ export function releasePoll(): void {
   rmSync(lockPath(), { force: true })
 }
 
+export function watcherGone(platform: string, account: string): boolean {
+  const path = join(inboxRoot(), platform, account, 'watch.log')
+  if (!existsSync(path)) return false
+  const lines = readFileSync(path, 'utf8').trim().split('\n').filter((l) => l.includes(': '))
+  return lines.length > 0 && /: accountNotFound: /.test(lines[lines.length - 1])
+}
+
 export function processAlive(pid: number): boolean {
   try {
     process.kill(pid, 0)
@@ -116,6 +123,7 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
     const path = watchPidPath(platform, account)
     const pid = Number(existsSync(path) ? readFileSync(path, 'utf8').trim() : '') || 0
     if (pid && alive(pid)) continue
+    if (watcherGone(platform, account)) continue
     const child = start(account)
     if (!child) continue
     writeJson(path, child)
