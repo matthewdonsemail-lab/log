@@ -8837,3 +8837,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every tool the log MCP server lists, `getGuide` included, now carries `_meta: { "anthropic/maxResultSizeChars": 200000 }` (`RESULT_SIZE_META`, `src/mcp/server/types.ts`). This is Claude Code's documented way for a server to raise one tool's result limit. Without it, Claude Code saves any text result over 50,000 characters (or 25,000 tokens) to a file and gives the agent only the path. With it, results up to 200,000 characters arrive whole. The hard ceiling is 500,000.
 Why: after the restart, matt had the agent call `getGuide({ topic: "logMcpInstructions" })` through the MCP only. The 72,209-character guide came back as "exceeds maximum allowed tokens … saved to <file>", so the agent never got the context the guides exist for. matt: don't hand-roll a fix, look it up in Claude Code's documentation. code.claude.com/docs/en/mcp, "MCP output limits and warnings" and "Raise the limit for a specific tool", fetched through TinyFish on 2026-10-30. The Reddit thread matt sent is about a different limit, `CLAUDE_CODE_MAX_OUTPUT_TOKENS`, the 32,000-token cap on Claude's own reply.
 Checked: a new test lists the tools over MCP and finds the limit on every one, 200,000 under the 500,000 ceiling. Every guide fits under it: the biggest, facebookFlows, is about 93K. MCP tests: 63 pass, tsc clean. The running log server needs reconnecting (/mcp) before it serves the new list.
+
+## 2026-10-30 04:59Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed function evidenceFor
+
+What changed: `log voice --with <chat>` also takes the other person's numeric X user id. A 15-22 digit value is matched to the X Chat conversation that ends with `:<id>` before the usual name match (`evidenceFor`).
+Why: matt: commit the voice work. The drafting flow knows people by user id (from `twitterDms`), and the name match couldn't find their chat from it.
+Checked: the change was already in the working tree, uncommitted, from an earlier session. tsc clean and `bun run check` green in this session's runs, with the change in the tree.
