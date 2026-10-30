@@ -510,8 +510,25 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     handles: dict[str, str | None] = {}
     for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
         await handle_of(client, user_id, handles)
-    messages = [xchat_message(m, me, handles) for m in page["messages"]][-limit:]
-    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "messages": messages}
+    fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
+    held = stored_xchat(spec, conversation_id)
+    for m in held:
+        key = str(m.get("event_id") or "")
+        if key and (key not in fetched or (fetched[key].get("text") is None and m.get("text") is not None)):
+            fetched[key] = m
+    merged = sorted(fetched.values(), key=lambda m: int(m.get("time_ms") or 0))
+    messages = [xchat_message(m, me, handles) for m in merged][-limit:]
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages}
+
+
+def stored_xchat(spec: dict[str, Any], conversation_id: str) -> list[dict[str, Any]]:
+    from twitterApi import inboxSync
+
+    if not spec.get("account"):
+        return []
+    state = inboxSync.read_state(sync_path(spec))
+    conv = (state or {}).get("xchat", {}).get(conversation_id) or {}
+    return [{**m, "conversation_id": m.get("conversation_id") or conversation_id} for m in conv.get("messages") or []]
 
 
 async def with_person(client: Any, cookies: dict[str, str], spec: dict[str, Any], handle: str, limit: int) -> dict[str, Any]:
