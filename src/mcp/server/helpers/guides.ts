@@ -28,6 +28,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   xAccount: { about: "An X account's session: saving and checking its cookies, and who follows whom", commands: ["twitter:session", "twitter:cookies", "twitter:follows", "twitter:followers"], skills: [] },
   discord: { about: "A Discord account: its session, chats, reading, the live gateway watch and sending", commands: ["discord:session", "discord:chats", "discord:read", "discord:watch", "discord:send"], skills: [] },
   reddit: { about: "A Reddit account's session", commands: ["reddit:session"], skills: [] },
+  linkedin: { about: "A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn", commands: ["linkedin:session", "linkedin:cookies"], skills: [] },
   accountsAndProxies: { about: "Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher", commands: ["facebook:accounts", "facebook:account", "any:proxy", "any:launch"], skills: [] },
   runsAndEvidence: { about: "What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself", commands: ["any:runs", "facebook:capture", "any:errors", "any:graph", "any:job", "any:mcp"], skills: ["runs", "reaCapture"] },
   knowledgeAndSearch: { about: "Finding context: the knowledge base and the conversation search, keyword and meaning at once", commands: ["any:kb", "any:search"], skills: ["knowledgeBase"] },

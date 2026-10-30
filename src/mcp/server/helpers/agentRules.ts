@@ -110,6 +110,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordRead: [13, 63, 64, 73, 83, 94],
   discordWatch: [13, 26, 63, 64, 73, 83, 94],
   discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94],
+  linkedinSession: [13, 63, 64, 73, 83],
+  linkedinCookies: [13, 21, 63, 64, 73, 83],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

@@ -9011,3 +9011,53 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: new `docs/infra/buzzMembers.md` explains how existing members join ListeningKit's self-hosted Buzz from desktop or phone, how to join with an identity already on the phone, how to move an existing identity to a new phone through `nostrpair://` device pairing or an `nsec` backup, how an owner/admin adds a new member's `npub`, the common join errors, and the known media/Git migration limits. `docs/infra/node02.md` links to it from the Buzz relay section.
 Why: members need a safe, copyable guide for using the new `wss://buzz.listeningkit.com` community without creating replacement identities or exposing their private keys.
 Checked: `bun run check`; the public relay and pairing endpoint were already verified live, and the guide was checked against the mobile NIP-AB pairing flow (`nostrpair://`, SAS confirmation, desktop-generated code).
+
+## 2026-10-30 23:06Z · feat/linkedinPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/linkedin.md`: new file
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/platforms/linkedin/README.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/linkedinApi/__init__.py`: new file, no top-level declarations
+- `python/linkedinApi/engine.py`: added const ROOT, const VENDOR, const PLATFORM, const LIBRARY, const SESSION_COOKIES, const COOKIE_DOMAIN, def no_wait, def session_of, def refreshed_of, def check, def ping, const ACTIONS
+- `scripts/twenty/twentySetup.mjs`: changed const PLATFORM_ADDITIONS
+- `src/cli/linkedin/cookies.test.ts`: added const realDeps, function typed, function run, const LI_AT, const JSESSION, const LOGGED_IN, test "a new profile: checked with LinkedIn first, then a LINKEDIN row loggedIn; nothing secret printed", test "cookies LinkedIn refuses, or for another profile, save nothing", test "it needs a terminal, and a public id is read from a profile url"
+- `src/cli/linkedin/helpers/cookies.ts`: added const LINKEDIN_COOKIES_USAGE, interface CookiePrompts, const linkedinCookiesDeps, const LINKEDIN_COOKIES_INPUT, function isLiAt, function isJsessionId, function publicIdOf, function existing, const linkedinCookiesCommand
+- `src/cli/linkedin/helpers/index.ts`: added export from "./cookies.ts"
+- `src/cli/linkedin/index.ts`: added const LINKEDIN_SESSION_USAGE, const LINKEDIN_SESSION_INPUT, function render, const linkedinSessionCommand, export from "./helpers/index.ts"
+- `src/cli/linkedin/linkedin.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the engine refuses cookies without li_at and JSESSIONID before calling LinkedIn"
+- `src/cli/runner/client.ts`: changed function createContext
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/linkedin/account/index.ts`: added export from "./session/index.ts"
+- `src/linkedin/account/session/client.ts`: added const LINKEDIN_PLATFORM, const LINKEDIN_COOKIE_DOMAIN, function findLinkedinAccount, function linkedinGate, function runLinkedinEngine, function recordLinkedinSession
+- `src/linkedin/account/session/index.ts`: added export from "./client"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `vendor/openLinkedinApi/LICENSE`: new file
+- `vendor/openLinkedinApi/README.md`: new file
+- `vendor/openLinkedinApi/UPSTREAM`: new file
+- `vendor/openLinkedinApi/open_linkedin_api/__init__.py`: added const __all__
+- `vendor/openLinkedinApi/open_linkedin_api/client.py`: added const logger, class ChallengeException, class UnauthorizedException, class Client
+- `vendor/openLinkedinApi/open_linkedin_api/cookie_repository.py`: added class Error, class LinkedinSessionExpired, class CookieRepository
+- `vendor/openLinkedinApi/open_linkedin_api/linkedin.py`: added const logger, def default_evade, class Linkedin
+- `vendor/openLinkedinApi/open_linkedin_api/settings.py`: added const HOME_DIR, const ROOT_DIR, const LINKEDIN_API_USER_DIR, const COOKIE_PATH
+- `vendor/openLinkedinApi/open_linkedin_api/utils/__init__.py`: new file, no top-level declarations
+- `vendor/openLinkedinApi/open_linkedin_api/utils/helpers.py`: added def get_id_from_urn, def get_urn_from_raw_update, def get_update_author_name, def get_update_old, def get_update_content, def get_update_author_profile, def get_update_url, def append_update_post_field_to_posts_list, def parse_list_raw_urns, def parse_list_raw_posts, def get_list_posts_sorted_without_promoted, def generate_trackingId_as_charString, def generate_trackingId
+- `vendor/openLinkedinApi/pyproject.toml`: new file
+
+What changed: LinkedIn is log-cli's fifth platform, made with `log new platform linkedin` (rule 83). `vendor/openLinkedinApi` is EseToni/open-linkedin-api (MIT) vendored at 5feee360ec26719d07d5e67638045e751b48a74c (`UPSTREAM`). It is the maintained fork of the original linkedin-api, which is gone from GitHub. It reads LinkedIn's internal Voyager API with the session cookies. `python/linkedinApi/engine.py` `ping` reads `/voyager/api/me` with the account's `li_at` and `JSESSIONID`, no redirects followed: a redirect, 401 or 403 is loggedOut, 999 or 429 is throttled, and 200 gives the public id, name and member id. Changed session cookies go back to Twenty. New `log linkedin cookies save --account <publicId>` (terminal only, like `log twitter cookies save`) takes `li_at` and `JSESSIONID` from a masked Clack prompt. It checks them with LinkedIn, saves only cookies signed in as that same profile, to a new or existing LINKEDIN socialAccounts row, and prints nothing secret. A profile url is read as its public id. New error codes `linkedinCookiesRefused`, `linkedinCookiesWrongAccount`, a `linkedin` MCP guide topic, the routes and rules, and `LINKEDIN` in twentySetup's platform additions (node02's Twenty already has the option).
+Why: mandeep asked for `log linkedin`, so LinkedIn works through log the way X does, starting with the account's session. Posting comes next, from a recording of linkedin.com (the library has no post call).
+Checked: `bun test` (1197 pass), with new cookies tests (saved when LinkedIn says loggedIn as that profile, refused or wrong account saves nothing, no cookie in any output, needs a terminal) and the engine refusing cookies without li_at and JSESSIONID before calling LinkedIn. Also `bun run typecheck`, and the platforms, docs, agentHooks, naming and noComments checks. twentySetup's dry run lists no LINKEDIN change. No live session check yet: it waits for mandeep's cookies.

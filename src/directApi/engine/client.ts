@@ -33,7 +33,9 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   discordChats: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_dms', when: 'chats (the DMs and group DMs)', seam: 'directDiscord' },
   discordRead: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_messages', when: 'read (a chat or channel, paged with before)', seam: 'directDiscord' },
   discordWatch: { platform: 'discord', library: 'endcord', only: true, surface: 'gateway', method: 'Gateway', when: 'watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled)', seam: 'directDiscordLive' },
-  discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' }
+  discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' },
+  linkedinSession: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directLinkedin' },
+  linkedinCookies: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'cookies save (the cookies are checked with LinkedIn before they are saved)', seam: 'directLinkedin' }
 }
 
 export function commandEngine(command: string): CommandEngine {

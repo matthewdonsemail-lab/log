@@ -129,6 +129,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `xAccount` | An X account's session: saving and checking its cookies, and who follows whom |
 | `discord` | A Discord account: its session, chats, reading, the live gateway watch and sending |
 | `reddit` | A Reddit account's session |
+| `linkedin` | A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn |
 | `accountsAndProxies` | Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base and the conversation search, keyword and meaning at once |
