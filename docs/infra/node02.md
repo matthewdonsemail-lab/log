@@ -41,14 +41,18 @@ log MCP server, remotely"). It is its own stack, apart from Twenty's:
 - **Listens on** `127.0.0.1:7337/mcp`, with no token 401, and with the token 148
   tools. Sign-in is the static token (`C:\Users\mande\.config\listeningkit\log-mcp-token.txt`
   on the PC) or OAuth through node02's Twenty, where only the owner may connect.
-- **Public address:** `https://node02.tail4fcf85.ts.net:8443/mcp` through
-  Tailscale Funnel, with only `/mcp`, `/oauth` and `/.well-known` published:
-  `tailscale funnel --bg --https=8443 --set-path=/mcp http://127.0.0.1:7337/mcp`,
-  then the same for `/oauth` and `/.well-known`. Funnel needs node02 allowed in
-  the tailnet policy (matt, once:
-  `https://login.tailscale.com/f/funnel?node=n1cQyAtmx111CNTRL`) and deepman as
-  Tailscale operator (`sudo tailscale set --operator=deepman`). Twenty on `:443`
-  stays tailnet only.
+- **Public address (live since 2026-10-30):** `https://node02.tail4fcf85.ts.net:8443/mcp`
+  through Tailscale Funnel, with only `/mcp`, `/oauth` and `/.well-known` published
+  (`tailscale funnel --bg --https=8443 --set-path=<path> http://127.0.0.1:7337<path>`
+  for each). It took node02 allowed for Funnel in the tailnet policy and deepman as
+  Tailscale operator (`sudo tailscale set --operator=deepman`). Checked from outside
+  the tailnet: the OAuth metadata answers, `:8443/` is 404, and Twenty on `:443`
+  can't be reached. A new Funnel name takes a minute or two to answer publicly.
+- **Connecting:** a claude.ai or Duet custom connector takes
+  `https://node02.tail4fcf85.ts.net:8443/mcp`, and its sign-in goes to node02's
+  Twenty, which is tailnet only, so the browser signing in must be on the tailnet.
+  Claude Code elsewhere:
+  `claude mcp add --transport http log-node02 https://node02.tail4fcf85.ts.net:8443/mcp --header "Authorization: Bearer <token from log-mcp-token.txt>"`.
 - **What runs there:** the direct-API platforms (X, Reddit, Discord) and the
   knowledge base. No browser: AdsPower and Camoufox stay on the PC.
 - **X Chat:** chat-xdk has no Linux wheel in `vendor/chatXdk`, so the image
