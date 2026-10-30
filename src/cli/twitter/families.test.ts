@@ -9,6 +9,8 @@ import { fingerprint, loadQueue } from "../../twitter/queue/plan/index.ts";
 import type { Queue } from "../../twitter/queue/plan/index.ts";
 import { runCli } from "../runner/index.ts";
 import { twitterSendDeps } from "./helpers/send.ts";
+import { twitterDmsDeps } from "./helpers/dms.ts";
+import { loadConversations } from "../../search/conversations/index.ts";
 
 const POST_A = "https://x.com/alice/status/1900000000000000001";
 const POST_B = "https://x.com/bob/status/1900000000000000002";
@@ -80,13 +82,33 @@ describe("log twitter dms", () => {
     const h = harness(() => ({ ok: true, screenName: "xtwo", waitingOnYou: 1, threads: [thread("1-2", "alice", false, "are you free"), thread("3-2", "bob", true, "talk soon")] }));
     const all = await h.run(["twitter", "dms", "--account", "xTwo"]);
     expect(all.code).toBe(0);
-    expect(h.calls).toEqual([{ action: "inbox", limit: 20 }]);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, export: true }]);
     expect(all.out).toContain("@alice · 2026-10-25T10:00:00Z · unread, waiting on you");
     expect(all.out).toContain("@bob");
     const waiting = await h.run(["twitter", "dms", "--account", "xTwo", "--waiting", "--limit", "5"]);
     expect(waiting.out).toContain("1 conversation waiting on a reply");
     expect(waiting.out).not.toContain("@bob");
-    expect(h.calls[1]).toEqual({ action: "inbox", limit: 5 });
+    expect(h.calls[1]).toEqual({ action: "inbox", limit: 5, export: true });
+  });
+
+  test("a synced read says what it fetched, keeps the conversations for search, and reindexes only when something is new", async () => {
+    let reindexed = 0;
+    twitterDmsDeps.reindex = () => {
+      reindexed++;
+    };
+    const conversations = [{ conversationId: "1:2", box: "xchat" as const, with: [{ userId: "1", handle: "alice" }], messages: [{ id: "9", conversationId: "1:2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "are you free", fromMe: false, from: "alice" }] }];
+    let fresh = 1;
+    const h = harness(() => ({ ok: true, screenName: "xtwo", waitingOnYou: 1, threads: [thread("1:2", "alice", false, "are you free")], conversations, sync: { mode: "delta" as const, newEvents: fresh, newMessages: fresh, xchatPages: 1, legacyPages: 1, since: "8", seconds: 0.9, maxSequenceId: "9" } }));
+    const r = await h.run(["twitter", "dms", "--account", "xTwo", "--json"]);
+    expect(r.err).toContain("synced in 0.9 s: 1 new X Chat event since sequence 8");
+    expect(JSON.parse(r.out).conversations).toBeUndefined();
+    expect(loadConversations().find((c) => c.conversationId === "1:2")?.messages[0].text).toBe("are you free");
+    expect(reindexed).toBe(1);
+    fresh = 0;
+    const quiet = await h.run(["twitter", "dms", "--account", "xTwo", "--full"]);
+    expect(quiet.err).toContain("nothing to decrypt");
+    expect(reindexed).toBe(1);
+    expect(h.calls[1]).toEqual({ action: "inbox", limit: 20, export: true, full: true });
   });
 
   test("--conversation reads one thread, and bad input is refused before X is called", async () => {

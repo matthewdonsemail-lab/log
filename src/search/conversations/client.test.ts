@@ -2,7 +2,7 @@ import { afterAll, describe, expect, test } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { benchmark, buildIndex, chunksOf, hashEmbedder, loadConversations, openIndex, percentiles, reciprocalRankFusion, saveConversations, search } from './index'
+import { benchmark, buildIndex, chunksOf, hashEmbedder, loadConversations, openIndex, percentiles, reciprocalRankFusion, saveConversations, search, updateIndex } from './index'
 import type { Conversation } from './index'
 
 const dir = mkdtempSync(join(tmpdir(), 'convSearch'))
@@ -63,5 +63,26 @@ describe('conversation search', () => {
     } finally {
       await index.close()
     }
+  })
+})
+
+describe('updating the index with only what changed', () => {
+  test('a new message embeds only its chunk, the same read again embeds nothing, and a search finds it', async () => {
+    const at = join(dir, 'incremental')
+    const embedder = hashEmbedder()
+    const first = await updateIndex(corpus, embedder, at)
+    expect(first.rebuilt).toBe(true)
+    const again = await updateIndex(corpus, embedder, at)
+    expect(again).toMatchObject({ embedded: 0, removed: 0, rebuilt: false })
+    const grown = [corpus[0], corpus[1], convo('c', 'jeffrey_ho', [[false, 'how good is the enrichment from treg for pool companies'], [true, 'finds the owner not the office'], [false, 'sending the pool owners list over tonight']])]
+    const updated = await updateIndex(grown, embedder, at)
+    expect(updated.rebuilt).toBe(false)
+    expect(updated.embedded).toBe(1)
+    expect(updated.chunks).toBe(first.chunks)
+    const index = await openIndex(embedder, at)
+    const hits = await search(index, 'pool owners list')
+    await index.close()
+    expect(hits[0].chunk.with).toEqual(['jeffrey_ho'])
+    expect(hits[0].chunk.text).toContain('sending the pool owners list over tonight')
   })
 })

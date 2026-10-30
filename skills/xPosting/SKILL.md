@@ -50,7 +50,18 @@ The parts every page uses:
 
 - **Finding:** treg's X search, profile and posts reads (rule 53). X itself is never used to search.
 - **One send:** `log twitter reply|quote|like|dm --account <handle> …` is a
-  dry run. `--live --approvedBy <who>` sends it.
+  dry run. `--live --approvedBy <who>` sends it. A dm drafted on several
+  lines goes out one message per line, with matt's usual gap between them,
+  and the queue sends dms the same way (rule 90); `--asOne` only when matt
+  asks. A drop stops the rest, and nothing is resent (rule 94).
+- **Reading the inbox:** `log twitter dms --account <handle>` syncs: the
+  first read takes the whole inbox once (about 20 s) and keeps it in
+  `~/.logCli/twitter/<handle>/inboxSync.json`; every read after asks X only
+  for what is newer than the newest event held (one request when nothing is
+  new, about 1.3 s in the engine) and decrypts only what is new. Each read
+  keeps its conversations for `log search` and updates the index in the
+  background with only the chunks that changed. `--full` reads everything
+  again.
 - **More than one:** the queue: `log twitter queue build → show → check →
   approve → plan → run → run --live`. It spaces sends at random and backs off
   when X throttles. Before any DM it drops people the account has already

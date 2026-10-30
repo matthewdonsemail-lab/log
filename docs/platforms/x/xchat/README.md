@@ -58,3 +58,28 @@ Read from X's shipped chat code (`assets/dm-core-DNH_F-Zu.js`, 11.7 MB, from `ht
 - **On a 429** the app does not retry. Its only automatic retry is Ktor's `HttpRequestRetry`, whose condition is `500 <= status <= 599`. A 429 becomes `TooManyRequests` (an `HttpException` carrying `retryAfterSeconds` from `Retry-After`) and the request ends there.
 
 log does the same. `log twitter dms --with <handle>` and `--conversation <a:b>` open one chat with `GetInboxPageConversationDataQuery`, then page back with `GetConversationPageQuery` up to 5 times, 1.5 s apart, while X says `has_more` (`client.get_xchat_conversation`). A 429 stops the read and pauses the account's governor, with nothing retried (rule 94). Checked live on 2026-10-29: @ricardoampudiar's thread took 4 requests in total (the legacy thread, the chat, two older pages), where the old path pulled up to 30 inbox pages back to back.
+
+## Catching up: only what is new (2026-10-30)
+
+`log twitter dms` took 32 to 90 s a read: every run unlocked the PIN through Juicebox (2.1 s), pulled the whole X Chat inbox (23 `GetInboxPageRequestQuery` pages back to back, 11.6 s), fetched every participant's keys and decrypted everything (3 s), then paged the old DM inbox with 1.5 s gaps (8 s). Nothing was kept between runs.
+
+X's own chat app doesn't do that. Read from `assets/dm-core-C1AlWU5D.js` (11.7 MB, build `d44a8531a879caf9c7543bb1afda9e0f1da43cd2` from `https://chat.x.com/embed-v1.json`): it keeps a local database (SQLDelight, `inboxConversationLocalPaginationPageSize`), pulls the inbox once (`GotInboxInitialPageAndProcessedFirstPage`, then `AfterFirstInboxPage` in the background) and after that catches up by sequence number: `MessagePullCoordinator`, `PullMessagesInstruction(sequence_start=…)` over the socket, and over GraphQL `GetMessageEventsPageQuery` (`8ds29Y40jrxh_MZDbqWy0A`):
+
+```graphql
+query GetMessageEventsPageQuery($continue_cursor: XChatGetMessageEventsPageContinueCursorInput, $query_settings: XChatPageQuerySettingsInput)
+# cursor: XChatGetMessageEventsPageEndCursor { pull_finished } | XChatGetMessageEventsPageContinueCursor { max_local_sequence_id }
+# answer: encoded_message_events, message_requests_count
+```
+
+`continue_cursor.max_local_sequence_id` is the newest event the client holds; an event's sequence id is its event id (Thrift field 1). Checked live on matthewsoldit (2026-10-30): from the newest event kept on 29 Oct 04:22 UTC, one call answered 61 events across 16 conversations in 1.4 s with `pull_finished: true`; with nothing new, one call answers none.
+
+rea read the whole bundle (`rea analyze-javascript-application`, Evidence `ev_a5489f350157a3fa307746e0ac39e035c95c93ca11b9d8472524771c3d440928`). Its semantic graph is partial on this minified Kotlin build: it stopped at its 20,000-node ceiling, with 117,370 dynamic calls and 336,952 ambiguous object flows left unresolved, before it reached the pull code. The query text, the cursor types and the pull log lines above are the bundle's own bytes.
+
+What log does now (`client.get_xchat_updates`, `client.open_xchat_events` in `vendor/twikit`; `python/twitterApi/inboxSync.py`):
+
+1. The first read takes everything once and keeps it in `~/.logCli/twitter/<account>/inboxSync.json` with the newest sequence id.
+2. Every read after asks `GetMessageEventsPageQuery` from that sequence id, beside one `dm/inbox_initial_state` for the old DMs, both at once. Nothing new: no PIN unlock, no keys, no decrypt.
+3. Something new: unlock once, read only those conversations' keys and participants (`GetInboxPageConversationDataQuery`, up to 20 ids a call), decrypt only the new events. Each event is kept once by its id.
+4. The conversations that changed are saved for `log search`, and the index embeds only the chunks that are new or changed (`updateIndex`).
+
+Measured on matthewsoldit, 2026-10-30, six reads 10 s apart with nothing new: the engine took p50 1.27 s, max 1.44 s (2 requests); the whole command p50 6.4 s, max 9.1 s, the rest being Bun and Python start-up and the Twenty lookups. The first read, which fills the store, took 21.7 s once.

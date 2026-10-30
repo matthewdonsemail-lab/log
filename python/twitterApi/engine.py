@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -375,8 +376,7 @@ async def xchat_threads(client: Any, me: str, opened: dict[str, list[dict[str, A
     return out
 
 
-async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[str, list[dict[str, Any]]] | None = None, export: bool = False) -> dict[str, Any]:
-    me = own_user_id(cookies) or ""
+async def legacy_pool(client: Any, limit: int, max_pages: int = 8) -> tuple[dict[str, Any], Any, int]:
     data, response = await client.get(DM_INBOX, params=INBOX_PARAMS, headers=client._base_headers)
     state = (data or {}).get("inbox_initial_state") or {}
     pool: dict[str, Any] = {"conversations": {}, "users": {}, "messages": [], "boxes": {}}
@@ -386,7 +386,7 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[s
     for box, label in (("trusted", "inbox"), ("untrusted", "request")):
         timeline = timelines.get(box) or {}
         cursor = timeline.get("min_entry_id")
-        while timeline.get("status") == "HAS_MORE" and cursor and len(pool["conversations"]) < limit and pages < 8:
+        while timeline.get("status") == "HAS_MORE" and cursor and len(pool["conversations"]) < limit and pages < max_pages:
             await asyncio.sleep(1.5)
             page, _ = await client.get(DM_TIMELINE.format(box), params={**INBOX_PARAMS, "max_id": cursor}, headers=client._base_headers)
             timeline = (page or {}).get("inbox_timeline") or {}
@@ -395,6 +395,77 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[s
             pages += 1
             if not added:
                 break
+    return pool, response, pages
+
+
+def sync_path(spec: dict[str, Any]) -> Path:
+    return state_dir(str(spec["account"])) / "inboxSync.json"
+
+
+async def synced_inbox(client: Any, cookies: dict[str, str], spec: dict[str, Any], limit: int, export: bool) -> dict[str, Any]:
+    from twikit.xchat import decode_event
+    from twitterApi import inboxSync
+
+    started = time.perf_counter()
+    me = own_user_id(cookies) or ""
+    path = sync_path(spec)
+    decrypted = bool(spec.get("pinPath"))
+    held = None if spec.get("full") is True else inboxSync.read_state(path)
+    if held is None:
+        opened = await xchat_read(client, spec)
+        pool, response, pages = await legacy_pool(client, limit)
+        state = inboxSync.empty_state()
+        try:
+            convs = await client.get_xchat_conversations()
+        except Exception:
+            convs = []
+        inboxSync.seed_xchat(state, convs, opened)
+        items = getattr(client, "_xchat_items", None) or []
+        heads = [decode_event(e) for item in items for e in (item.get("latest_message_events") or []) + (item.get("latest_conversation_key_change_events") or [])]
+        state["maxSequenceId"] = inboxSync.max_sequence(heads)
+        inboxSync.merge_pool(state["legacy"], pool)
+        touched = None
+        sync = {"mode": "full", "newEvents": sum(len(c["messages"]) for c in state["xchat"].values()), "xchatConversations": len(items), "legacyPages": pages}
+    else:
+        state = held
+        since = str(held["maxSequenceId"])
+        updates, (pool, response, pages) = await asyncio.gather(client.get_xchat_updates(state["maxSequenceId"]), legacy_pool(client, limit, max_pages=1))
+        heads = [decode_event(e) for e in updates["events"]]
+        opened, details = {}, {}
+        if updates["events"] and decrypted:
+            try:
+                await xchat_read_keys(client, spec)
+            except Exception as e:
+                raise XChatLocked(str(e)) from e
+            got = await client.open_xchat_events(updates["events"], sorted({h["conversation_id"] for h in heads if h.get("conversation_id")}))
+            opened, details = got["messages"], got["conversations"]
+        added = inboxSync.merge_xchat(state, me, heads, opened, details, decrypted)
+        touched = {h["conversation_id"] for h in heads if h.get("conversation_id")} | set(opened)
+        state["maxSequenceId"] = updates["max_sequence_id"]
+        inboxSync.merge_pool(state["legacy"], pool)
+        sync = {"mode": "delta", "newEvents": len(updates["events"]), "newMessages": added, "xchatPages": updates["pages"], "legacyPages": pages, "since": since}
+    from datetime import datetime, timezone
+
+    state["syncedAt"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    inboxSync.write_state(path, state)
+    legacy = state["legacy"]
+    threads = [thread_of(c, legacy["messages"], legacy["users"], me, legacy["boxes"].get(cid, "inbox")) for cid, c in legacy["conversations"].items()]
+    threads += inboxSync.xchat_threads(state, me, decrypted)
+    threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
+    everything = threads
+    threads = threads[:limit]
+    sync["seconds"] = round(time.perf_counter() - started, 2)
+    sync["maxSequenceId"] = state["maxSequenceId"]
+    out = {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (legacy["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None), "sync": sync}
+    if export:
+        kept = [t for t in everything if touched is None or t["conversationId"] in touched]
+        out["conversations"] = conversations_of(kept, legacy, inboxSync.opened_of(state), me)
+    return out
+
+
+async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[str, list[dict[str, Any]]] | None = None, export: bool = False) -> dict[str, Any]:
+    me = own_user_id(cookies) or ""
+    pool, response, pages = await legacy_pool(client, limit)
     threads = [thread_of(c, pool["messages"], pool["users"], me, pool["boxes"].get(cid, "inbox")) for cid, c in pool["conversations"].items()]
     try:
         threads += await xchat_threads(client, me, opened)
@@ -668,6 +739,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         if str(spec.get("withHandle") or "").strip():
             return await with_person(client, cookies, spec, str(spec["withHandle"]).strip().lstrip("@"), limit)
         try:
+            if spec.get("sync") is not False:
+                return await synced_inbox(client, cookies, spec, limit, spec.get("export") is True)
             opened = await xchat_read(client, spec)
         except XChatLocked as e:
             return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
@@ -704,6 +777,8 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
         forced_past = str(e)
     client = Client(language="en-US")
     client.set_cookies(cookies, clear_cookies=True)
+    if own_user_id(cookies):
+        client._user_id = own_user_id(cookies)
     try:
         out = await act(client, cookies, spec)
     except TooManyRequests as e:

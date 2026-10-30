@@ -1,16 +1,15 @@
 import { twitterAccounts } from "../../inbox/watch/client.ts";
 import { platformStateRoot } from "../../directApi/engine/index.ts";
 import { discordGate, findDiscordAccount } from "../../discord/account/session/index.ts";
-import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search } from "../../search/conversations/index.ts";
+import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search, twitterConversationOf, updateIndex } from "../../search/conversations/index.ts";
 import type { Conversation, Embedder, SearchHit } from "../../search/conversations/index.ts";
-import type { TwitterDmConversation } from "../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
 export const SEARCH_USAGE = [
   "Usage: log search \"<query>\" [--limit <n>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--json]",
-  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved]   (--saved rebuilds from the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group through vendor/endcord (its whole history, up to 20,000 messages each), keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
+  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (only the chunks that are new or changed are embedded, and the ones gone are removed, so the index stays deduplicated; --rebuild embeds everything again. --saved indexes the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group through vendor/endcord (its whole history, up to 20,000 messages each), keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
   "       log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)",
   "Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.",
 ].join("\n");
@@ -34,7 +33,7 @@ export const SEARCH_INPUT: CommandInput = {
       words: ["index"],
       summary: "Read every conversation through the platform's engine (X Chat decrypted with the saved PIN, Discord DMs and groups through endcord) and build the search indexes",
       positionals: [],
-      flags: [{ name: "platform", kind: "string", description: "Only this platform (twitter or discord; default both)" }, { name: "account", kind: "string", description: "Only this account (default: every signed-in X and Discord account)" }, { name: "saved", kind: "boolean", description: "Rebuild from the conversations already saved, reading nothing from the platforms" }, JSON_FLAG],
+      flags: [{ name: "platform", kind: "string", description: "Only this platform (twitter or discord; default both)" }, { name: "account", kind: "string", description: "Only this account (default: every signed-in X and Discord account)" }, { name: "saved", kind: "boolean", description: "Index the conversations already saved, reading nothing from the platforms" }, { name: "rebuild", kind: "boolean", description: "Embed every chunk again instead of only what changed" }, JSON_FLAG],
     },
     {
       words: ["bench"],
@@ -48,17 +47,6 @@ export const SEARCH_INPUT: CommandInput = {
 export const searchDeps: { embedder: () => Embedder } = { embedder: () => localEmbedder() };
 
 const BENCH_QUERIES = ["affiliate deal", "interview for a role", "consulting work", "enrichment for pool companies", "referral fee call", "where are you based", "open source agency", "treg", "subq tokens", "can we hop on a call"];
-
-function conversationOf(account: string, c: TwitterDmConversation): Conversation {
-  return {
-    platform: "twitter",
-    account,
-    conversationId: c.conversationId,
-    box: c.box ?? "inbox",
-    with: c.with.map((p) => p.handle ?? p.userId),
-    messages: c.messages.map((m) => ({ id: m.id, at: m.time ?? null, from: m.from ?? null, fromMe: m.fromMe === true, text: m.text ?? "" })),
-  };
-}
 
 interface DiscordExported {
   id: string;
@@ -130,7 +118,7 @@ async function indexAll(context: CommandContext, only: string | undefined, platf
       lines.push(`${account}: ${run.answer.code}: ${run.answer.detail ?? ""}`);
       continue;
     }
-    const found = (run.answer.conversations ?? []).map((c) => conversationOf(opened.account.accountName, c));
+    const found = (run.answer.conversations ?? []).map((c) => twitterConversationOf(opened.account.accountName, c));
     saveConversations(found);
     conversations.push(...found);
     lines.push(`${account}: ${found.length} conversations, ${found.reduce((n, c) => n + c.messages.length, 0)} messages`);
@@ -159,9 +147,11 @@ export const searchCommand: Command = {
         const account = typeof parsed.flags["account"] === "string" ? parsed.flags["account"] : undefined;
         const { lines } = parsed.flags["saved"] === true ? { lines: [] as string[] } : await indexAll(context, account, typeof parsed.flags["platform"] === "string" ? parsed.flags["platform"] : undefined);
         const all = loadConversations();
-        context.err(`search: embedding and indexing ${all.length} conversations with ${embedder.model}`);
-        const built = await buildIndex(all, embedder);
-        const done = `search: indexed ${built.chunks} chunks from ${built.conversations} conversations in ${(built.ms / 1000).toFixed(1)} s`;
+        const rebuild = parsed.flags["rebuild"] === true;
+        context.err(`search: ${rebuild ? "embedding and indexing" : "updating the index with what changed in"} ${all.length} conversations with ${embedder.model}`);
+        const built = rebuild ? { ...(await buildIndex(all, embedder)), rebuilt: true } : await updateIndex(all, embedder);
+        const changed = "embedded" in built && !built.rebuilt ? `, ${built.embedded} chunks embedded, ${built.removed} removed` : "";
+        const done = `search: ${built.rebuilt ? "indexed" : "index holds"} ${built.chunks} chunks from ${built.conversations} conversations${changed} in ${(built.ms / 1000).toFixed(1)} s`;
         return { code: 0, stdout: json ? JSON.stringify({ accounts: lines, ...built }, null, 2) : [...lines, done].join("\n") };
       }
       const index = await openIndex(embedder);

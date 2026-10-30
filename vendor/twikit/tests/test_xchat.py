@@ -129,3 +129,60 @@ def test_get_xchat_conversation_reads_one_chat_then_older_pages(monkeypatch):
     assert [m["event_id"] for m in out["messages"]] == [older, latest]
     assert out["has_more"] is False
     assert not any(c[0] == "inbox" for c in calls)
+
+
+def test_get_xchat_updates_reads_from_the_newest_held_until_x_says_finished(monkeypatch):
+    client = offline_client()
+    first, second = message_event("21", "5"), message_event("22", "5")
+    calls = []
+
+    async def page(since):
+        calls.append(since)
+        if since == "20":
+            return {"data": {"get_message_events_page": {"encoded_message_events": [second, first], "cursor": {"__typename": "XChatGetMessageEventsPageContinueCursor", "max_local_sequence_id": "22"}}}}, None
+        return {"data": {"get_message_events_page": {"encoded_message_events": [], "cursor": {"__typename": "XChatGetMessageEventsPageEndCursor", "pull_finished": True}}}}, None
+
+    monkeypatch.setattr(client.gql, "get_xchat_message_events_page", page)
+    out = run(client.get_xchat_updates("20"))
+    assert calls == ["20", "22"]
+    assert out["events"] == [first, second]
+    assert out["max_sequence_id"] == "22"
+    assert out["finished"] is True
+
+
+def test_get_xchat_updates_with_nothing_new_is_one_request(monkeypatch):
+    client = offline_client()
+    calls = []
+
+    async def page(since):
+        calls.append(since)
+        return {"data": {"get_message_events_page": {"encoded_message_events": [], "cursor": {"__typename": "XChatGetMessageEventsPageEndCursor", "pull_finished": True}}}}, None
+
+    monkeypatch.setattr(client.gql, "get_xchat_message_events_page", page)
+    out = run(client.get_xchat_updates("30"))
+    assert calls == ["30"]
+    assert out == {"events": [], "max_sequence_id": "30", "pages": 1, "finished": True}
+
+
+def test_open_xchat_events_reads_only_those_conversations_keys(monkeypatch):
+    client = offline_client()
+    client._xchat = object()
+    client._xchat_me = "100"
+    event, key = message_event("40", "5"), "keyChange"
+    asked = []
+
+    async def data(ids):
+        asked.append(ids)
+        return {"data": {"get_inbox_page_conversation_data": {"items": [{"latest_conversation_key_change_events": [key], "conversation_detail": {"conversation_id": "7:100", "participants_results": [{"rest_id": "7", "result": {"core": {"screen_name": "seven"}}}, {"rest_id": "100"}]}}]}}}, None
+
+    async def decrypt(events, people):
+        assert events == [key, event]
+        assert people == {"100", "7"}
+        return {"7:100": [{"event_id": "40", "text": "hey"}]}
+
+    monkeypatch.setattr(client.gql, "get_xchat_conversation_data", data)
+    monkeypatch.setattr(client, "_xchat_decrypt", decrypt)
+    out = run(client.open_xchat_events([event], ["7:100"]))
+    assert asked == [["7:100"]]
+    assert out["messages"]["7:100"][0]["text"] == "hey"
+    assert out["conversations"]["7:100"] == {"participant_ids": ["7"], "handles": {"7": "seven"}}
