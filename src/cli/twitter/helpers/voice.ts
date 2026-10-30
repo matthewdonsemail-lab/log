@@ -146,9 +146,10 @@ export const voiceCommand: Command = {
       let evidence: VoiceEvidence | undefined;
       if (chat) {
         const found = await evidenceFor(context, said || text, chat, text);
-        if (!found.ok) return found.result;
-        evidence = found.evidence;
-        if (!text.trim()) {
+        if (!found.ok && !text.trim()) return found.result;
+        if (!found.ok) context.err(`voice: matt has no saved chat with "${chat}" yet, so the draft is gated on his writing guide alone`);
+        else evidence = found.evidence;
+        if (found.ok && !text.trim()) {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ chat: found.label, profile: found.profile, replies: found.near }, null, 2) };
           return { code: 0, stdout: [`log voice: how matt writes in ${found.label}`, `  ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, `his latest messages here:`, ...found.recent.map((p) => `    matt: ${p.reply.replace(/\n/g, " / ").slice(0, 240)}`), `his real replies to things like this, nearest first (same chat, same person, same platform, anywhere):`, ...nearLines(found.near), "Draft from these, then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
         }
