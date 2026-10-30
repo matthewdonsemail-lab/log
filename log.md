@@ -8951,3 +8951,14 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log voice --with <handle>` for someone matt has never chatted with no longer refuses with `chatNotFound`: it says there's no saved chat yet and gates the draft on matt's writing guide alone, the way it does without `--with`. With no `--text` it still refuses, since there's nothing of his to show. `chatNotFound`'s meaning names every platform, not only Discord. The inbox hook no longer starts a watcher again for an account whose own watch log ends on `accountNotFound` (`watcherGone`): the Discord account disabled on 29 Oct is gone from Twenty, and the hook had started a dead watcher for it on every prompt, 821 times. `accountNotFound`'s action no longer points every platform at `log facebook accounts`.
 Why: matt's networking run: gating drafts for new people from his niche map failed with `chatNotFound` from the Discord account, and the Discord check he asked for found the watcher restarting for an account Twenty no longer has.
 Checked: inbox watch tests 7 pass (new: a gone account's watcher isn't started, a live one is). Typecheck clean. Gating new people without a chat passed for 15 drafts live.
+
+## 2026-10-30 07:08Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `python/errors/errorCatalog.json`: edited
+
+What changed: `docs/errorCatalog.md` and `python/errors/errorCatalog.json` are regenerated from the catalog (`bun run errors:export`) after ce676d2 changed `chatNotFound` and `accountNotFound`. `docs/useCases/twitter/dmInbox.md` now says how X Chat shows reactions, edits, photos and links, that read markers are hidden and messages that couldn't be opened are reopened, that group chats are read by their `g…` id, to check who really wrote last before answering, and that X's own daily limit (code 344, about 40 writes on matthewsoldit) stops a run whatever the governor says.
+Why: the pre-push test refused a catalog export older than the catalog, and the pre-commit use case review found `twitter/dmInbox` stale (77%) against this session's inbox work.
+Checked: `bun run errors:export` and the errors test; the use case review again.

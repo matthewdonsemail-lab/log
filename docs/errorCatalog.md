@@ -246,7 +246,7 @@ stateDiagram-v2
 
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
-| `chatNotFound` | no | `cli/discord` | command exits | None of the Discord account's DMs or groups matches the chat as it was said. | Say it another way (a word of its name, or who it is with), or list them with log discord chats and give its id. |
+| `chatNotFound` | no | `cli/discord`, `cli/twitter/voice` | command exits | None of the saved chats (X, Discord or any other platform) matches the chat as it was said. | Say it another way (a word of its name, or who it is with), or list them with log discord chats and give its id. |
 | `chatAmbiguous` | no | `cli/discord` | command exits | More than one of the Discord account's DMs or groups matches the chat as it was said, equally well. | Pick one of the chats listed and give its id, or say more of its name. |
 | `engineNotBuilt` | no | `platformKit/session` | command exits | The platform's direct-API engine was made by log new platform and has no client wired in yet, so it can't call the platform. | Vendor the platform's client under vendor/<library>, then fill in its actions in python/<platform>Api/engine.py. |
 | `workerNotStarted` | no | `worker`, `session` | publish→failed, monitor→failed | The Python interpreter could not be started. | Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`). |
@@ -277,7 +277,7 @@ stateDiagram-v2
 | `twentyRateLimited` | yes | `twenty/graphql` | command exits | Twenty refused the call for its rate limit ("Limit reached (100 tokens per 60000 ms)"). Nothing was written. | Nothing to do: the client waits out the minute and tries again (twice). If it still fails, fewer calls per minute. |
 | `twentyAuthFailed` | no | `twenty/graphql` | command exits | Twenty refused the API key (401/403). | Make a new API key in Twenty and put it in log-cli/.env.local. |
 | `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twenty/twentySetup.mjs needs running. |
-| `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | log facebook accounts lists the Facebook accounts. |
+| `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | Check the accountName in Twenty (log facebook accounts lists the Facebook ones). An inbox watcher for an account gone from Twenty is not restarted. |
 
 ## proxyVendor
 
