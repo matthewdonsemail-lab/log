@@ -5,6 +5,7 @@ import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildClientSchema, getIntrospectionQuery, printSchema } from 'graphql'
 import { generateCoreClientFromSchema } from 'twenty-client-sdk/generate'
+import { lighten } from './lightenTwentyClient.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const TARGET_DIR = join(root, 'src', 'twenty', 'graphql', 'generated')
@@ -28,7 +29,7 @@ function loadEnv() {
   return env
 }
 
-const isSource = (name) => name.endsWith('.ts')
+const isSource = (name) => name.endsWith('.ts') || name === 'types.json'
 
 const toTypeScriptSpecifiers = (content) => content.replace(/(from\s+['"]\.[^'"]*)\.js(['"])/g, '$1.ts$2')
 
@@ -40,8 +41,9 @@ async function collect(dir, base = dir) {
     const path = join(dir, entry.name)
     if (entry.isDirectory()) files.push(...(await collect(path, base)))
     else if (isSource(entry.name)) {
-      const body = toTypeScriptSpecifiers(withoutOwnTsNocheck(await readFile(path, 'utf8')))
-      files.push([relative(base, path).split('\\').join('/'), HEADER + body.replace(/\r\n/g, '\n')])
+      const raw = await readFile(path, 'utf8')
+      const name = relative(base, path).split('\\').join('/')
+      files.push([name, entry.name.endsWith('.json') ? raw : HEADER + toTypeScriptSpecifiers(withoutOwnTsNocheck(raw)).replace(/\r\n/g, '\n')])
     }
   }
   return files.sort(([a], [b]) => a.localeCompare(b))
@@ -76,7 +78,7 @@ async function readSchema() {
 const schema = await readSchema()
 const scratch = await mkdtemp(join(tmpdir(), 'logCliTwentyClient'))
 await generateCoreClientFromSchema({ schema, outputPath: scratch, clientWrapperTemplateSource: '' })
-const emitted = await collect(scratch)
+const emitted = lighten(await collect(scratch))
 await rm(scratch, { recursive: true, force: true })
 
 if (process.argv.includes('--check')) {

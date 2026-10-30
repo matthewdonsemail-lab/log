@@ -41,6 +41,38 @@ for (const file of readdirSync(diagramDir)) {
   }
 }
 
+{
+  const cli = join(root, "src/cli");
+  const found: { name: string; platform: string; module: string; exportName: string }[] = [];
+  for (const dir of readdirSync(cli).sort()) {
+    const index = join(cli, dir, "index.ts");
+    if (dir === "runner" || !existsSync(index)) continue;
+    const loaded = (await import(index)) as Record<string, unknown>;
+    for (const [exportName, value] of Object.entries(loaded).sort(([a], [b]) => a.localeCompare(b))) {
+      const command = COMMANDS.find((c) => c === value);
+      if (command && !found.some((f) => f.name === command.name && f.platform === command.platform)) found.push({ name: command.name, platform: command.platform, module: `src/cli/${dir}/index.ts`, exportName });
+    }
+  }
+  for (const command of COMMANDS) if (!found.some((f) => f.name === command.name && f.platform === command.platform)) problems.push(`${command.name} (${command.platform}) is in COMMANDS but no src/cli/<dir>/index.ts exports it, so log can't load it on its own`);
+  const ordered = COMMANDS.map((c) => found.find((f) => f.name === c.name && f.platform === c.platform)).filter((f): f is (typeof found)[number] => Boolean(f));
+  put(
+    "src/cli/runner/helpers/commandIndex.ts",
+    [
+      "export interface CommandIndexEntry {",
+      "  name: string",
+      "  platform: string",
+      "  module: string",
+      "  exportName: string",
+      "}",
+      "",
+      "export const COMMAND_INDEX: CommandIndexEntry[] = [",
+      ...ordered.map((f) => `  { name: ${JSON.stringify(f.name)}, platform: ${JSON.stringify(f.platform)}, module: ${JSON.stringify(f.module)}, exportName: ${JSON.stringify(f.exportName)} },`),
+      "]",
+      "",
+    ].join("\n"),
+  );
+}
+
 const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\r\n/g, "\n");
 put("README.md", withSurface(readme, renderSurface(entries, flows, all)));
 
