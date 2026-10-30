@@ -1,10 +1,11 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { Command } from "../../../cli/runner/types.ts";
 import type { FlowDefinition } from "../../../browser/flow/index.ts";
 import type { LogTool } from "../types.ts";
 
 export const GUIDES_DIR = fileURLToPath(new URL("../../../../docs/guides/", import.meta.url));
+export const USE_CASES_DIR = fileURLToPath(new URL("../../../../docs/useCases/", import.meta.url));
 export const SKILLS_DIR = fileURLToPath(new URL("../../../../skills/", import.meta.url));
 export const CORE_GUIDE = "logMcpInstructions";
 export const GUIDE_TOOL = "getGuide";
@@ -55,8 +56,52 @@ export function readGuide(topic: string): string | null {
   return readFileSync(guidePath(topic), "utf8");
 }
 
+export interface UseCase {
+  id: string;
+  title: string;
+  asks: string;
+  text: string;
+  tools: string[];
+}
+
+export function listUseCases(toolNames: readonly string[] = [], dir = USE_CASES_DIR): UseCase[] {
+  if (!existsSync(dir)) return [];
+  const known = new Set(toolNames);
+  const out: UseCase[] = [];
+  for (const platform of readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()) {
+    for (const file of readdirSync(`${dir}${platform}`).filter((f) => f.endsWith(".md") && f !== "README.md").sort()) {
+      const text = readFileSync(`${dir}${platform}/${file}`, "utf8").replace(/\r\n/g, "\n");
+      const tools = [...new Set([...text.matchAll(/`(\w+)`/g)].map((m) => m[1]).filter((name) => known.has(name)))];
+      out.push({ id: `${platform}/${file.slice(0, -3)}`, title: (/^# (.+)$/m.exec(text)?.[1] ?? file).trim(), asks: (/^How the owner asks for it: (.+)$/m.exec(text)?.[1] ?? "").trim(), text, tools });
+    }
+  }
+  return out;
+}
+
+export function readUseCase(id: string, dir = USE_CASES_DIR): string | null {
+  if (!/^\w+\/\w+$/.test(id)) return null;
+  const path = `${dir}${id}.md`;
+  return existsSync(path) ? readFileSync(path, "utf8") : null;
+}
+
+export function useCaseLine(ids: readonly string[]): string {
+  return `Use cases that call it, each a workflow the owner asks for, tool by tool: ${ids.map((id) => `${GUIDE_TOOL}({ useCase: "${id}" })`).join(", ")}.`;
+}
+
+export function withUseCases<T extends { name: string; description: string }>(tools: T[], useCases: readonly UseCase[]): T[] {
+  return tools.map((tool) => {
+    const ids = useCases.filter((u) => u.tools.includes(tool.name)).map((u) => u.id);
+    if (!ids.length || tool.name === GUIDE_TOOL) return tool;
+    const lines = tool.description.split("\n");
+    const at = lines.findIndex((line) => line.startsWith("Before first using this tool"));
+    lines.splice(at >= 0 ? at : Math.max(0, lines.length - 1), 0, useCaseLine(ids));
+    return { ...tool, description: lines.join("\n") };
+  });
+}
+
 export function guideTool(): Omit<LogTool, "outputSchema"> {
   const topics = Object.entries(GUIDE_TOPICS).map(([name, t]) => `"${name}": ${t.about}`).join("\n");
+  const useCases = listUseCases();
   return {
     name: GUIDE_TOOL,
     title: "Read a log guide",
@@ -64,12 +109,15 @@ export function guideTool(): Omit<LogTool, "outputSchema"> {
       `Read a detailed guide on one kind of work. Call with topic "${CORE_GUIDE}" before using other log tools, once per session; call again if a long thread may have dropped guide text.`,
       "Each tool's description names its guide: load it before first using that tool. A guide holds the work step by step (the skills), every tool it covers with its full usage, and every AGENTS.md rule those tools fall under, in full.",
       `Guides live in docs/guides/<topic>.md. Topics: ${Object.keys(GUIDE_TOPICS).map((t) => `"${t}"`).join(", ")}.`,
+      `Use cases are the work the owner asks for again and again, each one tool by tool in order (docs/useCases/<platform>/<page>.md). Read one with useCase instead of topic, and when the owner asks for work a use case covers, follow its page step by step. Use cases: ${useCases.map((u) => `"${u.id}"`).join(", ")}.`,
     ].join("\n"),
     annotations: { title: "Read a log guide", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: "object",
-      properties: { topic: { type: "string", enum: Object.keys(GUIDE_TOPICS), description: `The guide topic to read. Available topics:\n${topics}` } },
-      required: ["topic"],
+      properties: {
+        topic: { type: "string", enum: Object.keys(GUIDE_TOPICS), description: `The guide topic to read. Available topics:\n${topics}` },
+        useCase: { type: "string", enum: useCases.map((u) => u.id), description: `A use case to read instead of a topic: its steps, tool by tool. Available use cases:\n${useCases.map((u) => `"${u.id}": ${u.title}`).join("\n")}` },
+      },
       additionalProperties: false,
     },
   };

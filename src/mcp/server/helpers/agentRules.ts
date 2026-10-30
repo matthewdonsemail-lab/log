@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 94;
+export const RULES_REVIEWED_THROUGH = 95;
 
 export const AGENTS_URI = "log://agents";
 
@@ -30,6 +30,7 @@ export const CORE_PRINCIPLES = [
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
   "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
   "25. Never act on an account in quick succession: every platform call goes through log-cli's own commands and their governor, never a hand-rolled script with an account's token or cookies; a 429 or a failed send stops the run with nothing retried and the next action waits for matt; a bulk read of a server, group or member list is its own session, never in the same one as sending; cold DMs go out a few a day, minutes apart, each new DM channel counted as a write; after a block, disable, captcha or cooldown nothing resumes on that account until matt says so. One person's X Chat is opened as X's app opens it (`twitterDms` with `with`), never by reading the whole inbox (rule 94).",
+  "26. The work matt asks for again and again is a use case (docs/useCases/<platform>/<page>.md): how he asks for it, then its steps, each naming its tool. When he asks for work a use case covers, read it with `getGuide({ useCase })` and follow it step by step, never improvise; each tool names the use cases that call it. The pre-commit review asks SubQ whether this session's work left a page stale or uncovered (rule 95).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 

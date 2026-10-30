@@ -1149,6 +1149,27 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     - After a block, disable, captcha or cooldown, nothing resumes on
       that account until matt says so.
 
+95. 2026-10-30 · matt: the tool definitions fill the agent's context
+    with how matt works, so every agent knows how to do every job. The
+    work matt asks for again and again is written as use cases,
+    `docs/useCases/<platform>/<page>.md`: each one says how he asks for
+    it, then its steps in order, each naming its tool and what counts as
+    done. The log MCP serves them like Paper's MCP serves its guides:
+    short instructions that say to load `getGuide({ topic:
+    "logMcpInstructions" })` first (it lists every use case and how matt
+    asks for it), `getGuide({ useCase: "<platform>/<page>" })` for one
+    page, and every tool's description naming the use cases that call
+    it and its guide. When matt asks for work a use case covers, the
+    agent follows that page, never improvises. Every tool declares
+    `anthropic/maxResultSizeChars` so a guide arrives whole. lefthook's
+    pre-commit `useCases` (`bun run check:useCases`,
+    `src/useCases/review`) takes this session's transcript (matt's asks
+    and the tools called) and asks SubQ, for every page, whether it is
+    still the right way to do that work, stale or should move, and
+    whether the session did repeatable work no page covers. A stale page
+    or uncovered work stops the commit until the page is updated or
+    written and staged.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

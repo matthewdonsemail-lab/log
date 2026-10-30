@@ -4,6 +4,19 @@ An X account's session: saving and checking its cookies, and who follows whom.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
+| `getGuide({ useCase: "twitter/engagementReplies" })` | Answering the people who engaged with your posts | see the page |
+| `getGuide({ useCase: "twitter/engagerDms" })` | DMing the people who liked or reposted your post | see the page |
+| `getGuide({ useCase: "twitter/followers" })` | Checking who really follows you | see the page |
+| `getGuide({ useCase: "twitter/recruiting" })` | Recruiting on X with a reply queue | see the page |
+| `getGuide({ useCase: "twitter/topicReplies" })` | Replying to everyone posting about one topic | see the page |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -22,6 +35,7 @@ log twitter session check --account <accountName> [--json]
 Checks that X still accepts the account's saved session, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
 X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/engagementReplies" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followers" }), getGuide({ useCase: "twitter/recruiting" }), getGuide({ useCase: "twitter/topicReplies" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, and who follows whom).
 AGENTS.md (log://agents): rules 13, 21, 26, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -33,6 +47,7 @@ log twitter follows --account <accountName> --handles <handle,handle…> [--json
 Reads, for each handle, whether it follows the account and whether the account follows it, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
 X's own answer decides: one friendships/show read per handle, 1.5 s apart, after the session check. Handles come from treg research or matt, never a guess (rule 53).
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followers" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, and who follows whom).
 AGENTS.md (log://agents): rules 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

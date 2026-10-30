@@ -20,7 +20,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
@@ -169,7 +169,13 @@ export async function runToolCall(
   readBrowsers: ReadBrowsers = browserViews,
 ): Promise<CallToolResult> {
   if (name === GUIDE_TOOL) {
-    const topic = String((input as { topic?: unknown } | undefined)?.topic ?? "");
+    const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown };
+    if (typeof asked.useCase === "string" && asked.useCase) {
+      const page = readUseCase(asked.useCase);
+      if (page === null) return { isError: true, content: [{ type: "text", text: `No use case "${asked.useCase}". Use cases: ${listUseCases().map((u) => u.id).join(", ")}.` }] };
+      return { content: [{ type: "text", text: page }] };
+    }
+    const topic = String(asked.topic ?? CORE_GUIDE);
     const text = readGuide(topic);
     if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
     return { content: [{ type: "text", text }] };
@@ -230,7 +236,9 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
-    return { tools: [guideTool(), ...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })].map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
+    const tools = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
+    const listed = [guideTool(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
+    return { tools: listed.map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [{ uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }],

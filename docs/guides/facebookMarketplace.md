@@ -4,6 +4,14 @@ Marketplace listings from copy to publish, campaigns that fill and heal them, an
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -682,6 +690,7 @@ Show one Twenty listing, or create one for an account from a JSON file
 log facebook listing create --account <accountName> --file <listing.json> [--json]
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -703,6 +712,7 @@ Show one Twenty listing, or create one for an account from a JSON file
 log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypass] [--now] [--json]   (delete it on Facebook through the recorded flow marketplaceListingDelete, then REMOVED in Twenty; a dry run unless --live)
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -723,6 +733,7 @@ Show one Twenty listing, or create one for an account from a JSON file
 log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -765,6 +776,7 @@ Usage: log facebook campaign fill --campaign <agencyCampaignId> --from <agencyLi
        log facebook campaign show --campaign <agencyCampaignId> [--json]
 Pass the arguments after the command name in `args`, e.g. ["--json"]. It never takes --live: that is `campaignLive`. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 13, 18, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -779,6 +791,7 @@ Usage: log facebook campaign fill --campaign <agencyCampaignId> --from <agencyLi
        log facebook campaign show --campaign <agencyCampaignId> [--json]
 Pass the arguments after the command name in `args`, with --live. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
 AGENTS.md (log://agents): rules 13, 18, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

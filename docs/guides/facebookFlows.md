@@ -4,6 +4,14 @@ Recorded flows and the warm-up, run as steps in the account's open browser, each
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -462,6 +470,7 @@ Usage: log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--by
        log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]
 Pass the arguments after the command name in `args`, e.g. ["--json"]. It never takes --live or --likes: that is `warmupLive`. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -484,6 +493,7 @@ Usage: log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--by
        log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]
 Pass the arguments after the command name in `args`, with --live or --likes. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -655,6 +665,7 @@ Live on Facebook: runs every step in the account's browser. Call it only when ma
 Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review).
 Steps: gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadAddPhotosOrDrag → uploadAddPhoto → fillTitle → fillPrice → clickCategory → clickMiscellaneous → clickCondition → clickNew → fillDescription → clickNext → clickPublish → clickClose. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

@@ -17,7 +17,7 @@ Say: **"go on docs/useCases/twitter/dmInbox.md"**. The agent then reads this pag
 | 5 | Sort it into a table: **reply now** (a real opportunity waiting on you), **waiting on them** (worth one nudge), **no action** (pitches, spam). Each with a suggested move | wherever the owner reads | the owner picks what to answer |
 | 6 | Send what the owner approves, one at a time, dry run first | `twitterDm` then `twitterDmLive` { userId, text, approvedBy, confirmLive: true } | X's answer is `sent` |
 
-One `twitterDms` call reads the inbox and the message requests in a few seconds.
+Who wrote last is already in context at the start of a session: the SessionStart hook reads it from the account's local inbox store, with nothing fetched. `twitterDms` keeps that store up to date the way X's own app does: the first read takes the whole inbox once (about 20 s), and every read after asks X only for what is newer (about 5 s), decrypting only what is new and adding it to the conversation search. `full: true` reads everything again.
 
 ## What to know
 

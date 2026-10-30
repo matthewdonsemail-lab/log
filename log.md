@@ -8846,3 +8846,40 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log voice --with <chat>` also takes the other person's numeric X user id. A 15-22 digit value is matched to the X Chat conversation that ends with `:<id>` before the usual name match (`evidenceFor`).
 Why: matt: commit the voice work. The drafting flow knows people by user id (from `twitterDms`), and the name match couldn't find their chat from it.
 Checked: the change was already in the working tree, uncommitted, from an earlier session. tsc clean and `bun run check` green in this session's runs, with the change in the tree.
+
+## 2026-10-30 05:09Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/accountsAndProxies.md`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/facebookFlows.md`: edited
+- `docs/guides/facebookGroups.md`: edited
+- `docs/guides/facebookMarketplace.md`: edited
+- `docs/guides/knowledgeAndSearch.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/followUps.md`: new file
+- `docs/useCases/twitter/whoNeedsYou.md`: new file
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/checks/checkUseCases.ts`: added const root, const say, const git, const session, const digest, const useCases, const ids, const staged, const added, const newPageStaged, const key, const cachePath, const answers, const review
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/mcp/server/helpers/guides.ts`: added const USE_CASES_DIR, interface UseCase, function listUseCases, function readUseCase, function useCaseLine, function withUseCases · changed function guideTool
+- `src/mcp/server/helpers/index.ts`: changed export from "./guides.ts"
+- `src/mcp/server/index.ts`: changed function runToolCall, function createLogMcpServer
+- `src/useCases/review/client.ts`: added function projectSessionsDir, function latestSession, const plain, const isOwnerText, const short, function toolLine, function sessionDigest, function reviewQuestions, function readReview, function reviewLines
+- `src/useCases/review/index.ts`: added export from "./client.ts", export from "./types.ts"
+- `src/useCases/review/review.test.ts`: added const line, test "the digest keeps the owner's asks and the tools called, and drops reminders, tool results and notifications", test "a long session keeps its latest part", test "one choice question per page, and one for work no page covers", test "a stale page blocks the commit unless it is updated in it, and uncovered work blocks unless a new page is added"
+- `src/useCases/review/types.ts`: added const REVIEW_MODEL, const REVIEW_BLOCK_AT, const DIGEST_MAX_CHARS, type PageVerdict, const PAGE_CRITERIA, interface SessionDigest, interface PageReview, interface UseCaseReview
+
+What changed: use cases now fill the log tools' context the way Paper's guides do. `getGuide` takes `useCase` as well as `topic`, and serves `docs/useCases/<platform>/<page>.md`. Its description and the core guide list every use case with how matt asks for it, and say to follow the page step by step, never improvise. Every tool's description gains "Use cases that call it: getGuide({ useCase: … })" for each page whose steps name it (`listUseCases`, `withUseCases`). Each topic guide lists the use cases its tools are part of, and the docs build refuses a page that names no tool. Two new use cases, written from what matt asked for in this session: `twitter/whoNeedsYou` (find who needs something from you or who matters, with what each conversation is about and how close it is to money; sends nothing) and `twitter/followUps` (follow up in your own voice: read the person, `voice` for how matt writes to them, a draft per person, the voice gate, matt's yes, then one message per line). `twitter/dmInbox` now says the inbox is synced and that who wrote last is in context at session start. A new pre-commit check, `useCases` (`bun run check:useCases`, `scripts/checks/checkUseCases.ts`, `src/useCases/review`), reads this Claude Code session's transcript (matt's asks, mid-turn ones included, and every tool called) and asks SubQ (`subq-snap-1.1`), for every page, whether it's current, stale (update) or belongs elsewhere (move), and whether the session did repeatable work no page covers. A stale page that isn't staged, or uncovered work with no new page staged, stops the commit with what to do. SubQ is asked again only when matt's asks or the pages change (`.git/useCaseReview.json`). An unreachable SubQ is said and lets the commit through. AGENTS.md gains rule 95, and the MCP's core principles gain 26 (`RULES_REVIEWED_THROUGH` 95). The naming check allows `queue-operation`, a value from Claude Code's transcript.
+Why: matt: the tool definitions are verbose so the context teaches the agent how he works. The repeatable work he asks for goes in the use cases folder as workflows (call this tool, then this one), the guides pull them, and a pre-commit check runs SubQ over the whole session against the use cases to say whether one is stale, should change, or should move.
+Checked: run on this session through SubQ, before `dmInbox` was updated: all 11 pages current, `dmInbox` lowest at 61%, uncovered work 10%. After the update: `dmInbox` 90%, `whoNeedsYou` 94%, `followUps` 93%, uncovered 6%, nothing blocking. New tests cover the transcript digest (asks and tools kept, reminders, tool results and notifications dropped, a long session keeps its latest part), the questions, and the blocking rules. `bun run check`: 1183 pass, every check green.

@@ -4,6 +4,14 @@ Accounts in Twenty, their status and secrets, their proxies, and the interactive
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -72,6 +80,7 @@ Usage: log proxy check   --account <accountName> [--json]
        log proxy static  [--json]   (Byteful's static ISP IPs on the account, where each is)
 The proxy is the socialAccount's `proxy` field in Twenty (scheme://user:pass@host:port), its country `homeCountry`.
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

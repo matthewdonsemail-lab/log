@@ -4,6 +4,14 @@ Facebook groups: joining and answering their questions, reading posts and member
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "facebook/groups" })` | Listening to local Facebook groups | see the page |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -34,6 +42,7 @@ Needs the account's browser open first: inspectStart { account, detach: true }. 
 4. join group … --fill (dry run), then joinLive: --fill --live --submit (confirmLive) : the answers into the group's dialog, Submit confirmed by Facebook (QUESTIONNAIRE_COMPLETED). --show reads the row at any time.
 Pass the arguments after the command name in `args`, e.g. ["--json"]. It never takes --live: that is `joinLive`. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -55,6 +64,7 @@ Needs the account's browser open first: inspectStart { account, detach: true }. 
 4. join group … --fill (dry run), then joinLive: --fill --live --submit (confirmLive) : the answers into the group's dialog, Submit confirmed by Facebook (QUESTIONNAIRE_COMPLETED). --show reads the row at any time.
 Pass the arguments after the command name in `args`, with --live. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -77,6 +87,7 @@ It stops at --count members, when the list ends (has_next_page false) or at --ma
 The members go to ~/.logCli/members/<group>/<run time>.tsv and .json, never to Twenty; it prints how many, how many with a bio, owners and pages, and the files. --json gives them.
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `readGroupLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -121,6 +132,7 @@ It stops at --count members, when the list ends (has_next_page false) or at --ma
 The members go to ~/.logCli/members/<group>/<run time>.tsv and .json, never to Twenty; it prints how many, how many with a bio, owners and pages, and the files. --json gives them.
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -135,6 +147,7 @@ Every poll runs inside the account's local hours (rule 18); --bypass skips that,
 The account's browser must be open (log inspect start for that account, or log facebook host start): a poll is a step in it (rule 35).
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

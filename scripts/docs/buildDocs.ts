@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows } from "../../src/mcp/server/index.ts";
+import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, listUseCases, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
@@ -75,7 +75,10 @@ for (const file of readdirSync(diagramDir)) {
 
 {
   const agentsMd = readFileSync(join(root, "AGENTS.md"), "utf8").replace(/\r\n/g, "\n");
-  const full = [...toolsFromCommands(COMMANDS, { shell: true, full: true }), ...toolsFromFlows(savedFlows(), { shell: true, full: true })];
+  const allTools = [...toolsFromCommands(COMMANDS, { shell: true, full: true }), ...toolsFromFlows(savedFlows(), { shell: true, full: true })];
+  const useCases = listUseCases(allTools.map((t) => t.name));
+  const full = withUseCases(allTools, useCases);
+  for (const u of useCases) if (!u.tools.length) problems.push(`docs/useCases/${u.id}.md names no log tool: each step names the tool it calls`);
   const flowNames = new Set(toolsFromFlows(savedFlows(), { shell: true }).map((t) => t.name));
   const topicOfTool = new Map(commandTools(COMMANDS).map((e) => [e.tool, guideOfCommand(e.command)]));
   const rulesOf = (tool: { description: string }) => ((tool.description.split("\n").at(-1) ?? "").match(/rules ([\d, ]+)/)?.[1] ?? "").split(",").map((n) => Number(n.trim())).filter(Boolean);
@@ -84,9 +87,18 @@ for (const file of readdirSync(diagramDir)) {
   mkdirSync(guideDir, { recursive: true });
   for (const [topic, about] of Object.entries(GUIDE_TOPICS)) {
     const tools = full.filter((t) => (about.flows && flowNames.has(t.name)) || topicOfTool.get(t.name) === topic);
+    const names = new Set(tools.map((t) => t.name));
+    const theirs = useCases.filter((u) => u.tools.some((name) => names.has(name)));
+    const useCaseRows = (list: typeof useCases) => ["| Use case | What it is | How the owner asks for it |", "|---|---|---|", ...list.map((u) => `| \`${GUIDE_TOOL}({ useCase: "${u.id}" })\` | ${u.title} | ${u.asks || "see the page"} |`)];
     const extra =
       topic === CORE_GUIDE
         ? [
+            "## Use cases: the work the owner asks for, tool by tool",
+            "",
+            "This is how the owner works. Each use case is something the owner asks for again and again, written as its steps in order, each step naming its tool and what counts as done. When the owner asks for work a use case covers, read that use case and follow it step by step instead of improvising. Work no use case covers yet, done for the owner more than once, gets a page of its own in docs/useCases/<platform>/.",
+            "",
+            ...useCaseRows(useCases),
+            "",
             "## Rule one: if we don't know, we do this",
             "",
             agentsSection(agentsMd, "Rule one"),
@@ -110,7 +122,9 @@ for (const file of readdirSync(diagramDir)) {
             "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 54) and what only matt can clear (`needsMatt`).",
             "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
           ]
-        : [];
+        : theirs.length
+          ? ["## Use cases these tools are part of", "", "When the owner asks for one of these, follow its page step by step.", "", ...useCaseRows(theirs)]
+          : [];
     const rules = topic === CORE_GUIDE ? [...new Set([...CORE_PRINCIPLES.matchAll(/rules? ([\d, -]+)/g)].flatMap((m) => m[1].split(",").flatMap((part) => { const [a, b] = part.trim().split("-").map(Number); return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a]; })))].filter(Boolean) : [];
     put(`docs/guides/${topic}.md`, renderGuide({ topic, tools, commands: COMMANDS, flows: savedFlows(), agentsMd, rulesOf, rules, extra }));
   }
