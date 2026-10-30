@@ -113,7 +113,9 @@ host interfaces. The relay advertises `wss://buzz.listeningkit.com` and keeps
 closed membership.
 
 Migration record: `~/.buzz/WORK_LOGS/BUZZ_LISTENINGKIT_NODE02_MIGRATION.md`
-on Matt's PC. The hosted source relay remains online and untouched.
+on Matt's PC. The hosted source relay remains online and untouched. Member
+joining, mobile identity pairing and troubleshooting are in
+[buzzMembers.md](buzzMembers.md).
 
 ## Other tunnels on the account
 

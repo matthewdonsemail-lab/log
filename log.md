@@ -9001,3 +9001,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/infra/node02.md` now records ListeningKit's self-hosted Buzz relay: the public `wss://buzz.listeningkit.com` relay, pairing and media endpoints, the private Tailscale fallback, the `buzz_listeningkit` database, the retained `buzz` rollback database, and the Cloudflare tunnel routes from `buzz.listeningkit.com/pair` to bridge port 39501 and the relay to 39301. The cloudflared row now names the Buzz and MCP hostnames too.
 Why: ListeningKit's Buzz workspace moved from the hosted relay to node02 and the runbook needs one findable record of the domain, database, tunnel routing and rollback state.
 Checked: NIP-11, liveness, relay WebSocket and pairing WebSocket over `https://buzz.listeningkit.com`; 8,049 imported event IDs present, 24 channels and 448 migrated media blobs verified; Cloudflare tunnel reports healthy.
+
+## 2026-10-30 20:33Z · docs/buzzNode02Migration
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/buzzMembers.md`: new file
+- `docs/infra/node02.md`: edited
+
+What changed: new `docs/infra/buzzMembers.md` explains how existing members join ListeningKit's self-hosted Buzz from desktop or phone, how to join with an identity already on the phone, how to move an existing identity to a new phone through `nostrpair://` device pairing or an `nsec` backup, how an owner/admin adds a new member's `npub`, the common join errors, and the known media/Git migration limits. `docs/infra/node02.md` links to it from the Buzz relay section.
+Why: members need a safe, copyable guide for using the new `wss://buzz.listeningkit.com` community without creating replacement identities or exposing their private keys.
+Checked: `bun run check`; the public relay and pairing endpoint were already verified live, and the guide was checked against the mobile NIP-AB pairing flow (`nostrpair://`, SAS confirmation, desktop-generated code).
