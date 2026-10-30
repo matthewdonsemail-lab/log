@@ -76,7 +76,7 @@ describe("what a client needs from the server (MCP client best practices)", () =
     const [a, b] = InMemoryTransport.createLinkedPair();
     await Promise.all([server.connect(b), client.connect(a)]);
     const { tools } = await client.listTools();
-    expect(tools.every((t) => JSON.stringify(t.outputSchema) === JSON.stringify(TOOL_RESULT_SCHEMA))).toBe(true);
+    expect(tools.filter((t) => t.name !== "getGuide").every((t) => JSON.stringify(t.outputSchema) === JSON.stringify(TOOL_RESULT_SCHEMA))).toBe(true);
     expect(client.getServerCapabilities()?.tools?.listChanged).toBe(true);
     await client.close();
   });

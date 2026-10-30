@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { savedFlows } from "../../src/mcp/server/index.ts";
+import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, listUseCases, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
@@ -38,6 +38,103 @@ for (const file of readdirSync(diagramDir)) {
   else {
     rmSync(join(diagramDir, file));
     wrote.push(`removed docs/diagrams/${file}`);
+  }
+}
+
+{
+  const cli = join(root, "src/cli");
+  const found: { name: string; platform: string; module: string; exportName: string }[] = [];
+  for (const dir of readdirSync(cli).sort()) {
+    const index = join(cli, dir, "index.ts");
+    if (dir === "runner" || !existsSync(index)) continue;
+    const loaded = (await import(index)) as Record<string, unknown>;
+    for (const [exportName, value] of Object.entries(loaded).sort(([a], [b]) => a.localeCompare(b))) {
+      const command = COMMANDS.find((c) => c === value);
+      if (command && !found.some((f) => f.name === command.name && f.platform === command.platform)) found.push({ name: command.name, platform: command.platform, module: `src/cli/${dir}/index.ts`, exportName });
+    }
+  }
+  for (const command of COMMANDS) if (!found.some((f) => f.name === command.name && f.platform === command.platform)) problems.push(`${command.name} (${command.platform}) is in COMMANDS but no src/cli/<dir>/index.ts exports it, so log can't load it on its own`);
+  const ordered = COMMANDS.map((c) => found.find((f) => f.name === c.name && f.platform === c.platform)).filter((f): f is (typeof found)[number] => Boolean(f));
+  put(
+    "src/cli/runner/helpers/commandIndex.ts",
+    [
+      "export interface CommandIndexEntry {",
+      "  name: string",
+      "  platform: string",
+      "  module: string",
+      "  exportName: string",
+      "}",
+      "",
+      "export const COMMAND_INDEX: CommandIndexEntry[] = [",
+      ...ordered.map((f) => `  { name: ${JSON.stringify(f.name)}, platform: ${JSON.stringify(f.platform)}, module: ${JSON.stringify(f.module)}, exportName: ${JSON.stringify(f.exportName)} },`),
+      "]",
+      "",
+    ].join("\n"),
+  );
+}
+
+{
+  const agentsMd = readFileSync(join(root, "AGENTS.md"), "utf8").replace(/\r\n/g, "\n");
+  const allTools = [...toolsFromCommands(COMMANDS, { shell: true, full: true }), ...toolsFromFlows(savedFlows(), { shell: true, full: true })];
+  const useCases = listUseCases(allTools.map((t) => t.name));
+  const full = withUseCases(allTools, useCases);
+  for (const u of useCases) if (!u.tools.length) problems.push(`docs/useCases/${u.id}.md names no log tool: each step names the tool it calls`);
+  const flowNames = new Set(toolsFromFlows(savedFlows(), { shell: true }).map((t) => t.name));
+  const topicOfTool = new Map(commandTools(COMMANDS).map((e) => [e.tool, guideOfCommand(e.command)]));
+  const rulesOf = (tool: { description: string }) => ((tool.description.split("\n").at(-1) ?? "").match(/rules ([\d, ]+)/)?.[1] ?? "").split(",").map((n) => Number(n.trim())).filter(Boolean);
+  for (const tool of full) if (!flowNames.has(tool.name) && !topicOfTool.get(tool.name)) problems.push(`MCP tool ${tool.name} has no guide: add its command to GUIDE_TOPICS (src/mcp/server/helpers/guides.ts)`);
+  const guideDir = join(root, "docs/guides");
+  mkdirSync(guideDir, { recursive: true });
+  for (const [topic, about] of Object.entries(GUIDE_TOPICS)) {
+    const tools = full.filter((t) => (about.flows && flowNames.has(t.name)) || topicOfTool.get(t.name) === topic);
+    const names = new Set(tools.map((t) => t.name));
+    const theirs = useCases.filter((u) => u.tools.some((name) => names.has(name)));
+    const useCaseRows = (list: typeof useCases) => ["| Use case | What it is | How the owner asks for it |", "|---|---|---|", ...list.map((u) => `| \`${GUIDE_TOOL}({ useCase: "${u.id}" })\` | ${u.title} | ${u.asks || "see the page"} |`)];
+    const extra =
+      topic === CORE_GUIDE
+        ? [
+            "## Use cases: the work the owner asks for, tool by tool",
+            "",
+            "This is how the owner works. Each use case is something the owner asks for again and again, written as its steps in order, each step naming its tool and what counts as done. When the owner asks for work a use case covers, read that use case and follow it step by step instead of improvising. Work no use case covers yet, done for the owner more than once, gets a page of its own in docs/useCases/<platform>/.",
+            "",
+            ...useCaseRows(useCases),
+            "",
+            "## Rule one: if we don't know, we do this",
+            "",
+            agentsSection(agentsMd, "Rule one"),
+            "",
+            "## The core rules, in full",
+            "",
+            CORE_PRINCIPLES,
+            "",
+            "## Which guide for which work",
+            "",
+            `Each tool's description names its guide. Load it with \`${GUIDE_TOOL}({ topic })\` before first using that tool.`,
+            "",
+            "| Topic | What it covers |",
+            "|---|---|",
+            ...Object.entries(GUIDE_TOPICS).filter(([t]) => t !== CORE_GUIDE).map(([t, g]) => `| \`${t}\` | ${g.about} |`),
+            "",
+            "## How a run reports back",
+            "",
+            `- With a shell (Claude Code, Codex): ${longRunLine({ shell: true })}`,
+            `- Without one (claude.ai, Duet): ${longRunLine({ shell: false })}`,
+            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 54) and what only matt can clear (`needsMatt`).",
+            "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
+          ]
+        : theirs.length
+          ? ["## Use cases these tools are part of", "", "When the owner asks for one of these, follow its page step by step.", "", ...useCaseRows(theirs)]
+          : [];
+    const rules = topic === CORE_GUIDE ? [...new Set([...CORE_PRINCIPLES.matchAll(/rules? ([\d, -]+)/g)].flatMap((m) => m[1].split(",").flatMap((part) => { const [a, b] = part.trim().split("-").map(Number); return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a]; })))].filter(Boolean) : [];
+    put(`docs/guides/${topic}.md`, renderGuide({ topic, tools, commands: COMMANDS, flows: savedFlows(), agentsMd, rulesOf, rules, extra }));
+  }
+  for (const file of readdirSync(guideDir)) {
+    if (!file.endsWith(".md") || GUIDE_TOPICS[file.slice(0, -3)]) continue;
+    if (check) problems.push(`docs/guides/${file} is no longer a guide topic: run \`bun run docs:build\``);
+    else {
+      rmSync(join(guideDir, file));
+      wrote.push(`removed docs/guides/${file}`);
+    }
   }
 }
 

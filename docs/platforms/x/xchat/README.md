@@ -48,3 +48,61 @@ Why: `log twitter dms` (twikit, X's older `dm/inbox_initial_state`) never shows 
 ## Live
 
 New messages arrive by push, not by reading the inbox: one socket to `wss://chat-ws.x.com`, a KeepAlive every 30 s, each message decrypted as it lands. How it works, what was seen live and how to check it again: [live.md](live.md).
+
+## Opening one chat, and what X's app does on a 429 (2026-10-29)
+
+Read from X's shipped chat code (`assets/dm-core-DNH_F-Zu.js`, 11.7 MB, from `https://chat.x.com/embed-v1.json`). rea's whole-bundle read timed out at 240 s (partial Evidence `ev_f21c68f1…`), so these come from the bundle's own bytes:
+
+- **Opening a chat** is `GetInboxPageConversationDataQuery` (`4T3Z2Rwf_1SdOA6b-Oi5-w`) with `conversation_ids: [<id>]` and `include_user_public_keys: false`. It returns that conversation's `latest_message_events` and `latest_conversation_key_change_events`. It never reads the whole inbox.
+- **Older messages** come from `GetConversationPageQuery` (`GX9ZijkxG8AqRMQVD7hMnQ`), which the app logs as `fetchOlderMessages … from <sequence id> oldestCKey=<key version>`. Its variables are `conversation_id`, `min_local_sequence_id` (the oldest `MessageEvent.sequence_id` held, Thrift field 1) and `min_conversation_key_version` (the oldest key version held: `MessageCreateEvent.conversation_key_version`, field 101 of `detail.messageCreateEvent`). It answers with `encoded_message_events`, `missing_conversation_key_change_events` and `has_more`. `0` for either variable is refused (`BadRequest`, code 214).
+- **On a 429** the app does not retry. Its only automatic retry is Ktor's `HttpRequestRetry`, whose condition is `500 <= status <= 599`. A 429 becomes `TooManyRequests` (an `HttpException` carrying `retryAfterSeconds` from `Retry-After`) and the request ends there.
+
+log does the same. `log twitter dms --with <handle>` and `--conversation <a:b>` open one chat with `GetInboxPageConversationDataQuery`, then page back with `GetConversationPageQuery` up to 5 times, 1.5 s apart, while X says `has_more` (`client.get_xchat_conversation`). A 429 stops the read and pauses the account's governor, with nothing retried (rule 94). Checked live on 2026-10-29: @ricardoampudiar's thread took 4 requests in total (the legacy thread, the chat, two older pages), where the old path pulled up to 30 inbox pages back to back.
+
+## Catching up: only what is new (2026-10-30)
+
+`log twitter dms` took 32 to 90 s a read: every run unlocked the PIN through Juicebox (2.1 s), pulled the whole X Chat inbox (23 `GetInboxPageRequestQuery` pages back to back, 11.6 s), fetched every participant's keys and decrypted everything (3 s), then paged the old DM inbox with 1.5 s gaps (8 s). Nothing was kept between runs.
+
+X's own chat app doesn't do that. Read from `assets/dm-core-C1AlWU5D.js` (11.7 MB, build `d44a8531a879caf9c7543bb1afda9e0f1da43cd2` from `https://chat.x.com/embed-v1.json`): it keeps a local database (SQLDelight, `inboxConversationLocalPaginationPageSize`), pulls the inbox once (`GotInboxInitialPageAndProcessedFirstPage`, then `AfterFirstInboxPage` in the background) and after that catches up by sequence number: `MessagePullCoordinator`, `PullMessagesInstruction(sequence_start=…)` over the socket, and over GraphQL `GetMessageEventsPageQuery` (`8ds29Y40jrxh_MZDbqWy0A`):
+
+```graphql
+query GetMessageEventsPageQuery($continue_cursor: XChatGetMessageEventsPageContinueCursorInput, $query_settings: XChatPageQuerySettingsInput)
+# cursor: XChatGetMessageEventsPageEndCursor { pull_finished } | XChatGetMessageEventsPageContinueCursor { max_local_sequence_id }
+# answer: encoded_message_events, message_requests_count
+```
+
+`continue_cursor.max_local_sequence_id` is the newest event the client holds; an event's sequence id is its event id (Thrift field 1). Checked live on matthewsoldit (2026-10-30): from the newest event kept on 29 Oct 04:22 UTC, one call answered 61 events across 16 conversations in 1.4 s with `pull_finished: true`; with nothing new, one call answers none.
+
+rea read the whole bundle (`rea analyze-javascript-application`, Evidence `ev_a5489f350157a3fa307746e0ac39e035c95c93ca11b9d8472524771c3d440928`). Its semantic graph is partial on this minified Kotlin build: it stopped at its 20,000-node ceiling, with 117,370 dynamic calls and 336,952 ambiguous object flows left unresolved, before it reached the pull code. The query text, the cursor types and the pull log lines above are the bundle's own bytes.
+
+What log does now (`client.get_xchat_updates`, `client.open_xchat_events` in `vendor/twikit`; `python/twitterApi/inboxSync.py`):
+
+1. The first read takes everything once and keeps it in `~/.logCli/twitter/<account>/inboxSync.json` with the newest sequence id.
+2. Every read after asks `GetMessageEventsPageQuery` from that sequence id, beside one `dm/inbox_initial_state` for the old DMs, both at once. Nothing new: no PIN unlock, no keys, no decrypt.
+3. Something new: unlock once, read only those conversations' keys and participants (`GetInboxPageConversationDataQuery`, up to 20 ids a call), decrypt only the new events. Each event is kept once by its id.
+4. The conversations that changed are saved for `log search`, and the index embeds only the chunks that are new or changed (`updateIndex`).
+
+Measured on matthewsoldit, 2026-10-30, six reads 10 s apart with nothing new: the engine took p50 1.27 s, max 1.44 s (2 requests); the whole command p50 6.4 s, max 9.1 s, the rest being Bun and Python start-up and the Twenty lookups. The first read, which fills the store, took 21.7 s once.
+
+### Start-up cut (2026-10-30)
+
+Of the ~6 s a read took after the sync, about 1.3 s was X. The rest:
+
+- **Python, 1.73 s → 0.96 s.** `import twikit` loaded js2py (0.69 s, through `twikit.ui_metrics`) and the captcha solver with numpy (0.36 s) on every run, though only the password login uses them. Both now load when used (vendor/twikit, rule 81).
+- **Twenty, about 0.6 s less.** The account's Twenty id is kept in `~/.logCli/twitter/<account>/session.json` (not a secret), so the X Chat PIN is fetched at the same time as the account row. The session is written back only when the state or a cookie changed, or once an hour (`SESSION_REWRITE_MS`), instead of on every read.
+- **Commands load only when run (2026-10-30).** `bin/log.ts` used to import all 60 commands and their libraries (about 770 ms) before running one. It now looks the command up in `src/cli/runner/helpers/commandIndex.ts`, which `bun run docs:build` writes from `COMMANDS` and `check:docs` keeps in step, and imports only that command's module (`runFast`, `src/cli/runner/client.ts`). Help and unknown commands still load the whole catalog. That is the pattern OpenCode moved to for its CLI (anomalyco/opencode PR 27800). The Twenty client's 3.6 MB type map is now `types.json` (132 ms → 12 ms to load), linked on the first query instead of at import (105 ms), written that way by the generator (`scripts/twenty/lightenTwentyClient.mjs`). A command now starts in about 310 ms instead of 765 ms. Bun's compiled bytecode build (`bun build --compile --bytecode`) would cut parsing further, but it only works with the Bun version that built it, so it isn't used.
+
+Six reads with nothing new, 10 s apart: the whole command p50 4.6 s, max 6.5 s (was p50 6.4 s, max 9.1 s); the engine p50 1.3 s. With commands loaded only when run: p50 3.9 s, max 6.0 s.
+
+**No network for "who's waiting".** The engine records the account's user id in the store, and `log twitter chat watch --inbox` writes every message X pushes into it (each kept once, the sequence id left alone so the next sync still reads everything after it). The SessionStart hook reads the store and puts who wrote last into the agent's context in about 0.45 s, with nothing fetched (`storedInboxContext`, `src/inbox/watch`).
+
+## Messages that "could not be decrypted" (2026-10-30)
+
+The saved PIN was never the problem. On matthewsoldit 242 of 1,964 stored X Chat messages showed as "(could not decrypt)", among them RVAClassic's three replies, Jash's latest, Shaw's first line and all 53 of the five-person group chat. Four causes, each read from chat-xdk's own answer:
+
+- **The key change wasn't in the batch.** chat-xdk said so itself: "Message encrypted with key version '1793245813830' but no matching key found. Available versions: []. Include the conversation's KeyChange events in the batch". A catch-up read (`GetMessageEventsPageQuery`) brings new messages but not the key changes that open them. Now a failure like that is answered the way X's app does it: `GetConversationPageQuery` from the failing message's sequence id and the oldest key version held, taking its `missing_conversation_key_change_events`, then decrypting again (`_xchat_missing_keys`, `_xchat_fetch_key_changes`).
+- **The key change was there but its signer's key wasn't.** Since sequence `2070276095283454002` chat-xdk keeps a key change only when it can verify its sender's signature (`enforce_ckey_signatures`, `vendor/chatXdk/crates/core/src/core.rs`). In a group the member who rotated the key isn't always a current participant, so their signing key was never fetched and every key was dropped: `extract_conversation_keys` opened 20 versions of the group's key, `decrypt_events` kept none. Every event's sender is now in the public-key lookup. The group: 141 of 142 open; the one left (12 July) is under a key older than the oldest page X answers.
+- **It opened, but wasn't text.** 180 had no error at all: reactions, edits, photos, shared posts and read markers, where only `content.text` was read. chat-xdk tags each with `content_type`: a reaction is now `(reacted 🔥)`, an edit `(edited) …`, a photo `(image: name.jpg)`, a shared post or link its URL, and a read marker is hidden. Jash's "could not decrypt" was an edit of his message before it.
+- **Group ids went to the old DM path.** `--conversation g…` has no `:`, so it was read as a legacy DM and came back empty. `is_xchat_id` routes `g<digits>` to X Chat.
+
+Messages held from before the fix are opened again when their chat is read (`--with`, `--conversation`: up to 5, one `GetConversationPageQuery` each from just past the message), and by the inbox read itself, up to 3 conversations a sync, each message retried once a day (`reopen_unopened`). The older-page read also takes the key version from chat-xdk (`_xchat_versions`) when the event's Thrift doesn't give it.

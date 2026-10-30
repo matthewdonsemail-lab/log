@@ -5,7 +5,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const SESSION_USAGE = [
   "Usage: log twitter session check --account <accountName> [--json]",
-  "Checks that X still accepts the account's saved session, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
+  "Checks that X still accepts the account's saved session, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
   "X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.",
 ].join("\n");
 
@@ -25,7 +25,7 @@ export const SESSION_INPUT: CommandInput = {
 
 function render(accountName: string, answer: TwitterSessionAnswer, lines: string[]): string {
   const head = answer.ok
-    ? `log twitter session check: ${accountName} is loggedIn as @${answer.screenName ?? "?"} (${answer.userId}), via the direct-API engine (twikit, no browser).`
+    ? `log twitter session check: ${accountName} is loggedIn as @${answer.screenName ?? "?"} (${answer.userId}), via the direct-API engine (no browser).`
     : `log twitter session check: ${accountName}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
   const g = answer.governor;
   const governor = g ? `  governor: ${g.day_count}/${g.daily_cap} requests today${g.cooldown_active ? `, paused ${Math.ceil(g.cooldown_remaining_s / 60)} min` : ""}` : null;
@@ -51,7 +51,7 @@ export const sessionCommand: Command = {
       const gate = twitterGate(account);
       if (!gate.ok) return refuse("twitter session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directTwitter) return { code: 1, stderr: "log twitter session check: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: session check on the direct-API engine (twikit), X called directly`);
+      context.err(`${account.accountName}: session check on the direct-API engine, X called directly`);
       const run = context.directTwitter(account, { action: "ping" });
       const lines = await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date());
       for (const line of lines) context.err(line);
@@ -64,4 +64,4 @@ export const sessionCommand: Command = {
   },
 };
 
-export { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, voiceCommand } from "./helpers/index.ts";
+export { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, voiceCommand } from "./helpers/index.ts";

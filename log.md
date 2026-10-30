@@ -8667,6 +8667,301 @@ What changed: `.gitignore` now keeps matt's messages and everything built from t
 Why: matt: "it's not in the repo on GitHub, it can't be there, we need to gitignore it, it's fine locally."
 Checked: `git check-ignore` matches `pairs.json`, a conversation `.json` and a communication-map file. `git ls-files` tracks no message data, and no line from today's chats is in any tracked file. src/voice: 6 pass.
 
+## 2026-10-29 01:46Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: added def with_person · changed def xchat_conversation, def act
+- `src/cli/twitter/families.test.ts`: added test "--with <handle> reads only that person's legacy and X Chat threads, never the whole inbox, and merges them by time" · removed test "--with <handle> reads both the legacy and the X Chat thread in one export read and merges them by time"
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, const dmsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed interface TwitterEngineSpec
+- `vendor/twikit/tests/test_xchat.py`: added def thrift_string, def message_event, def test_key_version_of_reads_the_message_create_event, def test_get_xchat_conversation_reads_one_chat_then_older_pages
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/gql.py`: changed class Endpoint, class GQLClient
+- `vendor/twikit/twikit/xchat.py`: added def _struct_at, def key_version_of
+
+What changed: `log twitter dms --with <handle>` and `--conversation <a:b>` now open one person's X Chat the way X's own chat app does: `GetInboxPageConversationDataQuery` for that conversation id alone (`client.get_xchat_conversation`), then `GetConversationPageQuery` (its fetchOlderMessages) from the oldest sequence id and key version held, up to 5 pages 1.5 s apart while X says `has_more`. `--with` looks up the person's id and reads only their legacy thread and their X Chat, never the whole inbox (`with_person`). `xchat.key_version_of` reads a message event's conversation key version from its Thrift. A 429 inside the inbox read is no longer swallowed as `xchatReadFailed`: it reaches the engine's `rateLimited` answer, which pauses the governor, with nothing retried. AGENTS.md gains rule 94 (never act on an account in quick succession), distilled into the MCP instructions and cited on the X and Discord commands. The X Chat doc records what dm-core does.
+Why: matt, after his Discord account was disabled: "a rate limit or failed send stops the run", look at the bundle with rea and make it work. Every `dms --with` used to pull the legacy inbox and up to 30 X Chat inbox pages back to back, and three run at once got 429s from X on 2026-10-29. X's app (dm-core) opens a chat with one query and retries only 5xx, never a 429.
+Checked: live on matthewsoldit: `--conversation 1974596626342686720:2003675882351919106` and `--with ricardoampudiar` decrypted the X Chat thread in 4 requests (legacy, chat, 2 older pages until `has_more` false). The first try with `0` sequence ids was refused (BadRequest 214), which is how the fetchOlderMessages variables were confirmed. bun test: 1162 pass (with LOG_PYTHON set to the engine's Python). vendor/twikit tests: 24 pass. tsc clean.
+
+## 2026-10-30 03:15Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `src/cli/twitter/families.test.ts`: added test "a dm drafted on several lines goes out one message per line, --asOne as one, and a drop stops the rest"
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand
+- `src/cli/twitter/helpers/send.ts`: added const AS_ONE, const twitterSendDeps, function dmChatProfile, function dmSplit, function splitLine, function sendDmParts · changed const SHAPES, function usageOf, function inputOf, function sendCommand
+
+What changed: `log twitter dm` now splits a draft the way `log discord send` does (rule 90): a draft on several lines goes out one message per line, and a one-line draft is split the way matt writes in that X chat (its voice profile `chat:twitter:<conversation>`, found by the recipient's user id, X Chat's first), with his usual gap between them (`dmSplit`, `sendDmParts`). `--asOne` sends it as one. The dry run lists each part. A drop or throttle stops the rest: what was sent stays sent and nothing is retried (rule 94). `log twitter queue run` sends its dm items the same way, and a dm that went out in part comes back as sent with how many parts landed, so the queue never resends it. Replies, quotes and likes are unchanged.
+Why: matt: the natural line endings we have on Discord need to work the same on X. X dms went out as one message with the line breaks inside it.
+Checked: bun test src/cli/twitter: 32 pass, including the new test (two lines sent as two calls, --asOne as one, a 429 on the second of three stops at two). A dry run on matthewsoldit with the 4-line Thisath draft showed 4 messages, 8 s apart; X was not contacted. tsc clean, docs rebuilt.
+
+## 2026-10-30 03:43Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: added def legacy_pool, def sync_path, def synced_inbox · changed def inbox, def act, def run
+- `python/twitterApi/inboxSync.py`: added const VERSION, def empty_state, def read_state, def write_state, def seq, def merge_states, def add_messages, def mark_last, def max_sequence, def seed_xchat, def merge_xchat, def merge_pool, def xchat_threads, def opened_of
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/search/index.ts`: changed const SEARCH_USAGE, const SEARCH_INPUT, function indexAll, const searchCommand · removed function conversationOf
+- `src/cli/twitter/families.test.ts`: added test "a synced read says what it fetched, keeps the conversations for search, and reindexes only when something is new" · changed test "reads the inbox once on the direct-API engine and --waiting keeps who is waiting on a reply"
+- `src/cli/twitter/helpers/dms.ts`: added const twitterDmsDeps, function syncLine, function keepForSearch · changed const DMS_USAGE, const DMS_INPUT, const dmsCommand
+- `src/search/conversations/client.test.ts`: added test "a new message embeds only its chunk, the same read again embeds nothing, and a search finds it"
+- `src/search/conversations/client.ts`: added function updateIndex, function twitterConversationOf
+- `src/twitter/account/session/inboxSync.test.ts`: added const python, const SCRIPT, test "the first read pulls the whole inbox once and keeps it, with the newest sequence id", test "with nothing new it is one updates call from the newest held, no PIN unlock and no inbox pages", test "a new message unlocks once, opens only its conversation, and moves the sequence id on", test "the same event read again is kept once"
+- `src/twitter/account/session/types.ts`: added interface TwitterInboxSync · changed interface TwitterEngineSpec, interface TwitterSessionAnswer
+- `vendor/twikit/tests/test_xchat.py`: added def test_get_xchat_updates_reads_from_the_newest_held_until_x_says_finished, def test_get_xchat_updates_with_nothing_new_is_one_request, def test_open_xchat_events_reads_only_those_conversations_keys
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: `log twitter dms` now syncs the inbox the way X's own chat app (dm-core) does. The first read takes the whole inbox once and keeps it in `~/.logCli/twitter/<account>/inboxSync.json` with the newest event's sequence id (`python/twitterApi/inboxSync.py`). Every read after asks only for what is newer: `GetMessageEventsPageQuery` from that sequence id (`client.get_xchat_updates` in vendor/twikit), beside one `dm/inbox_initial_state` for the old DMs, both at once. With nothing new there is no PIN unlock, no key fetch and no decrypt. When something is new it unlocks once and opens only those conversations' keys (`client.open_xchat_events`, `GetInboxPageConversationDataQuery`, up to 20 ids a call), keeping each event once by its id. The engine takes the user id from the twid cookie instead of two settings calls. Each read saves the conversations it changed (all of them on a full read) for `log search`, and starts `log search index --saved` in the background. That now runs `updateIndex`: only new or changed chunks are embedded (upserted), chunks that are gone are removed, and BM25 is rebuilt. `--rebuild` embeds everything again. The command says what it fetched (`synced in 1.27 s: 0 new X Chat events since sequence …`). `--full` reads everything again. The X→search mapper moved into the search library (`twitterConversationOf`). The test preload keeps conversations and the search index in temp folders. The X Chat doc records the bundle evidence, rea's partial reading and the timings.
+Why: matt: `log twitter dms` takes about 2 minutes, which is unacceptable. Use rea on the bundle to find a faster way to p50/p99, index every read into search with duplicates removed, because the session hooks rely on it. Timed on 2026-10-30, the old read spent 11.6 s on 23 X Chat inbox pages back to back, 8 s on old DM pages with 1.5 s waits, 5 s unlocking and decrypting everything, and 3.5 s on start-up calls, every run. X's app pulls the inbox once, then catches up by sequence number.
+Checked: live on matthewsoldit: one GetMessageEventsPageQuery from 29 Oct 04:22 returned 61 events across 16 conversations in 1.4 s, `pull_finished` true. The first synced read filled the store in 21.7 s (198 X Chat conversations). Six reads with nothing new, 10 s apart: engine p50 1.27 s, max 1.44 s (2 requests each); whole command p50 6.4 s, max 9.1 s. Before, the same read took 32 s (78 s on an earlier run). `log search index --saved` over 35,290 real chunks: 0 embedded, 0.5 s. `log search bench`: warm p50 4.1 ms, p99 14.7 ms. rea read dm-core whole (Evidence ev_a5489f35…), partially: it stopped at its 20,000-node limit before the pull code. `bun run check`: 1169 pass, every check green. vendor/twikit tests: 27 pass.
+
+## 2026-10-30 03:53Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: changed def synced_inbox, def xchat_watch
+- `python/twitterApi/inboxSync.py`: added def push_message
+- `scripts/hooks/inbox.ts`: added const pushed, const stored · changed const text
+- `skills/xPosting/SKILL.md`: edited
+- `src/agentHooks/registry/index.ts`: changed const AGENT_HOOKS
+- `src/cli/twitter/helpers/dms.ts`: changed const dmsCommand
+- `src/cli/twitter/twitter.test.ts`: added test "a check that changes nothing within the hour skips the Twenty write, and a changed cookie still writes"
+- `src/directApi/engine/client.ts`: added function localAccountId · changed function writeLocalSession
+- `src/inbox/watch/client.ts`: added interface StoredConversation, interface StoredWaiting, function storedWaiting, function storedInboxContext
+- `src/inbox/watch/watch.test.ts`: added test "lists the conversations where they wrote last, newest first, and says when the store was synced"
+- `src/twitter/account/session/client.ts`: added const SESSION_REWRITE_MS, function sameCookies · changed function recordTwitterSession
+- `src/twitter/account/session/inboxSync.test.ts`: added test "a message the live watcher pushes is kept once in the store, without moving the sequence id the next sync reads from" · changed const SCRIPT
+- `vendor/twikit/twikit/__init__.py`: added def __getattr__
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: `log twitter dms` starts faster. vendor/twikit now loads js2py (`twikit.ui_metrics`) and the captcha solver (numpy) only when the password login uses them: `Capsolver` is a lazy module attribute and a type-only import, and `solve_ui_metrics` is imported inside `login`. The account's Twenty id is kept in the local `session.json` (`writeLocalSession` extra fields, `localAccountId`), so `dms` fetches the X Chat PIN at the same time as the account row. `recordTwitterSession` writes to Twenty only when the session state or a cookie changed, or once an hour (`SESSION_REWRITE_MS`), and updates the in-memory account so later calls compare against what was written. The engine records the account's user id in the inbox store. `log twitter chat watch --inbox` writes each message X pushes into the store (`inboxSync.push_message`): kept once by id, with the sequence id left alone so the next sync still reads everything after it. The SessionStart hook adds who wrote last and is waiting, read from each X account's store with nothing fetched (`storedWaiting`, `storedInboxContext`). The hook's description and diagram say so.
+Why: matt asked to cut the remaining start-up overhead: the hook should read the local inbox store with no network, and each dms read should make fewer Twenty lookups. Timed on 2026-10-30, the ~6 s outside the engine was Python imports 1.73 s, Bun loading every command 1.0 s, the account lookup 0.8 s, the PIN lookup 0.25 s, and a Twenty write on every read.
+Checked: Python engine imports 1.73 s → 0.96 s (three runs). Live on matthewsoldit, six reads with nothing new, 10 s apart: whole command p50 4.6 s, max 6.5 s (was p50 6.4 s, max 9.1 s), engine p50 1.3 s, no Twenty write printed. The SessionStart hook on the real store took 455 ms and listed 91 conversations where they wrote last, newest first, with nothing fetched. `bun run check`: 1172 pass, every check green. vendor/twikit tests: 27 pass. Bun loading every command (~1 s) is unchanged.
+
+## 2026-10-30 04:10Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `bin/log.ts`: changed const code
+- `docs/platforms/x/xchat/README.md`: edited
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/twenty/emitTwentyClient.mjs`: changed const isSource, function collect, const emitted
+- `scripts/twenty/lightenTwentyClient.mjs`: added const LINK, const LAZY, function lighten
+- `src/cli/new/index.ts`: changed const NEW_USAGE
+- `src/cli/runner/client.ts`: added const ALIASES, function createContext, function takeProxyMs, const defaultSendInspect, function runWith, function findIn, function dispatchWith, function runOne, function loadIndexed, function runFast
+- `src/cli/runner/fastPath.test.ts`: added function capture, test "every indexed command loads the very command COMMANDS holds, and none is missing", test "a command answers the same through the fast path as through the full runner", test "help and an unknown command fall back to the full catalog"
+- `src/cli/runner/helpers/commandIndex.ts`: added interface CommandIndexEntry, const COMMAND_INDEX
+- `src/cli/runner/helpers/platforms.ts`: changed function resolvePlatformForm
+- `src/cli/runner/index.ts`: added export from "./client.ts" · changed function runCli · removed const ALIASES, function createContext, function takeProxyMs, const defaultSendInspect, function dispatch
+- `src/scaffold/platform/client.ts`: changed const FILES, function planNewPlatform
+- `src/scaffold/platform/platform.test.ts`: changed function copyOfRepo, test "the plan wires every registration through the syntax tree and writes the platform's files"
+- `src/twenty/graphql/generated/index.ts`: added const linked · changed const typeMap, const createClient, const generateQueryOp, const generateMutationOp
+- `src/twenty/graphql/generated/types.json`: new file
+- `src/twenty/graphql/generated/types.ts`: file deleted
+
+What changed: `bin/log.ts` now runs commands through `runFast` (`src/cli/runner/client.ts`). It looks the command up in `src/cli/runner/helpers/commandIndex.ts` and imports only that command's module, instead of loading all 60 commands and their libraries. Help, an unknown command and anything the index can't load fall back to the full `runCli`. The context, proxy flag and dispatch moved out of `runner/index.ts` into `client.ts`, which imports no command. `index.ts` keeps `COMMANDS` and `runCli` for the MCP server, docs and tests. `resolvePlatformForm` is generic over anything with a name and a platform. `bun run docs:build` writes the index from `COMMANDS`, and `check:docs` refuses one that drifts or a command no `src/cli/<dir>/index.ts` exports. `log new platform` now edits `createContext` in `client.ts` and adds its session command to `COMMAND_INDEX`. The Twenty client's 3.6 MB type map is now `types.json`, linked on the first query instead of at import. The generator writes it that way (`scripts/twenty/lightenTwentyClient.mjs`, applied by `emitTwentyClient.mjs`), and the committed client was converted with the same step.
+Why: matt: Bun loading every command at start-up should be cut, looked up with the parallel skill. Parallel had no credit, so the skill fell back to web search. It pointed to loading commands only when run (OpenCode PR 27800, Gunshi's lazy commands); Bun's compiled bytecode is tied to the Bun version that built it, so it wasn't used. Timed: the runner import cost ~770 ms, of which the Twenty type map was 132 ms to load and 105 ms to link.
+Checked: a command now starts in ~310 ms instead of ~765 ms (five runs each, `twitter dms --limit 0`). Live on matthewsoldit, six reads with nothing new: p50 3.9 s, max 6.0 s (was p50 4.6 s). `types.json` deep-equals the committed `types.ts`. The generator's `--check` against live Twenty reports `schema.ts` and `types.json` stale: Twenty's schema changed after the 28 Oct generation, and `schema.ts` isn't touched here. Every `COMMAND_INDEX` entry loads the same command object as `COMMANDS`, and five argv shapes answer identically on both paths. `bun run check`: 1175 pass, every check green.
+
+## 2026-10-30 04:34Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/twenty/graphql/generated/schema.ts`: added interface BookedMeeting, interface BookedMeetingEdge, interface BookedMeetingConnection, interface BookedMeetingGroupByConnection, type BugReportsReviewStatusEnum, type BugReportsSourceStatusEnum, type BugReportsPriorityEnum, interface BugReports, interface BugReportsEdge, interface BugReportsConnection, interface BugReportsGroupByConnection, type BusinessPaymentDirectionEnum, type BusinessPaymentSourceAccountEnum, type BusinessPaymentCategoryEnum, type BusinessPaymentStatusEnum, interface BusinessPayment, interface BusinessPaymentEdge, interface BusinessPaymentConnection, interface BusinessPaymentGroupByConnection, type CmsContentContentTypeEnum, type CmsContentStatusEnum, interface CmsContent, interface CmsContentEdge, interface CmsContentConnection, interface CmsContentGroupByConnection, type DevToolLabelEnum, interface DevTool, interface DevToolEdge, interface DevToolConnection, interface DevToolGroupByConnection, interface DialerAudioSession, interface DialerAudioSessionEdge, interface DialerAudioSessionConnection, interface DialerAudioSessionGroupByConnection, type GithubIssueStateEnum, interface GithubIssue, interface GithubIssueEdge, interface GithubIssueConnection, interface GithubIssueGroupByConnection, type GithubPrsStateEnum, type GithubPrsPrTypeEnum, interface GithubPrs, interface GithubPrsEdge, interface GithubPrsConnection, interface GithubPrsGroupByConnection, interface BookedMeetingGenqlSelection, interface BookedMeetingEdgeGenqlSelection, interface BookedMeetingConnectionGenqlSelection, interface BookedMeetingGroupByConnectionGenqlSelection, interface BookedMeetingRelationInput, interface BookedMeetingConnectInput, interface BookedMeetingWhereUniqueInput, interface BookedMeetingCreateInput, interface BookedMeetingUpdateInput, interface BookedMeetingFilterInput, interface BookedMeetingOrderByInput, interface BookedMeetingOrderByWithGroupByInput, interface BookedMeetingOrderByWithGroupByAggregateInput, interface BookedMeetingGroupByInput, interface BugReportsGenqlSelection, interface BugReportsEdgeGenqlSelection, interface BugReportsConnectionGenqlSelection, interface BugReportsGroupByConnectionGenqlSelection, interface BugReportsRelationInput, interface BugReportsConnectInput, interface BugReportsWhereUniqueInput, interface BugReportsCreateInput, interface BugReportsUpdateInput, interface BugReportsFilterInput, interface BugReportsReviewStatusEnumFilter, interface BugReportsSourceStatusEnumFilter, interface BugReportsPriorityEnumFilter, interface BugReportsOrderByInput, interface BugReportsOrderByWithGroupByInput, interface BugReportsOrderByWithGroupByAggregateInput, interface BugReportsGroupByInput, interface BusinessPaymentGenqlSelection, interface BusinessPaymentEdgeGenqlSelection, interface BusinessPaymentConnectionGenqlSelection, interface BusinessPaymentGroupByConnectionGenqlSelection, interface BusinessPaymentRelationInput, interface BusinessPaymentConnectInput, interface BusinessPaymentWhereUniqueInput, interface BusinessPaymentCreateInput, interface BusinessPaymentUpdateInput, interface BusinessPaymentFilterInput, interface BusinessPaymentDirectionEnumFilter, interface BusinessPaymentSourceAccountEnumFilter, interface BusinessPaymentCategoryEnumFilter, interface BusinessPaymentStatusEnumFilter, interface BusinessPaymentOrderByInput, interface BusinessPaymentOrderByWithGroupByInput, interface BusinessPaymentOrderByWithGroupByAggregateInput, interface BusinessPaymentGroupByInput, interface CmsContentGenqlSelection, interface CmsContentEdgeGenqlSelection, interface CmsContentConnectionGenqlSelection, interface CmsContentGroupByConnectionGenqlSelection, interface CmsContentRelationInput, interface CmsContentConnectInput, interface CmsContentWhereUniqueInput, interface CmsContentCreateInput, interface CmsContentUpdateInput, interface CmsContentFilterInput, interface CmsContentContentTypeEnumFilter, interface CmsContentStatusEnumFilter, interface CmsContentOrderByInput, interface CmsContentOrderByWithGroupByInput, interface CmsContentOrderByWithGroupByAggregateInput, interface CmsContentGroupByInput, interface DevToolGenqlSelection, interface DevToolEdgeGenqlSelection, interface DevToolConnectionGenqlSelection, interface DevToolGroupByConnectionGenqlSelection, interface DevToolRelationInput, interface DevToolConnectInput, interface DevToolWhereUniqueInput, interface DevToolCreateInput, interface DevToolUpdateInput, interface DevToolFilterInput, interface DevToolLabelEnumFilter, interface DevToolOrderByInput, interface DevToolOrderByWithGroupByInput, interface DevToolOrderByWithGroupByAggregateInput, interface DevToolGroupByInput, interface DialerAudioSessionGenqlSelection, interface DialerAudioSessionEdgeGenqlSelection, interface DialerAudioSessionConnectionGenqlSelection, interface DialerAudioSessionGroupByConnectionGenqlSelection, interface DialerAudioSessionRelationInput, interface DialerAudioSessionConnectInput, interface DialerAudioSessionWhereUniqueInput, interface DialerAudioSessionCreateInput, interface DialerAudioSessionUpdateInput, interface DialerAudioSessionFilterInput, interface DialerAudioSessionOrderByInput, interface DialerAudioSessionOrderByWithGroupByInput, interface DialerAudioSessionOrderByWithGroupByAggregateInput, interface DialerAudioSessionGroupByInput, interface GithubIssueGenqlSelection, interface GithubIssueEdgeGenqlSelection, interface GithubIssueConnectionGenqlSelection, interface GithubIssueGroupByConnectionGenqlSelection, interface GithubIssueRelationInput, interface GithubIssueConnectInput, interface GithubIssueWhereUniqueInput, interface GithubIssueCreateInput, interface GithubIssueUpdateInput, interface GithubIssueFilterInput, interface GithubIssueStateEnumFilter, interface GithubIssueOrderByInput, interface GithubIssueOrderByWithGroupByInput, interface GithubIssueOrderByWithGroupByAggregateInput, interface GithubIssueGroupByInput, interface GithubPrsGenqlSelection, interface GithubPrsEdgeGenqlSelection, interface GithubPrsConnectionGenqlSelection, interface GithubPrsGroupByConnectionGenqlSelection, interface GithubPrsRelationInput, interface GithubPrsConnectInput, interface GithubPrsWhereUniqueInput, interface GithubPrsCreateInput, interface GithubPrsUpdateInput, interface GithubPrsFilterInput, interface GithubPrsStateEnumFilter, interface GithubPrsPrTypeEnumFilter, interface GithubPrsOrderByInput, interface GithubPrsOrderByWithGroupByInput, interface GithubPrsOrderByWithGroupByAggregateInput, interface GithubPrsGroupByInput, const BookedMeeting_possibleTypes, const isBookedMeeting, const BookedMeetingEdge_possibleTypes, const isBookedMeetingEdge, const BookedMeetingConnection_possibleTypes, const isBookedMeetingConnection, const BookedMeetingGroupByConnection_possibleTypes, const isBookedMeetingGroupByConnection, const BugReports_possibleTypes, const isBugReports, const BugReportsEdge_possibleTypes, const isBugReportsEdge, const BugReportsConnection_possibleTypes, const isBugReportsConnection, const BugReportsGroupByConnection_possibleTypes, const isBugReportsGroupByConnection, const BusinessPayment_possibleTypes, const isBusinessPayment, const BusinessPaymentEdge_possibleTypes, const isBusinessPaymentEdge, const BusinessPaymentConnection_possibleTypes, const isBusinessPaymentConnection, const BusinessPaymentGroupByConnection_possibleTypes, const isBusinessPaymentGroupByConnection, const CmsContent_possibleTypes, const isCmsContent, const CmsContentEdge_possibleTypes, const isCmsContentEdge, const CmsContentConnection_possibleTypes, const isCmsContentConnection, const CmsContentGroupByConnection_possibleTypes, const isCmsContentGroupByConnection, const DevTool_possibleTypes, const isDevTool, const DevToolEdge_possibleTypes, const isDevToolEdge, const DevToolConnection_possibleTypes, const isDevToolConnection, const DevToolGroupByConnection_possibleTypes, const isDevToolGroupByConnection, const DialerAudioSession_possibleTypes, const isDialerAudioSession, const DialerAudioSessionEdge_possibleTypes, const isDialerAudioSessionEdge, const DialerAudioSessionConnection_possibleTypes, const isDialerAudioSessionConnection, const DialerAudioSessionGroupByConnection_possibleTypes, const isDialerAudioSessionGroupByConnection, const GithubIssue_possibleTypes, const isGithubIssue, const GithubIssueEdge_possibleTypes, const isGithubIssueEdge, const GithubIssueConnection_possibleTypes, const isGithubIssueConnection, const GithubIssueGroupByConnection_possibleTypes, const isGithubIssueGroupByConnection, const GithubPrs_possibleTypes, const isGithubPrs, const GithubPrsEdge_possibleTypes, const isGithubPrsEdge, const GithubPrsConnection_possibleTypes, const isGithubPrsConnection, const GithubPrsGroupByConnection_possibleTypes, const isGithubPrsGroupByConnection, const enumBugReportsReviewStatusEnum, const enumBugReportsSourceStatusEnum, const enumBugReportsPriorityEnum, const enumBusinessPaymentDirectionEnum, const enumBusinessPaymentSourceAccountEnum, const enumBusinessPaymentCategoryEnum, const enumBusinessPaymentStatusEnum, const enumCmsContentContentTypeEnum, const enumCmsContentStatusEnum, const enumDevToolLabelEnum, const enumGithubIssueStateEnum, const enumGithubPrsStateEnum, const enumGithubPrsPrTypeEnum · changed interface AgentChatThreadTarget, interface AgentChatThreadTargetConnection, interface AgentChatThreadTargetGroupByConnection, interface Attachment, interface AttachmentConnection, interface AttachmentGroupByConnection, interface NoteTarget, interface NoteTargetConnection, interface NoteTargetGroupByConnection, interface TaskTarget, interface TaskTargetConnection, interface TaskTargetGroupByConnection, interface TimelineActivity, interface TimelineActivityConnection, interface TimelineActivityGroupByConnection, interface Query, interface Mutation, interface AgentChatThreadTargetGenqlSelection, interface AgentChatThreadTargetConnectionGenqlSelection, interface AgentChatThreadTargetGroupByConnectionGenqlSelection, interface AgentChatThreadTargetCreateInput, interface AgentChatThreadTargetUpdateInput, interface AgentChatThreadTargetFilterInput, interface AgentChatThreadTargetOrderByInput, interface AgentChatThreadTargetOrderByWithGroupByInput, interface AgentChatThreadTargetOrderByWithGroupByAggregateInput, interface AgentChatThreadTargetGroupByInput, interface AttachmentGenqlSelection, interface AttachmentConnectionGenqlSelection, interface AttachmentGroupByConnectionGenqlSelection, interface AttachmentCreateInput, interface AttachmentUpdateInput, interface AttachmentFilterInput, interface AttachmentOrderByInput, interface AttachmentOrderByWithGroupByInput, interface AttachmentOrderByWithGroupByAggregateInput, interface AttachmentGroupByInput, interface NoteTargetGenqlSelection, interface NoteTargetConnectionGenqlSelection, interface NoteTargetGroupByConnectionGenqlSelection, interface NoteTargetCreateInput, interface NoteTargetUpdateInput, interface NoteTargetFilterInput, interface NoteTargetOrderByInput, interface NoteTargetOrderByWithGroupByInput, interface NoteTargetOrderByWithGroupByAggregateInput, interface NoteTargetGroupByInput, interface TaskTargetGenqlSelection, interface TaskTargetConnectionGenqlSelection, interface TaskTargetGroupByConnectionGenqlSelection, interface TaskTargetCreateInput, interface TaskTargetUpdateInput, interface TaskTargetFilterInput, interface TaskTargetOrderByInput, interface TaskTargetOrderByWithGroupByInput, interface TaskTargetOrderByWithGroupByAggregateInput, interface TaskTargetGroupByInput, interface TimelineActivityGenqlSelection, interface TimelineActivityConnectionGenqlSelection, interface TimelineActivityGroupByConnectionGenqlSelection, interface TimelineActivityCreateInput, interface TimelineActivityUpdateInput, interface TimelineActivityFilterInput, interface TimelineActivityOrderByInput, interface TimelineActivityOrderByWithGroupByInput, interface TimelineActivityOrderByWithGroupByAggregateInput, interface TimelineActivityGroupByInput, interface QueryGenqlSelection, interface MutationGenqlSelection
+- `src/twenty/graphql/generated/types.json`: edited
+
+What changed: the generated Twenty client is regenerated from the live ListeningKit/log-cli Twenty schema (`bun run twenty:client`): `schema.ts` gains the objects and fields added in Twenty since 28 Oct (bookedMeetings, bugReports, businessPayments and others), and `types.json` gains their type map. Nothing hand-written changed.
+Why: matt asked to regenerate it after `twenty:client:check` found the committed client stale against the live schema.
+Checked: `node scripts/twenty/emitTwentyClient.mjs --check` against live Twenty: up to date (12 files). `bun run check`: 1178 pass, every check green.
+
+## 2026-10-30 04:35Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/guides/accountsAndProxies.md`: new file
+- `docs/guides/discord.md`: new file
+- `docs/guides/facebookBrowser.md`: new file
+- `docs/guides/facebookFlows.md`: new file
+- `docs/guides/facebookGroups.md`: new file
+- `docs/guides/facebookMarketplace.md`: new file
+- `docs/guides/knowledgeAndSearch.md`: new file
+- `docs/guides/logMcpInstructions.md`: new file
+- `docs/guides/newPlatform.md`: new file
+- `docs/guides/reddit.md`: new file
+- `docs/guides/runsAndEvidence.md`: new file
+- `docs/guides/xAccount.md`: new file
+- `docs/guides/xInbox.md`: new file
+- `docs/guides/xSending.md`: new file
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/discord/index.ts`: changed const DISCORD_SESSION_USAGE, function render, const discordSessionCommand, const DISCORD_CHATS_USAGE, const discordChatsCommand, const DISCORD_READ_USAGE, const DISCORD_WATCH_USAGE, const DISCORD_SEND_USAGE, const discordSendCommand
+- `src/cli/reddit/index.ts`: changed const REDDIT_SESSION_USAGE, function render, const redditSessionCommand
+- `src/cli/search/index.ts`: changed const SEARCH_USAGE, const SEARCH_INPUT
+- `src/cli/twitter/helpers/chat.ts`: changed const CHAT_USAGE
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const cookiesCommand
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function render, const dmsCommand
+- `src/cli/twitter/helpers/followers.ts`: changed const FOLLOWERS_USAGE, function render, const followersCommand
+- `src/cli/twitter/helpers/follows.ts`: changed const FOLLOWS_USAGE, function render, const followsCommand
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE
+- `src/cli/twitter/helpers/send.ts`: changed function usageOf, function sendCommand
+- `src/cli/twitter/index.ts`: changed const SESSION_USAGE, function render, const sessionCommand
+- `src/directApi/engine/client.ts`: changed function engineContext
+- `src/directApi/engine/engine.test.ts`: added test "no MCP description carries the engine line: the library behind a call gives the agent nothing to act on" · changed test "session state and governor use per account, a pause said loudly" · removed test "readGroup's MCP description carries the engine line, and readGroupLive doesn't"
+- `src/mcp/server/agentRules.test.ts`: added test "like Paper's MCP: short instructions that say to load the core guide first, never cut by the client", test "every tool names its guide just before its rules, and getGuide serves that guide from docs/guides", test "no tool description carries the engine's internals: they give the agent nothing to act on" · changed test "every tool's description ends with its rules and points back to AGENTS.md"
+- `src/mcp/server/helpers/agentRules.ts`: added const CORE_PRINCIPLES · changed const SERVER_INSTRUCTIONS
+- `src/mcp/server/helpers/guides.ts`: added const GUIDES_DIR, const SKILLS_DIR, const CORE_GUIDE, const GUIDE_TOOL, interface GuideTopic, const GUIDE_TOPICS, const guideKey, function guideOfCommand, const FLOWS_GUIDE, function guideLine, function guidePath, function readGuide, function guideTool, function agentsRules, function agentsSection, function skillBody, const shift, interface GuideInput, function renderGuide
+- `src/mcp/server/helpers/index.ts`: added export from "./guides.ts" · changed export from "./agentRules.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added function guideLines, function usageHeads · changed interface ToolOptions, function typedTool, function argsTool · removed function engineLines
+- `src/mcp/server/helpers/toolsFromFlows.ts`: changed function flowTool
+- `src/mcp/server/index.ts`: changed function runToolCall, function createLogMcpServer
+- `src/mcp/server/remote.test.ts`: changed test "every tool declares the same outputSchema, and listChanged is on"
+
+What changed: the log MCP now primes the agent the way Paper's MCP does. Its instructions are short (1,567 characters, was 13,278, so the client no longer cuts them off): what log is, "You MUST load the full guide before other log tools: getGuide({ topic: "logMcpInstructions" })", and seven one-line hard rules. A new `getGuide` tool, listed first, serves `docs/guides/<topic>.md`, and its topic list names each guide. There are 14 guides (`GUIDE_TOPICS`, `src/mcp/server/helpers/guides.ts`), one per kind of work (facebookBrowser, facebookFlows, facebookMarketplace, facebookGroups, xInbox, xSending, xAccount, discord, reddit, accountsAndProxies, runsAndEvidence, knowledgeAndSearch, newPlatform), plus the core logMcpInstructions. The core guide carries rule one, all 25 core principles in full, which guide covers which work, and how runs report back. `bun run docs:build` writes every guide from the code: the work step by step (each topic's skills), every tool it covers with its full description and usage (`toolsFromCommands({ full: true })`), and every AGENTS.md rule those tools cite, in full. `check:docs` refuses a stale guide and a tool with no guide. Each tool's description is now short: what it does, its `log …` usage line, its notes, "Before first using this tool in a session, load its guide: getGuide({ topic: … })", then its rules. The full usage moved into the guide. The engine paragraph naming the library behind a call (twikit, fbk, endcord, rdvwr) is gone from descriptions and guides, the usage text no longer names those libraries, and the hook's every-prompt "log-cli engines" block is now just each account's session and today's use.
+Why: matt: Paper's way of writing tool definitions and priming the context is the right one. Short instructions that say to load the guide first, and use-case guides in a directory that each tool points to. log's 145 tools should match it. And the libraries behind the engine (twikit and the like) give the agent no context, so they come out.
+Checked: measured from the code. Instructions 13,278 → 1,567 chars. Tool descriptions 168K → 154K chars across 146 tools, avg ~1,050, the biggest 3K. The input schemas (97K) are unchanged, and the 282K of identical outputSchema is MCP metadata, not sent to the model as tool definitions. 14 guides, 4,799 lines. Library names in the guides went from 46 to 12, the 12 being matt's own rules 80, 81 and 88 quoted in full. New tests: instructions under 2,000 chars with the MUST line, getGuide listed first, every tool naming an existing guide on its second-to-last line, getGuide serving the core guide and refusing an unknown topic, and no description carrying the engine line. `bun run check`: 1178 pass, every check green. The running log MCP server serves the old tool list until it is restarted (reconnect it with /mcp).
+
+## 2026-10-30 04:49Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/mcp/server/agentRules.test.ts`: added test "every tool declares Claude Code's result limit (anthropic/maxResultSizeChars), and every guide fits under it, so a guide or a big result arrives whole instead of as a file path"
+- `src/mcp/server/index.ts`: changed export from "./types.ts", function createLogMcpServer
+- `src/mcp/server/types.ts`: added const MAX_RESULT_CHARS, const RESULT_SIZE_META
+
+What changed: every tool the log MCP server lists, `getGuide` included, now carries `_meta: { "anthropic/maxResultSizeChars": 200000 }` (`RESULT_SIZE_META`, `src/mcp/server/types.ts`). This is Claude Code's documented way for a server to raise one tool's result limit. Without it, Claude Code saves any text result over 50,000 characters (or 25,000 tokens) to a file and gives the agent only the path. With it, results up to 200,000 characters arrive whole. The hard ceiling is 500,000.
+Why: after the restart, matt had the agent call `getGuide({ topic: "logMcpInstructions" })` through the MCP only. The 72,209-character guide came back as "exceeds maximum allowed tokens … saved to <file>", so the agent never got the context the guides exist for. matt: don't hand-roll a fix, look it up in Claude Code's documentation. code.claude.com/docs/en/mcp, "MCP output limits and warnings" and "Raise the limit for a specific tool", fetched through TinyFish on 2026-10-30. The Reddit thread matt sent is about a different limit, `CLAUDE_CODE_MAX_OUTPUT_TOKENS`, the 32,000-token cap on Claude's own reply.
+Checked: a new test lists the tools over MCP and finds the limit on every one, 200,000 under the 500,000 ceiling. Every guide fits under it: the biggest, facebookFlows, is about 93K. MCP tests: 63 pass, tsc clean. The running log server needs reconnecting (/mcp) before it serves the new list.
+
+## 2026-10-30 04:59Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed function evidenceFor
+
+What changed: `log voice --with <chat>` also takes the other person's numeric X user id. A 15-22 digit value is matched to the X Chat conversation that ends with `:<id>` before the usual name match (`evidenceFor`).
+Why: matt: commit the voice work. The drafting flow knows people by user id (from `twitterDms`), and the name match couldn't find their chat from it.
+Checked: the change was already in the working tree, uncommitted, from an earlier session. tsc clean and `bun run check` green in this session's runs, with the change in the tree.
+
+## 2026-10-30 05:09Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/accountsAndProxies.md`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/facebookFlows.md`: edited
+- `docs/guides/facebookGroups.md`: edited
+- `docs/guides/facebookMarketplace.md`: edited
+- `docs/guides/knowledgeAndSearch.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/followUps.md`: new file
+- `docs/useCases/twitter/whoNeedsYou.md`: new file
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/checks/checkUseCases.ts`: added const root, const say, const git, const session, const digest, const useCases, const ids, const staged, const added, const newPageStaged, const key, const cachePath, const answers, const review
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/mcp/server/helpers/guides.ts`: added const USE_CASES_DIR, interface UseCase, function listUseCases, function readUseCase, function useCaseLine, function withUseCases · changed function guideTool
+- `src/mcp/server/helpers/index.ts`: changed export from "./guides.ts"
+- `src/mcp/server/index.ts`: changed function runToolCall, function createLogMcpServer
+- `src/useCases/review/client.ts`: added function projectSessionsDir, function latestSession, const plain, const isOwnerText, const short, function toolLine, function sessionDigest, function reviewQuestions, function readReview, function reviewLines
+- `src/useCases/review/index.ts`: added export from "./client.ts", export from "./types.ts"
+- `src/useCases/review/review.test.ts`: added const line, test "the digest keeps the owner's asks and the tools called, and drops reminders, tool results and notifications", test "a long session keeps its latest part", test "one choice question per page, and one for work no page covers", test "a stale page blocks the commit unless it is updated in it, and uncovered work blocks unless a new page is added"
+- `src/useCases/review/types.ts`: added const REVIEW_MODEL, const REVIEW_BLOCK_AT, const DIGEST_MAX_CHARS, type PageVerdict, const PAGE_CRITERIA, interface SessionDigest, interface PageReview, interface UseCaseReview
+
+What changed: use cases now fill the log tools' context the way Paper's guides do. `getGuide` takes `useCase` as well as `topic`, and serves `docs/useCases/<platform>/<page>.md`. Its description and the core guide list every use case with how matt asks for it, and say to follow the page step by step, never improvise. Every tool's description gains "Use cases that call it: getGuide({ useCase: … })" for each page whose steps name it (`listUseCases`, `withUseCases`). Each topic guide lists the use cases its tools are part of, and the docs build refuses a page that names no tool. Two new use cases, written from what matt asked for in this session: `twitter/whoNeedsYou` (find who needs something from you or who matters, with what each conversation is about and how close it is to money; sends nothing) and `twitter/followUps` (follow up in your own voice: read the person, `voice` for how matt writes to them, a draft per person, the voice gate, matt's yes, then one message per line). `twitter/dmInbox` now says the inbox is synced and that who wrote last is in context at session start. A new pre-commit check, `useCases` (`bun run check:useCases`, `scripts/checks/checkUseCases.ts`, `src/useCases/review`), reads this Claude Code session's transcript (matt's asks, mid-turn ones included, and every tool called) and asks SubQ (`subq-snap-1.1`), for every page, whether it's current, stale (update) or belongs elsewhere (move), and whether the session did repeatable work no page covers. A stale page that isn't staged, or uncovered work with no new page staged, stops the commit with what to do. SubQ is asked again only when matt's asks or the pages change (`.git/useCaseReview.json`). An unreachable SubQ is said and lets the commit through. AGENTS.md gains rule 95, and the MCP's core principles gain 26 (`RULES_REVIEWED_THROUGH` 95). The naming check allows `queue-operation`, a value from Claude Code's transcript.
+Why: matt: the tool definitions are verbose so the context teaches the agent how he works. The repeatable work he asks for goes in the use cases folder as workflows (call this tool, then this one), the guides pull them, and a pre-commit check runs SubQ over the whole session against the use cases to say whether one is stale, should change, or should move.
+Checked: run on this session through SubQ, before `dmInbox` was updated: all 11 pages current, `dmInbox` lowest at 61%, uncovered work 10%. After the update: `dmInbox` 90%, `whoNeedsYou` 94%, `followUps` 93%, uncovered 6%, nothing blocking. New tests cover the transcript digest (asks and tools kept, reminders, tool results and notifications dropped, a long session keeps its latest part), the questions, and the blocking rules. `bun run check`: 1183 pass, every check green.
+
+## 2026-10-30 05:48Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/twitterApi/engine.py`: added def stored_xchat · changed def xchat_conversation
+- `scripts/tests/preload.ts`: added const envLocal
+- `src/twitter/account/session/inboxSync.test.ts`: added test "one person's chat shows every message the store holds, even when X answers with only the newest" · changed const SCRIPT
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: `log twitter dms --with <handle>` (and `twitterDms` with `with`) now shows every X Chat message the account's local inbox store holds for that chat, merged by event id with what X answers, oldest first. Before, it showed only what X's `GetInboxPageConversationDataQuery` answered, which is the chat's newest few events, because the older-page read is skipped when the latest events carry no key version. The skip now names which was missing (sequence id or key version) and how many events it looked at. The test preload takes `LOG_PYTHON` from `.env.local` when it isn't set, since `bun test` doesn't load `.env.local` and the bare `python` has no twikit packages, which had been failing the inbox sync tests.
+Why: replying to @shaw_gtm, `--with shaw_gtm` showed only his last line ("Read only access should be fine") and hid the 9 messages before it that answered matt's pricing question. Only a search found them. matt: fix it.
+Checked: new test, X answering with only the newest message while the store holds three: all four come back in order, with handles. Inbox sync tests 6 pass (0 before, the Python import failing). Live on @shaw_gtm: 15 messages, his whole answer, where it was 2.
+
+## 2026-10-30 06:05Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/x/xchat/README.md`: edited
+- `python/twitterApi/engine.py`: added def is_xchat_id, const REOPEN_PER_SYNC, const REOPEN_AGAIN_MS, def reopen_unopened, def inboxSync_shown, def keep_opened, def stored_handles · changed def synced_inbox, def xchat_conversation, def act
+- `python/twitterApi/inboxSync.py`: added def shown · changed def add_messages, def seed_xchat, def merge_xchat, def xchat_threads, def push_message, def opened_of
+- `src/cli/twitter/helpers/dms.ts`: changed function syncLine, function keepForSearch
+- `src/twitter/account/session/inboxSync.test.ts`: added test "a read marker is never the last message: the thread still shows what was said, and a group id reads as X Chat" · changed const SCRIPT, test "one person's chat shows every message the store holds, even when X answers with only the newest"
+- `src/twitter/account/session/types.ts`: changed interface TwitterInboxSync
+- `vendor/twikit/tests/test_xchat.py`: added def decrypted, def test_message_of_reads_every_content_type, def test_missing_keys_are_read_from_chat_xdks_own_error, class FakeChat, def test_decrypt_fetches_the_missing_key_changes_and_opens_again, def test_get_xchat_conversation_reopens_held_messages_x_left_out
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/xchat.py`: added const EVENT_KINDS, def event_kind_of, def is_marker, def attachment_text · changed def message_of
+
+What changed: X Chat messages that showed as "(could not decrypt)" open. Four causes, each read from chat-xdk's own answer. (1) A catch-up read brought messages without the key changes that open them: chat-xdk's error names the version needed, and `_xchat_decrypt` now asks `GetConversationPageQuery` for that conversation's `missing_conversation_key_change_events`, as X's app does, and decrypts again (`_xchat_missing_keys`, `_xchat_fetch_key_changes`). (2) chat-xdk drops a key change whose signer's signature it can't verify (`enforce_ckey_signatures`), and in a group the signer isn't always a current participant: every event's sender is now in the public-key lookup. (3) Reactions, edits, photos, shared posts and read markers decrypted fine but only `content.text` was read: `message_of` reads chat-xdk's `content_type` (`(reacted 🔥)`, `(edited) …`, `(image: name.jpg)`, the post's URL) and read markers are hidden everywhere (`is_marker`, `inboxSync.shown`), never counted as a chat's last message. (4) `--conversation g…` went to the old DM path: `is_xchat_id`. Messages held from before are opened again when their chat is read (`reopen`, up to 5) and by each inbox sync (`reopen_unopened`, 3 conversations a sync, once a day each), and the sync line says how many. The older-page read takes the key version from chat-xdk when the Thrift doesn't give it (`_xchat_versions`), and `--with` writes what it opened back into the store. Written up in `docs/platforms/x/xchat/README.md`.
+Why: matt: the "could not decrypt" messages (Shaw's first line, Jash's latest, RVA's replies, the group chat) can't be an issue, since we go through X's own client: find the cause and fix it.
+Checked: live on matthewsoldit, each read once: RVA 25 of 25 open (his three replies this morning, both photos, two reactions), Jash 7 of 7 (his 'could not decrypt' was an edit), the group 141 of 142 (the one left is from 12 July, under a key older than the oldest page X answers), Shaw's 21:30:01 now opens. twikit X Chat tests 12 pass (4 new: every content type, the missing key read from the error, the key changes fetched then opened again with the signers' keys, a held message reopened). Inbox sync tests 7 pass (new: a read marker is never the last message, group ids route to X Chat).
+
+## 2026-10-30 06:13Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: new file
+- `python/twitterApi/engine.py`: changed const WRITES, def reopen_unopened, def send, def refusal_of
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/send.ts`: added const followCommand · changed const SHAPES, function renderSent
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, const TWITTER_WRITES, interface TwitterSessionAnswer
+- `src/twitter/post/send/client.ts`: added const BY_USER · changed function targetOf, function planSend
+- `src/twitter/post/send/types.ts`: changed type SendAction
+
+What changed: `log twitter follow --account <a> --userId <id> [--approvedBy <who>] [--live]` (MCP `twitterFollow`, `twitterFollowLive`) follows one person on the direct-API engine, a dry run unless `--live`, counted by the governor as a write like a like or a dm. X's answer decides: the followed user back is sent; already following is sent too, with nothing called. A new use case, `twitter/networkMaxing`: everyone who messaged the owner gets something nice back that asks for nothing, and new people get followed first, then a like on the tweet the message is about, then the message. The X Chat sync now counts a reopened read marker as opened, so its line says what it fixed, and the entry for 76f7327 says RVA 25 of 25 (it said 20 of 20, from a read capped at 20).
+Why: matt: 'all them people messaging me, just message them something nice, get the ball moving with the networking... we're not even trying to get anything out of these people', 'if you're going to do cold outbound make sure part of the playbook is that you follow them', 'if we're going to send a tweet to someone at least leave a like on the tweet', 'we need to outline this as a play'. log could like and dm but not follow. The pre-commit use case review flagged the play as repeatable work no page covered (80%).
+Checked: `bun run check`: 1185 pass, every gate green (docs, guides, rules, naming, typecheck). The follow command plans by user id like a dm and refuses a non-numeric id. The inbox sync live: '1 older message opened that couldn't be before'.
+
+## 2026-10-30 06:27Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/voice.ts`: changed const voiceCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/inbox/watch/client.ts`: added function watcherGone · changed function ensureLiveWatchers
+- `src/inbox/watch/watch.test.ts`: added test "is not started again once its own log ends on accountNotFound"
+
+What changed: `log voice --with <handle>` for someone matt has never chatted with no longer refuses with `chatNotFound`: it says there's no saved chat yet and gates the draft on matt's writing guide alone, the way it does without `--with`. With no `--text` it still refuses, since there's nothing of his to show. `chatNotFound`'s meaning names every platform, not only Discord. The inbox hook no longer starts a watcher again for an account whose own watch log ends on `accountNotFound` (`watcherGone`): the Discord account disabled on 29 Oct is gone from Twenty, and the hook had started a dead watcher for it on every prompt, 821 times. `accountNotFound`'s action no longer points every platform at `log facebook accounts`.
+Why: matt's networking run: gating drafts for new people from his niche map failed with `chatNotFound` from the Discord account, and the Discord check he asked for found the watcher restarting for an account Twenty no longer has.
+Checked: inbox watch tests 7 pass (new: a gone account's watcher isn't started, a live one is). Typecheck clean. Gating new people without a chat passed for 15 drafts live.
+
+## 2026-10-30 07:08Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `python/errors/errorCatalog.json`: edited
+
+What changed: `docs/errorCatalog.md` and `python/errors/errorCatalog.json` are regenerated from the catalog (`bun run errors:export`) after ce676d2 changed `chatNotFound` and `accountNotFound`. `docs/useCases/twitter/dmInbox.md` now says how X Chat shows reactions, edits, photos and links, that read markers are hidden and messages that couldn't be opened are reopened, that group chats are read by their `g…` id, to check who really wrote last before answering, and that X's own daily limit (code 344, about 40 writes on matthewsoldit) stops a run whatever the governor says.
+Why: the pre-push test refused a catalog export older than the catalog, and the pre-commit use case review found `twitter/dmInbox` stale (77%) against this session's inbox work.
+Checked: `bun run errors:export` and the errors test; the use case review again.
 ## 2026-10-29 02:05Z · fix/xCookiesTwid
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):

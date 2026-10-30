@@ -145,13 +145,30 @@ export function runTwitterEngineLive(account: TwitterAccount, request: TwitterEn
   })
 }
 
+export const SESSION_REWRITE_MS = 60 * 60 * 1000
+
+function sameCookies(a: unknown, b: unknown): boolean {
+  const left = twitterCookies(a)
+  const right = twitterCookies(b)
+  const names = new Set([...Object.keys(left), ...Object.keys(right)])
+  return [...names].every((name) => left[name] === right[name])
+}
+
 export async function recordTwitterSession(twenty: TwentyClient, account: TwitterAccount, run: TwitterEngineRun, now: Date): Promise<string[]> {
   const state = run.answer.loginState
   if (!state) return []
   const update: Record<string, unknown> = { sessionState: state, sessionCheckedAt: now.toISOString() }
   const cookiesBack = run.answer.ok && state === 'loggedIn' && run.refreshed && Object.keys(run.refreshed).length > 0
-  if (cookiesBack) update.cookies = mergeCookieShape(account.cookies, run.refreshed!)
+  const merged = cookiesBack ? mergeCookieShape(account.cookies, run.refreshed!) : null
+  const cookiesChanged = merged !== null && !sameCookies(merged, account.cookies)
+  if (cookiesChanged) update.cookies = merged
+  const checkedAt = account.sessionCheckedAt ? Date.parse(account.sessionCheckedAt) : NaN
+  const fresh = state === account.sessionState && !cookiesChanged && Number.isFinite(checkedAt) && now.getTime() - checkedAt < SESSION_REWRITE_MS
+  writeLocalSession(account.accountName, state, now, twitterStateRoot(), { accountId: account.id })
+  if (fresh) return []
+  account.sessionState = state
+  account.sessionCheckedAt = now.toISOString()
+  if (cookiesChanged) account.cookies = merged as never
   await twenty.update(SOCIAL_ACCOUNTS, account.id, update as never)
-  writeLocalSession(account.accountName, state, now, twitterStateRoot())
-  return [`Twenty: ${account.accountName} sessionState ${state} (X's own answer)${cookiesBack ? ', its refreshed cookies merged back' : ''}.`]
+  return [`Twenty: ${account.accountName} sessionState ${state} (X's own answer)${cookiesChanged ? ', its refreshed cookies merged back' : ''}.`]
 }

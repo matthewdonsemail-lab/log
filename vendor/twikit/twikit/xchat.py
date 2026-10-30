@@ -83,6 +83,61 @@ def _skip(data: bytes, i: int, ftype: int) -> int:
     raise ValueError(f'unknown thrift type {ftype}')
 
 
+def _struct_at(data: bytes, i: int) -> dict[int, tuple[int, int]]:
+    """Maps each field of the Thrift struct starting at ``i`` to its type and
+    the offset its value starts at."""
+    fields: dict[int, tuple[int, int]] = {}
+    while i < len(data):
+        ftype = data[i]
+        if ftype == 0:
+            break
+        fid = struct.unpack(">h", data[i + 1:i + 3])[0]
+        fields[fid] = (ftype, i + 3)
+        i = _skip(data, i + 3, ftype)
+    return fields
+
+
+def key_version_of(encoded: str) -> str | None:
+    """The conversation key version a message event was encrypted under
+    (``MessageEvent.detail.messageCreateEvent.conversation_key_version``,
+    ``vendor/chatXdk/thrift/event.thrift``), or the version a key-change
+    event sets (``conversationKeyChangeEvent.conversation_key_version``)."""
+    try:
+        data = base64.b64decode(encoded)
+        detail = _struct_at(data, 0).get(7)
+        if not detail or detail[0] != 12:
+            return None
+        union = _struct_at(data, detail[1])
+        for fid, version_field in ((1, 101), (3, 1)):
+            inner = union.get(fid)
+            if inner and inner[0] == 12:
+                found = _struct_at(data, inner[1]).get(version_field)
+                if found and found[0] == 11:
+                    start = found[1]
+                    length = struct.unpack(">i", data[start:start + 4])[0]
+                    return data[start + 4:start + 4 + length].decode("utf-8", "replace")
+    except (ValueError, struct.error, IndexError):
+        return None
+    return None
+
+
+EVENT_KINDS = {1: 'messageCreate', 3: 'conversationKeyChange', 4: 'groupChange', 5: 'messageFailure', 6: 'messageTyping', 7: 'messageDelete', 8: 'conversationDelete', 9: 'conversationMetadataChange', 10: 'grokSearchResponse', 12: 'markConversationRead', 13: 'markConversationUnread', 14: 'memberAccountDelete'}
+
+
+def event_kind_of(encoded: str) -> str | None:
+    """Which ``MessageEventDetail`` a message event carries
+    (``vendor/chatXdk/thrift/event.thrift``)."""
+    try:
+        data = base64.b64decode(encoded)
+        detail = _struct_at(data, 0).get(7)
+        if not detail or detail[0] != 12:
+            return None
+        union = _struct_at(data, detail[1])
+        return next((EVENT_KINDS.get(fid, str(fid)) for fid in union), None)
+    except (ValueError, struct.error, IndexError):
+        return 'unreadable'
+
+
 def frame_of(raw: bytes) -> dict:
     """Reads one chat-ws socket frame, a Thrift binary ``Message`` union.
 
@@ -226,12 +281,52 @@ def message_of(decrypted: dict) -> dict:
     event = decrypted.get('event') or {}
     raw = decrypted.get('original_b64')
     head = decode_event(raw) if raw else {}
-    content = event.get('content') or {}
-    return {
+    content = event.get('content') if isinstance(event.get('content'), dict) else {}
+    kind = content.get('content_type') or ('Text' if 'text' in content else None)
+    out = {
         'event_id': head.get('event_id') or event.get('message_id'),
         'conversation_id': event.get('conversation_id') or head.get('conversation_id'),
         'sender_id': str(event.get('sender_id') or head.get('sender_id') or ''),
         'time_ms': head.get('time_ms'),
         'type': event.get('type'),
-        'text': content.get('text') if isinstance(content, dict) else None,
+        'kind': kind,
+        'text': None,
     }
+    if kind == 'Text':
+        said = content.get('text') or ''
+        shared = [a for a in (attachment_text(x) for x in content.get('attachments') or []) if a and a not in said]
+        out['text'] = ' '.join([said, *shared]).strip()
+    elif kind == 'Edit':
+        out['text'] = f"(edited) {content.get('new_text') or ''}".strip()
+        out['target_message_id'] = str(content.get('target_message_id') or '')
+    elif kind == 'Reaction':
+        out['text'] = f"(reacted {content.get('emoji') or ''})".replace(' )', ')')
+        out['target_message_id'] = str(content.get('target_message_id') or '')
+    return out
+
+
+def is_marker(message: dict) -> bool:
+    """A decrypted event that says nothing: a read or unread marker, a
+    reaction taken back, or a content type chat-xdk doesn't know."""
+    return message.get('text') is None and not message.get('error') and message.get('kind') not in (None, 'Text')
+
+
+def attachment_text(attachment: dict) -> str | None:
+    """A shared post, link, card, media or payment as one line of text."""
+    if not isinstance(attachment, dict):
+        return None
+    post = attachment.get('post') or {}
+    if post:
+        return post.get('post_url') or (f"https://x.com/i/status/{post['rest_id']}" if post.get('rest_id') else '(a post)')
+    url = attachment.get('url') or {}
+    if url:
+        return url.get('url') or url.get('display_title') or '(a link)'
+    media = attachment.get('media') or {}
+    if media:
+        return f"({str(media.get('type') or 'media').lower()}{': ' + media['filename'] if media.get('filename') else ''})"
+    if attachment.get('unified_card'):
+        return '(a card)'
+    money = attachment.get('money') or {}
+    if money:
+        return money.get('fallback_text') or '(a payment)'
+    return None

@@ -802,6 +802,22 @@ export interface AgentChatThreadTarget {
     targetAgencyLeadId?: Scalars['ID']
     /** AgentChatThreadTargets Influencer */
     targetInfluencerId?: Scalars['ID']
+    /** AgentChatThreadTargets Booked Meeting */
+    targetBookedMeetingId?: Scalars['ID']
+    /** AgentChatThreadTargets Bug Reports */
+    targetBugReportsId?: Scalars['ID']
+    /** AgentChatThreadTargets Content */
+    targetCmsContentId?: Scalars['ID']
+    /** AgentChatThreadTargets Github PRs */
+    targetGithubPrsId?: Scalars['ID']
+    /** AgentChatThreadTargets Payment */
+    targetBusinessPaymentId?: Scalars['ID']
+    /** AgentChatThreadTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: Scalars['ID']
+    /** AgentChatThreadTargets Dev Tool */
+    targetDevToolId?: Scalars['ID']
+    /** AgentChatThreadTargets GitHub Issue */
+    targetGithubIssueId?: Scalars['ID']
     /** Thread */
     thread?: AgentChatThread
     /** Record the chat is attached to */
@@ -874,6 +890,22 @@ export interface AgentChatThreadTarget {
     targetAgencyLead?: AgencyLead
     /** AgentChatThreadTargets Influencer */
     targetInfluencer?: Influencer
+    /** AgentChatThreadTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeeting
+    /** AgentChatThreadTargets Bug Reports */
+    targetBugReports?: BugReports
+    /** AgentChatThreadTargets Content */
+    targetCmsContent?: CmsContent
+    /** AgentChatThreadTargets Github PRs */
+    targetGithubPrs?: GithubPrs
+    /** AgentChatThreadTargets Payment */
+    targetBusinessPayment?: BusinessPayment
+    /** AgentChatThreadTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSession
+    /** AgentChatThreadTargets Dev Tool */
+    targetDevTool?: DevTool
+    /** AgentChatThreadTargets GitHub Issue */
+    targetGithubIssue?: GithubIssue
     __typename: 'AgentChatThreadTarget'
 }
 
@@ -1292,6 +1324,86 @@ export interface AgentChatThreadTargetConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: AgentChatThreadTargetEdge[]
     pageInfo: PageInfo
     __typename: 'AgentChatThreadTargetConnection'
@@ -1704,6 +1816,86 @@ export interface AgentChatThreadTargetGroupByConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: AgentChatThreadTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -4542,6 +4734,22 @@ export interface Attachment {
     targetAgencyLeadId?: Scalars['ID']
     /** Attachments Influencer */
     targetInfluencerId?: Scalars['ID']
+    /** Attachments Booked Meeting */
+    targetBookedMeetingId?: Scalars['ID']
+    /** Attachments Bug Reports */
+    targetBugReportsId?: Scalars['ID']
+    /** Attachments Content */
+    targetCmsContentId?: Scalars['ID']
+    /** Attachments Github PRs */
+    targetGithubPrsId?: Scalars['ID']
+    /** Attachments Payment */
+    targetBusinessPaymentId?: Scalars['ID']
+    /** Attachments Dialer Audio Session */
+    targetDialerAudioSessionId?: Scalars['ID']
+    /** Attachments Dev Tool */
+    targetDevToolId?: Scalars['ID']
+    /** Attachments GitHub Issue */
+    targetGithubIssueId?: Scalars['ID']
     /** Attachment target */
     targetAgentChatThread?: AgentChatThread
     /** Attachment target */
@@ -4622,6 +4830,22 @@ export interface Attachment {
     targetAgencyLead?: AgencyLead
     /** Attachments Influencer */
     targetInfluencer?: Influencer
+    /** Attachments Booked Meeting */
+    targetBookedMeeting?: BookedMeeting
+    /** Attachments Bug Reports */
+    targetBugReports?: BugReports
+    /** Attachments Content */
+    targetCmsContent?: CmsContent
+    /** Attachments Github PRs */
+    targetGithubPrs?: GithubPrs
+    /** Attachments Payment */
+    targetBusinessPayment?: BusinessPayment
+    /** Attachments Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSession
+    /** Attachments Dev Tool */
+    targetDevTool?: DevTool
+    /** Attachments GitHub Issue */
+    targetGithubIssue?: GithubIssue
     __typename: 'Attachment'
 }
 
@@ -5178,6 +5402,86 @@ export interface AttachmentConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     __typename: 'AttachmentConnection'
@@ -5720,6 +6024,86 @@ export interface AttachmentGroupByConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -12563,6 +12947,22 @@ export interface NoteTarget {
     targetAgencyLeadId?: Scalars['ID']
     /** NoteTargets Influencer */
     targetInfluencerId?: Scalars['ID']
+    /** NoteTargets Booked Meeting */
+    targetBookedMeetingId?: Scalars['ID']
+    /** NoteTargets Bug Reports */
+    targetBugReportsId?: Scalars['ID']
+    /** NoteTargets Content */
+    targetCmsContentId?: Scalars['ID']
+    /** NoteTargets Github PRs */
+    targetGithubPrsId?: Scalars['ID']
+    /** NoteTargets Payment */
+    targetBusinessPaymentId?: Scalars['ID']
+    /** NoteTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: Scalars['ID']
+    /** NoteTargets Dev Tool */
+    targetDevToolId?: Scalars['ID']
+    /** NoteTargets GitHub Issue */
+    targetGithubIssueId?: Scalars['ID']
     /** NoteTarget target */
     targetCompany?: Company
     /** NoteTarget note */
@@ -12635,6 +13035,22 @@ export interface NoteTarget {
     targetAgencyLead?: AgencyLead
     /** NoteTargets Influencer */
     targetInfluencer?: Influencer
+    /** NoteTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeeting
+    /** NoteTargets Bug Reports */
+    targetBugReports?: BugReports
+    /** NoteTargets Content */
+    targetCmsContent?: CmsContent
+    /** NoteTargets Github PRs */
+    targetGithubPrs?: GithubPrs
+    /** NoteTargets Payment */
+    targetBusinessPayment?: BusinessPayment
+    /** NoteTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSession
+    /** NoteTargets Dev Tool */
+    targetDevTool?: DevTool
+    /** NoteTargets GitHub Issue */
+    targetGithubIssue?: GithubIssue
     __typename: 'NoteTarget'
 }
 
@@ -13093,6 +13509,86 @@ export interface NoteTargetConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     __typename: 'NoteTargetConnection'
@@ -13545,6 +14041,86 @@ export interface NoteTargetGroupByConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -16795,6 +17371,22 @@ export interface TaskTarget {
     targetAgencyLeadId?: Scalars['ID']
     /** TaskTargets Influencer */
     targetInfluencerId?: Scalars['ID']
+    /** TaskTargets Booked Meeting */
+    targetBookedMeetingId?: Scalars['ID']
+    /** TaskTargets Bug Reports */
+    targetBugReportsId?: Scalars['ID']
+    /** TaskTargets Content */
+    targetCmsContentId?: Scalars['ID']
+    /** TaskTargets Github PRs */
+    targetGithubPrsId?: Scalars['ID']
+    /** TaskTargets Payment */
+    targetBusinessPaymentId?: Scalars['ID']
+    /** TaskTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: Scalars['ID']
+    /** TaskTargets Dev Tool */
+    targetDevToolId?: Scalars['ID']
+    /** TaskTargets GitHub Issue */
+    targetGithubIssueId?: Scalars['ID']
     /** TaskTarget target */
     targetCompany?: Company
     /** TaskTarget target */
@@ -16867,6 +17459,22 @@ export interface TaskTarget {
     targetAgencyLead?: AgencyLead
     /** TaskTargets Influencer */
     targetInfluencer?: Influencer
+    /** TaskTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeeting
+    /** TaskTargets Bug Reports */
+    targetBugReports?: BugReports
+    /** TaskTargets Content */
+    targetCmsContent?: CmsContent
+    /** TaskTargets Github PRs */
+    targetGithubPrs?: GithubPrs
+    /** TaskTargets Payment */
+    targetBusinessPayment?: BusinessPayment
+    /** TaskTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSession
+    /** TaskTargets Dev Tool */
+    targetDevTool?: DevTool
+    /** TaskTargets GitHub Issue */
+    targetGithubIssue?: GithubIssue
     __typename: 'TaskTarget'
 }
 
@@ -17325,6 +17933,86 @@ export interface TaskTargetConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     __typename: 'TaskTargetConnection'
@@ -17777,6 +18465,86 @@ export interface TaskTargetGroupByConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -17904,6 +18672,22 @@ export interface TimelineActivity {
     targetAgencyLeadId?: Scalars['ID']
     /** TimelineActivities Influencer */
     targetInfluencerId?: Scalars['ID']
+    /** TimelineActivities Booked Meeting */
+    targetBookedMeetingId?: Scalars['ID']
+    /** TimelineActivities Bug Reports */
+    targetBugReportsId?: Scalars['ID']
+    /** TimelineActivities Content */
+    targetCmsContentId?: Scalars['ID']
+    /** TimelineActivities Github PRs */
+    targetGithubPrsId?: Scalars['ID']
+    /** TimelineActivities Payment */
+    targetBusinessPaymentId?: Scalars['ID']
+    /** TimelineActivities Dialer Audio Session */
+    targetDialerAudioSessionId?: Scalars['ID']
+    /** TimelineActivities Dev Tool */
+    targetDevToolId?: Scalars['ID']
+    /** TimelineActivities GitHub Issue */
+    targetGithubIssueId?: Scalars['ID']
     /** Event target */
     targetCompany?: Company
     /** Event target */
@@ -17992,6 +18776,22 @@ export interface TimelineActivity {
     targetAgencyLead?: AgencyLead
     /** TimelineActivities Influencer */
     targetInfluencer?: Influencer
+    /** TimelineActivities Booked Meeting */
+    targetBookedMeeting?: BookedMeeting
+    /** TimelineActivities Bug Reports */
+    targetBugReports?: BugReports
+    /** TimelineActivities Content */
+    targetCmsContent?: CmsContent
+    /** TimelineActivities Github PRs */
+    targetGithubPrs?: GithubPrs
+    /** TimelineActivities Payment */
+    targetBusinessPayment?: BusinessPayment
+    /** TimelineActivities Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSession
+    /** TimelineActivities Dev Tool */
+    targetDevTool?: DevTool
+    /** TimelineActivities GitHub Issue */
+    targetGithubIssue?: GithubIssue
     __typename: 'TimelineActivity'
 }
 
@@ -18604,6 +19404,86 @@ export interface TimelineActivityConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     __typename: 'TimelineActivityConnection'
@@ -19210,6 +20090,86 @@ export interface TimelineActivityGroupByConnection {
     percentageEmptyTargetInfluencer?: Scalars['Float']
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: Scalars['Float']
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: Scalars['Int']
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: Scalars['Int']
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: Scalars['Float']
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: Scalars['Int']
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: Scalars['Int']
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: Scalars['Int']
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: Scalars['Float']
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: Scalars['Float']
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: Scalars['Int']
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: Scalars['Int']
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: Scalars['Int']
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: Scalars['Float']
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: Scalars['Float']
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: Scalars['Int']
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: Scalars['Int']
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: Scalars['Int']
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: Scalars['Float']
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: Scalars['Int']
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: Scalars['Int']
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: Scalars['Float']
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: Scalars['Int']
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: Scalars['Int']
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: Scalars['Float']
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: Scalars['Int']
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: Scalars['Int']
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: Scalars['Int']
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: Scalars['Float']
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: Scalars['Float']
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: Scalars['Int']
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: Scalars['Int']
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: Scalars['Int']
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: Scalars['Float']
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -42735,6 +43695,4683 @@ export interface InfluencerGroupByConnection {
     __typename: 'InfluencerGroupByConnection'
 }
 
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeeting {
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** When the meeting starts */
+    startTime?: Scalars['DateTime']
+    /** When the booking was made */
+    bookedAt?: Scalars['DateTime']
+    /** BookedMeetings tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** BookedMeetings tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** BookedMeetings tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** BookedMeetings tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** BookedMeetings tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'BookedMeeting'
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingEdge {
+    node: BookedMeeting
+    cursor: Scalars['Cursor']
+    __typename: 'BookedMeetingEdge'
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for startTime */
+    countUniqueValuesStartTime?: Scalars['Int']
+    /** Number of empty values for startTime */
+    countEmptyStartTime?: Scalars['Int']
+    /** Number of non-empty values for startTime */
+    countNotEmptyStartTime?: Scalars['Int']
+    /** Percentage of empty values for startTime */
+    percentageEmptyStartTime?: Scalars['Float']
+    /** Percentage of non-empty values for startTime */
+    percentageNotEmptyStartTime?: Scalars['Float']
+    /** Earliest date contained in the field startTime */
+    minStartTime?: Scalars['DateTime']
+    /** Latest date contained in the field startTime */
+    maxStartTime?: Scalars['DateTime']
+    /** Number of unique values for bookedAt */
+    countUniqueValuesBookedAt?: Scalars['Int']
+    /** Number of empty values for bookedAt */
+    countEmptyBookedAt?: Scalars['Int']
+    /** Number of non-empty values for bookedAt */
+    countNotEmptyBookedAt?: Scalars['Int']
+    /** Percentage of empty values for bookedAt */
+    percentageEmptyBookedAt?: Scalars['Float']
+    /** Percentage of non-empty values for bookedAt */
+    percentageNotEmptyBookedAt?: Scalars['Float']
+    /** Earliest date contained in the field bookedAt */
+    minBookedAt?: Scalars['DateTime']
+    /** Latest date contained in the field bookedAt */
+    maxBookedAt?: Scalars['DateTime']
+    edges: BookedMeetingEdge[]
+    pageInfo: PageInfo
+    __typename: 'BookedMeetingConnection'
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for startTime */
+    countUniqueValuesStartTime?: Scalars['Int']
+    /** Number of empty values for startTime */
+    countEmptyStartTime?: Scalars['Int']
+    /** Number of non-empty values for startTime */
+    countNotEmptyStartTime?: Scalars['Int']
+    /** Percentage of empty values for startTime */
+    percentageEmptyStartTime?: Scalars['Float']
+    /** Percentage of non-empty values for startTime */
+    percentageNotEmptyStartTime?: Scalars['Float']
+    /** Earliest date contained in the field startTime */
+    minStartTime?: Scalars['DateTime']
+    /** Latest date contained in the field startTime */
+    maxStartTime?: Scalars['DateTime']
+    /** Number of unique values for bookedAt */
+    countUniqueValuesBookedAt?: Scalars['Int']
+    /** Number of empty values for bookedAt */
+    countEmptyBookedAt?: Scalars['Int']
+    /** Number of non-empty values for bookedAt */
+    countNotEmptyBookedAt?: Scalars['Int']
+    /** Percentage of empty values for bookedAt */
+    percentageEmptyBookedAt?: Scalars['Float']
+    /** Percentage of non-empty values for bookedAt */
+    percentageNotEmptyBookedAt?: Scalars['Float']
+    /** Earliest date contained in the field bookedAt */
+    minBookedAt?: Scalars['DateTime']
+    /** Latest date contained in the field bookedAt */
+    maxBookedAt?: Scalars['DateTime']
+    edges: BookedMeetingEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'BookedMeetingGroupByConnection'
+}
+
+
+/** Report-a-Bug review status */
+export type BugReportsReviewStatusEnum = 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'DISPATCHED'
+
+
+/** Report-a-Bug convex status */
+export type BugReportsSourceStatusEnum = 'SUBMITTED' | 'REVIEWING' | 'APPROVED' | 'DISPATCHING' | 'RUNNING' | 'RESOLVED' | 'FAILED' | 'CLOSED'
+
+
+/** Report-a-Bug priority */
+export type BugReportsPriorityEnum = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReports {
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Report-a-Bug agent provider */
+    agentProvider?: Scalars['String']
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** Report-a-Bug error message */
+    errorMessage?: Scalars['String']
+    /** Report-a-Bug reporter name */
+    reporterName?: Scalars['String']
+    /** Report-a-Bug approved by user id */
+    approvedByUserId?: Scalars['String']
+    /** Report-a-Bug agent url */
+    agentUrl?: Scalars['String']
+    /** Report-a-Bug convex created at */
+    convexCreatedAt?: Scalars['DateTime']
+    /** Report-a-Bug attachment urls */
+    attachmentUrls?: Scalars['String']
+    /** Report-a-Bug agent instructions */
+    agentInstructions?: Scalars['String']
+    /** Report-a-Bug convex report id */
+    convexReportId?: Scalars['String']
+    /** Report-a-Bug reported page url */
+    pageUrl?: Scalars['String']
+    /** Report-a-Bug review status */
+    reviewStatus?: BugReportsReviewStatusEnum
+    /** Report-a-Bug convex updated at */
+    convexUpdatedAt?: Scalars['DateTime']
+    /** Report-a-Bug agent pull request url */
+    agentPullRequestUrl?: Scalars['String']
+    /** Report-a-Bug agent commit sha */
+    agentCommitSha?: Scalars['String']
+    /** Report-a-Bug description */
+    description?: Scalars['String']
+    /** Report-a-Bug convex status */
+    sourceStatus?: BugReportsSourceStatusEnum
+    /** Report-a-Bug review notes */
+    reviewNotes?: Scalars['String']
+    /** Report-a-Bug agent status */
+    agentStatus?: Scalars['String']
+    /** Report-a-Bug completed at */
+    completedAt?: Scalars['DateTime']
+    /** Report-a-Bug attachment count */
+    attachmentCount?: Scalars['Float']
+    /** Report-a-Bug priority */
+    priority?: BugReportsPriorityEnum
+    /** Report-a-Bug agent run id */
+    agentRunId?: Scalars['String']
+    /** Report-a-Bug agent branch */
+    agentBranch?: Scalars['String']
+    /** Report-a-Bug approved at */
+    approvedAt?: Scalars['DateTime']
+    /** BugReportss tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** BugReportss tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** BugReportss tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** BugReportss tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** BugReportss tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'BugReports'
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsEdge {
+    node: BugReports
+    cursor: Scalars['Cursor']
+    __typename: 'BugReportsEdge'
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for agentProvider */
+    countUniqueValuesAgentProvider?: Scalars['Int']
+    /** Number of empty values for agentProvider */
+    countEmptyAgentProvider?: Scalars['Int']
+    /** Number of non-empty values for agentProvider */
+    countNotEmptyAgentProvider?: Scalars['Int']
+    /** Percentage of empty values for agentProvider */
+    percentageEmptyAgentProvider?: Scalars['Float']
+    /** Percentage of non-empty values for agentProvider */
+    percentageNotEmptyAgentProvider?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for errorMessage */
+    countUniqueValuesErrorMessage?: Scalars['Int']
+    /** Number of empty values for errorMessage */
+    countEmptyErrorMessage?: Scalars['Int']
+    /** Number of non-empty values for errorMessage */
+    countNotEmptyErrorMessage?: Scalars['Int']
+    /** Percentage of empty values for errorMessage */
+    percentageEmptyErrorMessage?: Scalars['Float']
+    /** Percentage of non-empty values for errorMessage */
+    percentageNotEmptyErrorMessage?: Scalars['Float']
+    /** Number of unique values for reporterName */
+    countUniqueValuesReporterName?: Scalars['Int']
+    /** Number of empty values for reporterName */
+    countEmptyReporterName?: Scalars['Int']
+    /** Number of non-empty values for reporterName */
+    countNotEmptyReporterName?: Scalars['Int']
+    /** Percentage of empty values for reporterName */
+    percentageEmptyReporterName?: Scalars['Float']
+    /** Percentage of non-empty values for reporterName */
+    percentageNotEmptyReporterName?: Scalars['Float']
+    /** Number of unique values for approvedByUserId */
+    countUniqueValuesApprovedByUserId?: Scalars['Int']
+    /** Number of empty values for approvedByUserId */
+    countEmptyApprovedByUserId?: Scalars['Int']
+    /** Number of non-empty values for approvedByUserId */
+    countNotEmptyApprovedByUserId?: Scalars['Int']
+    /** Percentage of empty values for approvedByUserId */
+    percentageEmptyApprovedByUserId?: Scalars['Float']
+    /** Percentage of non-empty values for approvedByUserId */
+    percentageNotEmptyApprovedByUserId?: Scalars['Float']
+    /** Number of unique values for agentUrl */
+    countUniqueValuesAgentUrl?: Scalars['Int']
+    /** Number of empty values for agentUrl */
+    countEmptyAgentUrl?: Scalars['Int']
+    /** Number of non-empty values for agentUrl */
+    countNotEmptyAgentUrl?: Scalars['Int']
+    /** Percentage of empty values for agentUrl */
+    percentageEmptyAgentUrl?: Scalars['Float']
+    /** Percentage of non-empty values for agentUrl */
+    percentageNotEmptyAgentUrl?: Scalars['Float']
+    /** Number of unique values for convexCreatedAt */
+    countUniqueValuesConvexCreatedAt?: Scalars['Int']
+    /** Number of empty values for convexCreatedAt */
+    countEmptyConvexCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for convexCreatedAt */
+    countNotEmptyConvexCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for convexCreatedAt */
+    percentageEmptyConvexCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for convexCreatedAt */
+    percentageNotEmptyConvexCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field convexCreatedAt */
+    minConvexCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field convexCreatedAt */
+    maxConvexCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for attachmentUrls */
+    countUniqueValuesAttachmentUrls?: Scalars['Int']
+    /** Number of empty values for attachmentUrls */
+    countEmptyAttachmentUrls?: Scalars['Int']
+    /** Number of non-empty values for attachmentUrls */
+    countNotEmptyAttachmentUrls?: Scalars['Int']
+    /** Percentage of empty values for attachmentUrls */
+    percentageEmptyAttachmentUrls?: Scalars['Float']
+    /** Percentage of non-empty values for attachmentUrls */
+    percentageNotEmptyAttachmentUrls?: Scalars['Float']
+    /** Number of unique values for agentInstructions */
+    countUniqueValuesAgentInstructions?: Scalars['Int']
+    /** Number of empty values for agentInstructions */
+    countEmptyAgentInstructions?: Scalars['Int']
+    /** Number of non-empty values for agentInstructions */
+    countNotEmptyAgentInstructions?: Scalars['Int']
+    /** Percentage of empty values for agentInstructions */
+    percentageEmptyAgentInstructions?: Scalars['Float']
+    /** Percentage of non-empty values for agentInstructions */
+    percentageNotEmptyAgentInstructions?: Scalars['Float']
+    /** Number of unique values for convexReportId */
+    countUniqueValuesConvexReportId?: Scalars['Int']
+    /** Number of empty values for convexReportId */
+    countEmptyConvexReportId?: Scalars['Int']
+    /** Number of non-empty values for convexReportId */
+    countNotEmptyConvexReportId?: Scalars['Int']
+    /** Percentage of empty values for convexReportId */
+    percentageEmptyConvexReportId?: Scalars['Float']
+    /** Percentage of non-empty values for convexReportId */
+    percentageNotEmptyConvexReportId?: Scalars['Float']
+    /** Number of unique values for pageUrl */
+    countUniqueValuesPageUrl?: Scalars['Int']
+    /** Number of empty values for pageUrl */
+    countEmptyPageUrl?: Scalars['Int']
+    /** Number of non-empty values for pageUrl */
+    countNotEmptyPageUrl?: Scalars['Int']
+    /** Percentage of empty values for pageUrl */
+    percentageEmptyPageUrl?: Scalars['Float']
+    /** Percentage of non-empty values for pageUrl */
+    percentageNotEmptyPageUrl?: Scalars['Float']
+    /** Number of unique values for reviewStatus */
+    countUniqueValuesReviewStatus?: Scalars['Int']
+    /** Number of empty values for reviewStatus */
+    countEmptyReviewStatus?: Scalars['Int']
+    /** Number of non-empty values for reviewStatus */
+    countNotEmptyReviewStatus?: Scalars['Int']
+    /** Percentage of empty values for reviewStatus */
+    percentageEmptyReviewStatus?: Scalars['Float']
+    /** Percentage of non-empty values for reviewStatus */
+    percentageNotEmptyReviewStatus?: Scalars['Float']
+    /** Number of unique values for convexUpdatedAt */
+    countUniqueValuesConvexUpdatedAt?: Scalars['Int']
+    /** Number of empty values for convexUpdatedAt */
+    countEmptyConvexUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for convexUpdatedAt */
+    countNotEmptyConvexUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for convexUpdatedAt */
+    percentageEmptyConvexUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for convexUpdatedAt */
+    percentageNotEmptyConvexUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field convexUpdatedAt */
+    minConvexUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field convexUpdatedAt */
+    maxConvexUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for agentPullRequestUrl */
+    countUniqueValuesAgentPullRequestUrl?: Scalars['Int']
+    /** Number of empty values for agentPullRequestUrl */
+    countEmptyAgentPullRequestUrl?: Scalars['Int']
+    /** Number of non-empty values for agentPullRequestUrl */
+    countNotEmptyAgentPullRequestUrl?: Scalars['Int']
+    /** Percentage of empty values for agentPullRequestUrl */
+    percentageEmptyAgentPullRequestUrl?: Scalars['Float']
+    /** Percentage of non-empty values for agentPullRequestUrl */
+    percentageNotEmptyAgentPullRequestUrl?: Scalars['Float']
+    /** Number of unique values for agentCommitSha */
+    countUniqueValuesAgentCommitSha?: Scalars['Int']
+    /** Number of empty values for agentCommitSha */
+    countEmptyAgentCommitSha?: Scalars['Int']
+    /** Number of non-empty values for agentCommitSha */
+    countNotEmptyAgentCommitSha?: Scalars['Int']
+    /** Percentage of empty values for agentCommitSha */
+    percentageEmptyAgentCommitSha?: Scalars['Float']
+    /** Percentage of non-empty values for agentCommitSha */
+    percentageNotEmptyAgentCommitSha?: Scalars['Float']
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: Scalars['Int']
+    /** Number of empty values for description */
+    countEmptyDescription?: Scalars['Int']
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: Scalars['Int']
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: Scalars['Float']
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: Scalars['Float']
+    /** Number of unique values for sourceStatus */
+    countUniqueValuesSourceStatus?: Scalars['Int']
+    /** Number of empty values for sourceStatus */
+    countEmptySourceStatus?: Scalars['Int']
+    /** Number of non-empty values for sourceStatus */
+    countNotEmptySourceStatus?: Scalars['Int']
+    /** Percentage of empty values for sourceStatus */
+    percentageEmptySourceStatus?: Scalars['Float']
+    /** Percentage of non-empty values for sourceStatus */
+    percentageNotEmptySourceStatus?: Scalars['Float']
+    /** Number of unique values for reviewNotes */
+    countUniqueValuesReviewNotes?: Scalars['Int']
+    /** Number of empty values for reviewNotes */
+    countEmptyReviewNotes?: Scalars['Int']
+    /** Number of non-empty values for reviewNotes */
+    countNotEmptyReviewNotes?: Scalars['Int']
+    /** Percentage of empty values for reviewNotes */
+    percentageEmptyReviewNotes?: Scalars['Float']
+    /** Percentage of non-empty values for reviewNotes */
+    percentageNotEmptyReviewNotes?: Scalars['Float']
+    /** Number of unique values for agentStatus */
+    countUniqueValuesAgentStatus?: Scalars['Int']
+    /** Number of empty values for agentStatus */
+    countEmptyAgentStatus?: Scalars['Int']
+    /** Number of non-empty values for agentStatus */
+    countNotEmptyAgentStatus?: Scalars['Int']
+    /** Percentage of empty values for agentStatus */
+    percentageEmptyAgentStatus?: Scalars['Float']
+    /** Percentage of non-empty values for agentStatus */
+    percentageNotEmptyAgentStatus?: Scalars['Float']
+    /** Number of unique values for completedAt */
+    countUniqueValuesCompletedAt?: Scalars['Int']
+    /** Number of empty values for completedAt */
+    countEmptyCompletedAt?: Scalars['Int']
+    /** Number of non-empty values for completedAt */
+    countNotEmptyCompletedAt?: Scalars['Int']
+    /** Percentage of empty values for completedAt */
+    percentageEmptyCompletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for completedAt */
+    percentageNotEmptyCompletedAt?: Scalars['Float']
+    /** Earliest date contained in the field completedAt */
+    minCompletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field completedAt */
+    maxCompletedAt?: Scalars['DateTime']
+    /** Number of unique values for attachmentCount */
+    countUniqueValuesAttachmentCount?: Scalars['Int']
+    /** Number of empty values for attachmentCount */
+    countEmptyAttachmentCount?: Scalars['Int']
+    /** Number of non-empty values for attachmentCount */
+    countNotEmptyAttachmentCount?: Scalars['Int']
+    /** Percentage of empty values for attachmentCount */
+    percentageEmptyAttachmentCount?: Scalars['Float']
+    /** Percentage of non-empty values for attachmentCount */
+    percentageNotEmptyAttachmentCount?: Scalars['Float']
+    /** Minimum amount contained in the field attachmentCount */
+    minAttachmentCount?: Scalars['Float']
+    /** Maximum amount contained in the field attachmentCount */
+    maxAttachmentCount?: Scalars['Float']
+    /** Average amount contained in the field attachmentCount */
+    avgAttachmentCount?: Scalars['Float']
+    /** Sum of amounts contained in the field attachmentCount */
+    sumAttachmentCount?: Scalars['Float']
+    /** Number of unique values for priority */
+    countUniqueValuesPriority?: Scalars['Int']
+    /** Number of empty values for priority */
+    countEmptyPriority?: Scalars['Int']
+    /** Number of non-empty values for priority */
+    countNotEmptyPriority?: Scalars['Int']
+    /** Percentage of empty values for priority */
+    percentageEmptyPriority?: Scalars['Float']
+    /** Percentage of non-empty values for priority */
+    percentageNotEmptyPriority?: Scalars['Float']
+    /** Number of unique values for agentRunId */
+    countUniqueValuesAgentRunId?: Scalars['Int']
+    /** Number of empty values for agentRunId */
+    countEmptyAgentRunId?: Scalars['Int']
+    /** Number of non-empty values for agentRunId */
+    countNotEmptyAgentRunId?: Scalars['Int']
+    /** Percentage of empty values for agentRunId */
+    percentageEmptyAgentRunId?: Scalars['Float']
+    /** Percentage of non-empty values for agentRunId */
+    percentageNotEmptyAgentRunId?: Scalars['Float']
+    /** Number of unique values for agentBranch */
+    countUniqueValuesAgentBranch?: Scalars['Int']
+    /** Number of empty values for agentBranch */
+    countEmptyAgentBranch?: Scalars['Int']
+    /** Number of non-empty values for agentBranch */
+    countNotEmptyAgentBranch?: Scalars['Int']
+    /** Percentage of empty values for agentBranch */
+    percentageEmptyAgentBranch?: Scalars['Float']
+    /** Percentage of non-empty values for agentBranch */
+    percentageNotEmptyAgentBranch?: Scalars['Float']
+    /** Number of unique values for approvedAt */
+    countUniqueValuesApprovedAt?: Scalars['Int']
+    /** Number of empty values for approvedAt */
+    countEmptyApprovedAt?: Scalars['Int']
+    /** Number of non-empty values for approvedAt */
+    countNotEmptyApprovedAt?: Scalars['Int']
+    /** Percentage of empty values for approvedAt */
+    percentageEmptyApprovedAt?: Scalars['Float']
+    /** Percentage of non-empty values for approvedAt */
+    percentageNotEmptyApprovedAt?: Scalars['Float']
+    /** Earliest date contained in the field approvedAt */
+    minApprovedAt?: Scalars['DateTime']
+    /** Latest date contained in the field approvedAt */
+    maxApprovedAt?: Scalars['DateTime']
+    edges: BugReportsEdge[]
+    pageInfo: PageInfo
+    __typename: 'BugReportsConnection'
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for agentProvider */
+    countUniqueValuesAgentProvider?: Scalars['Int']
+    /** Number of empty values for agentProvider */
+    countEmptyAgentProvider?: Scalars['Int']
+    /** Number of non-empty values for agentProvider */
+    countNotEmptyAgentProvider?: Scalars['Int']
+    /** Percentage of empty values for agentProvider */
+    percentageEmptyAgentProvider?: Scalars['Float']
+    /** Percentage of non-empty values for agentProvider */
+    percentageNotEmptyAgentProvider?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for errorMessage */
+    countUniqueValuesErrorMessage?: Scalars['Int']
+    /** Number of empty values for errorMessage */
+    countEmptyErrorMessage?: Scalars['Int']
+    /** Number of non-empty values for errorMessage */
+    countNotEmptyErrorMessage?: Scalars['Int']
+    /** Percentage of empty values for errorMessage */
+    percentageEmptyErrorMessage?: Scalars['Float']
+    /** Percentage of non-empty values for errorMessage */
+    percentageNotEmptyErrorMessage?: Scalars['Float']
+    /** Number of unique values for reporterName */
+    countUniqueValuesReporterName?: Scalars['Int']
+    /** Number of empty values for reporterName */
+    countEmptyReporterName?: Scalars['Int']
+    /** Number of non-empty values for reporterName */
+    countNotEmptyReporterName?: Scalars['Int']
+    /** Percentage of empty values for reporterName */
+    percentageEmptyReporterName?: Scalars['Float']
+    /** Percentage of non-empty values for reporterName */
+    percentageNotEmptyReporterName?: Scalars['Float']
+    /** Number of unique values for approvedByUserId */
+    countUniqueValuesApprovedByUserId?: Scalars['Int']
+    /** Number of empty values for approvedByUserId */
+    countEmptyApprovedByUserId?: Scalars['Int']
+    /** Number of non-empty values for approvedByUserId */
+    countNotEmptyApprovedByUserId?: Scalars['Int']
+    /** Percentage of empty values for approvedByUserId */
+    percentageEmptyApprovedByUserId?: Scalars['Float']
+    /** Percentage of non-empty values for approvedByUserId */
+    percentageNotEmptyApprovedByUserId?: Scalars['Float']
+    /** Number of unique values for agentUrl */
+    countUniqueValuesAgentUrl?: Scalars['Int']
+    /** Number of empty values for agentUrl */
+    countEmptyAgentUrl?: Scalars['Int']
+    /** Number of non-empty values for agentUrl */
+    countNotEmptyAgentUrl?: Scalars['Int']
+    /** Percentage of empty values for agentUrl */
+    percentageEmptyAgentUrl?: Scalars['Float']
+    /** Percentage of non-empty values for agentUrl */
+    percentageNotEmptyAgentUrl?: Scalars['Float']
+    /** Number of unique values for convexCreatedAt */
+    countUniqueValuesConvexCreatedAt?: Scalars['Int']
+    /** Number of empty values for convexCreatedAt */
+    countEmptyConvexCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for convexCreatedAt */
+    countNotEmptyConvexCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for convexCreatedAt */
+    percentageEmptyConvexCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for convexCreatedAt */
+    percentageNotEmptyConvexCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field convexCreatedAt */
+    minConvexCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field convexCreatedAt */
+    maxConvexCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for attachmentUrls */
+    countUniqueValuesAttachmentUrls?: Scalars['Int']
+    /** Number of empty values for attachmentUrls */
+    countEmptyAttachmentUrls?: Scalars['Int']
+    /** Number of non-empty values for attachmentUrls */
+    countNotEmptyAttachmentUrls?: Scalars['Int']
+    /** Percentage of empty values for attachmentUrls */
+    percentageEmptyAttachmentUrls?: Scalars['Float']
+    /** Percentage of non-empty values for attachmentUrls */
+    percentageNotEmptyAttachmentUrls?: Scalars['Float']
+    /** Number of unique values for agentInstructions */
+    countUniqueValuesAgentInstructions?: Scalars['Int']
+    /** Number of empty values for agentInstructions */
+    countEmptyAgentInstructions?: Scalars['Int']
+    /** Number of non-empty values for agentInstructions */
+    countNotEmptyAgentInstructions?: Scalars['Int']
+    /** Percentage of empty values for agentInstructions */
+    percentageEmptyAgentInstructions?: Scalars['Float']
+    /** Percentage of non-empty values for agentInstructions */
+    percentageNotEmptyAgentInstructions?: Scalars['Float']
+    /** Number of unique values for convexReportId */
+    countUniqueValuesConvexReportId?: Scalars['Int']
+    /** Number of empty values for convexReportId */
+    countEmptyConvexReportId?: Scalars['Int']
+    /** Number of non-empty values for convexReportId */
+    countNotEmptyConvexReportId?: Scalars['Int']
+    /** Percentage of empty values for convexReportId */
+    percentageEmptyConvexReportId?: Scalars['Float']
+    /** Percentage of non-empty values for convexReportId */
+    percentageNotEmptyConvexReportId?: Scalars['Float']
+    /** Number of unique values for pageUrl */
+    countUniqueValuesPageUrl?: Scalars['Int']
+    /** Number of empty values for pageUrl */
+    countEmptyPageUrl?: Scalars['Int']
+    /** Number of non-empty values for pageUrl */
+    countNotEmptyPageUrl?: Scalars['Int']
+    /** Percentage of empty values for pageUrl */
+    percentageEmptyPageUrl?: Scalars['Float']
+    /** Percentage of non-empty values for pageUrl */
+    percentageNotEmptyPageUrl?: Scalars['Float']
+    /** Number of unique values for reviewStatus */
+    countUniqueValuesReviewStatus?: Scalars['Int']
+    /** Number of empty values for reviewStatus */
+    countEmptyReviewStatus?: Scalars['Int']
+    /** Number of non-empty values for reviewStatus */
+    countNotEmptyReviewStatus?: Scalars['Int']
+    /** Percentage of empty values for reviewStatus */
+    percentageEmptyReviewStatus?: Scalars['Float']
+    /** Percentage of non-empty values for reviewStatus */
+    percentageNotEmptyReviewStatus?: Scalars['Float']
+    /** Number of unique values for convexUpdatedAt */
+    countUniqueValuesConvexUpdatedAt?: Scalars['Int']
+    /** Number of empty values for convexUpdatedAt */
+    countEmptyConvexUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for convexUpdatedAt */
+    countNotEmptyConvexUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for convexUpdatedAt */
+    percentageEmptyConvexUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for convexUpdatedAt */
+    percentageNotEmptyConvexUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field convexUpdatedAt */
+    minConvexUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field convexUpdatedAt */
+    maxConvexUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for agentPullRequestUrl */
+    countUniqueValuesAgentPullRequestUrl?: Scalars['Int']
+    /** Number of empty values for agentPullRequestUrl */
+    countEmptyAgentPullRequestUrl?: Scalars['Int']
+    /** Number of non-empty values for agentPullRequestUrl */
+    countNotEmptyAgentPullRequestUrl?: Scalars['Int']
+    /** Percentage of empty values for agentPullRequestUrl */
+    percentageEmptyAgentPullRequestUrl?: Scalars['Float']
+    /** Percentage of non-empty values for agentPullRequestUrl */
+    percentageNotEmptyAgentPullRequestUrl?: Scalars['Float']
+    /** Number of unique values for agentCommitSha */
+    countUniqueValuesAgentCommitSha?: Scalars['Int']
+    /** Number of empty values for agentCommitSha */
+    countEmptyAgentCommitSha?: Scalars['Int']
+    /** Number of non-empty values for agentCommitSha */
+    countNotEmptyAgentCommitSha?: Scalars['Int']
+    /** Percentage of empty values for agentCommitSha */
+    percentageEmptyAgentCommitSha?: Scalars['Float']
+    /** Percentage of non-empty values for agentCommitSha */
+    percentageNotEmptyAgentCommitSha?: Scalars['Float']
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: Scalars['Int']
+    /** Number of empty values for description */
+    countEmptyDescription?: Scalars['Int']
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: Scalars['Int']
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: Scalars['Float']
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: Scalars['Float']
+    /** Number of unique values for sourceStatus */
+    countUniqueValuesSourceStatus?: Scalars['Int']
+    /** Number of empty values for sourceStatus */
+    countEmptySourceStatus?: Scalars['Int']
+    /** Number of non-empty values for sourceStatus */
+    countNotEmptySourceStatus?: Scalars['Int']
+    /** Percentage of empty values for sourceStatus */
+    percentageEmptySourceStatus?: Scalars['Float']
+    /** Percentage of non-empty values for sourceStatus */
+    percentageNotEmptySourceStatus?: Scalars['Float']
+    /** Number of unique values for reviewNotes */
+    countUniqueValuesReviewNotes?: Scalars['Int']
+    /** Number of empty values for reviewNotes */
+    countEmptyReviewNotes?: Scalars['Int']
+    /** Number of non-empty values for reviewNotes */
+    countNotEmptyReviewNotes?: Scalars['Int']
+    /** Percentage of empty values for reviewNotes */
+    percentageEmptyReviewNotes?: Scalars['Float']
+    /** Percentage of non-empty values for reviewNotes */
+    percentageNotEmptyReviewNotes?: Scalars['Float']
+    /** Number of unique values for agentStatus */
+    countUniqueValuesAgentStatus?: Scalars['Int']
+    /** Number of empty values for agentStatus */
+    countEmptyAgentStatus?: Scalars['Int']
+    /** Number of non-empty values for agentStatus */
+    countNotEmptyAgentStatus?: Scalars['Int']
+    /** Percentage of empty values for agentStatus */
+    percentageEmptyAgentStatus?: Scalars['Float']
+    /** Percentage of non-empty values for agentStatus */
+    percentageNotEmptyAgentStatus?: Scalars['Float']
+    /** Number of unique values for completedAt */
+    countUniqueValuesCompletedAt?: Scalars['Int']
+    /** Number of empty values for completedAt */
+    countEmptyCompletedAt?: Scalars['Int']
+    /** Number of non-empty values for completedAt */
+    countNotEmptyCompletedAt?: Scalars['Int']
+    /** Percentage of empty values for completedAt */
+    percentageEmptyCompletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for completedAt */
+    percentageNotEmptyCompletedAt?: Scalars['Float']
+    /** Earliest date contained in the field completedAt */
+    minCompletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field completedAt */
+    maxCompletedAt?: Scalars['DateTime']
+    /** Number of unique values for attachmentCount */
+    countUniqueValuesAttachmentCount?: Scalars['Int']
+    /** Number of empty values for attachmentCount */
+    countEmptyAttachmentCount?: Scalars['Int']
+    /** Number of non-empty values for attachmentCount */
+    countNotEmptyAttachmentCount?: Scalars['Int']
+    /** Percentage of empty values for attachmentCount */
+    percentageEmptyAttachmentCount?: Scalars['Float']
+    /** Percentage of non-empty values for attachmentCount */
+    percentageNotEmptyAttachmentCount?: Scalars['Float']
+    /** Minimum amount contained in the field attachmentCount */
+    minAttachmentCount?: Scalars['Float']
+    /** Maximum amount contained in the field attachmentCount */
+    maxAttachmentCount?: Scalars['Float']
+    /** Average amount contained in the field attachmentCount */
+    avgAttachmentCount?: Scalars['Float']
+    /** Sum of amounts contained in the field attachmentCount */
+    sumAttachmentCount?: Scalars['Float']
+    /** Number of unique values for priority */
+    countUniqueValuesPriority?: Scalars['Int']
+    /** Number of empty values for priority */
+    countEmptyPriority?: Scalars['Int']
+    /** Number of non-empty values for priority */
+    countNotEmptyPriority?: Scalars['Int']
+    /** Percentage of empty values for priority */
+    percentageEmptyPriority?: Scalars['Float']
+    /** Percentage of non-empty values for priority */
+    percentageNotEmptyPriority?: Scalars['Float']
+    /** Number of unique values for agentRunId */
+    countUniqueValuesAgentRunId?: Scalars['Int']
+    /** Number of empty values for agentRunId */
+    countEmptyAgentRunId?: Scalars['Int']
+    /** Number of non-empty values for agentRunId */
+    countNotEmptyAgentRunId?: Scalars['Int']
+    /** Percentage of empty values for agentRunId */
+    percentageEmptyAgentRunId?: Scalars['Float']
+    /** Percentage of non-empty values for agentRunId */
+    percentageNotEmptyAgentRunId?: Scalars['Float']
+    /** Number of unique values for agentBranch */
+    countUniqueValuesAgentBranch?: Scalars['Int']
+    /** Number of empty values for agentBranch */
+    countEmptyAgentBranch?: Scalars['Int']
+    /** Number of non-empty values for agentBranch */
+    countNotEmptyAgentBranch?: Scalars['Int']
+    /** Percentage of empty values for agentBranch */
+    percentageEmptyAgentBranch?: Scalars['Float']
+    /** Percentage of non-empty values for agentBranch */
+    percentageNotEmptyAgentBranch?: Scalars['Float']
+    /** Number of unique values for approvedAt */
+    countUniqueValuesApprovedAt?: Scalars['Int']
+    /** Number of empty values for approvedAt */
+    countEmptyApprovedAt?: Scalars['Int']
+    /** Number of non-empty values for approvedAt */
+    countNotEmptyApprovedAt?: Scalars['Int']
+    /** Percentage of empty values for approvedAt */
+    percentageEmptyApprovedAt?: Scalars['Float']
+    /** Percentage of non-empty values for approvedAt */
+    percentageNotEmptyApprovedAt?: Scalars['Float']
+    /** Earliest date contained in the field approvedAt */
+    minApprovedAt?: Scalars['DateTime']
+    /** Latest date contained in the field approvedAt */
+    maxApprovedAt?: Scalars['DateTime']
+    edges: BugReportsEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'BugReportsGroupByConnection'
+}
+
+export type BusinessPaymentDirectionEnum = 'IN' | 'OUT'
+
+export type BusinessPaymentSourceAccountEnum = 'PRODUCTION_BILLING' | 'MATTHEWS'
+
+export type BusinessPaymentCategoryEnum = 'SUBSCRIPTION' | 'API_USAGE' | 'INVOICE_FEE' | 'PAYOUT' | 'REFUND' | 'AD_SPEND' | 'TOOL' | 'OTHER'
+
+export type BusinessPaymentStatusEnum = 'UPCOMING' | 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPayment {
+    /** Name */
+    name?: Scalars['String']
+    direction?: BusinessPaymentDirectionEnum
+    currencyCode?: Scalars['String']
+    notes?: Scalars['String']
+    /** Drives payments due / upcoming */
+    paymentDueAt?: Scalars['DateTime']
+    amountUsd?: Currency
+    sourceAccount?: BusinessPaymentSourceAccountEnum
+    counterparty?: Scalars['String']
+    category?: BusinessPaymentCategoryEnum
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    paidAt?: Scalars['DateTime']
+    status?: BusinessPaymentStatusEnum
+    invoiceId?: Scalars['String']
+    /** Stripe object id; idempotency/dedupe key */
+    externalId?: Scalars['String']
+    receipts?: (FileObject | undefined)[]
+    /** BusinessPayments tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** BusinessPayments tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** BusinessPayments tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** BusinessPayments tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** BusinessPayments tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'BusinessPayment'
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentEdge {
+    node: BusinessPayment
+    cursor: Scalars['Cursor']
+    __typename: 'BusinessPaymentEdge'
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for direction */
+    countUniqueValuesDirection?: Scalars['Int']
+    /** Number of empty values for direction */
+    countEmptyDirection?: Scalars['Int']
+    /** Number of non-empty values for direction */
+    countNotEmptyDirection?: Scalars['Int']
+    /** Percentage of empty values for direction */
+    percentageEmptyDirection?: Scalars['Float']
+    /** Percentage of non-empty values for direction */
+    percentageNotEmptyDirection?: Scalars['Float']
+    /** Number of unique values for currencyCode */
+    countUniqueValuesCurrencyCode?: Scalars['Int']
+    /** Number of empty values for currencyCode */
+    countEmptyCurrencyCode?: Scalars['Int']
+    /** Number of non-empty values for currencyCode */
+    countNotEmptyCurrencyCode?: Scalars['Int']
+    /** Percentage of empty values for currencyCode */
+    percentageEmptyCurrencyCode?: Scalars['Float']
+    /** Percentage of non-empty values for currencyCode */
+    percentageNotEmptyCurrencyCode?: Scalars['Float']
+    /** Number of unique values for notes */
+    countUniqueValuesNotes?: Scalars['Int']
+    /** Number of empty values for notes */
+    countEmptyNotes?: Scalars['Int']
+    /** Number of non-empty values for notes */
+    countNotEmptyNotes?: Scalars['Int']
+    /** Percentage of empty values for notes */
+    percentageEmptyNotes?: Scalars['Float']
+    /** Percentage of non-empty values for notes */
+    percentageNotEmptyNotes?: Scalars['Float']
+    /** Number of unique values for paymentDueAt */
+    countUniqueValuesPaymentDueAt?: Scalars['Int']
+    /** Number of empty values for paymentDueAt */
+    countEmptyPaymentDueAt?: Scalars['Int']
+    /** Number of non-empty values for paymentDueAt */
+    countNotEmptyPaymentDueAt?: Scalars['Int']
+    /** Percentage of empty values for paymentDueAt */
+    percentageEmptyPaymentDueAt?: Scalars['Float']
+    /** Percentage of non-empty values for paymentDueAt */
+    percentageNotEmptyPaymentDueAt?: Scalars['Float']
+    /** Earliest date contained in the field paymentDueAt */
+    minPaymentDueAt?: Scalars['DateTime']
+    /** Latest date contained in the field paymentDueAt */
+    maxPaymentDueAt?: Scalars['DateTime']
+    /** Number of unique values for amountUsd */
+    countUniqueValuesAmountUsd?: Scalars['Int']
+    /** Number of empty values for amountUsd */
+    countEmptyAmountUsd?: Scalars['Int']
+    /** Number of non-empty values for amountUsd */
+    countNotEmptyAmountUsd?: Scalars['Int']
+    /** Percentage of empty values for amountUsd */
+    percentageEmptyAmountUsd?: Scalars['Float']
+    /** Percentage of non-empty values for amountUsd */
+    percentageNotEmptyAmountUsd?: Scalars['Float']
+    /** Minimum amount contained in the field amountUsd */
+    minAmountUsdAmountMicros?: Scalars['Float']
+    /** Maximal amount contained in the field amountUsd */
+    maxAmountUsdAmountMicros?: Scalars['Float']
+    /** Sum of amounts contained in the field amountUsd */
+    sumAmountUsdAmountMicros?: Scalars['Float']
+    /** Average amount contained in the field amountUsd */
+    avgAmountUsdAmountMicros?: Scalars['Float']
+    /** Number of unique values for sourceAccount */
+    countUniqueValuesSourceAccount?: Scalars['Int']
+    /** Number of empty values for sourceAccount */
+    countEmptySourceAccount?: Scalars['Int']
+    /** Number of non-empty values for sourceAccount */
+    countNotEmptySourceAccount?: Scalars['Int']
+    /** Percentage of empty values for sourceAccount */
+    percentageEmptySourceAccount?: Scalars['Float']
+    /** Percentage of non-empty values for sourceAccount */
+    percentageNotEmptySourceAccount?: Scalars['Float']
+    /** Number of unique values for counterparty */
+    countUniqueValuesCounterparty?: Scalars['Int']
+    /** Number of empty values for counterparty */
+    countEmptyCounterparty?: Scalars['Int']
+    /** Number of non-empty values for counterparty */
+    countNotEmptyCounterparty?: Scalars['Int']
+    /** Percentage of empty values for counterparty */
+    percentageEmptyCounterparty?: Scalars['Float']
+    /** Percentage of non-empty values for counterparty */
+    percentageNotEmptyCounterparty?: Scalars['Float']
+    /** Number of unique values for category */
+    countUniqueValuesCategory?: Scalars['Int']
+    /** Number of empty values for category */
+    countEmptyCategory?: Scalars['Int']
+    /** Number of non-empty values for category */
+    countNotEmptyCategory?: Scalars['Int']
+    /** Percentage of empty values for category */
+    percentageEmptyCategory?: Scalars['Float']
+    /** Percentage of non-empty values for category */
+    percentageNotEmptyCategory?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for paidAt */
+    countUniqueValuesPaidAt?: Scalars['Int']
+    /** Number of empty values for paidAt */
+    countEmptyPaidAt?: Scalars['Int']
+    /** Number of non-empty values for paidAt */
+    countNotEmptyPaidAt?: Scalars['Int']
+    /** Percentage of empty values for paidAt */
+    percentageEmptyPaidAt?: Scalars['Float']
+    /** Percentage of non-empty values for paidAt */
+    percentageNotEmptyPaidAt?: Scalars['Float']
+    /** Earliest date contained in the field paidAt */
+    minPaidAt?: Scalars['DateTime']
+    /** Latest date contained in the field paidAt */
+    maxPaidAt?: Scalars['DateTime']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for invoiceId */
+    countUniqueValuesInvoiceId?: Scalars['Int']
+    /** Number of empty values for invoiceId */
+    countEmptyInvoiceId?: Scalars['Int']
+    /** Number of non-empty values for invoiceId */
+    countNotEmptyInvoiceId?: Scalars['Int']
+    /** Percentage of empty values for invoiceId */
+    percentageEmptyInvoiceId?: Scalars['Float']
+    /** Percentage of non-empty values for invoiceId */
+    percentageNotEmptyInvoiceId?: Scalars['Float']
+    /** Number of unique values for externalId */
+    countUniqueValuesExternalId?: Scalars['Int']
+    /** Number of empty values for externalId */
+    countEmptyExternalId?: Scalars['Int']
+    /** Number of non-empty values for externalId */
+    countNotEmptyExternalId?: Scalars['Int']
+    /** Percentage of empty values for externalId */
+    percentageEmptyExternalId?: Scalars['Float']
+    /** Percentage of non-empty values for externalId */
+    percentageNotEmptyExternalId?: Scalars['Float']
+    /** Number of unique values for receipts */
+    countUniqueValuesReceipts?: Scalars['Int']
+    /** Number of empty values for receipts */
+    countEmptyReceipts?: Scalars['Int']
+    /** Number of non-empty values for receipts */
+    countNotEmptyReceipts?: Scalars['Int']
+    /** Percentage of empty values for receipts */
+    percentageEmptyReceipts?: Scalars['Float']
+    /** Percentage of non-empty values for receipts */
+    percentageNotEmptyReceipts?: Scalars['Float']
+    edges: BusinessPaymentEdge[]
+    pageInfo: PageInfo
+    __typename: 'BusinessPaymentConnection'
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for direction */
+    countUniqueValuesDirection?: Scalars['Int']
+    /** Number of empty values for direction */
+    countEmptyDirection?: Scalars['Int']
+    /** Number of non-empty values for direction */
+    countNotEmptyDirection?: Scalars['Int']
+    /** Percentage of empty values for direction */
+    percentageEmptyDirection?: Scalars['Float']
+    /** Percentage of non-empty values for direction */
+    percentageNotEmptyDirection?: Scalars['Float']
+    /** Number of unique values for currencyCode */
+    countUniqueValuesCurrencyCode?: Scalars['Int']
+    /** Number of empty values for currencyCode */
+    countEmptyCurrencyCode?: Scalars['Int']
+    /** Number of non-empty values for currencyCode */
+    countNotEmptyCurrencyCode?: Scalars['Int']
+    /** Percentage of empty values for currencyCode */
+    percentageEmptyCurrencyCode?: Scalars['Float']
+    /** Percentage of non-empty values for currencyCode */
+    percentageNotEmptyCurrencyCode?: Scalars['Float']
+    /** Number of unique values for notes */
+    countUniqueValuesNotes?: Scalars['Int']
+    /** Number of empty values for notes */
+    countEmptyNotes?: Scalars['Int']
+    /** Number of non-empty values for notes */
+    countNotEmptyNotes?: Scalars['Int']
+    /** Percentage of empty values for notes */
+    percentageEmptyNotes?: Scalars['Float']
+    /** Percentage of non-empty values for notes */
+    percentageNotEmptyNotes?: Scalars['Float']
+    /** Number of unique values for paymentDueAt */
+    countUniqueValuesPaymentDueAt?: Scalars['Int']
+    /** Number of empty values for paymentDueAt */
+    countEmptyPaymentDueAt?: Scalars['Int']
+    /** Number of non-empty values for paymentDueAt */
+    countNotEmptyPaymentDueAt?: Scalars['Int']
+    /** Percentage of empty values for paymentDueAt */
+    percentageEmptyPaymentDueAt?: Scalars['Float']
+    /** Percentage of non-empty values for paymentDueAt */
+    percentageNotEmptyPaymentDueAt?: Scalars['Float']
+    /** Earliest date contained in the field paymentDueAt */
+    minPaymentDueAt?: Scalars['DateTime']
+    /** Latest date contained in the field paymentDueAt */
+    maxPaymentDueAt?: Scalars['DateTime']
+    /** Number of unique values for amountUsd */
+    countUniqueValuesAmountUsd?: Scalars['Int']
+    /** Number of empty values for amountUsd */
+    countEmptyAmountUsd?: Scalars['Int']
+    /** Number of non-empty values for amountUsd */
+    countNotEmptyAmountUsd?: Scalars['Int']
+    /** Percentage of empty values for amountUsd */
+    percentageEmptyAmountUsd?: Scalars['Float']
+    /** Percentage of non-empty values for amountUsd */
+    percentageNotEmptyAmountUsd?: Scalars['Float']
+    /** Minimum amount contained in the field amountUsd */
+    minAmountUsdAmountMicros?: Scalars['Float']
+    /** Maximal amount contained in the field amountUsd */
+    maxAmountUsdAmountMicros?: Scalars['Float']
+    /** Sum of amounts contained in the field amountUsd */
+    sumAmountUsdAmountMicros?: Scalars['Float']
+    /** Average amount contained in the field amountUsd */
+    avgAmountUsdAmountMicros?: Scalars['Float']
+    /** Number of unique values for sourceAccount */
+    countUniqueValuesSourceAccount?: Scalars['Int']
+    /** Number of empty values for sourceAccount */
+    countEmptySourceAccount?: Scalars['Int']
+    /** Number of non-empty values for sourceAccount */
+    countNotEmptySourceAccount?: Scalars['Int']
+    /** Percentage of empty values for sourceAccount */
+    percentageEmptySourceAccount?: Scalars['Float']
+    /** Percentage of non-empty values for sourceAccount */
+    percentageNotEmptySourceAccount?: Scalars['Float']
+    /** Number of unique values for counterparty */
+    countUniqueValuesCounterparty?: Scalars['Int']
+    /** Number of empty values for counterparty */
+    countEmptyCounterparty?: Scalars['Int']
+    /** Number of non-empty values for counterparty */
+    countNotEmptyCounterparty?: Scalars['Int']
+    /** Percentage of empty values for counterparty */
+    percentageEmptyCounterparty?: Scalars['Float']
+    /** Percentage of non-empty values for counterparty */
+    percentageNotEmptyCounterparty?: Scalars['Float']
+    /** Number of unique values for category */
+    countUniqueValuesCategory?: Scalars['Int']
+    /** Number of empty values for category */
+    countEmptyCategory?: Scalars['Int']
+    /** Number of non-empty values for category */
+    countNotEmptyCategory?: Scalars['Int']
+    /** Percentage of empty values for category */
+    percentageEmptyCategory?: Scalars['Float']
+    /** Percentage of non-empty values for category */
+    percentageNotEmptyCategory?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for paidAt */
+    countUniqueValuesPaidAt?: Scalars['Int']
+    /** Number of empty values for paidAt */
+    countEmptyPaidAt?: Scalars['Int']
+    /** Number of non-empty values for paidAt */
+    countNotEmptyPaidAt?: Scalars['Int']
+    /** Percentage of empty values for paidAt */
+    percentageEmptyPaidAt?: Scalars['Float']
+    /** Percentage of non-empty values for paidAt */
+    percentageNotEmptyPaidAt?: Scalars['Float']
+    /** Earliest date contained in the field paidAt */
+    minPaidAt?: Scalars['DateTime']
+    /** Latest date contained in the field paidAt */
+    maxPaidAt?: Scalars['DateTime']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for invoiceId */
+    countUniqueValuesInvoiceId?: Scalars['Int']
+    /** Number of empty values for invoiceId */
+    countEmptyInvoiceId?: Scalars['Int']
+    /** Number of non-empty values for invoiceId */
+    countNotEmptyInvoiceId?: Scalars['Int']
+    /** Percentage of empty values for invoiceId */
+    percentageEmptyInvoiceId?: Scalars['Float']
+    /** Percentage of non-empty values for invoiceId */
+    percentageNotEmptyInvoiceId?: Scalars['Float']
+    /** Number of unique values for externalId */
+    countUniqueValuesExternalId?: Scalars['Int']
+    /** Number of empty values for externalId */
+    countEmptyExternalId?: Scalars['Int']
+    /** Number of non-empty values for externalId */
+    countNotEmptyExternalId?: Scalars['Int']
+    /** Percentage of empty values for externalId */
+    percentageEmptyExternalId?: Scalars['Float']
+    /** Percentage of non-empty values for externalId */
+    percentageNotEmptyExternalId?: Scalars['Float']
+    /** Number of unique values for receipts */
+    countUniqueValuesReceipts?: Scalars['Int']
+    /** Number of empty values for receipts */
+    countEmptyReceipts?: Scalars['Int']
+    /** Number of non-empty values for receipts */
+    countNotEmptyReceipts?: Scalars['Int']
+    /** Percentage of empty values for receipts */
+    percentageEmptyReceipts?: Scalars['Float']
+    /** Percentage of non-empty values for receipts */
+    percentageNotEmptyReceipts?: Scalars['Float']
+    edges: BusinessPaymentEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'BusinessPaymentGroupByConnection'
+}
+
+
+/** Blog, guide, newsletter, or change */
+export type CmsContentContentTypeEnum = 'BLOG' | 'GUIDE' | 'NEWSLETTER' | 'CHANGE' | 'TOOL' | 'VERSUS' | 'DOCUMENTATION' | 'AGENCY'
+
+
+/** Content status */
+export type CmsContentStatusEnum = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContent {
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    discordAnnouncedAt?: Scalars['DateTime']
+    /** Short blurb used in cards and lists */
+    excerpt?: Scalars['String']
+    /** Comma-separated author names */
+    authors?: Scalars['String']
+    /** Content description/summary */
+    description?: Scalars['String']
+    /** Hero or card image URL */
+    imageUrl?: Scalars['String']
+    /** Blog, guide, newsletter, or change */
+    contentType?: CmsContentContentTypeEnum
+    /** Legacy publish toggle kept for backwards compatibility */
+    isPublished?: Scalars['Boolean']
+    /** Lower values appear first */
+    sortOrder?: Scalars['Float']
+    /** Content body in markdown */
+    bodyMarkdown?: RichText
+    /** When content was published */
+    publishedAt?: Scalars['DateTime']
+    /** Optional rich text body converted before rendering */
+    bodyRichText?: RichText
+    /** Alt text for the image */
+    imageAlt?: Scalars['String']
+    /** URL slug */
+    slug?: Scalars['String']
+    /** Content status */
+    status?: CmsContentStatusEnum
+    /** Content title */
+    title: Scalars['String']
+    /** CmsContents tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** CmsContents tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** CmsContents tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** CmsContents tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** CmsContents tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'CmsContent'
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentEdge {
+    node: CmsContent
+    cursor: Scalars['Cursor']
+    __typename: 'CmsContentEdge'
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for discordAnnouncedAt */
+    countUniqueValuesDiscordAnnouncedAt?: Scalars['Int']
+    /** Number of empty values for discordAnnouncedAt */
+    countEmptyDiscordAnnouncedAt?: Scalars['Int']
+    /** Number of non-empty values for discordAnnouncedAt */
+    countNotEmptyDiscordAnnouncedAt?: Scalars['Int']
+    /** Percentage of empty values for discordAnnouncedAt */
+    percentageEmptyDiscordAnnouncedAt?: Scalars['Float']
+    /** Percentage of non-empty values for discordAnnouncedAt */
+    percentageNotEmptyDiscordAnnouncedAt?: Scalars['Float']
+    /** Earliest date contained in the field discordAnnouncedAt */
+    minDiscordAnnouncedAt?: Scalars['DateTime']
+    /** Latest date contained in the field discordAnnouncedAt */
+    maxDiscordAnnouncedAt?: Scalars['DateTime']
+    /** Number of unique values for excerpt */
+    countUniqueValuesExcerpt?: Scalars['Int']
+    /** Number of empty values for excerpt */
+    countEmptyExcerpt?: Scalars['Int']
+    /** Number of non-empty values for excerpt */
+    countNotEmptyExcerpt?: Scalars['Int']
+    /** Percentage of empty values for excerpt */
+    percentageEmptyExcerpt?: Scalars['Float']
+    /** Percentage of non-empty values for excerpt */
+    percentageNotEmptyExcerpt?: Scalars['Float']
+    /** Number of unique values for authors */
+    countUniqueValuesAuthors?: Scalars['Int']
+    /** Number of empty values for authors */
+    countEmptyAuthors?: Scalars['Int']
+    /** Number of non-empty values for authors */
+    countNotEmptyAuthors?: Scalars['Int']
+    /** Percentage of empty values for authors */
+    percentageEmptyAuthors?: Scalars['Float']
+    /** Percentage of non-empty values for authors */
+    percentageNotEmptyAuthors?: Scalars['Float']
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: Scalars['Int']
+    /** Number of empty values for description */
+    countEmptyDescription?: Scalars['Int']
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: Scalars['Int']
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: Scalars['Float']
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: Scalars['Float']
+    /** Number of unique values for imageUrl */
+    countUniqueValuesImageUrl?: Scalars['Int']
+    /** Number of empty values for imageUrl */
+    countEmptyImageUrl?: Scalars['Int']
+    /** Number of non-empty values for imageUrl */
+    countNotEmptyImageUrl?: Scalars['Int']
+    /** Percentage of empty values for imageUrl */
+    percentageEmptyImageUrl?: Scalars['Float']
+    /** Percentage of non-empty values for imageUrl */
+    percentageNotEmptyImageUrl?: Scalars['Float']
+    /** Number of unique values for contentType */
+    countUniqueValuesContentType?: Scalars['Int']
+    /** Number of empty values for contentType */
+    countEmptyContentType?: Scalars['Int']
+    /** Number of non-empty values for contentType */
+    countNotEmptyContentType?: Scalars['Int']
+    /** Percentage of empty values for contentType */
+    percentageEmptyContentType?: Scalars['Float']
+    /** Percentage of non-empty values for contentType */
+    percentageNotEmptyContentType?: Scalars['Float']
+    /** Number of unique values for isPublished */
+    countUniqueValuesIsPublished?: Scalars['Int']
+    /** Number of empty values for isPublished */
+    countEmptyIsPublished?: Scalars['Int']
+    /** Number of non-empty values for isPublished */
+    countNotEmptyIsPublished?: Scalars['Int']
+    /** Percentage of empty values for isPublished */
+    percentageEmptyIsPublished?: Scalars['Float']
+    /** Percentage of non-empty values for isPublished */
+    percentageNotEmptyIsPublished?: Scalars['Float']
+    /** Count of true values in the field isPublished */
+    countTrueIsPublished?: Scalars['Int']
+    /** Count of false values in the field isPublished */
+    countFalseIsPublished?: Scalars['Int']
+    /** Number of unique values for sortOrder */
+    countUniqueValuesSortOrder?: Scalars['Int']
+    /** Number of empty values for sortOrder */
+    countEmptySortOrder?: Scalars['Int']
+    /** Number of non-empty values for sortOrder */
+    countNotEmptySortOrder?: Scalars['Int']
+    /** Percentage of empty values for sortOrder */
+    percentageEmptySortOrder?: Scalars['Float']
+    /** Percentage of non-empty values for sortOrder */
+    percentageNotEmptySortOrder?: Scalars['Float']
+    /** Minimum amount contained in the field sortOrder */
+    minSortOrder?: Scalars['Float']
+    /** Maximum amount contained in the field sortOrder */
+    maxSortOrder?: Scalars['Float']
+    /** Average amount contained in the field sortOrder */
+    avgSortOrder?: Scalars['Float']
+    /** Sum of amounts contained in the field sortOrder */
+    sumSortOrder?: Scalars['Float']
+    /** Number of unique values for bodyMarkdown */
+    countUniqueValuesBodyMarkdown?: Scalars['Int']
+    /** Number of empty values for bodyMarkdown */
+    countEmptyBodyMarkdown?: Scalars['Int']
+    /** Number of non-empty values for bodyMarkdown */
+    countNotEmptyBodyMarkdown?: Scalars['Int']
+    /** Percentage of empty values for bodyMarkdown */
+    percentageEmptyBodyMarkdown?: Scalars['Float']
+    /** Percentage of non-empty values for bodyMarkdown */
+    percentageNotEmptyBodyMarkdown?: Scalars['Float']
+    /** Number of unique values for publishedAt */
+    countUniqueValuesPublishedAt?: Scalars['Int']
+    /** Number of empty values for publishedAt */
+    countEmptyPublishedAt?: Scalars['Int']
+    /** Number of non-empty values for publishedAt */
+    countNotEmptyPublishedAt?: Scalars['Int']
+    /** Percentage of empty values for publishedAt */
+    percentageEmptyPublishedAt?: Scalars['Float']
+    /** Percentage of non-empty values for publishedAt */
+    percentageNotEmptyPublishedAt?: Scalars['Float']
+    /** Earliest date contained in the field publishedAt */
+    minPublishedAt?: Scalars['DateTime']
+    /** Latest date contained in the field publishedAt */
+    maxPublishedAt?: Scalars['DateTime']
+    /** Number of unique values for bodyRichText */
+    countUniqueValuesBodyRichText?: Scalars['Int']
+    /** Number of empty values for bodyRichText */
+    countEmptyBodyRichText?: Scalars['Int']
+    /** Number of non-empty values for bodyRichText */
+    countNotEmptyBodyRichText?: Scalars['Int']
+    /** Percentage of empty values for bodyRichText */
+    percentageEmptyBodyRichText?: Scalars['Float']
+    /** Percentage of non-empty values for bodyRichText */
+    percentageNotEmptyBodyRichText?: Scalars['Float']
+    /** Number of unique values for imageAlt */
+    countUniqueValuesImageAlt?: Scalars['Int']
+    /** Number of empty values for imageAlt */
+    countEmptyImageAlt?: Scalars['Int']
+    /** Number of non-empty values for imageAlt */
+    countNotEmptyImageAlt?: Scalars['Int']
+    /** Percentage of empty values for imageAlt */
+    percentageEmptyImageAlt?: Scalars['Float']
+    /** Percentage of non-empty values for imageAlt */
+    percentageNotEmptyImageAlt?: Scalars['Float']
+    /** Number of unique values for slug */
+    countUniqueValuesSlug?: Scalars['Int']
+    /** Number of empty values for slug */
+    countEmptySlug?: Scalars['Int']
+    /** Number of non-empty values for slug */
+    countNotEmptySlug?: Scalars['Int']
+    /** Percentage of empty values for slug */
+    percentageEmptySlug?: Scalars['Float']
+    /** Percentage of non-empty values for slug */
+    percentageNotEmptySlug?: Scalars['Float']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    edges: CmsContentEdge[]
+    pageInfo: PageInfo
+    __typename: 'CmsContentConnection'
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for discordAnnouncedAt */
+    countUniqueValuesDiscordAnnouncedAt?: Scalars['Int']
+    /** Number of empty values for discordAnnouncedAt */
+    countEmptyDiscordAnnouncedAt?: Scalars['Int']
+    /** Number of non-empty values for discordAnnouncedAt */
+    countNotEmptyDiscordAnnouncedAt?: Scalars['Int']
+    /** Percentage of empty values for discordAnnouncedAt */
+    percentageEmptyDiscordAnnouncedAt?: Scalars['Float']
+    /** Percentage of non-empty values for discordAnnouncedAt */
+    percentageNotEmptyDiscordAnnouncedAt?: Scalars['Float']
+    /** Earliest date contained in the field discordAnnouncedAt */
+    minDiscordAnnouncedAt?: Scalars['DateTime']
+    /** Latest date contained in the field discordAnnouncedAt */
+    maxDiscordAnnouncedAt?: Scalars['DateTime']
+    /** Number of unique values for excerpt */
+    countUniqueValuesExcerpt?: Scalars['Int']
+    /** Number of empty values for excerpt */
+    countEmptyExcerpt?: Scalars['Int']
+    /** Number of non-empty values for excerpt */
+    countNotEmptyExcerpt?: Scalars['Int']
+    /** Percentage of empty values for excerpt */
+    percentageEmptyExcerpt?: Scalars['Float']
+    /** Percentage of non-empty values for excerpt */
+    percentageNotEmptyExcerpt?: Scalars['Float']
+    /** Number of unique values for authors */
+    countUniqueValuesAuthors?: Scalars['Int']
+    /** Number of empty values for authors */
+    countEmptyAuthors?: Scalars['Int']
+    /** Number of non-empty values for authors */
+    countNotEmptyAuthors?: Scalars['Int']
+    /** Percentage of empty values for authors */
+    percentageEmptyAuthors?: Scalars['Float']
+    /** Percentage of non-empty values for authors */
+    percentageNotEmptyAuthors?: Scalars['Float']
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: Scalars['Int']
+    /** Number of empty values for description */
+    countEmptyDescription?: Scalars['Int']
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: Scalars['Int']
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: Scalars['Float']
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: Scalars['Float']
+    /** Number of unique values for imageUrl */
+    countUniqueValuesImageUrl?: Scalars['Int']
+    /** Number of empty values for imageUrl */
+    countEmptyImageUrl?: Scalars['Int']
+    /** Number of non-empty values for imageUrl */
+    countNotEmptyImageUrl?: Scalars['Int']
+    /** Percentage of empty values for imageUrl */
+    percentageEmptyImageUrl?: Scalars['Float']
+    /** Percentage of non-empty values for imageUrl */
+    percentageNotEmptyImageUrl?: Scalars['Float']
+    /** Number of unique values for contentType */
+    countUniqueValuesContentType?: Scalars['Int']
+    /** Number of empty values for contentType */
+    countEmptyContentType?: Scalars['Int']
+    /** Number of non-empty values for contentType */
+    countNotEmptyContentType?: Scalars['Int']
+    /** Percentage of empty values for contentType */
+    percentageEmptyContentType?: Scalars['Float']
+    /** Percentage of non-empty values for contentType */
+    percentageNotEmptyContentType?: Scalars['Float']
+    /** Number of unique values for isPublished */
+    countUniqueValuesIsPublished?: Scalars['Int']
+    /** Number of empty values for isPublished */
+    countEmptyIsPublished?: Scalars['Int']
+    /** Number of non-empty values for isPublished */
+    countNotEmptyIsPublished?: Scalars['Int']
+    /** Percentage of empty values for isPublished */
+    percentageEmptyIsPublished?: Scalars['Float']
+    /** Percentage of non-empty values for isPublished */
+    percentageNotEmptyIsPublished?: Scalars['Float']
+    /** Count of true values in the field isPublished */
+    countTrueIsPublished?: Scalars['Int']
+    /** Count of false values in the field isPublished */
+    countFalseIsPublished?: Scalars['Int']
+    /** Number of unique values for sortOrder */
+    countUniqueValuesSortOrder?: Scalars['Int']
+    /** Number of empty values for sortOrder */
+    countEmptySortOrder?: Scalars['Int']
+    /** Number of non-empty values for sortOrder */
+    countNotEmptySortOrder?: Scalars['Int']
+    /** Percentage of empty values for sortOrder */
+    percentageEmptySortOrder?: Scalars['Float']
+    /** Percentage of non-empty values for sortOrder */
+    percentageNotEmptySortOrder?: Scalars['Float']
+    /** Minimum amount contained in the field sortOrder */
+    minSortOrder?: Scalars['Float']
+    /** Maximum amount contained in the field sortOrder */
+    maxSortOrder?: Scalars['Float']
+    /** Average amount contained in the field sortOrder */
+    avgSortOrder?: Scalars['Float']
+    /** Sum of amounts contained in the field sortOrder */
+    sumSortOrder?: Scalars['Float']
+    /** Number of unique values for bodyMarkdown */
+    countUniqueValuesBodyMarkdown?: Scalars['Int']
+    /** Number of empty values for bodyMarkdown */
+    countEmptyBodyMarkdown?: Scalars['Int']
+    /** Number of non-empty values for bodyMarkdown */
+    countNotEmptyBodyMarkdown?: Scalars['Int']
+    /** Percentage of empty values for bodyMarkdown */
+    percentageEmptyBodyMarkdown?: Scalars['Float']
+    /** Percentage of non-empty values for bodyMarkdown */
+    percentageNotEmptyBodyMarkdown?: Scalars['Float']
+    /** Number of unique values for publishedAt */
+    countUniqueValuesPublishedAt?: Scalars['Int']
+    /** Number of empty values for publishedAt */
+    countEmptyPublishedAt?: Scalars['Int']
+    /** Number of non-empty values for publishedAt */
+    countNotEmptyPublishedAt?: Scalars['Int']
+    /** Percentage of empty values for publishedAt */
+    percentageEmptyPublishedAt?: Scalars['Float']
+    /** Percentage of non-empty values for publishedAt */
+    percentageNotEmptyPublishedAt?: Scalars['Float']
+    /** Earliest date contained in the field publishedAt */
+    minPublishedAt?: Scalars['DateTime']
+    /** Latest date contained in the field publishedAt */
+    maxPublishedAt?: Scalars['DateTime']
+    /** Number of unique values for bodyRichText */
+    countUniqueValuesBodyRichText?: Scalars['Int']
+    /** Number of empty values for bodyRichText */
+    countEmptyBodyRichText?: Scalars['Int']
+    /** Number of non-empty values for bodyRichText */
+    countNotEmptyBodyRichText?: Scalars['Int']
+    /** Percentage of empty values for bodyRichText */
+    percentageEmptyBodyRichText?: Scalars['Float']
+    /** Percentage of non-empty values for bodyRichText */
+    percentageNotEmptyBodyRichText?: Scalars['Float']
+    /** Number of unique values for imageAlt */
+    countUniqueValuesImageAlt?: Scalars['Int']
+    /** Number of empty values for imageAlt */
+    countEmptyImageAlt?: Scalars['Int']
+    /** Number of non-empty values for imageAlt */
+    countNotEmptyImageAlt?: Scalars['Int']
+    /** Percentage of empty values for imageAlt */
+    percentageEmptyImageAlt?: Scalars['Float']
+    /** Percentage of non-empty values for imageAlt */
+    percentageNotEmptyImageAlt?: Scalars['Float']
+    /** Number of unique values for slug */
+    countUniqueValuesSlug?: Scalars['Int']
+    /** Number of empty values for slug */
+    countEmptySlug?: Scalars['Int']
+    /** Number of non-empty values for slug */
+    countNotEmptySlug?: Scalars['Int']
+    /** Percentage of empty values for slug */
+    percentageEmptySlug?: Scalars['Float']
+    /** Percentage of non-empty values for slug */
+    percentageNotEmptySlug?: Scalars['Float']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    edges: CmsContentEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'CmsContentGroupByConnection'
+}
+
+
+/** PR status label */
+export type DevToolLabelEnum = 'PR_SUBMITTED' | 'PR_ACCEPTED' | 'PR_DECLINED' | 'PR_NOT_CREATED'
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevTool {
+    /** PR status label */
+    label?: DevToolLabelEnum
+    /** GitHub repository */
+    github?: Links
+    /** GitHub stars */
+    stars?: Scalars['Float']
+    /** Tool website */
+    website?: Links
+    /** Submitted pull request URL */
+    submittedPr?: Links
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** DevTools tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** DevTools tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** DevTools tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** DevTools tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** DevTools tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'DevTool'
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolEdge {
+    node: DevTool
+    cursor: Scalars['Cursor']
+    __typename: 'DevToolEdge'
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: Scalars['Int']
+    /** Number of empty values for label */
+    countEmptyLabel?: Scalars['Int']
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: Scalars['Int']
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: Scalars['Float']
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: Scalars['Float']
+    /** Number of unique values for github */
+    countUniqueValuesGithub?: Scalars['Int']
+    /** Number of empty values for github */
+    countEmptyGithub?: Scalars['Int']
+    /** Number of non-empty values for github */
+    countNotEmptyGithub?: Scalars['Int']
+    /** Percentage of empty values for github */
+    percentageEmptyGithub?: Scalars['Float']
+    /** Percentage of non-empty values for github */
+    percentageNotEmptyGithub?: Scalars['Float']
+    /** Number of unique values for stars */
+    countUniqueValuesStars?: Scalars['Int']
+    /** Number of empty values for stars */
+    countEmptyStars?: Scalars['Int']
+    /** Number of non-empty values for stars */
+    countNotEmptyStars?: Scalars['Int']
+    /** Percentage of empty values for stars */
+    percentageEmptyStars?: Scalars['Float']
+    /** Percentage of non-empty values for stars */
+    percentageNotEmptyStars?: Scalars['Float']
+    /** Minimum amount contained in the field stars */
+    minStars?: Scalars['Float']
+    /** Maximum amount contained in the field stars */
+    maxStars?: Scalars['Float']
+    /** Average amount contained in the field stars */
+    avgStars?: Scalars['Float']
+    /** Sum of amounts contained in the field stars */
+    sumStars?: Scalars['Float']
+    /** Number of unique values for website */
+    countUniqueValuesWebsite?: Scalars['Int']
+    /** Number of empty values for website */
+    countEmptyWebsite?: Scalars['Int']
+    /** Number of non-empty values for website */
+    countNotEmptyWebsite?: Scalars['Int']
+    /** Percentage of empty values for website */
+    percentageEmptyWebsite?: Scalars['Float']
+    /** Percentage of non-empty values for website */
+    percentageNotEmptyWebsite?: Scalars['Float']
+    /** Number of unique values for submittedPr */
+    countUniqueValuesSubmittedPr?: Scalars['Int']
+    /** Number of empty values for submittedPr */
+    countEmptySubmittedPr?: Scalars['Int']
+    /** Number of non-empty values for submittedPr */
+    countNotEmptySubmittedPr?: Scalars['Int']
+    /** Percentage of empty values for submittedPr */
+    percentageEmptySubmittedPr?: Scalars['Float']
+    /** Percentage of non-empty values for submittedPr */
+    percentageNotEmptySubmittedPr?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    edges: DevToolEdge[]
+    pageInfo: PageInfo
+    __typename: 'DevToolConnection'
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: Scalars['Int']
+    /** Number of empty values for label */
+    countEmptyLabel?: Scalars['Int']
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: Scalars['Int']
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: Scalars['Float']
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: Scalars['Float']
+    /** Number of unique values for github */
+    countUniqueValuesGithub?: Scalars['Int']
+    /** Number of empty values for github */
+    countEmptyGithub?: Scalars['Int']
+    /** Number of non-empty values for github */
+    countNotEmptyGithub?: Scalars['Int']
+    /** Percentage of empty values for github */
+    percentageEmptyGithub?: Scalars['Float']
+    /** Percentage of non-empty values for github */
+    percentageNotEmptyGithub?: Scalars['Float']
+    /** Number of unique values for stars */
+    countUniqueValuesStars?: Scalars['Int']
+    /** Number of empty values for stars */
+    countEmptyStars?: Scalars['Int']
+    /** Number of non-empty values for stars */
+    countNotEmptyStars?: Scalars['Int']
+    /** Percentage of empty values for stars */
+    percentageEmptyStars?: Scalars['Float']
+    /** Percentage of non-empty values for stars */
+    percentageNotEmptyStars?: Scalars['Float']
+    /** Minimum amount contained in the field stars */
+    minStars?: Scalars['Float']
+    /** Maximum amount contained in the field stars */
+    maxStars?: Scalars['Float']
+    /** Average amount contained in the field stars */
+    avgStars?: Scalars['Float']
+    /** Sum of amounts contained in the field stars */
+    sumStars?: Scalars['Float']
+    /** Number of unique values for website */
+    countUniqueValuesWebsite?: Scalars['Int']
+    /** Number of empty values for website */
+    countEmptyWebsite?: Scalars['Int']
+    /** Number of non-empty values for website */
+    countNotEmptyWebsite?: Scalars['Int']
+    /** Percentage of empty values for website */
+    percentageEmptyWebsite?: Scalars['Float']
+    /** Percentage of non-empty values for website */
+    percentageNotEmptyWebsite?: Scalars['Float']
+    /** Number of unique values for submittedPr */
+    countUniqueValuesSubmittedPr?: Scalars['Int']
+    /** Number of empty values for submittedPr */
+    countEmptySubmittedPr?: Scalars['Int']
+    /** Number of non-empty values for submittedPr */
+    countNotEmptySubmittedPr?: Scalars['Int']
+    /** Percentage of empty values for submittedPr */
+    percentageEmptySubmittedPr?: Scalars['Float']
+    /** Percentage of non-empty values for submittedPr */
+    percentageNotEmptySubmittedPr?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    edges: DevToolEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'DevToolGroupByConnection'
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSession {
+    status?: Scalars['String']
+    agentPhone?: Scalars['String']
+    mode?: Scalars['String']
+    contactAnsweredAt?: Scalars['String']
+    error?: Scalars['String']
+    contactLegId?: Scalars['String']
+    hangupCause?: Scalars['String']
+    pin?: Scalars['String']
+    contactState?: Scalars['String']
+    contactEndedAt?: Scalars['String']
+    agentLegId?: Scalars['String']
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    expiresAt?: Scalars['String']
+    memberId?: Scalars['String']
+    /** DialerAudioSessions tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** DialerAudioSessions tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** DialerAudioSessions tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** DialerAudioSessions tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** DialerAudioSessions tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'DialerAudioSession'
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionEdge {
+    node: DialerAudioSession
+    cursor: Scalars['Cursor']
+    __typename: 'DialerAudioSessionEdge'
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for agentPhone */
+    countUniqueValuesAgentPhone?: Scalars['Int']
+    /** Number of empty values for agentPhone */
+    countEmptyAgentPhone?: Scalars['Int']
+    /** Number of non-empty values for agentPhone */
+    countNotEmptyAgentPhone?: Scalars['Int']
+    /** Percentage of empty values for agentPhone */
+    percentageEmptyAgentPhone?: Scalars['Float']
+    /** Percentage of non-empty values for agentPhone */
+    percentageNotEmptyAgentPhone?: Scalars['Float']
+    /** Number of unique values for mode */
+    countUniqueValuesMode?: Scalars['Int']
+    /** Number of empty values for mode */
+    countEmptyMode?: Scalars['Int']
+    /** Number of non-empty values for mode */
+    countNotEmptyMode?: Scalars['Int']
+    /** Percentage of empty values for mode */
+    percentageEmptyMode?: Scalars['Float']
+    /** Percentage of non-empty values for mode */
+    percentageNotEmptyMode?: Scalars['Float']
+    /** Number of unique values for contactAnsweredAt */
+    countUniqueValuesContactAnsweredAt?: Scalars['Int']
+    /** Number of empty values for contactAnsweredAt */
+    countEmptyContactAnsweredAt?: Scalars['Int']
+    /** Number of non-empty values for contactAnsweredAt */
+    countNotEmptyContactAnsweredAt?: Scalars['Int']
+    /** Percentage of empty values for contactAnsweredAt */
+    percentageEmptyContactAnsweredAt?: Scalars['Float']
+    /** Percentage of non-empty values for contactAnsweredAt */
+    percentageNotEmptyContactAnsweredAt?: Scalars['Float']
+    /** Number of unique values for error */
+    countUniqueValuesError?: Scalars['Int']
+    /** Number of empty values for error */
+    countEmptyError?: Scalars['Int']
+    /** Number of non-empty values for error */
+    countNotEmptyError?: Scalars['Int']
+    /** Percentage of empty values for error */
+    percentageEmptyError?: Scalars['Float']
+    /** Percentage of non-empty values for error */
+    percentageNotEmptyError?: Scalars['Float']
+    /** Number of unique values for contactLegId */
+    countUniqueValuesContactLegId?: Scalars['Int']
+    /** Number of empty values for contactLegId */
+    countEmptyContactLegId?: Scalars['Int']
+    /** Number of non-empty values for contactLegId */
+    countNotEmptyContactLegId?: Scalars['Int']
+    /** Percentage of empty values for contactLegId */
+    percentageEmptyContactLegId?: Scalars['Float']
+    /** Percentage of non-empty values for contactLegId */
+    percentageNotEmptyContactLegId?: Scalars['Float']
+    /** Number of unique values for hangupCause */
+    countUniqueValuesHangupCause?: Scalars['Int']
+    /** Number of empty values for hangupCause */
+    countEmptyHangupCause?: Scalars['Int']
+    /** Number of non-empty values for hangupCause */
+    countNotEmptyHangupCause?: Scalars['Int']
+    /** Percentage of empty values for hangupCause */
+    percentageEmptyHangupCause?: Scalars['Float']
+    /** Percentage of non-empty values for hangupCause */
+    percentageNotEmptyHangupCause?: Scalars['Float']
+    /** Number of unique values for pin */
+    countUniqueValuesPin?: Scalars['Int']
+    /** Number of empty values for pin */
+    countEmptyPin?: Scalars['Int']
+    /** Number of non-empty values for pin */
+    countNotEmptyPin?: Scalars['Int']
+    /** Percentage of empty values for pin */
+    percentageEmptyPin?: Scalars['Float']
+    /** Percentage of non-empty values for pin */
+    percentageNotEmptyPin?: Scalars['Float']
+    /** Number of unique values for contactState */
+    countUniqueValuesContactState?: Scalars['Int']
+    /** Number of empty values for contactState */
+    countEmptyContactState?: Scalars['Int']
+    /** Number of non-empty values for contactState */
+    countNotEmptyContactState?: Scalars['Int']
+    /** Percentage of empty values for contactState */
+    percentageEmptyContactState?: Scalars['Float']
+    /** Percentage of non-empty values for contactState */
+    percentageNotEmptyContactState?: Scalars['Float']
+    /** Number of unique values for contactEndedAt */
+    countUniqueValuesContactEndedAt?: Scalars['Int']
+    /** Number of empty values for contactEndedAt */
+    countEmptyContactEndedAt?: Scalars['Int']
+    /** Number of non-empty values for contactEndedAt */
+    countNotEmptyContactEndedAt?: Scalars['Int']
+    /** Percentage of empty values for contactEndedAt */
+    percentageEmptyContactEndedAt?: Scalars['Float']
+    /** Percentage of non-empty values for contactEndedAt */
+    percentageNotEmptyContactEndedAt?: Scalars['Float']
+    /** Number of unique values for agentLegId */
+    countUniqueValuesAgentLegId?: Scalars['Int']
+    /** Number of empty values for agentLegId */
+    countEmptyAgentLegId?: Scalars['Int']
+    /** Number of non-empty values for agentLegId */
+    countNotEmptyAgentLegId?: Scalars['Int']
+    /** Percentage of empty values for agentLegId */
+    percentageEmptyAgentLegId?: Scalars['Float']
+    /** Percentage of non-empty values for agentLegId */
+    percentageNotEmptyAgentLegId?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for expiresAt */
+    countUniqueValuesExpiresAt?: Scalars['Int']
+    /** Number of empty values for expiresAt */
+    countEmptyExpiresAt?: Scalars['Int']
+    /** Number of non-empty values for expiresAt */
+    countNotEmptyExpiresAt?: Scalars['Int']
+    /** Percentage of empty values for expiresAt */
+    percentageEmptyExpiresAt?: Scalars['Float']
+    /** Percentage of non-empty values for expiresAt */
+    percentageNotEmptyExpiresAt?: Scalars['Float']
+    /** Number of unique values for memberId */
+    countUniqueValuesMemberId?: Scalars['Int']
+    /** Number of empty values for memberId */
+    countEmptyMemberId?: Scalars['Int']
+    /** Number of non-empty values for memberId */
+    countNotEmptyMemberId?: Scalars['Int']
+    /** Percentage of empty values for memberId */
+    percentageEmptyMemberId?: Scalars['Float']
+    /** Percentage of non-empty values for memberId */
+    percentageNotEmptyMemberId?: Scalars['Float']
+    edges: DialerAudioSessionEdge[]
+    pageInfo: PageInfo
+    __typename: 'DialerAudioSessionConnection'
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: Scalars['Int']
+    /** Number of empty values for status */
+    countEmptyStatus?: Scalars['Int']
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: Scalars['Int']
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: Scalars['Float']
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: Scalars['Float']
+    /** Number of unique values for agentPhone */
+    countUniqueValuesAgentPhone?: Scalars['Int']
+    /** Number of empty values for agentPhone */
+    countEmptyAgentPhone?: Scalars['Int']
+    /** Number of non-empty values for agentPhone */
+    countNotEmptyAgentPhone?: Scalars['Int']
+    /** Percentage of empty values for agentPhone */
+    percentageEmptyAgentPhone?: Scalars['Float']
+    /** Percentage of non-empty values for agentPhone */
+    percentageNotEmptyAgentPhone?: Scalars['Float']
+    /** Number of unique values for mode */
+    countUniqueValuesMode?: Scalars['Int']
+    /** Number of empty values for mode */
+    countEmptyMode?: Scalars['Int']
+    /** Number of non-empty values for mode */
+    countNotEmptyMode?: Scalars['Int']
+    /** Percentage of empty values for mode */
+    percentageEmptyMode?: Scalars['Float']
+    /** Percentage of non-empty values for mode */
+    percentageNotEmptyMode?: Scalars['Float']
+    /** Number of unique values for contactAnsweredAt */
+    countUniqueValuesContactAnsweredAt?: Scalars['Int']
+    /** Number of empty values for contactAnsweredAt */
+    countEmptyContactAnsweredAt?: Scalars['Int']
+    /** Number of non-empty values for contactAnsweredAt */
+    countNotEmptyContactAnsweredAt?: Scalars['Int']
+    /** Percentage of empty values for contactAnsweredAt */
+    percentageEmptyContactAnsweredAt?: Scalars['Float']
+    /** Percentage of non-empty values for contactAnsweredAt */
+    percentageNotEmptyContactAnsweredAt?: Scalars['Float']
+    /** Number of unique values for error */
+    countUniqueValuesError?: Scalars['Int']
+    /** Number of empty values for error */
+    countEmptyError?: Scalars['Int']
+    /** Number of non-empty values for error */
+    countNotEmptyError?: Scalars['Int']
+    /** Percentage of empty values for error */
+    percentageEmptyError?: Scalars['Float']
+    /** Percentage of non-empty values for error */
+    percentageNotEmptyError?: Scalars['Float']
+    /** Number of unique values for contactLegId */
+    countUniqueValuesContactLegId?: Scalars['Int']
+    /** Number of empty values for contactLegId */
+    countEmptyContactLegId?: Scalars['Int']
+    /** Number of non-empty values for contactLegId */
+    countNotEmptyContactLegId?: Scalars['Int']
+    /** Percentage of empty values for contactLegId */
+    percentageEmptyContactLegId?: Scalars['Float']
+    /** Percentage of non-empty values for contactLegId */
+    percentageNotEmptyContactLegId?: Scalars['Float']
+    /** Number of unique values for hangupCause */
+    countUniqueValuesHangupCause?: Scalars['Int']
+    /** Number of empty values for hangupCause */
+    countEmptyHangupCause?: Scalars['Int']
+    /** Number of non-empty values for hangupCause */
+    countNotEmptyHangupCause?: Scalars['Int']
+    /** Percentage of empty values for hangupCause */
+    percentageEmptyHangupCause?: Scalars['Float']
+    /** Percentage of non-empty values for hangupCause */
+    percentageNotEmptyHangupCause?: Scalars['Float']
+    /** Number of unique values for pin */
+    countUniqueValuesPin?: Scalars['Int']
+    /** Number of empty values for pin */
+    countEmptyPin?: Scalars['Int']
+    /** Number of non-empty values for pin */
+    countNotEmptyPin?: Scalars['Int']
+    /** Percentage of empty values for pin */
+    percentageEmptyPin?: Scalars['Float']
+    /** Percentage of non-empty values for pin */
+    percentageNotEmptyPin?: Scalars['Float']
+    /** Number of unique values for contactState */
+    countUniqueValuesContactState?: Scalars['Int']
+    /** Number of empty values for contactState */
+    countEmptyContactState?: Scalars['Int']
+    /** Number of non-empty values for contactState */
+    countNotEmptyContactState?: Scalars['Int']
+    /** Percentage of empty values for contactState */
+    percentageEmptyContactState?: Scalars['Float']
+    /** Percentage of non-empty values for contactState */
+    percentageNotEmptyContactState?: Scalars['Float']
+    /** Number of unique values for contactEndedAt */
+    countUniqueValuesContactEndedAt?: Scalars['Int']
+    /** Number of empty values for contactEndedAt */
+    countEmptyContactEndedAt?: Scalars['Int']
+    /** Number of non-empty values for contactEndedAt */
+    countNotEmptyContactEndedAt?: Scalars['Int']
+    /** Percentage of empty values for contactEndedAt */
+    percentageEmptyContactEndedAt?: Scalars['Float']
+    /** Percentage of non-empty values for contactEndedAt */
+    percentageNotEmptyContactEndedAt?: Scalars['Float']
+    /** Number of unique values for agentLegId */
+    countUniqueValuesAgentLegId?: Scalars['Int']
+    /** Number of empty values for agentLegId */
+    countEmptyAgentLegId?: Scalars['Int']
+    /** Number of non-empty values for agentLegId */
+    countNotEmptyAgentLegId?: Scalars['Int']
+    /** Percentage of empty values for agentLegId */
+    percentageEmptyAgentLegId?: Scalars['Float']
+    /** Percentage of non-empty values for agentLegId */
+    percentageNotEmptyAgentLegId?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for expiresAt */
+    countUniqueValuesExpiresAt?: Scalars['Int']
+    /** Number of empty values for expiresAt */
+    countEmptyExpiresAt?: Scalars['Int']
+    /** Number of non-empty values for expiresAt */
+    countNotEmptyExpiresAt?: Scalars['Int']
+    /** Percentage of empty values for expiresAt */
+    percentageEmptyExpiresAt?: Scalars['Float']
+    /** Percentage of non-empty values for expiresAt */
+    percentageNotEmptyExpiresAt?: Scalars['Float']
+    /** Number of unique values for memberId */
+    countUniqueValuesMemberId?: Scalars['Int']
+    /** Number of empty values for memberId */
+    countEmptyMemberId?: Scalars['Int']
+    /** Number of non-empty values for memberId */
+    countNotEmptyMemberId?: Scalars['Int']
+    /** Percentage of empty values for memberId */
+    percentageEmptyMemberId?: Scalars['Float']
+    /** Percentage of non-empty values for memberId */
+    percentageNotEmptyMemberId?: Scalars['Float']
+    edges: DialerAudioSessionEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'DialerAudioSessionGroupByConnection'
+}
+
+
+/** GitHub issue state */
+export type GithubIssueStateEnum = 'OPEN' | 'CLOSED'
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssue {
+    /** GitHub issue author */
+    author?: Scalars['String']
+    /** GitHub issue state */
+    state?: GithubIssueStateEnum
+    /** GitHub issue closed at */
+    closedAt?: Scalars['DateTime']
+    /** GitHub issue assignees */
+    assignees?: Scalars['String']
+    /** GitHub issue github id */
+    githubId?: Scalars['Float']
+    /** GitHub issue opened at */
+    openedAt?: Scalars['DateTime']
+    /** GitHub issue labels */
+    labels?: Scalars['String']
+    /** GitHub issue title */
+    title?: Scalars['String']
+    /** GitHub issue repository */
+    repository?: Scalars['String']
+    /** GitHub issue last webhook delivery id */
+    lastWebhookDeliveryId?: Scalars['String']
+    /** GitHub issue issue number */
+    number?: Scalars['Float']
+    /** GitHub issue body */
+    body?: Scalars['String']
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** GitHub issue url */
+    url?: Scalars['String']
+    /** GitHub issue url link */
+    urlLink?: Links
+    /** GitHub issue github updated at */
+    githubUpdatedAt?: Scalars['DateTime']
+    /** GithubIssues tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** GithubIssues tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** GithubIssues tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** GithubIssues tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** GithubIssues tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'GithubIssue'
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueEdge {
+    node: GithubIssue
+    cursor: Scalars['Cursor']
+    __typename: 'GithubIssueEdge'
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: Scalars['Int']
+    /** Number of empty values for author */
+    countEmptyAuthor?: Scalars['Int']
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: Scalars['Int']
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: Scalars['Float']
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: Scalars['Float']
+    /** Number of unique values for state */
+    countUniqueValuesState?: Scalars['Int']
+    /** Number of empty values for state */
+    countEmptyState?: Scalars['Int']
+    /** Number of non-empty values for state */
+    countNotEmptyState?: Scalars['Int']
+    /** Percentage of empty values for state */
+    percentageEmptyState?: Scalars['Float']
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: Scalars['Float']
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: Scalars['Int']
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: Scalars['Int']
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: Scalars['Int']
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: Scalars['Float']
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: Scalars['Float']
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: Scalars['DateTime']
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: Scalars['DateTime']
+    /** Number of unique values for assignees */
+    countUniqueValuesAssignees?: Scalars['Int']
+    /** Number of empty values for assignees */
+    countEmptyAssignees?: Scalars['Int']
+    /** Number of non-empty values for assignees */
+    countNotEmptyAssignees?: Scalars['Int']
+    /** Percentage of empty values for assignees */
+    percentageEmptyAssignees?: Scalars['Float']
+    /** Percentage of non-empty values for assignees */
+    percentageNotEmptyAssignees?: Scalars['Float']
+    /** Number of unique values for githubId */
+    countUniqueValuesGithubId?: Scalars['Int']
+    /** Number of empty values for githubId */
+    countEmptyGithubId?: Scalars['Int']
+    /** Number of non-empty values for githubId */
+    countNotEmptyGithubId?: Scalars['Int']
+    /** Percentage of empty values for githubId */
+    percentageEmptyGithubId?: Scalars['Float']
+    /** Percentage of non-empty values for githubId */
+    percentageNotEmptyGithubId?: Scalars['Float']
+    /** Minimum amount contained in the field githubId */
+    minGithubId?: Scalars['Float']
+    /** Maximum amount contained in the field githubId */
+    maxGithubId?: Scalars['Float']
+    /** Average amount contained in the field githubId */
+    avgGithubId?: Scalars['Float']
+    /** Sum of amounts contained in the field githubId */
+    sumGithubId?: Scalars['Float']
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: Scalars['Int']
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: Scalars['Int']
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: Scalars['Int']
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: Scalars['Float']
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: Scalars['Float']
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: Scalars['DateTime']
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: Scalars['DateTime']
+    /** Number of unique values for labels */
+    countUniqueValuesLabels?: Scalars['Int']
+    /** Number of empty values for labels */
+    countEmptyLabels?: Scalars['Int']
+    /** Number of non-empty values for labels */
+    countNotEmptyLabels?: Scalars['Int']
+    /** Percentage of empty values for labels */
+    percentageEmptyLabels?: Scalars['Float']
+    /** Percentage of non-empty values for labels */
+    percentageNotEmptyLabels?: Scalars['Float']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: Scalars['Int']
+    /** Number of empty values for repository */
+    countEmptyRepository?: Scalars['Int']
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: Scalars['Int']
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: Scalars['Float']
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: Scalars['Float']
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: Scalars['Int']
+    /** Number of empty values for number */
+    countEmptyNumber?: Scalars['Int']
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: Scalars['Int']
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: Scalars['Float']
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: Scalars['Float']
+    /** Minimum amount contained in the field number */
+    minNumber?: Scalars['Float']
+    /** Maximum amount contained in the field number */
+    maxNumber?: Scalars['Float']
+    /** Average amount contained in the field number */
+    avgNumber?: Scalars['Float']
+    /** Sum of amounts contained in the field number */
+    sumNumber?: Scalars['Float']
+    /** Number of unique values for body */
+    countUniqueValuesBody?: Scalars['Int']
+    /** Number of empty values for body */
+    countEmptyBody?: Scalars['Int']
+    /** Number of non-empty values for body */
+    countNotEmptyBody?: Scalars['Int']
+    /** Percentage of empty values for body */
+    percentageEmptyBody?: Scalars['Float']
+    /** Percentage of non-empty values for body */
+    percentageNotEmptyBody?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for url */
+    countUniqueValuesUrl?: Scalars['Int']
+    /** Number of empty values for url */
+    countEmptyUrl?: Scalars['Int']
+    /** Number of non-empty values for url */
+    countNotEmptyUrl?: Scalars['Int']
+    /** Percentage of empty values for url */
+    percentageEmptyUrl?: Scalars['Float']
+    /** Percentage of non-empty values for url */
+    percentageNotEmptyUrl?: Scalars['Float']
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: Scalars['Int']
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: Scalars['Int']
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: Scalars['Int']
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: Scalars['Float']
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: Scalars['Float']
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: Scalars['Int']
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: Scalars['DateTime']
+    edges: GithubIssueEdge[]
+    pageInfo: PageInfo
+    __typename: 'GithubIssueConnection'
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: Scalars['Int']
+    /** Number of empty values for author */
+    countEmptyAuthor?: Scalars['Int']
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: Scalars['Int']
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: Scalars['Float']
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: Scalars['Float']
+    /** Number of unique values for state */
+    countUniqueValuesState?: Scalars['Int']
+    /** Number of empty values for state */
+    countEmptyState?: Scalars['Int']
+    /** Number of non-empty values for state */
+    countNotEmptyState?: Scalars['Int']
+    /** Percentage of empty values for state */
+    percentageEmptyState?: Scalars['Float']
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: Scalars['Float']
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: Scalars['Int']
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: Scalars['Int']
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: Scalars['Int']
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: Scalars['Float']
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: Scalars['Float']
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: Scalars['DateTime']
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: Scalars['DateTime']
+    /** Number of unique values for assignees */
+    countUniqueValuesAssignees?: Scalars['Int']
+    /** Number of empty values for assignees */
+    countEmptyAssignees?: Scalars['Int']
+    /** Number of non-empty values for assignees */
+    countNotEmptyAssignees?: Scalars['Int']
+    /** Percentage of empty values for assignees */
+    percentageEmptyAssignees?: Scalars['Float']
+    /** Percentage of non-empty values for assignees */
+    percentageNotEmptyAssignees?: Scalars['Float']
+    /** Number of unique values for githubId */
+    countUniqueValuesGithubId?: Scalars['Int']
+    /** Number of empty values for githubId */
+    countEmptyGithubId?: Scalars['Int']
+    /** Number of non-empty values for githubId */
+    countNotEmptyGithubId?: Scalars['Int']
+    /** Percentage of empty values for githubId */
+    percentageEmptyGithubId?: Scalars['Float']
+    /** Percentage of non-empty values for githubId */
+    percentageNotEmptyGithubId?: Scalars['Float']
+    /** Minimum amount contained in the field githubId */
+    minGithubId?: Scalars['Float']
+    /** Maximum amount contained in the field githubId */
+    maxGithubId?: Scalars['Float']
+    /** Average amount contained in the field githubId */
+    avgGithubId?: Scalars['Float']
+    /** Sum of amounts contained in the field githubId */
+    sumGithubId?: Scalars['Float']
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: Scalars['Int']
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: Scalars['Int']
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: Scalars['Int']
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: Scalars['Float']
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: Scalars['Float']
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: Scalars['DateTime']
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: Scalars['DateTime']
+    /** Number of unique values for labels */
+    countUniqueValuesLabels?: Scalars['Int']
+    /** Number of empty values for labels */
+    countEmptyLabels?: Scalars['Int']
+    /** Number of non-empty values for labels */
+    countNotEmptyLabels?: Scalars['Int']
+    /** Percentage of empty values for labels */
+    percentageEmptyLabels?: Scalars['Float']
+    /** Percentage of non-empty values for labels */
+    percentageNotEmptyLabels?: Scalars['Float']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: Scalars['Int']
+    /** Number of empty values for repository */
+    countEmptyRepository?: Scalars['Int']
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: Scalars['Int']
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: Scalars['Float']
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: Scalars['Float']
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: Scalars['Int']
+    /** Number of empty values for number */
+    countEmptyNumber?: Scalars['Int']
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: Scalars['Int']
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: Scalars['Float']
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: Scalars['Float']
+    /** Minimum amount contained in the field number */
+    minNumber?: Scalars['Float']
+    /** Maximum amount contained in the field number */
+    maxNumber?: Scalars['Float']
+    /** Average amount contained in the field number */
+    avgNumber?: Scalars['Float']
+    /** Sum of amounts contained in the field number */
+    sumNumber?: Scalars['Float']
+    /** Number of unique values for body */
+    countUniqueValuesBody?: Scalars['Int']
+    /** Number of empty values for body */
+    countEmptyBody?: Scalars['Int']
+    /** Number of non-empty values for body */
+    countNotEmptyBody?: Scalars['Int']
+    /** Percentage of empty values for body */
+    percentageEmptyBody?: Scalars['Float']
+    /** Percentage of non-empty values for body */
+    percentageNotEmptyBody?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for url */
+    countUniqueValuesUrl?: Scalars['Int']
+    /** Number of empty values for url */
+    countEmptyUrl?: Scalars['Int']
+    /** Number of non-empty values for url */
+    countNotEmptyUrl?: Scalars['Int']
+    /** Percentage of empty values for url */
+    percentageEmptyUrl?: Scalars['Float']
+    /** Percentage of non-empty values for url */
+    percentageNotEmptyUrl?: Scalars['Float']
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: Scalars['Int']
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: Scalars['Int']
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: Scalars['Int']
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: Scalars['Float']
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: Scalars['Float']
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: Scalars['Int']
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: Scalars['DateTime']
+    edges: GithubIssueEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'GithubIssueGroupByConnection'
+}
+
+
+/** GitHub pull request state */
+export type GithubPrsStateEnum = 'OPEN' | 'CLOSED'
+
+
+/** GitHub pull request pr type */
+export type GithubPrsPrTypeEnum = 'TEAM' | 'OPENHANDS_AGENT'
+
+export interface GithubPrs {
+    /** GitHub pull request draft */
+    draft?: Scalars['Boolean']
+    /** GitHub pull request opened at */
+    openedAt?: Scalars['DateTime']
+    /** GitHub pull request bug report id */
+    bugReportId?: Scalars['String']
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** GitHub pull request state */
+    state?: GithubPrsStateEnum
+    /** GitHub pull request pr type */
+    prType?: GithubPrsPrTypeEnum
+    /** GitHub pull request repository */
+    repository?: Scalars['String']
+    /** GitHub pull request github updated at */
+    githubUpdatedAt?: Scalars['DateTime']
+    /** GitHub pull request base branch */
+    baseBranch?: Scalars['String']
+    /** GitHub pull request url link */
+    urlLink?: Links
+    /** GitHub pull request closed at */
+    closedAt?: Scalars['DateTime']
+    /** GitHub pull request merged at */
+    mergedAt?: Scalars['DateTime']
+    /** GitHub pull request title */
+    title?: Scalars['String']
+    /** GitHub pull request last webhook delivery id */
+    lastWebhookDeliveryId?: Scalars['String']
+    /** GitHub pull request pr number */
+    number?: Scalars['Float']
+    /** GitHub pull request head sha */
+    headSha?: Scalars['String']
+    /** GitHub pull request author */
+    author?: Scalars['String']
+    /** GithubPrss tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** GithubPrss tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** GithubPrss tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** GithubPrss tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** GithubPrss tied to the Agent chat thread target */
+    agentChatThreadTargets?: AgentChatThreadTargetConnection
+    __typename: 'GithubPrs'
+}
+
+export interface GithubPrsEdge {
+    node: GithubPrs
+    cursor: Scalars['Cursor']
+    __typename: 'GithubPrsEdge'
+}
+
+export interface GithubPrsConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for draft */
+    countUniqueValuesDraft?: Scalars['Int']
+    /** Number of empty values for draft */
+    countEmptyDraft?: Scalars['Int']
+    /** Number of non-empty values for draft */
+    countNotEmptyDraft?: Scalars['Int']
+    /** Percentage of empty values for draft */
+    percentageEmptyDraft?: Scalars['Float']
+    /** Percentage of non-empty values for draft */
+    percentageNotEmptyDraft?: Scalars['Float']
+    /** Count of true values in the field draft */
+    countTrueDraft?: Scalars['Int']
+    /** Count of false values in the field draft */
+    countFalseDraft?: Scalars['Int']
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: Scalars['Int']
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: Scalars['Int']
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: Scalars['Int']
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: Scalars['Float']
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: Scalars['Float']
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: Scalars['DateTime']
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: Scalars['DateTime']
+    /** Number of unique values for bugReportId */
+    countUniqueValuesBugReportId?: Scalars['Int']
+    /** Number of empty values for bugReportId */
+    countEmptyBugReportId?: Scalars['Int']
+    /** Number of non-empty values for bugReportId */
+    countNotEmptyBugReportId?: Scalars['Int']
+    /** Percentage of empty values for bugReportId */
+    percentageEmptyBugReportId?: Scalars['Float']
+    /** Percentage of non-empty values for bugReportId */
+    percentageNotEmptyBugReportId?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for state */
+    countUniqueValuesState?: Scalars['Int']
+    /** Number of empty values for state */
+    countEmptyState?: Scalars['Int']
+    /** Number of non-empty values for state */
+    countNotEmptyState?: Scalars['Int']
+    /** Percentage of empty values for state */
+    percentageEmptyState?: Scalars['Float']
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: Scalars['Float']
+    /** Number of unique values for prType */
+    countUniqueValuesPrType?: Scalars['Int']
+    /** Number of empty values for prType */
+    countEmptyPrType?: Scalars['Int']
+    /** Number of non-empty values for prType */
+    countNotEmptyPrType?: Scalars['Int']
+    /** Percentage of empty values for prType */
+    percentageEmptyPrType?: Scalars['Float']
+    /** Percentage of non-empty values for prType */
+    percentageNotEmptyPrType?: Scalars['Float']
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: Scalars['Int']
+    /** Number of empty values for repository */
+    countEmptyRepository?: Scalars['Int']
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: Scalars['Int']
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: Scalars['Float']
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: Scalars['Float']
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: Scalars['Int']
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for baseBranch */
+    countUniqueValuesBaseBranch?: Scalars['Int']
+    /** Number of empty values for baseBranch */
+    countEmptyBaseBranch?: Scalars['Int']
+    /** Number of non-empty values for baseBranch */
+    countNotEmptyBaseBranch?: Scalars['Int']
+    /** Percentage of empty values for baseBranch */
+    percentageEmptyBaseBranch?: Scalars['Float']
+    /** Percentage of non-empty values for baseBranch */
+    percentageNotEmptyBaseBranch?: Scalars['Float']
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: Scalars['Int']
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: Scalars['Int']
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: Scalars['Int']
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: Scalars['Float']
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: Scalars['Float']
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: Scalars['Int']
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: Scalars['Int']
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: Scalars['Int']
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: Scalars['Float']
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: Scalars['Float']
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: Scalars['DateTime']
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: Scalars['DateTime']
+    /** Number of unique values for mergedAt */
+    countUniqueValuesMergedAt?: Scalars['Int']
+    /** Number of empty values for mergedAt */
+    countEmptyMergedAt?: Scalars['Int']
+    /** Number of non-empty values for mergedAt */
+    countNotEmptyMergedAt?: Scalars['Int']
+    /** Percentage of empty values for mergedAt */
+    percentageEmptyMergedAt?: Scalars['Float']
+    /** Percentage of non-empty values for mergedAt */
+    percentageNotEmptyMergedAt?: Scalars['Float']
+    /** Earliest date contained in the field mergedAt */
+    minMergedAt?: Scalars['DateTime']
+    /** Latest date contained in the field mergedAt */
+    maxMergedAt?: Scalars['DateTime']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: Scalars['Int']
+    /** Number of empty values for number */
+    countEmptyNumber?: Scalars['Int']
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: Scalars['Int']
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: Scalars['Float']
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: Scalars['Float']
+    /** Minimum amount contained in the field number */
+    minNumber?: Scalars['Float']
+    /** Maximum amount contained in the field number */
+    maxNumber?: Scalars['Float']
+    /** Average amount contained in the field number */
+    avgNumber?: Scalars['Float']
+    /** Sum of amounts contained in the field number */
+    sumNumber?: Scalars['Float']
+    /** Number of unique values for headSha */
+    countUniqueValuesHeadSha?: Scalars['Int']
+    /** Number of empty values for headSha */
+    countEmptyHeadSha?: Scalars['Int']
+    /** Number of non-empty values for headSha */
+    countNotEmptyHeadSha?: Scalars['Int']
+    /** Percentage of empty values for headSha */
+    percentageEmptyHeadSha?: Scalars['Float']
+    /** Percentage of non-empty values for headSha */
+    percentageNotEmptyHeadSha?: Scalars['Float']
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: Scalars['Int']
+    /** Number of empty values for author */
+    countEmptyAuthor?: Scalars['Int']
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: Scalars['Int']
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: Scalars['Float']
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: Scalars['Float']
+    edges: GithubPrsEdge[]
+    pageInfo: PageInfo
+    __typename: 'GithubPrsConnection'
+}
+
+export interface GithubPrsGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for draft */
+    countUniqueValuesDraft?: Scalars['Int']
+    /** Number of empty values for draft */
+    countEmptyDraft?: Scalars['Int']
+    /** Number of non-empty values for draft */
+    countNotEmptyDraft?: Scalars['Int']
+    /** Percentage of empty values for draft */
+    percentageEmptyDraft?: Scalars['Float']
+    /** Percentage of non-empty values for draft */
+    percentageNotEmptyDraft?: Scalars['Float']
+    /** Count of true values in the field draft */
+    countTrueDraft?: Scalars['Int']
+    /** Count of false values in the field draft */
+    countFalseDraft?: Scalars['Int']
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: Scalars['Int']
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: Scalars['Int']
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: Scalars['Int']
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: Scalars['Float']
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: Scalars['Float']
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: Scalars['DateTime']
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: Scalars['DateTime']
+    /** Number of unique values for bugReportId */
+    countUniqueValuesBugReportId?: Scalars['Int']
+    /** Number of empty values for bugReportId */
+    countEmptyBugReportId?: Scalars['Int']
+    /** Number of non-empty values for bugReportId */
+    countNotEmptyBugReportId?: Scalars['Int']
+    /** Percentage of empty values for bugReportId */
+    percentageEmptyBugReportId?: Scalars['Float']
+    /** Percentage of non-empty values for bugReportId */
+    percentageNotEmptyBugReportId?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for state */
+    countUniqueValuesState?: Scalars['Int']
+    /** Number of empty values for state */
+    countEmptyState?: Scalars['Int']
+    /** Number of non-empty values for state */
+    countNotEmptyState?: Scalars['Int']
+    /** Percentage of empty values for state */
+    percentageEmptyState?: Scalars['Float']
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: Scalars['Float']
+    /** Number of unique values for prType */
+    countUniqueValuesPrType?: Scalars['Int']
+    /** Number of empty values for prType */
+    countEmptyPrType?: Scalars['Int']
+    /** Number of non-empty values for prType */
+    countNotEmptyPrType?: Scalars['Int']
+    /** Percentage of empty values for prType */
+    percentageEmptyPrType?: Scalars['Float']
+    /** Percentage of non-empty values for prType */
+    percentageNotEmptyPrType?: Scalars['Float']
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: Scalars['Int']
+    /** Number of empty values for repository */
+    countEmptyRepository?: Scalars['Int']
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: Scalars['Int']
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: Scalars['Float']
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: Scalars['Float']
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: Scalars['Int']
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for baseBranch */
+    countUniqueValuesBaseBranch?: Scalars['Int']
+    /** Number of empty values for baseBranch */
+    countEmptyBaseBranch?: Scalars['Int']
+    /** Number of non-empty values for baseBranch */
+    countNotEmptyBaseBranch?: Scalars['Int']
+    /** Percentage of empty values for baseBranch */
+    percentageEmptyBaseBranch?: Scalars['Float']
+    /** Percentage of non-empty values for baseBranch */
+    percentageNotEmptyBaseBranch?: Scalars['Float']
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: Scalars['Int']
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: Scalars['Int']
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: Scalars['Int']
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: Scalars['Float']
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: Scalars['Float']
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: Scalars['Int']
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: Scalars['Int']
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: Scalars['Int']
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: Scalars['Float']
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: Scalars['Float']
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: Scalars['DateTime']
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: Scalars['DateTime']
+    /** Number of unique values for mergedAt */
+    countUniqueValuesMergedAt?: Scalars['Int']
+    /** Number of empty values for mergedAt */
+    countEmptyMergedAt?: Scalars['Int']
+    /** Number of non-empty values for mergedAt */
+    countNotEmptyMergedAt?: Scalars['Int']
+    /** Percentage of empty values for mergedAt */
+    percentageEmptyMergedAt?: Scalars['Float']
+    /** Percentage of non-empty values for mergedAt */
+    percentageNotEmptyMergedAt?: Scalars['Float']
+    /** Earliest date contained in the field mergedAt */
+    minMergedAt?: Scalars['DateTime']
+    /** Latest date contained in the field mergedAt */
+    maxMergedAt?: Scalars['DateTime']
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: Scalars['Int']
+    /** Number of empty values for title */
+    countEmptyTitle?: Scalars['Int']
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: Scalars['Int']
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: Scalars['Float']
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: Scalars['Float']
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: Scalars['Int']
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: Scalars['Float']
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: Scalars['Int']
+    /** Number of empty values for number */
+    countEmptyNumber?: Scalars['Int']
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: Scalars['Int']
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: Scalars['Float']
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: Scalars['Float']
+    /** Minimum amount contained in the field number */
+    minNumber?: Scalars['Float']
+    /** Maximum amount contained in the field number */
+    maxNumber?: Scalars['Float']
+    /** Average amount contained in the field number */
+    avgNumber?: Scalars['Float']
+    /** Sum of amounts contained in the field number */
+    sumNumber?: Scalars['Float']
+    /** Number of unique values for headSha */
+    countUniqueValuesHeadSha?: Scalars['Int']
+    /** Number of empty values for headSha */
+    countEmptyHeadSha?: Scalars['Int']
+    /** Number of non-empty values for headSha */
+    countNotEmptyHeadSha?: Scalars['Int']
+    /** Percentage of empty values for headSha */
+    percentageEmptyHeadSha?: Scalars['Float']
+    /** Percentage of non-empty values for headSha */
+    percentageNotEmptyHeadSha?: Scalars['Float']
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: Scalars['Int']
+    /** Number of empty values for author */
+    countEmptyAuthor?: Scalars['Int']
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: Scalars['Int']
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: Scalars['Float']
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: Scalars['Float']
+    edges: GithubPrsEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'GithubPrsGroupByConnection'
+}
+
 export interface Query {
     agentChatThreads?: AgentChatThreadConnection
     agentChatThread?: AgentChatThread
@@ -42957,6 +48594,30 @@ export interface Query {
     influencers?: InfluencerConnection
     influencer?: Influencer
     influencersGroupBy?: InfluencerGroupByConnection[]
+    bookedMeetings?: BookedMeetingConnection
+    bookedMeeting?: BookedMeeting
+    bookedMeetingsGroupBy?: BookedMeetingGroupByConnection[]
+    bugReportss?: BugReportsConnection
+    bugReports?: BugReports
+    bugReportssGroupBy?: BugReportsGroupByConnection[]
+    businessPayments?: BusinessPaymentConnection
+    businessPayment?: BusinessPayment
+    businessPaymentsGroupBy?: BusinessPaymentGroupByConnection[]
+    cmsContents?: CmsContentConnection
+    cmsContent?: CmsContent
+    cmsContentsGroupBy?: CmsContentGroupByConnection[]
+    devTools?: DevToolConnection
+    devTool?: DevTool
+    devToolsGroupBy?: DevToolGroupByConnection[]
+    dialerAudioSessions?: DialerAudioSessionConnection
+    dialerAudioSession?: DialerAudioSession
+    dialerAudioSessionsGroupBy?: DialerAudioSessionGroupByConnection[]
+    githubIssues?: GithubIssueConnection
+    githubIssue?: GithubIssue
+    githubIssuesGroupBy?: GithubIssueGroupByConnection[]
+    githubPrss?: GithubPrsConnection
+    githubPrs?: GithubPrs
+    githubPrssGroupBy?: GithubPrsGroupByConnection[]
     __typename: 'Query'
 }
 
@@ -43693,6 +49354,86 @@ export interface Mutation {
     destroyInfluencers?: Influencer[]
     restoreInfluencer?: Influencer
     restoreInfluencers?: Influencer[]
+    createBookedMeetings?: BookedMeeting[]
+    createBookedMeeting?: BookedMeeting
+    updateBookedMeeting?: BookedMeeting
+    deleteBookedMeeting?: BookedMeeting
+    updateBookedMeetings?: BookedMeeting[]
+    deleteBookedMeetings?: BookedMeeting[]
+    destroyBookedMeeting?: BookedMeeting
+    destroyBookedMeetings?: BookedMeeting[]
+    restoreBookedMeeting?: BookedMeeting
+    restoreBookedMeetings?: BookedMeeting[]
+    createBugReportss?: BugReports[]
+    createBugReports?: BugReports
+    updateBugReports?: BugReports
+    deleteBugReports?: BugReports
+    updateBugReportss?: BugReports[]
+    deleteBugReportss?: BugReports[]
+    destroyBugReports?: BugReports
+    destroyBugReportss?: BugReports[]
+    restoreBugReports?: BugReports
+    restoreBugReportss?: BugReports[]
+    createBusinessPayments?: BusinessPayment[]
+    createBusinessPayment?: BusinessPayment
+    updateBusinessPayment?: BusinessPayment
+    deleteBusinessPayment?: BusinessPayment
+    updateBusinessPayments?: BusinessPayment[]
+    deleteBusinessPayments?: BusinessPayment[]
+    destroyBusinessPayment?: BusinessPayment
+    destroyBusinessPayments?: BusinessPayment[]
+    restoreBusinessPayment?: BusinessPayment
+    restoreBusinessPayments?: BusinessPayment[]
+    createCmsContents?: CmsContent[]
+    createCmsContent?: CmsContent
+    updateCmsContent?: CmsContent
+    deleteCmsContent?: CmsContent
+    updateCmsContents?: CmsContent[]
+    deleteCmsContents?: CmsContent[]
+    destroyCmsContent?: CmsContent
+    destroyCmsContents?: CmsContent[]
+    restoreCmsContent?: CmsContent
+    restoreCmsContents?: CmsContent[]
+    createDevTools?: DevTool[]
+    createDevTool?: DevTool
+    updateDevTool?: DevTool
+    deleteDevTool?: DevTool
+    updateDevTools?: DevTool[]
+    deleteDevTools?: DevTool[]
+    destroyDevTool?: DevTool
+    destroyDevTools?: DevTool[]
+    restoreDevTool?: DevTool
+    restoreDevTools?: DevTool[]
+    createDialerAudioSessions?: DialerAudioSession[]
+    createDialerAudioSession?: DialerAudioSession
+    updateDialerAudioSession?: DialerAudioSession
+    deleteDialerAudioSession?: DialerAudioSession
+    updateDialerAudioSessions?: DialerAudioSession[]
+    deleteDialerAudioSessions?: DialerAudioSession[]
+    destroyDialerAudioSession?: DialerAudioSession
+    destroyDialerAudioSessions?: DialerAudioSession[]
+    restoreDialerAudioSession?: DialerAudioSession
+    restoreDialerAudioSessions?: DialerAudioSession[]
+    createGithubIssues?: GithubIssue[]
+    createGithubIssue?: GithubIssue
+    updateGithubIssue?: GithubIssue
+    deleteGithubIssue?: GithubIssue
+    updateGithubIssues?: GithubIssue[]
+    deleteGithubIssues?: GithubIssue[]
+    destroyGithubIssue?: GithubIssue
+    destroyGithubIssues?: GithubIssue[]
+    restoreGithubIssue?: GithubIssue
+    restoreGithubIssues?: GithubIssue[]
+    createGithubPrss?: GithubPrs[]
+    createGithubPrs?: GithubPrs
+    updateGithubPrs?: GithubPrs
+    deleteGithubPrs?: GithubPrs
+    updateGithubPrss?: GithubPrs[]
+    deleteGithubPrss?: GithubPrs[]
+    destroyGithubPrs?: GithubPrs
+    destroyGithubPrss?: GithubPrs[]
+    restoreGithubPrs?: GithubPrs
+    restoreGithubPrss?: GithubPrs[]
     __typename: 'Mutation'
 }
 
@@ -45160,6 +50901,22 @@ export interface AgentChatThreadTargetGenqlSelection{
     targetAgencyLeadId?: boolean | number
     /** AgentChatThreadTargets Influencer */
     targetInfluencerId?: boolean | number
+    /** AgentChatThreadTargets Booked Meeting */
+    targetBookedMeetingId?: boolean | number
+    /** AgentChatThreadTargets Bug Reports */
+    targetBugReportsId?: boolean | number
+    /** AgentChatThreadTargets Content */
+    targetCmsContentId?: boolean | number
+    /** AgentChatThreadTargets Github PRs */
+    targetGithubPrsId?: boolean | number
+    /** AgentChatThreadTargets Payment */
+    targetBusinessPaymentId?: boolean | number
+    /** AgentChatThreadTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: boolean | number
+    /** AgentChatThreadTargets Dev Tool */
+    targetDevToolId?: boolean | number
+    /** AgentChatThreadTargets GitHub Issue */
+    targetGithubIssueId?: boolean | number
     /** Thread */
     thread?: AgentChatThreadGenqlSelection
     /** Record the chat is attached to */
@@ -45232,6 +50989,22 @@ export interface AgentChatThreadTargetGenqlSelection{
     targetAgencyLead?: AgencyLeadGenqlSelection
     /** AgentChatThreadTargets Influencer */
     targetInfluencer?: InfluencerGenqlSelection
+    /** AgentChatThreadTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeetingGenqlSelection
+    /** AgentChatThreadTargets Bug Reports */
+    targetBugReports?: BugReportsGenqlSelection
+    /** AgentChatThreadTargets Content */
+    targetCmsContent?: CmsContentGenqlSelection
+    /** AgentChatThreadTargets Github PRs */
+    targetGithubPrs?: GithubPrsGenqlSelection
+    /** AgentChatThreadTargets Payment */
+    targetBusinessPayment?: BusinessPaymentGenqlSelection
+    /** AgentChatThreadTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSessionGenqlSelection
+    /** AgentChatThreadTargets Dev Tool */
+    targetDevTool?: DevToolGenqlSelection
+    /** AgentChatThreadTargets GitHub Issue */
+    targetGithubIssue?: GithubIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -45652,6 +51425,86 @@ export interface AgentChatThreadTargetConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: AgentChatThreadTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -46065,6 +51918,86 @@ export interface AgentChatThreadTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: AgentChatThreadTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -46250,7 +52183,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** AgentChatThreadTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** Record an agent chat thread is attached to */
@@ -46406,7 +52371,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** AgentChatThreadTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** Record an agent chat thread is attached to */
@@ -46562,7 +52559,39 @@ targetAgencyLead?: (AgencyLeadFilterInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (UUIDFilter | null),
 /** Filter on fields of the related influencer */
-targetInfluencer?: (InfluencerFilterInput | null),and?: ((AgentChatThreadTargetFilterInput | null)[] | null),or?: ((AgentChatThreadTargetFilterInput | null)[] | null),not?: (AgentChatThreadTargetFilterInput | null)}
+targetInfluencer?: (InfluencerFilterInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (UUIDFilter | null),
+/** Filter on fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingFilterInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (UUIDFilter | null),
+/** Filter on fields of the related bugReports */
+targetBugReports?: (BugReportsFilterInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (UUIDFilter | null),
+/** Filter on fields of the related cmsContent */
+targetCmsContent?: (CmsContentFilterInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (UUIDFilter | null),
+/** Filter on fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsFilterInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (UUIDFilter | null),
+/** Filter on fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentFilterInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (UUIDFilter | null),
+/** Filter on fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (UUIDFilter | null),
+/** Filter on fields of the related devTool */
+targetDevTool?: (DevToolFilterInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (UUIDFilter | null),
+/** Filter on fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueFilterInput | null),and?: ((AgentChatThreadTargetFilterInput | null)[] | null),or?: ((AgentChatThreadTargetFilterInput | null)[] | null),not?: (AgentChatThreadTargetFilterInput | null)}
 
 
 /** Record an agent chat thread is attached to */
@@ -46718,7 +52747,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** Record an agent chat thread is attached to */
@@ -46876,7 +52937,39 @@ targetAgencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByWithGroupByInput | null)}
+targetInfluencer?: (InfluencerOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByWithGroupByInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -47078,7 +53171,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** AgentChatThreadTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** AgentChatThreadTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** AgentChatThreadTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** AgentChatThreadTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** AgentChatThreadTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** AgentChatThreadTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** AgentChatThreadTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** AgentChatThreadTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** AgentChatThreadTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** Record an agent chat thread is attached to */
@@ -47158,7 +53283,23 @@ targetAgencyScript?: (AgencyScriptGroupByInput | null),
 /** Group by fields of the related agencyLead */
 targetAgencyLead?: (AgencyLeadGroupByInput | null),
 /** Group by fields of the related influencer */
-targetInfluencer?: (InfluencerGroupByInput | null)}
+targetInfluencer?: (InfluencerGroupByInput | null),
+/** Group by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingGroupByInput | null),
+/** Group by fields of the related bugReports */
+targetBugReports?: (BugReportsGroupByInput | null),
+/** Group by fields of the related cmsContent */
+targetCmsContent?: (CmsContentGroupByInput | null),
+/** Group by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsGroupByInput | null),
+/** Group by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentGroupByInput | null),
+/** Group by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
+/** Group by fields of the related devTool */
+targetDevTool?: (DevToolGroupByInput | null),
+/** Group by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueGroupByInput | null)}
 
 
 /** Agent turn */
@@ -52710,6 +58851,22 @@ export interface AttachmentGenqlSelection{
     targetAgencyLeadId?: boolean | number
     /** Attachments Influencer */
     targetInfluencerId?: boolean | number
+    /** Attachments Booked Meeting */
+    targetBookedMeetingId?: boolean | number
+    /** Attachments Bug Reports */
+    targetBugReportsId?: boolean | number
+    /** Attachments Content */
+    targetCmsContentId?: boolean | number
+    /** Attachments Github PRs */
+    targetGithubPrsId?: boolean | number
+    /** Attachments Payment */
+    targetBusinessPaymentId?: boolean | number
+    /** Attachments Dialer Audio Session */
+    targetDialerAudioSessionId?: boolean | number
+    /** Attachments Dev Tool */
+    targetDevToolId?: boolean | number
+    /** Attachments GitHub Issue */
+    targetGithubIssueId?: boolean | number
     /** Attachment target */
     targetAgentChatThread?: AgentChatThreadGenqlSelection
     /** Attachment target */
@@ -52790,6 +58947,22 @@ export interface AttachmentGenqlSelection{
     targetAgencyLead?: AgencyLeadGenqlSelection
     /** Attachments Influencer */
     targetInfluencer?: InfluencerGenqlSelection
+    /** Attachments Booked Meeting */
+    targetBookedMeeting?: BookedMeetingGenqlSelection
+    /** Attachments Bug Reports */
+    targetBugReports?: BugReportsGenqlSelection
+    /** Attachments Content */
+    targetCmsContent?: CmsContentGenqlSelection
+    /** Attachments Github PRs */
+    targetGithubPrs?: GithubPrsGenqlSelection
+    /** Attachments Payment */
+    targetBusinessPayment?: BusinessPaymentGenqlSelection
+    /** Attachments Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSessionGenqlSelection
+    /** Attachments Dev Tool */
+    targetDevTool?: DevToolGenqlSelection
+    /** Attachments GitHub Issue */
+    targetGithubIssue?: GithubIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -53349,6 +59522,86 @@ export interface AttachmentConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -53892,6 +60145,86 @@ export interface AttachmentGroupByConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -54101,7 +60434,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** Attachments Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** Attachments Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** Attachments Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** Attachments Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** Attachments Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** Attachments Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** Attachments Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** Attachments Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** Attachments GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 export interface FileItemInput {fileId: Scalars['UUID'],label: Scalars['String']}
 
@@ -54291,7 +60656,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** Attachments Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** Attachments Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** Attachments Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** Attachments Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** Attachments Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** Attachments Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** Attachments Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** Attachments Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** Attachments GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** An attachment */
@@ -54479,7 +60876,39 @@ targetAgencyLead?: (AgencyLeadFilterInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (UUIDFilter | null),
 /** Filter on fields of the related influencer */
-targetInfluencer?: (InfluencerFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
+targetInfluencer?: (InfluencerFilterInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (UUIDFilter | null),
+/** Filter on fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingFilterInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (UUIDFilter | null),
+/** Filter on fields of the related bugReports */
+targetBugReports?: (BugReportsFilterInput | null),
+/** Attachments Content */
+targetCmsContentId?: (UUIDFilter | null),
+/** Filter on fields of the related cmsContent */
+targetCmsContent?: (CmsContentFilterInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (UUIDFilter | null),
+/** Filter on fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsFilterInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (UUIDFilter | null),
+/** Filter on fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentFilterInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (UUIDFilter | null),
+/** Filter on fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (UUIDFilter | null),
+/** Filter on fields of the related devTool */
+targetDevTool?: (DevToolFilterInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (UUIDFilter | null),
+/** Filter on fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
 
 export interface AttachmentFileCategoryEnumFilter {eq?: (AttachmentFileCategoryEnum | null),neq?: (AttachmentFileCategoryEnum | null),in?: ((AttachmentFileCategoryEnum | null)[] | null),containsAny?: ((AttachmentFileCategoryEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AttachmentFileCategoryEnum | null),gte?: (AttachmentFileCategoryEnum | null),lt?: (AttachmentFileCategoryEnum | null),lte?: (AttachmentFileCategoryEnum | null)}
 
@@ -54671,7 +61100,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** Attachments Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** An attachment */
@@ -54861,7 +61322,39 @@ targetAgencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByWithGroupByInput | null)}
+targetInfluencer?: (InfluencerOrderByWithGroupByInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByWithGroupByInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByWithGroupByInput | null),
+/** Attachments Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByWithGroupByInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByWithGroupByInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByWithGroupByInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByWithGroupByInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -55159,7 +61652,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** Attachments Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** Attachments Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** Attachments Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** Attachments Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** Attachments Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** Attachments Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** Attachments Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** Attachments Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** Attachments GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** An attachment */
@@ -55253,7 +61778,23 @@ targetAgencyScript?: (AgencyScriptGroupByInput | null),
 /** Group by fields of the related agencyLead */
 targetAgencyLead?: (AgencyLeadGroupByInput | null),
 /** Group by fields of the related influencer */
-targetInfluencer?: (InfluencerGroupByInput | null)}
+targetInfluencer?: (InfluencerGroupByInput | null),
+/** Group by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingGroupByInput | null),
+/** Group by fields of the related bugReports */
+targetBugReports?: (BugReportsGroupByInput | null),
+/** Group by fields of the related cmsContent */
+targetCmsContent?: (CmsContentGroupByInput | null),
+/** Group by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsGroupByInput | null),
+/** Group by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentGroupByInput | null),
+/** Group by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
+/** Group by fields of the related devTool */
+targetDevTool?: (DevToolGroupByInput | null),
+/** Group by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueGroupByInput | null)}
 
 
 /** Blocklist */
@@ -68998,6 +75539,22 @@ export interface NoteTargetGenqlSelection{
     targetAgencyLeadId?: boolean | number
     /** NoteTargets Influencer */
     targetInfluencerId?: boolean | number
+    /** NoteTargets Booked Meeting */
+    targetBookedMeetingId?: boolean | number
+    /** NoteTargets Bug Reports */
+    targetBugReportsId?: boolean | number
+    /** NoteTargets Content */
+    targetCmsContentId?: boolean | number
+    /** NoteTargets Github PRs */
+    targetGithubPrsId?: boolean | number
+    /** NoteTargets Payment */
+    targetBusinessPaymentId?: boolean | number
+    /** NoteTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: boolean | number
+    /** NoteTargets Dev Tool */
+    targetDevToolId?: boolean | number
+    /** NoteTargets GitHub Issue */
+    targetGithubIssueId?: boolean | number
     /** NoteTarget target */
     targetCompany?: CompanyGenqlSelection
     /** NoteTarget note */
@@ -69070,6 +75627,22 @@ export interface NoteTargetGenqlSelection{
     targetAgencyLead?: AgencyLeadGenqlSelection
     /** NoteTargets Influencer */
     targetInfluencer?: InfluencerGenqlSelection
+    /** NoteTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeetingGenqlSelection
+    /** NoteTargets Bug Reports */
+    targetBugReports?: BugReportsGenqlSelection
+    /** NoteTargets Content */
+    targetCmsContent?: CmsContentGenqlSelection
+    /** NoteTargets Github PRs */
+    targetGithubPrs?: GithubPrsGenqlSelection
+    /** NoteTargets Payment */
+    targetBusinessPayment?: BusinessPaymentGenqlSelection
+    /** NoteTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSessionGenqlSelection
+    /** NoteTargets Dev Tool */
+    targetDevTool?: DevToolGenqlSelection
+    /** NoteTargets GitHub Issue */
+    targetGithubIssue?: GithubIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -69530,6 +76103,86 @@ export interface NoteTargetConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -69983,6 +76636,86 @@ export interface NoteTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -70176,7 +76909,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** NoteTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** NoteTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** NoteTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** NoteTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** NoteTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** NoteTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** A note target */
@@ -70340,7 +77105,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** NoteTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** NoteTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** NoteTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** NoteTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** NoteTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** NoteTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** A note target */
@@ -70504,7 +77301,39 @@ targetAgencyLead?: (AgencyLeadFilterInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (UUIDFilter | null),
 /** Filter on fields of the related influencer */
-targetInfluencer?: (InfluencerFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
+targetInfluencer?: (InfluencerFilterInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (UUIDFilter | null),
+/** Filter on fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingFilterInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (UUIDFilter | null),
+/** Filter on fields of the related bugReports */
+targetBugReports?: (BugReportsFilterInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (UUIDFilter | null),
+/** Filter on fields of the related cmsContent */
+targetCmsContent?: (CmsContentFilterInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (UUIDFilter | null),
+/** Filter on fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsFilterInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (UUIDFilter | null),
+/** Filter on fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentFilterInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (UUIDFilter | null),
+/** Filter on fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (UUIDFilter | null),
+/** Filter on fields of the related devTool */
+targetDevTool?: (DevToolFilterInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (UUIDFilter | null),
+/** Filter on fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
 
 
 /** A note target */
@@ -70668,7 +77497,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** A note target */
@@ -70834,7 +77695,39 @@ targetAgencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByWithGroupByInput | null)}
+targetInfluencer?: (InfluencerOrderByWithGroupByInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByWithGroupByInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByWithGroupByInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByWithGroupByInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByWithGroupByInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByWithGroupByInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByWithGroupByInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -71076,7 +77969,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** NoteTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** NoteTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** NoteTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** NoteTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** NoteTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** NoteTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** NoteTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** NoteTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** NoteTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** A note target */
@@ -71160,7 +78085,23 @@ targetAgencyScript?: (AgencyScriptGroupByInput | null),
 /** Group by fields of the related agencyLead */
 targetAgencyLead?: (AgencyLeadGroupByInput | null),
 /** Group by fields of the related influencer */
-targetInfluencer?: (InfluencerGroupByInput | null)}
+targetInfluencer?: (InfluencerGroupByInput | null),
+/** Group by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingGroupByInput | null),
+/** Group by fields of the related bugReports */
+targetBugReports?: (BugReportsGroupByInput | null),
+/** Group by fields of the related cmsContent */
+targetCmsContent?: (CmsContentGroupByInput | null),
+/** Group by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsGroupByInput | null),
+/** Group by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentGroupByInput | null),
+/** Group by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
+/** Group by fields of the related devTool */
+targetDevTool?: (DevToolGroupByInput | null),
+/** Group by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueGroupByInput | null)}
 
 
 /** An opportunity */
@@ -77196,6 +84137,22 @@ export interface TaskTargetGenqlSelection{
     targetAgencyLeadId?: boolean | number
     /** TaskTargets Influencer */
     targetInfluencerId?: boolean | number
+    /** TaskTargets Booked Meeting */
+    targetBookedMeetingId?: boolean | number
+    /** TaskTargets Bug Reports */
+    targetBugReportsId?: boolean | number
+    /** TaskTargets Content */
+    targetCmsContentId?: boolean | number
+    /** TaskTargets Github PRs */
+    targetGithubPrsId?: boolean | number
+    /** TaskTargets Payment */
+    targetBusinessPaymentId?: boolean | number
+    /** TaskTargets Dialer Audio Session */
+    targetDialerAudioSessionId?: boolean | number
+    /** TaskTargets Dev Tool */
+    targetDevToolId?: boolean | number
+    /** TaskTargets GitHub Issue */
+    targetGithubIssueId?: boolean | number
     /** TaskTarget target */
     targetCompany?: CompanyGenqlSelection
     /** TaskTarget target */
@@ -77268,6 +84225,22 @@ export interface TaskTargetGenqlSelection{
     targetAgencyLead?: AgencyLeadGenqlSelection
     /** TaskTargets Influencer */
     targetInfluencer?: InfluencerGenqlSelection
+    /** TaskTargets Booked Meeting */
+    targetBookedMeeting?: BookedMeetingGenqlSelection
+    /** TaskTargets Bug Reports */
+    targetBugReports?: BugReportsGenqlSelection
+    /** TaskTargets Content */
+    targetCmsContent?: CmsContentGenqlSelection
+    /** TaskTargets Github PRs */
+    targetGithubPrs?: GithubPrsGenqlSelection
+    /** TaskTargets Payment */
+    targetBusinessPayment?: BusinessPaymentGenqlSelection
+    /** TaskTargets Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSessionGenqlSelection
+    /** TaskTargets Dev Tool */
+    targetDevTool?: DevToolGenqlSelection
+    /** TaskTargets GitHub Issue */
+    targetGithubIssue?: GithubIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -77728,6 +84701,86 @@ export interface TaskTargetConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -78181,6 +85234,86 @@ export interface TaskTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -78374,7 +85507,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** TaskTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** TaskTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** TaskTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** TaskTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** TaskTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** TaskTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** A task target */
@@ -78538,7 +85703,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** TaskTargets Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** TaskTargets Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** TaskTargets Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** TaskTargets Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** TaskTargets Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** TaskTargets Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** A task target */
@@ -78702,7 +85899,39 @@ targetAgencyLead?: (AgencyLeadFilterInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (UUIDFilter | null),
 /** Filter on fields of the related influencer */
-targetInfluencer?: (InfluencerFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
+targetInfluencer?: (InfluencerFilterInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (UUIDFilter | null),
+/** Filter on fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingFilterInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (UUIDFilter | null),
+/** Filter on fields of the related bugReports */
+targetBugReports?: (BugReportsFilterInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (UUIDFilter | null),
+/** Filter on fields of the related cmsContent */
+targetCmsContent?: (CmsContentFilterInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (UUIDFilter | null),
+/** Filter on fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsFilterInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (UUIDFilter | null),
+/** Filter on fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentFilterInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (UUIDFilter | null),
+/** Filter on fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (UUIDFilter | null),
+/** Filter on fields of the related devTool */
+targetDevTool?: (DevToolFilterInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (UUIDFilter | null),
+/** Filter on fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
 
 
 /** A task target */
@@ -78866,7 +86095,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** A task target */
@@ -79032,7 +86293,39 @@ targetAgencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByWithGroupByInput | null)}
+targetInfluencer?: (InfluencerOrderByWithGroupByInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByWithGroupByInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByWithGroupByInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByWithGroupByInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByWithGroupByInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByWithGroupByInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByWithGroupByInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -79274,7 +86567,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** TaskTargets Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** TaskTargets Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** TaskTargets Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** TaskTargets Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** TaskTargets Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** TaskTargets Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** TaskTargets Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** TaskTargets Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** TaskTargets GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** A task target */
@@ -79358,7 +86683,23 @@ targetAgencyScript?: (AgencyScriptGroupByInput | null),
 /** Group by fields of the related agencyLead */
 targetAgencyLead?: (AgencyLeadGroupByInput | null),
 /** Group by fields of the related influencer */
-targetInfluencer?: (InfluencerGroupByInput | null)}
+targetInfluencer?: (InfluencerGroupByInput | null),
+/** Group by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingGroupByInput | null),
+/** Group by fields of the related bugReports */
+targetBugReports?: (BugReportsGroupByInput | null),
+/** Group by fields of the related cmsContent */
+targetCmsContent?: (CmsContentGroupByInput | null),
+/** Group by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsGroupByInput | null),
+/** Group by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentGroupByInput | null),
+/** Group by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
+/** Group by fields of the related devTool */
+targetDevTool?: (DevToolGroupByInput | null),
+/** Group by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueGroupByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -79481,6 +86822,22 @@ export interface TimelineActivityGenqlSelection{
     targetAgencyLeadId?: boolean | number
     /** TimelineActivities Influencer */
     targetInfluencerId?: boolean | number
+    /** TimelineActivities Booked Meeting */
+    targetBookedMeetingId?: boolean | number
+    /** TimelineActivities Bug Reports */
+    targetBugReportsId?: boolean | number
+    /** TimelineActivities Content */
+    targetCmsContentId?: boolean | number
+    /** TimelineActivities Github PRs */
+    targetGithubPrsId?: boolean | number
+    /** TimelineActivities Payment */
+    targetBusinessPaymentId?: boolean | number
+    /** TimelineActivities Dialer Audio Session */
+    targetDialerAudioSessionId?: boolean | number
+    /** TimelineActivities Dev Tool */
+    targetDevToolId?: boolean | number
+    /** TimelineActivities GitHub Issue */
+    targetGithubIssueId?: boolean | number
     /** Event target */
     targetCompany?: CompanyGenqlSelection
     /** Event target */
@@ -79569,6 +86926,22 @@ export interface TimelineActivityGenqlSelection{
     targetAgencyLead?: AgencyLeadGenqlSelection
     /** TimelineActivities Influencer */
     targetInfluencer?: InfluencerGenqlSelection
+    /** TimelineActivities Booked Meeting */
+    targetBookedMeeting?: BookedMeetingGenqlSelection
+    /** TimelineActivities Bug Reports */
+    targetBugReports?: BugReportsGenqlSelection
+    /** TimelineActivities Content */
+    targetCmsContent?: CmsContentGenqlSelection
+    /** TimelineActivities Github PRs */
+    targetGithubPrs?: GithubPrsGenqlSelection
+    /** TimelineActivities Payment */
+    targetBusinessPayment?: BusinessPaymentGenqlSelection
+    /** TimelineActivities Dialer Audio Session */
+    targetDialerAudioSession?: DialerAudioSessionGenqlSelection
+    /** TimelineActivities Dev Tool */
+    targetDevTool?: DevToolGenqlSelection
+    /** TimelineActivities GitHub Issue */
+    targetGithubIssue?: GithubIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -80183,6 +87556,86 @@ export interface TimelineActivityConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -80790,6 +88243,86 @@ export interface TimelineActivityGroupByConnectionGenqlSelection{
     percentageEmptyTargetInfluencer?: boolean | number
     /** Percentage of non-empty values for targetInfluencer */
     percentageNotEmptyTargetInfluencer?: boolean | number
+    /** Number of unique values for targetBookedMeeting */
+    countUniqueValuesTargetBookedMeeting?: boolean | number
+    /** Number of empty values for targetBookedMeeting */
+    countEmptyTargetBookedMeeting?: boolean | number
+    /** Number of non-empty values for targetBookedMeeting */
+    countNotEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of empty values for targetBookedMeeting */
+    percentageEmptyTargetBookedMeeting?: boolean | number
+    /** Percentage of non-empty values for targetBookedMeeting */
+    percentageNotEmptyTargetBookedMeeting?: boolean | number
+    /** Number of unique values for targetBugReports */
+    countUniqueValuesTargetBugReports?: boolean | number
+    /** Number of empty values for targetBugReports */
+    countEmptyTargetBugReports?: boolean | number
+    /** Number of non-empty values for targetBugReports */
+    countNotEmptyTargetBugReports?: boolean | number
+    /** Percentage of empty values for targetBugReports */
+    percentageEmptyTargetBugReports?: boolean | number
+    /** Percentage of non-empty values for targetBugReports */
+    percentageNotEmptyTargetBugReports?: boolean | number
+    /** Number of unique values for targetCmsContent */
+    countUniqueValuesTargetCmsContent?: boolean | number
+    /** Number of empty values for targetCmsContent */
+    countEmptyTargetCmsContent?: boolean | number
+    /** Number of non-empty values for targetCmsContent */
+    countNotEmptyTargetCmsContent?: boolean | number
+    /** Percentage of empty values for targetCmsContent */
+    percentageEmptyTargetCmsContent?: boolean | number
+    /** Percentage of non-empty values for targetCmsContent */
+    percentageNotEmptyTargetCmsContent?: boolean | number
+    /** Number of unique values for targetGithubPrs */
+    countUniqueValuesTargetGithubPrs?: boolean | number
+    /** Number of empty values for targetGithubPrs */
+    countEmptyTargetGithubPrs?: boolean | number
+    /** Number of non-empty values for targetGithubPrs */
+    countNotEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of empty values for targetGithubPrs */
+    percentageEmptyTargetGithubPrs?: boolean | number
+    /** Percentage of non-empty values for targetGithubPrs */
+    percentageNotEmptyTargetGithubPrs?: boolean | number
+    /** Number of unique values for targetBusinessPayment */
+    countUniqueValuesTargetBusinessPayment?: boolean | number
+    /** Number of empty values for targetBusinessPayment */
+    countEmptyTargetBusinessPayment?: boolean | number
+    /** Number of non-empty values for targetBusinessPayment */
+    countNotEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of empty values for targetBusinessPayment */
+    percentageEmptyTargetBusinessPayment?: boolean | number
+    /** Percentage of non-empty values for targetBusinessPayment */
+    percentageNotEmptyTargetBusinessPayment?: boolean | number
+    /** Number of unique values for targetDialerAudioSession */
+    countUniqueValuesTargetDialerAudioSession?: boolean | number
+    /** Number of empty values for targetDialerAudioSession */
+    countEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of non-empty values for targetDialerAudioSession */
+    countNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of empty values for targetDialerAudioSession */
+    percentageEmptyTargetDialerAudioSession?: boolean | number
+    /** Percentage of non-empty values for targetDialerAudioSession */
+    percentageNotEmptyTargetDialerAudioSession?: boolean | number
+    /** Number of unique values for targetDevTool */
+    countUniqueValuesTargetDevTool?: boolean | number
+    /** Number of empty values for targetDevTool */
+    countEmptyTargetDevTool?: boolean | number
+    /** Number of non-empty values for targetDevTool */
+    countNotEmptyTargetDevTool?: boolean | number
+    /** Percentage of empty values for targetDevTool */
+    percentageEmptyTargetDevTool?: boolean | number
+    /** Percentage of non-empty values for targetDevTool */
+    percentageNotEmptyTargetDevTool?: boolean | number
+    /** Number of unique values for targetGithubIssue */
+    countUniqueValuesTargetGithubIssue?: boolean | number
+    /** Number of empty values for targetGithubIssue */
+    countEmptyTargetGithubIssue?: boolean | number
+    /** Number of non-empty values for targetGithubIssue */
+    countNotEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of empty values for targetGithubIssue */
+    percentageEmptyTargetGithubIssue?: boolean | number
+    /** Percentage of non-empty values for targetGithubIssue */
+    percentageNotEmptyTargetGithubIssue?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -81021,7 +88554,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** TimelineActivities Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** TimelineActivities Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** TimelineActivities Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** TimelineActivities Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** TimelineActivities Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** TimelineActivities Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -81231,7 +88796,39 @@ targetAgencyLead?: (AgencyLeadRelationInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (Scalars['ID'] | null),
 /** TimelineActivities Influencer */
-targetInfluencer?: (InfluencerRelationInput | null)}
+targetInfluencer?: (InfluencerRelationInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (Scalars['ID'] | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeeting?: (BookedMeetingRelationInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (Scalars['ID'] | null),
+/** TimelineActivities Bug Reports */
+targetBugReports?: (BugReportsRelationInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (Scalars['ID'] | null),
+/** TimelineActivities Content */
+targetCmsContent?: (CmsContentRelationInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (Scalars['ID'] | null),
+/** TimelineActivities Github PRs */
+targetGithubPrs?: (GithubPrsRelationInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (Scalars['ID'] | null),
+/** TimelineActivities Payment */
+targetBusinessPayment?: (BusinessPaymentRelationInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (Scalars['ID'] | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (Scalars['ID'] | null),
+/** TimelineActivities Dev Tool */
+targetDevTool?: (DevToolRelationInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (Scalars['ID'] | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssue?: (GithubIssueRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -81441,7 +89038,39 @@ targetAgencyLead?: (AgencyLeadFilterInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (UUIDFilter | null),
 /** Filter on fields of the related influencer */
-targetInfluencer?: (InfluencerFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
+targetInfluencer?: (InfluencerFilterInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (UUIDFilter | null),
+/** Filter on fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingFilterInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (UUIDFilter | null),
+/** Filter on fields of the related bugReports */
+targetBugReports?: (BugReportsFilterInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (UUIDFilter | null),
+/** Filter on fields of the related cmsContent */
+targetCmsContent?: (CmsContentFilterInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (UUIDFilter | null),
+/** Filter on fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsFilterInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (UUIDFilter | null),
+/** Filter on fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentFilterInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (UUIDFilter | null),
+/** Filter on fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (UUIDFilter | null),
+/** Filter on fields of the related devTool */
+targetDevTool?: (DevToolFilterInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (UUIDFilter | null),
+/** Filter on fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -81651,7 +89280,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -81863,7 +89524,39 @@ targetAgencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByWithGroupByInput | null)}
+targetInfluencer?: (InfluencerOrderByWithGroupByInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByWithGroupByInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByWithGroupByInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByWithGroupByInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByWithGroupByInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByWithGroupByInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByWithGroupByInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -82211,7 +89904,39 @@ targetAgencyLead?: (AgencyLeadOrderByInput | null),
 /** TimelineActivities Influencer */
 targetInfluencerId?: (OrderByDirection | null),
 /** Order by fields of the related influencer */
-targetInfluencer?: (InfluencerOrderByInput | null)}
+targetInfluencer?: (InfluencerOrderByInput | null),
+/** TimelineActivities Booked Meeting */
+targetBookedMeetingId?: (OrderByDirection | null),
+/** Order by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingOrderByInput | null),
+/** TimelineActivities Bug Reports */
+targetBugReportsId?: (OrderByDirection | null),
+/** Order by fields of the related bugReports */
+targetBugReports?: (BugReportsOrderByInput | null),
+/** TimelineActivities Content */
+targetCmsContentId?: (OrderByDirection | null),
+/** Order by fields of the related cmsContent */
+targetCmsContent?: (CmsContentOrderByInput | null),
+/** TimelineActivities Github PRs */
+targetGithubPrsId?: (OrderByDirection | null),
+/** Order by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsOrderByInput | null),
+/** TimelineActivities Payment */
+targetBusinessPaymentId?: (OrderByDirection | null),
+/** Order by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentOrderByInput | null),
+/** TimelineActivities Dialer Audio Session */
+targetDialerAudioSessionId?: (OrderByDirection | null),
+/** Order by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
+/** TimelineActivities Dev Tool */
+targetDevToolId?: (OrderByDirection | null),
+/** Order by fields of the related devTool */
+targetDevTool?: (DevToolOrderByInput | null),
+/** TimelineActivities GitHub Issue */
+targetGithubIssueId?: (OrderByDirection | null),
+/** Order by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -82313,7 +90038,23 @@ targetAgencyScript?: (AgencyScriptGroupByInput | null),
 /** Group by fields of the related agencyLead */
 targetAgencyLead?: (AgencyLeadGroupByInput | null),
 /** Group by fields of the related influencer */
-targetInfluencer?: (InfluencerGroupByInput | null)}
+targetInfluencer?: (InfluencerGroupByInput | null),
+/** Group by fields of the related bookedMeeting */
+targetBookedMeeting?: (BookedMeetingGroupByInput | null),
+/** Group by fields of the related bugReports */
+targetBugReports?: (BugReportsGroupByInput | null),
+/** Group by fields of the related cmsContent */
+targetCmsContent?: (CmsContentGroupByInput | null),
+/** Group by fields of the related githubPrs */
+targetGithubPrs?: (GithubPrsGroupByInput | null),
+/** Group by fields of the related businessPayment */
+targetBusinessPayment?: (BusinessPaymentGroupByInput | null),
+/** Group by fields of the related dialerAudioSession */
+targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
+/** Group by fields of the related devTool */
+targetDevTool?: (DevToolGroupByInput | null),
+/** Group by fields of the related githubIssue */
+targetGithubIssue?: (GithubIssueGroupByInput | null)}
 
 
 /** A workflow */
@@ -127018,6 +134759,8783 @@ messageHistory?: (Scalars['Boolean'] | null),
 /** Creator category or label */
 creatorTag?: (Scalars['Boolean'] | null)}
 
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingGenqlSelection{
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** When the meeting starts */
+    startTime?: boolean | number
+    /** When the booking was made */
+    bookedAt?: boolean | number
+    /** BookedMeetings tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** BookedMeetings tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** BookedMeetings tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** BookedMeetings tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** BookedMeetings tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingEdgeGenqlSelection{
+    node?: BookedMeetingGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for startTime */
+    countUniqueValuesStartTime?: boolean | number
+    /** Number of empty values for startTime */
+    countEmptyStartTime?: boolean | number
+    /** Number of non-empty values for startTime */
+    countNotEmptyStartTime?: boolean | number
+    /** Percentage of empty values for startTime */
+    percentageEmptyStartTime?: boolean | number
+    /** Percentage of non-empty values for startTime */
+    percentageNotEmptyStartTime?: boolean | number
+    /** Earliest date contained in the field startTime */
+    minStartTime?: boolean | number
+    /** Latest date contained in the field startTime */
+    maxStartTime?: boolean | number
+    /** Number of unique values for bookedAt */
+    countUniqueValuesBookedAt?: boolean | number
+    /** Number of empty values for bookedAt */
+    countEmptyBookedAt?: boolean | number
+    /** Number of non-empty values for bookedAt */
+    countNotEmptyBookedAt?: boolean | number
+    /** Percentage of empty values for bookedAt */
+    percentageEmptyBookedAt?: boolean | number
+    /** Percentage of non-empty values for bookedAt */
+    percentageNotEmptyBookedAt?: boolean | number
+    /** Earliest date contained in the field bookedAt */
+    minBookedAt?: boolean | number
+    /** Latest date contained in the field bookedAt */
+    maxBookedAt?: boolean | number
+    edges?: BookedMeetingEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for startTime */
+    countUniqueValuesStartTime?: boolean | number
+    /** Number of empty values for startTime */
+    countEmptyStartTime?: boolean | number
+    /** Number of non-empty values for startTime */
+    countNotEmptyStartTime?: boolean | number
+    /** Percentage of empty values for startTime */
+    percentageEmptyStartTime?: boolean | number
+    /** Percentage of non-empty values for startTime */
+    percentageNotEmptyStartTime?: boolean | number
+    /** Earliest date contained in the field startTime */
+    minStartTime?: boolean | number
+    /** Latest date contained in the field startTime */
+    maxStartTime?: boolean | number
+    /** Number of unique values for bookedAt */
+    countUniqueValuesBookedAt?: boolean | number
+    /** Number of empty values for bookedAt */
+    countEmptyBookedAt?: boolean | number
+    /** Number of non-empty values for bookedAt */
+    countNotEmptyBookedAt?: boolean | number
+    /** Percentage of empty values for bookedAt */
+    percentageEmptyBookedAt?: boolean | number
+    /** Percentage of non-empty values for bookedAt */
+    percentageNotEmptyBookedAt?: boolean | number
+    /** Earliest date contained in the field bookedAt */
+    minBookedAt?: boolean | number
+    /** Latest date contained in the field bookedAt */
+    maxBookedAt?: boolean | number
+    edges?: BookedMeetingEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface BookedMeetingRelationInput {
+/** Connect to a bookedMeeting record */
+connect?: (BookedMeetingConnectInput | null),
+/** Create and connect a bookedMeeting record */
+create?: (BookedMeetingCreateInput | null),
+/** Disconnect from a bookedMeeting record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface BookedMeetingConnectInput {
+/** Find a bookedMeeting record based on its unique fields: id */
+where?: (BookedMeetingWhereUniqueInput | null)}
+
+export interface BookedMeetingWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingCreateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** When the meeting starts */
+startTime?: (Scalars['DateTime'] | null),
+/** When the booking was made */
+bookedAt?: (Scalars['DateTime'] | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingUpdateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** When the meeting starts */
+startTime?: (Scalars['DateTime'] | null),
+/** When the booking was made */
+bookedAt?: (Scalars['DateTime'] | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingFilterInput {
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** When the meeting starts */
+startTime?: (DateTimeFilter | null),
+/** When the booking was made */
+bookedAt?: (DateTimeFilter | null),and?: ((BookedMeetingFilterInput | null)[] | null),or?: ((BookedMeetingFilterInput | null)[] | null),not?: (BookedMeetingFilterInput | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingOrderByInput {
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** When the meeting starts */
+startTime?: (OrderByDirection | null),
+/** When the booking was made */
+bookedAt?: (OrderByDirection | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (BookedMeetingOrderByWithGroupByAggregateInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** When the meeting starts */
+startTime?: (OrderByDateGranularityInput | null),
+/** When the booking was made */
+bookedAt?: (OrderByDateGranularityInput | null)}
+
+
+/** Aggregate-based ordering */
+export interface BookedMeetingOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for startTime */
+countUniqueValuesStartTime?: (OrderByDirection | null),
+/** Number of empty values for startTime */
+countEmptyStartTime?: (OrderByDirection | null),
+/** Number of non-empty values for startTime */
+countNotEmptyStartTime?: (OrderByDirection | null),
+/** Percentage of empty values for startTime */
+percentageEmptyStartTime?: (OrderByDirection | null),
+/** Percentage of non-empty values for startTime */
+percentageNotEmptyStartTime?: (OrderByDirection | null),
+/** Earliest date contained in the field startTime */
+minStartTime?: (OrderByDirection | null),
+/** Latest date contained in the field startTime */
+maxStartTime?: (OrderByDirection | null),
+/** Number of unique values for bookedAt */
+countUniqueValuesBookedAt?: (OrderByDirection | null),
+/** Number of empty values for bookedAt */
+countEmptyBookedAt?: (OrderByDirection | null),
+/** Number of non-empty values for bookedAt */
+countNotEmptyBookedAt?: (OrderByDirection | null),
+/** Percentage of empty values for bookedAt */
+percentageEmptyBookedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for bookedAt */
+percentageNotEmptyBookedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field bookedAt */
+minBookedAt?: (OrderByDirection | null),
+/** Latest date contained in the field bookedAt */
+maxBookedAt?: (OrderByDirection | null)}
+
+
+/** Successfully booked meetings from the booking agent */
+export interface BookedMeetingGroupByInput {
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),
+/** When the meeting starts */
+startTime?: (GroupByDateGranularityInput | null),
+/** When the booking was made */
+bookedAt?: (GroupByDateGranularityInput | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsGenqlSelection{
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Report-a-Bug agent provider */
+    agentProvider?: boolean | number
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** Report-a-Bug error message */
+    errorMessage?: boolean | number
+    /** Report-a-Bug reporter name */
+    reporterName?: boolean | number
+    /** Report-a-Bug approved by user id */
+    approvedByUserId?: boolean | number
+    /** Report-a-Bug agent url */
+    agentUrl?: boolean | number
+    /** Report-a-Bug convex created at */
+    convexCreatedAt?: boolean | number
+    /** Report-a-Bug attachment urls */
+    attachmentUrls?: boolean | number
+    /** Report-a-Bug agent instructions */
+    agentInstructions?: boolean | number
+    /** Report-a-Bug convex report id */
+    convexReportId?: boolean | number
+    /** Report-a-Bug reported page url */
+    pageUrl?: boolean | number
+    /** Report-a-Bug review status */
+    reviewStatus?: boolean | number
+    /** Report-a-Bug convex updated at */
+    convexUpdatedAt?: boolean | number
+    /** Report-a-Bug agent pull request url */
+    agentPullRequestUrl?: boolean | number
+    /** Report-a-Bug agent commit sha */
+    agentCommitSha?: boolean | number
+    /** Report-a-Bug description */
+    description?: boolean | number
+    /** Report-a-Bug convex status */
+    sourceStatus?: boolean | number
+    /** Report-a-Bug review notes */
+    reviewNotes?: boolean | number
+    /** Report-a-Bug agent status */
+    agentStatus?: boolean | number
+    /** Report-a-Bug completed at */
+    completedAt?: boolean | number
+    /** Report-a-Bug attachment count */
+    attachmentCount?: boolean | number
+    /** Report-a-Bug priority */
+    priority?: boolean | number
+    /** Report-a-Bug agent run id */
+    agentRunId?: boolean | number
+    /** Report-a-Bug agent branch */
+    agentBranch?: boolean | number
+    /** Report-a-Bug approved at */
+    approvedAt?: boolean | number
+    /** BugReportss tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** BugReportss tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** BugReportss tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** BugReportss tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** BugReportss tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsEdgeGenqlSelection{
+    node?: BugReportsGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for agentProvider */
+    countUniqueValuesAgentProvider?: boolean | number
+    /** Number of empty values for agentProvider */
+    countEmptyAgentProvider?: boolean | number
+    /** Number of non-empty values for agentProvider */
+    countNotEmptyAgentProvider?: boolean | number
+    /** Percentage of empty values for agentProvider */
+    percentageEmptyAgentProvider?: boolean | number
+    /** Percentage of non-empty values for agentProvider */
+    percentageNotEmptyAgentProvider?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for errorMessage */
+    countUniqueValuesErrorMessage?: boolean | number
+    /** Number of empty values for errorMessage */
+    countEmptyErrorMessage?: boolean | number
+    /** Number of non-empty values for errorMessage */
+    countNotEmptyErrorMessage?: boolean | number
+    /** Percentage of empty values for errorMessage */
+    percentageEmptyErrorMessage?: boolean | number
+    /** Percentage of non-empty values for errorMessage */
+    percentageNotEmptyErrorMessage?: boolean | number
+    /** Number of unique values for reporterName */
+    countUniqueValuesReporterName?: boolean | number
+    /** Number of empty values for reporterName */
+    countEmptyReporterName?: boolean | number
+    /** Number of non-empty values for reporterName */
+    countNotEmptyReporterName?: boolean | number
+    /** Percentage of empty values for reporterName */
+    percentageEmptyReporterName?: boolean | number
+    /** Percentage of non-empty values for reporterName */
+    percentageNotEmptyReporterName?: boolean | number
+    /** Number of unique values for approvedByUserId */
+    countUniqueValuesApprovedByUserId?: boolean | number
+    /** Number of empty values for approvedByUserId */
+    countEmptyApprovedByUserId?: boolean | number
+    /** Number of non-empty values for approvedByUserId */
+    countNotEmptyApprovedByUserId?: boolean | number
+    /** Percentage of empty values for approvedByUserId */
+    percentageEmptyApprovedByUserId?: boolean | number
+    /** Percentage of non-empty values for approvedByUserId */
+    percentageNotEmptyApprovedByUserId?: boolean | number
+    /** Number of unique values for agentUrl */
+    countUniqueValuesAgentUrl?: boolean | number
+    /** Number of empty values for agentUrl */
+    countEmptyAgentUrl?: boolean | number
+    /** Number of non-empty values for agentUrl */
+    countNotEmptyAgentUrl?: boolean | number
+    /** Percentage of empty values for agentUrl */
+    percentageEmptyAgentUrl?: boolean | number
+    /** Percentage of non-empty values for agentUrl */
+    percentageNotEmptyAgentUrl?: boolean | number
+    /** Number of unique values for convexCreatedAt */
+    countUniqueValuesConvexCreatedAt?: boolean | number
+    /** Number of empty values for convexCreatedAt */
+    countEmptyConvexCreatedAt?: boolean | number
+    /** Number of non-empty values for convexCreatedAt */
+    countNotEmptyConvexCreatedAt?: boolean | number
+    /** Percentage of empty values for convexCreatedAt */
+    percentageEmptyConvexCreatedAt?: boolean | number
+    /** Percentage of non-empty values for convexCreatedAt */
+    percentageNotEmptyConvexCreatedAt?: boolean | number
+    /** Earliest date contained in the field convexCreatedAt */
+    minConvexCreatedAt?: boolean | number
+    /** Latest date contained in the field convexCreatedAt */
+    maxConvexCreatedAt?: boolean | number
+    /** Number of unique values for attachmentUrls */
+    countUniqueValuesAttachmentUrls?: boolean | number
+    /** Number of empty values for attachmentUrls */
+    countEmptyAttachmentUrls?: boolean | number
+    /** Number of non-empty values for attachmentUrls */
+    countNotEmptyAttachmentUrls?: boolean | number
+    /** Percentage of empty values for attachmentUrls */
+    percentageEmptyAttachmentUrls?: boolean | number
+    /** Percentage of non-empty values for attachmentUrls */
+    percentageNotEmptyAttachmentUrls?: boolean | number
+    /** Number of unique values for agentInstructions */
+    countUniqueValuesAgentInstructions?: boolean | number
+    /** Number of empty values for agentInstructions */
+    countEmptyAgentInstructions?: boolean | number
+    /** Number of non-empty values for agentInstructions */
+    countNotEmptyAgentInstructions?: boolean | number
+    /** Percentage of empty values for agentInstructions */
+    percentageEmptyAgentInstructions?: boolean | number
+    /** Percentage of non-empty values for agentInstructions */
+    percentageNotEmptyAgentInstructions?: boolean | number
+    /** Number of unique values for convexReportId */
+    countUniqueValuesConvexReportId?: boolean | number
+    /** Number of empty values for convexReportId */
+    countEmptyConvexReportId?: boolean | number
+    /** Number of non-empty values for convexReportId */
+    countNotEmptyConvexReportId?: boolean | number
+    /** Percentage of empty values for convexReportId */
+    percentageEmptyConvexReportId?: boolean | number
+    /** Percentage of non-empty values for convexReportId */
+    percentageNotEmptyConvexReportId?: boolean | number
+    /** Number of unique values for pageUrl */
+    countUniqueValuesPageUrl?: boolean | number
+    /** Number of empty values for pageUrl */
+    countEmptyPageUrl?: boolean | number
+    /** Number of non-empty values for pageUrl */
+    countNotEmptyPageUrl?: boolean | number
+    /** Percentage of empty values for pageUrl */
+    percentageEmptyPageUrl?: boolean | number
+    /** Percentage of non-empty values for pageUrl */
+    percentageNotEmptyPageUrl?: boolean | number
+    /** Number of unique values for reviewStatus */
+    countUniqueValuesReviewStatus?: boolean | number
+    /** Number of empty values for reviewStatus */
+    countEmptyReviewStatus?: boolean | number
+    /** Number of non-empty values for reviewStatus */
+    countNotEmptyReviewStatus?: boolean | number
+    /** Percentage of empty values for reviewStatus */
+    percentageEmptyReviewStatus?: boolean | number
+    /** Percentage of non-empty values for reviewStatus */
+    percentageNotEmptyReviewStatus?: boolean | number
+    /** Number of unique values for convexUpdatedAt */
+    countUniqueValuesConvexUpdatedAt?: boolean | number
+    /** Number of empty values for convexUpdatedAt */
+    countEmptyConvexUpdatedAt?: boolean | number
+    /** Number of non-empty values for convexUpdatedAt */
+    countNotEmptyConvexUpdatedAt?: boolean | number
+    /** Percentage of empty values for convexUpdatedAt */
+    percentageEmptyConvexUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for convexUpdatedAt */
+    percentageNotEmptyConvexUpdatedAt?: boolean | number
+    /** Earliest date contained in the field convexUpdatedAt */
+    minConvexUpdatedAt?: boolean | number
+    /** Latest date contained in the field convexUpdatedAt */
+    maxConvexUpdatedAt?: boolean | number
+    /** Number of unique values for agentPullRequestUrl */
+    countUniqueValuesAgentPullRequestUrl?: boolean | number
+    /** Number of empty values for agentPullRequestUrl */
+    countEmptyAgentPullRequestUrl?: boolean | number
+    /** Number of non-empty values for agentPullRequestUrl */
+    countNotEmptyAgentPullRequestUrl?: boolean | number
+    /** Percentage of empty values for agentPullRequestUrl */
+    percentageEmptyAgentPullRequestUrl?: boolean | number
+    /** Percentage of non-empty values for agentPullRequestUrl */
+    percentageNotEmptyAgentPullRequestUrl?: boolean | number
+    /** Number of unique values for agentCommitSha */
+    countUniqueValuesAgentCommitSha?: boolean | number
+    /** Number of empty values for agentCommitSha */
+    countEmptyAgentCommitSha?: boolean | number
+    /** Number of non-empty values for agentCommitSha */
+    countNotEmptyAgentCommitSha?: boolean | number
+    /** Percentage of empty values for agentCommitSha */
+    percentageEmptyAgentCommitSha?: boolean | number
+    /** Percentage of non-empty values for agentCommitSha */
+    percentageNotEmptyAgentCommitSha?: boolean | number
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: boolean | number
+    /** Number of empty values for description */
+    countEmptyDescription?: boolean | number
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: boolean | number
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: boolean | number
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: boolean | number
+    /** Number of unique values for sourceStatus */
+    countUniqueValuesSourceStatus?: boolean | number
+    /** Number of empty values for sourceStatus */
+    countEmptySourceStatus?: boolean | number
+    /** Number of non-empty values for sourceStatus */
+    countNotEmptySourceStatus?: boolean | number
+    /** Percentage of empty values for sourceStatus */
+    percentageEmptySourceStatus?: boolean | number
+    /** Percentage of non-empty values for sourceStatus */
+    percentageNotEmptySourceStatus?: boolean | number
+    /** Number of unique values for reviewNotes */
+    countUniqueValuesReviewNotes?: boolean | number
+    /** Number of empty values for reviewNotes */
+    countEmptyReviewNotes?: boolean | number
+    /** Number of non-empty values for reviewNotes */
+    countNotEmptyReviewNotes?: boolean | number
+    /** Percentage of empty values for reviewNotes */
+    percentageEmptyReviewNotes?: boolean | number
+    /** Percentage of non-empty values for reviewNotes */
+    percentageNotEmptyReviewNotes?: boolean | number
+    /** Number of unique values for agentStatus */
+    countUniqueValuesAgentStatus?: boolean | number
+    /** Number of empty values for agentStatus */
+    countEmptyAgentStatus?: boolean | number
+    /** Number of non-empty values for agentStatus */
+    countNotEmptyAgentStatus?: boolean | number
+    /** Percentage of empty values for agentStatus */
+    percentageEmptyAgentStatus?: boolean | number
+    /** Percentage of non-empty values for agentStatus */
+    percentageNotEmptyAgentStatus?: boolean | number
+    /** Number of unique values for completedAt */
+    countUniqueValuesCompletedAt?: boolean | number
+    /** Number of empty values for completedAt */
+    countEmptyCompletedAt?: boolean | number
+    /** Number of non-empty values for completedAt */
+    countNotEmptyCompletedAt?: boolean | number
+    /** Percentage of empty values for completedAt */
+    percentageEmptyCompletedAt?: boolean | number
+    /** Percentage of non-empty values for completedAt */
+    percentageNotEmptyCompletedAt?: boolean | number
+    /** Earliest date contained in the field completedAt */
+    minCompletedAt?: boolean | number
+    /** Latest date contained in the field completedAt */
+    maxCompletedAt?: boolean | number
+    /** Number of unique values for attachmentCount */
+    countUniqueValuesAttachmentCount?: boolean | number
+    /** Number of empty values for attachmentCount */
+    countEmptyAttachmentCount?: boolean | number
+    /** Number of non-empty values for attachmentCount */
+    countNotEmptyAttachmentCount?: boolean | number
+    /** Percentage of empty values for attachmentCount */
+    percentageEmptyAttachmentCount?: boolean | number
+    /** Percentage of non-empty values for attachmentCount */
+    percentageNotEmptyAttachmentCount?: boolean | number
+    /** Minimum amount contained in the field attachmentCount */
+    minAttachmentCount?: boolean | number
+    /** Maximum amount contained in the field attachmentCount */
+    maxAttachmentCount?: boolean | number
+    /** Average amount contained in the field attachmentCount */
+    avgAttachmentCount?: boolean | number
+    /** Sum of amounts contained in the field attachmentCount */
+    sumAttachmentCount?: boolean | number
+    /** Number of unique values for priority */
+    countUniqueValuesPriority?: boolean | number
+    /** Number of empty values for priority */
+    countEmptyPriority?: boolean | number
+    /** Number of non-empty values for priority */
+    countNotEmptyPriority?: boolean | number
+    /** Percentage of empty values for priority */
+    percentageEmptyPriority?: boolean | number
+    /** Percentage of non-empty values for priority */
+    percentageNotEmptyPriority?: boolean | number
+    /** Number of unique values for agentRunId */
+    countUniqueValuesAgentRunId?: boolean | number
+    /** Number of empty values for agentRunId */
+    countEmptyAgentRunId?: boolean | number
+    /** Number of non-empty values for agentRunId */
+    countNotEmptyAgentRunId?: boolean | number
+    /** Percentage of empty values for agentRunId */
+    percentageEmptyAgentRunId?: boolean | number
+    /** Percentage of non-empty values for agentRunId */
+    percentageNotEmptyAgentRunId?: boolean | number
+    /** Number of unique values for agentBranch */
+    countUniqueValuesAgentBranch?: boolean | number
+    /** Number of empty values for agentBranch */
+    countEmptyAgentBranch?: boolean | number
+    /** Number of non-empty values for agentBranch */
+    countNotEmptyAgentBranch?: boolean | number
+    /** Percentage of empty values for agentBranch */
+    percentageEmptyAgentBranch?: boolean | number
+    /** Percentage of non-empty values for agentBranch */
+    percentageNotEmptyAgentBranch?: boolean | number
+    /** Number of unique values for approvedAt */
+    countUniqueValuesApprovedAt?: boolean | number
+    /** Number of empty values for approvedAt */
+    countEmptyApprovedAt?: boolean | number
+    /** Number of non-empty values for approvedAt */
+    countNotEmptyApprovedAt?: boolean | number
+    /** Percentage of empty values for approvedAt */
+    percentageEmptyApprovedAt?: boolean | number
+    /** Percentage of non-empty values for approvedAt */
+    percentageNotEmptyApprovedAt?: boolean | number
+    /** Earliest date contained in the field approvedAt */
+    minApprovedAt?: boolean | number
+    /** Latest date contained in the field approvedAt */
+    maxApprovedAt?: boolean | number
+    edges?: BugReportsEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for agentProvider */
+    countUniqueValuesAgentProvider?: boolean | number
+    /** Number of empty values for agentProvider */
+    countEmptyAgentProvider?: boolean | number
+    /** Number of non-empty values for agentProvider */
+    countNotEmptyAgentProvider?: boolean | number
+    /** Percentage of empty values for agentProvider */
+    percentageEmptyAgentProvider?: boolean | number
+    /** Percentage of non-empty values for agentProvider */
+    percentageNotEmptyAgentProvider?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for errorMessage */
+    countUniqueValuesErrorMessage?: boolean | number
+    /** Number of empty values for errorMessage */
+    countEmptyErrorMessage?: boolean | number
+    /** Number of non-empty values for errorMessage */
+    countNotEmptyErrorMessage?: boolean | number
+    /** Percentage of empty values for errorMessage */
+    percentageEmptyErrorMessage?: boolean | number
+    /** Percentage of non-empty values for errorMessage */
+    percentageNotEmptyErrorMessage?: boolean | number
+    /** Number of unique values for reporterName */
+    countUniqueValuesReporterName?: boolean | number
+    /** Number of empty values for reporterName */
+    countEmptyReporterName?: boolean | number
+    /** Number of non-empty values for reporterName */
+    countNotEmptyReporterName?: boolean | number
+    /** Percentage of empty values for reporterName */
+    percentageEmptyReporterName?: boolean | number
+    /** Percentage of non-empty values for reporterName */
+    percentageNotEmptyReporterName?: boolean | number
+    /** Number of unique values for approvedByUserId */
+    countUniqueValuesApprovedByUserId?: boolean | number
+    /** Number of empty values for approvedByUserId */
+    countEmptyApprovedByUserId?: boolean | number
+    /** Number of non-empty values for approvedByUserId */
+    countNotEmptyApprovedByUserId?: boolean | number
+    /** Percentage of empty values for approvedByUserId */
+    percentageEmptyApprovedByUserId?: boolean | number
+    /** Percentage of non-empty values for approvedByUserId */
+    percentageNotEmptyApprovedByUserId?: boolean | number
+    /** Number of unique values for agentUrl */
+    countUniqueValuesAgentUrl?: boolean | number
+    /** Number of empty values for agentUrl */
+    countEmptyAgentUrl?: boolean | number
+    /** Number of non-empty values for agentUrl */
+    countNotEmptyAgentUrl?: boolean | number
+    /** Percentage of empty values for agentUrl */
+    percentageEmptyAgentUrl?: boolean | number
+    /** Percentage of non-empty values for agentUrl */
+    percentageNotEmptyAgentUrl?: boolean | number
+    /** Number of unique values for convexCreatedAt */
+    countUniqueValuesConvexCreatedAt?: boolean | number
+    /** Number of empty values for convexCreatedAt */
+    countEmptyConvexCreatedAt?: boolean | number
+    /** Number of non-empty values for convexCreatedAt */
+    countNotEmptyConvexCreatedAt?: boolean | number
+    /** Percentage of empty values for convexCreatedAt */
+    percentageEmptyConvexCreatedAt?: boolean | number
+    /** Percentage of non-empty values for convexCreatedAt */
+    percentageNotEmptyConvexCreatedAt?: boolean | number
+    /** Earliest date contained in the field convexCreatedAt */
+    minConvexCreatedAt?: boolean | number
+    /** Latest date contained in the field convexCreatedAt */
+    maxConvexCreatedAt?: boolean | number
+    /** Number of unique values for attachmentUrls */
+    countUniqueValuesAttachmentUrls?: boolean | number
+    /** Number of empty values for attachmentUrls */
+    countEmptyAttachmentUrls?: boolean | number
+    /** Number of non-empty values for attachmentUrls */
+    countNotEmptyAttachmentUrls?: boolean | number
+    /** Percentage of empty values for attachmentUrls */
+    percentageEmptyAttachmentUrls?: boolean | number
+    /** Percentage of non-empty values for attachmentUrls */
+    percentageNotEmptyAttachmentUrls?: boolean | number
+    /** Number of unique values for agentInstructions */
+    countUniqueValuesAgentInstructions?: boolean | number
+    /** Number of empty values for agentInstructions */
+    countEmptyAgentInstructions?: boolean | number
+    /** Number of non-empty values for agentInstructions */
+    countNotEmptyAgentInstructions?: boolean | number
+    /** Percentage of empty values for agentInstructions */
+    percentageEmptyAgentInstructions?: boolean | number
+    /** Percentage of non-empty values for agentInstructions */
+    percentageNotEmptyAgentInstructions?: boolean | number
+    /** Number of unique values for convexReportId */
+    countUniqueValuesConvexReportId?: boolean | number
+    /** Number of empty values for convexReportId */
+    countEmptyConvexReportId?: boolean | number
+    /** Number of non-empty values for convexReportId */
+    countNotEmptyConvexReportId?: boolean | number
+    /** Percentage of empty values for convexReportId */
+    percentageEmptyConvexReportId?: boolean | number
+    /** Percentage of non-empty values for convexReportId */
+    percentageNotEmptyConvexReportId?: boolean | number
+    /** Number of unique values for pageUrl */
+    countUniqueValuesPageUrl?: boolean | number
+    /** Number of empty values for pageUrl */
+    countEmptyPageUrl?: boolean | number
+    /** Number of non-empty values for pageUrl */
+    countNotEmptyPageUrl?: boolean | number
+    /** Percentage of empty values for pageUrl */
+    percentageEmptyPageUrl?: boolean | number
+    /** Percentage of non-empty values for pageUrl */
+    percentageNotEmptyPageUrl?: boolean | number
+    /** Number of unique values for reviewStatus */
+    countUniqueValuesReviewStatus?: boolean | number
+    /** Number of empty values for reviewStatus */
+    countEmptyReviewStatus?: boolean | number
+    /** Number of non-empty values for reviewStatus */
+    countNotEmptyReviewStatus?: boolean | number
+    /** Percentage of empty values for reviewStatus */
+    percentageEmptyReviewStatus?: boolean | number
+    /** Percentage of non-empty values for reviewStatus */
+    percentageNotEmptyReviewStatus?: boolean | number
+    /** Number of unique values for convexUpdatedAt */
+    countUniqueValuesConvexUpdatedAt?: boolean | number
+    /** Number of empty values for convexUpdatedAt */
+    countEmptyConvexUpdatedAt?: boolean | number
+    /** Number of non-empty values for convexUpdatedAt */
+    countNotEmptyConvexUpdatedAt?: boolean | number
+    /** Percentage of empty values for convexUpdatedAt */
+    percentageEmptyConvexUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for convexUpdatedAt */
+    percentageNotEmptyConvexUpdatedAt?: boolean | number
+    /** Earliest date contained in the field convexUpdatedAt */
+    minConvexUpdatedAt?: boolean | number
+    /** Latest date contained in the field convexUpdatedAt */
+    maxConvexUpdatedAt?: boolean | number
+    /** Number of unique values for agentPullRequestUrl */
+    countUniqueValuesAgentPullRequestUrl?: boolean | number
+    /** Number of empty values for agentPullRequestUrl */
+    countEmptyAgentPullRequestUrl?: boolean | number
+    /** Number of non-empty values for agentPullRequestUrl */
+    countNotEmptyAgentPullRequestUrl?: boolean | number
+    /** Percentage of empty values for agentPullRequestUrl */
+    percentageEmptyAgentPullRequestUrl?: boolean | number
+    /** Percentage of non-empty values for agentPullRequestUrl */
+    percentageNotEmptyAgentPullRequestUrl?: boolean | number
+    /** Number of unique values for agentCommitSha */
+    countUniqueValuesAgentCommitSha?: boolean | number
+    /** Number of empty values for agentCommitSha */
+    countEmptyAgentCommitSha?: boolean | number
+    /** Number of non-empty values for agentCommitSha */
+    countNotEmptyAgentCommitSha?: boolean | number
+    /** Percentage of empty values for agentCommitSha */
+    percentageEmptyAgentCommitSha?: boolean | number
+    /** Percentage of non-empty values for agentCommitSha */
+    percentageNotEmptyAgentCommitSha?: boolean | number
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: boolean | number
+    /** Number of empty values for description */
+    countEmptyDescription?: boolean | number
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: boolean | number
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: boolean | number
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: boolean | number
+    /** Number of unique values for sourceStatus */
+    countUniqueValuesSourceStatus?: boolean | number
+    /** Number of empty values for sourceStatus */
+    countEmptySourceStatus?: boolean | number
+    /** Number of non-empty values for sourceStatus */
+    countNotEmptySourceStatus?: boolean | number
+    /** Percentage of empty values for sourceStatus */
+    percentageEmptySourceStatus?: boolean | number
+    /** Percentage of non-empty values for sourceStatus */
+    percentageNotEmptySourceStatus?: boolean | number
+    /** Number of unique values for reviewNotes */
+    countUniqueValuesReviewNotes?: boolean | number
+    /** Number of empty values for reviewNotes */
+    countEmptyReviewNotes?: boolean | number
+    /** Number of non-empty values for reviewNotes */
+    countNotEmptyReviewNotes?: boolean | number
+    /** Percentage of empty values for reviewNotes */
+    percentageEmptyReviewNotes?: boolean | number
+    /** Percentage of non-empty values for reviewNotes */
+    percentageNotEmptyReviewNotes?: boolean | number
+    /** Number of unique values for agentStatus */
+    countUniqueValuesAgentStatus?: boolean | number
+    /** Number of empty values for agentStatus */
+    countEmptyAgentStatus?: boolean | number
+    /** Number of non-empty values for agentStatus */
+    countNotEmptyAgentStatus?: boolean | number
+    /** Percentage of empty values for agentStatus */
+    percentageEmptyAgentStatus?: boolean | number
+    /** Percentage of non-empty values for agentStatus */
+    percentageNotEmptyAgentStatus?: boolean | number
+    /** Number of unique values for completedAt */
+    countUniqueValuesCompletedAt?: boolean | number
+    /** Number of empty values for completedAt */
+    countEmptyCompletedAt?: boolean | number
+    /** Number of non-empty values for completedAt */
+    countNotEmptyCompletedAt?: boolean | number
+    /** Percentage of empty values for completedAt */
+    percentageEmptyCompletedAt?: boolean | number
+    /** Percentage of non-empty values for completedAt */
+    percentageNotEmptyCompletedAt?: boolean | number
+    /** Earliest date contained in the field completedAt */
+    minCompletedAt?: boolean | number
+    /** Latest date contained in the field completedAt */
+    maxCompletedAt?: boolean | number
+    /** Number of unique values for attachmentCount */
+    countUniqueValuesAttachmentCount?: boolean | number
+    /** Number of empty values for attachmentCount */
+    countEmptyAttachmentCount?: boolean | number
+    /** Number of non-empty values for attachmentCount */
+    countNotEmptyAttachmentCount?: boolean | number
+    /** Percentage of empty values for attachmentCount */
+    percentageEmptyAttachmentCount?: boolean | number
+    /** Percentage of non-empty values for attachmentCount */
+    percentageNotEmptyAttachmentCount?: boolean | number
+    /** Minimum amount contained in the field attachmentCount */
+    minAttachmentCount?: boolean | number
+    /** Maximum amount contained in the field attachmentCount */
+    maxAttachmentCount?: boolean | number
+    /** Average amount contained in the field attachmentCount */
+    avgAttachmentCount?: boolean | number
+    /** Sum of amounts contained in the field attachmentCount */
+    sumAttachmentCount?: boolean | number
+    /** Number of unique values for priority */
+    countUniqueValuesPriority?: boolean | number
+    /** Number of empty values for priority */
+    countEmptyPriority?: boolean | number
+    /** Number of non-empty values for priority */
+    countNotEmptyPriority?: boolean | number
+    /** Percentage of empty values for priority */
+    percentageEmptyPriority?: boolean | number
+    /** Percentage of non-empty values for priority */
+    percentageNotEmptyPriority?: boolean | number
+    /** Number of unique values for agentRunId */
+    countUniqueValuesAgentRunId?: boolean | number
+    /** Number of empty values for agentRunId */
+    countEmptyAgentRunId?: boolean | number
+    /** Number of non-empty values for agentRunId */
+    countNotEmptyAgentRunId?: boolean | number
+    /** Percentage of empty values for agentRunId */
+    percentageEmptyAgentRunId?: boolean | number
+    /** Percentage of non-empty values for agentRunId */
+    percentageNotEmptyAgentRunId?: boolean | number
+    /** Number of unique values for agentBranch */
+    countUniqueValuesAgentBranch?: boolean | number
+    /** Number of empty values for agentBranch */
+    countEmptyAgentBranch?: boolean | number
+    /** Number of non-empty values for agentBranch */
+    countNotEmptyAgentBranch?: boolean | number
+    /** Percentage of empty values for agentBranch */
+    percentageEmptyAgentBranch?: boolean | number
+    /** Percentage of non-empty values for agentBranch */
+    percentageNotEmptyAgentBranch?: boolean | number
+    /** Number of unique values for approvedAt */
+    countUniqueValuesApprovedAt?: boolean | number
+    /** Number of empty values for approvedAt */
+    countEmptyApprovedAt?: boolean | number
+    /** Number of non-empty values for approvedAt */
+    countNotEmptyApprovedAt?: boolean | number
+    /** Percentage of empty values for approvedAt */
+    percentageEmptyApprovedAt?: boolean | number
+    /** Percentage of non-empty values for approvedAt */
+    percentageNotEmptyApprovedAt?: boolean | number
+    /** Earliest date contained in the field approvedAt */
+    minApprovedAt?: boolean | number
+    /** Latest date contained in the field approvedAt */
+    maxApprovedAt?: boolean | number
+    edges?: BugReportsEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface BugReportsRelationInput {
+/** Connect to a bugReports record */
+connect?: (BugReportsConnectInput | null),
+/** Create and connect a bugReports record */
+create?: (BugReportsCreateInput | null),
+/** Disconnect from a bugReports record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface BugReportsConnectInput {
+/** Find a bugReports record based on its unique fields: id */
+where?: (BugReportsWhereUniqueInput | null)}
+
+export interface BugReportsWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsCreateInput {
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** Report-a-Bug error message */
+errorMessage?: (Scalars['String'] | null),
+/** Report-a-Bug reporter name */
+reporterName?: (Scalars['String'] | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (Scalars['String'] | null),
+/** Report-a-Bug agent url */
+agentUrl?: (Scalars['String'] | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (Scalars['String'] | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (Scalars['String'] | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (Scalars['String'] | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (Scalars['String'] | null),
+/** Report-a-Bug review status */
+reviewStatus?: (BugReportsReviewStatusEnum | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (Scalars['String'] | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (Scalars['String'] | null),
+/** Report-a-Bug description */
+description?: (Scalars['String'] | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (BugReportsSourceStatusEnum | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (Scalars['String'] | null),
+/** Report-a-Bug agent status */
+agentStatus?: (Scalars['String'] | null),
+/** Report-a-Bug completed at */
+completedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (Scalars['Float'] | null),
+/** Report-a-Bug priority */
+priority?: (BugReportsPriorityEnum | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (Scalars['String'] | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (Scalars['String'] | null),
+/** Report-a-Bug approved at */
+approvedAt?: (Scalars['DateTime'] | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsUpdateInput {
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** Report-a-Bug error message */
+errorMessage?: (Scalars['String'] | null),
+/** Report-a-Bug reporter name */
+reporterName?: (Scalars['String'] | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (Scalars['String'] | null),
+/** Report-a-Bug agent url */
+agentUrl?: (Scalars['String'] | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (Scalars['String'] | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (Scalars['String'] | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (Scalars['String'] | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (Scalars['String'] | null),
+/** Report-a-Bug review status */
+reviewStatus?: (BugReportsReviewStatusEnum | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (Scalars['String'] | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (Scalars['String'] | null),
+/** Report-a-Bug description */
+description?: (Scalars['String'] | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (BugReportsSourceStatusEnum | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (Scalars['String'] | null),
+/** Report-a-Bug agent status */
+agentStatus?: (Scalars['String'] | null),
+/** Report-a-Bug completed at */
+completedAt?: (Scalars['DateTime'] | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (Scalars['Float'] | null),
+/** Report-a-Bug priority */
+priority?: (BugReportsPriorityEnum | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (Scalars['String'] | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (Scalars['String'] | null),
+/** Report-a-Bug approved at */
+approvedAt?: (Scalars['DateTime'] | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsFilterInput {
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (StringFilter | null),
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** Report-a-Bug error message */
+errorMessage?: (StringFilter | null),
+/** Report-a-Bug reporter name */
+reporterName?: (StringFilter | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (StringFilter | null),
+/** Report-a-Bug agent url */
+agentUrl?: (StringFilter | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (DateTimeFilter | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (StringFilter | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (StringFilter | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (StringFilter | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (StringFilter | null),
+/** Report-a-Bug review status */
+reviewStatus?: (BugReportsReviewStatusEnumFilter | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (DateTimeFilter | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (StringFilter | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (StringFilter | null),
+/** Report-a-Bug description */
+description?: (StringFilter | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (BugReportsSourceStatusEnumFilter | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (StringFilter | null),
+/** Report-a-Bug agent status */
+agentStatus?: (StringFilter | null),
+/** Report-a-Bug completed at */
+completedAt?: (DateTimeFilter | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (FloatFilter | null),
+/** Report-a-Bug priority */
+priority?: (BugReportsPriorityEnumFilter | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (StringFilter | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (StringFilter | null),
+/** Report-a-Bug approved at */
+approvedAt?: (DateTimeFilter | null),and?: ((BugReportsFilterInput | null)[] | null),or?: ((BugReportsFilterInput | null)[] | null),not?: (BugReportsFilterInput | null)}
+
+export interface BugReportsReviewStatusEnumFilter {eq?: (BugReportsReviewStatusEnum | null),neq?: (BugReportsReviewStatusEnum | null),in?: ((BugReportsReviewStatusEnum | null)[] | null),containsAny?: ((BugReportsReviewStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BugReportsReviewStatusEnum | null),gte?: (BugReportsReviewStatusEnum | null),lt?: (BugReportsReviewStatusEnum | null),lte?: (BugReportsReviewStatusEnum | null)}
+
+export interface BugReportsSourceStatusEnumFilter {eq?: (BugReportsSourceStatusEnum | null),neq?: (BugReportsSourceStatusEnum | null),in?: ((BugReportsSourceStatusEnum | null)[] | null),containsAny?: ((BugReportsSourceStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BugReportsSourceStatusEnum | null),gte?: (BugReportsSourceStatusEnum | null),lt?: (BugReportsSourceStatusEnum | null),lte?: (BugReportsSourceStatusEnum | null)}
+
+export interface BugReportsPriorityEnumFilter {eq?: (BugReportsPriorityEnum | null),neq?: (BugReportsPriorityEnum | null),in?: ((BugReportsPriorityEnum | null)[] | null),containsAny?: ((BugReportsPriorityEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BugReportsPriorityEnum | null),gte?: (BugReportsPriorityEnum | null),lt?: (BugReportsPriorityEnum | null),lte?: (BugReportsPriorityEnum | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsOrderByInput {
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** Report-a-Bug error message */
+errorMessage?: (OrderByDirection | null),
+/** Report-a-Bug reporter name */
+reporterName?: (OrderByDirection | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (OrderByDirection | null),
+/** Report-a-Bug agent url */
+agentUrl?: (OrderByDirection | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (OrderByDirection | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (OrderByDirection | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (OrderByDirection | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (OrderByDirection | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (OrderByDirection | null),
+/** Report-a-Bug review status */
+reviewStatus?: (OrderByDirection | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (OrderByDirection | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (OrderByDirection | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (OrderByDirection | null),
+/** Report-a-Bug description */
+description?: (OrderByDirection | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (OrderByDirection | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (OrderByDirection | null),
+/** Report-a-Bug agent status */
+agentStatus?: (OrderByDirection | null),
+/** Report-a-Bug completed at */
+completedAt?: (OrderByDirection | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (OrderByDirection | null),
+/** Report-a-Bug priority */
+priority?: (OrderByDirection | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (OrderByDirection | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (OrderByDirection | null),
+/** Report-a-Bug approved at */
+approvedAt?: (OrderByDirection | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (BugReportsOrderByWithGroupByAggregateInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** Report-a-Bug error message */
+errorMessage?: (OrderByDirection | null),
+/** Report-a-Bug reporter name */
+reporterName?: (OrderByDirection | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (OrderByDirection | null),
+/** Report-a-Bug agent url */
+agentUrl?: (OrderByDirection | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (OrderByDateGranularityInput | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (OrderByDirection | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (OrderByDirection | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (OrderByDirection | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (OrderByDirection | null),
+/** Report-a-Bug review status */
+reviewStatus?: (OrderByDirection | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (OrderByDateGranularityInput | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (OrderByDirection | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (OrderByDirection | null),
+/** Report-a-Bug description */
+description?: (OrderByDirection | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (OrderByDirection | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (OrderByDirection | null),
+/** Report-a-Bug agent status */
+agentStatus?: (OrderByDirection | null),
+/** Report-a-Bug completed at */
+completedAt?: (OrderByDateGranularityInput | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (OrderByDirection | null),
+/** Report-a-Bug priority */
+priority?: (OrderByDirection | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (OrderByDirection | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (OrderByDirection | null),
+/** Report-a-Bug approved at */
+approvedAt?: (OrderByDateGranularityInput | null)}
+
+
+/** Aggregate-based ordering */
+export interface BugReportsOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for agentProvider */
+countUniqueValuesAgentProvider?: (OrderByDirection | null),
+/** Number of empty values for agentProvider */
+countEmptyAgentProvider?: (OrderByDirection | null),
+/** Number of non-empty values for agentProvider */
+countNotEmptyAgentProvider?: (OrderByDirection | null),
+/** Percentage of empty values for agentProvider */
+percentageEmptyAgentProvider?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentProvider */
+percentageNotEmptyAgentProvider?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for errorMessage */
+countUniqueValuesErrorMessage?: (OrderByDirection | null),
+/** Number of empty values for errorMessage */
+countEmptyErrorMessage?: (OrderByDirection | null),
+/** Number of non-empty values for errorMessage */
+countNotEmptyErrorMessage?: (OrderByDirection | null),
+/** Percentage of empty values for errorMessage */
+percentageEmptyErrorMessage?: (OrderByDirection | null),
+/** Percentage of non-empty values for errorMessage */
+percentageNotEmptyErrorMessage?: (OrderByDirection | null),
+/** Number of unique values for reporterName */
+countUniqueValuesReporterName?: (OrderByDirection | null),
+/** Number of empty values for reporterName */
+countEmptyReporterName?: (OrderByDirection | null),
+/** Number of non-empty values for reporterName */
+countNotEmptyReporterName?: (OrderByDirection | null),
+/** Percentage of empty values for reporterName */
+percentageEmptyReporterName?: (OrderByDirection | null),
+/** Percentage of non-empty values for reporterName */
+percentageNotEmptyReporterName?: (OrderByDirection | null),
+/** Number of unique values for approvedByUserId */
+countUniqueValuesApprovedByUserId?: (OrderByDirection | null),
+/** Number of empty values for approvedByUserId */
+countEmptyApprovedByUserId?: (OrderByDirection | null),
+/** Number of non-empty values for approvedByUserId */
+countNotEmptyApprovedByUserId?: (OrderByDirection | null),
+/** Percentage of empty values for approvedByUserId */
+percentageEmptyApprovedByUserId?: (OrderByDirection | null),
+/** Percentage of non-empty values for approvedByUserId */
+percentageNotEmptyApprovedByUserId?: (OrderByDirection | null),
+/** Number of unique values for agentUrl */
+countUniqueValuesAgentUrl?: (OrderByDirection | null),
+/** Number of empty values for agentUrl */
+countEmptyAgentUrl?: (OrderByDirection | null),
+/** Number of non-empty values for agentUrl */
+countNotEmptyAgentUrl?: (OrderByDirection | null),
+/** Percentage of empty values for agentUrl */
+percentageEmptyAgentUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentUrl */
+percentageNotEmptyAgentUrl?: (OrderByDirection | null),
+/** Number of unique values for convexCreatedAt */
+countUniqueValuesConvexCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for convexCreatedAt */
+countEmptyConvexCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for convexCreatedAt */
+countNotEmptyConvexCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for convexCreatedAt */
+percentageEmptyConvexCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for convexCreatedAt */
+percentageNotEmptyConvexCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field convexCreatedAt */
+minConvexCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field convexCreatedAt */
+maxConvexCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for attachmentUrls */
+countUniqueValuesAttachmentUrls?: (OrderByDirection | null),
+/** Number of empty values for attachmentUrls */
+countEmptyAttachmentUrls?: (OrderByDirection | null),
+/** Number of non-empty values for attachmentUrls */
+countNotEmptyAttachmentUrls?: (OrderByDirection | null),
+/** Percentage of empty values for attachmentUrls */
+percentageEmptyAttachmentUrls?: (OrderByDirection | null),
+/** Percentage of non-empty values for attachmentUrls */
+percentageNotEmptyAttachmentUrls?: (OrderByDirection | null),
+/** Number of unique values for agentInstructions */
+countUniqueValuesAgentInstructions?: (OrderByDirection | null),
+/** Number of empty values for agentInstructions */
+countEmptyAgentInstructions?: (OrderByDirection | null),
+/** Number of non-empty values for agentInstructions */
+countNotEmptyAgentInstructions?: (OrderByDirection | null),
+/** Percentage of empty values for agentInstructions */
+percentageEmptyAgentInstructions?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentInstructions */
+percentageNotEmptyAgentInstructions?: (OrderByDirection | null),
+/** Number of unique values for convexReportId */
+countUniqueValuesConvexReportId?: (OrderByDirection | null),
+/** Number of empty values for convexReportId */
+countEmptyConvexReportId?: (OrderByDirection | null),
+/** Number of non-empty values for convexReportId */
+countNotEmptyConvexReportId?: (OrderByDirection | null),
+/** Percentage of empty values for convexReportId */
+percentageEmptyConvexReportId?: (OrderByDirection | null),
+/** Percentage of non-empty values for convexReportId */
+percentageNotEmptyConvexReportId?: (OrderByDirection | null),
+/** Number of unique values for pageUrl */
+countUniqueValuesPageUrl?: (OrderByDirection | null),
+/** Number of empty values for pageUrl */
+countEmptyPageUrl?: (OrderByDirection | null),
+/** Number of non-empty values for pageUrl */
+countNotEmptyPageUrl?: (OrderByDirection | null),
+/** Percentage of empty values for pageUrl */
+percentageEmptyPageUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for pageUrl */
+percentageNotEmptyPageUrl?: (OrderByDirection | null),
+/** Number of unique values for reviewStatus */
+countUniqueValuesReviewStatus?: (OrderByDirection | null),
+/** Number of empty values for reviewStatus */
+countEmptyReviewStatus?: (OrderByDirection | null),
+/** Number of non-empty values for reviewStatus */
+countNotEmptyReviewStatus?: (OrderByDirection | null),
+/** Percentage of empty values for reviewStatus */
+percentageEmptyReviewStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for reviewStatus */
+percentageNotEmptyReviewStatus?: (OrderByDirection | null),
+/** Number of unique values for convexUpdatedAt */
+countUniqueValuesConvexUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for convexUpdatedAt */
+countEmptyConvexUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for convexUpdatedAt */
+countNotEmptyConvexUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for convexUpdatedAt */
+percentageEmptyConvexUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for convexUpdatedAt */
+percentageNotEmptyConvexUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field convexUpdatedAt */
+minConvexUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field convexUpdatedAt */
+maxConvexUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for agentPullRequestUrl */
+countUniqueValuesAgentPullRequestUrl?: (OrderByDirection | null),
+/** Number of empty values for agentPullRequestUrl */
+countEmptyAgentPullRequestUrl?: (OrderByDirection | null),
+/** Number of non-empty values for agentPullRequestUrl */
+countNotEmptyAgentPullRequestUrl?: (OrderByDirection | null),
+/** Percentage of empty values for agentPullRequestUrl */
+percentageEmptyAgentPullRequestUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentPullRequestUrl */
+percentageNotEmptyAgentPullRequestUrl?: (OrderByDirection | null),
+/** Number of unique values for agentCommitSha */
+countUniqueValuesAgentCommitSha?: (OrderByDirection | null),
+/** Number of empty values for agentCommitSha */
+countEmptyAgentCommitSha?: (OrderByDirection | null),
+/** Number of non-empty values for agentCommitSha */
+countNotEmptyAgentCommitSha?: (OrderByDirection | null),
+/** Percentage of empty values for agentCommitSha */
+percentageEmptyAgentCommitSha?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentCommitSha */
+percentageNotEmptyAgentCommitSha?: (OrderByDirection | null),
+/** Number of unique values for description */
+countUniqueValuesDescription?: (OrderByDirection | null),
+/** Number of empty values for description */
+countEmptyDescription?: (OrderByDirection | null),
+/** Number of non-empty values for description */
+countNotEmptyDescription?: (OrderByDirection | null),
+/** Percentage of empty values for description */
+percentageEmptyDescription?: (OrderByDirection | null),
+/** Percentage of non-empty values for description */
+percentageNotEmptyDescription?: (OrderByDirection | null),
+/** Number of unique values for sourceStatus */
+countUniqueValuesSourceStatus?: (OrderByDirection | null),
+/** Number of empty values for sourceStatus */
+countEmptySourceStatus?: (OrderByDirection | null),
+/** Number of non-empty values for sourceStatus */
+countNotEmptySourceStatus?: (OrderByDirection | null),
+/** Percentage of empty values for sourceStatus */
+percentageEmptySourceStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for sourceStatus */
+percentageNotEmptySourceStatus?: (OrderByDirection | null),
+/** Number of unique values for reviewNotes */
+countUniqueValuesReviewNotes?: (OrderByDirection | null),
+/** Number of empty values for reviewNotes */
+countEmptyReviewNotes?: (OrderByDirection | null),
+/** Number of non-empty values for reviewNotes */
+countNotEmptyReviewNotes?: (OrderByDirection | null),
+/** Percentage of empty values for reviewNotes */
+percentageEmptyReviewNotes?: (OrderByDirection | null),
+/** Percentage of non-empty values for reviewNotes */
+percentageNotEmptyReviewNotes?: (OrderByDirection | null),
+/** Number of unique values for agentStatus */
+countUniqueValuesAgentStatus?: (OrderByDirection | null),
+/** Number of empty values for agentStatus */
+countEmptyAgentStatus?: (OrderByDirection | null),
+/** Number of non-empty values for agentStatus */
+countNotEmptyAgentStatus?: (OrderByDirection | null),
+/** Percentage of empty values for agentStatus */
+percentageEmptyAgentStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentStatus */
+percentageNotEmptyAgentStatus?: (OrderByDirection | null),
+/** Number of unique values for completedAt */
+countUniqueValuesCompletedAt?: (OrderByDirection | null),
+/** Number of empty values for completedAt */
+countEmptyCompletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for completedAt */
+countNotEmptyCompletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for completedAt */
+percentageEmptyCompletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for completedAt */
+percentageNotEmptyCompletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field completedAt */
+minCompletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field completedAt */
+maxCompletedAt?: (OrderByDirection | null),
+/** Number of unique values for attachmentCount */
+countUniqueValuesAttachmentCount?: (OrderByDirection | null),
+/** Number of empty values for attachmentCount */
+countEmptyAttachmentCount?: (OrderByDirection | null),
+/** Number of non-empty values for attachmentCount */
+countNotEmptyAttachmentCount?: (OrderByDirection | null),
+/** Percentage of empty values for attachmentCount */
+percentageEmptyAttachmentCount?: (OrderByDirection | null),
+/** Percentage of non-empty values for attachmentCount */
+percentageNotEmptyAttachmentCount?: (OrderByDirection | null),
+/** Minimum amount contained in the field attachmentCount */
+minAttachmentCount?: (OrderByDirection | null),
+/** Maximum amount contained in the field attachmentCount */
+maxAttachmentCount?: (OrderByDirection | null),
+/** Average amount contained in the field attachmentCount */
+avgAttachmentCount?: (OrderByDirection | null),
+/** Sum of amounts contained in the field attachmentCount */
+sumAttachmentCount?: (OrderByDirection | null),
+/** Number of unique values for priority */
+countUniqueValuesPriority?: (OrderByDirection | null),
+/** Number of empty values for priority */
+countEmptyPriority?: (OrderByDirection | null),
+/** Number of non-empty values for priority */
+countNotEmptyPriority?: (OrderByDirection | null),
+/** Percentage of empty values for priority */
+percentageEmptyPriority?: (OrderByDirection | null),
+/** Percentage of non-empty values for priority */
+percentageNotEmptyPriority?: (OrderByDirection | null),
+/** Number of unique values for agentRunId */
+countUniqueValuesAgentRunId?: (OrderByDirection | null),
+/** Number of empty values for agentRunId */
+countEmptyAgentRunId?: (OrderByDirection | null),
+/** Number of non-empty values for agentRunId */
+countNotEmptyAgentRunId?: (OrderByDirection | null),
+/** Percentage of empty values for agentRunId */
+percentageEmptyAgentRunId?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentRunId */
+percentageNotEmptyAgentRunId?: (OrderByDirection | null),
+/** Number of unique values for agentBranch */
+countUniqueValuesAgentBranch?: (OrderByDirection | null),
+/** Number of empty values for agentBranch */
+countEmptyAgentBranch?: (OrderByDirection | null),
+/** Number of non-empty values for agentBranch */
+countNotEmptyAgentBranch?: (OrderByDirection | null),
+/** Percentage of empty values for agentBranch */
+percentageEmptyAgentBranch?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentBranch */
+percentageNotEmptyAgentBranch?: (OrderByDirection | null),
+/** Number of unique values for approvedAt */
+countUniqueValuesApprovedAt?: (OrderByDirection | null),
+/** Number of empty values for approvedAt */
+countEmptyApprovedAt?: (OrderByDirection | null),
+/** Number of non-empty values for approvedAt */
+countNotEmptyApprovedAt?: (OrderByDirection | null),
+/** Percentage of empty values for approvedAt */
+percentageEmptyApprovedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for approvedAt */
+percentageNotEmptyApprovedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field approvedAt */
+minApprovedAt?: (OrderByDirection | null),
+/** Latest date contained in the field approvedAt */
+maxApprovedAt?: (OrderByDirection | null)}
+
+
+/** Bugs that have been reported Directly from the Website and there associated PR */
+export interface BugReportsGroupByInput {
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Report-a-Bug agent provider */
+agentProvider?: (Scalars['Boolean'] | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),
+/** Report-a-Bug error message */
+errorMessage?: (Scalars['Boolean'] | null),
+/** Report-a-Bug reporter name */
+reporterName?: (Scalars['Boolean'] | null),
+/** Report-a-Bug approved by user id */
+approvedByUserId?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent url */
+agentUrl?: (Scalars['Boolean'] | null),
+/** Report-a-Bug convex created at */
+convexCreatedAt?: (GroupByDateGranularityInput | null),
+/** Report-a-Bug attachment urls */
+attachmentUrls?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent instructions */
+agentInstructions?: (Scalars['Boolean'] | null),
+/** Report-a-Bug convex report id */
+convexReportId?: (Scalars['Boolean'] | null),
+/** Report-a-Bug reported page url */
+pageUrl?: (Scalars['Boolean'] | null),
+/** Report-a-Bug review status */
+reviewStatus?: (Scalars['Boolean'] | null),
+/** Report-a-Bug convex updated at */
+convexUpdatedAt?: (GroupByDateGranularityInput | null),
+/** Report-a-Bug agent pull request url */
+agentPullRequestUrl?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent commit sha */
+agentCommitSha?: (Scalars['Boolean'] | null),
+/** Report-a-Bug description */
+description?: (Scalars['Boolean'] | null),
+/** Report-a-Bug convex status */
+sourceStatus?: (Scalars['Boolean'] | null),
+/** Report-a-Bug review notes */
+reviewNotes?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent status */
+agentStatus?: (Scalars['Boolean'] | null),
+/** Report-a-Bug completed at */
+completedAt?: (GroupByDateGranularityInput | null),
+/** Report-a-Bug attachment count */
+attachmentCount?: (Scalars['Boolean'] | null),
+/** Report-a-Bug priority */
+priority?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent run id */
+agentRunId?: (Scalars['Boolean'] | null),
+/** Report-a-Bug agent branch */
+agentBranch?: (Scalars['Boolean'] | null),
+/** Report-a-Bug approved at */
+approvedAt?: (GroupByDateGranularityInput | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentGenqlSelection{
+    /** Name */
+    name?: boolean | number
+    direction?: boolean | number
+    currencyCode?: boolean | number
+    notes?: boolean | number
+    /** Drives payments due / upcoming */
+    paymentDueAt?: boolean | number
+    amountUsd?: CurrencyGenqlSelection
+    sourceAccount?: boolean | number
+    counterparty?: boolean | number
+    category?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    paidAt?: boolean | number
+    status?: boolean | number
+    invoiceId?: boolean | number
+    /** Stripe object id; idempotency/dedupe key */
+    externalId?: boolean | number
+    receipts?: FileObjectGenqlSelection
+    /** BusinessPayments tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** BusinessPayments tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** BusinessPayments tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** BusinessPayments tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** BusinessPayments tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentEdgeGenqlSelection{
+    node?: BusinessPaymentGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for direction */
+    countUniqueValuesDirection?: boolean | number
+    /** Number of empty values for direction */
+    countEmptyDirection?: boolean | number
+    /** Number of non-empty values for direction */
+    countNotEmptyDirection?: boolean | number
+    /** Percentage of empty values for direction */
+    percentageEmptyDirection?: boolean | number
+    /** Percentage of non-empty values for direction */
+    percentageNotEmptyDirection?: boolean | number
+    /** Number of unique values for currencyCode */
+    countUniqueValuesCurrencyCode?: boolean | number
+    /** Number of empty values for currencyCode */
+    countEmptyCurrencyCode?: boolean | number
+    /** Number of non-empty values for currencyCode */
+    countNotEmptyCurrencyCode?: boolean | number
+    /** Percentage of empty values for currencyCode */
+    percentageEmptyCurrencyCode?: boolean | number
+    /** Percentage of non-empty values for currencyCode */
+    percentageNotEmptyCurrencyCode?: boolean | number
+    /** Number of unique values for notes */
+    countUniqueValuesNotes?: boolean | number
+    /** Number of empty values for notes */
+    countEmptyNotes?: boolean | number
+    /** Number of non-empty values for notes */
+    countNotEmptyNotes?: boolean | number
+    /** Percentage of empty values for notes */
+    percentageEmptyNotes?: boolean | number
+    /** Percentage of non-empty values for notes */
+    percentageNotEmptyNotes?: boolean | number
+    /** Number of unique values for paymentDueAt */
+    countUniqueValuesPaymentDueAt?: boolean | number
+    /** Number of empty values for paymentDueAt */
+    countEmptyPaymentDueAt?: boolean | number
+    /** Number of non-empty values for paymentDueAt */
+    countNotEmptyPaymentDueAt?: boolean | number
+    /** Percentage of empty values for paymentDueAt */
+    percentageEmptyPaymentDueAt?: boolean | number
+    /** Percentage of non-empty values for paymentDueAt */
+    percentageNotEmptyPaymentDueAt?: boolean | number
+    /** Earliest date contained in the field paymentDueAt */
+    minPaymentDueAt?: boolean | number
+    /** Latest date contained in the field paymentDueAt */
+    maxPaymentDueAt?: boolean | number
+    /** Number of unique values for amountUsd */
+    countUniqueValuesAmountUsd?: boolean | number
+    /** Number of empty values for amountUsd */
+    countEmptyAmountUsd?: boolean | number
+    /** Number of non-empty values for amountUsd */
+    countNotEmptyAmountUsd?: boolean | number
+    /** Percentage of empty values for amountUsd */
+    percentageEmptyAmountUsd?: boolean | number
+    /** Percentage of non-empty values for amountUsd */
+    percentageNotEmptyAmountUsd?: boolean | number
+    /** Minimum amount contained in the field amountUsd */
+    minAmountUsdAmountMicros?: boolean | number
+    /** Maximal amount contained in the field amountUsd */
+    maxAmountUsdAmountMicros?: boolean | number
+    /** Sum of amounts contained in the field amountUsd */
+    sumAmountUsdAmountMicros?: boolean | number
+    /** Average amount contained in the field amountUsd */
+    avgAmountUsdAmountMicros?: boolean | number
+    /** Number of unique values for sourceAccount */
+    countUniqueValuesSourceAccount?: boolean | number
+    /** Number of empty values for sourceAccount */
+    countEmptySourceAccount?: boolean | number
+    /** Number of non-empty values for sourceAccount */
+    countNotEmptySourceAccount?: boolean | number
+    /** Percentage of empty values for sourceAccount */
+    percentageEmptySourceAccount?: boolean | number
+    /** Percentage of non-empty values for sourceAccount */
+    percentageNotEmptySourceAccount?: boolean | number
+    /** Number of unique values for counterparty */
+    countUniqueValuesCounterparty?: boolean | number
+    /** Number of empty values for counterparty */
+    countEmptyCounterparty?: boolean | number
+    /** Number of non-empty values for counterparty */
+    countNotEmptyCounterparty?: boolean | number
+    /** Percentage of empty values for counterparty */
+    percentageEmptyCounterparty?: boolean | number
+    /** Percentage of non-empty values for counterparty */
+    percentageNotEmptyCounterparty?: boolean | number
+    /** Number of unique values for category */
+    countUniqueValuesCategory?: boolean | number
+    /** Number of empty values for category */
+    countEmptyCategory?: boolean | number
+    /** Number of non-empty values for category */
+    countNotEmptyCategory?: boolean | number
+    /** Percentage of empty values for category */
+    percentageEmptyCategory?: boolean | number
+    /** Percentage of non-empty values for category */
+    percentageNotEmptyCategory?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for paidAt */
+    countUniqueValuesPaidAt?: boolean | number
+    /** Number of empty values for paidAt */
+    countEmptyPaidAt?: boolean | number
+    /** Number of non-empty values for paidAt */
+    countNotEmptyPaidAt?: boolean | number
+    /** Percentage of empty values for paidAt */
+    percentageEmptyPaidAt?: boolean | number
+    /** Percentage of non-empty values for paidAt */
+    percentageNotEmptyPaidAt?: boolean | number
+    /** Earliest date contained in the field paidAt */
+    minPaidAt?: boolean | number
+    /** Latest date contained in the field paidAt */
+    maxPaidAt?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for invoiceId */
+    countUniqueValuesInvoiceId?: boolean | number
+    /** Number of empty values for invoiceId */
+    countEmptyInvoiceId?: boolean | number
+    /** Number of non-empty values for invoiceId */
+    countNotEmptyInvoiceId?: boolean | number
+    /** Percentage of empty values for invoiceId */
+    percentageEmptyInvoiceId?: boolean | number
+    /** Percentage of non-empty values for invoiceId */
+    percentageNotEmptyInvoiceId?: boolean | number
+    /** Number of unique values for externalId */
+    countUniqueValuesExternalId?: boolean | number
+    /** Number of empty values for externalId */
+    countEmptyExternalId?: boolean | number
+    /** Number of non-empty values for externalId */
+    countNotEmptyExternalId?: boolean | number
+    /** Percentage of empty values for externalId */
+    percentageEmptyExternalId?: boolean | number
+    /** Percentage of non-empty values for externalId */
+    percentageNotEmptyExternalId?: boolean | number
+    /** Number of unique values for receipts */
+    countUniqueValuesReceipts?: boolean | number
+    /** Number of empty values for receipts */
+    countEmptyReceipts?: boolean | number
+    /** Number of non-empty values for receipts */
+    countNotEmptyReceipts?: boolean | number
+    /** Percentage of empty values for receipts */
+    percentageEmptyReceipts?: boolean | number
+    /** Percentage of non-empty values for receipts */
+    percentageNotEmptyReceipts?: boolean | number
+    edges?: BusinessPaymentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for direction */
+    countUniqueValuesDirection?: boolean | number
+    /** Number of empty values for direction */
+    countEmptyDirection?: boolean | number
+    /** Number of non-empty values for direction */
+    countNotEmptyDirection?: boolean | number
+    /** Percentage of empty values for direction */
+    percentageEmptyDirection?: boolean | number
+    /** Percentage of non-empty values for direction */
+    percentageNotEmptyDirection?: boolean | number
+    /** Number of unique values for currencyCode */
+    countUniqueValuesCurrencyCode?: boolean | number
+    /** Number of empty values for currencyCode */
+    countEmptyCurrencyCode?: boolean | number
+    /** Number of non-empty values for currencyCode */
+    countNotEmptyCurrencyCode?: boolean | number
+    /** Percentage of empty values for currencyCode */
+    percentageEmptyCurrencyCode?: boolean | number
+    /** Percentage of non-empty values for currencyCode */
+    percentageNotEmptyCurrencyCode?: boolean | number
+    /** Number of unique values for notes */
+    countUniqueValuesNotes?: boolean | number
+    /** Number of empty values for notes */
+    countEmptyNotes?: boolean | number
+    /** Number of non-empty values for notes */
+    countNotEmptyNotes?: boolean | number
+    /** Percentage of empty values for notes */
+    percentageEmptyNotes?: boolean | number
+    /** Percentage of non-empty values for notes */
+    percentageNotEmptyNotes?: boolean | number
+    /** Number of unique values for paymentDueAt */
+    countUniqueValuesPaymentDueAt?: boolean | number
+    /** Number of empty values for paymentDueAt */
+    countEmptyPaymentDueAt?: boolean | number
+    /** Number of non-empty values for paymentDueAt */
+    countNotEmptyPaymentDueAt?: boolean | number
+    /** Percentage of empty values for paymentDueAt */
+    percentageEmptyPaymentDueAt?: boolean | number
+    /** Percentage of non-empty values for paymentDueAt */
+    percentageNotEmptyPaymentDueAt?: boolean | number
+    /** Earliest date contained in the field paymentDueAt */
+    minPaymentDueAt?: boolean | number
+    /** Latest date contained in the field paymentDueAt */
+    maxPaymentDueAt?: boolean | number
+    /** Number of unique values for amountUsd */
+    countUniqueValuesAmountUsd?: boolean | number
+    /** Number of empty values for amountUsd */
+    countEmptyAmountUsd?: boolean | number
+    /** Number of non-empty values for amountUsd */
+    countNotEmptyAmountUsd?: boolean | number
+    /** Percentage of empty values for amountUsd */
+    percentageEmptyAmountUsd?: boolean | number
+    /** Percentage of non-empty values for amountUsd */
+    percentageNotEmptyAmountUsd?: boolean | number
+    /** Minimum amount contained in the field amountUsd */
+    minAmountUsdAmountMicros?: boolean | number
+    /** Maximal amount contained in the field amountUsd */
+    maxAmountUsdAmountMicros?: boolean | number
+    /** Sum of amounts contained in the field amountUsd */
+    sumAmountUsdAmountMicros?: boolean | number
+    /** Average amount contained in the field amountUsd */
+    avgAmountUsdAmountMicros?: boolean | number
+    /** Number of unique values for sourceAccount */
+    countUniqueValuesSourceAccount?: boolean | number
+    /** Number of empty values for sourceAccount */
+    countEmptySourceAccount?: boolean | number
+    /** Number of non-empty values for sourceAccount */
+    countNotEmptySourceAccount?: boolean | number
+    /** Percentage of empty values for sourceAccount */
+    percentageEmptySourceAccount?: boolean | number
+    /** Percentage of non-empty values for sourceAccount */
+    percentageNotEmptySourceAccount?: boolean | number
+    /** Number of unique values for counterparty */
+    countUniqueValuesCounterparty?: boolean | number
+    /** Number of empty values for counterparty */
+    countEmptyCounterparty?: boolean | number
+    /** Number of non-empty values for counterparty */
+    countNotEmptyCounterparty?: boolean | number
+    /** Percentage of empty values for counterparty */
+    percentageEmptyCounterparty?: boolean | number
+    /** Percentage of non-empty values for counterparty */
+    percentageNotEmptyCounterparty?: boolean | number
+    /** Number of unique values for category */
+    countUniqueValuesCategory?: boolean | number
+    /** Number of empty values for category */
+    countEmptyCategory?: boolean | number
+    /** Number of non-empty values for category */
+    countNotEmptyCategory?: boolean | number
+    /** Percentage of empty values for category */
+    percentageEmptyCategory?: boolean | number
+    /** Percentage of non-empty values for category */
+    percentageNotEmptyCategory?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for paidAt */
+    countUniqueValuesPaidAt?: boolean | number
+    /** Number of empty values for paidAt */
+    countEmptyPaidAt?: boolean | number
+    /** Number of non-empty values for paidAt */
+    countNotEmptyPaidAt?: boolean | number
+    /** Percentage of empty values for paidAt */
+    percentageEmptyPaidAt?: boolean | number
+    /** Percentage of non-empty values for paidAt */
+    percentageNotEmptyPaidAt?: boolean | number
+    /** Earliest date contained in the field paidAt */
+    minPaidAt?: boolean | number
+    /** Latest date contained in the field paidAt */
+    maxPaidAt?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for invoiceId */
+    countUniqueValuesInvoiceId?: boolean | number
+    /** Number of empty values for invoiceId */
+    countEmptyInvoiceId?: boolean | number
+    /** Number of non-empty values for invoiceId */
+    countNotEmptyInvoiceId?: boolean | number
+    /** Percentage of empty values for invoiceId */
+    percentageEmptyInvoiceId?: boolean | number
+    /** Percentage of non-empty values for invoiceId */
+    percentageNotEmptyInvoiceId?: boolean | number
+    /** Number of unique values for externalId */
+    countUniqueValuesExternalId?: boolean | number
+    /** Number of empty values for externalId */
+    countEmptyExternalId?: boolean | number
+    /** Number of non-empty values for externalId */
+    countNotEmptyExternalId?: boolean | number
+    /** Percentage of empty values for externalId */
+    percentageEmptyExternalId?: boolean | number
+    /** Percentage of non-empty values for externalId */
+    percentageNotEmptyExternalId?: boolean | number
+    /** Number of unique values for receipts */
+    countUniqueValuesReceipts?: boolean | number
+    /** Number of empty values for receipts */
+    countEmptyReceipts?: boolean | number
+    /** Number of non-empty values for receipts */
+    countNotEmptyReceipts?: boolean | number
+    /** Percentage of empty values for receipts */
+    percentageEmptyReceipts?: boolean | number
+    /** Percentage of non-empty values for receipts */
+    percentageNotEmptyReceipts?: boolean | number
+    edges?: BusinessPaymentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface BusinessPaymentRelationInput {
+/** Connect to a businessPayment record */
+connect?: (BusinessPaymentConnectInput | null),
+/** Create and connect a businessPayment record */
+create?: (BusinessPaymentCreateInput | null),
+/** Disconnect from a businessPayment record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface BusinessPaymentConnectInput {
+/** Find a businessPayment record based on its unique fields: id */
+where?: (BusinessPaymentWhereUniqueInput | null)}
+
+export interface BusinessPaymentWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentCreateInput {
+/** Name */
+name?: (Scalars['String'] | null),direction?: (BusinessPaymentDirectionEnum | null),currencyCode?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (Scalars['DateTime'] | null),amountUsd?: (CurrencyCreateInput | null),sourceAccount?: (BusinessPaymentSourceAccountEnum | null),counterparty?: (Scalars['String'] | null),category?: (BusinessPaymentCategoryEnum | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),paidAt?: (Scalars['DateTime'] | null),status?: (BusinessPaymentStatusEnum | null),invoiceId?: (Scalars['String'] | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (Scalars['String'] | null),receipts?: ((FileItemInput | null)[] | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentUpdateInput {
+/** Name */
+name?: (Scalars['String'] | null),direction?: (BusinessPaymentDirectionEnum | null),currencyCode?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (Scalars['DateTime'] | null),amountUsd?: (CurrencyUpdateInput | null),sourceAccount?: (BusinessPaymentSourceAccountEnum | null),counterparty?: (Scalars['String'] | null),category?: (BusinessPaymentCategoryEnum | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),paidAt?: (Scalars['DateTime'] | null),status?: (BusinessPaymentStatusEnum | null),invoiceId?: (Scalars['String'] | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (Scalars['String'] | null),receipts?: ((FileItemInput | null)[] | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentFilterInput {
+/** Name */
+name?: (StringFilter | null),direction?: (BusinessPaymentDirectionEnumFilter | null),currencyCode?: (StringFilter | null),notes?: (StringFilter | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (DateTimeFilter | null),amountUsd?: (CurrencyFilterInput | null),sourceAccount?: (BusinessPaymentSourceAccountEnumFilter | null),counterparty?: (StringFilter | null),category?: (BusinessPaymentCategoryEnumFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),paidAt?: (DateTimeFilter | null),status?: (BusinessPaymentStatusEnumFilter | null),invoiceId?: (StringFilter | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (StringFilter | null),receipts?: (RawJsonFilter | null),and?: ((BusinessPaymentFilterInput | null)[] | null),or?: ((BusinessPaymentFilterInput | null)[] | null),not?: (BusinessPaymentFilterInput | null)}
+
+export interface BusinessPaymentDirectionEnumFilter {eq?: (BusinessPaymentDirectionEnum | null),neq?: (BusinessPaymentDirectionEnum | null),in?: ((BusinessPaymentDirectionEnum | null)[] | null),containsAny?: ((BusinessPaymentDirectionEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BusinessPaymentDirectionEnum | null),gte?: (BusinessPaymentDirectionEnum | null),lt?: (BusinessPaymentDirectionEnum | null),lte?: (BusinessPaymentDirectionEnum | null)}
+
+export interface BusinessPaymentSourceAccountEnumFilter {eq?: (BusinessPaymentSourceAccountEnum | null),neq?: (BusinessPaymentSourceAccountEnum | null),in?: ((BusinessPaymentSourceAccountEnum | null)[] | null),containsAny?: ((BusinessPaymentSourceAccountEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BusinessPaymentSourceAccountEnum | null),gte?: (BusinessPaymentSourceAccountEnum | null),lt?: (BusinessPaymentSourceAccountEnum | null),lte?: (BusinessPaymentSourceAccountEnum | null)}
+
+export interface BusinessPaymentCategoryEnumFilter {eq?: (BusinessPaymentCategoryEnum | null),neq?: (BusinessPaymentCategoryEnum | null),in?: ((BusinessPaymentCategoryEnum | null)[] | null),containsAny?: ((BusinessPaymentCategoryEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BusinessPaymentCategoryEnum | null),gte?: (BusinessPaymentCategoryEnum | null),lt?: (BusinessPaymentCategoryEnum | null),lte?: (BusinessPaymentCategoryEnum | null)}
+
+export interface BusinessPaymentStatusEnumFilter {eq?: (BusinessPaymentStatusEnum | null),neq?: (BusinessPaymentStatusEnum | null),in?: ((BusinessPaymentStatusEnum | null)[] | null),containsAny?: ((BusinessPaymentStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (BusinessPaymentStatusEnum | null),gte?: (BusinessPaymentStatusEnum | null),lt?: (BusinessPaymentStatusEnum | null),lte?: (BusinessPaymentStatusEnum | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentOrderByInput {
+/** Name */
+name?: (OrderByDirection | null),direction?: (OrderByDirection | null),currencyCode?: (OrderByDirection | null),notes?: (OrderByDirection | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (OrderByDirection | null),amountUsd?: (CurrencyOrderByInput | null),sourceAccount?: (OrderByDirection | null),counterparty?: (OrderByDirection | null),category?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),paidAt?: (OrderByDirection | null),status?: (OrderByDirection | null),invoiceId?: (OrderByDirection | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (OrderByDirection | null),receipts?: (OrderByDirection | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (BusinessPaymentOrderByWithGroupByAggregateInput | null),
+/** Name */
+name?: (OrderByDirection | null),direction?: (OrderByDirection | null),currencyCode?: (OrderByDirection | null),notes?: (OrderByDirection | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (OrderByDateGranularityInput | null),amountUsd?: (CurrencyOrderByInput | null),sourceAccount?: (OrderByDirection | null),counterparty?: (OrderByDirection | null),category?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),paidAt?: (OrderByDateGranularityInput | null),status?: (OrderByDirection | null),invoiceId?: (OrderByDirection | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (OrderByDirection | null),receipts?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface BusinessPaymentOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for direction */
+countUniqueValuesDirection?: (OrderByDirection | null),
+/** Number of empty values for direction */
+countEmptyDirection?: (OrderByDirection | null),
+/** Number of non-empty values for direction */
+countNotEmptyDirection?: (OrderByDirection | null),
+/** Percentage of empty values for direction */
+percentageEmptyDirection?: (OrderByDirection | null),
+/** Percentage of non-empty values for direction */
+percentageNotEmptyDirection?: (OrderByDirection | null),
+/** Number of unique values for currencyCode */
+countUniqueValuesCurrencyCode?: (OrderByDirection | null),
+/** Number of empty values for currencyCode */
+countEmptyCurrencyCode?: (OrderByDirection | null),
+/** Number of non-empty values for currencyCode */
+countNotEmptyCurrencyCode?: (OrderByDirection | null),
+/** Percentage of empty values for currencyCode */
+percentageEmptyCurrencyCode?: (OrderByDirection | null),
+/** Percentage of non-empty values for currencyCode */
+percentageNotEmptyCurrencyCode?: (OrderByDirection | null),
+/** Number of unique values for notes */
+countUniqueValuesNotes?: (OrderByDirection | null),
+/** Number of empty values for notes */
+countEmptyNotes?: (OrderByDirection | null),
+/** Number of non-empty values for notes */
+countNotEmptyNotes?: (OrderByDirection | null),
+/** Percentage of empty values for notes */
+percentageEmptyNotes?: (OrderByDirection | null),
+/** Percentage of non-empty values for notes */
+percentageNotEmptyNotes?: (OrderByDirection | null),
+/** Number of unique values for paymentDueAt */
+countUniqueValuesPaymentDueAt?: (OrderByDirection | null),
+/** Number of empty values for paymentDueAt */
+countEmptyPaymentDueAt?: (OrderByDirection | null),
+/** Number of non-empty values for paymentDueAt */
+countNotEmptyPaymentDueAt?: (OrderByDirection | null),
+/** Percentage of empty values for paymentDueAt */
+percentageEmptyPaymentDueAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for paymentDueAt */
+percentageNotEmptyPaymentDueAt?: (OrderByDirection | null),
+/** Earliest date contained in the field paymentDueAt */
+minPaymentDueAt?: (OrderByDirection | null),
+/** Latest date contained in the field paymentDueAt */
+maxPaymentDueAt?: (OrderByDirection | null),
+/** Number of unique values for amountUsd */
+countUniqueValuesAmountUsd?: (OrderByDirection | null),
+/** Number of empty values for amountUsd */
+countEmptyAmountUsd?: (OrderByDirection | null),
+/** Number of non-empty values for amountUsd */
+countNotEmptyAmountUsd?: (OrderByDirection | null),
+/** Percentage of empty values for amountUsd */
+percentageEmptyAmountUsd?: (OrderByDirection | null),
+/** Percentage of non-empty values for amountUsd */
+percentageNotEmptyAmountUsd?: (OrderByDirection | null),
+/** Minimum amount contained in the field amountUsd */
+minAmountUsdAmountMicros?: (OrderByDirection | null),
+/** Maximal amount contained in the field amountUsd */
+maxAmountUsdAmountMicros?: (OrderByDirection | null),
+/** Sum of amounts contained in the field amountUsd */
+sumAmountUsdAmountMicros?: (OrderByDirection | null),
+/** Average amount contained in the field amountUsd */
+avgAmountUsdAmountMicros?: (OrderByDirection | null),
+/** Number of unique values for sourceAccount */
+countUniqueValuesSourceAccount?: (OrderByDirection | null),
+/** Number of empty values for sourceAccount */
+countEmptySourceAccount?: (OrderByDirection | null),
+/** Number of non-empty values for sourceAccount */
+countNotEmptySourceAccount?: (OrderByDirection | null),
+/** Percentage of empty values for sourceAccount */
+percentageEmptySourceAccount?: (OrderByDirection | null),
+/** Percentage of non-empty values for sourceAccount */
+percentageNotEmptySourceAccount?: (OrderByDirection | null),
+/** Number of unique values for counterparty */
+countUniqueValuesCounterparty?: (OrderByDirection | null),
+/** Number of empty values for counterparty */
+countEmptyCounterparty?: (OrderByDirection | null),
+/** Number of non-empty values for counterparty */
+countNotEmptyCounterparty?: (OrderByDirection | null),
+/** Percentage of empty values for counterparty */
+percentageEmptyCounterparty?: (OrderByDirection | null),
+/** Percentage of non-empty values for counterparty */
+percentageNotEmptyCounterparty?: (OrderByDirection | null),
+/** Number of unique values for category */
+countUniqueValuesCategory?: (OrderByDirection | null),
+/** Number of empty values for category */
+countEmptyCategory?: (OrderByDirection | null),
+/** Number of non-empty values for category */
+countNotEmptyCategory?: (OrderByDirection | null),
+/** Percentage of empty values for category */
+percentageEmptyCategory?: (OrderByDirection | null),
+/** Percentage of non-empty values for category */
+percentageNotEmptyCategory?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for paidAt */
+countUniqueValuesPaidAt?: (OrderByDirection | null),
+/** Number of empty values for paidAt */
+countEmptyPaidAt?: (OrderByDirection | null),
+/** Number of non-empty values for paidAt */
+countNotEmptyPaidAt?: (OrderByDirection | null),
+/** Percentage of empty values for paidAt */
+percentageEmptyPaidAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for paidAt */
+percentageNotEmptyPaidAt?: (OrderByDirection | null),
+/** Earliest date contained in the field paidAt */
+minPaidAt?: (OrderByDirection | null),
+/** Latest date contained in the field paidAt */
+maxPaidAt?: (OrderByDirection | null),
+/** Number of unique values for status */
+countUniqueValuesStatus?: (OrderByDirection | null),
+/** Number of empty values for status */
+countEmptyStatus?: (OrderByDirection | null),
+/** Number of non-empty values for status */
+countNotEmptyStatus?: (OrderByDirection | null),
+/** Percentage of empty values for status */
+percentageEmptyStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for status */
+percentageNotEmptyStatus?: (OrderByDirection | null),
+/** Number of unique values for invoiceId */
+countUniqueValuesInvoiceId?: (OrderByDirection | null),
+/** Number of empty values for invoiceId */
+countEmptyInvoiceId?: (OrderByDirection | null),
+/** Number of non-empty values for invoiceId */
+countNotEmptyInvoiceId?: (OrderByDirection | null),
+/** Percentage of empty values for invoiceId */
+percentageEmptyInvoiceId?: (OrderByDirection | null),
+/** Percentage of non-empty values for invoiceId */
+percentageNotEmptyInvoiceId?: (OrderByDirection | null),
+/** Number of unique values for externalId */
+countUniqueValuesExternalId?: (OrderByDirection | null),
+/** Number of empty values for externalId */
+countEmptyExternalId?: (OrderByDirection | null),
+/** Number of non-empty values for externalId */
+countNotEmptyExternalId?: (OrderByDirection | null),
+/** Percentage of empty values for externalId */
+percentageEmptyExternalId?: (OrderByDirection | null),
+/** Percentage of non-empty values for externalId */
+percentageNotEmptyExternalId?: (OrderByDirection | null),
+/** Number of unique values for receipts */
+countUniqueValuesReceipts?: (OrderByDirection | null),
+/** Number of empty values for receipts */
+countEmptyReceipts?: (OrderByDirection | null),
+/** Number of non-empty values for receipts */
+countNotEmptyReceipts?: (OrderByDirection | null),
+/** Percentage of empty values for receipts */
+percentageEmptyReceipts?: (OrderByDirection | null),
+/** Percentage of non-empty values for receipts */
+percentageNotEmptyReceipts?: (OrderByDirection | null)}
+
+
+/** Business cash-flow ledger: every payment in/out across the business, with expense labels, due/upcoming tracking, and receipts. Canonical ledger for the Accountant agent. */
+export interface BusinessPaymentGroupByInput {
+/** Name */
+name?: (Scalars['Boolean'] | null),direction?: (Scalars['Boolean'] | null),currencyCode?: (Scalars['Boolean'] | null),notes?: (Scalars['Boolean'] | null),
+/** Drives payments due / upcoming */
+paymentDueAt?: (GroupByDateGranularityInput | null),amountUsd?: (CurrencyGroupByInput | null),sourceAccount?: (Scalars['Boolean'] | null),counterparty?: (Scalars['Boolean'] | null),category?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),paidAt?: (GroupByDateGranularityInput | null),status?: (Scalars['Boolean'] | null),invoiceId?: (Scalars['Boolean'] | null),
+/** Stripe object id; idempotency/dedupe key */
+externalId?: (Scalars['Boolean'] | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentGenqlSelection{
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    discordAnnouncedAt?: boolean | number
+    /** Short blurb used in cards and lists */
+    excerpt?: boolean | number
+    /** Comma-separated author names */
+    authors?: boolean | number
+    /** Content description/summary */
+    description?: boolean | number
+    /** Hero or card image URL */
+    imageUrl?: boolean | number
+    /** Blog, guide, newsletter, or change */
+    contentType?: boolean | number
+    /** Legacy publish toggle kept for backwards compatibility */
+    isPublished?: boolean | number
+    /** Lower values appear first */
+    sortOrder?: boolean | number
+    /** Content body in markdown */
+    bodyMarkdown?: RichTextGenqlSelection
+    /** When content was published */
+    publishedAt?: boolean | number
+    /** Optional rich text body converted before rendering */
+    bodyRichText?: RichTextGenqlSelection
+    /** Alt text for the image */
+    imageAlt?: boolean | number
+    /** URL slug */
+    slug?: boolean | number
+    /** Content status */
+    status?: boolean | number
+    /** Content title */
+    title?: boolean | number
+    /** CmsContents tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** CmsContents tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** CmsContents tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** CmsContents tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** CmsContents tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentEdgeGenqlSelection{
+    node?: CmsContentGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for discordAnnouncedAt */
+    countUniqueValuesDiscordAnnouncedAt?: boolean | number
+    /** Number of empty values for discordAnnouncedAt */
+    countEmptyDiscordAnnouncedAt?: boolean | number
+    /** Number of non-empty values for discordAnnouncedAt */
+    countNotEmptyDiscordAnnouncedAt?: boolean | number
+    /** Percentage of empty values for discordAnnouncedAt */
+    percentageEmptyDiscordAnnouncedAt?: boolean | number
+    /** Percentage of non-empty values for discordAnnouncedAt */
+    percentageNotEmptyDiscordAnnouncedAt?: boolean | number
+    /** Earliest date contained in the field discordAnnouncedAt */
+    minDiscordAnnouncedAt?: boolean | number
+    /** Latest date contained in the field discordAnnouncedAt */
+    maxDiscordAnnouncedAt?: boolean | number
+    /** Number of unique values for excerpt */
+    countUniqueValuesExcerpt?: boolean | number
+    /** Number of empty values for excerpt */
+    countEmptyExcerpt?: boolean | number
+    /** Number of non-empty values for excerpt */
+    countNotEmptyExcerpt?: boolean | number
+    /** Percentage of empty values for excerpt */
+    percentageEmptyExcerpt?: boolean | number
+    /** Percentage of non-empty values for excerpt */
+    percentageNotEmptyExcerpt?: boolean | number
+    /** Number of unique values for authors */
+    countUniqueValuesAuthors?: boolean | number
+    /** Number of empty values for authors */
+    countEmptyAuthors?: boolean | number
+    /** Number of non-empty values for authors */
+    countNotEmptyAuthors?: boolean | number
+    /** Percentage of empty values for authors */
+    percentageEmptyAuthors?: boolean | number
+    /** Percentage of non-empty values for authors */
+    percentageNotEmptyAuthors?: boolean | number
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: boolean | number
+    /** Number of empty values for description */
+    countEmptyDescription?: boolean | number
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: boolean | number
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: boolean | number
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: boolean | number
+    /** Number of unique values for imageUrl */
+    countUniqueValuesImageUrl?: boolean | number
+    /** Number of empty values for imageUrl */
+    countEmptyImageUrl?: boolean | number
+    /** Number of non-empty values for imageUrl */
+    countNotEmptyImageUrl?: boolean | number
+    /** Percentage of empty values for imageUrl */
+    percentageEmptyImageUrl?: boolean | number
+    /** Percentage of non-empty values for imageUrl */
+    percentageNotEmptyImageUrl?: boolean | number
+    /** Number of unique values for contentType */
+    countUniqueValuesContentType?: boolean | number
+    /** Number of empty values for contentType */
+    countEmptyContentType?: boolean | number
+    /** Number of non-empty values for contentType */
+    countNotEmptyContentType?: boolean | number
+    /** Percentage of empty values for contentType */
+    percentageEmptyContentType?: boolean | number
+    /** Percentage of non-empty values for contentType */
+    percentageNotEmptyContentType?: boolean | number
+    /** Number of unique values for isPublished */
+    countUniqueValuesIsPublished?: boolean | number
+    /** Number of empty values for isPublished */
+    countEmptyIsPublished?: boolean | number
+    /** Number of non-empty values for isPublished */
+    countNotEmptyIsPublished?: boolean | number
+    /** Percentage of empty values for isPublished */
+    percentageEmptyIsPublished?: boolean | number
+    /** Percentage of non-empty values for isPublished */
+    percentageNotEmptyIsPublished?: boolean | number
+    /** Count of true values in the field isPublished */
+    countTrueIsPublished?: boolean | number
+    /** Count of false values in the field isPublished */
+    countFalseIsPublished?: boolean | number
+    /** Number of unique values for sortOrder */
+    countUniqueValuesSortOrder?: boolean | number
+    /** Number of empty values for sortOrder */
+    countEmptySortOrder?: boolean | number
+    /** Number of non-empty values for sortOrder */
+    countNotEmptySortOrder?: boolean | number
+    /** Percentage of empty values for sortOrder */
+    percentageEmptySortOrder?: boolean | number
+    /** Percentage of non-empty values for sortOrder */
+    percentageNotEmptySortOrder?: boolean | number
+    /** Minimum amount contained in the field sortOrder */
+    minSortOrder?: boolean | number
+    /** Maximum amount contained in the field sortOrder */
+    maxSortOrder?: boolean | number
+    /** Average amount contained in the field sortOrder */
+    avgSortOrder?: boolean | number
+    /** Sum of amounts contained in the field sortOrder */
+    sumSortOrder?: boolean | number
+    /** Number of unique values for bodyMarkdown */
+    countUniqueValuesBodyMarkdown?: boolean | number
+    /** Number of empty values for bodyMarkdown */
+    countEmptyBodyMarkdown?: boolean | number
+    /** Number of non-empty values for bodyMarkdown */
+    countNotEmptyBodyMarkdown?: boolean | number
+    /** Percentage of empty values for bodyMarkdown */
+    percentageEmptyBodyMarkdown?: boolean | number
+    /** Percentage of non-empty values for bodyMarkdown */
+    percentageNotEmptyBodyMarkdown?: boolean | number
+    /** Number of unique values for publishedAt */
+    countUniqueValuesPublishedAt?: boolean | number
+    /** Number of empty values for publishedAt */
+    countEmptyPublishedAt?: boolean | number
+    /** Number of non-empty values for publishedAt */
+    countNotEmptyPublishedAt?: boolean | number
+    /** Percentage of empty values for publishedAt */
+    percentageEmptyPublishedAt?: boolean | number
+    /** Percentage of non-empty values for publishedAt */
+    percentageNotEmptyPublishedAt?: boolean | number
+    /** Earliest date contained in the field publishedAt */
+    minPublishedAt?: boolean | number
+    /** Latest date contained in the field publishedAt */
+    maxPublishedAt?: boolean | number
+    /** Number of unique values for bodyRichText */
+    countUniqueValuesBodyRichText?: boolean | number
+    /** Number of empty values for bodyRichText */
+    countEmptyBodyRichText?: boolean | number
+    /** Number of non-empty values for bodyRichText */
+    countNotEmptyBodyRichText?: boolean | number
+    /** Percentage of empty values for bodyRichText */
+    percentageEmptyBodyRichText?: boolean | number
+    /** Percentage of non-empty values for bodyRichText */
+    percentageNotEmptyBodyRichText?: boolean | number
+    /** Number of unique values for imageAlt */
+    countUniqueValuesImageAlt?: boolean | number
+    /** Number of empty values for imageAlt */
+    countEmptyImageAlt?: boolean | number
+    /** Number of non-empty values for imageAlt */
+    countNotEmptyImageAlt?: boolean | number
+    /** Percentage of empty values for imageAlt */
+    percentageEmptyImageAlt?: boolean | number
+    /** Percentage of non-empty values for imageAlt */
+    percentageNotEmptyImageAlt?: boolean | number
+    /** Number of unique values for slug */
+    countUniqueValuesSlug?: boolean | number
+    /** Number of empty values for slug */
+    countEmptySlug?: boolean | number
+    /** Number of non-empty values for slug */
+    countNotEmptySlug?: boolean | number
+    /** Percentage of empty values for slug */
+    percentageEmptySlug?: boolean | number
+    /** Percentage of non-empty values for slug */
+    percentageNotEmptySlug?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    edges?: CmsContentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for discordAnnouncedAt */
+    countUniqueValuesDiscordAnnouncedAt?: boolean | number
+    /** Number of empty values for discordAnnouncedAt */
+    countEmptyDiscordAnnouncedAt?: boolean | number
+    /** Number of non-empty values for discordAnnouncedAt */
+    countNotEmptyDiscordAnnouncedAt?: boolean | number
+    /** Percentage of empty values for discordAnnouncedAt */
+    percentageEmptyDiscordAnnouncedAt?: boolean | number
+    /** Percentage of non-empty values for discordAnnouncedAt */
+    percentageNotEmptyDiscordAnnouncedAt?: boolean | number
+    /** Earliest date contained in the field discordAnnouncedAt */
+    minDiscordAnnouncedAt?: boolean | number
+    /** Latest date contained in the field discordAnnouncedAt */
+    maxDiscordAnnouncedAt?: boolean | number
+    /** Number of unique values for excerpt */
+    countUniqueValuesExcerpt?: boolean | number
+    /** Number of empty values for excerpt */
+    countEmptyExcerpt?: boolean | number
+    /** Number of non-empty values for excerpt */
+    countNotEmptyExcerpt?: boolean | number
+    /** Percentage of empty values for excerpt */
+    percentageEmptyExcerpt?: boolean | number
+    /** Percentage of non-empty values for excerpt */
+    percentageNotEmptyExcerpt?: boolean | number
+    /** Number of unique values for authors */
+    countUniqueValuesAuthors?: boolean | number
+    /** Number of empty values for authors */
+    countEmptyAuthors?: boolean | number
+    /** Number of non-empty values for authors */
+    countNotEmptyAuthors?: boolean | number
+    /** Percentage of empty values for authors */
+    percentageEmptyAuthors?: boolean | number
+    /** Percentage of non-empty values for authors */
+    percentageNotEmptyAuthors?: boolean | number
+    /** Number of unique values for description */
+    countUniqueValuesDescription?: boolean | number
+    /** Number of empty values for description */
+    countEmptyDescription?: boolean | number
+    /** Number of non-empty values for description */
+    countNotEmptyDescription?: boolean | number
+    /** Percentage of empty values for description */
+    percentageEmptyDescription?: boolean | number
+    /** Percentage of non-empty values for description */
+    percentageNotEmptyDescription?: boolean | number
+    /** Number of unique values for imageUrl */
+    countUniqueValuesImageUrl?: boolean | number
+    /** Number of empty values for imageUrl */
+    countEmptyImageUrl?: boolean | number
+    /** Number of non-empty values for imageUrl */
+    countNotEmptyImageUrl?: boolean | number
+    /** Percentage of empty values for imageUrl */
+    percentageEmptyImageUrl?: boolean | number
+    /** Percentage of non-empty values for imageUrl */
+    percentageNotEmptyImageUrl?: boolean | number
+    /** Number of unique values for contentType */
+    countUniqueValuesContentType?: boolean | number
+    /** Number of empty values for contentType */
+    countEmptyContentType?: boolean | number
+    /** Number of non-empty values for contentType */
+    countNotEmptyContentType?: boolean | number
+    /** Percentage of empty values for contentType */
+    percentageEmptyContentType?: boolean | number
+    /** Percentage of non-empty values for contentType */
+    percentageNotEmptyContentType?: boolean | number
+    /** Number of unique values for isPublished */
+    countUniqueValuesIsPublished?: boolean | number
+    /** Number of empty values for isPublished */
+    countEmptyIsPublished?: boolean | number
+    /** Number of non-empty values for isPublished */
+    countNotEmptyIsPublished?: boolean | number
+    /** Percentage of empty values for isPublished */
+    percentageEmptyIsPublished?: boolean | number
+    /** Percentage of non-empty values for isPublished */
+    percentageNotEmptyIsPublished?: boolean | number
+    /** Count of true values in the field isPublished */
+    countTrueIsPublished?: boolean | number
+    /** Count of false values in the field isPublished */
+    countFalseIsPublished?: boolean | number
+    /** Number of unique values for sortOrder */
+    countUniqueValuesSortOrder?: boolean | number
+    /** Number of empty values for sortOrder */
+    countEmptySortOrder?: boolean | number
+    /** Number of non-empty values for sortOrder */
+    countNotEmptySortOrder?: boolean | number
+    /** Percentage of empty values for sortOrder */
+    percentageEmptySortOrder?: boolean | number
+    /** Percentage of non-empty values for sortOrder */
+    percentageNotEmptySortOrder?: boolean | number
+    /** Minimum amount contained in the field sortOrder */
+    minSortOrder?: boolean | number
+    /** Maximum amount contained in the field sortOrder */
+    maxSortOrder?: boolean | number
+    /** Average amount contained in the field sortOrder */
+    avgSortOrder?: boolean | number
+    /** Sum of amounts contained in the field sortOrder */
+    sumSortOrder?: boolean | number
+    /** Number of unique values for bodyMarkdown */
+    countUniqueValuesBodyMarkdown?: boolean | number
+    /** Number of empty values for bodyMarkdown */
+    countEmptyBodyMarkdown?: boolean | number
+    /** Number of non-empty values for bodyMarkdown */
+    countNotEmptyBodyMarkdown?: boolean | number
+    /** Percentage of empty values for bodyMarkdown */
+    percentageEmptyBodyMarkdown?: boolean | number
+    /** Percentage of non-empty values for bodyMarkdown */
+    percentageNotEmptyBodyMarkdown?: boolean | number
+    /** Number of unique values for publishedAt */
+    countUniqueValuesPublishedAt?: boolean | number
+    /** Number of empty values for publishedAt */
+    countEmptyPublishedAt?: boolean | number
+    /** Number of non-empty values for publishedAt */
+    countNotEmptyPublishedAt?: boolean | number
+    /** Percentage of empty values for publishedAt */
+    percentageEmptyPublishedAt?: boolean | number
+    /** Percentage of non-empty values for publishedAt */
+    percentageNotEmptyPublishedAt?: boolean | number
+    /** Earliest date contained in the field publishedAt */
+    minPublishedAt?: boolean | number
+    /** Latest date contained in the field publishedAt */
+    maxPublishedAt?: boolean | number
+    /** Number of unique values for bodyRichText */
+    countUniqueValuesBodyRichText?: boolean | number
+    /** Number of empty values for bodyRichText */
+    countEmptyBodyRichText?: boolean | number
+    /** Number of non-empty values for bodyRichText */
+    countNotEmptyBodyRichText?: boolean | number
+    /** Percentage of empty values for bodyRichText */
+    percentageEmptyBodyRichText?: boolean | number
+    /** Percentage of non-empty values for bodyRichText */
+    percentageNotEmptyBodyRichText?: boolean | number
+    /** Number of unique values for imageAlt */
+    countUniqueValuesImageAlt?: boolean | number
+    /** Number of empty values for imageAlt */
+    countEmptyImageAlt?: boolean | number
+    /** Number of non-empty values for imageAlt */
+    countNotEmptyImageAlt?: boolean | number
+    /** Percentage of empty values for imageAlt */
+    percentageEmptyImageAlt?: boolean | number
+    /** Percentage of non-empty values for imageAlt */
+    percentageNotEmptyImageAlt?: boolean | number
+    /** Number of unique values for slug */
+    countUniqueValuesSlug?: boolean | number
+    /** Number of empty values for slug */
+    countEmptySlug?: boolean | number
+    /** Number of non-empty values for slug */
+    countNotEmptySlug?: boolean | number
+    /** Percentage of empty values for slug */
+    percentageEmptySlug?: boolean | number
+    /** Percentage of non-empty values for slug */
+    percentageNotEmptySlug?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    edges?: CmsContentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface CmsContentRelationInput {
+/** Connect to a cmsContent record */
+connect?: (CmsContentConnectInput | null),
+/** Create and connect a cmsContent record */
+create?: (CmsContentCreateInput | null),
+/** Disconnect from a cmsContent record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface CmsContentConnectInput {
+/** Find a cmsContent record based on its unique fields: id */
+where?: (CmsContentWhereUniqueInput | null)}
+
+export interface CmsContentWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentCreateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),discordAnnouncedAt?: (Scalars['DateTime'] | null),
+/** Short blurb used in cards and lists */
+excerpt?: (Scalars['String'] | null),
+/** Comma-separated author names */
+authors?: (Scalars['String'] | null),
+/** Content description/summary */
+description?: (Scalars['String'] | null),
+/** Hero or card image URL */
+imageUrl?: (Scalars['String'] | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (CmsContentContentTypeEnum | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (Scalars['Boolean'] | null),
+/** Lower values appear first */
+sortOrder?: (Scalars['Float'] | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextCreateInput | null),
+/** When content was published */
+publishedAt?: (Scalars['DateTime'] | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextCreateInput | null),
+/** Alt text for the image */
+imageAlt?: (Scalars['String'] | null),
+/** URL slug */
+slug?: (Scalars['String'] | null),
+/** Content status */
+status?: (CmsContentStatusEnum | null),
+/** Content title */
+title: Scalars['String']}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentUpdateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),discordAnnouncedAt?: (Scalars['DateTime'] | null),
+/** Short blurb used in cards and lists */
+excerpt?: (Scalars['String'] | null),
+/** Comma-separated author names */
+authors?: (Scalars['String'] | null),
+/** Content description/summary */
+description?: (Scalars['String'] | null),
+/** Hero or card image URL */
+imageUrl?: (Scalars['String'] | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (CmsContentContentTypeEnum | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (Scalars['Boolean'] | null),
+/** Lower values appear first */
+sortOrder?: (Scalars['Float'] | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextUpdateInput | null),
+/** When content was published */
+publishedAt?: (Scalars['DateTime'] | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextUpdateInput | null),
+/** Alt text for the image */
+imageAlt?: (Scalars['String'] | null),
+/** URL slug */
+slug?: (Scalars['String'] | null),
+/** Content status */
+status?: (CmsContentStatusEnum | null),
+/** Content title */
+title?: (Scalars['String'] | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentFilterInput {
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),discordAnnouncedAt?: (DateTimeFilter | null),
+/** Short blurb used in cards and lists */
+excerpt?: (StringFilter | null),
+/** Comma-separated author names */
+authors?: (StringFilter | null),
+/** Content description/summary */
+description?: (StringFilter | null),
+/** Hero or card image URL */
+imageUrl?: (StringFilter | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (CmsContentContentTypeEnumFilter | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (BooleanFilter | null),
+/** Lower values appear first */
+sortOrder?: (FloatFilter | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextFilterInput | null),
+/** When content was published */
+publishedAt?: (DateTimeFilter | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextFilterInput | null),
+/** Alt text for the image */
+imageAlt?: (StringFilter | null),
+/** URL slug */
+slug?: (StringFilter | null),
+/** Content status */
+status?: (CmsContentStatusEnumFilter | null),
+/** Content title */
+title?: (StringFilter | null),and?: ((CmsContentFilterInput | null)[] | null),or?: ((CmsContentFilterInput | null)[] | null),not?: (CmsContentFilterInput | null)}
+
+export interface CmsContentContentTypeEnumFilter {eq?: (CmsContentContentTypeEnum | null),neq?: (CmsContentContentTypeEnum | null),in?: ((CmsContentContentTypeEnum | null)[] | null),containsAny?: ((CmsContentContentTypeEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (CmsContentContentTypeEnum | null),gte?: (CmsContentContentTypeEnum | null),lt?: (CmsContentContentTypeEnum | null),lte?: (CmsContentContentTypeEnum | null)}
+
+export interface CmsContentStatusEnumFilter {eq?: (CmsContentStatusEnum | null),neq?: (CmsContentStatusEnum | null),in?: ((CmsContentStatusEnum | null)[] | null),containsAny?: ((CmsContentStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (CmsContentStatusEnum | null),gte?: (CmsContentStatusEnum | null),lt?: (CmsContentStatusEnum | null),lte?: (CmsContentStatusEnum | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentOrderByInput {
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),discordAnnouncedAt?: (OrderByDirection | null),
+/** Short blurb used in cards and lists */
+excerpt?: (OrderByDirection | null),
+/** Comma-separated author names */
+authors?: (OrderByDirection | null),
+/** Content description/summary */
+description?: (OrderByDirection | null),
+/** Hero or card image URL */
+imageUrl?: (OrderByDirection | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (OrderByDirection | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (OrderByDirection | null),
+/** Lower values appear first */
+sortOrder?: (OrderByDirection | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextOrderByInput | null),
+/** When content was published */
+publishedAt?: (OrderByDirection | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextOrderByInput | null),
+/** Alt text for the image */
+imageAlt?: (OrderByDirection | null),
+/** URL slug */
+slug?: (OrderByDirection | null),
+/** Content status */
+status?: (OrderByDirection | null),
+/** Content title */
+title?: (OrderByDirection | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (CmsContentOrderByWithGroupByAggregateInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),discordAnnouncedAt?: (OrderByDateGranularityInput | null),
+/** Short blurb used in cards and lists */
+excerpt?: (OrderByDirection | null),
+/** Comma-separated author names */
+authors?: (OrderByDirection | null),
+/** Content description/summary */
+description?: (OrderByDirection | null),
+/** Hero or card image URL */
+imageUrl?: (OrderByDirection | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (OrderByDirection | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (OrderByDirection | null),
+/** Lower values appear first */
+sortOrder?: (OrderByDirection | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextOrderByInput | null),
+/** When content was published */
+publishedAt?: (OrderByDateGranularityInput | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextOrderByInput | null),
+/** Alt text for the image */
+imageAlt?: (OrderByDirection | null),
+/** URL slug */
+slug?: (OrderByDirection | null),
+/** Content status */
+status?: (OrderByDirection | null),
+/** Content title */
+title?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface CmsContentOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for discordAnnouncedAt */
+countUniqueValuesDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Number of empty values for discordAnnouncedAt */
+countEmptyDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Number of non-empty values for discordAnnouncedAt */
+countNotEmptyDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Percentage of empty values for discordAnnouncedAt */
+percentageEmptyDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for discordAnnouncedAt */
+percentageNotEmptyDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field discordAnnouncedAt */
+minDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Latest date contained in the field discordAnnouncedAt */
+maxDiscordAnnouncedAt?: (OrderByDirection | null),
+/** Number of unique values for excerpt */
+countUniqueValuesExcerpt?: (OrderByDirection | null),
+/** Number of empty values for excerpt */
+countEmptyExcerpt?: (OrderByDirection | null),
+/** Number of non-empty values for excerpt */
+countNotEmptyExcerpt?: (OrderByDirection | null),
+/** Percentage of empty values for excerpt */
+percentageEmptyExcerpt?: (OrderByDirection | null),
+/** Percentage of non-empty values for excerpt */
+percentageNotEmptyExcerpt?: (OrderByDirection | null),
+/** Number of unique values for authors */
+countUniqueValuesAuthors?: (OrderByDirection | null),
+/** Number of empty values for authors */
+countEmptyAuthors?: (OrderByDirection | null),
+/** Number of non-empty values for authors */
+countNotEmptyAuthors?: (OrderByDirection | null),
+/** Percentage of empty values for authors */
+percentageEmptyAuthors?: (OrderByDirection | null),
+/** Percentage of non-empty values for authors */
+percentageNotEmptyAuthors?: (OrderByDirection | null),
+/** Number of unique values for description */
+countUniqueValuesDescription?: (OrderByDirection | null),
+/** Number of empty values for description */
+countEmptyDescription?: (OrderByDirection | null),
+/** Number of non-empty values for description */
+countNotEmptyDescription?: (OrderByDirection | null),
+/** Percentage of empty values for description */
+percentageEmptyDescription?: (OrderByDirection | null),
+/** Percentage of non-empty values for description */
+percentageNotEmptyDescription?: (OrderByDirection | null),
+/** Number of unique values for imageUrl */
+countUniqueValuesImageUrl?: (OrderByDirection | null),
+/** Number of empty values for imageUrl */
+countEmptyImageUrl?: (OrderByDirection | null),
+/** Number of non-empty values for imageUrl */
+countNotEmptyImageUrl?: (OrderByDirection | null),
+/** Percentage of empty values for imageUrl */
+percentageEmptyImageUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for imageUrl */
+percentageNotEmptyImageUrl?: (OrderByDirection | null),
+/** Number of unique values for contentType */
+countUniqueValuesContentType?: (OrderByDirection | null),
+/** Number of empty values for contentType */
+countEmptyContentType?: (OrderByDirection | null),
+/** Number of non-empty values for contentType */
+countNotEmptyContentType?: (OrderByDirection | null),
+/** Percentage of empty values for contentType */
+percentageEmptyContentType?: (OrderByDirection | null),
+/** Percentage of non-empty values for contentType */
+percentageNotEmptyContentType?: (OrderByDirection | null),
+/** Number of unique values for isPublished */
+countUniqueValuesIsPublished?: (OrderByDirection | null),
+/** Number of empty values for isPublished */
+countEmptyIsPublished?: (OrderByDirection | null),
+/** Number of non-empty values for isPublished */
+countNotEmptyIsPublished?: (OrderByDirection | null),
+/** Percentage of empty values for isPublished */
+percentageEmptyIsPublished?: (OrderByDirection | null),
+/** Percentage of non-empty values for isPublished */
+percentageNotEmptyIsPublished?: (OrderByDirection | null),
+/** Count of true values in the field isPublished */
+countTrueIsPublished?: (OrderByDirection | null),
+/** Count of false values in the field isPublished */
+countFalseIsPublished?: (OrderByDirection | null),
+/** Number of unique values for sortOrder */
+countUniqueValuesSortOrder?: (OrderByDirection | null),
+/** Number of empty values for sortOrder */
+countEmptySortOrder?: (OrderByDirection | null),
+/** Number of non-empty values for sortOrder */
+countNotEmptySortOrder?: (OrderByDirection | null),
+/** Percentage of empty values for sortOrder */
+percentageEmptySortOrder?: (OrderByDirection | null),
+/** Percentage of non-empty values for sortOrder */
+percentageNotEmptySortOrder?: (OrderByDirection | null),
+/** Minimum amount contained in the field sortOrder */
+minSortOrder?: (OrderByDirection | null),
+/** Maximum amount contained in the field sortOrder */
+maxSortOrder?: (OrderByDirection | null),
+/** Average amount contained in the field sortOrder */
+avgSortOrder?: (OrderByDirection | null),
+/** Sum of amounts contained in the field sortOrder */
+sumSortOrder?: (OrderByDirection | null),
+/** Number of unique values for bodyMarkdown */
+countUniqueValuesBodyMarkdown?: (OrderByDirection | null),
+/** Number of empty values for bodyMarkdown */
+countEmptyBodyMarkdown?: (OrderByDirection | null),
+/** Number of non-empty values for bodyMarkdown */
+countNotEmptyBodyMarkdown?: (OrderByDirection | null),
+/** Percentage of empty values for bodyMarkdown */
+percentageEmptyBodyMarkdown?: (OrderByDirection | null),
+/** Percentage of non-empty values for bodyMarkdown */
+percentageNotEmptyBodyMarkdown?: (OrderByDirection | null),
+/** Number of unique values for publishedAt */
+countUniqueValuesPublishedAt?: (OrderByDirection | null),
+/** Number of empty values for publishedAt */
+countEmptyPublishedAt?: (OrderByDirection | null),
+/** Number of non-empty values for publishedAt */
+countNotEmptyPublishedAt?: (OrderByDirection | null),
+/** Percentage of empty values for publishedAt */
+percentageEmptyPublishedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for publishedAt */
+percentageNotEmptyPublishedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field publishedAt */
+minPublishedAt?: (OrderByDirection | null),
+/** Latest date contained in the field publishedAt */
+maxPublishedAt?: (OrderByDirection | null),
+/** Number of unique values for bodyRichText */
+countUniqueValuesBodyRichText?: (OrderByDirection | null),
+/** Number of empty values for bodyRichText */
+countEmptyBodyRichText?: (OrderByDirection | null),
+/** Number of non-empty values for bodyRichText */
+countNotEmptyBodyRichText?: (OrderByDirection | null),
+/** Percentage of empty values for bodyRichText */
+percentageEmptyBodyRichText?: (OrderByDirection | null),
+/** Percentage of non-empty values for bodyRichText */
+percentageNotEmptyBodyRichText?: (OrderByDirection | null),
+/** Number of unique values for imageAlt */
+countUniqueValuesImageAlt?: (OrderByDirection | null),
+/** Number of empty values for imageAlt */
+countEmptyImageAlt?: (OrderByDirection | null),
+/** Number of non-empty values for imageAlt */
+countNotEmptyImageAlt?: (OrderByDirection | null),
+/** Percentage of empty values for imageAlt */
+percentageEmptyImageAlt?: (OrderByDirection | null),
+/** Percentage of non-empty values for imageAlt */
+percentageNotEmptyImageAlt?: (OrderByDirection | null),
+/** Number of unique values for slug */
+countUniqueValuesSlug?: (OrderByDirection | null),
+/** Number of empty values for slug */
+countEmptySlug?: (OrderByDirection | null),
+/** Number of non-empty values for slug */
+countNotEmptySlug?: (OrderByDirection | null),
+/** Percentage of empty values for slug */
+percentageEmptySlug?: (OrderByDirection | null),
+/** Percentage of non-empty values for slug */
+percentageNotEmptySlug?: (OrderByDirection | null),
+/** Number of unique values for status */
+countUniqueValuesStatus?: (OrderByDirection | null),
+/** Number of empty values for status */
+countEmptyStatus?: (OrderByDirection | null),
+/** Number of non-empty values for status */
+countNotEmptyStatus?: (OrderByDirection | null),
+/** Percentage of empty values for status */
+percentageEmptyStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for status */
+percentageNotEmptyStatus?: (OrderByDirection | null),
+/** Number of unique values for title */
+countUniqueValuesTitle?: (OrderByDirection | null),
+/** Number of empty values for title */
+countEmptyTitle?: (OrderByDirection | null),
+/** Number of non-empty values for title */
+countNotEmptyTitle?: (OrderByDirection | null),
+/** Percentage of empty values for title */
+percentageEmptyTitle?: (OrderByDirection | null),
+/** Percentage of non-empty values for title */
+percentageNotEmptyTitle?: (OrderByDirection | null)}
+
+
+/** Markdown publishing content for blogs, guides, newsletters, and changes */
+export interface CmsContentGroupByInput {
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),discordAnnouncedAt?: (GroupByDateGranularityInput | null),
+/** Short blurb used in cards and lists */
+excerpt?: (Scalars['Boolean'] | null),
+/** Comma-separated author names */
+authors?: (Scalars['Boolean'] | null),
+/** Content description/summary */
+description?: (Scalars['Boolean'] | null),
+/** Hero or card image URL */
+imageUrl?: (Scalars['Boolean'] | null),
+/** Blog, guide, newsletter, or change */
+contentType?: (Scalars['Boolean'] | null),
+/** Legacy publish toggle kept for backwards compatibility */
+isPublished?: (Scalars['Boolean'] | null),
+/** Lower values appear first */
+sortOrder?: (Scalars['Boolean'] | null),
+/** Content body in markdown */
+bodyMarkdown?: (RichTextGroupByInput | null),
+/** When content was published */
+publishedAt?: (GroupByDateGranularityInput | null),
+/** Optional rich text body converted before rendering */
+bodyRichText?: (RichTextGroupByInput | null),
+/** Alt text for the image */
+imageAlt?: (Scalars['Boolean'] | null),
+/** URL slug */
+slug?: (Scalars['Boolean'] | null),
+/** Content status */
+status?: (Scalars['Boolean'] | null),
+/** Content title */
+title?: (Scalars['Boolean'] | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolGenqlSelection{
+    /** PR status label */
+    label?: boolean | number
+    /** GitHub repository */
+    github?: LinksGenqlSelection
+    /** GitHub stars */
+    stars?: boolean | number
+    /** Tool website */
+    website?: LinksGenqlSelection
+    /** Submitted pull request URL */
+    submittedPr?: LinksGenqlSelection
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** DevTools tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** DevTools tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** DevTools tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** DevTools tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** DevTools tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolEdgeGenqlSelection{
+    node?: DevToolGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: boolean | number
+    /** Number of empty values for label */
+    countEmptyLabel?: boolean | number
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: boolean | number
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: boolean | number
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: boolean | number
+    /** Number of unique values for github */
+    countUniqueValuesGithub?: boolean | number
+    /** Number of empty values for github */
+    countEmptyGithub?: boolean | number
+    /** Number of non-empty values for github */
+    countNotEmptyGithub?: boolean | number
+    /** Percentage of empty values for github */
+    percentageEmptyGithub?: boolean | number
+    /** Percentage of non-empty values for github */
+    percentageNotEmptyGithub?: boolean | number
+    /** Number of unique values for stars */
+    countUniqueValuesStars?: boolean | number
+    /** Number of empty values for stars */
+    countEmptyStars?: boolean | number
+    /** Number of non-empty values for stars */
+    countNotEmptyStars?: boolean | number
+    /** Percentage of empty values for stars */
+    percentageEmptyStars?: boolean | number
+    /** Percentage of non-empty values for stars */
+    percentageNotEmptyStars?: boolean | number
+    /** Minimum amount contained in the field stars */
+    minStars?: boolean | number
+    /** Maximum amount contained in the field stars */
+    maxStars?: boolean | number
+    /** Average amount contained in the field stars */
+    avgStars?: boolean | number
+    /** Sum of amounts contained in the field stars */
+    sumStars?: boolean | number
+    /** Number of unique values for website */
+    countUniqueValuesWebsite?: boolean | number
+    /** Number of empty values for website */
+    countEmptyWebsite?: boolean | number
+    /** Number of non-empty values for website */
+    countNotEmptyWebsite?: boolean | number
+    /** Percentage of empty values for website */
+    percentageEmptyWebsite?: boolean | number
+    /** Percentage of non-empty values for website */
+    percentageNotEmptyWebsite?: boolean | number
+    /** Number of unique values for submittedPr */
+    countUniqueValuesSubmittedPr?: boolean | number
+    /** Number of empty values for submittedPr */
+    countEmptySubmittedPr?: boolean | number
+    /** Number of non-empty values for submittedPr */
+    countNotEmptySubmittedPr?: boolean | number
+    /** Percentage of empty values for submittedPr */
+    percentageEmptySubmittedPr?: boolean | number
+    /** Percentage of non-empty values for submittedPr */
+    percentageNotEmptySubmittedPr?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    edges?: DevToolEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: boolean | number
+    /** Number of empty values for label */
+    countEmptyLabel?: boolean | number
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: boolean | number
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: boolean | number
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: boolean | number
+    /** Number of unique values for github */
+    countUniqueValuesGithub?: boolean | number
+    /** Number of empty values for github */
+    countEmptyGithub?: boolean | number
+    /** Number of non-empty values for github */
+    countNotEmptyGithub?: boolean | number
+    /** Percentage of empty values for github */
+    percentageEmptyGithub?: boolean | number
+    /** Percentage of non-empty values for github */
+    percentageNotEmptyGithub?: boolean | number
+    /** Number of unique values for stars */
+    countUniqueValuesStars?: boolean | number
+    /** Number of empty values for stars */
+    countEmptyStars?: boolean | number
+    /** Number of non-empty values for stars */
+    countNotEmptyStars?: boolean | number
+    /** Percentage of empty values for stars */
+    percentageEmptyStars?: boolean | number
+    /** Percentage of non-empty values for stars */
+    percentageNotEmptyStars?: boolean | number
+    /** Minimum amount contained in the field stars */
+    minStars?: boolean | number
+    /** Maximum amount contained in the field stars */
+    maxStars?: boolean | number
+    /** Average amount contained in the field stars */
+    avgStars?: boolean | number
+    /** Sum of amounts contained in the field stars */
+    sumStars?: boolean | number
+    /** Number of unique values for website */
+    countUniqueValuesWebsite?: boolean | number
+    /** Number of empty values for website */
+    countEmptyWebsite?: boolean | number
+    /** Number of non-empty values for website */
+    countNotEmptyWebsite?: boolean | number
+    /** Percentage of empty values for website */
+    percentageEmptyWebsite?: boolean | number
+    /** Percentage of non-empty values for website */
+    percentageNotEmptyWebsite?: boolean | number
+    /** Number of unique values for submittedPr */
+    countUniqueValuesSubmittedPr?: boolean | number
+    /** Number of empty values for submittedPr */
+    countEmptySubmittedPr?: boolean | number
+    /** Number of non-empty values for submittedPr */
+    countNotEmptySubmittedPr?: boolean | number
+    /** Percentage of empty values for submittedPr */
+    percentageEmptySubmittedPr?: boolean | number
+    /** Percentage of non-empty values for submittedPr */
+    percentageNotEmptySubmittedPr?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    edges?: DevToolEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DevToolRelationInput {
+/** Connect to a devTool record */
+connect?: (DevToolConnectInput | null),
+/** Create and connect a devTool record */
+create?: (DevToolCreateInput | null),
+/** Disconnect from a devTool record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface DevToolConnectInput {
+/** Find a devTool record based on its unique fields: id */
+where?: (DevToolWhereUniqueInput | null)}
+
+export interface DevToolWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolCreateInput {
+/** PR status label */
+label?: (DevToolLabelEnum | null),
+/** GitHub repository */
+github?: (LinksCreateInput | null),
+/** GitHub stars */
+stars?: (Scalars['Float'] | null),
+/** Tool website */
+website?: (LinksCreateInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksCreateInput | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolUpdateInput {
+/** PR status label */
+label?: (DevToolLabelEnum | null),
+/** GitHub repository */
+github?: (LinksUpdateInput | null),
+/** GitHub stars */
+stars?: (Scalars['Float'] | null),
+/** Tool website */
+website?: (LinksUpdateInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksUpdateInput | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolFilterInput {
+/** PR status label */
+label?: (DevToolLabelEnumFilter | null),
+/** GitHub repository */
+github?: (LinksFilterInput | null),
+/** GitHub stars */
+stars?: (FloatFilter | null),
+/** Tool website */
+website?: (LinksFilterInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksFilterInput | null),
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),and?: ((DevToolFilterInput | null)[] | null),or?: ((DevToolFilterInput | null)[] | null),not?: (DevToolFilterInput | null)}
+
+export interface DevToolLabelEnumFilter {eq?: (DevToolLabelEnum | null),neq?: (DevToolLabelEnum | null),in?: ((DevToolLabelEnum | null)[] | null),containsAny?: ((DevToolLabelEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (DevToolLabelEnum | null),gte?: (DevToolLabelEnum | null),lt?: (DevToolLabelEnum | null),lte?: (DevToolLabelEnum | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolOrderByInput {
+/** PR status label */
+label?: (OrderByDirection | null),
+/** GitHub repository */
+github?: (LinksOrderByInput | null),
+/** GitHub stars */
+stars?: (OrderByDirection | null),
+/** Tool website */
+website?: (LinksOrderByInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksOrderByInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (DevToolOrderByWithGroupByAggregateInput | null),
+/** PR status label */
+label?: (OrderByDirection | null),
+/** GitHub repository */
+github?: (LinksOrderByInput | null),
+/** GitHub stars */
+stars?: (OrderByDirection | null),
+/** Tool website */
+website?: (LinksOrderByInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksOrderByInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface DevToolOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for label */
+countUniqueValuesLabel?: (OrderByDirection | null),
+/** Number of empty values for label */
+countEmptyLabel?: (OrderByDirection | null),
+/** Number of non-empty values for label */
+countNotEmptyLabel?: (OrderByDirection | null),
+/** Percentage of empty values for label */
+percentageEmptyLabel?: (OrderByDirection | null),
+/** Percentage of non-empty values for label */
+percentageNotEmptyLabel?: (OrderByDirection | null),
+/** Number of unique values for github */
+countUniqueValuesGithub?: (OrderByDirection | null),
+/** Number of empty values for github */
+countEmptyGithub?: (OrderByDirection | null),
+/** Number of non-empty values for github */
+countNotEmptyGithub?: (OrderByDirection | null),
+/** Percentage of empty values for github */
+percentageEmptyGithub?: (OrderByDirection | null),
+/** Percentage of non-empty values for github */
+percentageNotEmptyGithub?: (OrderByDirection | null),
+/** Number of unique values for stars */
+countUniqueValuesStars?: (OrderByDirection | null),
+/** Number of empty values for stars */
+countEmptyStars?: (OrderByDirection | null),
+/** Number of non-empty values for stars */
+countNotEmptyStars?: (OrderByDirection | null),
+/** Percentage of empty values for stars */
+percentageEmptyStars?: (OrderByDirection | null),
+/** Percentage of non-empty values for stars */
+percentageNotEmptyStars?: (OrderByDirection | null),
+/** Minimum amount contained in the field stars */
+minStars?: (OrderByDirection | null),
+/** Maximum amount contained in the field stars */
+maxStars?: (OrderByDirection | null),
+/** Average amount contained in the field stars */
+avgStars?: (OrderByDirection | null),
+/** Sum of amounts contained in the field stars */
+sumStars?: (OrderByDirection | null),
+/** Number of unique values for website */
+countUniqueValuesWebsite?: (OrderByDirection | null),
+/** Number of empty values for website */
+countEmptyWebsite?: (OrderByDirection | null),
+/** Number of non-empty values for website */
+countNotEmptyWebsite?: (OrderByDirection | null),
+/** Percentage of empty values for website */
+percentageEmptyWebsite?: (OrderByDirection | null),
+/** Percentage of non-empty values for website */
+percentageNotEmptyWebsite?: (OrderByDirection | null),
+/** Number of unique values for submittedPr */
+countUniqueValuesSubmittedPr?: (OrderByDirection | null),
+/** Number of empty values for submittedPr */
+countEmptySubmittedPr?: (OrderByDirection | null),
+/** Number of non-empty values for submittedPr */
+countNotEmptySubmittedPr?: (OrderByDirection | null),
+/** Percentage of empty values for submittedPr */
+percentageEmptySubmittedPr?: (OrderByDirection | null),
+/** Percentage of non-empty values for submittedPr */
+percentageNotEmptySubmittedPr?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null)}
+
+
+/** Developer tools tracked for PR outreach */
+export interface DevToolGroupByInput {
+/** PR status label */
+label?: (Scalars['Boolean'] | null),
+/** GitHub repository */
+github?: (LinksGroupByInput | null),
+/** GitHub stars */
+stars?: (Scalars['Boolean'] | null),
+/** Tool website */
+website?: (LinksGroupByInput | null),
+/** Submitted pull request URL */
+submittedPr?: (LinksGroupByInput | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionGenqlSelection{
+    status?: boolean | number
+    agentPhone?: boolean | number
+    mode?: boolean | number
+    contactAnsweredAt?: boolean | number
+    error?: boolean | number
+    contactLegId?: boolean | number
+    hangupCause?: boolean | number
+    pin?: boolean | number
+    contactState?: boolean | number
+    contactEndedAt?: boolean | number
+    agentLegId?: boolean | number
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    expiresAt?: boolean | number
+    memberId?: boolean | number
+    /** DialerAudioSessions tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** DialerAudioSessions tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** DialerAudioSessions tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** DialerAudioSessions tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** DialerAudioSessions tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionEdgeGenqlSelection{
+    node?: DialerAudioSessionGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for agentPhone */
+    countUniqueValuesAgentPhone?: boolean | number
+    /** Number of empty values for agentPhone */
+    countEmptyAgentPhone?: boolean | number
+    /** Number of non-empty values for agentPhone */
+    countNotEmptyAgentPhone?: boolean | number
+    /** Percentage of empty values for agentPhone */
+    percentageEmptyAgentPhone?: boolean | number
+    /** Percentage of non-empty values for agentPhone */
+    percentageNotEmptyAgentPhone?: boolean | number
+    /** Number of unique values for mode */
+    countUniqueValuesMode?: boolean | number
+    /** Number of empty values for mode */
+    countEmptyMode?: boolean | number
+    /** Number of non-empty values for mode */
+    countNotEmptyMode?: boolean | number
+    /** Percentage of empty values for mode */
+    percentageEmptyMode?: boolean | number
+    /** Percentage of non-empty values for mode */
+    percentageNotEmptyMode?: boolean | number
+    /** Number of unique values for contactAnsweredAt */
+    countUniqueValuesContactAnsweredAt?: boolean | number
+    /** Number of empty values for contactAnsweredAt */
+    countEmptyContactAnsweredAt?: boolean | number
+    /** Number of non-empty values for contactAnsweredAt */
+    countNotEmptyContactAnsweredAt?: boolean | number
+    /** Percentage of empty values for contactAnsweredAt */
+    percentageEmptyContactAnsweredAt?: boolean | number
+    /** Percentage of non-empty values for contactAnsweredAt */
+    percentageNotEmptyContactAnsweredAt?: boolean | number
+    /** Number of unique values for error */
+    countUniqueValuesError?: boolean | number
+    /** Number of empty values for error */
+    countEmptyError?: boolean | number
+    /** Number of non-empty values for error */
+    countNotEmptyError?: boolean | number
+    /** Percentage of empty values for error */
+    percentageEmptyError?: boolean | number
+    /** Percentage of non-empty values for error */
+    percentageNotEmptyError?: boolean | number
+    /** Number of unique values for contactLegId */
+    countUniqueValuesContactLegId?: boolean | number
+    /** Number of empty values for contactLegId */
+    countEmptyContactLegId?: boolean | number
+    /** Number of non-empty values for contactLegId */
+    countNotEmptyContactLegId?: boolean | number
+    /** Percentage of empty values for contactLegId */
+    percentageEmptyContactLegId?: boolean | number
+    /** Percentage of non-empty values for contactLegId */
+    percentageNotEmptyContactLegId?: boolean | number
+    /** Number of unique values for hangupCause */
+    countUniqueValuesHangupCause?: boolean | number
+    /** Number of empty values for hangupCause */
+    countEmptyHangupCause?: boolean | number
+    /** Number of non-empty values for hangupCause */
+    countNotEmptyHangupCause?: boolean | number
+    /** Percentage of empty values for hangupCause */
+    percentageEmptyHangupCause?: boolean | number
+    /** Percentage of non-empty values for hangupCause */
+    percentageNotEmptyHangupCause?: boolean | number
+    /** Number of unique values for pin */
+    countUniqueValuesPin?: boolean | number
+    /** Number of empty values for pin */
+    countEmptyPin?: boolean | number
+    /** Number of non-empty values for pin */
+    countNotEmptyPin?: boolean | number
+    /** Percentage of empty values for pin */
+    percentageEmptyPin?: boolean | number
+    /** Percentage of non-empty values for pin */
+    percentageNotEmptyPin?: boolean | number
+    /** Number of unique values for contactState */
+    countUniqueValuesContactState?: boolean | number
+    /** Number of empty values for contactState */
+    countEmptyContactState?: boolean | number
+    /** Number of non-empty values for contactState */
+    countNotEmptyContactState?: boolean | number
+    /** Percentage of empty values for contactState */
+    percentageEmptyContactState?: boolean | number
+    /** Percentage of non-empty values for contactState */
+    percentageNotEmptyContactState?: boolean | number
+    /** Number of unique values for contactEndedAt */
+    countUniqueValuesContactEndedAt?: boolean | number
+    /** Number of empty values for contactEndedAt */
+    countEmptyContactEndedAt?: boolean | number
+    /** Number of non-empty values for contactEndedAt */
+    countNotEmptyContactEndedAt?: boolean | number
+    /** Percentage of empty values for contactEndedAt */
+    percentageEmptyContactEndedAt?: boolean | number
+    /** Percentage of non-empty values for contactEndedAt */
+    percentageNotEmptyContactEndedAt?: boolean | number
+    /** Number of unique values for agentLegId */
+    countUniqueValuesAgentLegId?: boolean | number
+    /** Number of empty values for agentLegId */
+    countEmptyAgentLegId?: boolean | number
+    /** Number of non-empty values for agentLegId */
+    countNotEmptyAgentLegId?: boolean | number
+    /** Percentage of empty values for agentLegId */
+    percentageEmptyAgentLegId?: boolean | number
+    /** Percentage of non-empty values for agentLegId */
+    percentageNotEmptyAgentLegId?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for expiresAt */
+    countUniqueValuesExpiresAt?: boolean | number
+    /** Number of empty values for expiresAt */
+    countEmptyExpiresAt?: boolean | number
+    /** Number of non-empty values for expiresAt */
+    countNotEmptyExpiresAt?: boolean | number
+    /** Percentage of empty values for expiresAt */
+    percentageEmptyExpiresAt?: boolean | number
+    /** Percentage of non-empty values for expiresAt */
+    percentageNotEmptyExpiresAt?: boolean | number
+    /** Number of unique values for memberId */
+    countUniqueValuesMemberId?: boolean | number
+    /** Number of empty values for memberId */
+    countEmptyMemberId?: boolean | number
+    /** Number of non-empty values for memberId */
+    countNotEmptyMemberId?: boolean | number
+    /** Percentage of empty values for memberId */
+    percentageEmptyMemberId?: boolean | number
+    /** Percentage of non-empty values for memberId */
+    percentageNotEmptyMemberId?: boolean | number
+    edges?: DialerAudioSessionEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for status */
+    countUniqueValuesStatus?: boolean | number
+    /** Number of empty values for status */
+    countEmptyStatus?: boolean | number
+    /** Number of non-empty values for status */
+    countNotEmptyStatus?: boolean | number
+    /** Percentage of empty values for status */
+    percentageEmptyStatus?: boolean | number
+    /** Percentage of non-empty values for status */
+    percentageNotEmptyStatus?: boolean | number
+    /** Number of unique values for agentPhone */
+    countUniqueValuesAgentPhone?: boolean | number
+    /** Number of empty values for agentPhone */
+    countEmptyAgentPhone?: boolean | number
+    /** Number of non-empty values for agentPhone */
+    countNotEmptyAgentPhone?: boolean | number
+    /** Percentage of empty values for agentPhone */
+    percentageEmptyAgentPhone?: boolean | number
+    /** Percentage of non-empty values for agentPhone */
+    percentageNotEmptyAgentPhone?: boolean | number
+    /** Number of unique values for mode */
+    countUniqueValuesMode?: boolean | number
+    /** Number of empty values for mode */
+    countEmptyMode?: boolean | number
+    /** Number of non-empty values for mode */
+    countNotEmptyMode?: boolean | number
+    /** Percentage of empty values for mode */
+    percentageEmptyMode?: boolean | number
+    /** Percentage of non-empty values for mode */
+    percentageNotEmptyMode?: boolean | number
+    /** Number of unique values for contactAnsweredAt */
+    countUniqueValuesContactAnsweredAt?: boolean | number
+    /** Number of empty values for contactAnsweredAt */
+    countEmptyContactAnsweredAt?: boolean | number
+    /** Number of non-empty values for contactAnsweredAt */
+    countNotEmptyContactAnsweredAt?: boolean | number
+    /** Percentage of empty values for contactAnsweredAt */
+    percentageEmptyContactAnsweredAt?: boolean | number
+    /** Percentage of non-empty values for contactAnsweredAt */
+    percentageNotEmptyContactAnsweredAt?: boolean | number
+    /** Number of unique values for error */
+    countUniqueValuesError?: boolean | number
+    /** Number of empty values for error */
+    countEmptyError?: boolean | number
+    /** Number of non-empty values for error */
+    countNotEmptyError?: boolean | number
+    /** Percentage of empty values for error */
+    percentageEmptyError?: boolean | number
+    /** Percentage of non-empty values for error */
+    percentageNotEmptyError?: boolean | number
+    /** Number of unique values for contactLegId */
+    countUniqueValuesContactLegId?: boolean | number
+    /** Number of empty values for contactLegId */
+    countEmptyContactLegId?: boolean | number
+    /** Number of non-empty values for contactLegId */
+    countNotEmptyContactLegId?: boolean | number
+    /** Percentage of empty values for contactLegId */
+    percentageEmptyContactLegId?: boolean | number
+    /** Percentage of non-empty values for contactLegId */
+    percentageNotEmptyContactLegId?: boolean | number
+    /** Number of unique values for hangupCause */
+    countUniqueValuesHangupCause?: boolean | number
+    /** Number of empty values for hangupCause */
+    countEmptyHangupCause?: boolean | number
+    /** Number of non-empty values for hangupCause */
+    countNotEmptyHangupCause?: boolean | number
+    /** Percentage of empty values for hangupCause */
+    percentageEmptyHangupCause?: boolean | number
+    /** Percentage of non-empty values for hangupCause */
+    percentageNotEmptyHangupCause?: boolean | number
+    /** Number of unique values for pin */
+    countUniqueValuesPin?: boolean | number
+    /** Number of empty values for pin */
+    countEmptyPin?: boolean | number
+    /** Number of non-empty values for pin */
+    countNotEmptyPin?: boolean | number
+    /** Percentage of empty values for pin */
+    percentageEmptyPin?: boolean | number
+    /** Percentage of non-empty values for pin */
+    percentageNotEmptyPin?: boolean | number
+    /** Number of unique values for contactState */
+    countUniqueValuesContactState?: boolean | number
+    /** Number of empty values for contactState */
+    countEmptyContactState?: boolean | number
+    /** Number of non-empty values for contactState */
+    countNotEmptyContactState?: boolean | number
+    /** Percentage of empty values for contactState */
+    percentageEmptyContactState?: boolean | number
+    /** Percentage of non-empty values for contactState */
+    percentageNotEmptyContactState?: boolean | number
+    /** Number of unique values for contactEndedAt */
+    countUniqueValuesContactEndedAt?: boolean | number
+    /** Number of empty values for contactEndedAt */
+    countEmptyContactEndedAt?: boolean | number
+    /** Number of non-empty values for contactEndedAt */
+    countNotEmptyContactEndedAt?: boolean | number
+    /** Percentage of empty values for contactEndedAt */
+    percentageEmptyContactEndedAt?: boolean | number
+    /** Percentage of non-empty values for contactEndedAt */
+    percentageNotEmptyContactEndedAt?: boolean | number
+    /** Number of unique values for agentLegId */
+    countUniqueValuesAgentLegId?: boolean | number
+    /** Number of empty values for agentLegId */
+    countEmptyAgentLegId?: boolean | number
+    /** Number of non-empty values for agentLegId */
+    countNotEmptyAgentLegId?: boolean | number
+    /** Percentage of empty values for agentLegId */
+    percentageEmptyAgentLegId?: boolean | number
+    /** Percentage of non-empty values for agentLegId */
+    percentageNotEmptyAgentLegId?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for expiresAt */
+    countUniqueValuesExpiresAt?: boolean | number
+    /** Number of empty values for expiresAt */
+    countEmptyExpiresAt?: boolean | number
+    /** Number of non-empty values for expiresAt */
+    countNotEmptyExpiresAt?: boolean | number
+    /** Percentage of empty values for expiresAt */
+    percentageEmptyExpiresAt?: boolean | number
+    /** Percentage of non-empty values for expiresAt */
+    percentageNotEmptyExpiresAt?: boolean | number
+    /** Number of unique values for memberId */
+    countUniqueValuesMemberId?: boolean | number
+    /** Number of empty values for memberId */
+    countEmptyMemberId?: boolean | number
+    /** Number of non-empty values for memberId */
+    countNotEmptyMemberId?: boolean | number
+    /** Percentage of empty values for memberId */
+    percentageEmptyMemberId?: boolean | number
+    /** Percentage of non-empty values for memberId */
+    percentageNotEmptyMemberId?: boolean | number
+    edges?: DialerAudioSessionEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DialerAudioSessionRelationInput {
+/** Connect to a dialerAudioSession record */
+connect?: (DialerAudioSessionConnectInput | null),
+/** Create and connect a dialerAudioSession record */
+create?: (DialerAudioSessionCreateInput | null),
+/** Disconnect from a dialerAudioSession record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface DialerAudioSessionConnectInput {
+/** Find a dialerAudioSession record based on its unique fields: id */
+where?: (DialerAudioSessionWhereUniqueInput | null)}
+
+export interface DialerAudioSessionWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionCreateInput {status?: (Scalars['String'] | null),agentPhone?: (Scalars['String'] | null),mode?: (Scalars['String'] | null),contactAnsweredAt?: (Scalars['String'] | null),error?: (Scalars['String'] | null),contactLegId?: (Scalars['String'] | null),hangupCause?: (Scalars['String'] | null),pin?: (Scalars['String'] | null),contactState?: (Scalars['String'] | null),contactEndedAt?: (Scalars['String'] | null),agentLegId?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),expiresAt?: (Scalars['String'] | null),memberId?: (Scalars['String'] | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionUpdateInput {status?: (Scalars['String'] | null),agentPhone?: (Scalars['String'] | null),mode?: (Scalars['String'] | null),contactAnsweredAt?: (Scalars['String'] | null),error?: (Scalars['String'] | null),contactLegId?: (Scalars['String'] | null),hangupCause?: (Scalars['String'] | null),pin?: (Scalars['String'] | null),contactState?: (Scalars['String'] | null),contactEndedAt?: (Scalars['String'] | null),agentLegId?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),expiresAt?: (Scalars['String'] | null),memberId?: (Scalars['String'] | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionFilterInput {status?: (StringFilter | null),agentPhone?: (StringFilter | null),mode?: (StringFilter | null),contactAnsweredAt?: (StringFilter | null),error?: (StringFilter | null),contactLegId?: (StringFilter | null),hangupCause?: (StringFilter | null),pin?: (StringFilter | null),contactState?: (StringFilter | null),contactEndedAt?: (StringFilter | null),agentLegId?: (StringFilter | null),
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),expiresAt?: (StringFilter | null),memberId?: (StringFilter | null),and?: ((DialerAudioSessionFilterInput | null)[] | null),or?: ((DialerAudioSessionFilterInput | null)[] | null),not?: (DialerAudioSessionFilterInput | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionOrderByInput {status?: (OrderByDirection | null),agentPhone?: (OrderByDirection | null),mode?: (OrderByDirection | null),contactAnsweredAt?: (OrderByDirection | null),error?: (OrderByDirection | null),contactLegId?: (OrderByDirection | null),hangupCause?: (OrderByDirection | null),pin?: (OrderByDirection | null),contactState?: (OrderByDirection | null),contactEndedAt?: (OrderByDirection | null),agentLegId?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),expiresAt?: (OrderByDirection | null),memberId?: (OrderByDirection | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (DialerAudioSessionOrderByWithGroupByAggregateInput | null),status?: (OrderByDirection | null),agentPhone?: (OrderByDirection | null),mode?: (OrderByDirection | null),contactAnsweredAt?: (OrderByDirection | null),error?: (OrderByDirection | null),contactLegId?: (OrderByDirection | null),hangupCause?: (OrderByDirection | null),pin?: (OrderByDirection | null),contactState?: (OrderByDirection | null),contactEndedAt?: (OrderByDirection | null),agentLegId?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),expiresAt?: (OrderByDirection | null),memberId?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface DialerAudioSessionOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for status */
+countUniqueValuesStatus?: (OrderByDirection | null),
+/** Number of empty values for status */
+countEmptyStatus?: (OrderByDirection | null),
+/** Number of non-empty values for status */
+countNotEmptyStatus?: (OrderByDirection | null),
+/** Percentage of empty values for status */
+percentageEmptyStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for status */
+percentageNotEmptyStatus?: (OrderByDirection | null),
+/** Number of unique values for agentPhone */
+countUniqueValuesAgentPhone?: (OrderByDirection | null),
+/** Number of empty values for agentPhone */
+countEmptyAgentPhone?: (OrderByDirection | null),
+/** Number of non-empty values for agentPhone */
+countNotEmptyAgentPhone?: (OrderByDirection | null),
+/** Percentage of empty values for agentPhone */
+percentageEmptyAgentPhone?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentPhone */
+percentageNotEmptyAgentPhone?: (OrderByDirection | null),
+/** Number of unique values for mode */
+countUniqueValuesMode?: (OrderByDirection | null),
+/** Number of empty values for mode */
+countEmptyMode?: (OrderByDirection | null),
+/** Number of non-empty values for mode */
+countNotEmptyMode?: (OrderByDirection | null),
+/** Percentage of empty values for mode */
+percentageEmptyMode?: (OrderByDirection | null),
+/** Percentage of non-empty values for mode */
+percentageNotEmptyMode?: (OrderByDirection | null),
+/** Number of unique values for contactAnsweredAt */
+countUniqueValuesContactAnsweredAt?: (OrderByDirection | null),
+/** Number of empty values for contactAnsweredAt */
+countEmptyContactAnsweredAt?: (OrderByDirection | null),
+/** Number of non-empty values for contactAnsweredAt */
+countNotEmptyContactAnsweredAt?: (OrderByDirection | null),
+/** Percentage of empty values for contactAnsweredAt */
+percentageEmptyContactAnsweredAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for contactAnsweredAt */
+percentageNotEmptyContactAnsweredAt?: (OrderByDirection | null),
+/** Number of unique values for error */
+countUniqueValuesError?: (OrderByDirection | null),
+/** Number of empty values for error */
+countEmptyError?: (OrderByDirection | null),
+/** Number of non-empty values for error */
+countNotEmptyError?: (OrderByDirection | null),
+/** Percentage of empty values for error */
+percentageEmptyError?: (OrderByDirection | null),
+/** Percentage of non-empty values for error */
+percentageNotEmptyError?: (OrderByDirection | null),
+/** Number of unique values for contactLegId */
+countUniqueValuesContactLegId?: (OrderByDirection | null),
+/** Number of empty values for contactLegId */
+countEmptyContactLegId?: (OrderByDirection | null),
+/** Number of non-empty values for contactLegId */
+countNotEmptyContactLegId?: (OrderByDirection | null),
+/** Percentage of empty values for contactLegId */
+percentageEmptyContactLegId?: (OrderByDirection | null),
+/** Percentage of non-empty values for contactLegId */
+percentageNotEmptyContactLegId?: (OrderByDirection | null),
+/** Number of unique values for hangupCause */
+countUniqueValuesHangupCause?: (OrderByDirection | null),
+/** Number of empty values for hangupCause */
+countEmptyHangupCause?: (OrderByDirection | null),
+/** Number of non-empty values for hangupCause */
+countNotEmptyHangupCause?: (OrderByDirection | null),
+/** Percentage of empty values for hangupCause */
+percentageEmptyHangupCause?: (OrderByDirection | null),
+/** Percentage of non-empty values for hangupCause */
+percentageNotEmptyHangupCause?: (OrderByDirection | null),
+/** Number of unique values for pin */
+countUniqueValuesPin?: (OrderByDirection | null),
+/** Number of empty values for pin */
+countEmptyPin?: (OrderByDirection | null),
+/** Number of non-empty values for pin */
+countNotEmptyPin?: (OrderByDirection | null),
+/** Percentage of empty values for pin */
+percentageEmptyPin?: (OrderByDirection | null),
+/** Percentage of non-empty values for pin */
+percentageNotEmptyPin?: (OrderByDirection | null),
+/** Number of unique values for contactState */
+countUniqueValuesContactState?: (OrderByDirection | null),
+/** Number of empty values for contactState */
+countEmptyContactState?: (OrderByDirection | null),
+/** Number of non-empty values for contactState */
+countNotEmptyContactState?: (OrderByDirection | null),
+/** Percentage of empty values for contactState */
+percentageEmptyContactState?: (OrderByDirection | null),
+/** Percentage of non-empty values for contactState */
+percentageNotEmptyContactState?: (OrderByDirection | null),
+/** Number of unique values for contactEndedAt */
+countUniqueValuesContactEndedAt?: (OrderByDirection | null),
+/** Number of empty values for contactEndedAt */
+countEmptyContactEndedAt?: (OrderByDirection | null),
+/** Number of non-empty values for contactEndedAt */
+countNotEmptyContactEndedAt?: (OrderByDirection | null),
+/** Percentage of empty values for contactEndedAt */
+percentageEmptyContactEndedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for contactEndedAt */
+percentageNotEmptyContactEndedAt?: (OrderByDirection | null),
+/** Number of unique values for agentLegId */
+countUniqueValuesAgentLegId?: (OrderByDirection | null),
+/** Number of empty values for agentLegId */
+countEmptyAgentLegId?: (OrderByDirection | null),
+/** Number of non-empty values for agentLegId */
+countNotEmptyAgentLegId?: (OrderByDirection | null),
+/** Percentage of empty values for agentLegId */
+percentageEmptyAgentLegId?: (OrderByDirection | null),
+/** Percentage of non-empty values for agentLegId */
+percentageNotEmptyAgentLegId?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for expiresAt */
+countUniqueValuesExpiresAt?: (OrderByDirection | null),
+/** Number of empty values for expiresAt */
+countEmptyExpiresAt?: (OrderByDirection | null),
+/** Number of non-empty values for expiresAt */
+countNotEmptyExpiresAt?: (OrderByDirection | null),
+/** Percentage of empty values for expiresAt */
+percentageEmptyExpiresAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for expiresAt */
+percentageNotEmptyExpiresAt?: (OrderByDirection | null),
+/** Number of unique values for memberId */
+countUniqueValuesMemberId?: (OrderByDirection | null),
+/** Number of empty values for memberId */
+countEmptyMemberId?: (OrderByDirection | null),
+/** Number of non-empty values for memberId */
+countNotEmptyMemberId?: (OrderByDirection | null),
+/** Percentage of empty values for memberId */
+percentageEmptyMemberId?: (OrderByDirection | null),
+/** Percentage of non-empty values for memberId */
+percentageNotEmptyMemberId?: (OrderByDirection | null)}
+
+
+/** Phone audio lines (Call me / Dial in) used by the dialer */
+export interface DialerAudioSessionGroupByInput {status?: (Scalars['Boolean'] | null),agentPhone?: (Scalars['Boolean'] | null),mode?: (Scalars['Boolean'] | null),contactAnsweredAt?: (Scalars['Boolean'] | null),error?: (Scalars['Boolean'] | null),contactLegId?: (Scalars['Boolean'] | null),hangupCause?: (Scalars['Boolean'] | null),pin?: (Scalars['Boolean'] | null),contactState?: (Scalars['Boolean'] | null),contactEndedAt?: (Scalars['Boolean'] | null),agentLegId?: (Scalars['Boolean'] | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),expiresAt?: (Scalars['Boolean'] | null),memberId?: (Scalars['Boolean'] | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueGenqlSelection{
+    /** GitHub issue author */
+    author?: boolean | number
+    /** GitHub issue state */
+    state?: boolean | number
+    /** GitHub issue closed at */
+    closedAt?: boolean | number
+    /** GitHub issue assignees */
+    assignees?: boolean | number
+    /** GitHub issue github id */
+    githubId?: boolean | number
+    /** GitHub issue opened at */
+    openedAt?: boolean | number
+    /** GitHub issue labels */
+    labels?: boolean | number
+    /** GitHub issue title */
+    title?: boolean | number
+    /** GitHub issue repository */
+    repository?: boolean | number
+    /** GitHub issue last webhook delivery id */
+    lastWebhookDeliveryId?: boolean | number
+    /** GitHub issue issue number */
+    number?: boolean | number
+    /** GitHub issue body */
+    body?: boolean | number
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** GitHub issue url */
+    url?: boolean | number
+    /** GitHub issue url link */
+    urlLink?: LinksGenqlSelection
+    /** GitHub issue github updated at */
+    githubUpdatedAt?: boolean | number
+    /** GithubIssues tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** GithubIssues tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** GithubIssues tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** GithubIssues tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** GithubIssues tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueEdgeGenqlSelection{
+    node?: GithubIssueGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: boolean | number
+    /** Number of empty values for author */
+    countEmptyAuthor?: boolean | number
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: boolean | number
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: boolean | number
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: boolean | number
+    /** Number of unique values for state */
+    countUniqueValuesState?: boolean | number
+    /** Number of empty values for state */
+    countEmptyState?: boolean | number
+    /** Number of non-empty values for state */
+    countNotEmptyState?: boolean | number
+    /** Percentage of empty values for state */
+    percentageEmptyState?: boolean | number
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: boolean | number
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: boolean | number
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: boolean | number
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: boolean | number
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: boolean | number
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: boolean | number
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: boolean | number
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: boolean | number
+    /** Number of unique values for assignees */
+    countUniqueValuesAssignees?: boolean | number
+    /** Number of empty values for assignees */
+    countEmptyAssignees?: boolean | number
+    /** Number of non-empty values for assignees */
+    countNotEmptyAssignees?: boolean | number
+    /** Percentage of empty values for assignees */
+    percentageEmptyAssignees?: boolean | number
+    /** Percentage of non-empty values for assignees */
+    percentageNotEmptyAssignees?: boolean | number
+    /** Number of unique values for githubId */
+    countUniqueValuesGithubId?: boolean | number
+    /** Number of empty values for githubId */
+    countEmptyGithubId?: boolean | number
+    /** Number of non-empty values for githubId */
+    countNotEmptyGithubId?: boolean | number
+    /** Percentage of empty values for githubId */
+    percentageEmptyGithubId?: boolean | number
+    /** Percentage of non-empty values for githubId */
+    percentageNotEmptyGithubId?: boolean | number
+    /** Minimum amount contained in the field githubId */
+    minGithubId?: boolean | number
+    /** Maximum amount contained in the field githubId */
+    maxGithubId?: boolean | number
+    /** Average amount contained in the field githubId */
+    avgGithubId?: boolean | number
+    /** Sum of amounts contained in the field githubId */
+    sumGithubId?: boolean | number
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: boolean | number
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: boolean | number
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: boolean | number
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: boolean | number
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: boolean | number
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: boolean | number
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: boolean | number
+    /** Number of unique values for labels */
+    countUniqueValuesLabels?: boolean | number
+    /** Number of empty values for labels */
+    countEmptyLabels?: boolean | number
+    /** Number of non-empty values for labels */
+    countNotEmptyLabels?: boolean | number
+    /** Percentage of empty values for labels */
+    percentageEmptyLabels?: boolean | number
+    /** Percentage of non-empty values for labels */
+    percentageNotEmptyLabels?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: boolean | number
+    /** Number of empty values for repository */
+    countEmptyRepository?: boolean | number
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: boolean | number
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: boolean | number
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: boolean | number
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: boolean | number
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: boolean | number
+    /** Number of empty values for number */
+    countEmptyNumber?: boolean | number
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: boolean | number
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: boolean | number
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: boolean | number
+    /** Minimum amount contained in the field number */
+    minNumber?: boolean | number
+    /** Maximum amount contained in the field number */
+    maxNumber?: boolean | number
+    /** Average amount contained in the field number */
+    avgNumber?: boolean | number
+    /** Sum of amounts contained in the field number */
+    sumNumber?: boolean | number
+    /** Number of unique values for body */
+    countUniqueValuesBody?: boolean | number
+    /** Number of empty values for body */
+    countEmptyBody?: boolean | number
+    /** Number of non-empty values for body */
+    countNotEmptyBody?: boolean | number
+    /** Percentage of empty values for body */
+    percentageEmptyBody?: boolean | number
+    /** Percentage of non-empty values for body */
+    percentageNotEmptyBody?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for url */
+    countUniqueValuesUrl?: boolean | number
+    /** Number of empty values for url */
+    countEmptyUrl?: boolean | number
+    /** Number of non-empty values for url */
+    countNotEmptyUrl?: boolean | number
+    /** Percentage of empty values for url */
+    percentageEmptyUrl?: boolean | number
+    /** Percentage of non-empty values for url */
+    percentageNotEmptyUrl?: boolean | number
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: boolean | number
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: boolean | number
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: boolean | number
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: boolean | number
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: boolean | number
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: boolean | number
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: boolean | number
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: boolean | number
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: boolean | number
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: boolean | number
+    edges?: GithubIssueEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: boolean | number
+    /** Number of empty values for author */
+    countEmptyAuthor?: boolean | number
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: boolean | number
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: boolean | number
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: boolean | number
+    /** Number of unique values for state */
+    countUniqueValuesState?: boolean | number
+    /** Number of empty values for state */
+    countEmptyState?: boolean | number
+    /** Number of non-empty values for state */
+    countNotEmptyState?: boolean | number
+    /** Percentage of empty values for state */
+    percentageEmptyState?: boolean | number
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: boolean | number
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: boolean | number
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: boolean | number
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: boolean | number
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: boolean | number
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: boolean | number
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: boolean | number
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: boolean | number
+    /** Number of unique values for assignees */
+    countUniqueValuesAssignees?: boolean | number
+    /** Number of empty values for assignees */
+    countEmptyAssignees?: boolean | number
+    /** Number of non-empty values for assignees */
+    countNotEmptyAssignees?: boolean | number
+    /** Percentage of empty values for assignees */
+    percentageEmptyAssignees?: boolean | number
+    /** Percentage of non-empty values for assignees */
+    percentageNotEmptyAssignees?: boolean | number
+    /** Number of unique values for githubId */
+    countUniqueValuesGithubId?: boolean | number
+    /** Number of empty values for githubId */
+    countEmptyGithubId?: boolean | number
+    /** Number of non-empty values for githubId */
+    countNotEmptyGithubId?: boolean | number
+    /** Percentage of empty values for githubId */
+    percentageEmptyGithubId?: boolean | number
+    /** Percentage of non-empty values for githubId */
+    percentageNotEmptyGithubId?: boolean | number
+    /** Minimum amount contained in the field githubId */
+    minGithubId?: boolean | number
+    /** Maximum amount contained in the field githubId */
+    maxGithubId?: boolean | number
+    /** Average amount contained in the field githubId */
+    avgGithubId?: boolean | number
+    /** Sum of amounts contained in the field githubId */
+    sumGithubId?: boolean | number
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: boolean | number
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: boolean | number
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: boolean | number
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: boolean | number
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: boolean | number
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: boolean | number
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: boolean | number
+    /** Number of unique values for labels */
+    countUniqueValuesLabels?: boolean | number
+    /** Number of empty values for labels */
+    countEmptyLabels?: boolean | number
+    /** Number of non-empty values for labels */
+    countNotEmptyLabels?: boolean | number
+    /** Percentage of empty values for labels */
+    percentageEmptyLabels?: boolean | number
+    /** Percentage of non-empty values for labels */
+    percentageNotEmptyLabels?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: boolean | number
+    /** Number of empty values for repository */
+    countEmptyRepository?: boolean | number
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: boolean | number
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: boolean | number
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: boolean | number
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: boolean | number
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: boolean | number
+    /** Number of empty values for number */
+    countEmptyNumber?: boolean | number
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: boolean | number
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: boolean | number
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: boolean | number
+    /** Minimum amount contained in the field number */
+    minNumber?: boolean | number
+    /** Maximum amount contained in the field number */
+    maxNumber?: boolean | number
+    /** Average amount contained in the field number */
+    avgNumber?: boolean | number
+    /** Sum of amounts contained in the field number */
+    sumNumber?: boolean | number
+    /** Number of unique values for body */
+    countUniqueValuesBody?: boolean | number
+    /** Number of empty values for body */
+    countEmptyBody?: boolean | number
+    /** Number of non-empty values for body */
+    countNotEmptyBody?: boolean | number
+    /** Percentage of empty values for body */
+    percentageEmptyBody?: boolean | number
+    /** Percentage of non-empty values for body */
+    percentageNotEmptyBody?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for url */
+    countUniqueValuesUrl?: boolean | number
+    /** Number of empty values for url */
+    countEmptyUrl?: boolean | number
+    /** Number of non-empty values for url */
+    countNotEmptyUrl?: boolean | number
+    /** Percentage of empty values for url */
+    percentageEmptyUrl?: boolean | number
+    /** Percentage of non-empty values for url */
+    percentageNotEmptyUrl?: boolean | number
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: boolean | number
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: boolean | number
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: boolean | number
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: boolean | number
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: boolean | number
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: boolean | number
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: boolean | number
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: boolean | number
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: boolean | number
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: boolean | number
+    edges?: GithubIssueEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GithubIssueRelationInput {
+/** Connect to a githubIssue record */
+connect?: (GithubIssueConnectInput | null),
+/** Create and connect a githubIssue record */
+create?: (GithubIssueCreateInput | null),
+/** Disconnect from a githubIssue record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface GithubIssueConnectInput {
+/** Find a githubIssue record based on its unique fields: id */
+where?: (GithubIssueWhereUniqueInput | null)}
+
+export interface GithubIssueWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueCreateInput {
+/** GitHub issue author */
+author?: (Scalars['String'] | null),
+/** GitHub issue state */
+state?: (GithubIssueStateEnum | null),
+/** GitHub issue closed at */
+closedAt?: (Scalars['DateTime'] | null),
+/** GitHub issue assignees */
+assignees?: (Scalars['String'] | null),
+/** GitHub issue github id */
+githubId?: (Scalars['Float'] | null),
+/** GitHub issue opened at */
+openedAt?: (Scalars['DateTime'] | null),
+/** GitHub issue labels */
+labels?: (Scalars['String'] | null),
+/** GitHub issue title */
+title?: (Scalars['String'] | null),
+/** GitHub issue repository */
+repository?: (Scalars['String'] | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['String'] | null),
+/** GitHub issue issue number */
+number?: (Scalars['Float'] | null),
+/** GitHub issue body */
+body?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** GitHub issue url */
+url?: (Scalars['String'] | null),
+/** GitHub issue url link */
+urlLink?: (LinksCreateInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (Scalars['DateTime'] | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueUpdateInput {
+/** GitHub issue author */
+author?: (Scalars['String'] | null),
+/** GitHub issue state */
+state?: (GithubIssueStateEnum | null),
+/** GitHub issue closed at */
+closedAt?: (Scalars['DateTime'] | null),
+/** GitHub issue assignees */
+assignees?: (Scalars['String'] | null),
+/** GitHub issue github id */
+githubId?: (Scalars['Float'] | null),
+/** GitHub issue opened at */
+openedAt?: (Scalars['DateTime'] | null),
+/** GitHub issue labels */
+labels?: (Scalars['String'] | null),
+/** GitHub issue title */
+title?: (Scalars['String'] | null),
+/** GitHub issue repository */
+repository?: (Scalars['String'] | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['String'] | null),
+/** GitHub issue issue number */
+number?: (Scalars['Float'] | null),
+/** GitHub issue body */
+body?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** GitHub issue url */
+url?: (Scalars['String'] | null),
+/** GitHub issue url link */
+urlLink?: (LinksUpdateInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (Scalars['DateTime'] | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueFilterInput {
+/** GitHub issue author */
+author?: (StringFilter | null),
+/** GitHub issue state */
+state?: (GithubIssueStateEnumFilter | null),
+/** GitHub issue closed at */
+closedAt?: (DateTimeFilter | null),
+/** GitHub issue assignees */
+assignees?: (StringFilter | null),
+/** GitHub issue github id */
+githubId?: (FloatFilter | null),
+/** GitHub issue opened at */
+openedAt?: (DateTimeFilter | null),
+/** GitHub issue labels */
+labels?: (StringFilter | null),
+/** GitHub issue title */
+title?: (StringFilter | null),
+/** GitHub issue repository */
+repository?: (StringFilter | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (StringFilter | null),
+/** GitHub issue issue number */
+number?: (FloatFilter | null),
+/** GitHub issue body */
+body?: (StringFilter | null),
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** GitHub issue url */
+url?: (StringFilter | null),
+/** GitHub issue url link */
+urlLink?: (LinksFilterInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (DateTimeFilter | null),and?: ((GithubIssueFilterInput | null)[] | null),or?: ((GithubIssueFilterInput | null)[] | null),not?: (GithubIssueFilterInput | null)}
+
+export interface GithubIssueStateEnumFilter {eq?: (GithubIssueStateEnum | null),neq?: (GithubIssueStateEnum | null),in?: ((GithubIssueStateEnum | null)[] | null),containsAny?: ((GithubIssueStateEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (GithubIssueStateEnum | null),gte?: (GithubIssueStateEnum | null),lt?: (GithubIssueStateEnum | null),lte?: (GithubIssueStateEnum | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueOrderByInput {
+/** GitHub issue author */
+author?: (OrderByDirection | null),
+/** GitHub issue state */
+state?: (OrderByDirection | null),
+/** GitHub issue closed at */
+closedAt?: (OrderByDirection | null),
+/** GitHub issue assignees */
+assignees?: (OrderByDirection | null),
+/** GitHub issue github id */
+githubId?: (OrderByDirection | null),
+/** GitHub issue opened at */
+openedAt?: (OrderByDirection | null),
+/** GitHub issue labels */
+labels?: (OrderByDirection | null),
+/** GitHub issue title */
+title?: (OrderByDirection | null),
+/** GitHub issue repository */
+repository?: (OrderByDirection | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (OrderByDirection | null),
+/** GitHub issue issue number */
+number?: (OrderByDirection | null),
+/** GitHub issue body */
+body?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** GitHub issue url */
+url?: (OrderByDirection | null),
+/** GitHub issue url link */
+urlLink?: (LinksOrderByInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (OrderByDirection | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (GithubIssueOrderByWithGroupByAggregateInput | null),
+/** GitHub issue author */
+author?: (OrderByDirection | null),
+/** GitHub issue state */
+state?: (OrderByDirection | null),
+/** GitHub issue closed at */
+closedAt?: (OrderByDateGranularityInput | null),
+/** GitHub issue assignees */
+assignees?: (OrderByDirection | null),
+/** GitHub issue github id */
+githubId?: (OrderByDirection | null),
+/** GitHub issue opened at */
+openedAt?: (OrderByDateGranularityInput | null),
+/** GitHub issue labels */
+labels?: (OrderByDirection | null),
+/** GitHub issue title */
+title?: (OrderByDirection | null),
+/** GitHub issue repository */
+repository?: (OrderByDirection | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (OrderByDirection | null),
+/** GitHub issue issue number */
+number?: (OrderByDirection | null),
+/** GitHub issue body */
+body?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** GitHub issue url */
+url?: (OrderByDirection | null),
+/** GitHub issue url link */
+urlLink?: (LinksOrderByInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (OrderByDateGranularityInput | null)}
+
+
+/** Aggregate-based ordering */
+export interface GithubIssueOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for author */
+countUniqueValuesAuthor?: (OrderByDirection | null),
+/** Number of empty values for author */
+countEmptyAuthor?: (OrderByDirection | null),
+/** Number of non-empty values for author */
+countNotEmptyAuthor?: (OrderByDirection | null),
+/** Percentage of empty values for author */
+percentageEmptyAuthor?: (OrderByDirection | null),
+/** Percentage of non-empty values for author */
+percentageNotEmptyAuthor?: (OrderByDirection | null),
+/** Number of unique values for state */
+countUniqueValuesState?: (OrderByDirection | null),
+/** Number of empty values for state */
+countEmptyState?: (OrderByDirection | null),
+/** Number of non-empty values for state */
+countNotEmptyState?: (OrderByDirection | null),
+/** Percentage of empty values for state */
+percentageEmptyState?: (OrderByDirection | null),
+/** Percentage of non-empty values for state */
+percentageNotEmptyState?: (OrderByDirection | null),
+/** Number of unique values for closedAt */
+countUniqueValuesClosedAt?: (OrderByDirection | null),
+/** Number of empty values for closedAt */
+countEmptyClosedAt?: (OrderByDirection | null),
+/** Number of non-empty values for closedAt */
+countNotEmptyClosedAt?: (OrderByDirection | null),
+/** Percentage of empty values for closedAt */
+percentageEmptyClosedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for closedAt */
+percentageNotEmptyClosedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field closedAt */
+minClosedAt?: (OrderByDirection | null),
+/** Latest date contained in the field closedAt */
+maxClosedAt?: (OrderByDirection | null),
+/** Number of unique values for assignees */
+countUniqueValuesAssignees?: (OrderByDirection | null),
+/** Number of empty values for assignees */
+countEmptyAssignees?: (OrderByDirection | null),
+/** Number of non-empty values for assignees */
+countNotEmptyAssignees?: (OrderByDirection | null),
+/** Percentage of empty values for assignees */
+percentageEmptyAssignees?: (OrderByDirection | null),
+/** Percentage of non-empty values for assignees */
+percentageNotEmptyAssignees?: (OrderByDirection | null),
+/** Number of unique values for githubId */
+countUniqueValuesGithubId?: (OrderByDirection | null),
+/** Number of empty values for githubId */
+countEmptyGithubId?: (OrderByDirection | null),
+/** Number of non-empty values for githubId */
+countNotEmptyGithubId?: (OrderByDirection | null),
+/** Percentage of empty values for githubId */
+percentageEmptyGithubId?: (OrderByDirection | null),
+/** Percentage of non-empty values for githubId */
+percentageNotEmptyGithubId?: (OrderByDirection | null),
+/** Minimum amount contained in the field githubId */
+minGithubId?: (OrderByDirection | null),
+/** Maximum amount contained in the field githubId */
+maxGithubId?: (OrderByDirection | null),
+/** Average amount contained in the field githubId */
+avgGithubId?: (OrderByDirection | null),
+/** Sum of amounts contained in the field githubId */
+sumGithubId?: (OrderByDirection | null),
+/** Number of unique values for openedAt */
+countUniqueValuesOpenedAt?: (OrderByDirection | null),
+/** Number of empty values for openedAt */
+countEmptyOpenedAt?: (OrderByDirection | null),
+/** Number of non-empty values for openedAt */
+countNotEmptyOpenedAt?: (OrderByDirection | null),
+/** Percentage of empty values for openedAt */
+percentageEmptyOpenedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for openedAt */
+percentageNotEmptyOpenedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field openedAt */
+minOpenedAt?: (OrderByDirection | null),
+/** Latest date contained in the field openedAt */
+maxOpenedAt?: (OrderByDirection | null),
+/** Number of unique values for labels */
+countUniqueValuesLabels?: (OrderByDirection | null),
+/** Number of empty values for labels */
+countEmptyLabels?: (OrderByDirection | null),
+/** Number of non-empty values for labels */
+countNotEmptyLabels?: (OrderByDirection | null),
+/** Percentage of empty values for labels */
+percentageEmptyLabels?: (OrderByDirection | null),
+/** Percentage of non-empty values for labels */
+percentageNotEmptyLabels?: (OrderByDirection | null),
+/** Number of unique values for title */
+countUniqueValuesTitle?: (OrderByDirection | null),
+/** Number of empty values for title */
+countEmptyTitle?: (OrderByDirection | null),
+/** Number of non-empty values for title */
+countNotEmptyTitle?: (OrderByDirection | null),
+/** Percentage of empty values for title */
+percentageEmptyTitle?: (OrderByDirection | null),
+/** Percentage of non-empty values for title */
+percentageNotEmptyTitle?: (OrderByDirection | null),
+/** Number of unique values for repository */
+countUniqueValuesRepository?: (OrderByDirection | null),
+/** Number of empty values for repository */
+countEmptyRepository?: (OrderByDirection | null),
+/** Number of non-empty values for repository */
+countNotEmptyRepository?: (OrderByDirection | null),
+/** Percentage of empty values for repository */
+percentageEmptyRepository?: (OrderByDirection | null),
+/** Percentage of non-empty values for repository */
+percentageNotEmptyRepository?: (OrderByDirection | null),
+/** Number of unique values for lastWebhookDeliveryId */
+countUniqueValuesLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of empty values for lastWebhookDeliveryId */
+countEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of non-empty values for lastWebhookDeliveryId */
+countNotEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Percentage of empty values for lastWebhookDeliveryId */
+percentageEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastWebhookDeliveryId */
+percentageNotEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of unique values for number */
+countUniqueValuesNumber?: (OrderByDirection | null),
+/** Number of empty values for number */
+countEmptyNumber?: (OrderByDirection | null),
+/** Number of non-empty values for number */
+countNotEmptyNumber?: (OrderByDirection | null),
+/** Percentage of empty values for number */
+percentageEmptyNumber?: (OrderByDirection | null),
+/** Percentage of non-empty values for number */
+percentageNotEmptyNumber?: (OrderByDirection | null),
+/** Minimum amount contained in the field number */
+minNumber?: (OrderByDirection | null),
+/** Maximum amount contained in the field number */
+maxNumber?: (OrderByDirection | null),
+/** Average amount contained in the field number */
+avgNumber?: (OrderByDirection | null),
+/** Sum of amounts contained in the field number */
+sumNumber?: (OrderByDirection | null),
+/** Number of unique values for body */
+countUniqueValuesBody?: (OrderByDirection | null),
+/** Number of empty values for body */
+countEmptyBody?: (OrderByDirection | null),
+/** Number of non-empty values for body */
+countNotEmptyBody?: (OrderByDirection | null),
+/** Percentage of empty values for body */
+percentageEmptyBody?: (OrderByDirection | null),
+/** Percentage of non-empty values for body */
+percentageNotEmptyBody?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for url */
+countUniqueValuesUrl?: (OrderByDirection | null),
+/** Number of empty values for url */
+countEmptyUrl?: (OrderByDirection | null),
+/** Number of non-empty values for url */
+countNotEmptyUrl?: (OrderByDirection | null),
+/** Percentage of empty values for url */
+percentageEmptyUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for url */
+percentageNotEmptyUrl?: (OrderByDirection | null),
+/** Number of unique values for urlLink */
+countUniqueValuesUrlLink?: (OrderByDirection | null),
+/** Number of empty values for urlLink */
+countEmptyUrlLink?: (OrderByDirection | null),
+/** Number of non-empty values for urlLink */
+countNotEmptyUrlLink?: (OrderByDirection | null),
+/** Percentage of empty values for urlLink */
+percentageEmptyUrlLink?: (OrderByDirection | null),
+/** Percentage of non-empty values for urlLink */
+percentageNotEmptyUrlLink?: (OrderByDirection | null),
+/** Number of unique values for githubUpdatedAt */
+countUniqueValuesGithubUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for githubUpdatedAt */
+countEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for githubUpdatedAt */
+countNotEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for githubUpdatedAt */
+percentageEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for githubUpdatedAt */
+percentageNotEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field githubUpdatedAt */
+minGithubUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field githubUpdatedAt */
+maxGithubUpdatedAt?: (OrderByDirection | null)}
+
+
+/** GitHub issue events synchronized by repository automation */
+export interface GithubIssueGroupByInput {
+/** GitHub issue author */
+author?: (Scalars['Boolean'] | null),
+/** GitHub issue state */
+state?: (Scalars['Boolean'] | null),
+/** GitHub issue closed at */
+closedAt?: (GroupByDateGranularityInput | null),
+/** GitHub issue assignees */
+assignees?: (Scalars['Boolean'] | null),
+/** GitHub issue github id */
+githubId?: (Scalars['Boolean'] | null),
+/** GitHub issue opened at */
+openedAt?: (GroupByDateGranularityInput | null),
+/** GitHub issue labels */
+labels?: (Scalars['Boolean'] | null),
+/** GitHub issue title */
+title?: (Scalars['Boolean'] | null),
+/** GitHub issue repository */
+repository?: (Scalars['Boolean'] | null),
+/** GitHub issue last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['Boolean'] | null),
+/** GitHub issue issue number */
+number?: (Scalars['Boolean'] | null),
+/** GitHub issue body */
+body?: (Scalars['Boolean'] | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),
+/** GitHub issue url */
+url?: (Scalars['Boolean'] | null),
+/** GitHub issue url link */
+urlLink?: (LinksGroupByInput | null),
+/** GitHub issue github updated at */
+githubUpdatedAt?: (GroupByDateGranularityInput | null)}
+
+export interface GithubPrsGenqlSelection{
+    /** GitHub pull request draft */
+    draft?: boolean | number
+    /** GitHub pull request opened at */
+    openedAt?: boolean | number
+    /** GitHub pull request bug report id */
+    bugReportId?: boolean | number
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** GitHub pull request state */
+    state?: boolean | number
+    /** GitHub pull request pr type */
+    prType?: boolean | number
+    /** GitHub pull request repository */
+    repository?: boolean | number
+    /** GitHub pull request github updated at */
+    githubUpdatedAt?: boolean | number
+    /** GitHub pull request base branch */
+    baseBranch?: boolean | number
+    /** GitHub pull request url link */
+    urlLink?: LinksGenqlSelection
+    /** GitHub pull request closed at */
+    closedAt?: boolean | number
+    /** GitHub pull request merged at */
+    mergedAt?: boolean | number
+    /** GitHub pull request title */
+    title?: boolean | number
+    /** GitHub pull request last webhook delivery id */
+    lastWebhookDeliveryId?: boolean | number
+    /** GitHub pull request pr number */
+    number?: boolean | number
+    /** GitHub pull request head sha */
+    headSha?: boolean | number
+    /** GitHub pull request author */
+    author?: boolean | number
+    /** GithubPrss tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** GithubPrss tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** GithubPrss tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** GithubPrss tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** GithubPrss tied to the Agent chat thread target */
+    agentChatThreadTargets?: (AgentChatThreadTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadTargetFilterInput | null), orderBy?: ((AgentChatThreadTargetOrderByInput | null)[] | null)} })
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GithubPrsEdgeGenqlSelection{
+    node?: GithubPrsGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GithubPrsConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for draft */
+    countUniqueValuesDraft?: boolean | number
+    /** Number of empty values for draft */
+    countEmptyDraft?: boolean | number
+    /** Number of non-empty values for draft */
+    countNotEmptyDraft?: boolean | number
+    /** Percentage of empty values for draft */
+    percentageEmptyDraft?: boolean | number
+    /** Percentage of non-empty values for draft */
+    percentageNotEmptyDraft?: boolean | number
+    /** Count of true values in the field draft */
+    countTrueDraft?: boolean | number
+    /** Count of false values in the field draft */
+    countFalseDraft?: boolean | number
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: boolean | number
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: boolean | number
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: boolean | number
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: boolean | number
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: boolean | number
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: boolean | number
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: boolean | number
+    /** Number of unique values for bugReportId */
+    countUniqueValuesBugReportId?: boolean | number
+    /** Number of empty values for bugReportId */
+    countEmptyBugReportId?: boolean | number
+    /** Number of non-empty values for bugReportId */
+    countNotEmptyBugReportId?: boolean | number
+    /** Percentage of empty values for bugReportId */
+    percentageEmptyBugReportId?: boolean | number
+    /** Percentage of non-empty values for bugReportId */
+    percentageNotEmptyBugReportId?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for state */
+    countUniqueValuesState?: boolean | number
+    /** Number of empty values for state */
+    countEmptyState?: boolean | number
+    /** Number of non-empty values for state */
+    countNotEmptyState?: boolean | number
+    /** Percentage of empty values for state */
+    percentageEmptyState?: boolean | number
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: boolean | number
+    /** Number of unique values for prType */
+    countUniqueValuesPrType?: boolean | number
+    /** Number of empty values for prType */
+    countEmptyPrType?: boolean | number
+    /** Number of non-empty values for prType */
+    countNotEmptyPrType?: boolean | number
+    /** Percentage of empty values for prType */
+    percentageEmptyPrType?: boolean | number
+    /** Percentage of non-empty values for prType */
+    percentageNotEmptyPrType?: boolean | number
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: boolean | number
+    /** Number of empty values for repository */
+    countEmptyRepository?: boolean | number
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: boolean | number
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: boolean | number
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: boolean | number
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: boolean | number
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: boolean | number
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: boolean | number
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: boolean | number
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: boolean | number
+    /** Number of unique values for baseBranch */
+    countUniqueValuesBaseBranch?: boolean | number
+    /** Number of empty values for baseBranch */
+    countEmptyBaseBranch?: boolean | number
+    /** Number of non-empty values for baseBranch */
+    countNotEmptyBaseBranch?: boolean | number
+    /** Percentage of empty values for baseBranch */
+    percentageEmptyBaseBranch?: boolean | number
+    /** Percentage of non-empty values for baseBranch */
+    percentageNotEmptyBaseBranch?: boolean | number
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: boolean | number
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: boolean | number
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: boolean | number
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: boolean | number
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: boolean | number
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: boolean | number
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: boolean | number
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: boolean | number
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: boolean | number
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: boolean | number
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: boolean | number
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: boolean | number
+    /** Number of unique values for mergedAt */
+    countUniqueValuesMergedAt?: boolean | number
+    /** Number of empty values for mergedAt */
+    countEmptyMergedAt?: boolean | number
+    /** Number of non-empty values for mergedAt */
+    countNotEmptyMergedAt?: boolean | number
+    /** Percentage of empty values for mergedAt */
+    percentageEmptyMergedAt?: boolean | number
+    /** Percentage of non-empty values for mergedAt */
+    percentageNotEmptyMergedAt?: boolean | number
+    /** Earliest date contained in the field mergedAt */
+    minMergedAt?: boolean | number
+    /** Latest date contained in the field mergedAt */
+    maxMergedAt?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: boolean | number
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: boolean | number
+    /** Number of empty values for number */
+    countEmptyNumber?: boolean | number
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: boolean | number
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: boolean | number
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: boolean | number
+    /** Minimum amount contained in the field number */
+    minNumber?: boolean | number
+    /** Maximum amount contained in the field number */
+    maxNumber?: boolean | number
+    /** Average amount contained in the field number */
+    avgNumber?: boolean | number
+    /** Sum of amounts contained in the field number */
+    sumNumber?: boolean | number
+    /** Number of unique values for headSha */
+    countUniqueValuesHeadSha?: boolean | number
+    /** Number of empty values for headSha */
+    countEmptyHeadSha?: boolean | number
+    /** Number of non-empty values for headSha */
+    countNotEmptyHeadSha?: boolean | number
+    /** Percentage of empty values for headSha */
+    percentageEmptyHeadSha?: boolean | number
+    /** Percentage of non-empty values for headSha */
+    percentageNotEmptyHeadSha?: boolean | number
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: boolean | number
+    /** Number of empty values for author */
+    countEmptyAuthor?: boolean | number
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: boolean | number
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: boolean | number
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: boolean | number
+    edges?: GithubPrsEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GithubPrsGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for draft */
+    countUniqueValuesDraft?: boolean | number
+    /** Number of empty values for draft */
+    countEmptyDraft?: boolean | number
+    /** Number of non-empty values for draft */
+    countNotEmptyDraft?: boolean | number
+    /** Percentage of empty values for draft */
+    percentageEmptyDraft?: boolean | number
+    /** Percentage of non-empty values for draft */
+    percentageNotEmptyDraft?: boolean | number
+    /** Count of true values in the field draft */
+    countTrueDraft?: boolean | number
+    /** Count of false values in the field draft */
+    countFalseDraft?: boolean | number
+    /** Number of unique values for openedAt */
+    countUniqueValuesOpenedAt?: boolean | number
+    /** Number of empty values for openedAt */
+    countEmptyOpenedAt?: boolean | number
+    /** Number of non-empty values for openedAt */
+    countNotEmptyOpenedAt?: boolean | number
+    /** Percentage of empty values for openedAt */
+    percentageEmptyOpenedAt?: boolean | number
+    /** Percentage of non-empty values for openedAt */
+    percentageNotEmptyOpenedAt?: boolean | number
+    /** Earliest date contained in the field openedAt */
+    minOpenedAt?: boolean | number
+    /** Latest date contained in the field openedAt */
+    maxOpenedAt?: boolean | number
+    /** Number of unique values for bugReportId */
+    countUniqueValuesBugReportId?: boolean | number
+    /** Number of empty values for bugReportId */
+    countEmptyBugReportId?: boolean | number
+    /** Number of non-empty values for bugReportId */
+    countNotEmptyBugReportId?: boolean | number
+    /** Percentage of empty values for bugReportId */
+    percentageEmptyBugReportId?: boolean | number
+    /** Percentage of non-empty values for bugReportId */
+    percentageNotEmptyBugReportId?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for state */
+    countUniqueValuesState?: boolean | number
+    /** Number of empty values for state */
+    countEmptyState?: boolean | number
+    /** Number of non-empty values for state */
+    countNotEmptyState?: boolean | number
+    /** Percentage of empty values for state */
+    percentageEmptyState?: boolean | number
+    /** Percentage of non-empty values for state */
+    percentageNotEmptyState?: boolean | number
+    /** Number of unique values for prType */
+    countUniqueValuesPrType?: boolean | number
+    /** Number of empty values for prType */
+    countEmptyPrType?: boolean | number
+    /** Number of non-empty values for prType */
+    countNotEmptyPrType?: boolean | number
+    /** Percentage of empty values for prType */
+    percentageEmptyPrType?: boolean | number
+    /** Percentage of non-empty values for prType */
+    percentageNotEmptyPrType?: boolean | number
+    /** Number of unique values for repository */
+    countUniqueValuesRepository?: boolean | number
+    /** Number of empty values for repository */
+    countEmptyRepository?: boolean | number
+    /** Number of non-empty values for repository */
+    countNotEmptyRepository?: boolean | number
+    /** Percentage of empty values for repository */
+    percentageEmptyRepository?: boolean | number
+    /** Percentage of non-empty values for repository */
+    percentageNotEmptyRepository?: boolean | number
+    /** Number of unique values for githubUpdatedAt */
+    countUniqueValuesGithubUpdatedAt?: boolean | number
+    /** Number of empty values for githubUpdatedAt */
+    countEmptyGithubUpdatedAt?: boolean | number
+    /** Number of non-empty values for githubUpdatedAt */
+    countNotEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of empty values for githubUpdatedAt */
+    percentageEmptyGithubUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for githubUpdatedAt */
+    percentageNotEmptyGithubUpdatedAt?: boolean | number
+    /** Earliest date contained in the field githubUpdatedAt */
+    minGithubUpdatedAt?: boolean | number
+    /** Latest date contained in the field githubUpdatedAt */
+    maxGithubUpdatedAt?: boolean | number
+    /** Number of unique values for baseBranch */
+    countUniqueValuesBaseBranch?: boolean | number
+    /** Number of empty values for baseBranch */
+    countEmptyBaseBranch?: boolean | number
+    /** Number of non-empty values for baseBranch */
+    countNotEmptyBaseBranch?: boolean | number
+    /** Percentage of empty values for baseBranch */
+    percentageEmptyBaseBranch?: boolean | number
+    /** Percentage of non-empty values for baseBranch */
+    percentageNotEmptyBaseBranch?: boolean | number
+    /** Number of unique values for urlLink */
+    countUniqueValuesUrlLink?: boolean | number
+    /** Number of empty values for urlLink */
+    countEmptyUrlLink?: boolean | number
+    /** Number of non-empty values for urlLink */
+    countNotEmptyUrlLink?: boolean | number
+    /** Percentage of empty values for urlLink */
+    percentageEmptyUrlLink?: boolean | number
+    /** Percentage of non-empty values for urlLink */
+    percentageNotEmptyUrlLink?: boolean | number
+    /** Number of unique values for closedAt */
+    countUniqueValuesClosedAt?: boolean | number
+    /** Number of empty values for closedAt */
+    countEmptyClosedAt?: boolean | number
+    /** Number of non-empty values for closedAt */
+    countNotEmptyClosedAt?: boolean | number
+    /** Percentage of empty values for closedAt */
+    percentageEmptyClosedAt?: boolean | number
+    /** Percentage of non-empty values for closedAt */
+    percentageNotEmptyClosedAt?: boolean | number
+    /** Earliest date contained in the field closedAt */
+    minClosedAt?: boolean | number
+    /** Latest date contained in the field closedAt */
+    maxClosedAt?: boolean | number
+    /** Number of unique values for mergedAt */
+    countUniqueValuesMergedAt?: boolean | number
+    /** Number of empty values for mergedAt */
+    countEmptyMergedAt?: boolean | number
+    /** Number of non-empty values for mergedAt */
+    countNotEmptyMergedAt?: boolean | number
+    /** Percentage of empty values for mergedAt */
+    percentageEmptyMergedAt?: boolean | number
+    /** Percentage of non-empty values for mergedAt */
+    percentageNotEmptyMergedAt?: boolean | number
+    /** Earliest date contained in the field mergedAt */
+    minMergedAt?: boolean | number
+    /** Latest date contained in the field mergedAt */
+    maxMergedAt?: boolean | number
+    /** Number of unique values for title */
+    countUniqueValuesTitle?: boolean | number
+    /** Number of empty values for title */
+    countEmptyTitle?: boolean | number
+    /** Number of non-empty values for title */
+    countNotEmptyTitle?: boolean | number
+    /** Percentage of empty values for title */
+    percentageEmptyTitle?: boolean | number
+    /** Percentage of non-empty values for title */
+    percentageNotEmptyTitle?: boolean | number
+    /** Number of unique values for lastWebhookDeliveryId */
+    countUniqueValuesLastWebhookDeliveryId?: boolean | number
+    /** Number of empty values for lastWebhookDeliveryId */
+    countEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of non-empty values for lastWebhookDeliveryId */
+    countNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of empty values for lastWebhookDeliveryId */
+    percentageEmptyLastWebhookDeliveryId?: boolean | number
+    /** Percentage of non-empty values for lastWebhookDeliveryId */
+    percentageNotEmptyLastWebhookDeliveryId?: boolean | number
+    /** Number of unique values for number */
+    countUniqueValuesNumber?: boolean | number
+    /** Number of empty values for number */
+    countEmptyNumber?: boolean | number
+    /** Number of non-empty values for number */
+    countNotEmptyNumber?: boolean | number
+    /** Percentage of empty values for number */
+    percentageEmptyNumber?: boolean | number
+    /** Percentage of non-empty values for number */
+    percentageNotEmptyNumber?: boolean | number
+    /** Minimum amount contained in the field number */
+    minNumber?: boolean | number
+    /** Maximum amount contained in the field number */
+    maxNumber?: boolean | number
+    /** Average amount contained in the field number */
+    avgNumber?: boolean | number
+    /** Sum of amounts contained in the field number */
+    sumNumber?: boolean | number
+    /** Number of unique values for headSha */
+    countUniqueValuesHeadSha?: boolean | number
+    /** Number of empty values for headSha */
+    countEmptyHeadSha?: boolean | number
+    /** Number of non-empty values for headSha */
+    countNotEmptyHeadSha?: boolean | number
+    /** Percentage of empty values for headSha */
+    percentageEmptyHeadSha?: boolean | number
+    /** Percentage of non-empty values for headSha */
+    percentageNotEmptyHeadSha?: boolean | number
+    /** Number of unique values for author */
+    countUniqueValuesAuthor?: boolean | number
+    /** Number of empty values for author */
+    countEmptyAuthor?: boolean | number
+    /** Number of non-empty values for author */
+    countNotEmptyAuthor?: boolean | number
+    /** Percentage of empty values for author */
+    percentageEmptyAuthor?: boolean | number
+    /** Percentage of non-empty values for author */
+    percentageNotEmptyAuthor?: boolean | number
+    edges?: GithubPrsEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GithubPrsRelationInput {
+/** Connect to a githubPrs record */
+connect?: (GithubPrsConnectInput | null),
+/** Create and connect a githubPrs record */
+create?: (GithubPrsCreateInput | null),
+/** Disconnect from a githubPrs record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface GithubPrsConnectInput {
+/** Find a githubPrs record based on its unique fields: id */
+where?: (GithubPrsWhereUniqueInput | null)}
+
+export interface GithubPrsWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+export interface GithubPrsCreateInput {
+/** GitHub pull request draft */
+draft?: (Scalars['Boolean'] | null),
+/** GitHub pull request opened at */
+openedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request bug report id */
+bugReportId?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** GitHub pull request state */
+state?: (GithubPrsStateEnum | null),
+/** GitHub pull request pr type */
+prType?: (GithubPrsPrTypeEnum | null),
+/** GitHub pull request repository */
+repository?: (Scalars['String'] | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request base branch */
+baseBranch?: (Scalars['String'] | null),
+/** GitHub pull request url link */
+urlLink?: (LinksCreateInput | null),
+/** GitHub pull request closed at */
+closedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request merged at */
+mergedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request title */
+title?: (Scalars['String'] | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['String'] | null),
+/** GitHub pull request pr number */
+number?: (Scalars['Float'] | null),
+/** GitHub pull request head sha */
+headSha?: (Scalars['String'] | null),
+/** GitHub pull request author */
+author?: (Scalars['String'] | null)}
+
+export interface GithubPrsUpdateInput {
+/** GitHub pull request draft */
+draft?: (Scalars['Boolean'] | null),
+/** GitHub pull request opened at */
+openedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request bug report id */
+bugReportId?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** GitHub pull request state */
+state?: (GithubPrsStateEnum | null),
+/** GitHub pull request pr type */
+prType?: (GithubPrsPrTypeEnum | null),
+/** GitHub pull request repository */
+repository?: (Scalars['String'] | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request base branch */
+baseBranch?: (Scalars['String'] | null),
+/** GitHub pull request url link */
+urlLink?: (LinksUpdateInput | null),
+/** GitHub pull request closed at */
+closedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request merged at */
+mergedAt?: (Scalars['DateTime'] | null),
+/** GitHub pull request title */
+title?: (Scalars['String'] | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['String'] | null),
+/** GitHub pull request pr number */
+number?: (Scalars['Float'] | null),
+/** GitHub pull request head sha */
+headSha?: (Scalars['String'] | null),
+/** GitHub pull request author */
+author?: (Scalars['String'] | null)}
+
+export interface GithubPrsFilterInput {
+/** GitHub pull request draft */
+draft?: (BooleanFilter | null),
+/** GitHub pull request opened at */
+openedAt?: (DateTimeFilter | null),
+/** GitHub pull request bug report id */
+bugReportId?: (StringFilter | null),
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** GitHub pull request state */
+state?: (GithubPrsStateEnumFilter | null),
+/** GitHub pull request pr type */
+prType?: (GithubPrsPrTypeEnumFilter | null),
+/** GitHub pull request repository */
+repository?: (StringFilter | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (DateTimeFilter | null),
+/** GitHub pull request base branch */
+baseBranch?: (StringFilter | null),
+/** GitHub pull request url link */
+urlLink?: (LinksFilterInput | null),
+/** GitHub pull request closed at */
+closedAt?: (DateTimeFilter | null),
+/** GitHub pull request merged at */
+mergedAt?: (DateTimeFilter | null),
+/** GitHub pull request title */
+title?: (StringFilter | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (StringFilter | null),
+/** GitHub pull request pr number */
+number?: (FloatFilter | null),
+/** GitHub pull request head sha */
+headSha?: (StringFilter | null),
+/** GitHub pull request author */
+author?: (StringFilter | null),and?: ((GithubPrsFilterInput | null)[] | null),or?: ((GithubPrsFilterInput | null)[] | null),not?: (GithubPrsFilterInput | null)}
+
+export interface GithubPrsStateEnumFilter {eq?: (GithubPrsStateEnum | null),neq?: (GithubPrsStateEnum | null),in?: ((GithubPrsStateEnum | null)[] | null),containsAny?: ((GithubPrsStateEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (GithubPrsStateEnum | null),gte?: (GithubPrsStateEnum | null),lt?: (GithubPrsStateEnum | null),lte?: (GithubPrsStateEnum | null)}
+
+export interface GithubPrsPrTypeEnumFilter {eq?: (GithubPrsPrTypeEnum | null),neq?: (GithubPrsPrTypeEnum | null),in?: ((GithubPrsPrTypeEnum | null)[] | null),containsAny?: ((GithubPrsPrTypeEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (GithubPrsPrTypeEnum | null),gte?: (GithubPrsPrTypeEnum | null),lt?: (GithubPrsPrTypeEnum | null),lte?: (GithubPrsPrTypeEnum | null)}
+
+export interface GithubPrsOrderByInput {
+/** GitHub pull request draft */
+draft?: (OrderByDirection | null),
+/** GitHub pull request opened at */
+openedAt?: (OrderByDirection | null),
+/** GitHub pull request bug report id */
+bugReportId?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** GitHub pull request state */
+state?: (OrderByDirection | null),
+/** GitHub pull request pr type */
+prType?: (OrderByDirection | null),
+/** GitHub pull request repository */
+repository?: (OrderByDirection | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (OrderByDirection | null),
+/** GitHub pull request base branch */
+baseBranch?: (OrderByDirection | null),
+/** GitHub pull request url link */
+urlLink?: (LinksOrderByInput | null),
+/** GitHub pull request closed at */
+closedAt?: (OrderByDirection | null),
+/** GitHub pull request merged at */
+mergedAt?: (OrderByDirection | null),
+/** GitHub pull request title */
+title?: (OrderByDirection | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (OrderByDirection | null),
+/** GitHub pull request pr number */
+number?: (OrderByDirection | null),
+/** GitHub pull request head sha */
+headSha?: (OrderByDirection | null),
+/** GitHub pull request author */
+author?: (OrderByDirection | null)}
+
+export interface GithubPrsOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (GithubPrsOrderByWithGroupByAggregateInput | null),
+/** GitHub pull request draft */
+draft?: (OrderByDirection | null),
+/** GitHub pull request opened at */
+openedAt?: (OrderByDateGranularityInput | null),
+/** GitHub pull request bug report id */
+bugReportId?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** GitHub pull request state */
+state?: (OrderByDirection | null),
+/** GitHub pull request pr type */
+prType?: (OrderByDirection | null),
+/** GitHub pull request repository */
+repository?: (OrderByDirection | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (OrderByDateGranularityInput | null),
+/** GitHub pull request base branch */
+baseBranch?: (OrderByDirection | null),
+/** GitHub pull request url link */
+urlLink?: (LinksOrderByInput | null),
+/** GitHub pull request closed at */
+closedAt?: (OrderByDateGranularityInput | null),
+/** GitHub pull request merged at */
+mergedAt?: (OrderByDateGranularityInput | null),
+/** GitHub pull request title */
+title?: (OrderByDirection | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (OrderByDirection | null),
+/** GitHub pull request pr number */
+number?: (OrderByDirection | null),
+/** GitHub pull request head sha */
+headSha?: (OrderByDirection | null),
+/** GitHub pull request author */
+author?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface GithubPrsOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for draft */
+countUniqueValuesDraft?: (OrderByDirection | null),
+/** Number of empty values for draft */
+countEmptyDraft?: (OrderByDirection | null),
+/** Number of non-empty values for draft */
+countNotEmptyDraft?: (OrderByDirection | null),
+/** Percentage of empty values for draft */
+percentageEmptyDraft?: (OrderByDirection | null),
+/** Percentage of non-empty values for draft */
+percentageNotEmptyDraft?: (OrderByDirection | null),
+/** Count of true values in the field draft */
+countTrueDraft?: (OrderByDirection | null),
+/** Count of false values in the field draft */
+countFalseDraft?: (OrderByDirection | null),
+/** Number of unique values for openedAt */
+countUniqueValuesOpenedAt?: (OrderByDirection | null),
+/** Number of empty values for openedAt */
+countEmptyOpenedAt?: (OrderByDirection | null),
+/** Number of non-empty values for openedAt */
+countNotEmptyOpenedAt?: (OrderByDirection | null),
+/** Percentage of empty values for openedAt */
+percentageEmptyOpenedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for openedAt */
+percentageNotEmptyOpenedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field openedAt */
+minOpenedAt?: (OrderByDirection | null),
+/** Latest date contained in the field openedAt */
+maxOpenedAt?: (OrderByDirection | null),
+/** Number of unique values for bugReportId */
+countUniqueValuesBugReportId?: (OrderByDirection | null),
+/** Number of empty values for bugReportId */
+countEmptyBugReportId?: (OrderByDirection | null),
+/** Number of non-empty values for bugReportId */
+countNotEmptyBugReportId?: (OrderByDirection | null),
+/** Percentage of empty values for bugReportId */
+percentageEmptyBugReportId?: (OrderByDirection | null),
+/** Percentage of non-empty values for bugReportId */
+percentageNotEmptyBugReportId?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for state */
+countUniqueValuesState?: (OrderByDirection | null),
+/** Number of empty values for state */
+countEmptyState?: (OrderByDirection | null),
+/** Number of non-empty values for state */
+countNotEmptyState?: (OrderByDirection | null),
+/** Percentage of empty values for state */
+percentageEmptyState?: (OrderByDirection | null),
+/** Percentage of non-empty values for state */
+percentageNotEmptyState?: (OrderByDirection | null),
+/** Number of unique values for prType */
+countUniqueValuesPrType?: (OrderByDirection | null),
+/** Number of empty values for prType */
+countEmptyPrType?: (OrderByDirection | null),
+/** Number of non-empty values for prType */
+countNotEmptyPrType?: (OrderByDirection | null),
+/** Percentage of empty values for prType */
+percentageEmptyPrType?: (OrderByDirection | null),
+/** Percentage of non-empty values for prType */
+percentageNotEmptyPrType?: (OrderByDirection | null),
+/** Number of unique values for repository */
+countUniqueValuesRepository?: (OrderByDirection | null),
+/** Number of empty values for repository */
+countEmptyRepository?: (OrderByDirection | null),
+/** Number of non-empty values for repository */
+countNotEmptyRepository?: (OrderByDirection | null),
+/** Percentage of empty values for repository */
+percentageEmptyRepository?: (OrderByDirection | null),
+/** Percentage of non-empty values for repository */
+percentageNotEmptyRepository?: (OrderByDirection | null),
+/** Number of unique values for githubUpdatedAt */
+countUniqueValuesGithubUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for githubUpdatedAt */
+countEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for githubUpdatedAt */
+countNotEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for githubUpdatedAt */
+percentageEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for githubUpdatedAt */
+percentageNotEmptyGithubUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field githubUpdatedAt */
+minGithubUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field githubUpdatedAt */
+maxGithubUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for baseBranch */
+countUniqueValuesBaseBranch?: (OrderByDirection | null),
+/** Number of empty values for baseBranch */
+countEmptyBaseBranch?: (OrderByDirection | null),
+/** Number of non-empty values for baseBranch */
+countNotEmptyBaseBranch?: (OrderByDirection | null),
+/** Percentage of empty values for baseBranch */
+percentageEmptyBaseBranch?: (OrderByDirection | null),
+/** Percentage of non-empty values for baseBranch */
+percentageNotEmptyBaseBranch?: (OrderByDirection | null),
+/** Number of unique values for urlLink */
+countUniqueValuesUrlLink?: (OrderByDirection | null),
+/** Number of empty values for urlLink */
+countEmptyUrlLink?: (OrderByDirection | null),
+/** Number of non-empty values for urlLink */
+countNotEmptyUrlLink?: (OrderByDirection | null),
+/** Percentage of empty values for urlLink */
+percentageEmptyUrlLink?: (OrderByDirection | null),
+/** Percentage of non-empty values for urlLink */
+percentageNotEmptyUrlLink?: (OrderByDirection | null),
+/** Number of unique values for closedAt */
+countUniqueValuesClosedAt?: (OrderByDirection | null),
+/** Number of empty values for closedAt */
+countEmptyClosedAt?: (OrderByDirection | null),
+/** Number of non-empty values for closedAt */
+countNotEmptyClosedAt?: (OrderByDirection | null),
+/** Percentage of empty values for closedAt */
+percentageEmptyClosedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for closedAt */
+percentageNotEmptyClosedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field closedAt */
+minClosedAt?: (OrderByDirection | null),
+/** Latest date contained in the field closedAt */
+maxClosedAt?: (OrderByDirection | null),
+/** Number of unique values for mergedAt */
+countUniqueValuesMergedAt?: (OrderByDirection | null),
+/** Number of empty values for mergedAt */
+countEmptyMergedAt?: (OrderByDirection | null),
+/** Number of non-empty values for mergedAt */
+countNotEmptyMergedAt?: (OrderByDirection | null),
+/** Percentage of empty values for mergedAt */
+percentageEmptyMergedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for mergedAt */
+percentageNotEmptyMergedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field mergedAt */
+minMergedAt?: (OrderByDirection | null),
+/** Latest date contained in the field mergedAt */
+maxMergedAt?: (OrderByDirection | null),
+/** Number of unique values for title */
+countUniqueValuesTitle?: (OrderByDirection | null),
+/** Number of empty values for title */
+countEmptyTitle?: (OrderByDirection | null),
+/** Number of non-empty values for title */
+countNotEmptyTitle?: (OrderByDirection | null),
+/** Percentage of empty values for title */
+percentageEmptyTitle?: (OrderByDirection | null),
+/** Percentage of non-empty values for title */
+percentageNotEmptyTitle?: (OrderByDirection | null),
+/** Number of unique values for lastWebhookDeliveryId */
+countUniqueValuesLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of empty values for lastWebhookDeliveryId */
+countEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of non-empty values for lastWebhookDeliveryId */
+countNotEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Percentage of empty values for lastWebhookDeliveryId */
+percentageEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastWebhookDeliveryId */
+percentageNotEmptyLastWebhookDeliveryId?: (OrderByDirection | null),
+/** Number of unique values for number */
+countUniqueValuesNumber?: (OrderByDirection | null),
+/** Number of empty values for number */
+countEmptyNumber?: (OrderByDirection | null),
+/** Number of non-empty values for number */
+countNotEmptyNumber?: (OrderByDirection | null),
+/** Percentage of empty values for number */
+percentageEmptyNumber?: (OrderByDirection | null),
+/** Percentage of non-empty values for number */
+percentageNotEmptyNumber?: (OrderByDirection | null),
+/** Minimum amount contained in the field number */
+minNumber?: (OrderByDirection | null),
+/** Maximum amount contained in the field number */
+maxNumber?: (OrderByDirection | null),
+/** Average amount contained in the field number */
+avgNumber?: (OrderByDirection | null),
+/** Sum of amounts contained in the field number */
+sumNumber?: (OrderByDirection | null),
+/** Number of unique values for headSha */
+countUniqueValuesHeadSha?: (OrderByDirection | null),
+/** Number of empty values for headSha */
+countEmptyHeadSha?: (OrderByDirection | null),
+/** Number of non-empty values for headSha */
+countNotEmptyHeadSha?: (OrderByDirection | null),
+/** Percentage of empty values for headSha */
+percentageEmptyHeadSha?: (OrderByDirection | null),
+/** Percentage of non-empty values for headSha */
+percentageNotEmptyHeadSha?: (OrderByDirection | null),
+/** Number of unique values for author */
+countUniqueValuesAuthor?: (OrderByDirection | null),
+/** Number of empty values for author */
+countEmptyAuthor?: (OrderByDirection | null),
+/** Number of non-empty values for author */
+countNotEmptyAuthor?: (OrderByDirection | null),
+/** Percentage of empty values for author */
+percentageEmptyAuthor?: (OrderByDirection | null),
+/** Percentage of non-empty values for author */
+percentageNotEmptyAuthor?: (OrderByDirection | null)}
+
+export interface GithubPrsGroupByInput {
+/** GitHub pull request draft */
+draft?: (Scalars['Boolean'] | null),
+/** GitHub pull request opened at */
+openedAt?: (GroupByDateGranularityInput | null),
+/** GitHub pull request bug report id */
+bugReportId?: (Scalars['Boolean'] | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorGroupByInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorGroupByInput | null),
+/** GitHub pull request state */
+state?: (Scalars['Boolean'] | null),
+/** GitHub pull request pr type */
+prType?: (Scalars['Boolean'] | null),
+/** GitHub pull request repository */
+repository?: (Scalars['Boolean'] | null),
+/** GitHub pull request github updated at */
+githubUpdatedAt?: (GroupByDateGranularityInput | null),
+/** GitHub pull request base branch */
+baseBranch?: (Scalars['Boolean'] | null),
+/** GitHub pull request url link */
+urlLink?: (LinksGroupByInput | null),
+/** GitHub pull request closed at */
+closedAt?: (GroupByDateGranularityInput | null),
+/** GitHub pull request merged at */
+mergedAt?: (GroupByDateGranularityInput | null),
+/** GitHub pull request title */
+title?: (Scalars['Boolean'] | null),
+/** GitHub pull request last webhook delivery id */
+lastWebhookDeliveryId?: (Scalars['Boolean'] | null),
+/** GitHub pull request pr number */
+number?: (Scalars['Boolean'] | null),
+/** GitHub pull request head sha */
+headSha?: (Scalars['Boolean'] | null),
+/** GitHub pull request author */
+author?: (Scalars['Boolean'] | null)}
+
 export interface QueryGenqlSelection{
     agentChatThreads?: (AgentChatThreadConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgentChatThreadFilterInput | null), orderBy?: ((AgentChatThreadOrderByInput | null)[] | null)} })
     agentChatThread?: (AgentChatThreadGenqlSelection & { __args: {filter: AgentChatThreadFilterInput} })
@@ -127240,6 +143758,30 @@ export interface QueryGenqlSelection{
     influencers?: (InfluencerConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (InfluencerFilterInput | null), orderBy?: ((InfluencerOrderByInput | null)[] | null)} })
     influencer?: (InfluencerGenqlSelection & { __args: {filter: InfluencerFilterInput} })
     influencersGroupBy?: (InfluencerGroupByConnectionGenqlSelection & { __args: {groupBy: InfluencerGroupByInput[], filter?: (InfluencerFilterInput | null), orderBy?: ((InfluencerOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((InfluencerOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    bookedMeetings?: (BookedMeetingConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (BookedMeetingFilterInput | null), orderBy?: ((BookedMeetingOrderByInput | null)[] | null)} })
+    bookedMeeting?: (BookedMeetingGenqlSelection & { __args: {filter: BookedMeetingFilterInput} })
+    bookedMeetingsGroupBy?: (BookedMeetingGroupByConnectionGenqlSelection & { __args: {groupBy: BookedMeetingGroupByInput[], filter?: (BookedMeetingFilterInput | null), orderBy?: ((BookedMeetingOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((BookedMeetingOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    bugReportss?: (BugReportsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (BugReportsFilterInput | null), orderBy?: ((BugReportsOrderByInput | null)[] | null)} })
+    bugReports?: (BugReportsGenqlSelection & { __args: {filter: BugReportsFilterInput} })
+    bugReportssGroupBy?: (BugReportsGroupByConnectionGenqlSelection & { __args: {groupBy: BugReportsGroupByInput[], filter?: (BugReportsFilterInput | null), orderBy?: ((BugReportsOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((BugReportsOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    businessPayments?: (BusinessPaymentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (BusinessPaymentFilterInput | null), orderBy?: ((BusinessPaymentOrderByInput | null)[] | null)} })
+    businessPayment?: (BusinessPaymentGenqlSelection & { __args: {filter: BusinessPaymentFilterInput} })
+    businessPaymentsGroupBy?: (BusinessPaymentGroupByConnectionGenqlSelection & { __args: {groupBy: BusinessPaymentGroupByInput[], filter?: (BusinessPaymentFilterInput | null), orderBy?: ((BusinessPaymentOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((BusinessPaymentOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    cmsContents?: (CmsContentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (CmsContentFilterInput | null), orderBy?: ((CmsContentOrderByInput | null)[] | null)} })
+    cmsContent?: (CmsContentGenqlSelection & { __args: {filter: CmsContentFilterInput} })
+    cmsContentsGroupBy?: (CmsContentGroupByConnectionGenqlSelection & { __args: {groupBy: CmsContentGroupByInput[], filter?: (CmsContentFilterInput | null), orderBy?: ((CmsContentOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((CmsContentOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    devTools?: (DevToolConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (DevToolFilterInput | null), orderBy?: ((DevToolOrderByInput | null)[] | null)} })
+    devTool?: (DevToolGenqlSelection & { __args: {filter: DevToolFilterInput} })
+    devToolsGroupBy?: (DevToolGroupByConnectionGenqlSelection & { __args: {groupBy: DevToolGroupByInput[], filter?: (DevToolFilterInput | null), orderBy?: ((DevToolOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((DevToolOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    dialerAudioSessions?: (DialerAudioSessionConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (DialerAudioSessionFilterInput | null), orderBy?: ((DialerAudioSessionOrderByInput | null)[] | null)} })
+    dialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {filter: DialerAudioSessionFilterInput} })
+    dialerAudioSessionsGroupBy?: (DialerAudioSessionGroupByConnectionGenqlSelection & { __args: {groupBy: DialerAudioSessionGroupByInput[], filter?: (DialerAudioSessionFilterInput | null), orderBy?: ((DialerAudioSessionOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((DialerAudioSessionOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    githubIssues?: (GithubIssueConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (GithubIssueFilterInput | null), orderBy?: ((GithubIssueOrderByInput | null)[] | null)} })
+    githubIssue?: (GithubIssueGenqlSelection & { __args: {filter: GithubIssueFilterInput} })
+    githubIssuesGroupBy?: (GithubIssueGroupByConnectionGenqlSelection & { __args: {groupBy: GithubIssueGroupByInput[], filter?: (GithubIssueFilterInput | null), orderBy?: ((GithubIssueOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((GithubIssueOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    githubPrss?: (GithubPrsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (GithubPrsFilterInput | null), orderBy?: ((GithubPrsOrderByInput | null)[] | null)} })
+    githubPrs?: (GithubPrsGenqlSelection & { __args: {filter: GithubPrsFilterInput} })
+    githubPrssGroupBy?: (GithubPrsGroupByConnectionGenqlSelection & { __args: {groupBy: GithubPrsGroupByInput[], filter?: (GithubPrsFilterInput | null), orderBy?: ((GithubPrsOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((GithubPrsOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -127977,6 +144519,86 @@ export interface MutationGenqlSelection{
     destroyInfluencers?: (InfluencerGenqlSelection & { __args: {filter: InfluencerFilterInput} })
     restoreInfluencer?: (InfluencerGenqlSelection & { __args: {id: Scalars['UUID']} })
     restoreInfluencers?: (InfluencerGenqlSelection & { __args: {filter: InfluencerFilterInput} })
+    createBookedMeetings?: (BookedMeetingGenqlSelection & { __args: {data: BookedMeetingCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createBookedMeeting?: (BookedMeetingGenqlSelection & { __args: {data: BookedMeetingCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateBookedMeeting?: (BookedMeetingGenqlSelection & { __args: {id: Scalars['UUID'], data: BookedMeetingUpdateInput} })
+    deleteBookedMeeting?: (BookedMeetingGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateBookedMeetings?: (BookedMeetingGenqlSelection & { __args: {data: BookedMeetingUpdateInput, filter: BookedMeetingFilterInput} })
+    deleteBookedMeetings?: (BookedMeetingGenqlSelection & { __args: {filter: BookedMeetingFilterInput} })
+    destroyBookedMeeting?: (BookedMeetingGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyBookedMeetings?: (BookedMeetingGenqlSelection & { __args: {filter: BookedMeetingFilterInput} })
+    restoreBookedMeeting?: (BookedMeetingGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreBookedMeetings?: (BookedMeetingGenqlSelection & { __args: {filter: BookedMeetingFilterInput} })
+    createBugReportss?: (BugReportsGenqlSelection & { __args: {data: BugReportsCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createBugReports?: (BugReportsGenqlSelection & { __args: {data: BugReportsCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateBugReports?: (BugReportsGenqlSelection & { __args: {id: Scalars['UUID'], data: BugReportsUpdateInput} })
+    deleteBugReports?: (BugReportsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateBugReportss?: (BugReportsGenqlSelection & { __args: {data: BugReportsUpdateInput, filter: BugReportsFilterInput} })
+    deleteBugReportss?: (BugReportsGenqlSelection & { __args: {filter: BugReportsFilterInput} })
+    destroyBugReports?: (BugReportsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyBugReportss?: (BugReportsGenqlSelection & { __args: {filter: BugReportsFilterInput} })
+    restoreBugReports?: (BugReportsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreBugReportss?: (BugReportsGenqlSelection & { __args: {filter: BugReportsFilterInput} })
+    createBusinessPayments?: (BusinessPaymentGenqlSelection & { __args: {data: BusinessPaymentCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createBusinessPayment?: (BusinessPaymentGenqlSelection & { __args: {data: BusinessPaymentCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateBusinessPayment?: (BusinessPaymentGenqlSelection & { __args: {id: Scalars['UUID'], data: BusinessPaymentUpdateInput} })
+    deleteBusinessPayment?: (BusinessPaymentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateBusinessPayments?: (BusinessPaymentGenqlSelection & { __args: {data: BusinessPaymentUpdateInput, filter: BusinessPaymentFilterInput} })
+    deleteBusinessPayments?: (BusinessPaymentGenqlSelection & { __args: {filter: BusinessPaymentFilterInput} })
+    destroyBusinessPayment?: (BusinessPaymentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyBusinessPayments?: (BusinessPaymentGenqlSelection & { __args: {filter: BusinessPaymentFilterInput} })
+    restoreBusinessPayment?: (BusinessPaymentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreBusinessPayments?: (BusinessPaymentGenqlSelection & { __args: {filter: BusinessPaymentFilterInput} })
+    createCmsContents?: (CmsContentGenqlSelection & { __args: {data: CmsContentCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createCmsContent?: (CmsContentGenqlSelection & { __args: {data: CmsContentCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateCmsContent?: (CmsContentGenqlSelection & { __args: {id: Scalars['UUID'], data: CmsContentUpdateInput} })
+    deleteCmsContent?: (CmsContentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateCmsContents?: (CmsContentGenqlSelection & { __args: {data: CmsContentUpdateInput, filter: CmsContentFilterInput} })
+    deleteCmsContents?: (CmsContentGenqlSelection & { __args: {filter: CmsContentFilterInput} })
+    destroyCmsContent?: (CmsContentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyCmsContents?: (CmsContentGenqlSelection & { __args: {filter: CmsContentFilterInput} })
+    restoreCmsContent?: (CmsContentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreCmsContents?: (CmsContentGenqlSelection & { __args: {filter: CmsContentFilterInput} })
+    createDevTools?: (DevToolGenqlSelection & { __args: {data: DevToolCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createDevTool?: (DevToolGenqlSelection & { __args: {data: DevToolCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateDevTool?: (DevToolGenqlSelection & { __args: {id: Scalars['UUID'], data: DevToolUpdateInput} })
+    deleteDevTool?: (DevToolGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateDevTools?: (DevToolGenqlSelection & { __args: {data: DevToolUpdateInput, filter: DevToolFilterInput} })
+    deleteDevTools?: (DevToolGenqlSelection & { __args: {filter: DevToolFilterInput} })
+    destroyDevTool?: (DevToolGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyDevTools?: (DevToolGenqlSelection & { __args: {filter: DevToolFilterInput} })
+    restoreDevTool?: (DevToolGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreDevTools?: (DevToolGenqlSelection & { __args: {filter: DevToolFilterInput} })
+    createDialerAudioSessions?: (DialerAudioSessionGenqlSelection & { __args: {data: DialerAudioSessionCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createDialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {data: DialerAudioSessionCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateDialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {id: Scalars['UUID'], data: DialerAudioSessionUpdateInput} })
+    deleteDialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateDialerAudioSessions?: (DialerAudioSessionGenqlSelection & { __args: {data: DialerAudioSessionUpdateInput, filter: DialerAudioSessionFilterInput} })
+    deleteDialerAudioSessions?: (DialerAudioSessionGenqlSelection & { __args: {filter: DialerAudioSessionFilterInput} })
+    destroyDialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyDialerAudioSessions?: (DialerAudioSessionGenqlSelection & { __args: {filter: DialerAudioSessionFilterInput} })
+    restoreDialerAudioSession?: (DialerAudioSessionGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreDialerAudioSessions?: (DialerAudioSessionGenqlSelection & { __args: {filter: DialerAudioSessionFilterInput} })
+    createGithubIssues?: (GithubIssueGenqlSelection & { __args: {data: GithubIssueCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createGithubIssue?: (GithubIssueGenqlSelection & { __args: {data: GithubIssueCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateGithubIssue?: (GithubIssueGenqlSelection & { __args: {id: Scalars['UUID'], data: GithubIssueUpdateInput} })
+    deleteGithubIssue?: (GithubIssueGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateGithubIssues?: (GithubIssueGenqlSelection & { __args: {data: GithubIssueUpdateInput, filter: GithubIssueFilterInput} })
+    deleteGithubIssues?: (GithubIssueGenqlSelection & { __args: {filter: GithubIssueFilterInput} })
+    destroyGithubIssue?: (GithubIssueGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyGithubIssues?: (GithubIssueGenqlSelection & { __args: {filter: GithubIssueFilterInput} })
+    restoreGithubIssue?: (GithubIssueGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreGithubIssues?: (GithubIssueGenqlSelection & { __args: {filter: GithubIssueFilterInput} })
+    createGithubPrss?: (GithubPrsGenqlSelection & { __args: {data: GithubPrsCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createGithubPrs?: (GithubPrsGenqlSelection & { __args: {data: GithubPrsCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateGithubPrs?: (GithubPrsGenqlSelection & { __args: {id: Scalars['UUID'], data: GithubPrsUpdateInput} })
+    deleteGithubPrs?: (GithubPrsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateGithubPrss?: (GithubPrsGenqlSelection & { __args: {data: GithubPrsUpdateInput, filter: GithubPrsFilterInput} })
+    deleteGithubPrss?: (GithubPrsGenqlSelection & { __args: {filter: GithubPrsFilterInput} })
+    destroyGithubPrs?: (GithubPrsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyGithubPrss?: (GithubPrsGenqlSelection & { __args: {filter: GithubPrsFilterInput} })
+    restoreGithubPrs?: (GithubPrsGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreGithubPrss?: (GithubPrsGenqlSelection & { __args: {filter: GithubPrsFilterInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -130426,6 +147048,262 @@ export interface ShareWithInput {workspaceMemberId?: (Scalars['UUID'] | null),ro
     
 
 
+    const BookedMeeting_possibleTypes: string[] = ['BookedMeeting']
+    export const isBookedMeeting = (obj?: { __typename?: any } | null): obj is BookedMeeting => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBookedMeeting"')
+      return BookedMeeting_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BookedMeetingEdge_possibleTypes: string[] = ['BookedMeetingEdge']
+    export const isBookedMeetingEdge = (obj?: { __typename?: any } | null): obj is BookedMeetingEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBookedMeetingEdge"')
+      return BookedMeetingEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BookedMeetingConnection_possibleTypes: string[] = ['BookedMeetingConnection']
+    export const isBookedMeetingConnection = (obj?: { __typename?: any } | null): obj is BookedMeetingConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBookedMeetingConnection"')
+      return BookedMeetingConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BookedMeetingGroupByConnection_possibleTypes: string[] = ['BookedMeetingGroupByConnection']
+    export const isBookedMeetingGroupByConnection = (obj?: { __typename?: any } | null): obj is BookedMeetingGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBookedMeetingGroupByConnection"')
+      return BookedMeetingGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BugReports_possibleTypes: string[] = ['BugReports']
+    export const isBugReports = (obj?: { __typename?: any } | null): obj is BugReports => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBugReports"')
+      return BugReports_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BugReportsEdge_possibleTypes: string[] = ['BugReportsEdge']
+    export const isBugReportsEdge = (obj?: { __typename?: any } | null): obj is BugReportsEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBugReportsEdge"')
+      return BugReportsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BugReportsConnection_possibleTypes: string[] = ['BugReportsConnection']
+    export const isBugReportsConnection = (obj?: { __typename?: any } | null): obj is BugReportsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBugReportsConnection"')
+      return BugReportsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BugReportsGroupByConnection_possibleTypes: string[] = ['BugReportsGroupByConnection']
+    export const isBugReportsGroupByConnection = (obj?: { __typename?: any } | null): obj is BugReportsGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBugReportsGroupByConnection"')
+      return BugReportsGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BusinessPayment_possibleTypes: string[] = ['BusinessPayment']
+    export const isBusinessPayment = (obj?: { __typename?: any } | null): obj is BusinessPayment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBusinessPayment"')
+      return BusinessPayment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BusinessPaymentEdge_possibleTypes: string[] = ['BusinessPaymentEdge']
+    export const isBusinessPaymentEdge = (obj?: { __typename?: any } | null): obj is BusinessPaymentEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBusinessPaymentEdge"')
+      return BusinessPaymentEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BusinessPaymentConnection_possibleTypes: string[] = ['BusinessPaymentConnection']
+    export const isBusinessPaymentConnection = (obj?: { __typename?: any } | null): obj is BusinessPaymentConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBusinessPaymentConnection"')
+      return BusinessPaymentConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BusinessPaymentGroupByConnection_possibleTypes: string[] = ['BusinessPaymentGroupByConnection']
+    export const isBusinessPaymentGroupByConnection = (obj?: { __typename?: any } | null): obj is BusinessPaymentGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBusinessPaymentGroupByConnection"')
+      return BusinessPaymentGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CmsContent_possibleTypes: string[] = ['CmsContent']
+    export const isCmsContent = (obj?: { __typename?: any } | null): obj is CmsContent => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCmsContent"')
+      return CmsContent_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CmsContentEdge_possibleTypes: string[] = ['CmsContentEdge']
+    export const isCmsContentEdge = (obj?: { __typename?: any } | null): obj is CmsContentEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCmsContentEdge"')
+      return CmsContentEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CmsContentConnection_possibleTypes: string[] = ['CmsContentConnection']
+    export const isCmsContentConnection = (obj?: { __typename?: any } | null): obj is CmsContentConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCmsContentConnection"')
+      return CmsContentConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CmsContentGroupByConnection_possibleTypes: string[] = ['CmsContentGroupByConnection']
+    export const isCmsContentGroupByConnection = (obj?: { __typename?: any } | null): obj is CmsContentGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCmsContentGroupByConnection"')
+      return CmsContentGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DevTool_possibleTypes: string[] = ['DevTool']
+    export const isDevTool = (obj?: { __typename?: any } | null): obj is DevTool => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDevTool"')
+      return DevTool_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DevToolEdge_possibleTypes: string[] = ['DevToolEdge']
+    export const isDevToolEdge = (obj?: { __typename?: any } | null): obj is DevToolEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDevToolEdge"')
+      return DevToolEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DevToolConnection_possibleTypes: string[] = ['DevToolConnection']
+    export const isDevToolConnection = (obj?: { __typename?: any } | null): obj is DevToolConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDevToolConnection"')
+      return DevToolConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DevToolGroupByConnection_possibleTypes: string[] = ['DevToolGroupByConnection']
+    export const isDevToolGroupByConnection = (obj?: { __typename?: any } | null): obj is DevToolGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDevToolGroupByConnection"')
+      return DevToolGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DialerAudioSession_possibleTypes: string[] = ['DialerAudioSession']
+    export const isDialerAudioSession = (obj?: { __typename?: any } | null): obj is DialerAudioSession => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDialerAudioSession"')
+      return DialerAudioSession_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DialerAudioSessionEdge_possibleTypes: string[] = ['DialerAudioSessionEdge']
+    export const isDialerAudioSessionEdge = (obj?: { __typename?: any } | null): obj is DialerAudioSessionEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDialerAudioSessionEdge"')
+      return DialerAudioSessionEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DialerAudioSessionConnection_possibleTypes: string[] = ['DialerAudioSessionConnection']
+    export const isDialerAudioSessionConnection = (obj?: { __typename?: any } | null): obj is DialerAudioSessionConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDialerAudioSessionConnection"')
+      return DialerAudioSessionConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DialerAudioSessionGroupByConnection_possibleTypes: string[] = ['DialerAudioSessionGroupByConnection']
+    export const isDialerAudioSessionGroupByConnection = (obj?: { __typename?: any } | null): obj is DialerAudioSessionGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDialerAudioSessionGroupByConnection"')
+      return DialerAudioSessionGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubIssue_possibleTypes: string[] = ['GithubIssue']
+    export const isGithubIssue = (obj?: { __typename?: any } | null): obj is GithubIssue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubIssue"')
+      return GithubIssue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubIssueEdge_possibleTypes: string[] = ['GithubIssueEdge']
+    export const isGithubIssueEdge = (obj?: { __typename?: any } | null): obj is GithubIssueEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubIssueEdge"')
+      return GithubIssueEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubIssueConnection_possibleTypes: string[] = ['GithubIssueConnection']
+    export const isGithubIssueConnection = (obj?: { __typename?: any } | null): obj is GithubIssueConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubIssueConnection"')
+      return GithubIssueConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubIssueGroupByConnection_possibleTypes: string[] = ['GithubIssueGroupByConnection']
+    export const isGithubIssueGroupByConnection = (obj?: { __typename?: any } | null): obj is GithubIssueGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubIssueGroupByConnection"')
+      return GithubIssueGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubPrs_possibleTypes: string[] = ['GithubPrs']
+    export const isGithubPrs = (obj?: { __typename?: any } | null): obj is GithubPrs => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubPrs"')
+      return GithubPrs_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubPrsEdge_possibleTypes: string[] = ['GithubPrsEdge']
+    export const isGithubPrsEdge = (obj?: { __typename?: any } | null): obj is GithubPrsEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubPrsEdge"')
+      return GithubPrsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubPrsConnection_possibleTypes: string[] = ['GithubPrsConnection']
+    export const isGithubPrsConnection = (obj?: { __typename?: any } | null): obj is GithubPrsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubPrsConnection"')
+      return GithubPrsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GithubPrsGroupByConnection_possibleTypes: string[] = ['GithubPrsGroupByConnection']
+    export const isGithubPrsGroupByConnection = (obj?: { __typename?: any } | null): obj is GithubPrsGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGithubPrsGroupByConnection"')
+      return GithubPrsGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Query_possibleTypes: string[] = ['Query']
     export const isQuery = (obj?: { __typename?: any } | null): obj is Query => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isQuery"')
@@ -131668,6 +148546,100 @@ export const enumInfluencerCreatorTagEnum = {
    GROWING: 'GROWING' as const,
    NICHE: 'NICHE' as const,
    MICRO_INFLUENCER: 'MICRO_INFLUENCER' as const
+}
+
+export const enumBugReportsReviewStatusEnum = {
+   PENDING: 'PENDING' as const,
+   IN_REVIEW: 'IN_REVIEW' as const,
+   APPROVED: 'APPROVED' as const,
+   REJECTED: 'REJECTED' as const,
+   DISPATCHED: 'DISPATCHED' as const
+}
+
+export const enumBugReportsSourceStatusEnum = {
+   SUBMITTED: 'SUBMITTED' as const,
+   REVIEWING: 'REVIEWING' as const,
+   APPROVED: 'APPROVED' as const,
+   DISPATCHING: 'DISPATCHING' as const,
+   RUNNING: 'RUNNING' as const,
+   RESOLVED: 'RESOLVED' as const,
+   FAILED: 'FAILED' as const,
+   CLOSED: 'CLOSED' as const
+}
+
+export const enumBugReportsPriorityEnum = {
+   LOW: 'LOW' as const,
+   MEDIUM: 'MEDIUM' as const,
+   HIGH: 'HIGH' as const,
+   URGENT: 'URGENT' as const
+}
+
+export const enumBusinessPaymentDirectionEnum = {
+   IN: 'IN' as const,
+   OUT: 'OUT' as const
+}
+
+export const enumBusinessPaymentSourceAccountEnum = {
+   PRODUCTION_BILLING: 'PRODUCTION_BILLING' as const,
+   MATTHEWS: 'MATTHEWS' as const
+}
+
+export const enumBusinessPaymentCategoryEnum = {
+   SUBSCRIPTION: 'SUBSCRIPTION' as const,
+   API_USAGE: 'API_USAGE' as const,
+   INVOICE_FEE: 'INVOICE_FEE' as const,
+   PAYOUT: 'PAYOUT' as const,
+   REFUND: 'REFUND' as const,
+   AD_SPEND: 'AD_SPEND' as const,
+   TOOL: 'TOOL' as const,
+   OTHER: 'OTHER' as const
+}
+
+export const enumBusinessPaymentStatusEnum = {
+   UPCOMING: 'UPCOMING' as const,
+   PENDING: 'PENDING' as const,
+   PAID: 'PAID' as const,
+   FAILED: 'FAILED' as const,
+   REFUNDED: 'REFUNDED' as const
+}
+
+export const enumCmsContentContentTypeEnum = {
+   BLOG: 'BLOG' as const,
+   GUIDE: 'GUIDE' as const,
+   NEWSLETTER: 'NEWSLETTER' as const,
+   CHANGE: 'CHANGE' as const,
+   TOOL: 'TOOL' as const,
+   VERSUS: 'VERSUS' as const,
+   DOCUMENTATION: 'DOCUMENTATION' as const,
+   AGENCY: 'AGENCY' as const
+}
+
+export const enumCmsContentStatusEnum = {
+   DRAFT: 'DRAFT' as const,
+   PUBLISHED: 'PUBLISHED' as const,
+   ARCHIVED: 'ARCHIVED' as const
+}
+
+export const enumDevToolLabelEnum = {
+   PR_SUBMITTED: 'PR_SUBMITTED' as const,
+   PR_ACCEPTED: 'PR_ACCEPTED' as const,
+   PR_DECLINED: 'PR_DECLINED' as const,
+   PR_NOT_CREATED: 'PR_NOT_CREATED' as const
+}
+
+export const enumGithubIssueStateEnum = {
+   OPEN: 'OPEN' as const,
+   CLOSED: 'CLOSED' as const
+}
+
+export const enumGithubPrsStateEnum = {
+   OPEN: 'OPEN' as const,
+   CLOSED: 'CLOSED' as const
+}
+
+export const enumGithubPrsPrTypeEnum = {
+   TEAM: 'TEAM' as const,
+   OPENHANDS_AGENT: 'OPENHANDS_AGENT' as const
 }
 
 export const enumRecordShareAccessLevel = {

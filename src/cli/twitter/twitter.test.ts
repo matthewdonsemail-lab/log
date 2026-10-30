@@ -39,6 +39,19 @@ describe("log twitter session check", () => {
     expect(cookies.find((c) => c.name === "guest_id")).toMatchObject({ value: "v1", domain: ".x.com" });
   });
 
+  test("a check that changes nothing within the hour skips the Twenty write, and a changed cookie still writes", async () => {
+    const twenty = fixture();
+    const same = { answer: { ok: true, loginState: "loggedIn" as const, httpStatus: 404, userId: "42", screenName: "xtwo" }, refreshed: { ct0: "b".repeat(40) } };
+    const first = await run(["twitter", "session", "check", "--account", "xTwo"], same, twenty);
+    expect(first.err).toContain("Twenty: xTwo sessionState loggedIn");
+    const checkedAt = first.row.sessionCheckedAt;
+    const second = await run(["twitter", "session", "check", "--account", "xTwo"], same, twenty);
+    expect(second.err).not.toContain("Twenty:");
+    expect(second.row.sessionCheckedAt).toBe(checkedAt);
+    const third = await run(["twitter", "session", "check", "--account", "xTwo"], { ...same, refreshed: { ct0: "d".repeat(40) } }, twenty);
+    expect(third.err).toContain("its refreshed cookies merged back");
+  });
+
   test("loggedOut: exit 1, sessionState written, cookies left as they were", async () => {
     const r = await run(["twitter", "session", "check", "--account", "xTwo", "--json"], { answer: { ok: false, code: "sessionDead", loginState: "loggedOut", httpStatus: 401, detail: "X answered HTTP 401 to the session check" }, refreshed: { ct0: "z" } });
     expect(r.code).toBe(1);

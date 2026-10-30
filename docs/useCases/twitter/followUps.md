@@ -1,0 +1,29 @@
+# Following up in your own voice
+
+Answer or follow up the people the owner picked, each in the owner's own voice, the way they write to that person. It's for warming a relationship as much as for a deal: say it was good to meet, ask for advice, take someone up on an offer, keep a door open. Nothing goes out until the owner has seen every draft and said yes.
+
+How the owner asks for it: "follow up with these, not for anything in particular, just warming up the relationship", "say it was cool to meet him", "ask him for some advice on what he's doing", "take him up on the doc he offered".
+
+## Run it from a fresh context
+
+Say: **"go on docs/useCases/twitter/followUps.md"**, and who, with what the owner wants from each. The agent reads this page and [README.md](README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
+
+## The steps
+
+| # | Step | Tool | Done when |
+| --- | --- | --- | --- |
+| 1 | Read each person in full, old DM thread and X Chat merged | `twitterDms` { account, with: "<handle>" } | everything they've said, oldest first |
+| 2 | Take what the owner wants from each, in the owner's words only (met in person, ask advice, take up an offer) | the owner | one intent per person |
+| 3 | How the owner really writes to this person: their messages to them first, then the owner's whole history | `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } | the owner's own lines to draft from |
+| 4 | Draft each one from those lines, in the owner's words and length. Every draft reads differently: no shared opener, no stock line. Each line of a draft is one message | the agent | one draft per person |
+| 5 | Gate each draft against the same person, and rewrite until it passes | `voice` { to, with, context, text: "<draft>" } | the gate passes |
+| 6 | Show the owner every draft as it will go out, one message per line | the owner | the owner says yes, or what to change |
+| 7 | Send each one: dry run, then live. A draft on several lines goes out one message per line, with the owner's usual gap between them. People go a few minutes apart, never back to back | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true } | X's answer is `sent` for every part |
+
+## What to know
+
+- Never ask something the person already told the owner. Read far enough back first (step 1, and `search` { query, with } for older talk).
+- Use only facts the owner said. Nothing invented about a meeting, a deal or a number.
+- `--asOne` (`asOne: true`) sends a draft as one message, only when the owner asks for that.
+- A drop or a 429 stops the rest: what went out stays out, nothing is resent, and the next send waits for the owner (rule 94).
+- Two or more people at once can go through the queue (README.md, "The queue"), each target carrying its own `text`. Its dm items split one message per line the same way.

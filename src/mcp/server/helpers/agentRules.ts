@@ -1,8 +1,8 @@
-export const RULES_REVIEWED_THROUGH = 93;
+export const RULES_REVIEWED_THROUGH = 95;
 
 export const AGENTS_URI = "log://agents";
 
-export const SERVER_INSTRUCTIONS = [
+export const CORE_PRINCIPLES = [
   "The `log` tools run log-cli: Facebook accounts (Twenty socialAccounts) and what they do on Facebook (Marketplace listings, groups).",
   `Its rules are matt's, in AGENTS.md (read the resource ${AGENTS_URI}; the newest rules are at the bottom and win). The core of them:`,
   "1. Rule one, above every other: if we don't know, we do this. Read the step's internal API (what we sent and what came back; the answers decide, never the screen, a timer or the step having run); collate everything about the moment (goal, account, what we did, every call, the page, the screenshot, the earlier steps); ask SubQ what it means; say it loudly; keep going until the goal is reached; write what went wrong as P.E.E. (point, evidence, explain) with how it was fixed; and name the state so next time it is known. In `inspect`: `goal`, `inspectFinding`, `inspectGoal`, `inspectRead` (rules 73-76).",
@@ -29,7 +29,25 @@ export const SERVER_INSTRUCTIONS = [
   "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
   "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
+  "25. Never act on an account in quick succession: every platform call goes through log-cli's own commands and their governor, never a hand-rolled script with an account's token or cookies; a 429 or a failed send stops the run with nothing retried and the next action waits for matt; a bulk read of a server, group or member list is its own session, never in the same one as sending; cold DMs go out a few a day, minutes apart, each new DM channel counted as a write; after a block, disable, captcha or cooldown nothing resumes on that account until matt says so. One person's X Chat is opened as X's app opens it (`twitterDms` with `with`), never by reading the whole inbox (rule 94).",
+  "26. The work matt asks for again and again is a use case (docs/useCases/<platform>/<page>.md): how he asks for it, then its steps, each naming its tool. When he asks for work a use case covers, read it with `getGuide({ useCase })` and follow it step by step, never improvise; each tool names the use cases that call it. The pre-commit review asks SubQ whether this session's work left a page stale or uncovered (rule 95).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
+].join("\n");
+
+export const SERVER_INSTRUCTIONS = [
+  "The `log` tools run log-cli: accounts on Facebook, X, Reddit and Discord (Twenty socialAccounts) and what they do there, each through its own engine and governor.",
+  "",
+  "You MUST load the full guide before other log tools: getGuide({ topic: \"logMcpInstructions\" }). Do this once per session; call again if a long thread may have dropped guide text. Each tool's description names the guide for its kind of work: load that guide before first using the tool.",
+  "",
+  "1. Rule one, above every other: if we don't know, we do this. Read the step's internal API, collate the moment, ask SubQ what it means, say it loudly, keep going until the goal is reached, write what went wrong as P.E.E. (rules 73-76).",
+  "2. When matt says to do something, do it completely, in the same turn (rule 30).",
+  "3. Only what matt said: no added options, scope or spending (rules 39-41). Never raise Meta's or Facebook's rules unless he does (rule 38).",
+  "4. Read-only unless matt asked: what acts is its own `…Live` tool and needs confirmLive: true (rules 8, 10).",
+  "5. One browser per account for its day; never act on an account in quick succession; a 429 stops the run (rules 35, 94).",
+  "6. matt sees everything as it happens (rule 26): before a call that runs more than a few seconds, start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`. A client without a shell reads each result's `progress` instead.",
+  "7. A refusal names its error code: the `errors` tool says what to do.",
+  "",
+  `Every rule is in AGENTS.md (${AGENTS_URI}), the newest at the bottom; each tool's description ends with the ones it falls under.`,
 ].join("\n");
 
 export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
@@ -62,18 +80,19 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   check: [8, 13, 18, 22, 29, 35, 69, 73],
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88],
-  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94],
+  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81],
   voice: [30, 39, 41, 63, 64],
   search: [13, 26, 63, 64, 88, 89],
   kb: [13, 26, 30, 93],
   twitterFollowers: [13, 63, 64, 73, 80, 81],
-  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87],
+  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
@@ -85,11 +104,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   logout: [],
   whoami: [],
   redditSession: [13, 63, 64, 73, 83],
-  discordSession: [13, 63, 64, 73, 83],
-  discordChats: [13, 63, 64, 73, 83],
-  discordRead: [13, 63, 64, 73, 83],
-  discordWatch: [13, 26, 63, 64, 73, 83],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91],
+  discordSession: [13, 63, 64, 73, 83, 94],
+  discordChats: [13, 63, 64, 73, 83, 94],
+  discordRead: [13, 63, 64, 73, 83, 94],
+  discordWatch: [13, 26, 63, 64, 73, 83, 94],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

@@ -24,6 +24,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
+  twitterFollow: { platform: 'twitter', library: 'twikit', only: true, surface: 'users', method: 'follow_user', when: 'follow', seam: 'directTwitter' },
   twitterDm: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'send_dm', when: 'dm', seam: 'directTwitter' },
   twitterQueue: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'queue run --live (each like and reply)', seam: 'directTwitter' },
   redditSession: { platform: 'reddit', library: 'rdvwr', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directReddit' },
@@ -86,10 +87,16 @@ function readJson<T>(path: string): T | null {
   }
 }
 
-export function writeLocalSession(accountName: string, state: string, now: Date, root = fbkStateRoot()): void {
+export function writeLocalSession(accountName: string, state: string, now: Date, root = fbkStateRoot(), extra: Record<string, string> = {}): void {
   const dir = join(root, accountName)
   mkdirSync(dir, { recursive: true })
-  writeFileSync(join(dir, 'session.json'), JSON.stringify({ sessionState: state, checkedAt: now.toISOString() }))
+  const held = readJson<Record<string, string>>(join(dir, 'session.json')) ?? {}
+  const keep = held.accountId ? { accountId: held.accountId } : {}
+  writeFileSync(join(dir, 'session.json'), JSON.stringify({ ...keep, ...extra, sessionState: state, checkedAt: now.toISOString() }))
+}
+
+export function localAccountId(accountName: string, root = fbkStateRoot()): string | null {
+  return readJson<{ accountId?: string }>(join(root, accountName.trim().replace(/^@/, ''), 'session.json'))?.accountId ?? null
 }
 
 export function localEngineStates(root = fbkStateRoot(), now: Date = new Date()): LocalEngineState[] {
@@ -107,10 +114,7 @@ export function localEngineStates(root = fbkStateRoot(), now: Date = new Date())
 
 export function engineContext(states: LocalEngineState[] = allEngineStates(), now: Date = new Date()): string {
   const today = now.toISOString().slice(0, 10)
-  const routes = Object.entries(DIRECT_ROUTES).map(([name, r]) => `log ${r.platform} ${commandWordOfKey(name, r.platform)} (${r.when}) → ${r.library} ${r.surface}.${r.method}${r.only ? ', direct only' : ', before the browser'}`)
-  const lines = [
-    `log-cli engines: the direct-API engine runs ${routes.join('; ')}. Facebook goes through vendor/fbk with its proxy and a governor and token cache per account (~/.logCli/fbk/<account>); X goes through vendor/twikit directly, with no proxy (rule 80) and a governor per account (~/.logCli/twitter/<account>). The platform's own answer decides (socialAccounts.sessionState), not accountStatus. Everything else runs in the browser. Declared in DIRECT_ROUTES (src/directApi/engine).`
-  ]
+  const lines = ['log-cli accounts: each one\'s session (the platform\'s own answer) and what its governor allowed today:']
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
     const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'

@@ -24,6 +24,7 @@
     "check:rdvwrTransport": "bun scripts/checks/checkRdvwrTransport.ts",
     "check:platforms": "bun scripts/checks/checkPlatforms.ts",
     "docs:build": "bun scripts/docs/buildDocs.ts",
+    "check:useCases": "bun scripts/checks/checkUseCases.ts",
     "check:docs": "bun scripts/docs/buildDocs.ts --check",
     "browsers:docs": "bun scripts/checks/checkBrowserParity.ts --write",
     "errors:export": "bun bin/log.ts errors --json > python/errors/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",

@@ -7,6 +7,7 @@ import type { Collection } from 'verso-db'
 import { chunksOf, onePerPerson, percentiles, reciprocalRankFusion } from './helpers/index'
 import { SEARCH_DEPTH } from './types'
 import type { Chunk, Conversation, Embedder, Latency, SearchHit, SearchOptions } from './types'
+import type { TwitterDmConversation } from '../../twitter/account/session/index'
 
 type ChunkMeta = { platform: string; account: string; conversationId: string; at: string }
 
@@ -81,6 +82,52 @@ export async function buildIndex(conversations: Conversation[], embedder: Embedd
   }
   await db.close()
   return { chunks: chunks.length, conversations: merged.length, ms: performance.now() - started }
+}
+
+export async function updateIndex(conversations: Conversation[], embedder: Embedder, dir = join(searchRoot(), 'conversations'), batch = 64): Promise<{ chunks: number; conversations: number; embedded: number; removed: number; ms: number; rebuilt: boolean }> {
+  const started = performance.now()
+  if (!existsSync(join(dir, 'chunks.json')) || !existsSync(join(dir, 'model.json'))) {
+    const built = await buildIndex(conversations, embedder, dir, batch)
+    return { ...built, embedded: built.chunks, removed: 0, rebuilt: true }
+  }
+  const model = JSON.parse(readFileSync(join(dir, 'model.json'), 'utf8')) as { model: string; dimensions: number }
+  if (model.model !== embedder.model || model.dimensions !== embedder.dimensions) {
+    const built = await buildIndex(conversations, embedder, dir, batch)
+    return { ...built, embedded: built.chunks, removed: 0, rebuilt: true }
+  }
+  const merged = onePerPerson(conversations)
+  const chunks = merged.flatMap((c) => chunksOf(c))
+  const held = new Map((JSON.parse(readFileSync(join(dir, 'chunks.json'), 'utf8')) as Chunk[]).map((c) => [c.id, c]))
+  const fresh = chunks.filter((c) => held.get(c.id)?.text !== c.text)
+  const ids = new Set(chunks.map((c) => c.id))
+  const gone = [...held.keys()].filter((id) => !ids.has(id))
+  if (!fresh.length && !gone.length) return { chunks: chunks.length, conversations: merged.length, embedded: 0, removed: 0, ms: performance.now() - started, rebuilt: false }
+  const db = await VectorDB.open({ path: join(dir, 'vectors') })
+  const collection = await db.collection<ChunkMeta>('chunks')
+  if (gone.length) await collection.delete(gone)
+  for (let start = 0; start < fresh.length; start += batch) {
+    const slice = fresh.slice(start, start + batch)
+    const vectors = await embedder.embed(slice.map((c) => c.text))
+    await collection.upsert(slice.map((c, i) => ({ id: c.id, vector: vectors[i], metadata: { platform: c.platform, account: c.account, conversationId: c.conversationId, at: c.at ?? '' } })))
+  }
+  await db.close()
+  const keyword = new BM25()
+  keyword.index(tokenize(chunks.map((c) => c.text)))
+  await keyword.save(join(dir, 'bm25'))
+  writeFileSync(join(dir, 'chunks.json'), JSON.stringify(chunks))
+  writeFileSync(join(dir, 'model.json'), JSON.stringify({ model: embedder.model, dimensions: embedder.dimensions, builtAt: new Date().toISOString() }))
+  return { chunks: chunks.length, conversations: merged.length, embedded: fresh.length, removed: gone.length, ms: performance.now() - started, rebuilt: false }
+}
+
+export function twitterConversationOf(account: string, c: TwitterDmConversation): Conversation {
+  return {
+    platform: 'twitter',
+    account,
+    conversationId: c.conversationId,
+    box: c.box ?? 'inbox',
+    with: c.with.map((p) => p.handle ?? p.userId),
+    messages: c.messages.map((m) => ({ id: m.id, at: m.time ?? null, from: m.from ?? null, fromMe: m.fromMe === true, text: m.text ?? '' })),
+  }
 }
 
 export async function openIndex(embedder: Embedder, dir = join(searchRoot(), 'conversations')): Promise<ConversationIndex> {
