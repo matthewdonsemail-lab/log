@@ -178,5 +178,20 @@ def xchat_threads(state: dict[str, Any], me: str, decrypted: bool) -> list[dict[
     return out
 
 
+def push_message(path: Path | None, me: str, event: dict[str, Any], handle: str | None) -> bool:
+    state = read_state(path)
+    cid = str(event.get("conversation_id") or "")
+    if state is None or not cid or not event.get("event_id"):
+        return False
+    conv = state["xchat"].setdefault(cid, {"participants": [p for p in cid.split(":") if p.isdigit() and p != me], "handles": {}, "lastMs": None, "lastSender": None, "messages": []})
+    sender = str(event.get("sender_id") or "")
+    if handle and sender and sender != me:
+        conv["handles"].setdefault(sender, handle)
+    added = add_messages(conv, [{k: event.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id")}])
+    mark_last(conv, event.get("time_ms"), sender)
+    write_state(path, state)
+    return bool(added)
+
+
 def opened_of(state: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     return {cid: conv["messages"] for cid, conv in state["xchat"].items()}

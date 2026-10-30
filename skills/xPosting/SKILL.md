@@ -61,7 +61,9 @@ The parts every page uses:
   new, about 1.3 s in the engine) and decrypts only what is new. Each read
   keeps its conversations for `log search` and updates the index in the
   background with only the chunks that changed. `--full` reads everything
-  again.
+  again. The live watcher (`log twitter chat watch --inbox`) writes each
+  pushed message into the same store, and the SessionStart hook says who is
+  waiting from it with nothing fetched.
 - **More than one:** the queue: `log twitter queue build → show → check →
   approve → plan → run → run --live`. It spaces sends at random and backs off
   when X throttles. Before any DM it drops people the account has already

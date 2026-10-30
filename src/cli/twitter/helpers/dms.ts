@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { TwitterDmMessage, TwitterDmThread, TwitterInboxSync, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
+import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { dropMirrors, mergeThreads, ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
@@ -105,9 +106,11 @@ export const dmsCommand: Command = {
     if (withHandle !== undefined && (typeof withHandle !== "string" || !withHandle.trim())) return refuse("twitter dms", "targetMissing", "--with names a handle");
     const waiting = parsed.flags["waiting"] === true;
     try {
+      const knownId = localAccountId(ref, twitterStateRoot());
+      const early = knownId ? context.twenty.loginSecrets(knownId).catch(() => null) : null;
       const opened = await openTwitterAccount(context, "twitter dms", ref);
       if (!opened.ok) return opened.result;
-      const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
+      const secrets = early && knownId === opened.account.id ? await early : await context.twenty.loginSecrets(opened.account.id).catch(() => null);
       const chatPin = secrets?.messengerPin ?? undefined;
       const full = parsed.flags["full"] === true;
       const read = (spec: { limit: number; conversationId?: string; withHandle?: string; export?: boolean; full?: boolean }) => opened.engine({ action: "inbox", ...spec, ...(chatPin ? { chatPin } : {}) });

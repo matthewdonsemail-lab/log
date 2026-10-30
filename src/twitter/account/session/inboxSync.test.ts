@@ -58,6 +58,12 @@ async def main():
     out["fresh"] = await engine.synced_inbox(FakeClient(["e11"]), cookies, spec, 20, True)
     out["freshCalls"] = list(calls); calls.clear()
     out["again"] = await engine.synced_inbox(FakeClient(["e11"]), cookies, spec, 20, True)
+    from twitterApi import inboxSync
+    path = engine.sync_path(spec)
+    out["pushed"] = inboxSync.push_message(path, ME, {"event_id": "15", "sender_id": "7", "time_ms": 3000, "text": "you there", "conversation_id": "7:100"}, "seven")
+    out["pushedAgain"] = inboxSync.push_message(path, ME, {"event_id": "15", "sender_id": "7", "time_ms": 3000, "text": "you there", "conversation_id": "7:100"}, "seven")
+    held = inboxSync.read_state(path)
+    out["afterPush"] = {"max": held["maxSequenceId"], "texts": [m["text"] for m in held["xchat"]["7:100"]["messages"]], "userId": held.get("userId")}
 
 asyncio.run(main())
 print(json.dumps(out, default=str))
@@ -91,5 +97,11 @@ describe("log twitter dms syncs the inbox the way X's app does: everything once,
   test("the same event read again is kept once", () => {
     expect(out.again.sync.newMessages).toBe(0);
     expect(out.again.conversations[0].messages).toHaveLength(2);
+  });
+
+  test("a message the live watcher pushes is kept once in the store, without moving the sequence id the next sync reads from", () => {
+    expect(out.pushed).toBe(true);
+    expect(out.pushedAgain).toBe(false);
+    expect(out.afterPush).toEqual({ max: "11", texts: ["yo lad", "sounds good", "you there"], userId: "100" });
   });
 });

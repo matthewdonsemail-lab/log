@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { join } from 'node:path'
 import { platformStateRoot } from '../../src/directApi/engine/index'
-import { ensureLiveWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startTwitterWatch, takePending, twitterAccounts } from '../../src/inbox/watch/index'
+import { ensureLiveWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startTwitterWatch, storedInboxContext, takePending, twitterAccounts } from '../../src/inbox/watch/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -23,5 +23,7 @@ try {
 ensureLiveWatchers('twitter', twitterAccounts(), (account) => startTwitterWatch(account, repo))
 ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')), (account) => startDiscordWatch(account, repo))
 
-const text = inboxContext(takePending())
+const pushed = inboxContext(takePending())
+const stored = event === 'SessionStart' ? storedInboxContext(twitterAccounts()) : null
+const text = [pushed, stored].filter(Boolean).join('\n\n')
 if (text) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))

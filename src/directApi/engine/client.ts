@@ -86,10 +86,16 @@ function readJson<T>(path: string): T | null {
   }
 }
 
-export function writeLocalSession(accountName: string, state: string, now: Date, root = fbkStateRoot()): void {
+export function writeLocalSession(accountName: string, state: string, now: Date, root = fbkStateRoot(), extra: Record<string, string> = {}): void {
   const dir = join(root, accountName)
   mkdirSync(dir, { recursive: true })
-  writeFileSync(join(dir, 'session.json'), JSON.stringify({ sessionState: state, checkedAt: now.toISOString() }))
+  const held = readJson<Record<string, string>>(join(dir, 'session.json')) ?? {}
+  const keep = held.accountId ? { accountId: held.accountId } : {}
+  writeFileSync(join(dir, 'session.json'), JSON.stringify({ ...keep, ...extra, sessionState: state, checkedAt: now.toISOString() }))
+}
+
+export function localAccountId(accountName: string, root = fbkStateRoot()): string | null {
+  return readJson<{ accountId?: string }>(join(root, accountName.trim().replace(/^@/, ''), 'session.json'))?.accountId ?? null
 }
 
 export function localEngineStates(root = fbkStateRoot(), now: Date = new Date()): LocalEngineState[] {

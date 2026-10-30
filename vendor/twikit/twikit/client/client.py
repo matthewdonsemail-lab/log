@@ -9,14 +9,16 @@ import time
 
 import warnings
 from functools import partial
-from typing import Any, AsyncGenerator, Literal
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Literal
 from urllib.parse import unquote, urlparse
 
 import filetype
 import pyotp
 from curl_cffi.requests import AsyncSession, Response
 
-from .._captcha import Capsolver
+if TYPE_CHECKING:
+    from .._captcha import Capsolver
+
 from ..bookmark import BookmarkFolder
 from ..community import Community, CommunityMember
 from ..constants import TOKEN, DOMAIN, IMPERSONATE
@@ -46,7 +48,6 @@ from ..notification import Notification
 from ..streaming import Payload, StreamingSession, _payload_from_data
 from ..trend import Location, PlaceTrend, PlaceTrends, Trend
 from ..tweet import CommunityNote, Poll, ScheduledTweet, Tweet, tweet_from_data
-from ..ui_metrics import solve_ui_metrics
 from ..user import User
 from ..utils import (
     Flow,
@@ -393,6 +394,8 @@ class Client:
         await flow.sso_init('apple')
 
         if enable_ui_metrics:
+            from ..ui_metrics import solve_ui_metrics
+
             ui_metrics_response = solve_ui_metrics(
                 await self._ui_metrics()
             )

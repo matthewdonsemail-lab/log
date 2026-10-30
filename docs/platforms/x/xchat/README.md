@@ -83,3 +83,15 @@ What log does now (`client.get_xchat_updates`, `client.open_xchat_events` in `ve
 4. The conversations that changed are saved for `log search`, and the index embeds only the chunks that are new or changed (`updateIndex`).
 
 Measured on matthewsoldit, 2026-10-30, six reads 10 s apart with nothing new: the engine took p50 1.27 s, max 1.44 s (2 requests); the whole command p50 6.4 s, max 9.1 s, the rest being Bun and Python start-up and the Twenty lookups. The first read, which fills the store, took 21.7 s once.
+
+### Start-up cut (2026-10-30)
+
+Of the ~6 s a read took after the sync, about 1.3 s was X. The rest:
+
+- **Python, 1.73 s → 0.96 s.** `import twikit` loaded js2py (0.69 s, through `twikit.ui_metrics`) and the captcha solver with numpy (0.36 s) on every run, though only the password login uses them. Both now load when used (vendor/twikit, rule 81).
+- **Twenty, about 0.6 s less.** The account's Twenty id is kept in `~/.logCli/twitter/<account>/session.json` (not a secret), so the X Chat PIN is fetched at the same time as the account row. The session is written back only when the state or a cookie changed, or once an hour (`SESSION_REWRITE_MS`), instead of on every read.
+- Bun loading every command (about 1 s) is unchanged.
+
+Six reads with nothing new, 10 s apart: the whole command p50 4.6 s, max 6.5 s (was p50 6.4 s, max 9.1 s); the engine p50 1.3 s.
+
+**No network for "who's waiting".** The engine records the account's user id in the store, and `log twitter chat watch --inbox` writes every message X pushes into it (each kept once, the sequence id left alone so the next sync still reads everything after it). The SessionStart hook reads the store and puts who wrote last into the agent's context in about 0.45 s, with nothing fetched (`storedInboxContext`, `src/inbox/watch`).

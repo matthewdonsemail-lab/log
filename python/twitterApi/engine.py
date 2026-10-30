@@ -447,6 +447,7 @@ async def synced_inbox(client: Any, cookies: dict[str, str], spec: dict[str, Any
     from datetime import datetime, timezone
 
     state["syncedAt"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    state["userId"] = me
     inboxSync.write_state(path, state)
     legacy = state["legacy"]
     threads = [thread_of(c, legacy["messages"], legacy["users"], me, legacy["boxes"].get(cid, "inbox")) for cid, c in legacy["conversations"].items()]
@@ -633,6 +634,8 @@ async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -
 
 
 async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
+    from twitterApi import inboxSync
+
     me = own_user_id(cookies) or ""
     unlocked = False
     if spec.get("pinPath"):
@@ -652,7 +655,10 @@ async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]
             continue
         sender = str(event.get("sender_id") or "")
         messages += 1
-        live_line({**xchat_message(event, me, {sender: await handle_of(client, sender, handles) or ""}), "box": "xchat", "encrypted": not unlocked})
+        handle = await handle_of(client, sender, handles)
+        if unlocked and event.get("text") is not None:
+            inboxSync.push_message(sync_path(spec), me, event, handle)
+        live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
     return {"ok": True, "loginState": "loggedIn", "userId": me, "messages": messages, "unlocked": unlocked}
 
 
