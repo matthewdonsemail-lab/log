@@ -23,10 +23,11 @@ import type { OAuthServer } from "../oauth/index.ts";
 import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
+import { RESULT_SIZE_META } from "./types.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
-export { NO_PROMPT, TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "./types.ts";
+export { MAX_RESULT_CHARS, NO_PROMPT, RESULT_SIZE_META, TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "./types.ts";
 
 export type ReadBrowsers = () => BrowserView[];
 
@@ -229,7 +230,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
-    return { tools: [guideTool(), ...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })] };
+    return { tools: [guideTool(), ...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })].map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [{ uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }],

@@ -1,12 +1,12 @@
 import { commandKey } from "../../cli/runner/helpers/platforms.ts";
 import { describe, expect, test } from "bun:test";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { COMMANDS } from "../../cli/runner/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
-import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, GUIDES_DIR, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS, TERMINAL_ONLY } from "./index.ts";
+import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, GUIDES_DIR, MAX_RESULT_CHARS, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS, TERMINAL_ONLY } from "./index.ts";
 
 const agents = readFileSync(AGENTS_MD, "utf8");
 const rules = [...agents.matchAll(/^(\d+)\. 20\d\d-\d\d-\d\d/gm)].map((m) => Number(m[1]));
@@ -109,6 +109,15 @@ describe("watching a long call live over MCP (rule 26)", () => {
     expect(text).toContain("## Which guide for which work");
     const missing = await client.callTool({ name: "getGuide", arguments: { topic: "nope" } });
     expect(missing.isError).toBe(true);
+    await client.close();
+  });
+
+  test("every tool declares Claude Code's result limit (anthropic/maxResultSizeChars), and every guide fits under it, so a guide or a big result arrives whole instead of as a file path", async () => {
+    const client = await connected();
+    const { tools } = await client.listTools();
+    for (const tool of tools) expect((tool._meta as Record<string, unknown> | undefined)?.["anthropic/maxResultSizeChars"]).toBe(MAX_RESULT_CHARS);
+    expect(MAX_RESULT_CHARS).toBeLessThanOrEqual(500_000);
+    for (const file of readdirSync(GUIDES_DIR).filter((f) => f.endsWith(".md"))) expect(readFileSync(join(GUIDES_DIR, file), "utf8").length).toBeLessThan(MAX_RESULT_CHARS);
     await client.close();
   });
 
