@@ -14,7 +14,7 @@ check approval once). Everything runs as one Docker Compose stack in
 | redis | `redis:7-alpine` | Twenty's own cache and queues | internal |
 | kb-redis | `redis:8.2.11` (search and JSON modules loaded) | The knowledge base search index (`kbIdx`) | `127.0.0.1:6380`; tailnet `node02.tail4fcf85.ts.net:6380` (Tailscale Serve TCP) |
 | auth-guard | `nginx:1.27.5-alpine` | Basic Auth in front of Twenty for the public name | behind the tunnel |
-| cloudflared | `cloudflare/cloudflared:2026.10.3` | Tunnel `listeningkit-node02` (6a03a4f1-27e0-40eb-ae42-500247e312ab) | `twenty.listeningkit.com`, `newsletter-relay.listeningkit.com` |
+| cloudflared | `cloudflare/cloudflared:2026.10.3` | Tunnel `listeningkit-node02` (6a03a4f1-27e0-40eb-ae42-500247e312ab) | `twenty.listeningkit.com`, `newsletter-relay.listeningkit.com`, `mcp.listeningkit.com`, `buzz.listeningkit.com` |
 | newsletter-relay | `node:22-alpine` | Newsletter sign-up relay for the Vercel site | `newsletter-relay.listeningkit.com` (profile `relay`) |
 | buzz-twenty-bridge | `node:22-trixie-slim` | Buzz `crm-sync` channel to Twenty | profile `bridge`, running again since 2026-10-27 |
 
@@ -91,6 +91,31 @@ Windows `TWENTY_API_KEY` is the legacy key. The Buzz bridge has its own key
 Still writing to the legacy Twenty until they are moved: blaster (calls,
 SMS, prospects), OpenMagpie's webhook into `socialListenings`, and anything
 else holding the legacy key.
+
+## Buzz relay (2026-10-30)
+
+ListeningKit's Buzz workspace moved from the hosted relay to node02. It runs in
+a separate stack at `/home/deepman/buzz-stack/selfhost-buzz`, with PostgreSQL
+database `buzz_listeningkit`. The old `buzz` database is retained for rollback.
+
+| What | URL |
+| --- | --- |
+| Public relay | `wss://buzz.listeningkit.com` |
+| Pairing | `wss://buzz.listeningkit.com/pair` |
+| Media | `https://buzz.listeningkit.com/media` |
+| NIP-11 | `https://buzz.listeningkit.com/` |
+| Private fallback | `wss://node02-1.tail4fcf85.ts.net` |
+
+The public hostname is a proxied CNAME to Cloudflare tunnel
+`listeningkit-node02`. Its ingress sends `/pair` to `172.17.0.1:39501` and all
+other paths to `172.17.0.1:39301`; those are Docker-bridge bindings, not public
+host interfaces. The relay advertises `wss://buzz.listeningkit.com` and keeps
+closed membership.
+
+Migration record: `~/.buzz/WORK_LOGS/BUZZ_LISTENINGKIT_NODE02_MIGRATION.md`
+on Matt's PC. The hosted source relay remains online and untouched. Member
+joining, mobile identity pairing and troubleshooting are in
+[buzzMembers.md](buzzMembers.md).
 
 ## Other tunnels on the account
 

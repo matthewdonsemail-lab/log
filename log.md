@@ -8992,3 +8992,22 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: new `log twitter post --account <a> --text "<copy>" [--media <file>[,<file>]] [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]` (MCP `twitterPost` / `twitterPostLive`) makes an original post on the direct-API engine. Without `--live` it is a dry run: the copy is checked against the account's copy style, and the media is checked by `mediaProblem` before X is contacted. That check covers the type (.mp4 .mov .gif .jpg .jpeg .png .webp), that the file is there and not empty, X's size limits (5 MB an image, 15 MB a gif, 512 MB a video), a video or gif alone, and up to 4 images. With `--live --approvedBy` the engine's `upload_post_media` uploads each file through twikit's chunked upload. A video or gif waits until X's processing status says succeeded, capped at 300 s. Then `create_tweet(media_ids=…)` runs, and X's create answer decides: a tweet id is sent, an empty result is a drop. `post` is a governed write (`TWITTER_WRITES`, engine `WRITES`). New error code `mediaInvalid`, a `twitterPost` route and rules, the xSending guide, and the xPosting skill now says to post originals with it.
 Why: mandeep asked for a `log twitter post` command, so the cold-call video can be posted from @deepman_1 through log rather than by hand.
 Checked: `bun test` (1189 pass), with new planSend and media tests, and a CLI test where the dry run contacts nothing, bad media, style and approval are refused, and `--live` uploads and posts once. Also `bun run typecheck`, the checks for docs, agentHooks and noComments, and a real dry run on deepman_1 with the 3.1 MB v3 video and the house-style copy. Not yet posted live.
+
+## 2026-10-30 20:24Z · docs/buzzNode02Migration
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now records ListeningKit's self-hosted Buzz relay: the public `wss://buzz.listeningkit.com` relay, pairing and media endpoints, the private Tailscale fallback, the `buzz_listeningkit` database, the retained `buzz` rollback database, and the Cloudflare tunnel routes from `buzz.listeningkit.com/pair` to bridge port 39501 and the relay to 39301. The cloudflared row now names the Buzz and MCP hostnames too.
+Why: ListeningKit's Buzz workspace moved from the hosted relay to node02 and the runbook needs one findable record of the domain, database, tunnel routing and rollback state.
+Checked: NIP-11, liveness, relay WebSocket and pairing WebSocket over `https://buzz.listeningkit.com`; 8,049 imported event IDs present, 24 channels and 448 migrated media blobs verified; Cloudflare tunnel reports healthy.
+
+## 2026-10-30 20:33Z · docs/buzzNode02Migration
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/buzzMembers.md`: new file
+- `docs/infra/node02.md`: edited
+
+What changed: new `docs/infra/buzzMembers.md` explains how existing members join ListeningKit's self-hosted Buzz from desktop or phone, how to join with an identity already on the phone, how to move an existing identity to a new phone through `nostrpair://` device pairing or an `nsec` backup, how an owner/admin adds a new member's `npub`, the common join errors, and the known media/Git migration limits. `docs/infra/node02.md` links to it from the Buzz relay section.
+Why: members need a safe, copyable guide for using the new `wss://buzz.listeningkit.com` community without creating replacement identities or exposing their private keys.
+Checked: `bun run check`; the public relay and pairing endpoint were already verified live, and the guide was checked against the mobile NIP-AB pairing flow (`nostrpair://`, SAS confirmation, desktop-generated code).
