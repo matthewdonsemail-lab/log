@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
+import { dmSplit, sendDmParts, splitLine } from "./send.ts";
 import {
   approvalProblem,
   approveQueue,
@@ -194,7 +195,14 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
         send: async (item, kind): Promise<TwitterSessionAnswer> => {
           const plan = specFor(item, kind, approvedBy, opened.account.copyStyle);
           if (!plan.ok) return { ok: false, code: plan.problem.code, detail: plan.problem.detail };
-          return (await opened.engine(flags["force"] === true ? { ...plan.spec, force: true } : plan.spec)).answer;
+          const spec = flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
+          if (kind === "like" || item.action !== "dm" || !plan.spec.text || !item.userId) return (await opened.engine(spec)).answer;
+          const split = dmSplit(plan.spec.text, item.userId, false);
+          if (split.parts.length > 1) log(`#${item.n} dm ${splitLine(split)}`);
+          const { answers, last } = await sendDmParts(context, opened.engine, spec, split);
+          const done = answers.filter((a) => a.ok && a.event === "sent").length;
+          if (done && done < split.parts.length) return { ...answers[done - 1], detail: `${done} of ${split.parts.length} parts sent, then ${last.answer.event ?? last.answer.code}: ${last.answer.detail ?? ""}; what was sent stays sent, never resent` };
+          return last.answer;
         },
         nowMs,
         sleep: context.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms))),

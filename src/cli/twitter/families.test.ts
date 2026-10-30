@@ -8,6 +8,7 @@ import type { TwitterEngineRun, TwitterEngineSpec, TwitterSessionAnswer } from "
 import { fingerprint, loadQueue } from "../../twitter/queue/plan/index.ts";
 import type { Queue } from "../../twitter/queue/plan/index.ts";
 import { runCli } from "../runner/index.ts";
+import { twitterSendDeps } from "./helpers/send.ts";
 
 const POST_A = "https://x.com/alice/status/1900000000000000001";
 const POST_B = "https://x.com/bob/status/1900000000000000002";
@@ -144,6 +145,27 @@ describe("log twitter reply, quote, like, dm", () => {
     const dropped = await h.run(["twitter", "quote", "--account", "xTwo", "--tweet", POST_A, "--text", "yes", "--approvedBy", "matt", "--live", "--json"]);
     expect(dropped.code).toBe(1);
     expect(JSON.parse(dropped.out)).toMatchObject({ event: "dropped", code: "xSentNothing", approvedBy: "matt" });
+  });
+
+  test("a dm drafted on several lines goes out one message per line, --asOne as one, and a drop stops the rest", async () => {
+    twitterSendDeps.profiles = () => ({});
+    const h = harness(() => ({ ok: true, event: "sent", conversationId: "42-1" }));
+    const dry = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class"]);
+    expect(dry.out).toContain("as 2 messages");
+    expect(h.calls).toEqual([]);
+    const sent = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--approvedBy", "matt", "--live"]);
+    expect(sent.code).toBe(0);
+    expect(h.calls.map((c) => c.text)).toEqual(["was sick meeting you", "coffee was class"]);
+    expect(sent.out).toContain("sent the dm as 2 messages");
+    h.calls.length = 0;
+    await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--asOne", "--approvedBy", "matt", "--live"]);
+    expect(h.calls.map((c) => c.text)).toEqual(["was sick meeting you\ncoffee was class"]);
+    let n = 0;
+    const dropped = harness(() => (n++ ? { ok: false, event: "throttled", code: "429", detail: "rate limited" } : { ok: true, event: "sent", conversationId: "42-1" }));
+    const partial = await dropped.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "one\ntwo\nthree", "--approvedBy", "matt", "--live"]);
+    expect(partial.code).toBe(1);
+    expect(dropped.calls.map((c) => c.text)).toEqual(["one", "two"]);
+    expect(partial.out).toContain("1 of 3 sent");
   });
 
   test("--force asks the engine to go past the governor, only when given, and says what it went past", async () => {
