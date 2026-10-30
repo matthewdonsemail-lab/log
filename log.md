@@ -8911,4 +8911,31 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 
 What changed: X Chat messages that showed as "(could not decrypt)" open. Four causes, each read from chat-xdk's own answer. (1) A catch-up read brought messages without the key changes that open them: chat-xdk's error names the version needed, and `_xchat_decrypt` now asks `GetConversationPageQuery` for that conversation's `missing_conversation_key_change_events`, as X's app does, and decrypts again (`_xchat_missing_keys`, `_xchat_fetch_key_changes`). (2) chat-xdk drops a key change whose signer's signature it can't verify (`enforce_ckey_signatures`), and in a group the signer isn't always a current participant: every event's sender is now in the public-key lookup. (3) Reactions, edits, photos, shared posts and read markers decrypted fine but only `content.text` was read: `message_of` reads chat-xdk's `content_type` (`(reacted 🔥)`, `(edited) …`, `(image: name.jpg)`, the post's URL) and read markers are hidden everywhere (`is_marker`, `inboxSync.shown`), never counted as a chat's last message. (4) `--conversation g…` went to the old DM path: `is_xchat_id`. Messages held from before are opened again when their chat is read (`reopen`, up to 5) and by each inbox sync (`reopen_unopened`, 3 conversations a sync, once a day each), and the sync line says how many. The older-page read takes the key version from chat-xdk when the Thrift doesn't give it (`_xchat_versions`), and `--with` writes what it opened back into the store. Written up in `docs/platforms/x/xchat/README.md`.
 Why: matt: the "could not decrypt" messages (Shaw's first line, Jash's latest, RVA's replies, the group chat) can't be an issue, since we go through X's own client: find the cause and fix it.
-Checked: live on matthewsoldit, each read once: RVA 20 of 20 open (his three replies this morning, both photos, two reactions), Jash 7 of 7 (his 'could not decrypt' was an edit), the group 141 of 142 (the one left is from 12 July, under a key older than the oldest page X answers), Shaw's 21:30:01 now opens. twikit X Chat tests 12 pass (4 new: every content type, the missing key read from the error, the key changes fetched then opened again with the signers' keys, a held message reopened). Inbox sync tests 7 pass (new: a read marker is never the last message, group ids route to X Chat).
+Checked: live on matthewsoldit, each read once: RVA 25 of 25 open (his three replies this morning, both photos, two reactions), Jash 7 of 7 (his 'could not decrypt' was an edit), the group 141 of 142 (the one left is from 12 July, under a key older than the oldest page X answers), Shaw's 21:30:01 now opens. twikit X Chat tests 12 pass (4 new: every content type, the missing key read from the error, the key changes fetched then opened again with the signers' keys, a held message reopened). Inbox sync tests 7 pass (new: a read marker is never the last message, group ids route to X Chat).
+
+## 2026-10-30 06:13Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: new file
+- `python/twitterApi/engine.py`: changed const WRITES, def reopen_unopened, def send, def refusal_of
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/send.ts`: added const followCommand · changed const SHAPES, function renderSent
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, const TWITTER_WRITES, interface TwitterSessionAnswer
+- `src/twitter/post/send/client.ts`: added const BY_USER · changed function targetOf, function planSend
+- `src/twitter/post/send/types.ts`: changed type SendAction
+
+What changed: `log twitter follow --account <a> --userId <id> [--approvedBy <who>] [--live]` (MCP `twitterFollow`, `twitterFollowLive`) follows one person on the direct-API engine, a dry run unless `--live`, counted by the governor as a write like a like or a dm. X's answer decides: the followed user back is sent; already following is sent too, with nothing called. A new use case, `twitter/networkMaxing`: everyone who messaged the owner gets something nice back that asks for nothing, and new people get followed first, then a like on the tweet the message is about, then the message. The X Chat sync now counts a reopened read marker as opened, so its line says what it fixed, and the entry for 76f7327 says RVA 25 of 25 (it said 20 of 20, from a read capped at 20).
+Why: matt: 'all them people messaging me, just message them something nice, get the ball moving with the networking... we're not even trying to get anything out of these people', 'if you're going to do cold outbound make sure part of the playbook is that you follow them', 'if we're going to send a tweet to someone at least leave a like on the tweet', 'we need to outline this as a play'. log could like and dm but not follow. The pre-commit use case review flagged the play as repeatable work no page covered (80%).
+Checked: `bun run check`: 1185 pass, every gate green (docs, guides, rules, naming, typecheck). The follow command plans by user id like a dm and refuses a non-numeric id. The inbox sync live: '1 older message opened that couldn't be before'.

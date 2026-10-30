@@ -34,6 +34,7 @@ const SHAPES: Record<SendAction, SendShape> = {
   reply: { action: "reply", verb: "reply to", target: "tweet", text: true, summary: "Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits)" },
   quote: { action: "quote", verb: "quote", target: "tweet", text: true, summary: "Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop" },
   like: { action: "like", verb: "like", target: "tweet", text: false, summary: "Like one post on X, on the direct-API engine; a dry run unless --live", says: "X's favorite answer decides: Done (or already liked, code 139) is sent" },
+  follow: { action: "follow", verb: "follow", target: "userId", text: false, summary: "Follow one person on X, on the direct-API engine; a dry run unless --live", says: "X's follow answer decides: the followed user back is sent, already following is sent too. Follow before a cold dm: nobody gets a cold message from an account that doesn't follow them" },
   dm: { action: "dm", verb: "dm", target: "userId", text: true, summary: "Send one approved direct message on X, on the direct-API engine; a dry run unless --live", says: `A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). ${ONE_INBOX_NOTE} A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed` },
 };
 
@@ -57,6 +58,7 @@ function inputOf(shape: SendShape): CommandInput {
 export function renderSent(label: string, account: string, answer: TwitterSessionAnswer): string {
   if (answer.ok && answer.event === "sent") {
     if (answer.liked) return `log ${label}: ${account} liked ${answer.tweetId}${answer.already ? " (it was already liked)" : ""}.`;
+    if (answer.followed) return `log ${label}: ${account} follows ${answer.handle ? `@${answer.handle}` : answer.userId}${answer.already ? " (already did)" : ""}.`;
     if (answer.conversationId) return `log ${label}: ${account} sent the dm (conversation ${answer.conversationId}): delivered, it shows in their X Chat too, so it is never resent.`;
     return `log ${label}: ${account} posted https://x.com/${account}/status/${answer.tweetId}.${answer.forcedPast ? ` Forced past the governor: ${answer.forcedPast}.` : ""}`;
   }
@@ -161,4 +163,5 @@ function sendCommand(shape: SendShape): Command {
 export const replyCommand = sendCommand(SHAPES.reply);
 export const quoteCommand = sendCommand(SHAPES.quote);
 export const likeCommand = sendCommand(SHAPES.like);
+export const followCommand = sendCommand(SHAPES.follow);
 export const dmCommand = sendCommand(SHAPES.dm);

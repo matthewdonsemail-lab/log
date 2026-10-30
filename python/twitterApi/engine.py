@@ -18,7 +18,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "dm")
+WRITES = ("reply", "quote", "like", "dm", "follow")
 ACTIONS = READS + WRITES
 
 
@@ -427,12 +427,12 @@ async def reopen_unopened(client: Any, spec: dict[str, Any], state: dict[str, An
             page = await client.get_xchat_conversation(cid, older_pages=0, reopen=ids)
         except Exception:
             continue
-        before = sum(1 for m in conv["messages"] if m.get("text") is None)
+        before = sum(1 for m in conv["messages"] if m.get("text") is None and inboxSync.shown(m))
         inboxSync.add_messages(conv, [{k: m.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id", "kind", "error") if m.get(k) is not None} | {"conversation_id": cid} for m in page["messages"]])
         for m in conv["messages"]:
             if str(m.get("event_id")) in ids and m.get("text") is None:
                 m["retriedAt"] = now
-        out["opened"] += before - sum(1 for m in conv["messages"] if m.get("text") is None)
+        out["opened"] += before - sum(1 for m in conv["messages"] if m.get("text") is None and inboxSync.shown(m))
         out["conversations"].append(cid)
     return out
 
@@ -767,6 +767,15 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if errors or ((data or {}).get("data") or {}).get("favorite_tweet") != "Done":
             raise RuntimeError(f"x did not like the post: {json.dumps(data)[:300]}")
         return {"ok": True, "event": "sent", "liked": True, "tweetId": tweet_id}
+    if action == "follow":
+        user_id = str(spec["userId"])
+        before = await client.get_user_by_id(user_id)
+        if getattr(before, "following", False):
+            return {"ok": True, "event": "sent", "followed": True, "already": True, "userId": user_id, "handle": getattr(before, "screen_name", None)}
+        user = await client.follow_user(user_id)
+        if not str(getattr(user, "id", "") or ""):
+            return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the follow with no user: nobody was followed"}
+        return {"ok": True, "event": "sent", "followed": True, "userId": user_id, "handle": getattr(user, "screen_name", None) or getattr(before, "screen_name", None)}
     if action == "dm":
         message = await client.send_dm(str(spec["userId"]), spec["text"])
         message_id = str(getattr(message, "id", "") or "") or None
@@ -793,8 +802,8 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
     if action in ("reply", "quote", "like") and not spec.get("tweetUrl"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
-    if action == "dm" and not spec.get("userId"):
-        return {"ok": False, "code": "targetMissing", "detail": "dm needs the recipient's user id"}
+    if action in ("dm", "follow") and not spec.get("userId"):
+        return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action in ("reply", "quote", "dm") and not str(spec.get("text") or "").strip():
         return {"ok": False, "code": "textMissing", "detail": f"{action} needs its text"}
     if action == "follows" and not spec.get("handles"):
