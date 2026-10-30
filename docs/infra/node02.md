@@ -1,8 +1,8 @@
 # node02: ListeningKit's Twenty and the knowledge base
 
 node02 is a Linux server on matt's tailnet (`node02.tail4fcf85.ts.net`,
-100.84.226.128). SSH: `ssh root@100.84.226.128` (Tailscale SSH, which asks for a
-check approval once). Everything runs as one Docker Compose stack in
+100.84.226.128). SSH: `ssh deepman@100.84.226.128` (Tailscale SSH). Since 2026-10-30 the
+tailnet policy refuses `root`, and deepman's sudo needs a password. Everything runs as one Docker Compose stack in
 `/home/deepman/services/listeningkit-twenty`, owned by `deepman`.
 
 ## Services
@@ -23,6 +23,85 @@ profiles, so a plain `docker compose up -d` does not start them. cloudflared
 waits for newsletter-relay to be healthy; start it alone with
 `docker compose --profile cloudflare up -d --no-deps cloudflared`.
 
+## log MCP over HTTPS (2026-10-30)
+
+log-cli's MCP server also runs on node02, so Claude's connectors (claude.ai,
+Duet) and Claude Code on other machines can reach it (`docs/deployment.md`, "The
+log MCP server, remotely"). It is its own stack, apart from Twenty's:
+`/home/deepman/services/logMcp`.
+
+| Part | What it is |
+| --- | --- |
+| `app/` | a clone of `~/repos/log-cli.git`, a bare repo that matt's PC pushes to (`git push node02 main`, remote `node02` = `deepman@100.84.226.128:repos/log-cli.git`) |
+| `Dockerfile`, `compose.yaml`, `.dockerignore` | the image `log-mcp:local` and the container `log-mcp` (restart unless-stopped, host network), below |
+| `.env` (mode 600) | `LOG_TWENTY_BASE_URL`/`LOG_TWENTY_API_KEY` (node02's Twenty, the same as the PC's), `LOG_MCP_TOKEN`, `LOG_MCP_PUBLIC_URL=https://node02.tail4fcf85.ts.net:8443`, `LOG_MCP_OWNER_USER_ID` (mandeep's Twenty user) |
+| `data/logCli` | the container's `~/.logCli`: X governors, runs, OAuth clients (`mcp/oauth.json`) |
+| `data/listeningkit` | read-only copies of `subq-api-key.txt`, `twenty-listeningkit-api-key.txt`, `kb-redis-url.txt` |
+
+- **Listens on** `127.0.0.1:7337/mcp`, with no token 401, and with the token 148
+  tools. Sign-in is the static token (`C:\Users\mande\.config\listeningkit\log-mcp-token.txt`
+  on the PC) or OAuth through node02's Twenty, where only the owner may connect.
+- **Public address:** `https://node02.tail4fcf85.ts.net:8443/mcp` through
+  Tailscale Funnel, with only `/mcp`, `/oauth` and `/.well-known` published:
+  `tailscale funnel --bg --https=8443 --set-path=/mcp http://127.0.0.1:7337/mcp`,
+  then the same for `/oauth` and `/.well-known`. Funnel needs node02 allowed in
+  the tailnet policy (matt, once:
+  `https://login.tailscale.com/f/funnel?node=n1cQyAtmx111CNTRL`) and deepman as
+  Tailscale operator (`sudo tailscale set --operator=deepman`). Twenty on `:443`
+  stays tailnet only.
+- **What runs there:** the direct-API platforms (X, Reddit, Discord) and the
+  knowledge base. No browser: AdsPower and Camoufox stay on the PC.
+- **X Chat:** chat-xdk has no Linux wheel in `vendor/chatXdk`, so the image
+  builds it from source with juicebox-sdk 0.3.7 checked out beside it (chat-xdk's
+  CI does the same). That build takes about 13 minutes and is cached after.
+- **Its own governor:** the container counts X sends in its own `~/.logCli`, so
+  one account's sends should come from one machine.
+- **Update:** `git push node02 main` from the PC, then on node02
+  `cd ~/services/logMcp/app && git pull && cd .. && docker compose up -d --build`.
+  Ownership is set with `COPY --chown`, because a `chown -R` over
+  `node_modules` ran for an hour on the overlay filesystem.
+
+```dockerfile
+FROM rust:1.91.1-bookworm AS chatxdk
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip python3-venv && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/build && /opt/build/bin/pip install -q "maturin>=1.8,<2.0"
+RUN git clone -q --depth 1 --branch 0.3.7 https://github.com/juicebox-systems/juicebox-sdk /src/juicebox-sdk
+COPY app/vendor/chatXdk /src/chatXdk
+WORKDIR /src/chatXdk
+RUN rustup component add rustfmt clippy && /opt/build/bin/maturin build --release -m crates/pyo3/Cargo.toml -o /wheels
+
+FROM oven/bun:1.4.4-debian
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv python3-pip git ca-certificates curl libsndfile1 libpulse0 && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install -q --no-cache-dir \
+    "curl_cffi>=0.15" filetype beautifulsoup4 pyotp lxml webvtt-py m3u8 Js2Py-3.13 "pydantic>=2.6" \
+    "websocket-client>=1.9.2" "python-socks>=3.1.1" "orjson>=3.13.0" "pycryptodome>=4.2.0" numpy soundfile soundcard
+COPY --from=chatxdk /wheels /wheels
+RUN /opt/venv/bin/pip install -q --no-cache-dir /wheels/*.whl
+RUN mkdir -p /app /home/log && chown 1000:1000 /app /home/log
+WORKDIR /app
+USER 1000:1000
+COPY --chown=1000:1000 app/package.json app/bun.lock* app/bun.lockb* ./
+RUN bun install --frozen-lockfile --ignore-scripts
+COPY --chown=1000:1000 app/ ./
+ENV LOG_PYTHON=/opt/venv/bin/python PYTHONUTF8=1 HOME=/home/log
+EXPOSE 7337
+CMD ["bun", "bin/logMcp.ts", "--http", "--host", "127.0.0.1", "--port", "7337"]
+```
+
+```yaml
+services:
+  logMcp:
+    build: .
+    image: log-mcp:local
+    container_name: log-mcp
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    volumes:
+      - ./data/logCli:/home/log/.logCli
+      - ./data/listeningkit:/home/log/.config/listeningkit:ro
+```
+
 ## Where the logins are
 
 Never in the repo, the knowledge base or chat. On matt's PC, in
@@ -34,6 +113,8 @@ Never in the repo, the knowledge base or chat. On matt's PC, in
   "log-cli knowledge base").
 - `kb-redis-url.txt`: the kb-redis URL with its password.
 - `cloudflare-api-token.txt`: the Cloudflare API token (zones, DNS, tunnels).
+- `log-mcp-token.txt`: the bearer token for log MCP on node02 (also
+  `LOG_MCP_TOKEN` in `~/services/logMcp/.env` there).
 
 On node02 the stack's secrets are in `.env` (mode 600, owner deepman).
 

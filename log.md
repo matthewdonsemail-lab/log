@@ -8962,3 +8962,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/errorCatalog.md` and `python/errors/errorCatalog.json` are regenerated from the catalog (`bun run errors:export`) after ce676d2 changed `chatNotFound` and `accountNotFound`. `docs/useCases/twitter/dmInbox.md` now says how X Chat shows reactions, edits, photos and links, that read markers are hidden and messages that couldn't be opened are reopened, that group chats are read by their `g…` id, to check who really wrote last before answering, and that X's own daily limit (code 344, about 40 writes on matthewsoldit) stops a run whatever the governor says.
 Why: the pre-push test refused a catalog export older than the catalog, and the pre-commit use case review found `twitter/dmInbox` stale (77%) against this session's inbox work.
 Checked: `bun run errors:export` and the errors test; the use case review again.
+
+## 2026-10-30 18:15Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now has the node02 log MCP stack (`/home/deepman/services/logMcp`). It covers the bare repo the PC pushes to, the `log-mcp` container and its Dockerfile and compose file, what the `.env` holds (names only), the data folders, the planned Tailscale Funnel on `:8443` with only `/mcp`, `/oauth` and `/.well-known`, the chat-xdk source build with juicebox-sdk 0.3.7, the separate X governor and how to update it. The SSH line now says `deepman@`, since the tailnet policy refuses `root`. `log-mcp-token.txt` is listed with the other logins.
+Why: mandeep asked to set log-cli up with HTTPS, on node02 through Tailscale, for claude.ai/Duet connectors and for Claude Code elsewhere.
+Checked: on node02 the container answers 401 with no token. With the token, `initialize` and `tools/list` return 148 tools, and the OAuth metadata names `https://node02.tail4fcf85.ts.net:8443`. Funnel itself is still waiting on the tailnet policy.
