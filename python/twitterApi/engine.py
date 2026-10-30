@@ -18,7 +18,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "dm", "follow")
+WRITES = ("reply", "quote", "like", "dm", "follow", "post")
 ACTIONS = READS + WRITES
 
 
@@ -193,6 +193,25 @@ def event_of(error: Exception) -> str:
     if isinstance(error, TooManyRequests) or "cloudflare" in text.lower() or "you have been blocked" in text.lower():
         return "throttled"
     return "failed"
+
+
+MEDIA_CATEGORIES = {".mp4": "tweet_video", ".mov": "tweet_video", ".gif": "tweet_gif"}
+MEDIA_PROCESSING_SECONDS = 300
+
+
+async def upload_post_media(client: Any, paths: list[str]) -> list[str]:
+    ids = []
+    for path in paths:
+        category = MEDIA_CATEGORIES.get(Path(path).suffix.lower(), "tweet_image")
+        moving = category != "tweet_image"
+        media_id = await asyncio.wait_for(
+            client.upload_media(path, wait_for_completion=moving, media_category=category),
+            timeout=MEDIA_PROCESSING_SECONDS,
+        )
+        if not str(media_id or ""):
+            raise RuntimeError(f"x gave no media id for {Path(path).name}: nothing was posted")
+        ids.append(str(media_id))
+    return ids
 
 
 def keep_create_answers(client: Any) -> dict[str, Any]:
@@ -783,7 +802,11 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the dm with no message id: nothing was sent"}
         pair = sorted([str(getattr(message, "sender_id", "") or ""), str(getattr(message, "recipient_id", "") or "")], key=lambda i: int(i) if i.isdigit() else 0)
         return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"])}
-    if action == "reply":
+    media_ids: list[str] = []
+    if action == "post":
+        media_ids = await upload_post_media(client, list(spec.get("media") or []))
+        tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None)
+    elif action == "reply":
         tweet = await client.create_tweet(text=spec["text"], reply_to=tweet_id_from_url(spec["tweetUrl"]))
     else:
         tweet = await client.create_tweet(text=spec["text"], attachment_url=spec["tweetUrl"])
@@ -791,7 +814,7 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     if not tweet_id:
         limits = raw.get("limits") or {}
         return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": f"x created no tweet (empty result): nothing was posted. x said: {json.dumps(raw.get('body'))[:300]}", "limits": limits, "rateLimitReset": reset_of(limits)}
-    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec["tweetUrl"], "limits": raw.get("limits") or {}}
+    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), "limits": raw.get("limits") or {}}
 
 
 def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
@@ -804,7 +827,9 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
-    if action in ("reply", "quote", "dm") and not str(spec.get("text") or "").strip():
+    if action == "post" and any(not Path(str(m)).is_file() for m in (spec.get("media") or [])):
+        return {"ok": False, "code": "mediaInvalid", "detail": "post: a media file isn't there"}
+    if action in ("reply", "quote", "dm", "post") and not str(spec.get("text") or "").strip():
         return {"ok": False, "code": "textMissing", "detail": f"{action} needs its text"}
     if action == "follows" and not spec.get("handles"):
         return {"ok": False, "code": "targetMissing", "detail": "follows needs the handles to check"}

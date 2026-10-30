@@ -1,4 +1,4 @@
-import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
+import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followCommand, followsCommand, likeCommand, postCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
 import { accountCommand, accountsCommand } from "../account/index.ts";
 import { adsPowerCommand } from "../adsPower/index.ts";
 import { campaignCommand } from "../campaign/index.ts";
@@ -90,6 +90,7 @@ export const COMMANDS: Command[] = [
   followersCommand,
   replyCommand,
   quoteCommand,
+  postCommand,
   likeCommand,
   followCommand,
   dmCommand,

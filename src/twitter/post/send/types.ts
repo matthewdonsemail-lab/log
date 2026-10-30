@@ -1,19 +1,20 @@
 import type { TwitterEngineSpec } from '../../account/session/index'
 
-export type SendAction = 'reply' | 'quote' | 'like' | 'dm' | 'follow'
+export type SendAction = 'reply' | 'quote' | 'like' | 'dm' | 'follow' | 'post'
 
 export interface SendRequest {
   action: SendAction
   tweetUrl?: string
   userId?: string
   text?: string
+  media?: string[]
   approvedBy?: string
   skipStyleCheck?: boolean
   style?: string | null
   live: boolean
 }
 
-export type SendProblemCode = 'targetMissing' | 'tweetUrlInvalid' | 'userIdInvalid' | 'textMissing' | 'notApproved' | 'styleFailed'
+export type SendProblemCode = 'targetMissing' | 'tweetUrlInvalid' | 'userIdInvalid' | 'textMissing' | 'notApproved' | 'styleFailed' | 'mediaInvalid'
 
 export interface SendProblem {
   code: SendProblemCode
