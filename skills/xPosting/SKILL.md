@@ -36,10 +36,12 @@ comment, the quote an hour later).
 - Twenty: Notes → "Social posting playbook (ListeningKit)".
 - Knowledge base: `log kb search "social posting playbook"`.
 
-log-cli doesn't post originals yet. They go out by hand from the X app or
-web, or through Postiz once it is signed in. Everything after the post goes
-through log-cli: the replies to its comments, the quote, and the DMs to the
-people who liked it.
+Post the original with `log twitter post --account <handle> --text "<copy>" --media <video.mp4>` (MCP `twitterPost`, `twitterPostLive`).
+It is a dry run first: it checks the copy against the account's style, and checks the file's type and size,
+without contacting X. `--live --approvedBy <who>` uploads the file and posts.
+A video is uploaded in chunks, and the post is made only once X's own processing says succeeded.
+It takes one video or gif, or up to 4 images. Everything after the post goes through log-cli as well:
+the replies to its comments, the quote an hour later, and the DMs to the people who liked it.
 
 ## 3. Reaching people: `log twitter`
 

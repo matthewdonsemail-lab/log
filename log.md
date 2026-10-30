@@ -8962,3 +8962,33 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/errorCatalog.md` and `python/errors/errorCatalog.json` are regenerated from the catalog (`bun run errors:export`) after ce676d2 changed `chatNotFound` and `accountNotFound`. `docs/useCases/twitter/dmInbox.md` now says how X Chat shows reactions, edits, photos and links, that read markers are hidden and messages that couldn't be opened are reopened, that group chats are read by their `g…` id, to check who really wrote last before answering, and that X's own daily limit (code 344, about 40 writes on matthewsoldit) stops a run whatever the governor says.
 Why: the pre-push test refused a catalog export older than the catalog, and the pre-commit use case review found `twitter/dmInbox` stale (77%) against this session's inbox work.
 Checked: `bun run errors:export` and the errors test; the use case review again.
+
+## 2026-10-30 20:07Z · feat/twitterPost
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const MEDIA_CATEGORIES, const MEDIA_PROCESSING_SECONDS, def upload_post_media · changed const WRITES, def send, def refusal_of
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/families.test.ts`: added test "post: a dry run checks the copy and the media and contacts nothing; --live uploads and posts once"
+- `src/cli/twitter/helpers/send.ts`: added const MEDIA, const postCommand · changed interface SendShape, const SHAPES, function usageOf, function inputOf, function sendCommand
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, const TWITTER_WRITES, interface TwitterEngineSpec, interface TwitterSessionAnswer
+- `src/twitter/post/send/client.ts`: added const NEW_POST, type MediaKind, const MEDIA_KINDS, const MEDIA_MAX_BYTES, type SizeOf, const fileSize, function mediaKindOf, function mediaProblem · changed const WITH_TEXT, function targetOf, function planSend
+- `src/twitter/post/send/send.test.ts`: added test "a post needs no target, only its text, and carries its media as full paths", test "media is checked before X is called: type, size, a video alone, at most 4 images"
+- `src/twitter/post/send/types.ts`: changed type SendAction, interface SendRequest, type SendProblemCode
+
+What changed: new `log twitter post --account <a> --text "<copy>" [--media <file>[,<file>]] [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]` (MCP `twitterPost` / `twitterPostLive`) makes an original post on the direct-API engine. Without `--live` it is a dry run: the copy is checked against the account's copy style, and the media is checked by `mediaProblem` before X is contacted. That check covers the type (.mp4 .mov .gif .jpg .jpeg .png .webp), that the file is there and not empty, X's size limits (5 MB an image, 15 MB a gif, 512 MB a video), a video or gif alone, and up to 4 images. With `--live --approvedBy` the engine's `upload_post_media` uploads each file through twikit's chunked upload. A video or gif waits until X's processing status says succeeded, capped at 300 s. Then `create_tweet(media_ids=…)` runs, and X's create answer decides: a tweet id is sent, an empty result is a drop. `post` is a governed write (`TWITTER_WRITES`, engine `WRITES`). New error code `mediaInvalid`, a `twitterPost` route and rules, the xSending guide, and the xPosting skill now says to post originals with it.
+Why: mandeep asked for a `log twitter post` command, so the cold-call video can be posted from @deepman_1 through log rather than by hand.
+Checked: `bun test` (1189 pass), with new planSend and media tests, and a CLI test where the dry run contacts nothing, bad media, style and approval are refused, and `--live` uploads and posts once. Also `bun run typecheck`, the checks for docs, agentHooks and noComments, and a real dry run on deepman_1 with the 3.1 MB v3 video and the house-style copy. Not yet posted live.

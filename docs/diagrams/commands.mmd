@@ -62,6 +62,7 @@ flowchart TB
     c_twitterFollowers["followers"]
     c_twitterReply["reply"]
     c_twitterQuote["quote"]
+    c_twitterPost["post"]
     c_twitterLike["like"]
     c_twitterFollow["follow"]
     c_twitterDm["dm"]
@@ -192,6 +193,8 @@ flowchart TB
   mcp --> c_twitterReply
   cli --> c_twitterQuote
   mcp --> c_twitterQuote
+  cli --> c_twitterPost
+  mcp --> c_twitterPost
   cli --> c_twitterLike
   mcp --> c_twitterLike
   cli --> c_twitterFollow

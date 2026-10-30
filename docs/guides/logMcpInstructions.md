@@ -125,7 +125,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `facebookMarketplace` | Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations |
 | `facebookGroups` | Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls |
 | `xInbox` | Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live |
-| `xSending` | Sending as an X account: dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send |
+| `xSending` | Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send |
 | `xAccount` | An X account's session: saving and checking its cookies, and who follows whom |
 | `discord` | A Discord account: its session, chats, reading, the live gateway watch and sending |
 | `reddit` | A Reddit account's session |

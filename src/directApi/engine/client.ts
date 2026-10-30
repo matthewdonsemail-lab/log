@@ -23,6 +23,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   twitterDms: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'inbox', when: 'dms read (the inbox, or one conversation)', seam: 'directTwitter' },
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
+  twitterPost: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'post (media uploaded first with upload_media)', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
   twitterFollow: { platform: 'twitter', library: 'twikit', only: true, surface: 'users', method: 'follow_user', when: 'follow', seam: 'directTwitter' },
   twitterDm: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'send_dm', when: 'dm', seam: 'directTwitter' },
