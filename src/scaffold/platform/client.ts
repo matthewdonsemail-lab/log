@@ -10,6 +10,8 @@ export const PLATFORM_NAME = /^[a-z][a-zA-Z0-9]*$/;
 const FILES = {
   platforms: "src/cli/runner/helpers/platforms.ts",
   runner: "src/cli/runner/index.ts",
+  runnerCore: "src/cli/runner/client.ts",
+  commandIndex: "src/cli/runner/helpers/commandIndex.ts",
   context: "src/cli/runner/types.ts",
   routes: "src/directApi/engine/client.ts",
   rules: "src/mcp/server/helpers/agentRules.ts",
@@ -71,14 +73,16 @@ export function planNewPlatform(root: string, options: NewPlatformOptions): Plat
   ];
   for (const file of files) if (existsSync(join(root, file.path))) throw new Error(`${file.path} already exists: nothing is overwritten`);
   const contextType = `import("../../platformKit/session/index.ts")`;
+  const indexEntry = `{ name: "session", platform: "${n.name}", module: "src/cli/${n.name}/index.ts", exportName: "${n.name}SessionCommand" }`;
   const edits: PlannedEdit[] = [
     { path: FILES.platforms, what: `PLATFORMS gains "${n.name}"`, apply: (s) => addToArray(s, "PLATFORMS", `"${n.name}"`), landed: (s) => arrayHasText(s, "PLATFORMS", `"${n.name}"`) },
     { path: FILES.platforms, what: `PLATFORM_LABELS gains ${n.name}: "${n.label}"`, apply: (s) => addToObject(s, "PLATFORM_LABELS", n.name, JSON.stringify(n.label)), landed: (s) => objectHasKey(s, "PLATFORM_LABELS", n.name) },
     { path: FILES.platforms, what: `PLATFORM_SITES gains ${n.name} (${n.hosts.join(", ")}, proxy ${n.proxy}, ${n.browser ? "the account's browser" : "no browser"})`, apply: (s) => addToObject(s, "PLATFORM_SITES", n.name, `{ twenty: ${JSON.stringify(n.twentyPlatform)}, domain: ${JSON.stringify(n.cookieDomain)}, hosts: [${n.hosts.map((h) => JSON.stringify(h)).join(", ")}], home: ${JSON.stringify(n.home)}, proxy: ${JSON.stringify(n.proxy)}, browser: ${n.browser} }`), landed: (s) => objectHasKey(s, "PLATFORM_SITES", n.name) },
     { path: FILES.runner, what: `imports ${n.name}SessionCommand`, apply: (s) => addImport(s, `../${n.name}/index.ts`, `${n.name}SessionCommand`), landed: (s) => hasImport(s, `../${n.name}/index.ts`, `${n.name}SessionCommand`) },
-    { path: FILES.runner, what: `imports run${n.pascal}Engine`, apply: (s) => addImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`), landed: (s) => hasImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`) },
+    { path: FILES.runnerCore, what: `imports run${n.pascal}Engine`, apply: (s) => addImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`), landed: (s) => hasImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`) },
     { path: FILES.runner, what: `COMMANDS gains ${n.name}SessionCommand`, apply: (s) => addToArray(s, "COMMANDS", `${n.name}SessionCommand`), landed: (s) => arrayHasText(s, "COMMANDS", `${n.name}SessionCommand`) },
-    { path: FILES.runner, what: `createContext wires context.${n.seam}`, apply: (s) => addToReturnedObject(s, "createContext", n.seam, `overrides.${n.seam} ?? run${n.pascal}Engine`), landed: (s) => returnedObjectHasKey(s, "createContext", n.seam) },
+    { path: FILES.runnerCore, what: `createContext wires context.${n.seam}`, apply: (s) => addToReturnedObject(s, "createContext", n.seam, `overrides.${n.seam} ?? run${n.pascal}Engine`), landed: (s) => returnedObjectHasKey(s, "createContext", n.seam) },
+    { path: FILES.commandIndex, what: `COMMAND_INDEX gains ${n.name} session, loaded only when run`, apply: (s) => addToArray(s, "COMMAND_INDEX", indexEntry), landed: (s) => arrayHasText(s, "COMMAND_INDEX", indexEntry) },
     { path: FILES.context, what: `CommandContext gains ${n.seam}`, apply: (s) => addToInterface(s, "CommandContext", n.seam, `${n.seam}?: (account: ${contextType}.PlatformAccount, spec: ${contextType}.PlatformEngineSpec) => ${contextType}.PlatformEngineRun;`), landed: (s) => interfaceHasMember(s, "CommandContext", n.seam) },
     { path: FILES.routes, what: `DIRECT_ROUTES gains ${n.sessionKey}`, apply: (s) => addToObject(s, "DIRECT_ROUTES", n.sessionKey, `{ platform: '${n.name}', library: '${n.libraryText}', only: true, surface: 'account', method: 'ping', when: 'session check', seam: '${n.seam}' }`), landed: (s) => objectHasKey(s, "DIRECT_ROUTES", n.sessionKey) },
     { path: FILES.rules, what: `COMMAND_RULES gains ${n.sessionKey}`, apply: (s) => addToObject(s, "COMMAND_RULES", n.sessionKey, `[13, 63, 64, 73, ${NEW_PLATFORM_RULE}]`), landed: (s) => objectHasKey(s, "COMMAND_RULES", n.sessionKey) },

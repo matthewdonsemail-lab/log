@@ -25,10 +25,24 @@ export interface TwitterEngineSpec {
   handles?: string[]
   limit?: number
   conversationId?: string
+  withHandle?: string
   force?: boolean
   chatPin?: string
   export?: boolean
+  full?: boolean
   seconds?: number
+}
+
+export interface TwitterInboxSync {
+  mode: 'full' | 'delta'
+  newEvents: number
+  newMessages?: number
+  xchatPages?: number
+  xchatConversations?: number
+  legacyPages: number
+  since?: string
+  seconds: number
+  maxSequenceId: string
 }
 
 export interface XChatLiveEvent {
@@ -134,6 +148,7 @@ export interface TwitterSessionAnswer {
   waitingOnYou?: number
   messages?: TwitterDmMessage[]
   conversations?: TwitterDmConversation[]
+  sync?: TwitterInboxSync
   forcedPast?: string
   followers?: TwitterFollower[]
   complete?: boolean

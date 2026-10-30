@@ -28,12 +28,9 @@ describe('the engine is declared in code', () => {
     expect(engineLine('join')).toBeNull()
   })
 
-  test("readGroup's MCP description carries the engine line, and readGroupLive doesn't", () => {
+  test("no MCP description carries the engine line: the library behind a call gives the agent nothing to act on", () => {
     const tools = toolsFromCommands(COMMANDS.filter((c) => c.name === 'read'))
-    const plain = tools.find((t) => t.name === 'readGroup')!
-    const live = tools.find((t) => t.name === 'readGroupLive')!
-    expect(plain.description).toContain('Engine: the direct-API engine first (fbk groups.feed_read')
-    expect(live.description).not.toContain('Engine: the direct-API engine first')
+    for (const name of ['readGroup', 'readGroupLive']) expect(tools.find((t) => t.name === name)!.description).not.toContain('Engine: the direct-API engine')
   })
 })
 
@@ -64,7 +61,8 @@ describe('the hook context comes from each account folder', () => {
     writeFileSync(join(root, 'a2', 'governor_state.json'), JSON.stringify({ day: '2026-10-25', hour_count: 3, day_count: 12, mutation_count: 1, cooldown_until: now.getTime() / 1000 + 600, soft_blocks_seen: 1 }))
     const states = localEngineStates(root, now)
     const text = engineContext(states, now)
-    expect(text).toContain('fbk groups.feed_read')
+    expect(text).not.toContain('fbk')
+    expect(text).not.toContain('twikit')
     expect(text).toContain('a1: session loggedIn')
     expect(text).toContain('a2: session not read yet, 12/500 requests, 1/40 writes today, PAUSED 10 min')
   })

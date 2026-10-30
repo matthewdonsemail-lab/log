@@ -76,7 +76,8 @@ function nearLines(near: readonly NearPair[]): string[] {
 
 async function evidenceFor(context: CommandContext, said: string, chat: string, draft = ""): Promise<{ ok: true; evidence: VoiceEvidence; near: NearPair[]; wording: NearPair[]; recent: VoicePair[]; profile: VoiceProfile | null; label: string } | { ok: false; result: CommandResult }> {
   const chats = chatsOf(loadConversations());
-  const found = matchChat(chats, chat);
+  const byId = /^\d{15,22}$/.test(chat) ? chats.find((c) => c.id.endsWith(`:${chat}`)) : undefined;
+  const found = byId ? matchChat(chats, byId.id) : matchChat(chats, chat);
   if (!found.ok) return { ok: false, result: refuse("voice", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n")) };
   const picked = chats.find((c) => c.id === found.chat.id)!;
   const label = `${found.label} (${picked.platform} ${picked.kind})`;

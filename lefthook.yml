@@ -27,6 +27,9 @@ pre-commit:
     docs:
       run: bun run check:docs
 
+    useCases:
+      run: bun run check:useCases
+
 pre-push:
   parallel: false
   commands:

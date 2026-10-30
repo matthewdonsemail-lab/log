@@ -8,6 +8,9 @@ import type { TwitterEngineRun, TwitterEngineSpec, TwitterSessionAnswer } from "
 import { fingerprint, loadQueue } from "../../twitter/queue/plan/index.ts";
 import type { Queue } from "../../twitter/queue/plan/index.ts";
 import { runCli } from "../runner/index.ts";
+import { twitterSendDeps } from "./helpers/send.ts";
+import { twitterDmsDeps } from "./helpers/dms.ts";
+import { loadConversations } from "../../search/conversations/index.ts";
 
 const POST_A = "https://x.com/alice/status/1900000000000000001";
 const POST_B = "https://x.com/bob/status/1900000000000000002";
@@ -79,13 +82,33 @@ describe("log twitter dms", () => {
     const h = harness(() => ({ ok: true, screenName: "xtwo", waitingOnYou: 1, threads: [thread("1-2", "alice", false, "are you free"), thread("3-2", "bob", true, "talk soon")] }));
     const all = await h.run(["twitter", "dms", "--account", "xTwo"]);
     expect(all.code).toBe(0);
-    expect(h.calls).toEqual([{ action: "inbox", limit: 20 }]);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, export: true }]);
     expect(all.out).toContain("@alice · 2026-10-25T10:00:00Z · unread, waiting on you");
     expect(all.out).toContain("@bob");
     const waiting = await h.run(["twitter", "dms", "--account", "xTwo", "--waiting", "--limit", "5"]);
     expect(waiting.out).toContain("1 conversation waiting on a reply");
     expect(waiting.out).not.toContain("@bob");
-    expect(h.calls[1]).toEqual({ action: "inbox", limit: 5 });
+    expect(h.calls[1]).toEqual({ action: "inbox", limit: 5, export: true });
+  });
+
+  test("a synced read says what it fetched, keeps the conversations for search, and reindexes only when something is new", async () => {
+    let reindexed = 0;
+    twitterDmsDeps.reindex = () => {
+      reindexed++;
+    };
+    const conversations = [{ conversationId: "1:2", box: "xchat" as const, with: [{ userId: "1", handle: "alice" }], messages: [{ id: "9", conversationId: "1:2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "are you free", fromMe: false, from: "alice" }] }];
+    let fresh = 1;
+    const h = harness(() => ({ ok: true, screenName: "xtwo", waitingOnYou: 1, threads: [thread("1:2", "alice", false, "are you free")], conversations, sync: { mode: "delta" as const, newEvents: fresh, newMessages: fresh, xchatPages: 1, legacyPages: 1, since: "8", seconds: 0.9, maxSequenceId: "9" } }));
+    const r = await h.run(["twitter", "dms", "--account", "xTwo", "--json"]);
+    expect(r.err).toContain("synced in 0.9 s: 1 new X Chat event since sequence 8");
+    expect(JSON.parse(r.out).conversations).toBeUndefined();
+    expect(loadConversations().find((c) => c.conversationId === "1:2")?.messages[0].text).toBe("are you free");
+    expect(reindexed).toBe(1);
+    fresh = 0;
+    const quiet = await h.run(["twitter", "dms", "--account", "xTwo", "--full"]);
+    expect(quiet.err).toContain("nothing to decrypt");
+    expect(reindexed).toBe(1);
+    expect(h.calls[1]).toEqual({ action: "inbox", limit: 20, export: true, full: true });
   });
 
   test("--conversation reads one thread, and bad input is refused before X is called", async () => {
@@ -98,21 +121,21 @@ describe("log twitter dms", () => {
     expect(h.calls).toHaveLength(1);
   });
 
-  test("--with <handle> reads both the legacy and the X Chat thread in one export read and merges them by time", async () => {
-    const h = harness(() => ({
-      ok: true,
-      threads: [],
-      conversations: [
-        { conversationId: "xchat1", box: "xchat", with: [{ userId: "1", handle: "alex" }], messages: [{ id: "8", conversationId: "xchat1", time: "2026-10-25T11:00:00Z", senderId: "1", text: "let me talk to the team", fromMe: false, from: "alex" }] },
-        { conversationId: "1-2", box: "inbox", with: [{ userId: "1", handle: "alex" }], messages: [{ id: "9", conversationId: "1-2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "very cool", fromMe: false, from: "alex" }] },
-        { conversationId: "3-2", box: "inbox", with: [{ userId: "3", handle: "bob" }], messages: [{ id: "7", conversationId: "3-2", time: "2026-10-25T09:00:00Z", senderId: "3", text: "not alex", fromMe: false, from: "bob" }] },
-      ],
-    }));
+  test("--with <handle> reads only that person's legacy and X Chat threads, never the whole inbox, and merges them by time", async () => {
+    const h = harness((spec) => spec.withHandle === "alex"
+      ? {
+        ok: true,
+        conversationId: "1-2 + 1:2",
+        messages: [
+          { id: "8", conversationId: "1:2", time: "2026-10-25T11:00:00Z", senderId: "1", text: "let me talk to the team", fromMe: false, from: "alex" },
+          { id: "9", conversationId: "1-2", time: "2026-10-25T10:00:00Z", senderId: "1", text: "very cool", fromMe: false, from: "alex" },
+        ],
+      }
+      : { ok: true, conversationId: "", messages: [] });
     const r = await h.run(["twitter", "dms", "--account", "xTwo", "--with", "@alex"]);
     expect(r.code).toBe(0);
     expect(r.out.indexOf("@alex: very cool")).toBeLessThan(r.out.indexOf("@alex: let me talk to the team"));
-    expect(r.out).not.toContain("not alex");
-    expect(h.calls).toEqual([{ action: "inbox", limit: 200, export: true }]);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, withHandle: "alex" }]);
     expect((await h.run(["twitter", "dms", "--account", "xTwo", "--with", "nobody"])).err).toContain("targetMissing");
   });
 });
@@ -144,6 +167,27 @@ describe("log twitter reply, quote, like, dm", () => {
     const dropped = await h.run(["twitter", "quote", "--account", "xTwo", "--tweet", POST_A, "--text", "yes", "--approvedBy", "matt", "--live", "--json"]);
     expect(dropped.code).toBe(1);
     expect(JSON.parse(dropped.out)).toMatchObject({ event: "dropped", code: "xSentNothing", approvedBy: "matt" });
+  });
+
+  test("a dm drafted on several lines goes out one message per line, --asOne as one, and a drop stops the rest", async () => {
+    twitterSendDeps.profiles = () => ({});
+    const h = harness(() => ({ ok: true, event: "sent", conversationId: "42-1" }));
+    const dry = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class"]);
+    expect(dry.out).toContain("as 2 messages");
+    expect(h.calls).toEqual([]);
+    const sent = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--approvedBy", "matt", "--live"]);
+    expect(sent.code).toBe(0);
+    expect(h.calls.map((c) => c.text)).toEqual(["was sick meeting you", "coffee was class"]);
+    expect(sent.out).toContain("sent the dm as 2 messages");
+    h.calls.length = 0;
+    await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--asOne", "--approvedBy", "matt", "--live"]);
+    expect(h.calls.map((c) => c.text)).toEqual(["was sick meeting you\ncoffee was class"]);
+    let n = 0;
+    const dropped = harness(() => (n++ ? { ok: false, event: "throttled", code: "429", detail: "rate limited" } : { ok: true, event: "sent", conversationId: "42-1" }));
+    const partial = await dropped.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "one\ntwo\nthree", "--approvedBy", "matt", "--live"]);
+    expect(partial.code).toBe(1);
+    expect(dropped.calls.map((c) => c.text)).toEqual(["one", "two"]);
+    expect(partial.out).toContain("1 of 3 sent");
   });
 
   test("--force asks the engine to go past the governor, only when given, and says what it went past", async () => {

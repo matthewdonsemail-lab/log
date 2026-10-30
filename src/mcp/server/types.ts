@@ -16,6 +16,10 @@ export interface LogToolAnnotations {
   openWorldHint: boolean;
 }
 
+export const MAX_RESULT_CHARS = 200_000;
+
+export const RESULT_SIZE_META = { "anthropic/maxResultSizeChars": MAX_RESULT_CHARS } as const;
+
 export interface LogTool {
   name: string;
   title: string;

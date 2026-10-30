@@ -189,6 +189,49 @@ export function twitterAccounts(root: string = twitterStateRoot()): string[] {
   return readdirSync(root).filter((name) => readJson<{ sessionState?: string }>(join(root, name, 'session.json'), {}).sessionState === 'loggedIn')
 }
 
+interface StoredConversation {
+  participants?: string[]
+  handles?: Record<string, string>
+  lastMs?: number | null
+  lastSender?: string | null
+  messages?: { time_ms?: number | null; text?: string | null }[]
+}
+
+export interface StoredWaiting {
+  conversationId: string
+  with: string
+  at: string
+  text: string
+}
+
+export function storedWaiting(account: string, root: string = twitterStateRoot(), limit = 12): { syncedAt: string | null; waiting: StoredWaiting[]; total: number } {
+  const state = readJson<{ syncedAt?: string | null; userId?: string; xchat?: Record<string, StoredConversation> } | null>(join(root, account, 'inboxSync.json'), null)
+  if (!state?.xchat || !state.userId) return { syncedAt: null, waiting: [], total: 0 }
+  const rows: (StoredWaiting & { ms: number })[] = []
+  for (const [conversationId, c] of Object.entries(state.xchat)) {
+    if (!c.lastMs || !c.lastSender || c.lastSender === state.userId) continue
+    const said = (c.messages ?? []).filter((m) => m.text != null)
+    const last = said[said.length - 1]
+    rows.push({ conversationId, with: (c.participants ?? []).map((id) => c.handles?.[id] ? `@${c.handles[id]}` : id).join(', ') || '?', at: new Date(c.lastMs).toISOString(), text: last && last.time_ms === c.lastMs ? String(last.text) : '(could not decrypt)', ms: c.lastMs })
+  }
+  rows.sort((a, b) => b.ms - a.ms)
+  return { syncedAt: state.syncedAt ?? null, waiting: rows.slice(0, limit).map(({ ms: _ms, ...r }) => r), total: rows.length }
+}
+
+export function storedInboxContext(accounts: readonly string[], root: string = twitterStateRoot()): string | null {
+  const parts: string[] = []
+  for (const account of accounts) {
+    const { syncedAt, waiting, total } = storedWaiting(account, root)
+    if (!syncedAt || !total) continue
+    parts.push([
+      `X inbox for ${account}, from the local store (synced ${syncedAt.slice(0, 16).replace('T', ' ')} UTC, live pushes added since; nothing was fetched for this): ${total} conversation${total === 1 ? '' : 's'} where they wrote last${total > waiting.length ? `, the newest ${waiting.length}` : ''}:`,
+      ...waiting.map((w) => `  ${w.with} at ${w.at.slice(0, 16).replace('T', ' ')} UTC: "${w.text.replace(/\s+/g, ' ').slice(0, 160)}" (conversation ${w.conversationId})`),
+      `  \`log twitter dms --account ${account}\` fetches only what is new since then (about 5 s); \`--with <handle>\` reads one person in full.`,
+    ].join('\n'))
+  }
+  return parts.length ? parts.join('\n\n') : null
+}
+
 export function twitterThreads(account: string, repo: string): InboxThread[] | null {
   const run = spawnSync('bun', [join(repo, 'bin', 'log.ts'), 'twitter', 'dms', '--account', account, '--limit', '60', '--json'], { cwd: repo, encoding: 'utf8', timeout: 120_000, env: process.env, windowsHide: true })
   try {

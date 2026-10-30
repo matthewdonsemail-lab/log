@@ -20,9 +20,10 @@ import {
 export type { FieldsSelection } from './runtime'
 export { GenqlError }
 
-import types from './types'
+import types from './types.json'
 export * from './schema'
-const typeMap = linkTypeMap(types as any)
+let linked: ReturnType<typeof linkTypeMap> | undefined
+const typeMap = () => (linked ??= linkTypeMap(types as any))
 
 export interface Client {
   query<R extends QueryGenqlSelection>(
@@ -39,9 +40,9 @@ export const createClient = function (options?: ClientOptions): Client {
     url: undefined,
 
     ...options,
-    queryRoot: typeMap.Query!,
-    mutationRoot: typeMap.Mutation!,
-    subscriptionRoot: typeMap.Subscription!,
+    queryRoot: typeMap().Query!,
+    mutationRoot: typeMap().Mutation!,
+    subscriptionRoot: typeMap().Subscription!,
   }) as any
 }
 
@@ -56,7 +57,7 @@ export type QueryResult<fields extends QueryGenqlSelection> = FieldsSelection<
 export const generateQueryOp: (
   fields: QueryGenqlSelection & { __name?: string },
 ) => GraphqlOperation = function (fields) {
-  return generateGraphqlOperation('query', typeMap.Query!, fields as any)
+  return generateGraphqlOperation('query', typeMap().Query!, fields as any)
 }
 
 export type MutationResult<fields extends MutationGenqlSelection> =
@@ -64,7 +65,7 @@ export type MutationResult<fields extends MutationGenqlSelection> =
 export const generateMutationOp: (
   fields: MutationGenqlSelection & { __name?: string },
 ) => GraphqlOperation = function (fields) {
-  return generateGraphqlOperation('mutation', typeMap.Mutation!, fields as any)
+  return generateGraphqlOperation('mutation', typeMap().Mutation!, fields as any)
 }
 
 // CoreApiClient (auto-injected by twenty-client-sdk)

@@ -13,7 +13,7 @@ import type { Command, CommandInput } from "../../runner/types.ts";
 
 export const COOKIES_USAGE = [
   "Usage: log twitter cookies save --account <handle> [--style <copyStyle>] [--name <label>]",
-  "Saves an X account's session to Twenty from a masked Clack prompt: its auth_token and ct0 cookies, copied from a browser signed in to x.com, never passed as flags or printed. They are checked first: the direct-API engine (twikit, no browser, no proxy, rule 80) pings X with them, and only cookies X accepts for that same handle are saved. A handle Twenty doesn't have yet gets a new TWITTER socialAccounts row (rule 13); one it has gets its cookies replaced. --style sets the account's copyStyle, the writing style every send and queue check holds its copy to (empty: house). The account's governor starts under ~/.logCli/twitter/<handle>.",
+  "Saves an X account's session to Twenty from a masked Clack prompt: its auth_token and ct0 cookies, copied from a browser signed in to x.com, never passed as flags or printed. They are checked first: the direct-API engine (no browser, no proxy, rule 80) pings X with them, and only cookies X accepts for that same handle are saved. A handle Twenty doesn't have yet gets a new TWITTER socialAccounts row (rule 13); one it has gets its cookies replaced. --style sets the account's copyStyle, the writing style every send and queue check holds its copy to (empty: house). The account's governor starts under ~/.logCli/twitter/<handle>.",
 ].join("\n");
 
 interface CookiePrompts {
@@ -93,7 +93,7 @@ export const cookiesCommand: Command = {
       }
       const cookies = { auth_token: authToken, ct0 };
       const probe = toFacebookAccount({ id: found?.id ?? "new", accountName: handle, name: handle, platform: "TWITTER", cookies } as SocialAccountRow);
-      context.err(`@${handle}: checking the cookies with X on the direct-API engine (twikit) before saving`);
+      context.err(`@${handle}: checking the cookies with X on the direct-API engine before saving`);
       const run = context.directTwitter(probe, { action: "ping" });
       if (!run.answer.ok || run.answer.loginState !== "loggedIn") {
         prompts.cancel("X didn't accept those cookies. Nothing saved.");

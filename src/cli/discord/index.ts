@@ -10,7 +10,7 @@ import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const DISCORD_SESSION_USAGE = [
   "Usage: log discord session check --account <accountName> [--json]",
-  "Checks that Discord still accepts the account's saved session, on the direct-API engine (vendor/endcord, no browser). Sends nothing.",
+  "Checks that Discord still accepts the account's saved session, on the direct-API engine (no browser). Sends nothing.",
   "Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.",
 ].join("\n");
 
@@ -29,7 +29,7 @@ export const DISCORD_SESSION_INPUT: CommandInput = {
 };
 
 function render(accountName: string, answer: PlatformAnswer): string {
-  if (answer.ok) return `log discord session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (vendor/endcord, no browser).`;
+  if (answer.ok) return `log discord session check: ${accountName} is loggedIn${answer.screenName ? ` as ${answer.screenName}` : ""}, via the direct-API engine (no browser).`;
   return `log discord session check: ${accountName}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
 }
 
@@ -52,7 +52,7 @@ export const discordSessionCommand: Command = {
       const gate = discordGate(account);
       if (!gate.ok) return refuse("discord session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directDiscord) return { code: 1, stderr: "log discord session check: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: session check on the direct-API engine (vendor/endcord)`);
+      context.err(`${account.accountName}: session check on the direct-API engine`);
       const run = context.directDiscord(account, { action: "ping" });
       for (const line of await recordDiscordSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
       const code = run.answer.ok ? 0 : 1;
@@ -70,7 +70,7 @@ const DISCORD_ACCOUNT: FlagSpec = { name: "account", kind: "string", required: t
 
 export const DISCORD_CHATS_USAGE = [
   "Usage: log discord chats --account <accountName> [--json]",
-  "Lists the account's DMs and group DMs with their ids, names and members, on the direct-API engine (vendor/endcord, no browser). Sends nothing.",
+  "Lists the account's DMs and group DMs with their ids, names and members, on the direct-API engine (no browser). Sends nothing.",
 ].join("\n");
 
 export const DISCORD_CHATS_INPUT: CommandInput = {
@@ -94,7 +94,7 @@ export const discordChatsCommand: Command = {
       const gate = discordGate(account);
       if (!gate.ok) return refuse("discord chats", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directDiscord) return { code: 1, stderr: "log discord chats: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: chats on the direct-API engine (vendor/endcord)`);
+      context.err(`${account.accountName}: chats on the direct-API engine`);
       const run = context.directDiscord(account, { action: "chats" });
       const chats = (run.answer.chats as DiscordChat[] | undefined) ?? [];
       const code = run.answer.ok ? 0 : 1;
@@ -109,7 +109,7 @@ export const discordChatsCommand: Command = {
 
 export const DISCORD_READ_USAGE = [
   "Usage: log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--json]",
-  "Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (vendor/endcord, no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.",
+  "Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.",
 ].join("\n");
 
 export const DISCORD_READ_INPUT: CommandInput = {
@@ -190,7 +190,7 @@ export const discordReadCommand: Command = {
 
 export const DISCORD_WATCH_USAGE = [
   "Usage: log discord watch --account <accountName> [--channel <channelId|chat name>] [--seconds <s>] [--inbox] [--json]",
-  "Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, through vendor/endcord, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.",
+  "Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.",
 ].join("\n");
 
 export const DISCORD_WATCH_INPUT: CommandInput = {
@@ -282,7 +282,7 @@ export const discordWatchCommand: Command = {
 
 export const DISCORD_SEND_USAGE = [
   'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
-  "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (vendor/endcord, no browser).",
+  "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).",
   "A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write.",
 ].join("\n");
 
@@ -346,7 +346,7 @@ export const discordSendCommand: Command = {
       const planLine = `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
       if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
-      context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine (vendor/endcord), approved by ${approvedBy}`);
+      context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const sent: PlatformAnswer[] = [];
       for (const [i, part] of plan.parts.entries()) {
         if (i) await discordDeps.wait(plan.gapSeconds * 1000);

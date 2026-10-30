@@ -30,7 +30,7 @@ describe("the syntax-tree edits", () => {
 
 function copyOfRepo(): string {
   const root = mkdtempSync(join(tmpdir(), "newPlatform"));
-  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/twenty/graphql/generated/schema.ts"]) {
+  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/client.ts", "src/cli/runner/helpers/commandIndex.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/twenty/graphql/generated/schema.ts"]) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     cpSync(join(REPO, path), join(root, path));
   }
@@ -51,7 +51,8 @@ describe("log new platform", () => {
     expect(read("src/cli/runner/helpers/platforms.ts")).toContain(`"${PROBE}"`);
     expect(read("src/cli/runner/helpers/platforms.ts")).toContain(`${PROBE}: "ScaffoldProbe"`);
     expect(read("src/cli/runner/index.ts")).toContain(`import { ${PROBE}SessionCommand } from "../${PROBE}/index.ts";`);
-    expect(read("src/cli/runner/index.ts")).toContain("directScaffoldProbe: overrides.directScaffoldProbe ?? runScaffoldProbeEngine");
+    expect(read("src/cli/runner/client.ts")).toContain("directScaffoldProbe: overrides.directScaffoldProbe ?? runScaffoldProbeEngine");
+    expect(read("src/cli/runner/helpers/commandIndex.ts")).toContain(`{ name: "session", platform: "${PROBE}", module: "src/cli/${PROBE}/index.ts", exportName: "${PROBE}SessionCommand" }`);
     expect(read("src/cli/runner/types.ts")).toContain("directScaffoldProbe?: (account:");
     expect(read("src/directApi/engine/client.ts")).toContain(`${PROBE}Session: { platform: '${PROBE}'`);
     expect(read("src/mcp/server/helpers/agentRules.ts")).toContain(`${PROBE}Session: [13, 63, 64, 73, 83]`);

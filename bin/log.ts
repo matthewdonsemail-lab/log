@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { runCli } from "../src/cli/runner/index.ts";
+import { runFast } from "../src/cli/runner/client.ts";
 import { appendLiveLine, liveLogDir } from "../src/observability/liveLog/index.ts";
 import { setLogSink } from "../src/observability/processLog/index.ts";
 
@@ -11,7 +11,7 @@ setLogSink((entry) => {
   process.stderr.write(`${entry.line}\n`);
   appendLiveLine(dir, tool, entry.source, entry.line, entry.at);
 });
-const code = await runCli(argv, {
+const code = await runFast(argv, {
   out: (line) => {
     console.log(line);
     appendLiveLine(dir, tool, "out", line);

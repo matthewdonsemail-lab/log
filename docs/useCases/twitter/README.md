@@ -11,6 +11,8 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [dmInbox.md](dmInbox.md) | read the DM inbox and list who is waiting on you | nothing |
 | [affiliateMarketing.md](affiliateMarketing.md) | follow up the conversations about a tool you use, with your affiliate credit where it helps, and book the partner call | dms, one by one or through the queue |
 | [followers.md](followers.md) | check who really follows you before saying so | nothing |
+| [whoNeedsYou.md](whoNeedsYou.md) | find who needs something from you, or who matters, and how close each is to money | nothing |
+| [followUps.md](followUps.md) | follow up the people you picked, each in your own voice | dms, one message per line, after you say yes |
 
 DMs are their own pages. Recruiting is public replies only.
 

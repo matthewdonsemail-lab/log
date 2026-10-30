@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { addPending, claimPoll, inboxContext, newMessages, pollReaders, releasePoll, takePending } from "./index.ts";
+import { addPending, claimPoll, inboxContext, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
+import { mkdirSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
 const thread = (id: string, who: string, at: string, fromMe: boolean, box = "inbox", text: string | null = "hey"): InboxThread => ({ conversationId: id, with: who, lastAt: at, lastFromMe: fromMe, lastText: text, box });
@@ -63,3 +64,28 @@ describe("inbox watch", () => {
     expect(text).toContain("log discord send --account sourcedandsoldtothehighestbidder --channel <channel>");
   });
 });
+
+describe("who is waiting, read from the local inbox store with no network", () => {
+  test("lists the conversations where they wrote last, newest first, and says when the store was synced", () => {
+    const root = mkdtempSync(join(tmpdir(), "store"));
+    mkdirSync(join(root, "acct"), { recursive: true });
+    writeFileSync(join(root, "acct", "inboxSync.json"), JSON.stringify({
+      version: 1, maxSequenceId: "9", syncedAt: "2026-10-30T03:50:00Z", userId: "100",
+      xchat: {
+        "7:100": { participants: ["7"], handles: { "7": "seven" }, lastMs: Date.parse("2026-10-30T01:00:00Z"), lastSender: "7", messages: [{ time_ms: Date.parse("2026-10-30T01:00:00Z"), text: "sounds good" }] },
+        "8:100": { participants: ["8"], handles: { "8": "eight" }, lastMs: Date.parse("2026-10-30T02:00:00Z"), lastSender: "8", messages: [{ time_ms: Date.parse("2026-10-30T02:00:00Z"), text: null }] },
+        "9:100": { participants: ["9"], handles: {}, lastMs: Date.parse("2026-10-30T03:00:00Z"), lastSender: "100", messages: [] },
+      },
+      legacy: { conversations: {}, users: {}, messages: [], boxes: {} },
+    }));
+    const found = storedWaiting("acct", root);
+    expect(found.total).toBe(2);
+    expect(found.waiting.map((w) => [w.with, w.text])).toEqual([["@eight", "(could not decrypt)"], ["@seven", "sounds good"]]);
+    const text = storedInboxContext(["acct", "nobody"], root)!;
+    expect(text).toContain("synced 2026-10-30 03:50 UTC");
+    expect(text).toContain('@seven at 2026-10-30 01:00 UTC: "sounds good"');
+    expect(text).not.toContain("9:100");
+    expect(storedInboxContext(["nobody"], root)).toBeNull();
+  });
+});
+

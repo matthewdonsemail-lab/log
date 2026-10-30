@@ -68,10 +68,10 @@ export function platformLabel(command: Pick<Command, "platform">): string {
 
 export const isPlatform = (word: string | undefined): word is Platform => (PLATFORMS as readonly string[]).includes(word ?? "");
 
-export function resolvePlatformForm(
+export function resolvePlatformForm<C extends { name: string; platform: string } = Command>(
   argv: string[],
-  find: (name: string, platform?: Platform) => Command | undefined,
-): { ok: true; command: Command; argv: string[] } | { ok: false; error: string } | { ok: true; command: null } {
+  find: (name: string, platform?: Platform) => C | undefined,
+): { ok: true; command: C; argv: string[] } | { ok: false; error: string } | { ok: true; command: null } {
   const [first, second, ...rest] = argv;
   if (isPlatform(first)) {
     const command = second === undefined ? undefined : find(second, first);
