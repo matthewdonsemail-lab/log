@@ -3443,7 +3443,8 @@ class Client:
             sequences = [int(q) for q, _ in heads if q.isdigit()]
             versions = [int(v) for _, v in heads if v.isdigit()]
             if not sequences or not versions:
-                pages.append({'skipped': 'no sequence id or key version in the latest events'})
+                missing = ' and '.join(n for n, got in (('sequence id', sequences), ('key version', versions)) if not got)
+                pages.append({'skipped': f'no {missing} in the {len(events)} latest events'})
                 break
             await asyncio.sleep(1.5)
             response, _ = await self.gql.get_xchat_conversation_page(conversation_id, str(min(sequences)), str(min(versions)))
