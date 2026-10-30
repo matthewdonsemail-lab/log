@@ -8980,3 +8980,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/infra/node02.md` now says log MCP's public address `https://node02.tail4fcf85.ts.net:8443/mcp` is live through Tailscale Funnel: only `/mcp`, `/oauth` and `/.well-known`, and what it took (node02 allowed for Funnel, deepman as Tailscale operator). It adds how to connect a claude.ai or Duet connector (the sign-in browser must be on the tailnet, since Twenty is tailnet only) and Claude Code elsewhere (`claude mcp add --transport http` with the bearer token).
 Why: mandeep allowed node02 for Funnel and set the operator, then asked to finish the HTTPS setup.
 Checked: fetched from outside the tailnet (treg tinyfish.web.fetch): the protected-resource and authorization-server metadata answer, `:8443/` is 404, and `https://node02.tail4fcf85.ts.net/` (Twenty) is unreachable.
+
+## 2026-10-30 19:30Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now gives log MCP's fixed address, `https://mcp.listeningkit.com/mcp`, served by the Cloudflare tunnel `listeningkit-node02`. That tunnel has an ingress rule for only `/mcp`, `/oauth/*` and `/.well-known/*` to `http://172.17.0.1:7337`, and a proxied `mcp` CNAME. The doc covers the container listening on the Docker bridge (`command:` in `compose.yaml`), `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, why `log.listeningkit.com` wasn't used (it points at Vercel), how to connect, and that the Tailscale Funnel on `:8443` is off. Twenty has a matching Note, "Infrastructure: log MCP server (mcp.listeningkit.com)".
+Why: mandeep asked for a proper domain name that stays the same, with the details in Twenty.
+Checked: from the internet, `/mcp` with no token gives 401, with the token `initialize` answers, both OAuth metadata documents name `https://mcp.listeningkit.com`, and `/` and `/admin` give 404. From the `listeningkit-twenty_internal` network, `172.17.0.1:7337` answers 401.

@@ -14,7 +14,7 @@ tailnet policy refuses `root`, and deepman's sudo needs a password. Everything r
 | redis | `redis:7-alpine` | Twenty's own cache and queues | internal |
 | kb-redis | `redis:8.2.11` (search and JSON modules loaded) | The knowledge base search index (`kbIdx`) | `127.0.0.1:6380`; tailnet `node02.tail4fcf85.ts.net:6380` (Tailscale Serve TCP) |
 | auth-guard | `nginx:1.27.5-alpine` | Basic Auth in front of Twenty for the public name | behind the tunnel |
-| cloudflared | `cloudflare/cloudflared:2026.10.3` | Tunnel `listeningkit-node02` (6a03a4f1-27e0-40eb-ae42-500247e312ab) | `twenty.listeningkit.com`, `newsletter-relay.listeningkit.com` |
+| cloudflared | `cloudflare/cloudflared:2026.10.3` | Tunnel `listeningkit-node02` (6a03a4f1-27e0-40eb-ae42-500247e312ab) | `twenty.listeningkit.com`, `newsletter-relay.listeningkit.com`, `mcp.listeningkit.com` (log MCP, below) |
 | newsletter-relay | `node:22-alpine` | Newsletter sign-up relay for the Vercel site | `newsletter-relay.listeningkit.com` (profile `relay`) |
 | buzz-twenty-bridge | `node:22-trixie-slim` | Buzz `crm-sync` channel to Twenty | profile `bridge`, running again since 2026-10-27 |
 
@@ -34,25 +34,30 @@ log MCP server, remotely"). It is its own stack, apart from Twenty's:
 | --- | --- |
 | `app/` | a clone of `~/repos/log-cli.git`, a bare repo that matt's PC pushes to (`git push node02 main`, remote `node02` = `deepman@100.84.226.128:repos/log-cli.git`) |
 | `Dockerfile`, `compose.yaml`, `.dockerignore` | the image `log-mcp:local` and the container `log-mcp` (restart unless-stopped, host network), below |
-| `.env` (mode 600) | `LOG_TWENTY_BASE_URL`/`LOG_TWENTY_API_KEY` (node02's Twenty, the same as the PC's), `LOG_MCP_TOKEN`, `LOG_MCP_PUBLIC_URL=https://node02.tail4fcf85.ts.net:8443`, `LOG_MCP_OWNER_USER_ID` (mandeep's Twenty user) |
+| `.env` (mode 600) | `LOG_TWENTY_BASE_URL`/`LOG_TWENTY_API_KEY` (node02's Twenty, the same as the PC's), `LOG_MCP_TOKEN`, `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, `LOG_MCP_OWNER_USER_ID` (mandeep's Twenty user) |
 | `data/logCli` | the container's `~/.logCli`: X governors, runs, OAuth clients (`mcp/oauth.json`) |
 | `data/listeningkit` | read-only copies of `subq-api-key.txt`, `twenty-listeningkit-api-key.txt`, `kb-redis-url.txt` |
 
-- **Listens on** `127.0.0.1:7337/mcp`, with no token 401, and with the token 148
-  tools. Sign-in is the static token (`C:\Users\mande\.config\listeningkit\log-mcp-token.txt`
+- **The address: `https://mcp.listeningkit.com/mcp`.** It stays the same. Point every
+  connector at it, never at a machine name. Twenty holds it too (Note
+  "Infrastructure: log MCP server (mcp.listeningkit.com)").
+- **Listens on** `172.17.0.1:7337`, the Docker bridge, not the internet (`command:` in
+  `compose.yaml`). With no token it answers 401, and with the token it lists 148 tools.
+  Sign-in is the static token (`C:\Users\mande\.config\listeningkit\log-mcp-token.txt`
   on the PC) or OAuth through node02's Twenty, where only the owner may connect.
-- **Public address (live since 2026-10-30):** `https://node02.tail4fcf85.ts.net:8443/mcp`
-  through Tailscale Funnel, with only `/mcp`, `/oauth` and `/.well-known` published
-  (`tailscale funnel --bg --https=8443 --set-path=<path> http://127.0.0.1:7337<path>`
-  for each). It took node02 allowed for Funnel in the tailnet policy and deepman as
-  Tailscale operator (`sudo tailscale set --operator=deepman`). Checked from outside
-  the tailnet: the OAuth metadata answers, `:8443/` is 404, and Twenty on `:443`
-  can't be reached. A new Funnel name takes a minute or two to answer publicly.
+- **Public route:** the Cloudflare tunnel `listeningkit-node02` (above) has an ingress
+  rule for `mcp.listeningkit.com` with path `^/(mcp|oauth/.*|\.well-known/.*)$` to
+  `http://172.17.0.1:7337`. cloudflared reaches it from `listeningkit-twenty_internal`
+  through the host's bridge address. DNS: `mcp` is a proxied CNAME to the tunnel. Any
+  other path is 404. `log.listeningkit.com` was not used, because it points at Vercel
+  (a live site).
 - **Connecting:** a claude.ai or Duet custom connector takes
-  `https://node02.tail4fcf85.ts.net:8443/mcp`, and its sign-in goes to node02's
-  Twenty, which is tailnet only, so the browser signing in must be on the tailnet.
-  Claude Code elsewhere:
-  `claude mcp add --transport http log-node02 https://node02.tail4fcf85.ts.net:8443/mcp --header "Authorization: Bearer <token from log-mcp-token.txt>"`.
+  `https://mcp.listeningkit.com/mcp`. Its sign-in goes to node02's Twenty, which is
+  tailnet only, so the browser signing in must be on the tailnet. Claude Code elsewhere:
+  `claude mcp add --transport http log-node02 https://mcp.listeningkit.com/mcp --header "Authorization: Bearer <token from log-mcp-token.txt>"`.
+- **History:** on 2026-10-30 it ran first on Tailscale Funnel
+  (`node02.tail4fcf85.ts.net:8443`) and moved the same day to the tunnel. The Funnel is
+  off (`tailscale funnel --https=8443 off`).
 - **What runs there:** the direct-API platforms (X, Reddit, Discord) and the
   knowledge base. No browser: AdsPower and Camoufox stay on the PC.
 - **X Chat:** chat-xdk has no Linux wheel in `vendor/chatXdk`, so the image
@@ -101,6 +106,7 @@ services:
     restart: unless-stopped
     network_mode: host
     env_file: .env
+    command: ["bun", "bin/logMcp.ts", "--http", "--host", "172.17.0.1", "--port", "7337"]
     volumes:
       - ./data/logCli:/home/log/.logCli
       - ./data/listeningkit:/home/log/.config/listeningkit:ro
