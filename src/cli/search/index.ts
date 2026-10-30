@@ -9,7 +9,7 @@ import { openTwitterAccount } from "../twitter/helpers/account.ts";
 
 export const SEARCH_USAGE = [
   "Usage: log search \"<query>\" [--limit <n>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--json]",
-  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (only the chunks that are new or changed are embedded, and the ones gone are removed, so the index stays deduplicated; --rebuild embeds everything again. --saved indexes the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group through vendor/endcord (its whole history, up to 20,000 messages each), keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
+  "       log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--rebuild]   (only the chunks that are new or changed are embedded, and the ones gone are removed, so the index stays deduplicated; --rebuild embeds everything again. --saved indexes the conversations already kept, reading nothing; otherwise reads every conversation through the platform's engine: X's DMs with X Chat decrypted with the saved PIN, and every Discord DM and group (its whole history, up to 20,000 messages each), keeps them in ~/.logCli/conversations, and builds the keyword and meaning indexes in ~/.logCli/search)",
   "       log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)",
   "Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.",
 ].join("\n");
@@ -31,7 +31,7 @@ export const SEARCH_INPUT: CommandInput = {
     },
     {
       words: ["index"],
-      summary: "Read every conversation through the platform's engine (X Chat decrypted with the saved PIN, Discord DMs and groups through endcord) and build the search indexes",
+      summary: "Read every conversation through the platform's engine (X Chat decrypted with the saved PIN, Discord DMs and groups) and build the search indexes",
       positionals: [],
       flags: [{ name: "platform", kind: "string", description: "Only this platform (twitter or discord; default both)" }, { name: "account", kind: "string", description: "Only this account (default: every signed-in X and Discord account)" }, { name: "saved", kind: "boolean", description: "Index the conversations already saved, reading nothing from the platforms" }, { name: "rebuild", kind: "boolean", description: "Embed every chunk again instead of only what changed" }, JSON_FLAG],
     },

@@ -2,6 +2,7 @@ import type { FlowDefinition } from "../../../browser/flow/index.ts";
 import { toolName } from "../../../browser/flow/index.ts";
 import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
+import { FLOWS_GUIDE, guideLine } from "./guides.ts";
 import { rulesLine } from "./agentRules.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 import { longRunLine, WAIT_MS } from "./toolsFromCommands.ts";
@@ -30,6 +31,7 @@ function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): Lo
       flow.summary,
       `Steps: ${flow.steps.map((s) => s.id.replace(/^s\d+_/, "")).join(" → ")}. Every step is recorded (snapshot, screenshot, HAR, rea).`,
       ...(live ? [longRunLine(options, "minutes in the account's browser")] : []),
+      guideLine(FLOWS_GUIDE),
       rulesLine("flow"),
     ].join("\n"),
     annotations: annotationsOf("read", live, title),

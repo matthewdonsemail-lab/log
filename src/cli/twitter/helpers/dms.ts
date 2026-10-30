@@ -10,7 +10,7 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--json]",
-  "Reads the account's X direct messages on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
+  "Reads the account's X direct messages on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
   "Without --conversation it syncs the inbox the way X's own chat app does (dm-core): the first read takes the whole X Chat inbox (GetInitialXChatPageQuery, then GetInboxPageRequestQuery pages) and the old DM inbox (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and keeps them in ~/.logCli/twitter/<account>/inboxSync.json with the newest event's sequence id; every read after that asks X only for what is newer (GetMessageEventsPageQuery from that sequence id, beside one dm/inbox_initial_state), unlocks the PIN and decrypts only when something is new, opening just those conversations' keys (GetInboxPageConversationDataQuery), and keeps each event once by its id. --full reads everything again. Each read saves its conversations for log search and updates the search index in the background with only the chunks that changed. It then lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.",
   "--with <handle> reads everything with one person by their handle and nobody else: their user id, their legacy thread (dm/conversation) and their X Chat thread (read the way X's own chat app opens a chat, from its dm-core: GetInboxPageConversationDataQuery for that one conversation, then GetConversationPageQuery from the oldest message held, its fetchOlderMessages, up to 5 pages 1.5 s apart while X says there is more), merged into one timeline, oldest first, a message mirrored into both shown once. It never reads the whole inbox. A 429 stops the read with nothing retried, as X's app does (it retries only 5xx), and pauses the account's governor (rule 94). X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
 ].join("\n");
@@ -52,9 +52,9 @@ function messageLine(message: TwitterDmMessage): string {
 
 function render(account: string, answer: TwitterSessionAnswer, waiting: boolean): string {
   if (!answer.ok) return `log twitter dms: ${account}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
-  if (answer.messages) return [`log twitter dms: @${account}, conversation ${answer.conversationId}, ${answer.messages.length} message${answer.messages.length === 1 ? "" : "s"}, oldest first, via the direct-API engine (twikit, no browser):`, ...answer.messages.map(messageLine)].join("\n");
+  if (answer.messages) return [`log twitter dms: @${account}, conversation ${answer.conversationId}, ${answer.messages.length} message${answer.messages.length === 1 ? "" : "s"}, oldest first, via the direct-API engine (no browser):`, ...answer.messages.map(messageLine)].join("\n");
   const threads = (answer.threads ?? []).filter((t) => !waiting || !t.lastFromMe);
-  const head = `log twitter dms: @${answer.screenName ?? account}, ${threads.length} conversation${threads.length === 1 ? "" : "s"}${waiting ? " waiting on a reply" : `, ${answer.waitingOnYou ?? 0} waiting on a reply`}, newest first, via the direct-API engine (twikit, no browser):`;
+  const head = `log twitter dms: @${answer.screenName ?? account}, ${threads.length} conversation${threads.length === 1 ? "" : "s"}${waiting ? " waiting on a reply" : `, ${answer.waitingOnYou ?? 0} waiting on a reply`}, newest first, via the direct-API engine (no browser):`;
   return [head, ...threads.map(threadLine)].join("\n");
 }
 
@@ -127,7 +127,7 @@ export const dmsCommand: Command = {
         const governor = governorLine(merged);
         return { code: answer.ok ? 0 : 1, stdout: [render(opened.account.accountName, answer, false), ...(governor ? [governor] : [])].join("\n") };
       }
-      context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine (twikit), X called directly${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
+      context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine, X called directly${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
       const raw = await read({ limit, ...(typeof convoId === "string" ? { conversationId: convoId } : { export: true, ...(full ? { full } : {}) }) });
       if (raw.answer.sync) context.err(syncLine(opened.account.accountName, raw.answer.sync));
       if (raw.answer.ok && raw.answer.conversations) {

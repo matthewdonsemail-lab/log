@@ -4,7 +4,7 @@ import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.t
 import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
-import { engineLine } from "../../../directApi/engine/index.ts";
+import { guideLine, guideOfCommand } from "./guides.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 
 export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue"]);
@@ -49,6 +49,7 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
 }
 
 export interface ToolOptions {
+  full?: boolean;
   shell?: boolean;
 }
 
@@ -78,7 +79,7 @@ function formUsage(command: Command, form: InputForm): string[] {
   return [...(own.length ? own : lines.filter((line) => line.startsWith("log "))), ...notes];
 }
 
-const NOTES: Readonly<Record<string, string[]>> = {
+export const NOTES: Readonly<Record<string, string[]>> = {
   connect: ["Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from Twenty's email, password and 2FA secret (rule 21), and anything it can't handle waits for matt in the visible window (up to --wait seconds, default 600). Progress streams to ~/.logCli/mcp/<day>.log."],
   inspectStart: ["Opens the account's browser as its own process (detach: true) and returns once the gate and self-check passed. It stays open until `inspectDo` with action stop (or 30 idle minutes)."],
   inspectDo: ["Sends one step to the open session and returns its snapshot (element refs), requests and rea reading. Steps that act on Facebook (click, type, press, solve, signIn, code, pin…) are `inspectDoLive`."],
@@ -93,9 +94,13 @@ const NOTES: Readonly<Record<string, string[]>> = {
   profile: ["Without --live it only reads the profile and lists its controls in the run's profileFound.txt. profileLive with --live uploads socialAccounts.profilePhoto and coverPhoto in one run (rule 28): only when matt asked."],
 };
 
-function engineLines(command: string, live: boolean): string[] {
-  const line = live ? null : engineLine(command);
-  return line ? [line] : [];
+function guideLines(command: Command): string[] {
+  const topic = guideOfCommand(command);
+  return topic ? [guideLine(topic)] : [];
+}
+
+function usageHeads(usage: string): string[] {
+  return usage.split("\n").map((line) => line.replace(/^\s*Usage:\s*/, "").trim()).filter((line) => line.startsWith("log "));
 }
 
 const LIVE_LINE = (place: string) => `Live on ${place}: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).`;
@@ -112,11 +117,11 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
       `${form.summary}.`,
       ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
-      ...engineLines(commandKey(command), entry.live),
-      ...formUsage(command, form),
+      ...(options.full ? formUsage(command, form) : formUsage(command, form).filter((line) => line.startsWith("log "))),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on ${platformLabel(command)} is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
       ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
+      ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
@@ -141,13 +146,13 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
       ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
-      ...engineLines(commandKey(command), entry.live),
-      command.usage,
+      ...(options.full ? [command.usage] : usageHeads(command.usage)),
       ...(NOTES[command.name] ?? []),
       entry.live
         ? `Pass the arguments after the command name in \`args\`, with ${liveFlags}. \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`
         : `Pass the arguments after the command name in \`args\`, e.g. ["--json"].${liveFlags ? ` It never takes ${liveFlags}: that is \`${command.name}${LIVE_SUFFIX}\`.` : ""} \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`,
       ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
+      ...guideLines(command),
       rulesLine(commandKey(command)),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),

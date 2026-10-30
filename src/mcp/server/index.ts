@@ -20,7 +20,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, hasShell, LONG_RUNNING, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 
@@ -167,6 +167,12 @@ export async function runToolCall(
   onLine: OnLogLine = () => {},
   readBrowsers: ReadBrowsers = browserViews,
 ): Promise<CallToolResult> {
+  if (name === GUIDE_TOOL) {
+    const topic = String((input as { topic?: unknown } | undefined)?.topic ?? "");
+    const text = readGuide(topic);
+    if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
+    return { content: [{ type: "text", text }] };
+  }
   const { waitMs, ...fields } = input ?? {};
   const flowCall = flowOfTool(savedFlows(), name);
   if (flowCall) {
@@ -223,7 +229,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
-    return { tools: [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })] };
+    return { tools: [guideTool(), ...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })] };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [{ uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }],

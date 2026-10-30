@@ -5,7 +5,7 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const FOLLOWERS_USAGE = [
   "Usage: log twitter followers --account <accountName> [--limit <n>] [--json]",
-  "Reads the account's own followers on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing.",
+  "Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing.",
   "X's own answer decides: the session check first, then X's followers list, 100 a page, 1.5 s apart. --limit is how many to read, default 200, at most 4000.",
 ].join("\n");
 
@@ -36,7 +36,7 @@ function line(f: TwitterFollower, i: number): string {
 function render(account: string, answer: TwitterSessionAnswer): string {
   if (!answer.ok) return `log twitter followers: ${account}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
   const list = answer.followers ?? [];
-  return [`log twitter followers: @${account}, ${list.length} followers read${answer.complete ? " (all of them)" : ""}, newest first, via the direct-API engine (twikit, no browser):`, ...list.map(line)].join("\n");
+  return [`log twitter followers: @${account}, ${list.length} followers read${answer.complete ? " (all of them)" : ""}, newest first, via the direct-API engine (no browser):`, ...list.map(line)].join("\n");
 }
 
 export const followersCommand: Command = {
@@ -58,7 +58,7 @@ export const followersCommand: Command = {
     try {
       const opened = await openTwitterAccount(context, "twitter followers", ref);
       if (!opened.ok) return opened.result;
-      context.err(`${opened.account.accountName}: followers read (up to ${limit}) on the direct-API engine (twikit), X called directly`);
+      context.err(`${opened.account.accountName}: followers read (up to ${limit}) on the direct-API engine, X called directly`);
       const run = await opened.engine({ action: "followers", limit });
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...run.answer }, null, 2) };

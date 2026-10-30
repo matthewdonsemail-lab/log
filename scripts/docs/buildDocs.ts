@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { commandKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { savedFlows } from "../../src/mcp/server/index.ts";
+import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
@@ -71,6 +71,57 @@ for (const file of readdirSync(diagramDir)) {
       "",
     ].join("\n"),
   );
+}
+
+{
+  const agentsMd = readFileSync(join(root, "AGENTS.md"), "utf8").replace(/\r\n/g, "\n");
+  const full = [...toolsFromCommands(COMMANDS, { shell: true, full: true }), ...toolsFromFlows(savedFlows(), { shell: true, full: true })];
+  const flowNames = new Set(toolsFromFlows(savedFlows(), { shell: true }).map((t) => t.name));
+  const topicOfTool = new Map(commandTools(COMMANDS).map((e) => [e.tool, guideOfCommand(e.command)]));
+  const rulesOf = (tool: { description: string }) => ((tool.description.split("\n").at(-1) ?? "").match(/rules ([\d, ]+)/)?.[1] ?? "").split(",").map((n) => Number(n.trim())).filter(Boolean);
+  for (const tool of full) if (!flowNames.has(tool.name) && !topicOfTool.get(tool.name)) problems.push(`MCP tool ${tool.name} has no guide: add its command to GUIDE_TOPICS (src/mcp/server/helpers/guides.ts)`);
+  const guideDir = join(root, "docs/guides");
+  mkdirSync(guideDir, { recursive: true });
+  for (const [topic, about] of Object.entries(GUIDE_TOPICS)) {
+    const tools = full.filter((t) => (about.flows && flowNames.has(t.name)) || topicOfTool.get(t.name) === topic);
+    const extra =
+      topic === CORE_GUIDE
+        ? [
+            "## Rule one: if we don't know, we do this",
+            "",
+            agentsSection(agentsMd, "Rule one"),
+            "",
+            "## The core rules, in full",
+            "",
+            CORE_PRINCIPLES,
+            "",
+            "## Which guide for which work",
+            "",
+            `Each tool's description names its guide. Load it with \`${GUIDE_TOOL}({ topic })\` before first using that tool.`,
+            "",
+            "| Topic | What it covers |",
+            "|---|---|",
+            ...Object.entries(GUIDE_TOPICS).filter(([t]) => t !== CORE_GUIDE).map(([t, g]) => `| \`${t}\` | ${g.about} |`),
+            "",
+            "## How a run reports back",
+            "",
+            `- With a shell (Claude Code, Codex): ${longRunLine({ shell: true })}`,
+            `- Without one (claude.ai, Duet): ${longRunLine({ shell: false })}`,
+            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 54) and what only matt can clear (`needsMatt`).",
+            "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
+          ]
+        : [];
+    const rules = topic === CORE_GUIDE ? [...new Set([...CORE_PRINCIPLES.matchAll(/rules? ([\d, -]+)/g)].flatMap((m) => m[1].split(",").flatMap((part) => { const [a, b] = part.trim().split("-").map(Number); return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a]; })))].filter(Boolean) : [];
+    put(`docs/guides/${topic}.md`, renderGuide({ topic, tools, commands: COMMANDS, flows: savedFlows(), agentsMd, rulesOf, rules, extra }));
+  }
+  for (const file of readdirSync(guideDir)) {
+    if (!file.endsWith(".md") || GUIDE_TOPICS[file.slice(0, -3)]) continue;
+    if (check) problems.push(`docs/guides/${file} is no longer a guide topic: run \`bun run docs:build\``);
+    else {
+      rmSync(join(guideDir, file));
+      wrote.push(`removed docs/guides/${file}`);
+    }
+  }
 }
 
 const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\r\n/g, "\n");

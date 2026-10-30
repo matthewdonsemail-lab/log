@@ -43,7 +43,7 @@ function usageOf(shape: SendShape): string {
   const skip = shape.text ? ` [--skipStyleCheck]${shape.action === "dm" ? " [--asOne]" : ""}` : "";
   return [
     `Usage: log twitter ${shape.action} --account <accountName> ${target}${text} [--approvedBy <who>]${skip} [--force] [--live] [--json]`,
-    `${shape.summary.replace(", on the direct-API engine; a dry run unless --live", "")}, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80).`,
+    `${shape.summary.replace(", on the direct-API engine; a dry run unless --live", "")}, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).`,
     `Without --live it is a dry run: the target${shape.text ? ", the text and its house style" : ""} are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.`,
     `${shape.says}. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.`,
   ].join("\n");
@@ -134,7 +134,7 @@ function sendCommand(shape: SendShape): Command {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify(dry, null, 2) };
           return { code: 0, stdout: `log ${label}: dry run: ${account.accountName} would ${shape.verb} ${plan.target}${plan.spec.text ? ` with "${plan.spec.text}"` : ""}. Checked; X was not contacted. --live --approvedBy <who> sends it (rule 8).` };
         }
-        context.err(`${account.accountName}: ${shape.action} ${plan.target}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine (twikit), X called directly, approved by ${plan.spec.approvedBy}`);
+        context.err(`${account.accountName}: ${shape.action} ${plan.target}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
           const { answers, last } = await sendDmParts(context, engine, spec, split);

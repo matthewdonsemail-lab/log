@@ -8781,3 +8781,48 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the generated Twenty client is regenerated from the live ListeningKit/log-cli Twenty schema (`bun run twenty:client`): `schema.ts` gains the objects and fields added in Twenty since 28 Oct (bookedMeetings, bugReports, businessPayments and others), and `types.json` gains their type map. Nothing hand-written changed.
 Why: matt asked to regenerate it after `twenty:client:check` found the committed client stale against the live schema.
 Checked: `node scripts/twenty/emitTwentyClient.mjs --check` against live Twenty: up to date (12 files). `bun run check`: 1178 pass, every check green.
+
+## 2026-10-30 04:35Z · xchatOneConversation
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/guides/accountsAndProxies.md`: new file
+- `docs/guides/discord.md`: new file
+- `docs/guides/facebookBrowser.md`: new file
+- `docs/guides/facebookFlows.md`: new file
+- `docs/guides/facebookGroups.md`: new file
+- `docs/guides/facebookMarketplace.md`: new file
+- `docs/guides/knowledgeAndSearch.md`: new file
+- `docs/guides/logMcpInstructions.md`: new file
+- `docs/guides/newPlatform.md`: new file
+- `docs/guides/reddit.md`: new file
+- `docs/guides/runsAndEvidence.md`: new file
+- `docs/guides/xAccount.md`: new file
+- `docs/guides/xInbox.md`: new file
+- `docs/guides/xSending.md`: new file
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/discord/index.ts`: changed const DISCORD_SESSION_USAGE, function render, const discordSessionCommand, const DISCORD_CHATS_USAGE, const discordChatsCommand, const DISCORD_READ_USAGE, const DISCORD_WATCH_USAGE, const DISCORD_SEND_USAGE, const discordSendCommand
+- `src/cli/reddit/index.ts`: changed const REDDIT_SESSION_USAGE, function render, const redditSessionCommand
+- `src/cli/search/index.ts`: changed const SEARCH_USAGE, const SEARCH_INPUT
+- `src/cli/twitter/helpers/chat.ts`: changed const CHAT_USAGE
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const cookiesCommand
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function render, const dmsCommand
+- `src/cli/twitter/helpers/followers.ts`: changed const FOLLOWERS_USAGE, function render, const followersCommand
+- `src/cli/twitter/helpers/follows.ts`: changed const FOLLOWS_USAGE, function render, const followsCommand
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE
+- `src/cli/twitter/helpers/send.ts`: changed function usageOf, function sendCommand
+- `src/cli/twitter/index.ts`: changed const SESSION_USAGE, function render, const sessionCommand
+- `src/directApi/engine/client.ts`: changed function engineContext
+- `src/directApi/engine/engine.test.ts`: added test "no MCP description carries the engine line: the library behind a call gives the agent nothing to act on" · changed test "session state and governor use per account, a pause said loudly" · removed test "readGroup's MCP description carries the engine line, and readGroupLive doesn't"
+- `src/mcp/server/agentRules.test.ts`: added test "like Paper's MCP: short instructions that say to load the core guide first, never cut by the client", test "every tool names its guide just before its rules, and getGuide serves that guide from docs/guides", test "no tool description carries the engine's internals: they give the agent nothing to act on" · changed test "every tool's description ends with its rules and points back to AGENTS.md"
+- `src/mcp/server/helpers/agentRules.ts`: added const CORE_PRINCIPLES · changed const SERVER_INSTRUCTIONS
+- `src/mcp/server/helpers/guides.ts`: added const GUIDES_DIR, const SKILLS_DIR, const CORE_GUIDE, const GUIDE_TOOL, interface GuideTopic, const GUIDE_TOPICS, const guideKey, function guideOfCommand, const FLOWS_GUIDE, function guideLine, function guidePath, function readGuide, function guideTool, function agentsRules, function agentsSection, function skillBody, const shift, interface GuideInput, function renderGuide
+- `src/mcp/server/helpers/index.ts`: added export from "./guides.ts" · changed export from "./agentRules.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added function guideLines, function usageHeads · changed interface ToolOptions, function typedTool, function argsTool · removed function engineLines
+- `src/mcp/server/helpers/toolsFromFlows.ts`: changed function flowTool
+- `src/mcp/server/index.ts`: changed function runToolCall, function createLogMcpServer
+- `src/mcp/server/remote.test.ts`: changed test "every tool declares the same outputSchema, and listChanged is on"
+
+What changed: the log MCP now primes the agent the way Paper's MCP does. Its instructions are short (1,567 characters, was 13,278, so the client no longer cuts them off): what log is, "You MUST load the full guide before other log tools: getGuide({ topic: "logMcpInstructions" })", and seven one-line hard rules. A new `getGuide` tool, listed first, serves `docs/guides/<topic>.md`, and its topic list names each guide. There are 14 guides (`GUIDE_TOPICS`, `src/mcp/server/helpers/guides.ts`), one per kind of work (facebookBrowser, facebookFlows, facebookMarketplace, facebookGroups, xInbox, xSending, xAccount, discord, reddit, accountsAndProxies, runsAndEvidence, knowledgeAndSearch, newPlatform), plus the core logMcpInstructions. The core guide carries rule one, all 25 core principles in full, which guide covers which work, and how runs report back. `bun run docs:build` writes every guide from the code: the work step by step (each topic's skills), every tool it covers with its full description and usage (`toolsFromCommands({ full: true })`), and every AGENTS.md rule those tools cite, in full. `check:docs` refuses a stale guide and a tool with no guide. Each tool's description is now short: what it does, its `log …` usage line, its notes, "Before first using this tool in a session, load its guide: getGuide({ topic: … })", then its rules. The full usage moved into the guide. The engine paragraph naming the library behind a call (twikit, fbk, endcord, rdvwr) is gone from descriptions and guides, the usage text no longer names those libraries, and the hook's every-prompt "log-cli engines" block is now just each account's session and today's use.
+Why: matt: Paper's way of writing tool definitions and priming the context is the right one. Short instructions that say to load the guide first, and use-case guides in a directory that each tool points to. log's 145 tools should match it. And the libraries behind the engine (twikit and the like) give the agent no context, so they come out.
+Checked: measured from the code. Instructions 13,278 → 1,567 chars. Tool descriptions 168K → 154K chars across 146 tools, avg ~1,050, the biggest 3K. The input schemas (97K) are unchanged, and the 282K of identical outputSchema is MCP metadata, not sent to the model as tool definitions. 14 guides, 4,799 lines. Library names in the guides went from 46 to 12, the 12 being matt's own rules 80, 81 and 88 quoted in full. New tests: instructions under 2,000 chars with the MUST line, getGuide listed first, every tool naming an existing guide on its second-to-last line, getGuide serving the core guide and refusing an unknown topic, and no description carrying the engine line. `bun run check`: 1178 pass, every check green. The running log MCP server serves the old tool list until it is restarted (reconnect it with /mcp).

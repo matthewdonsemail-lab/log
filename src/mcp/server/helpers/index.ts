@@ -7,4 +7,6 @@ export { flowArgv, flowOfTool, toolsFromFlows } from "./toolsFromFlows.ts";
 export { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 export { formatLogLine, logFileName } from "./formatLogLine.ts";
 export type { LogStream } from "./formatLogLine.ts";
-export { AGENTS_URI, citedRules, COMMAND_RULES, EVERY_TOOL_RULES, rulesLine, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS } from "./agentRules.ts";
+export { AGENTS_URI, citedRules, COMMAND_RULES, CORE_PRINCIPLES, EVERY_TOOL_RULES, rulesLine, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS } from "./agentRules.ts";
+export { agentsRules, agentsSection, CORE_GUIDE, FLOWS_GUIDE, GUIDE_TOOL, GUIDE_TOPICS, guideKey, guideLine, guideOfCommand, guidePath, GUIDES_DIR, guideTool, readGuide, renderGuide, skillBody } from "./guides.ts";
+export type { GuideTopic, GuideInput } from "./guides.ts";

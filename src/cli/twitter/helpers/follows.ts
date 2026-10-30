@@ -5,7 +5,7 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const FOLLOWS_USAGE = [
   "Usage: log twitter follows --account <accountName> --handles <handle,handle…> [--json]",
-  "Reads, for each handle, whether it follows the account and whether the account follows it, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
+  "Reads, for each handle, whether it follows the account and whether the account follows it, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.",
   "X's own answer decides: one friendships/show read per handle, 1.5 s apart, after the session check. Handles come from treg research or matt, never a guess (rule 53).",
 ].join("\n");
 
@@ -27,7 +27,7 @@ export const FOLLOWS_INPUT: CommandInput = {
 function render(account: string, answer: TwitterSessionAnswer): string {
   if (!answer.ok) return `log twitter follows: ${account}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
   const rows = (answer.checked ?? []).map((c) => (c.error ? `  @${c.handle}: ${c.event ?? "failed"}: ${c.error}` : `  @${c.handle}: ${c.followsYou ? "follows you" : "doesn't follow you"}, ${c.youFollow ? "you follow them" : "you don't follow them"}`));
-  return [`log twitter follows: @${answer.screenName ?? account}, ${rows.length} handle${rows.length === 1 ? "" : "s"} checked, via the direct-API engine (twikit, no browser):`, ...rows].join("\n");
+  return [`log twitter follows: @${answer.screenName ?? account}, ${rows.length} handle${rows.length === 1 ? "" : "s"} checked, via the direct-API engine (no browser):`, ...rows].join("\n");
 }
 
 export const followsCommand: Command = {
@@ -49,7 +49,7 @@ export const followsCommand: Command = {
     try {
       const opened = await openTwitterAccount(context, "twitter follows", ref);
       if (!opened.ok) return opened.result;
-      context.err(`${opened.account.accountName}: follows read for ${handles.length} handle${handles.length === 1 ? "" : "s"} on the direct-API engine (twikit), X called directly`);
+      context.err(`${opened.account.accountName}: follows read for ${handles.length} handle${handles.length === 1 ? "" : "s"} on the direct-API engine, X called directly`);
       const run = await opened.engine({ action: "follows", handles });
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...run.answer }, null, 2) };
