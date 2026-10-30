@@ -186,3 +186,100 @@ def test_open_xchat_events_reads_only_those_conversations_keys(monkeypatch):
     assert asked == [["7:100"]]
     assert out["messages"]["7:100"][0]["text"] == "hey"
     assert out["conversations"]["7:100"] == {"participant_ids": ["7"], "handles": {"7": "seven"}}
+
+
+def decrypted(content, sequence="50", sender="7"):
+    return {"event": {"type": "Message", "conversation_id": "7:100", "sender_id": sender, "content": content}, "original_b64": message_event(sequence, "5")}
+
+
+def test_message_of_reads_every_content_type():
+    from twikit.xchat import is_marker, message_of
+    text = message_of(decrypted({"content_type": "Text", "text": "look", "attachments": [{"post": {"post_url": "https://x.com/a/status/1"}}]}))
+    photo = message_of(decrypted({"content_type": "Text", "text": "", "attachments": [{"media": {"type": "Image", "filename": "a.jpg"}}]}))
+    reaction = message_of(decrypted({"content_type": "Reaction", "emoji": "🔥", "target_message_id": "40"}))
+    edit = message_of(decrypted({"content_type": "Edit", "new_text": "fixed", "target_message_id": "40"}))
+    marker = message_of(decrypted({"content_type": "MarkRead"}))
+    assert text["text"] == "look https://x.com/a/status/1"
+    assert photo["text"] == "(image: a.jpg)"
+    assert (reaction["text"], reaction["target_message_id"]) == ("(reacted 🔥)", "40")
+    assert edit["text"] == "(edited) fixed"
+    assert marker["text"] is None and is_marker(marker)
+    assert not any(is_marker(m) for m in (text, photo, reaction, edit))
+
+
+def test_missing_keys_are_read_from_chat_xdks_own_error():
+    events = [message_event("60", "9"), message_event("61", "9")]
+    error = "Crypto error: Decryption failed: Message encrypted with key version '9' but no matching key found. Available versions: [3, 4]. Include the conversation's KeyChange events"
+    missing = Client._xchat_missing_keys(events, {"errors": {0: error, 1: error}})
+    assert missing == {"7:100": {"sequence": 61, "needed": {9}, "held": {3, 4}}}
+
+
+class FakeChat:
+    def __init__(self):
+        self.batches = []
+        self.signing = []
+
+    def set_signing_keys(self, keys):
+        self.signing = keys
+
+    def set_reject_unverified(self, _):
+        pass
+
+    def decrypt_events(self, events):
+        self.batches.append(list(events))
+        if "keyChange" in events:
+            return {"messages": [{"event": {"type": "Message", "conversation_id": "7:100", "sender_id": "7", "content": {"content_type": "Text", "text": "opened"}}, "original_b64": e} for e in events if e != "keyChange"], "errors": {}}
+        error = "Message encrypted with key version '9' but no matching key found. Available versions: []. Include the conversation's KeyChange events"
+        return {"messages": [], "errors": {i: error for i in range(len(events))}}
+
+
+def test_decrypt_fetches_the_missing_key_changes_and_opens_again(monkeypatch):
+    client = offline_client()
+    client._xchat = FakeChat()
+    event = message_event("70", "9")
+    asked, pages = [], []
+
+    async def keys(ids, include_juicebox_tokens=False):
+        asked.append(sorted(ids))
+        return []
+
+    async def page(cid, min_sequence, min_version):
+        pages.append((cid, min_sequence, min_version))
+        return {"data": {"get_conversation_page": {"missing_conversation_key_change_events": ["keyChange"], "encoded_message_events": [], "has_more": False}}}, None
+
+    monkeypatch.setattr(client, "get_xchat_public_keys", keys)
+    monkeypatch.setattr(client.gql, "get_xchat_conversation_page", page)
+    out = run(client._xchat_decrypt([event], {"100"}))
+    assert pages == [("7:100", "71", "9")]
+    assert client._xchat.batches[-1] == ["keyChange", event]
+    assert out["7:100"][0]["text"] == "opened"
+    assert asked == [["100", "7"]]
+
+
+def test_get_xchat_conversation_reopens_held_messages_x_left_out(monkeypatch):
+    client = offline_client()
+    client._xchat = object()
+    client._xchat_me = "100"
+    latest, wanted = message_event("90", "5"), message_event("80", "5")
+    calls = []
+
+    async def data(ids):
+        return {"data": {"get_inbox_page_conversation_data": {"items": [{"latest_message_events": [latest], "latest_conversation_key_change_events": []}]}}}, None
+
+    async def page(cid, min_sequence, min_version):
+        calls.append((min_sequence, min_version))
+        return {"data": {"get_conversation_page": {"encoded_message_events": [wanted], "missing_conversation_key_change_events": [], "has_more": False}}}, None
+
+    async def decrypt(events, people):
+        return {"7:100": [{"event_id": e} for e in events]}
+
+    async def no_sleep(_):
+        return None
+
+    monkeypatch.setattr(client.gql, "get_xchat_conversation_data", data)
+    monkeypatch.setattr(client.gql, "get_xchat_conversation_page", page)
+    monkeypatch.setattr(client, "_xchat_decrypt", decrypt)
+    monkeypatch.setattr(asyncio, "sleep", no_sleep)
+    out = run(client.get_xchat_conversation("7:100", older_pages=0, reopen=["80"]))
+    assert calls == [("81", "5")]
+    assert wanted in [m["event_id"] for m in out["messages"]]

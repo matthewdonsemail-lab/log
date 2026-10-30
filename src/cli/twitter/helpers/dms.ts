@@ -68,14 +68,14 @@ export const twitterDmsDeps: { reindex: () => void } = {
 
 export function syncLine(account: string, sync: TwitterInboxSync): string {
   if (sync.mode === "full") return `${account}: full inbox read in ${sync.seconds} s (${sync.xchatConversations ?? 0} X Chat conversations, ${sync.legacyPages} old DM page${sync.legacyPages === 1 ? "" : "s"}), kept from sequence ${sync.maxSequenceId}`;
-  return `${account}: synced in ${sync.seconds} s: ${sync.newEvents} new X Chat event${sync.newEvents === 1 ? "" : "s"} since sequence ${sync.since}${sync.newEvents ? `, ${sync.newMessages ?? 0} new message${sync.newMessages === 1 ? "" : "s"}` : ", nothing to decrypt"} (${sync.xchatPages ?? 1} X Chat request${(sync.xchatPages ?? 1) === 1 ? "" : "s"}, ${sync.legacyPages} old DM request${sync.legacyPages === 1 ? "" : "s"})`;
+  return `${account}: synced in ${sync.seconds} s: ${sync.newEvents} new X Chat event${sync.newEvents === 1 ? "" : "s"} since sequence ${sync.since}${sync.newEvents ? `, ${sync.newMessages ?? 0} new message${sync.newMessages === 1 ? "" : "s"}` : ", nothing to decrypt"} (${sync.xchatPages ?? 1} X Chat request${(sync.xchatPages ?? 1) === 1 ? "" : "s"}, ${sync.legacyPages} old DM request${sync.legacyPages === 1 ? "" : "s"})${sync.reopened ? `, ${sync.reopened} older message${sync.reopened === 1 ? "" : "s"} opened that couldn't be before` : ""}`;
 }
 
 function keepForSearch(account: string, answer: TwitterSessionAnswer): number {
   const conversations = (answer.conversations ?? []).map((c) => twitterConversationOf(account, c)).filter((c) => c.messages.length);
   if (!conversations.length) return 0;
   saveConversations(conversations);
-  if (answer.sync?.mode === "full" || (answer.sync?.newMessages ?? 0) > 0) twitterDmsDeps.reindex();
+  if (answer.sync?.mode === "full" || (answer.sync?.newMessages ?? 0) > 0 || (answer.sync?.reopened ?? 0) > 0) twitterDmsDeps.reindex();
   return conversations.length;
 }
 

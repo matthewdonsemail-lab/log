@@ -37,6 +37,7 @@ export interface TwitterInboxSync {
   mode: 'full' | 'delta'
   newEvents: number
   newMessages?: number
+  reopened?: number
   xchatPages?: number
   xchatConversations?: number
   legacyPages: number

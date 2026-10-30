@@ -65,13 +65,17 @@ async def main():
     held = inboxSync.read_state(path)
     out["afterPush"] = {"max": held["maxSequenceId"], "texts": [m["text"] for m in held["xchat"]["7:100"]["messages"]], "userId": held.get("userId")}
     newest_only = FakeClient([])
-    async def one_chat(cid, older_pages=1):
+    async def one_chat(cid, older_pages=1, reopen=None):
         return {"messages": [{"event_id": "16", "sender_id": "100", "time_ms": 4000, "text": "on it", "conversation_id": cid}], "has_more": False, "older_pages": [{"skipped": "no key version in the 1 latest events"}]}
     newest_only.get_xchat_conversation = one_chat
     async def user(uid):
         return type("U", (), {"screen_name": "seven"})()
     newest_only.get_user_by_id = user
     out["oneChat"] = await engine.xchat_conversation(newest_only, cookies, spec, "7:100", 50)
+    inboxSync.push_message(path, ME, {"event_id": "17", "sender_id": "7", "time_ms": 5000, "text": None, "kind": "MarkRead", "conversation_id": "7:100"}, "seven")
+    marked = inboxSync.read_state(path)
+    out["afterMarker"] = inboxSync.xchat_threads(marked, ME, True)[0]
+    out["groupRoutes"] = [engine.is_xchat_id(c) for c in ("g2004865989830476207", "7:100", "1234-5678")]
 
 asyncio.run(main())
 print(json.dumps(out, default=str))
@@ -113,8 +117,13 @@ describe("log twitter dms syncs the inbox the way X's app does: everything once,
     expect(out.afterPush).toEqual({ max: "11", texts: ["yo lad", "sounds good", "you there"], userId: "100" });
   });
 
+  test("a read marker is never the last message: the thread still shows what was said, and a group id reads as X Chat", () => {
+    expect(out.afterMarker).toMatchObject({ lastText: "on it", lastFromMe: true });
+    expect(out.groupRoutes).toEqual([true, true, false]);
+  });
+
   test("one person's chat shows every message the store holds, even when X answers with only the newest", () => {
-    expect(out.oneChat.fromStore).toBe(3);
+    expect(out.oneChat.fromStore).toBe(4);
     expect(out.oneChat.messages.map((m: { text: string; from: string | null }) => [m.text, m.from])).toEqual([["yo lad", null], ["sounds good", "seven"], ["you there", "seven"], ["on it", null]]);
   });
 });
