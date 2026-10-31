@@ -1,4 +1,17 @@
+<p align="center">
+  <img src="banner.png" alt="Log by ListeningKit — Omnichannel Social Media Listening & Marketing Tool" width="100%" />
+</p>
+
 # log
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@listeningkit/log"><img src="https://img.shields.io/npm/v/@listeningkit/log.svg?style=flat-square" alt="npm: @listeningkit/log" /></a>
+  <a href="https://log.listeningkit.com"><img src="https://img.shields.io/badge/Live%20Deployment-log.listeningkit.com-success.svg?style=flat-square" alt="Live Deployment" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square" alt="License: MIT" /></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/Protocol-Model%20Context%20Protocol%20(MCP)-purple.svg?style=flat-square" alt="Model Context Protocol" /></a>
+  <a href="https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit"><img src="https://img.shields.io/badge/Convex-Hackathon%20Submission-blue.svg?style=flat-square" alt="Convex Hackathon Submission" /></a>
+  <a href="https://app.ona.com/#https://github.com/matthewdonsemail-lab/log"><img src="https://ona.com/build-with-ona.svg" alt="Build with Ona" /></a>
+</p>
 
 ListeningKit's own go-to-market tool, open-sourced so you can run the same thing.
 One CLI and one MCP server run our accounts on X, Reddit, Facebook and Discord:

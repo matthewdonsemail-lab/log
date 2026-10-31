@@ -9472,3 +9472,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: vercel.json puts npm's global bin first on PATH in both the install and build commands, so the pnpm 10.5.2 it installs is the one that runs, and the install prints `pnpm --version`.
 Why: with pnpm 10.5.2 installed, the third preview still said "Ignoring not compatible lockfile", the same as before. The lockfile installs with 10.5.2 here, so Vercel's own pnpm was still the one on PATH.
 Checked: vercel.json parses. The build log's pnpm version line and the preview build this push starts are the real check.
+
+## 2026-10-31 08:06Z · sync/logCliTail
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `banner.png`: new file
+
+What changed: `banner.png` is back at the repo root and at the top of the README. Under the title there is a badge row again: npm (`@listeningkit/log`), the live site, MIT, MCP, the Convex hackathon submission, and the Build with Ona button. Convex is no longer listed as the backend.
+Why: matt: "what about the art that we had there before". The move into log (b6824f0) deleted the old README's banner and badge row, and with it the Build with Ona button Ona's extra credits ask for (PR #9).
+Checked: `banner.png` is the same file as on main before the move (d132cbd, 2785679 bytes). The README's generated section is untouched, and `check:docs` runs on this commit.
