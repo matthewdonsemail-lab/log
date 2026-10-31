@@ -41,16 +41,17 @@ async function run(argv: string[], engine: TwitterEngineRun | null, twenty = mar
 
 const TOKEN = "a".repeat(40);
 const CT0 = "b".repeat(64);
+const TWID = "u%3D2039389784808853504";
 const LOGGED_IN = (screenName: string): TwitterEngineRun => ({ answer: { ok: true, loginState: "loggedIn", httpStatus: 404, userId: "77", screenName }, refreshed: { guest_id: "v1" } });
 
 describe("log twitter cookies save", () => {
   test("a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", async () => {
-    const said = typed([TOKEN, CT0]);
+    const said = typed([TOKEN, CT0, TWID]);
     const r = await run(["twitter", "cookies", "save", "--account", "@newOne", "--style", "house"], LOGGED_IN("newone"));
     expect(r.code).toBe(0);
-    expect(r.calls).toEqual([{ account: "newOne", action: "ping", cookies: { auth_token: TOKEN, ct0: CT0 } }]);
+    expect(r.calls).toEqual([{ account: "newOne", action: "ping", cookies: { auth_token: TOKEN, ct0: CT0, twid: TWID } }]);
     const row = r.twenty.rows.socialAccounts!.find((x) => x.accountName === "newOne")!;
-    expect(row).toMatchObject({ platform: "TWITTER", name: "newOne", sessionState: "loggedIn", copyStyle: "house", cookies: { auth_token: TOKEN, ct0: CT0, guest_id: "v1" } });
+    expect(row).toMatchObject({ platform: "TWITTER", name: "newOne", sessionState: "loggedIn", copyStyle: "house", cookies: { auth_token: TOKEN, ct0: CT0, twid: TWID, guest_id: "v1" } });
     expect(r.out).toContain("@newOne added in Twenty");
     for (const text of [r.out, r.err, ...said]) {
       expect(text).not.toContain(TOKEN);
@@ -59,7 +60,7 @@ describe("log twitter cookies save", () => {
   });
 
   test("an existing handle has its cookies replaced, not a second row", async () => {
-    typed([TOKEN, CT0]);
+    typed([TOKEN, CT0, TWID]);
     const twenty = marketplaceFixture();
     twenty.rows.socialAccounts!.push({ id: "xOld", accountName: "oldOne", platform: "TWITTER", cookies: { auth_token: "z".repeat(40), ct0: "y".repeat(40) }, proxy: null });
     const r = await run(["twitter", "cookies", "save", "--account", "oldOne"], LOGGED_IN("OldOne"), twenty);
@@ -71,12 +72,12 @@ describe("log twitter cookies save", () => {
   });
 
   test("cookies X refuses, or for another handle, save nothing", async () => {
-    typed([TOKEN, CT0]);
+    typed([TOKEN, CT0, TWID]);
     const refused = await run(["twitter", "cookies", "save", "--account", "newOne"], { answer: { ok: false, code: "sessionDead", loginState: "loggedOut" }, refreshed: null });
     expect(refused.code).toBe(1);
     expect(refused.err).toContain("twitterCookiesRefused");
     expect(refused.twenty.rows.socialAccounts!.some((x) => x.accountName === "newOne")).toBe(false);
-    typed([TOKEN, CT0]);
+    typed([TOKEN, CT0, TWID]);
     const wrong = await run(["twitter", "cookies", "save", "--account", "newOne"], LOGGED_IN("someoneElse"));
     expect(wrong.err).toContain("twitterCookiesWrongAccount");
     expect(wrong.twenty.rows.socialAccounts!.some((x) => x.accountName === "newOne")).toBe(false);

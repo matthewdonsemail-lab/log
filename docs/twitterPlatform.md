@@ -1,30 +1,59 @@
-# Twitter as a log-cli platform: the plan
+# X (Twitter) in log
 
-Status: 2026-10-25. Steps 1 to 4 are built: the engine (`python/twitterApi/engine.py`: ping, follows, reply, quote, like, dm, each answer read into one event), `log twitter session check`, `follows`, `reply`, `quote`, `like`, `dm` and `queue`, each an MCP tool (the sends and `queue run` with their `…Live` twins). Step 5 (retiring the controller's skill) is left. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported). We maintain `vendor/twikit` ourselves (rule 81): its transport is curl_cffi impersonating Safari, as fbk's is, not httpx, checked by `bun run check:twikitTransport` and `vendor/twikit/tests/test_transport.py`.
+log runs X accounts without a browser: it calls X's internal API directly with the account's saved session, through the vendored twikit library. This page explains how X fits into log's usual shape (command, engine, library, Twenty), which commands exist, how sends and queues work, and how X's answers are read. Read it if you work on the X commands or want to know how a reply or DM actually goes out.
 
-## In one line
+## Status
 
-twitter-controller already does on X what log-cli does on Facebook through fbk: it calls the platform's internal API with an account's saved session, no browser. So X goes in the way fbk did. twikit is the engine in `vendor/`, and our commands, MCP tools, hooks and Twenty sit around it, as `log twitter <command> …`.
+Steps 1 to 4 of the plan below are built:
 
-## What twitter-controller is
+- the engine (`python/twitterApi/engine.py`: ping, follows, reply, quote, like, dm, each answer read into one event);
+- `log twitter session check`, `follows`, `reply`, `quote`, `like`, `dm` and `queue`, each an MCP tool, with a `…Live` version for the sends and `queue run`.
 
-A skill (`.agents/skills/twitter-controller`, now `vendor/twitterController`) that **sends** what a person already approved, from any X account in Twenty, through twikit:
+Step 5, retiring the earlier X controller, is left.
 
-| Script | Does |
+Two things are vendored:
+
+- `vendor/twikit`: a fork of twikit (MIT, commit `6a73ab9`, 2026-05-17). We maintain it ourselves. Its transport is curl_cffi impersonating Safari, the way fbk's is, not httpx. `bun run check:twikitTransport` and `vendor/twikit/tests/test_transport.py` check this.
+- `vendor/twitterController`: the earlier X controller's scripts and tests as they were, the code being ported.
+
+## The idea in one line
+
+The X controller already does on X what log does on Facebook through fbk: it calls the platform's internal API with an account's saved session, with no browser. So X goes in the same way. twikit is the engine in `vendor/`, and log's commands, MCP tools, hooks and Twenty sit around it, as `log twitter <command> …`.
+
+## What the X controller does
+
+The controller is an earlier skill that **sends** what a person has already approved, from any X account in Twenty, through twikit:
+
+| Script | What it does |
 | --- | --- |
-| `send_approved_reply.py --action ping` | checks the saved session still works (read-only) |
-| `--action reply / quote / dm / like` | sends one approved reply, quote, DM or like, with the approver recorded |
-| `--action follows` | read-only: does each handle follow the account (`friendships/show`) |
-| `sequence.py build/show/check/approve/run/status` | a queue of approved messages, sent one at a time 90-150 s apart. `approve` stores a fingerprint of every recipient and every line of copy, and an edit voids it |
-| `random_run.py plan/run/nudge` | spreads a queue over a window at random times, as a state machine (`planned → waiting → liking/replying → cooling → finished`, `halted`), with cool-offs on X's blocks and a nudge that sends the next N now |
+| `send_approved_reply.py --action ping` | Checks the saved session still works (read-only). |
+| `--action reply / quote / dm / like` | Sends one approved reply, quote, DM or like, recording who approved it. |
+| `--action follows` | Read-only: does each handle follow the account (`friendships/show`)? |
+| `sequence.py build/show/check/approve/run/status` | A queue of approved messages, sent one at a time 90-150 s apart. `approve` stores a fingerprint of every recipient and every line of copy, and any edit voids it. |
+| `random_run.py plan/run/nudge` | Spreads a queue over a time window at random times, as a state machine (`planned → waiting → liking/replying → cooling → finished`, `halted`), with cool-offs when X blocks and a nudge that sends the next N now. |
 
-Its rules match log-cli's: discovery is treg's, never twikit's (rule 53); nothing is sent without a named approver (rules 8, 10); cookies come from Twenty `socialAccounts` and are never printed (rule 21). Copy is checked against the house style before it goes out: lowercase, no commas, no full stops, no em dashes.
+Its habits match log's:
 
-What X answers, as the controller reads it: 226 automated, 344 daily limit (wait a day), 385 gone, 433 replies off, HTTP 429 with `x-rate-limit-reset`, 401 code 32 dead session. And one with no code at all: HTTP 200 with an empty `create_tweet` result, which means X quietly dropped the reply.
+- Finding people and posts is done by a separate search tool, never through twikit.
+- Nothing is sent without a named approver.
+- Cookies come from Twenty `socialAccounts` and are never printed.
+- Copy is checked against the house style before it goes out: lowercase, no commas, no full stops, no em dashes.
 
-## The shape it maps to
+### How X answers
 
-The same three layers Facebook has, platform first (rules 63, 64):
+| Answer | Meaning |
+| --- | --- |
+| 226 | Looks automated. |
+| 344 | Daily limit reached; wait a day. |
+| 385 | The post is gone. |
+| 433 | Replies are turned off. |
+| HTTP 429 with `x-rate-limit-reset` | Too many requests; wait until the reset time. |
+| HTTP 401, code 32 | The session is dead. |
+| HTTP 200 with an empty `create_tweet` result | X quietly dropped the reply. |
+
+## How it fits log's shape
+
+The same three layers Facebook has, platform first:
 
 ```mermaid
 flowchart LR
@@ -34,66 +63,76 @@ flowchart LR
   src --> twenty["Twenty socialAccounts<br/>platform TWITTER"]
 ```
 
-| Layer | Facebook today | Twitter |
+| Layer | Facebook | X |
 | --- | --- | --- |
-| The library | `vendor/fbk` (surfaces per family) | `vendor/twikit` (one `Client`, 114 calls) |
-| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`: `ping` first (the controller's `check_session`), then one twikit call |
-| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor; refreshed cookies merged back to Twenty |
-| The gate | `directGate` (session, proxy in the home country, hours) | `twitterGate`: platform TWITTER, not deactivated, `auth_token` + `ct0` saved. No proxy (rule 80) |
-| The result | `socialAccounts.sessionState` | the same field (`loggedIn`, `loggedOut` for 401/32, `restricted` for 226) |
-| Declared in | `DIRECT_ROUTES`, `commandEngine` | the same, with a new engine kind `directApiOnly`: X has no browser path |
+| The library | `vendor/fbk` (one surface per family) | `vendor/twikit` (one `Client`, 114 calls) |
+| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`: `ping` first, then one twikit call |
+| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor; refreshed cookies merged back into Twenty |
+| The gate | `directGate` (session, proxy in the home country, active hours) | `twitterGate`: platform TWITTER, not deactivated, `auth_token` and `ct0` saved. No proxy. |
+| The result | `socialAccounts.sessionState` | The same field (`loggedIn`, `loggedOut` for 401/32, `restricted` for 226) |
+| Declared in | `DIRECT_ROUTES`, `commandEngine` | The same, with the engine kind `directApiOnly`: X has no browser path |
 
-Example: `log twitter reply --account matthewsoldit --tweet <url> --text "<copy>" --approvedBy matt --live`. The gate checks the account, the engine pings the session, the style check passes, twikit sends, and the answer decides (rule 73). A sent id is ok. An empty result is a drop, and the account cools off. A 401 marks the session `loggedOut` in Twenty.
+Example: `log twitter reply --account <a> --tweet <url> --text "<copy>" --approvedBy <name> --live`.
 
-## The families
+1. The gate checks the account.
+2. The engine pings the session.
+3. The style check passes.
+4. twikit sends the reply.
+5. X's answer decides the result. A sent id is success. An empty result is a drop, and the account cools off. A 401 marks the session `loggedOut` in Twenty.
 
-Twitter's families are what the controller does now, by area. Discovery stays treg's.
+## The commands
 
-| Command | Area/domain | From | Live? |
+These cover what the controller does today, by area.
+
+| Command | Area/domain | From the controller | Live version |
 | --- | --- | --- | --- |
-| `log twitter session check --account <a>` | `twitter/account/session` | `--action ping` | no |
-| `log twitter follows --account <a> --handles <h,…>` | `twitter/graph/follows` | `--action follows` | no |
-| `log twitter dms --account <a> [--waiting] [--conversation <id>]` | `cli/twitter/dms` | none (the controller never read DMs: twikit's `dm/inbox_initial_state`, `dm/inbox_timeline` and `dm/conversation`) | no |
-| `log twitter followers --account <a> [--limit <n>]` | `cli/twitter/followers` | none (twikit's `get_user_followers`, 100 a page) | no |
-| `log twitter reply` / `quote` | `twitter/post/send` | `--action reply / quote` | `twitterReplyLive`, `twitterQuoteLive` (rule 8) |
+| `log twitter session check --account <a>` | `twitter/account/session` | `--action ping` | none |
+| `log twitter follows --account <a> --handles <h,…>` | `twitter/graph/follows` | `--action follows` | none |
+| `log twitter dms --account <a> [--waiting] [--conversation <id>]` | `cli/twitter/dms` | new (twikit's `dm/inbox_initial_state`, `dm/inbox_timeline` and `dm/conversation`) | none |
+| `log twitter followers --account <a> [--limit <n>]` | `cli/twitter/followers` | new (twikit's `get_user_followers`, 100 a page) | none |
+| `log twitter reply` / `quote` | `twitter/post/send` | `--action reply / quote` | `twitterReplyLive`, `twitterQuoteLive` |
 | `log twitter dm --userId <id>` | `twitter/post/send` | `--action dm` | `twitterDmLive` |
 | `log twitter like` | `twitter/post/send` | `--action like` | `twitterLikeLive` |
-| `log twitter queue build / show / check / approve / status / plan` | `twitter/queue/plan` | `sequence.py`, `random_run.py plan` | no |
+| `log twitter queue build / show / check / approve / status / plan` | `twitter/queue/plan` | `sequence.py`, `random_run.py plan` | none |
 | `log twitter queue run / nudge` | `twitter/queue/run` (XState) | `random_run.py run / nudge` | `twitterQueueRunLive` |
-| the house style check | `twitter/copy/style` | `check_style` | no |
+| the house style check | `twitter/copy/style` | `check_style` | none |
 
-Without `--live` a send is a dry run: the target, the text and its house style are checked and X is not contacted. `--live` needs `--approvedBy`, and the engine refuses a send without both too. A queue file keeps the controller's shape: its snake_case keys are read and written back in camelCase, and its approval fingerprint is computed the way the controller's Python computes it, so a queue the controller approved stays approved.
+- **Without `--live`, a send is a dry run:** the target, the text and its style are checked, and X isn't contacted.
+- **`--live` needs `--approvedBy`,** and the engine also refuses a send without both.
+- **Queue files keep the controller's format.** Their snake_case keys are read and written back in camelCase, and the approval fingerprint is computed the same way the controller's Python does it, so a queue the controller approved stays approved.
 
-What every platform's commands share stays shared: the copy rules beside `facebook/marketplace/copy`, and the governor.
+What every platform's commands share stays shared: the copy rules (beside `facebook/marketplace/copy`) and the governor.
 
-## Sequencing: how the runner becomes ours
+## How the queue runner works
 
-`random_run.py` already is a state machine (python-statemachine). It becomes an XState machine in `src/twitter/queue/run/machine.ts`, run through `observability/trace` like every process that runs over time (rule 6), so `log watch` and the live log show each step (rule 26).
+`random_run.py` was already a state machine (python-statemachine). It becomes an XState machine in `src/twitter/queue/run/machine.ts`, run through `observability/trace` like every long-running process, so `log watch` and the live log show each step.
 
-- **States** stay as they are: `planned`, `waiting`, `liking`, `replying`, `cooling`, `finished`, `halted`.
-- **Each send** is one engine call. Its answer is the event: `sent`, `dropped` (an empty result), `throttled` (429, with its reset time), `dailyLimit` (344), `gone` (385, 433), `automated` (226), `sessionDead` (401/32).
-- **Random times** keep the system random source and the drawn gaps. A cool-off moves what is left later by the pause.
-- **Cool-offs** go into the account's governor. fbk's `RequestGovernor` already paces with heavy-tailed gaps, caps and persistent cooldowns, and it takes its config as an object. A twitter config (X's daily send limit, its 2h/6h/12h and 24h waits) is a second config of the same class, kept per account like Facebook's.
-- **Approval** keeps the fingerprint: a queue edited after `approve` is refused until it is approved again.
-- **The halt** tags matt in buzz, as the controller's alert does now.
+- **States** stay the same: `planned`, `waiting`, `liking`, `replying`, `cooling`, `finished`, `halted`.
+- **Each send** is one engine call, and its answer is the event: `sent`, `dropped` (an empty result), `throttled` (429, with its reset time), `dailyLimit` (344), `gone` (385, 433), `automated` (226), `sessionDead` (401/32).
+- **Random times** use the system random source and the drawn gaps. A cool-off pushes everything left later by the length of the pause.
+- **Cool-offs** go into the account's governor. fbk's `RequestGovernor` already paces with heavy-tailed gaps, caps and lasting cooldowns, and takes its settings as an object. X's settings (its daily send limit and its 2h/6h/12h and 24h waits) are a second configuration of the same class, kept per account like Facebook's.
+- **Approval** keeps the fingerprint: a queue edited after `approve` is refused until it's approved again.
+- **A halt** sends an alert to the team chat, as the controller's alert does now.
 
 ## Twenty
 
-X accounts are `socialAccounts` rows with platform `TWITTER`. There are 2 today, both with cookies set, and none has a proxy, home country or status. The controller merges X's refreshed cookies back into the row after each run, and that carries over.
+X accounts are `socialAccounts` rows with platform `TWITTER`. They need cookies set; they don't need a proxy or home country. After each run, X's refreshed cookies are merged back into the row, as the controller does.
 
-## Not now
+## Not yet
 
-The warm-up, X listening (searching and reading posts: #26's first half), a browser path for X, and the rea request docs for X. They come later, on the same shape.
+The warm-up, X listening (searching and reading posts), a browser path for X, and rea request docs for X. They'll come later, in the same shape.
 
-## Order
+## The plan, in order
 
-1. The engine: `python/twitterApi/engine.py` around `vendor/twikit` (the session from Twenty, the proxy, the governor, the session ping, the answer read into an event), and `log twitter session check` as its first command. It changes nothing on X.
-2. `follows`: the controller's one read.
-3. `reply`, `quote`, `like` and `dm`, each with its `…Live` tool and the style check.
-4. The queue (plan, approve, run, nudge) as the XState machine above.
-5. `vendor/twitterController` retires once each script has its command: the skill points at `log twitter …`.
+1. **The engine:** `python/twitterApi/engine.py` around `vendor/twikit` (the session from Twenty, the governor, the session ping, the answer read into an event), with `log twitter session check` as its first command. It changes nothing on X.
+2. **`follows`:** the controller's one read.
+3. **`reply`, `quote`, `like` and `dm`,** each with its `…Live` tool and the style check.
+4. **The queue** (plan, approve, run, nudge) as the XState machine above.
+5. **Retire `vendor/twitterController`** once each script has its command, pointing the skill at `log twitter …`.
 
-## Decided (matt, 2026-10-25)
+## Decisions
 
-- **No proxy for X.** X accounts call X directly, as the controller does today. Rule 12 stays Facebook's (rule 80).
-- **Name.** The platform word is `twitter` (Twenty's `TWITTER`, the skill's name).
+- **No proxy for X.** X accounts call X directly, as the controller does. The rule that a browser never opens without a proxy stays Facebook's.
+- **The name.** The platform word is `twitter` (matching Twenty's `TWITTER`).
+
+The rules behind this are in AGENTS.md.

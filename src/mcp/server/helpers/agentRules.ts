@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 101;
+export const RULES_REVIEWED_THROUGH = 103;
 
 export const AGENTS_URI = "log://agents";
 
@@ -35,6 +35,7 @@ export const CORE_PRINCIPLES = [
   "28. A first message to someone matt has never talked with is the opener only: about them and what they posted, always relevant, never the ask (no pitch, no \"you using treg\", no call); the ask waits until they answer, and `voice` fails a first message with one (rule 98).",
   "29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).",
   "30. A reaction to matt's message, or their read receipt past it, means they opened it: `twitterDms` { waiting: true, limit: \"200\" } lists it apart as a follow-up to send (about them and what they're doing, never the opener again, never the ask), not a reply they're waiting on (rule 100).",
+  "31. LinkedIn is reached only through vendor/openLinkedinApi's one curl_cffi Session pinned to Chrome (`IMPERSONATE`), never plain `requests`, and every call goes through the account's governor; a LinkedIn account writes at most 10 times a day (rule 102).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -111,6 +112,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   logout: [],
   whoami: [],
   redditSession: [13, 63, 64, 73, 83],
+  linkedinSession: [13, 63, 64, 73, 83, 102],
+  linkedinCookies: [13, 21, 63, 64, 73, 83, 102],
   discordSession: [13, 63, 64, 73, 83, 94],
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94],

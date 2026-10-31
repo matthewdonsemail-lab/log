@@ -55,13 +55,13 @@ replies show up the second they land and no inbox read ever hits X's 429.
 
 ```bash
 ## who wrote: the hook says it, pushed by X. To watch by hand:
-bun bin/log.ts twitter chat watch --account matthewsoldit --seconds 600
+log twitter chat watch --account matthewsoldit --seconds 600
 ## read them
-bun bin/log.ts twitter dms --account matthewsoldit --with <handle>
+log twitter dms --account matthewsoldit --with <handle>
 ## gate the draft
-bun bin/log.ts voice --to <handle> --text "<draft>" --context "<what they said>"
+log voice --to <handle> --text "<draft>" --context "<what they said>"
 ## send, once matt says
-bun bin/log.ts twitter dm --account matthewsoldit --userId <id> --text "<draft>" --approvedBy matt --live
+log twitter dm --account matthewsoldit --userId <id> --text "<draft>" --approvedBy matt --live
 ```
 
 ### When it goes wrong

@@ -69,3 +69,6 @@ __pycache__/
 
 .vercel
 .env*
+
+# generated from docs/ by scripts/docs/syncSiteDocs.mjs on every site build
+apps/docs/content/docs/

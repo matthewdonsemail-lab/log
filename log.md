@@ -9233,6 +9233,153 @@ What changed: an opened message with no reply is a follow-up too, not only a rea
 Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
 Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.
 
+## 2026-10-30 18:15Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now has the node02 log MCP stack (`/home/deepman/services/logMcp`). It covers the bare repo the PC pushes to, the `log-mcp` container and its Dockerfile and compose file, what the `.env` holds (names only), the data folders, the planned Tailscale Funnel on `:8443` with only `/mcp`, `/oauth` and `/.well-known`, the chat-xdk source build with juicebox-sdk 0.3.7, the separate X governor and how to update it. The SSH line now says `deepman@`, since the tailnet policy refuses `root`. `log-mcp-token.txt` is listed with the other logins.
+Why: mandeep asked to set log-cli up with HTTPS, on node02 through Tailscale, for claude.ai/Duet connectors and for Claude Code elsewhere.
+Checked: on node02 the container answers 401 with no token. With the token, `initialize` and `tools/list` return 148 tools, and the OAuth metadata names `https://node02.tail4fcf85.ts.net:8443`. Funnel itself is still waiting on the tailnet policy.
+
+## 2026-10-30 18:52Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now says log MCP's public address `https://node02.tail4fcf85.ts.net:8443/mcp` is live through Tailscale Funnel: only `/mcp`, `/oauth` and `/.well-known`, and what it took (node02 allowed for Funnel, deepman as Tailscale operator). It adds how to connect a claude.ai or Duet connector (the sign-in browser must be on the tailnet, since Twenty is tailnet only) and Claude Code elsewhere (`claude mcp add --transport http` with the bearer token).
+Why: mandeep allowed node02 for Funnel and set the operator, then asked to finish the HTTPS setup.
+Checked: fetched from outside the tailnet (treg tinyfish.web.fetch): the protected-resource and authorization-server metadata answer, `:8443/` is 404, and `https://node02.tail4fcf85.ts.net/` (Twenty) is unreachable.
+
+## 2026-10-30 19:30Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now gives log MCP's fixed address, `https://mcp.listeningkit.com/mcp`, served by the Cloudflare tunnel `listeningkit-node02`. That tunnel has an ingress rule for only `/mcp`, `/oauth/*` and `/.well-known/*` to `http://172.17.0.1:7337`, and a proxied `mcp` CNAME. The doc covers the container listening on the Docker bridge (`command:` in `compose.yaml`), `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, why `log.listeningkit.com` wasn't used (it points at Vercel), how to connect, and that the Tailscale Funnel on `:8443` is off. Twenty has a matching Note, "Infrastructure: log MCP server (mcp.listeningkit.com)".
+Why: mandeep asked for a proper domain name that stays the same, with the details in Twenty.
+Checked: from the internet, `/mcp` with no token gives 401, with the token `initialize` answers, both OAuth metadata documents name `https://mcp.listeningkit.com`, and `/` and `/admin` give 404. From the `listeningkit-twenty_internal` network, `172.17.0.1:7337` answers 401.
+
+## 2026-10-29 02:05Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/cookies.test.ts`: added const TWID · changed test "a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", test "an existing handle has its cookies replaced, not a second row", test "cookies X refuses, or for another handle, save nothing"
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const COOKIES_INPUT, const cookiesCommand
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+
+What changed: `log twitter cookies save` asks for a third cookie, twid, after auth_token and ct0, and saves it with them. The usage, the terminal-only note and `skills/xPosting` name all three.
+Why: the first real save (@deepman_1) was refused with twidMissing: X accepted auth_token and ct0, but the engine reads the account's id from twid, so the ping can't finish without it.
+Checked: @deepman_1 saved to Twenty with the three cookies, loggedIn as 2039389784808853504, and `log twitter session check --account deepman_1` answers loggedIn; the cookie-save tests pass with twid (31 pass in src/cli/twitter).
+
+## 2026-10-29 02:13Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills/xPosting/SKILL.md`: edited
+
+What changed: `skills/xPosting` gains the growth loop matt runs on @matthewsoldit, in order: one original post by the playbook, every comment answered in the first 2 hours, a trend quoted an hour later, DMs to the likers and reposters the cold DM way, topic replies every day inside 40 writes, the inbox answered (never a cold template to someone already talked to), followers scored weekly with treg, leads into Twenty. Each step names its use-case page and commands. It also says `log voice` judges by matt's own writing, so another account writes in its `copyStyle`, and it gives the playbook's Twenty note ids (node02 and legacy).
+Why: asked to find through log how matt connects and grows on X, and how to do it the same way from @deepman_1.
+Checked: read from the knowledge base (`log kb search`: engagerDms, engagementReplies, topicReplies, perPersonVoice, xchatReplies, the matt X memory note); treg 0.25.0 installed here; the playbook note created in node02's Twenty (201).
+
+## 2026-10-29 02:17Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: new file
+- `docs/infra/node02.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/subq/decisions/client.ts`: added function subqKeyFile · changed function subqKey, function createDecisionsClient
+- `src/subq/decisions/decisions.test.ts`: added test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads `~/.config/listeningkit/subq-api-key.txt` after `SUBQ_API_KEY` and before `.env.local` (`subqKeyFile`), with a test. `docs/infra/apiKeys.md` lists every key file in `~/.config/listeningkit` (SubQ, treg, Twenty, kb-redis, Cloudflare, the X cookie how-to): what each one is and what reads it, never its value. `docs/infra/node02.md` links to it. `skills/xPosting` gets an account-plan table: @matthewsoldit's from his memory note, and @deepman_1's Mandeep + InferenceSaver Social Growth Plan (inferencesaver `docs/project/social-growth-plan.md`), with where it gives way to the X discipline.
+Why: asked to keep the treg and SubQ keys in a text file that log uses and that is findable from Twenty for every future session, and whether the small-founder growth plan had been used (it hadn't).
+Checked: `bun run check` green (1163 pass, 0 fail), with the new key-file test. `treg-api-key.txt` was copied from `~/.treg/config.json` without printing it. `subq-api-key.txt` was created empty for the key to be pasted in.
+
+## 2026-10-29 02:21Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: edited
+- `src/subq/decisions/client.ts`: changed function subqKey
+- `src/subq/decisions/decisions.test.ts`: added test "a key file in NAME=value lines gives its SUBQ_API_KEY line only" · changed test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads the key file's `SUBQ_API_KEY=` line when it has one, and a file of bare `NAME=value` lines without it gives no key. A file holding only the key works as before. `docs/infra/apiKeys.md` says both layouts work.
+Why: the key was saved as two lines (`SUBQ_BASE_URL=…` and `SUBQ_API_KEY=…`), and the reader took the whole file as the key.
+Checked: the reader gives a 40-character, one-line key. An empty request to `api.subq.ai/v1/systemone` with it answers 422 (a validation error, so the key is accepted), and a wrong key answers 401. Nothing was billed. The SubQ tests pass, 17 of 17.
+
+## 2026-10-30 23:06Z · feat/linkedinPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/linkedin.md`: new file
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/platforms/linkedin/README.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/linkedinApi/__init__.py`: new file, no top-level declarations
+- `python/linkedinApi/engine.py`: added const ROOT, const VENDOR, const PLATFORM, const LIBRARY, const SESSION_COOKIES, const COOKIE_DOMAIN, def no_wait, def session_of, def refreshed_of, def check, def ping, const ACTIONS
+- `scripts/twenty/twentySetup.mjs`: changed const PLATFORM_ADDITIONS
+- `src/cli/linkedin/cookies.test.ts`: added const realDeps, function typed, function run, const LI_AT, const JSESSION, const LOGGED_IN, test "a new profile: checked with LinkedIn first, then a LINKEDIN row loggedIn; nothing secret printed", test "cookies LinkedIn refuses, or for another profile, save nothing", test "it needs a terminal, and a public id is read from a profile url"
+- `src/cli/linkedin/helpers/cookies.ts`: added const LINKEDIN_COOKIES_USAGE, interface CookiePrompts, const linkedinCookiesDeps, const LINKEDIN_COOKIES_INPUT, function isLiAt, function isJsessionId, function publicIdOf, function existing, const linkedinCookiesCommand
+- `src/cli/linkedin/helpers/index.ts`: added export from "./cookies.ts"
+- `src/cli/linkedin/index.ts`: added const LINKEDIN_SESSION_USAGE, const LINKEDIN_SESSION_INPUT, function render, const linkedinSessionCommand, export from "./helpers/index.ts"
+- `src/cli/linkedin/linkedin.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the engine refuses cookies without li_at and JSESSIONID before calling LinkedIn"
+- `src/cli/runner/client.ts`: changed function createContext
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/linkedin/account/index.ts`: added export from "./session/index.ts"
+- `src/linkedin/account/session/client.ts`: added const LINKEDIN_PLATFORM, const LINKEDIN_COOKIE_DOMAIN, function findLinkedinAccount, function linkedinGate, function runLinkedinEngine, function recordLinkedinSession
+- `src/linkedin/account/session/index.ts`: added export from "./client"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `vendor/openLinkedinApi/LICENSE`: new file
+- `vendor/openLinkedinApi/README.md`: new file
+- `vendor/openLinkedinApi/UPSTREAM`: new file
+- `vendor/openLinkedinApi/open_linkedin_api/__init__.py`: added const __all__
+- `vendor/openLinkedinApi/open_linkedin_api/client.py`: added const logger, class ChallengeException, class UnauthorizedException, class Client
+- `vendor/openLinkedinApi/open_linkedin_api/cookie_repository.py`: added class Error, class LinkedinSessionExpired, class CookieRepository
+- `vendor/openLinkedinApi/open_linkedin_api/linkedin.py`: added const logger, def default_evade, class Linkedin
+- `vendor/openLinkedinApi/open_linkedin_api/settings.py`: added const HOME_DIR, const ROOT_DIR, const LINKEDIN_API_USER_DIR, const COOKIE_PATH
+- `vendor/openLinkedinApi/open_linkedin_api/utils/__init__.py`: new file, no top-level declarations
+- `vendor/openLinkedinApi/open_linkedin_api/utils/helpers.py`: added def get_id_from_urn, def get_urn_from_raw_update, def get_update_author_name, def get_update_old, def get_update_content, def get_update_author_profile, def get_update_url, def append_update_post_field_to_posts_list, def parse_list_raw_urns, def parse_list_raw_posts, def get_list_posts_sorted_without_promoted, def generate_trackingId_as_charString, def generate_trackingId
+- `vendor/openLinkedinApi/pyproject.toml`: new file
+
+What changed: LinkedIn is log-cli's fifth platform, made with `log new platform linkedin` (rule 83). `vendor/openLinkedinApi` is EseToni/open-linkedin-api (MIT) vendored at 5feee360ec26719d07d5e67638045e751b48a74c (`UPSTREAM`). It is the maintained fork of the original linkedin-api, which is gone from GitHub. It reads LinkedIn's internal Voyager API with the session cookies. `python/linkedinApi/engine.py` `ping` reads `/voyager/api/me` with the account's `li_at` and `JSESSIONID`, no redirects followed: a redirect, 401 or 403 is loggedOut, 999 or 429 is throttled, and 200 gives the public id, name and member id. Changed session cookies go back to Twenty. New `log linkedin cookies save --account <publicId>` (terminal only, like `log twitter cookies save`) takes `li_at` and `JSESSIONID` from a masked Clack prompt. It checks them with LinkedIn, saves only cookies signed in as that same profile, to a new or existing LINKEDIN socialAccounts row, and prints nothing secret. A profile url is read as its public id. New error codes `linkedinCookiesRefused`, `linkedinCookiesWrongAccount`, a `linkedin` MCP guide topic, the routes and rules, and `LINKEDIN` in twentySetup's platform additions (node02's Twenty already has the option).
+Why: mandeep asked for `log linkedin`, so LinkedIn works through log the way X does, starting with the account's session. Posting comes next, from a recording of linkedin.com (the library has no post call).
+Checked: `bun test` (1197 pass), with new cookies tests (saved when LinkedIn says loggedIn as that profile, refused or wrong account saves nothing, no cookie in any output, needs a terminal) and the engine refusing cookies without li_at and JSESSIONID before calling LinkedIn. Also `bun run typecheck`, and the platforms, docs, agentHooks, naming and noComments checks. twentySetup's dry run lists no LINKEDIN change. No live session check yet: it waits for mandeep's cookies.
+
+## 2026-10-31 02:44Z · feat/linkedinPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/linkedin.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/platforms/linkedin/README.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/checks/linkedinTransport.py`: added const ROOT, const PACKAGE, const TRANSPORT, const FORBIDDEN, const SESSION_NAMES, def forbidden, def problems_in, def tracked, def main
+- `python/linkedinApi/engine.py`: changed def session_of, def refreshed_of · removed const COOKIE_DOMAIN
+- `scripts/checks/checkLinkedinTransport.ts`: added const root, function python, const mode, const run
+- `src/cli/linkedin/linkedin.test.ts`: added test "a LinkedIn account writes at most 10 times a day", test "the engine reaches LinkedIn through curl_cffi pinned to Chrome, never plain requests"
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `vendor/openLinkedinApi/open_linkedin_api/client.py`: changed class Client
+- `vendor/openLinkedinApi/open_linkedin_api/cookie_repository.py`: changed class CookieRepository
+- `vendor/openLinkedinApi/open_linkedin_api/transport.py`: added const IMPERSONATE, const COOKIE_DOMAIN, const __all__, def new_session
+
+What changed: LinkedIn now goes out looking like Chrome, the way X goes out looking like Safari (rule 96, after rule 81). `vendor/openLinkedinApi` reaches LinkedIn only through one curl_cffi `Session` in the new `open_linkedin_api/transport.py`, pinned to `IMPERSONATE` (`chrome150`, the closest target to mandeep's Chrome 156). It sends that target's own user agent, never plain `requests` or the library's fixed Chrome 83 one. The sign-in calls that used module-level `requests` now use the same session, and the cookie repository types use `http.cookiejar`. The engine passes the cookies as a dict (set on `.linkedin.com`) and reads refreshed ones from the session's jar. New `python/checks/linkedinTransport.py` (`bun run check:linkedinTransport`, in `bun run check` and lefthook pre-commit and pre-push) refuses a `requests`, httpx, urllib3 or socket import anywhere in the package, a curl_cffi session made outside transport.py, a session not pinned to `IMPERSONATE`, or any count other than one. A LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not 40. Rule 96 is in AGENTS.md, the MCP instructions (`RULES_REVIEWED_THROUGH` 96) and the LinkedIn commands' rules, and `docs/platforms/linkedin/README.md` says how log reaches LinkedIn.
+Why: mandeep asked whether LinkedIn used the same stealth as X ("yes try it"). It sent Python `requests`' fingerprint with a Chrome 83 user agent, which LinkedIn checks harder than X does. Every call already went through the account's governor (4 s floor, 12 s mean, 120 an hour, 500 a day, 15 min pause after a throttle), so pacing is unchanged.
+Checked: `bun run check` (1199 pass, every check green), with new tests for the 10-a-day cap and the engine's session being curl_cffi on chrome150 with no fixed user agent. Against linkedin.com with dummy cookies, `/voyager/api/me` answered 302 through the chrome150 session (read as loggedOut). browserleaks showed chrome150's own Chrome 150 user agent and JA4. The check passes on the package and flags an added `import requests`. No live session check yet: it waits for mandeep's cookies.
+
 ## 2026-10-31 06:44Z · move/logCliIn
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
@@ -9325,3 +9472,409 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: vercel.json puts npm's global bin first on PATH in both the install and build commands, so the pnpm 10.5.2 it installs is the one that runs, and the install prints `pnpm --version`.
 Why: with pnpm 10.5.2 installed, the third preview still said "Ignoring not compatible lockfile", the same as before. The lockfile installs with 10.5.2 here, so Vercel's own pnpm was still the one on PATH.
 Checked: vercel.json parses. The build log's pnpm version line and the preview build this push starts are the real check.
+
+## 2026-10-31 08:06Z · sync/logCliTail
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `banner.png`: new file
+
+What changed: `banner.png` is back at the repo root and at the top of the README. Under the title there is a badge row again: npm (`@listeningkit/log`), the live site, MIT, MCP, the Convex hackathon submission, and the Build with Ona button. Convex is no longer listed as the backend.
+Why: matt: "what about the art that we had there before". The move into log (b6824f0) deleted the old README's banner and badge row, and with it the Build with Ona button Ona's extra credits ask for (PR #9).
+Checked: `banner.png` is the same file as on main before the move (d132cbd, 2785679 bytes). The README's generated section is untouched, and `check:docs` runs on this commit.
+
+## 2026-10-31 08:30Z · sync/logCliTail
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/README.md`: new file
+- `docs/browserSetup.md`: new file
+- `docs/errorCatalog.md`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/facebookFlows.md`: edited
+- `docs/guides/facebookMarketplace.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/runsAndEvidence.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/howItWorks.md`: new file
+- `docs/install.md`: new file
+- `docs/layout.md`: new file
+- `docs/listingMonitor.md`: new file
+- `docs/mcp.md`: new file
+- `docs/platforms/facebook/README.md`: edited
+- `docs/recordToFlow.md`: edited
+- `docs/reference.md`: new file
+- `docs/signingIn.md`: new file
+- `docs/twenty.md`: new file
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `scripts/checks/checkAgentHooks.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkFacebookClientDocs.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/docs/buildDocs.ts`: added const referencePath, const reference, const fromDocs
+- `scripts/docs/syncSiteDocs.mjs`: added const root, const docsDir, const check, const outDir, const GITHUB, const LEFT_OUT, const ORDER, const toPosix, function listDocs, function slugOf, function urlOf, const sources, const published, const problems, function rewriteLink, function titleAndBody, function escapeProse, function plainText, function render
+- `site/.gitignore`: edited
+- `site/apps/docs/app/layout.config.tsx`: changed const baseOptions
+- `site/apps/docs/content/docs/_meta.json`: file deleted
+- `site/apps/docs/content/docs/api-reference/_meta.json`: file deleted
+- `site/apps/docs/content/docs/api-reference/account-state.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/_meta.json`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/accounts.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/api-keys.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/brand.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/communities.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/feed.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/keywords.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/listings.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/endpoints/messaging.mdx`: file deleted
+- `site/apps/docs/content/docs/api-reference/index.mdx`: file deleted
+- `site/apps/docs/content/docs/brand/_meta.json`: file deleted
+- `site/apps/docs/content/docs/brand/agent-context.mdx`: file deleted
+- `site/apps/docs/content/docs/brand/channels.mdx`: file deleted
+- `site/apps/docs/content/docs/brand/index.mdx`: file deleted
+- `site/apps/docs/content/docs/brand/voice.mdx`: file deleted
+- `site/apps/docs/content/docs/brand/website-index.mdx`: file deleted
+- `site/apps/docs/content/docs/getting-started/_meta.json`: file deleted
+- `site/apps/docs/content/docs/getting-started/api.mdx`: file deleted
+- `site/apps/docs/content/docs/getting-started/chrome-extension.mdx`: file deleted
+- `site/apps/docs/content/docs/getting-started/errors.mdx`: file deleted
+- `site/apps/docs/content/docs/getting-started/index.mdx`: file deleted
+- `site/apps/docs/content/docs/getting-started/tokens.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/_meta.json`: file deleted
+- `site/apps/docs/content/docs/guide/api.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/developers.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/helpers.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/index.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/mcp.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/privacy.mdx`: file deleted
+- `site/apps/docs/content/docs/guide/using-listeningkit.mdx`: file deleted
+- `site/apps/docs/content/docs/index.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/_meta.json`: file deleted
+- `site/apps/docs/content/docs/installation/chatgpt.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/claude.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/cursor.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/hermes.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/index.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/mcp.mdx`: file deleted
+- `site/apps/docs/content/docs/installation/openai.mdx`: file deleted
+- `site/apps/docs/content/docs/keywords/_meta.json`: file deleted
+- `site/apps/docs/content/docs/keywords/facebook.mdx`: file deleted
+- `site/apps/docs/content/docs/keywords/index.mdx`: file deleted
+- `site/apps/docs/content/docs/keywords/reddit.mdx`: file deleted
+- `site/apps/docs/content/docs/keywords/x.mdx`: file deleted
+- `site/apps/web/index.html`: edited
+- `site/apps/web/package.json`: edited
+- `site/apps/web/public/logos/stack/convex.svg`: file deleted
+- `site/apps/web/scripts/export-openapi.ts`: file deleted · removed const specs, const here, const out
+- `site/apps/web/src/App.tsx`: changed function HealthPage, function App · removed function lazyNamed, const DashboardLayout, const DashboardSettings, const DashboardGroups, const DashboardAccounts, const DashboardMessages, const DashboardMessagesLive, const DashboardListings, const DashboardKeywords, const DashboardKeywordsLive, const DashboardAnalyticsOverview, const DashboardAnalyticsPage, const DashboardAccountPage, const DashboardChallengePage, const DashboardFeed, const DashboardDocs, const StaticDocsRedirect, const DashboardAPI, const DashboardApiKeyPage, const DashboardApiLive, const DashboardBrand, function demoOnly
+- `site/apps/web/src/components/AccountHealthBadge.tsx`: file deleted · removed function AccountHealthBadge
+- `site/apps/web/src/components/AccountStatus.tsx`: file deleted · removed const SEVERITY_BADGE, const SEVERITY_DOT, const SEVERITY_LABEL, const SEVERITY_LIFECYCLE_LABEL, function accountStatusLabel, function accountStatusTitle, function AccountStatusBadge
+- `site/apps/web/src/components/AccountTooltip.tsx`: file deleted · removed function AccountTooltip
+- `site/apps/web/src/components/AuthGate.tsx`: file deleted · removed function AuthSetup, function OnboardingRoute, function SignInRoute, function SignUpRoute, function AuthRoute, function RequireAuth
+- `site/apps/web/src/components/DashboardAPI.tsx`: file deleted · removed function formatDateTime, function ScopeChip, function DashboardAPI
+- `site/apps/web/src/components/DashboardAccountConsole.tsx`: file deleted · removed const RENDER_CAP, const FILTER_META, interface FirehoseRowData, function signalToText, function formatTs, function useRetryRemaining, function FirehoseRow, function DashboardAccountConsole
+- `site/apps/web/src/components/DashboardAccountInspectForm.tsx`: file deleted · removed const SETTINGS_FIXES, function signalToText, function formatTs, function DashboardAccountInspectForm
+- `site/apps/web/src/components/DashboardAccountPage.tsx`: file deleted · removed function formatTime, function AccountMeta, function DashboardAccountPage
+- `site/apps/web/src/components/DashboardAccounts.tsx`: file deleted · removed const PLATFORMS, function socialIconFor, function platformGlyph, function formatConnectedAt, function DashboardAccounts
+- `site/apps/web/src/components/DashboardAnalytics.tsx`: file deleted · removed const HERO, const DEEP, const MID, const SOFT, const PALE, const GRID, const TICK, const ROW_RAMP, const SENTIMENT_COLORS, function ChartCard, function MiniTrend, function MiniRows, function MiniDonut, const tooltipCard, function StatCard, function DashboardAnalytics
+- `site/apps/web/src/components/DashboardAnalyticsConsole.tsx`: file deleted · removed const TYPE_FILTER_META, const SENTIMENT_BADGE, const SENTIMENT_ICON, const AVATAR_TINTS, const RENDER_CAP, function tintFor, function initialsFor, function formatTs, function DashboardAnalyticsConsole
+- `site/apps/web/src/components/DashboardAnalyticsOverview.tsx`: file deleted · removed function DashboardAnalyticsOverview
+- `site/apps/web/src/components/DashboardAnalyticsPage.tsx`: file deleted · removed function AnalyticsMeta, function DashboardAnalyticsPage
+- `site/apps/web/src/components/DashboardApiActivityInspectForm.tsx`: file deleted · removed const METHOD_BADGE, function formatTs, type BlockedDimension, function blockedDimensionByReason, function GroupScopeDenialRow, function DashboardApiActivityInspectForm
+- `site/apps/web/src/components/DashboardApiCreateForm.tsx`: file deleted · removed const STEP_HINTS, function SelectRow, function DashboardApiCreateForm
+- `site/apps/web/src/components/DashboardApiKeyConsole.tsx`: file deleted · removed const FILTER_META, const RENDER_CAP, const METHOD_BADGE, function formatTs, function DashboardApiKeyConsole
+- `site/apps/web/src/components/DashboardApiKeyPage.tsx`: file deleted · removed function DashboardApiKeyPage
+- `site/apps/web/src/components/DashboardApiKeyScopes.tsx`: file deleted · removed function SectionLabel, function DashboardApiKeyScopes
+- `site/apps/web/src/components/DashboardApiLive.tsx`: file deleted · removed function when, function ScopeChip, function DashboardApiLive
+- `site/apps/web/src/components/DashboardBrand.tsx`: file deleted · removed type BrandTab, function BrandSurface, function DashboardBrand, function EditButton, function SnippetsBlurb, function StyleRow, function GoldExamples, function AutorepliesSection
+- `site/apps/web/src/components/DashboardBrandForm.tsx`: file deleted · removed type BrandNamespace, const NAMESPACE_META, function blankChannels, function cloneProfile, function cleanProfile, function newAutoreplyId, function DashboardBrandForm, function ChannelFields, function AutorepliesEditor, function StringListEditor, function Field
+- `site/apps/web/src/components/DashboardChallengePage.tsx`: file deleted · removed function DashboardChallengePage, function BackLink
+- `site/apps/web/src/components/DashboardDocs.tsx`: file deleted · removed const DASHBOARD_DOCS_PREFIX, function toDocsSrc, function DashboardDocs
+- `site/apps/web/src/components/DashboardEventInspectForm.tsx`: file deleted · removed const SENTIMENT_BADGE, const AI_SUMMARY_BY_TYPE, type AiTagTone, const AI_TAG_TONE_STYLES, const AI_TAGS_BY_TYPE, const AI_NEXT_ACTIONS, type AiFollowUpId, function formatTs, function timeAgo, function statFor, function handleFor, function AiTagPill, function ReplyDraftPanel, function DashboardEventInspectForm
+- `site/apps/web/src/components/DashboardFeed.tsx`: file deleted · removed function toInspectEvent, function FeedCard, function FeedColumn, function FeedSkeletonColumn, function useListeningPhrases, function FeedGrid, function SyncBar, function ConvexFeed, function DashboardFeed, function ClassicFeed
+- `site/apps/web/src/components/DashboardFeedHeader.tsx`: file deleted · removed function DashboardFeedHeader
+- `site/apps/web/src/components/DashboardFormPrimitives.tsx`: file deleted · removed const NEUTRAL_STROKE, const ACTIVE_STROKE, const SQUIRCLE_NEUTRAL_STROKE, const SQUIRCLE_ACTIVE_STROKE, export from "@listeningkit/ui", function PlatformPick, function PlatformTile, function PickRow, function FormInput, function LoadingLine, function EmptyLine, function ChatBubble, function Toggle, function EmptyBanner
+- `site/apps/web/src/components/DashboardFormSheet.tsx`: file deleted · removed const RADIUS, const STEP_TRANSITION, interface FormSheetProps, function StepProgress, function DashboardFormSheet, function FormSheetSurface
+- `site/apps/web/src/components/DashboardFormSlot.tsx`: file deleted · removed type FormSlotWidth, interface FormSlotOptions, const DashboardFormContext, function useDashboardFormSlot, const DashboardFormProvider
+- `site/apps/web/src/components/DashboardGroups.tsx`: file deleted · removed function GroupsTab, type CommunityHandlers, function communitySubtitle, function CommunityCard, type ViewMode, function JoinStateBadge, type CommunityMenuItem, function communityMenuItems, function CommunitySection, function DashboardGroups
+- `site/apps/web/src/components/DashboardGroupsForm.tsx`: file deleted · removed function iconFor, function DashboardGroupsForm, function AccountPick, function AccountCard, function FacebookUrlStep, function FacebookQuestionsStep, function GuideStep, function RelationLists, function RedditGroupPick
+- `site/apps/web/src/components/DashboardHeader.tsx`: file deleted · removed function DashboardHeader
+- `site/apps/web/src/components/DashboardHowItWorks.tsx`: file deleted · removed function DashboardHowItWorks
+- `site/apps/web/src/components/DashboardKeywords.tsx`: file deleted · removed type ViewMode, function formatAddedAt, function StatusBadge, function MiniSpark, function AccountHealthCell, function keywordActions, function KeywordCard, function DashboardKeywords
+- `site/apps/web/src/components/DashboardKeywordsForm.tsx`: file deleted · removed function iconFor, function DashboardKeywordsForm, function FacebookScopeEditor, function FacebookScopeQuestions, function RedditScopeEditor, function PhraseStep
+- `site/apps/web/src/components/DashboardKeywordsLive.tsx`: file deleted · removed const SUGGESTED_SUBREDDITS, const PLATFORM_CHOICES, function ago, function freshness, const HELPERS, function HelperNote, function HitCard, function KeywordRow, function DashboardKeywordsLive
+- `site/apps/web/src/components/DashboardLayout.tsx`: file deleted · removed const SQUIRCLE_RADIUS, function DashboardLayout, const FormOverlay
+- `site/apps/web/src/components/DashboardListingCreateForm.tsx`: file deleted · removed const facebookIcon, const CATEGORIES, const CONDITIONS, const CONDITION_NONE, const MAX_PHOTOS, function DashboardListingCreateForm, function ImageStep, function Field
+- `site/apps/web/src/components/DashboardListingInspectForm.tsx`: file deleted · removed const facebookIcon, function statusNote, const DRAG_THRESHOLD, function ListingCarousel, function DashboardListingInspectForm
+- `site/apps/web/src/components/DashboardListings.tsx`: file deleted · removed const facebookIcon, const LISTINGS_URL, const STATUS_ICON, function DashboardListings
+- `site/apps/web/src/components/DashboardLocationPicker.tsx`: file deleted · removed const POSITRON_URL, const POSITRON_ATTR, const FIELD_RADIUS, const NOMINATIM, type GeoResult, function searchPlaces, function PickLayer, function Center, function LocationMap, function LocationField
+- `site/apps/web/src/components/DashboardMessages.tsx`: file deleted · removed const MESSAGING_PLATFORM_BY_ICON, function formatChatTime, function PlatformTab, function isKnownPlatform, function messagesUrl, function ThreadAvatar, function AccountPicker, const BUBBLE_RADIUS, const BUBBLE_TAIL_RADIUS, function MessageBubble, const COMPOSER_RADIUS, function PromptComposer, function DashboardMessages
+- `site/apps/web/src/components/DashboardMessagesLive.tsx`: file deleted · removed function ago, function ThreadRow, function DashboardMessagesLive
+- `site/apps/web/src/components/DashboardRelatedCommunitiesForm.tsx`: file deleted · removed function DashboardRelatedCommunitiesForm
+- `site/apps/web/src/components/DashboardRelatedKeywordsForm.tsx`: file deleted · removed function DashboardRelatedKeywordsForm
+- `site/apps/web/src/components/DashboardScopeRows.tsx`: file deleted · removed interface ScopeDirectory, function useScopeDirectory, type ScopeRowTone, const SHELL, const TITLE, const DETAIL, function LeadingBox, const CIRCLE, function ScopeVisual, function glyphFor, function AccountScopeVisuals, function NamedGroupRows, function GroupScopeVisuals, function MessageScopeVisuals
+- `site/apps/web/src/components/DashboardSettings.tsx`: file deleted · removed type TabIcon, type SettingsTabId, function SettingsTab, function DashboardSettings
+- `site/apps/web/src/components/DashboardSettingsBilling.tsx`: file deleted · removed const PLATFORMS, function DashboardSettingsBilling
+- `site/apps/web/src/components/DashboardSettingsConnections.tsx`: file deleted · removed type SocialIcon, function iconFor, function ConnectionRow, function DashboardSettingsConnections
+- `site/apps/web/src/components/DashboardSettingsEmailAlerts.tsx`: file deleted · removed function DashboardSettingsEmailAlerts
+- `site/apps/web/src/components/DashboardSettingsIngest.tsx`: file deleted · removed function when, function exampleCurl, function DashboardSettingsIngest
+- `site/apps/web/src/components/DashboardSettingsNotifications.tsx`: file deleted · removed type SendStatus, const PILL, const PILL_LABEL, function BarkConnectionRow, function DashboardSettingsNotifications
+- `site/apps/web/src/components/DashboardSidebar.tsx`: file deleted · removed type NavIcon, type DashboardNavItem, const NAV, const DEMO_ONLY, const DEMO_ONLY_PATHS, function navItems, const ITEM_PITCH, function isNavActive, function NavItem, function DashboardSidebar, const MOBILE_BOTTOM_PATHS, function isBottomItem, function DashboardMobileNav
+- `site/apps/web/src/components/DashboardSidebarUser.tsx`: file deleted · removed type DashboardSidebarUserProps, function initialsOf, function DashboardSidebarUser
+- `site/apps/web/src/components/DashboardTab.tsx`: file deleted · removed type DashboardTabAccent, const ACCENT, function DashboardTab
+- `site/apps/web/src/components/DashboardWebhooks.tsx`: file deleted · removed function Log, function DashboardWebhooks
+- `site/apps/web/src/components/FunnelVideo.tsx`: file deleted · removed type FunnelVideoProps, function FunnelVideo
+- `site/apps/web/src/components/MarketplaceImages.tsx`: file deleted · removed interface MarketplaceImagesProps, const CARD_W, const CARD_H, const STEP_X, const FAN_DEG, const REST_SCALE, function MarketplaceImages
+- `site/apps/web/src/components/Modals/ChallengeResolver.tsx`: file deleted · removed function ChallengeResolver
+- `site/apps/web/src/components/MorphLine.tsx`: file deleted · removed const LINES, const STEP_MS, function MorphLine
+- `site/apps/web/src/components/PixelBlast.css`: file deleted
+- `site/apps/web/src/components/PixelBlast.tsx`: file deleted · removed interface PixelBlastProps, interface TouchPoint, const createTouchTexture, const createLiquidEffect, const SHAPE_MAP, const VERTEX_SRC, const FRAGMENT_SRC, const MAX_CLICKS, interface ThreeState, const PixelBlast
+- `site/apps/web/src/components/ReadyFill.tsx`: file deleted · removed const FILL_DURATION_MS, const LOGO_AT, const WHITE, const WHITE_LIQUID, function useFillController, function ReadyFill
+- `site/apps/web/src/components/RelatedCommunitiesChain.tsx`: file deleted · removed type CommunitiesStep, const STAGE_ORDER, const MAX_ROUNDS, const ROUND_SIZE, const LABEL, interface BeatDef, function useBeatRunner, function StreamedLabel, function blurAnd, function ContinueButton, function GhostButton, function scoreCommunity, function RelatedCommunitiesChain
+- `site/apps/web/src/components/RelatedMentionsChain.tsx`: file deleted · removed function StreamedLabel, const LABEL, const STAGE_ORDER, interface BeatDef, function useBeatRunner, function blurAnd, function channelFor, interface RelatedMentionsState, function ContinueButton, function GhostButton, function RelatedMentionsChain
+- `site/apps/web/src/components/ai-elements/reasoning.tsx`: file deleted · removed type ReasoningContextType, const ReasoningContext, function useReasoningContext, type ReasoningProps, function Reasoning, type ReasoningTriggerProps, function ReasoningTrigger, type ReasoningContentProps, function ReasoningContent
+- `site/apps/web/src/components/ai-elements/source.tsx`: file deleted · removed const SourceContext, function useSourceContext, type SourceProps, function Source, type SourceTriggerProps, function SourceTrigger, type SourceContentProps, function SourceContent
+- `site/apps/web/src/components/cards/FeedCardFrame.tsx`: no declaration changed (comments, formatting or line endings)
+- `site/apps/web/src/components/cards/PlatformCard.tsx`: file deleted · removed type CardPlatform, type PlatformCardProps, function CardHtml, function PlatformCard
+- `site/apps/web/src/components/cards/RedditThread.tsx`: file deleted · removed const COLOR, type PillTone, type RedditThreadProps, function PostAuthorAvatar, function VoteCountPill, function ActionChip, const ICON_PATH, function RedditThread
+- `site/apps/web/src/components/cards/TwitterThreads.tsx`: file deleted · removed const COLOR, type TwitterThreadsProps, type TwitterThreadReplyProps, function MentionerAvatar, function AgentAvatar, function ThreadConnector, function ThreadMedia, function ThreadAction, function ThreadActions, function MoreButton, function TwitterThreads, function TwitterThreadReply
+- `site/apps/web/src/components/cards/index.ts`: file deleted · removed export from "./FacebookCard", export from "./FeedCardFrame", export from "./RedditCard", export from "./RedditThread", export from "./TwitterCard", export from "./TwitterThreads"
+- `site/apps/web/src/components/chat-theme.css`: file deleted
+- `site/apps/web/src/components/listing-shared.tsx`: file deleted · removed const STATUS_COLOR, function formatPublished, const COUNTRY_CODES, function flagForLocation
+- `site/apps/web/src/components/onboarding/BrandRevealStep.tsx`: file deleted · removed type PagesState, const inputClass, const skipClass, function pageLabel, function competitorHref, function slugId, function RelateKeywordCard, function BrandRevealStep
+- `site/apps/web/src/components/ui/hover-card.tsx`: file deleted · removed function HoverCard, function HoverCardTrigger, function HoverCardContent
+- `site/apps/web/src/landing/Cards.tsx`: file deleted · removed const CARDS, function Cards
+- `site/apps/web/src/landing/CompetitorLogos.tsx`: file deleted · removed function CompetitorLogo
+- `site/apps/web/src/landing/Faq.tsx`: file deleted
+- `site/apps/web/src/landing/Header.tsx`: changed const defaultNavMenuItems
+- `site/apps/web/src/landing/LandingPage.tsx`: changed const PLUGS, function LandingPage
+- `site/apps/web/src/landing/Pricing.tsx`: file deleted · removed function Pricing
+- `site/apps/web/src/landing/SquircleBadge.tsx`: file deleted · removed type SquircleBadgeProps, function SquircleBadge
+- `site/apps/web/src/landing/Stateful.tsx`: file deleted · removed function Stateful
+- `site/apps/web/src/landing/UsecaseLoop.tsx`: file deleted · removed const FALLBACK_S, const TICK_MS, const WRAP_HOLD_MS, function UsecaseLoop
+- `site/apps/web/src/landing/competitor-data.ts`: file deleted · removed type Competitor, type CompareRow, type CompareGroup, const COMPETITORS, const COMPETITOR_COMPARE_GROUPS
+- `site/apps/web/src/landing/pricing-data.ts`: file deleted · removed type PricingBilling, type PricingPlan, type PricingEnterpriseItem, type PricingCompareRow, type PricingCompareGroup, type PricingCopy, const PRICING_COPY, type FaqItem, type FaqAsideData, type FaqCopy, const FAQ_COPY
+- `site/apps/web/src/lib/__tests__/api-coverage.test.ts`: file deleted · removed function req, it "lists, creates, and deletes", it "covers all 7 brand routes", it "creates and lists", it "resolves challenges only when the API says one is pending", it "lists and resolves", it "lists", it "lists and validates scoping", it "lists with filters", it "requires accountId and serves per-account inboxes"
+- `site/apps/web/src/lib/__tests__/api-keys-live.test.ts`: file deleted · removed const calls, const reply, it "is on the live backend only, at /api/v1 on the deployment's site address", it "lists validated keys", it "sends the trimmed name and returns the secret for the one time it is shown", it "checks the name before sending, and shows the server's plain reason otherwise", it "revokes by id", it "gives a copy-paste example that uses the key and the real base address", it "lists the endpoints that exist, each with the scope it needs, and states the rate limit", it "offers three scopes, read locked on, and warns when a key could change things"
+- `site/apps/web/src/lib/__tests__/auth-gate.test.tsx`: file deleted · removed const state, const withRouter
+- `site/apps/web/src/lib/__tests__/auth-handoff.test.ts`: file deleted · removed it "carries only the confirmed platform through OAuth and can consume it once", it "does not persist arbitrary text or tokens", it "tolerates unavailable storage", it "records the furthest step, clears, and ignores junk", it "never moves backwards once recorded"
+- `site/apps/web/src/lib/__tests__/communities_routes.test.ts`: file deleted · removed const HEALTHY_FB_ACCOUNT, const FB_ANSWERS, function postJoin, function postRoute, function deleteCommunity, function getRow, it "201s a full join with provenance stamped", it "201s a partial join flagged incomplete instead of 400", it "400s a missing account and 200s a rejoin as a no-op", it "renders, drafts, abandons, resumes, then submits from the modal", it "409s the form past the modal and rejects bad phases", it "accepts once, then 409s the double accept", it "stamps platform removals and gates the rejoin", it "lets a self-leave rejoin and withdraws pending rows", it "400s admin routes on non-facebook rows", it "reads restricted subs as limited; member rows no-op the join", it "requests private access over modmail and lands the approval", it "opts in to quarantine and confirms on observation", it "tags karma gates with evidence and unsubscribes cleanly", it "marks banned subs gone and refuses the rejoin", it "400s empty observations and no-ops the accepted join", it "walls dallas-homeowners and restores pending on clear", it "resolves communities and registers unknown links", it "dedupes join-by-url on tracked rows"
+- `site/apps/web/src/lib/__tests__/connections-live.test.ts`: file deleted · removed const calls, const sessions, const account, const b64url, const redditToken, it "connects with a real token and returns the connected account", it "catches a token pasted on the wrong account before sending it", it "tests a connection against what is saved", it "has no proxy for a person to set: a connection is just the token", it "disconnects only accounts that are connected"
+- `site/apps/web/src/lib/__tests__/docs-hosting.test.ts`: file deleted · removed it "uses the docs server address in development", it "uses the static page files on the hosted site, which only serves exact file names"
+- `site/apps/web/src/lib/__tests__/feed-convex.test.ts`: file deleted · removed const calls, const reply, const token, const item, it "reads the feed straight from Convex with the caller token and forwards filters", it "does not hide server or schema errors behind mock rows", it "refuses to call Convex without a signed-in token", it "syncs a subreddit through the Convex action and validates the summary", it "lists and creates accounts through Convex", it "stays on the bridge when no Convex URL is configured"
+- `site/apps/web/src/lib/__tests__/feed-transport.test.ts`: file deleted · removed it "preserves legacy platform calls and object search filters", it "keeps empty live results empty and sends filters without service credentials", it "does not hide HTTP, network, or schema errors behind mock rows", it "rejects invalid mode instead of silently choosing mocks", it "syncs one subreddit through the live API and validates the summary", it "refuses mock-mode sync instead of pretending to ingest"
+- `site/apps/web/src/lib/__tests__/ingest-keys.test.ts`: file deleted · removed const calls, const reply, const key, it "derives the public endpoint from the deployment url", it "is unavailable in mock mode or without a deployment", it "lists keys and validates the wire shape", it "creates a key with a trimmed name and returns the one-time secret", it "surfaces server messages and never hides failures", it "requires a signed-in token"
+- `site/apps/web/src/lib/__tests__/keywords-live.test.ts`: file deleted · removed const calls, const listing, const failWith, const row, it "maps live rows to the dashboard shape, with the subreddit as the group", it "creates, pauses and removes through Convex", it "shows the server's own message and rejects malformed data", it "keeps the mock store when no deployment is configured", it "tells a normal person when it was read and warns about old data", it "names the intent in plain words and bands the score", it "puts the best matches first, keeps unscored ones after, and leaves newest-first alone"
+- `site/apps/web/src/lib/__tests__/landing-onboarding.test.tsx`: file deleted · removed const store
+- `site/apps/web/src/lib/__tests__/lazy-routes.test.ts`: file deleted · removed const src, const app, const main, const pairs, it "keeps Clerk and Convex mounted at the entry point", it "protects the dashboard and sends unknown app links to onboarding", it "finds the lazy pages in App.tsx", it "renders every lazy page inside a Suspense boundary"
+- `site/apps/web/src/lib/__tests__/listings_machine.test.ts`: file deleted · removed const rowByListingId, function patchStatus, it "lets the seller sell or remove only what is live", it "never lets the seller self-approve a held listing", it "lets the seller undo a sale, and archive after selling", it "gates the relist on who took the listing down", it "refuses all seller writes under a suspended or limited account", it "treats login-wall / unknown as overwrite-in, resolve-any-out (both sources)", it "offer the same set the store will accept", it "409s a seller self-approve, 200s the same move from the platform", it "stamps removedBy with the source and clears it on the way out", it "refuses the seller a relist of a platform takedown", it "409s unknown ids and unknown statuses"
+- `site/apps/web/src/lib/__tests__/live-accounts.test.ts`: file deleted · removed it "uses live account routes, without falling back to the seeded roster", it "requires sign-in before any network access", it "never pretends a live cookie/session was verified"
+- `site/apps/web/src/lib/__tests__/live-brand-alerts.test.ts`: file deleted · removed const calls, const reply, const FACTS, it "sends the trimmed address and returns validated facts", it "shows the server's plain-words reason, and hides anything else behind a fallback", it "knows when reading is simply not switched on, so onboarding can carry on", it "knows when nobody has signed in yet (a landing arrival, before the person signs in), so onboarding can carry on", it "exists only on the live backend", it "accepts a page that gave only a name", it "sends the trimmed address and returns validated links", it "rejects an invalid map response", it "seeds no sources — pages only enter from a real read", it "replaces the guessed defaults with what the site said", it "keeps the defaults for anything the site did not say, and invents nothing", it "validates what the server sends", it "offers plain-worded bars that match the server range", it "saves and sends a test through the backend, with plain-words errors"
+- `site/apps/web/src/lib/__tests__/live-messages.test.ts`: file deleted · removed const calls, const reply, it "a thread needs a platform, a peer handle and a valid timestamp", it "a message needs a known direction and status", it "sends the trimmed text to messages:sendMessage for the given thread", it "surfaces the server's own plain-words message, like the Free plan and length limits"
+- `site/apps/web/src/lib/__tests__/live-nav.test.ts`: file deleted · removed it "shows every page in demo mode", it "hides the pages that only have mock data on the live site, and keeps the real ones"
+- `site/apps/web/src/lib/__tests__/live-sessions.test.ts`: file deleted · removed const calls, const reply, const b64url, it "sends the trimmed token and returns only the summary", it "shows the server's plain-words reason and rejects odd replies", it "lists and disconnects", it "reads the platform out of a token so a mix-up is caught before sending", it "describes expiry in plain words"
+- `site/apps/web/src/lib/__tests__/messaging.test.ts`: file deleted · removed function req, const ISO, it "each seeded account lists only its own threads, newest first", it "a connected account with no seed gets an empty inbox, not an error", it "an unknown account id also resolves to an empty inbox", it "a thread only resolves under the account that owns it", it "platforms never share threads", it "messages follow the same isolation", it "X threads are dm_conversation_ids (selfId-participantId) with 19-digit event ids", it "Facebook threads use numeric thread_keys and participant page ids", it "Reddit threads are their first message (first_message_name = t4_ id)", it "appends a message and syncs the thread preview + updatedAt", it "never crosses an account boundary", it "rejects empty bodies and unresolvable reply targets", it "opens a conversation whose native id follows the platform", it "keeps the name/handle fallbacks sane", it "duplicates the same participant 409s, empty compose 400s", it "attaches a subject on Reddit only", it "clears unread and is idempotent", it "requires ?accountId= on every route", it "serves each platform inbox under the requesting account", it "404s a thread that belongs to another account", it "starts, sends, and acks over HTTP", it "validates the compose body schema", it "keeps the legacy /twitter mount in sync with /x", it "round-trips through the dashboard client"
+- `site/apps/web/src/lib/__tests__/onboarding-live.test.tsx`: file deleted · removed const render
+- `site/apps/web/src/lib/__tests__/plans.test.tsx`: file deleted · removed const plan
+- `site/apps/web/src/lib/__tests__/request-log.test.ts`: file deleted · removed it "strips secret-bearing fields by name, including nested ones", it "logs method, path, status, and redacted bodies when enabled", it "stays silent when disabled", it "logs exactly once per request arriving through the mounted root, labeled by domain", it "labels messaging traffic per platform", it "logs direct leaf-app calls the way dashboard clients invoke them"
+- `site/apps/web/src/lib/__tests__/reveal-honest.test.tsx`: file deleted · removed const profile
+- `site/apps/web/src/lib/__tests__/reveal-suggest.test.ts`: file deleted · removed function brand, it "derives plain phrases from the name, offerings and location", it "skips the location forms when no location was read", it "returns nothing to derive from when the read found nothing", it "dedupes and caps the list"
+- `site/apps/web/src/lib/__tests__/webhooks-live.test.ts`: file deleted · removed const calls, const reply, const hook, it "is checked before it is shown", it "shows the Pro notice unless the plan allows any", it "says what a webhook sends, or why it is off", it "says what happened to a delivery", it "offers score bars that the server accepts", it "creates one, returning the secret for the one time it is shown", it "shows the server's plain reason, and hides anything else behind a fallback", it "switches on and off, removes, and tests"
+- `site/apps/web/src/lib/__tests__/website.test.ts`: file deleted
+- `site/apps/web/src/lib/account-issues/catalog.ts`: file deleted · removed interface CatalogEntry, const ALL, const ISSUE_CATALOG, const LIFECYCLE_ISSUES, function issueInfo, function severityToState
+- `site/apps/web/src/lib/account-issues/challenge.ts`: file deleted · removed const CHALLENGE_RESOLVABLE_ISSUES, const CHALLENGE_PAGES, function challengePageFor, const CHALLENGE_SOLVED_MESSAGE
+- `site/apps/web/src/lib/account-issues/events.ts`: file deleted · removed interface AccountIssueEvent, const HISTORY_POOL_EXCLUDE, function hashString, const cache, function getAccountIssueEvents
+- `site/apps/web/src/lib/account-issues/index.ts`: file deleted · removed export from "./types", export from "./catalog", export from "./normalize", export from "./events", export from "./challenge", export from "./state", export from "./store", interface AccountIssueSnapshot, function accountIssueSnapshot, const SEVERITY_ORDER, function effectiveSeverity
+- `site/apps/web/src/lib/account-issues/normalize.ts`: file deleted · removed function normalizeSignal, function has, function normalizeFacebook, function normalizeX, function normalizeReddit, const FIX_LABELS
+- `site/apps/web/src/lib/account-issues/state.test.ts`: file deleted · removed const base, it "turns a challenge into an actionable component state", it "does not require user action for a transient rate limit", it "emits one notification when a healthy account enters a challenge", it "surfaces the platform-specific remediation copy in the notification", it "emits a recovery notification when the issue clears", it "does not emit duplicate notifications for the same state"
+- `site/apps/web/src/lib/account-issues/state.ts`: file deleted · removed type AccountState, type AccountUserAction, interface AccountNotification, interface AccountStateViewModel, function actionFor, function accountStateView, function accountStateNotification, interface AccountStateChangeInput, function accountIssuePatch
+- `site/apps/web/src/lib/account-issues/store.ts`: file deleted · removed interface AccountStateStore, function createMockAccountStateStore
+- `site/apps/web/src/lib/account-issues/types.ts`: file deleted · removed type AccountIssue, type IssueSeverity, type IssueFix, interface RawSignal, interface AccountIssueInfo, interface AccountIssueRecord
+- `site/apps/web/src/lib/account-state.ts`: file deleted · removed type AccountGate, const TERMINAL_ISSUES, const STALLED_ISSUES, const WRITE_BLOCKING_ISSUES, function labelFor, function gateAccount, function describeGate
+- `site/apps/web/src/lib/analytics/index.ts`: file deleted · removed export from "./types", export from "./mock"
+- `site/apps/web/src/lib/analytics/mock.ts`: file deleted · removed const PLATFORM_GROUPS, const AUTHORS, const TEXTS, const RELATED_PHRASES, const RETRY_PHRASES, const COMMENT_TEMPLATES, interface MockComment, function eventComments, const EVENT_TYPES, function hashSeed, function mulberry32, function dayLabel, function eventTime, function sentimentFor, function eventUrl, function getKeywordAnalytics
+- `site/apps/web/src/lib/analytics/types.ts`: file deleted · removed type FirehoseEventType, const FIREHOSE_EVENT_TYPES, const FIREHOSE_TYPE_LABELS, type EventSentiment, const EVENT_SENTIMENT_LABELS, interface FirehoseEvent, interface SignalDay, interface PlatformSplit, interface SentimentSlice, interface KeywordAnalytics
+- `site/apps/web/src/lib/api-keys-live.ts`: file deleted · removed const keySchema, const createdSchema, type ApiKeyRow, type CreatedApiKey, function apiKeysAvailable, function apiBaseUrl, function mcpUrl, function listApiKeys, function createApiKey, function revokeApiKey, function exampleCurl, const SCOPE_CHOICES, function scopesCanWrite, const API_ENDPOINTS, const RATE_LIMIT_TEXT
+- `site/apps/web/src/lib/api/activity.ts`: file deleted · removed interface ApiActivityEvent, function hashSeed, function mulberry32, function apiActivityFor
+- `site/apps/web/src/lib/api/index.ts`: file deleted · removed export from "./types", export from "./server", export from "./mock", export from "./scopes", export from "./activity", function request, interface CreateApiKeyParams, function getApiKeys, function createApiKey, function revokeApiKey
+- `site/apps/web/src/lib/api/mock.ts`: file deleted · removed function apiKeyId, function generateApiKey, function prefixOfSecret, function hashSecret, const SEED_API_KEYS
+- `site/apps/web/src/lib/api/scopes.ts`: file deleted · removed interface ApiRouteNeeds, interface ApiRouteDef, const API_ROUTES, interface ApiAccessContext, type ApiAccessResult, function checkAccess, function authorizeApiKey
+- `site/apps/web/src/lib/api/server.ts`: file deleted · removed const API_KEYS_KEY, function isApiKeyScope, function isApiKeyArray, const apiKeys, function persistApiKeys, function verifyApiKey, const apiKeysApp, type ApiKeysApp
+- `site/apps/web/src/lib/api/types.ts`: file deleted · removed interface ApiKeyScope, interface ApiKey, interface ApiKeysResponse, interface CreatedApiKeyResponse, type CreateApiKeyInput
+- `site/apps/web/src/lib/brand/__tests__/skip.test.ts`: file deleted · removed it "gives a placeholder brand that saves and reads back like a real one"
+- `site/apps/web/src/lib/brand/index.ts`: file deleted · removed export from "./types", export from "./server", export from "./prompt", export from "./sources", function getBrand, function saveBrand, function clearBrand, function getBrandAsync, function saveBrandAsync, function appendBrandIntelligenceAsync, function clearBrandAsync, function getSourcesAsync, function indexBrandAsync, function removeSourceAsync, const MAPPING_KEY, function isPage, function isStringArray, function isKeywordStrategyMapping, function getKeywordMapping, function saveKeywordMapping, function fillDork, function humanizeHost, function skippedBrand, function extractBrandFromUrl
+- `site/apps/web/src/lib/brand/prompt.ts`: file deleted · removed const PROMPT_VERSION, const FORMALITY_LINES, function buildBrandSystemPrompt, function retrieveSourceRefs, interface ReplyContext, function buildReplyContext, interface SimulatedReply, const FIRST_TOUCH_FALLBACK, function wordsOf, function simulateOutbound
+- `site/apps/web/src/lib/brand/query.ts`: file deleted · removed function buildAiQuery, const STOPWORDS, function tokensOf, function suggestKeywords, function suggestAcross, const BRAND_CHANNELS, function channelForPlatform, function matchAutoreply, function draftReply, interface SuggestedResource, function slugify, function youtubeSearchUrl, function suggestResource
+- `site/apps/web/src/lib/brand/server.ts`: file deleted · removed const BRAND_KEY, function isCommunityPick, function isBrandOffering, const rawStored, const brand, function persistBrand, function stamp, interface BrandIntelligenceInput, const brandApp, type BrandApp, function getBrandRecord, function setBrandRecord, function clearBrandRecord
+- `site/apps/web/src/lib/brand/sources.ts`: file deleted · removed function seedSourcesFor, function resolveSitemap
+- `site/apps/web/src/lib/brand/types.ts`: file deleted · removed interface BrandIdentity, interface BrandLocation, interface BrandVoiceExample, type BrandFormality, interface BrandVoice, interface BrandOffering, type BrandPageStatus, interface BrandPage, interface BrandSourceRef, type ChannelStyle, type BrandChannel, interface Autoreply, interface ChannelProfile, interface BrandMemory, interface BrandIntelligence, interface BrandEntity, type AiFollowUpAction, interface KeywordTargetEntry, interface SearchStrategyEntry, interface KeywordStrategyMapping, interface CommunityPick, function isStringArray, function isCommunityPick, function isBrandVoiceExample, function isBrandOffering, function isBrandPage, function isAutoreply, function isChannelProfile, const BRAND_CHANNELS, function defaultChannels, function isChannelMap, function migrateChannelMap, function isBrandEntity, function migrateBrandEntity, interface MatchedAutoreply, interface AiQuery
+- `site/apps/web/src/lib/client-tasks/machine.test.ts`: file deleted · removed const T0, const plus, function session, it "walks queued to done through questions, drafts, and submit", it "expires a silent task and resumes it with a fresh lease", it "keeps drafts across submit failure and abandons on cancel", it "creates, advances, and reads leases on access", it "returns null for unknown tasks and events"
+- `site/apps/web/src/lib/client-tasks/machine.ts`: file deleted · removed interface ClientTaskContext, function leaseFrom, const clientTaskMachine
+- `site/apps/web/src/lib/client-tasks/store.ts`: file deleted · removed const TASKS_KEY, function isTaskRecord, const tasks, function persistTasks, function sendTaskEvent, const actors, function actorFor, function bootstrapTaskEvents, function createTask, function taskForCommunity, function getTask, function listTasks
+- `site/apps/web/src/lib/client-tasks/types.ts`: file deleted · removed type ClientTaskState, interface ClientTask, type ClientTaskEvent, interface ClientTaskInput, const CLIENT_TASK_LEASE_MS
+- `site/apps/web/src/lib/communities/actors.ts`: file deleted · removed interface DrivenSnapshot, function driveMachine
+- `site/apps/web/src/lib/communities/facebook/assertions.ts`: file deleted · removed const SUBMITTABLE, function canSubmitAnswers, function isFormStale, function answersCompleteness
+- `site/apps/web/src/lib/communities/facebook/machine.test.ts`: file deleted · removed const QUESTIONS, const AT, function session, function joinEvents, function joined, function storedRow, it "walks notMember to pendingApproval with complete answers", it "accepts partial submits and flags them", it "approves, limits, promotes, and removes", it "declines with answers kept, withdraws with prefill kept", it "renders, drafts, abandons, and resumes with drafts intact", it "failed submits return to the form with the error", it "refuses user moves under a write-blocked account", it "ignores guarded user events in the actor (verdicts 409 first)", it "gates platform-removed rejoins on the group", it "refuses joins already in flight and leaves with no membership", it "asserts submittability and staleness purely", it "menus mirror the machine", it "overwrites any state and restores the prior node", it "replays flat rows to the same node as the live chain", it "rebuilds an abandoned modal from its mirror fields"
+- `site/apps/web/src/lib/communities/facebook/machine.ts`: file deleted · removed const facebookMachine, type FacebookUserIntent, function facebookUserVerdict, function facebookToJoinState, function facebookNotice, function facebookMenu, function resolveFacebookObservation, function facebookInputFromRow, function bootstrapFacebookEvents, function deriveFacebookValue
+- `site/apps/web/src/lib/communities/facebook/types.ts`: file deleted · removed type FacebookStateValue, type FacebookWallType, interface FacebookContext, type FacebookEvent, interface FacebookInput, const FACEBOOK_MODAL_LEASE_MS
+- `site/apps/web/src/lib/communities/index.ts`: file deleted · removed export from "./types", export from "./server", export from "./mock", function request, function getCommunities, function joinCommunity, function joinCommunityByUrl, function resolveCommunityByUrl, function resolveRedditCommunity, function acceptCommunity, function declineCommunity, function removeCommunityMember, function leaveCommunity, function reportCommunityForm, function resumeCommunityForm, interface CommunityObservation, function observeCommunity, function requestCommunityAccess, function optInCommunityQuarantine
+- `site/apps/web/src/lib/communities/menus.ts`: file deleted · removed interface CommunityMenuAvailability, function storedFromCommunity, function communityMenuAvailability
+- `site/apps/web/src/lib/communities/mock.ts`: file deleted · removed const COMMUNITIES_BASE, const SEED_JOINED, function resolveAccountLabel, const FACEBOOK_HOSTS, interface ParsedGroupUrl, function parseFacebookGroupUrl, function titleFromSlug, interface ParsedSubreddit, function parseSubredditName, function communityFromSubreddit, function communityFromGroupUrl, const COMMUNITY_TOPICS
+- `site/apps/web/src/lib/communities/reddit/assertions.ts`: file deleted · removed function canPost, function refuseReason, function canComment, function canReadStream, function isQuarantineGated, function isAutomodGated
+- `site/apps/web/src/lib/communities/reddit/machine.test.ts`: file deleted · removed function session, function storedRow, const RESTRICTED, it "subscribes to public subs and unsubscribes back", it "reads restricted subs as read-only until approved", it "gates private subs behind modmail and quarantine behind opt-in", it "marks banned and archived subs gone with an untrack note", it "observes a platform kick back to unsubscribed", it "gates posting, commenting, and reading per snapshot", it "normalizes tail subreddit types to unclassified", it "tags karma gates with evidence and clears them", it "menus mirror the machine", it "overwrites any state, refuses double walls, and restores", it "replays flat rows to the same node as live observations"
+- `site/apps/web/src/lib/communities/reddit/machine.ts`: file deleted · removed const redditMachine, type RedditUserIntent, function redditUserVerdict, function redditToJoinState, function redditNotice, function redditMenu, function resolveRedditObservation, function normalizeSubredditType, function redditInputFromRow, function bootstrapRedditEvents, function deriveRedditValue
+- `site/apps/web/src/lib/communities/reddit/types.ts`: file deleted · removed type RedditSubredditType, type RedditStateValue, type RedditWallType, interface RedditContext, type RedditEvent, interface RedditInput
+- `site/apps/web/src/lib/communities/server.ts`: file deleted · removed type BaseCommunity, type JoinState, const CATALOG_KEY, const JOINS_KEY, const FORM_PHASES, function isBaseCommunityArray, function isJoinStateRecord, function defaultJoin, const catalog, function createJoinState, function communityPlatformOf, const joins, function persistCommunities, function findBaseById, function findBaseByUrl, function registerRow, function registerBase, function findRedditBase, function liveAccountIssue, function effectiveQuestions, function rowNotice, function materialize, function writeFacebookBack, function driveFacebook, function writeRedditBack, function driveReddit, const communitiesApp, type CommunitiesApp
+- `site/apps/web/src/lib/communities/transition.ts`: file deleted · removed interface TransitionVerdict, function allow, function refuse, function writeBlockedVerdict, function hashQuestionSet
+- `site/apps/web/src/lib/communities/types.ts`: file deleted · removed type CommunityJoinState, const COMMUNITY_JOIN_STATES, const COMMUNITY_JOIN_STATE_LABELS, type CommunityRemovalProvenance, interface Community, interface CommunitiesResponse, interface CommunityResponse, type StoredFormPhase, interface StoredCommunityJoin
+- `site/apps/web/src/lib/connections/cookie.ts`: file deleted · removed function normalizeCookie, function assertCookie
+- `site/apps/web/src/lib/connections/index.ts`: file deleted · removed export from "./types", export from "./store", export from "./mock", export from "./server", function liveOnConvex, function request, function getAccounts, function createAccount, function saveAccount, function deleteAccount, function delay, function testConnection, function connectAccount, function disconnectLive, function disconnectAccount, function resolveChallenge
+- `site/apps/web/src/lib/connections/mock.ts`: file deleted · removed const MOCK_FACEBOOK_ACCOUNTS, const MOCK_CONNECTIONS
+- `site/apps/web/src/lib/connections/server.ts`: file deleted · removed const accounts, const connectionsApp, type ConnectionsApp
+- `site/apps/web/src/lib/connections/store.ts`: file deleted · removed const STORAGE_KEY, const LEGACY_KEY, const DEFAULT_PLATFORMS, const PLATFORM_LABEL, function platformLabel, function newAccountId, function isRecord, function isValidRecord, function migrateLegacy, function writeAll, function readAll, function loadAccounts, function findAccount, function addAccount, function saveAccount, function removeAccount
+- `site/apps/web/src/lib/connections/types.ts`: file deleted · removed type ConnectionPlatform, type ConnectionStatus, interface ConnectInput, interface ConnectionRecord
+- `site/apps/web/src/lib/convex.ts`: file deleted · removed function convexUrl, const url, const convexReactClient, const feedListRef, const syncSubredditRef, const accountsListRef, const accountsCreateRef, const keywordsListRef, const keywordsCreateRef, const keywordsSetStatusRef, const keywordsRemoveRef, const hitsListRef, const sessionsSaveRef, const sessionsListRef, const sessionsRemoveRef, const brandExtractRef, const brandMapRef, const alertsMineRef, const alertsSaveRef, const alertsSendTestRef, const apiKeysListRef, const apiKeysCreateRef, const apiKeysRevokeRef, const webhooksListRef, const webhooksDeliveriesRef, const webhooksCreateRef, const webhooksUpdateRef, const webhooksRemoveRef, const webhooksTestRef, const planMineRef, const ingestListRef, const ingestCreateRef, const ingestRevokeRef, const dmThreadsListRef, const dmMessagesListRef, const dmSendRef, function convexSiteUrl, function convexClient, function convexErrorMessage
+- `site/apps/web/src/lib/feed/index.ts`: file deleted · removed export from "./mock", export from "./server", interface FeedFilters, function getFeed, function syncFeed
+- `site/apps/web/src/lib/feed/mock.ts`: file deleted · removed type FeedPlatform, type FeedVariant, interface FeedMetrics, interface FeedItem, interface FeedResponse, function formatCount, function formatCountWithUnit, const img, const MOCK_FEED_ITEMS
+- `site/apps/web/src/lib/feed/remote.ts`: file deleted · removed const remoteFeedSchema, function fetchRemoteFeed, function fetchConvexFeed, const remoteSyncSchema, type FeedSyncResult, function syncConvexFeed, function syncRemoteFeed
+- `site/apps/web/src/lib/feed/server.ts`: file deleted · removed function matchesSearch, function filterFeed, const feedApp, type FeedApp
+- `site/apps/web/src/lib/health/index.ts`: file deleted · removed type AccountHealthState, interface AccountHealth, const STALE_AFTER_DAYS, const DAY_MS, function daysBetween, function assessAccountHealth, function healthForConnectedAt, function healthForLabel, function healthForAccountId, function worstHealth
+- `site/apps/web/src/lib/how-it-works.ts`: file deleted · removed interface HowItWorks, const HOW_IT_WORKS, function howItWorksForPathname, function routeLabelForPathname
+- `site/apps/web/src/lib/ids.ts`: file deleted · removed function uuid
+- `site/apps/web/src/lib/ingest-keys.ts`: file deleted · removed const keySchema, const createdSchema, type IngestKey, type CreatedIngestKey, function ingestAvailable, function ingestEndpoint, function listIngestKeys, function createIngestKey, function revokeIngestKey
+- `site/apps/web/src/lib/intent.ts`: added const INTENT_WORDS, function intentLabel
+- `site/apps/web/src/lib/keywords/index.ts`: file deleted · removed export from "./types", export from "./server", export from "./mock", function request, interface GetKeywordsParams, function getKeywords, function createKeyword, function saveKeyword, function deleteKeyword, function resetKeywords
+- `site/apps/web/src/lib/keywords/mock.ts`: file deleted · removed const SEED_KEYWORDS, function keywordId
+- `site/apps/web/src/lib/keywords/server.ts`: file deleted · removed const KEYWORDS_KEY, function isKeywordArray, const keywords, function persistKeywords, function joinedGroupsFor, const keywordsApp, type KeywordsApp
+- `site/apps/web/src/lib/keywords/types.ts`: file deleted · removed type KeywordPlatform, type KeywordStatus, interface Keyword, interface KeywordsResponse, interface KeywordResponse, interface CreateKeywordInput
+- `site/apps/web/src/lib/listings/index.ts`: file deleted · removed export from "./types", export from "./machine", export from "./mock", export from "./server", function getListings, function getListingStatus, function saveListing, function setListingStatus, function deleteListing, function createListing
+- `site/apps/web/src/lib/listings/machine.ts`: file deleted · removed type TransitionSource, interface ListingTransitionContext, const OBSERVATION_STATES, const SELLER_EDGES, const PLATFORM_EDGES, function allowedTransition, function validateContext, function listingActions
+- `site/apps/web/src/lib/listings/mock.ts`: file deleted · removed function resolveListingAccountLabel, function resolveListingAccountId, const img, const DEFAULT_LISTING_IMAGE, const MOCK_LISTINGS
+- `site/apps/web/src/lib/listings/server.ts`: file deleted · removed const LISTINGS_KEY, function isListingArray, function migrateListingRow, const listings, function persistListings, function nextListingId, function toLocationPoint, const listingsApp, type ListingsApp
+- `site/apps/web/src/lib/listings/types.ts`: file deleted · removed type ListingStatus, type RemovalProvenance, const LISTING_STATUSES, const LISTING_STATUS_LABELS, interface ListingLocation, const DEFAULT_LISTING_LOCATION, interface ListingRecord, interface ListingsResponse, interface ListingDraft, interface ListingCreatedResponse, interface ListingStatusResponse
+- `site/apps/web/src/lib/live-alerts.ts`: file deleted · removed const alertSettingsSchema, type AlertSettings, const MIN_SCORE_CHOICES, function saveAlertSettings, function sendTestAlert
+- `site/apps/web/src/lib/live-brand.ts`: file deleted · removed const brandOnConvex, const websiteFactsSchema, type WebsiteFacts, function readWebsite, function readingIsOff, function notSignedInYet, const siteMapSchema, type SiteMap, function readSiteMap, function applyWebsiteFacts
+- `site/apps/web/src/lib/live-keywords.ts`: file deleted · removed const platformSchema, const liveKeywordSchema, const liveKeywordsSchema, const liveHitsSchema, type LiveKeyword, type LiveHit, function keywordsOnConvex, function toKeyword, function parseKeywords, function listLiveKeywords, function createLiveKeyword, function setLiveKeywordStatus, function removeLiveKeyword, const INTENT_WORDS, function intentLabel, function scoreBand, function sortHits
+- `site/apps/web/src/lib/live-messages.ts`: file deleted · removed const liveThreadSchema, type LiveThread, const liveThreadsSchema, const liveDmMessageSchema, type LiveDmMessage, const liveDmMessagesSchema, function sendLiveDm
+- `site/apps/web/src/lib/live-sessions.ts`: file deleted · removed const platformSchema, const savedSchema, const liveSessionsSchema, type SavedSession, type SessionSummary, const sessionsOnConvex, function saveSession, function listSessions, function removeSession, function describeExpiry, function tokenPlatform
+- `site/apps/web/src/lib/messaging/facebook/mock.ts`: file deleted · removed const FB_THREAD_IDS, const FBT1_M, const FBT2_M, const FBT3_M, const FBT4_M, const danaWhitfield, const marcusWebb, const roisinByrne, const paddyFoley, const fbPersonal, const fbRubbish, const fbPersonalMessages, const fbRubbishMessages, const FACEBOOK_SEEDS
+- `site/apps/web/src/lib/messaging/facebook/server.ts`: file deleted · removed const facebookMessagingApp
+- `site/apps/web/src/lib/messaging/identities.ts`: file deleted · removed interface MessagingIdentity, function selfParticipant, const MESSAGING_IDENTITIES, const DEFAULT_MESSAGING_ACCOUNT, function identityFor
+- `site/apps/web/src/lib/messaging/index.ts`: file deleted · removed export from "./types", export from "./identities", const messagingApp, type MessagingApp, const PLATFORMS, function asJson, function getThreads, function getThreadMessages, function sendThreadMessage, function startThread, function acknowledgeThread
+- `site/apps/web/src/lib/messaging/reddit/mock.ts`: file deleted · removed const REDDIT_THREAD_IDS, const RET1_M, const RET2_M, const RET3_M, const dallasPlumber, const diyDan, const hoodfixerIe, const galwaydrips, const subwatcher, const galwaydripsMessages, const subwatcherMessages, const REDDIT_SEEDS
+- `site/apps/web/src/lib/messaging/reddit/server.ts`: file deleted · removed const redditMessagingApp
+- `site/apps/web/src/lib/messaging/routes.ts`: file deleted · removed const ACCOUNT_PARAM, const CODE, function buildMessagingRoutes
+- `site/apps/web/src/lib/messaging/store.ts`: file deleted · removed interface PlatformSeed, type AccountStore, type StoreShape, const PLATFORMS, function emptyAccount, function seedStore, function buildPlatformStore, function isAccountStore, function isMessagingStore, const KEY, const store, const saveSuspended, function persist, function resetMessagingStore, function accountOrEmpty, function listThreads, function getThread, function getThreadMessages, function rand36, function synthesizeMessageId, function synthesizeThreadId, class StoreError, function buildMessage, function sendMessage, function startThread, function acknowledgeThread
+- `site/apps/web/src/lib/messaging/twitter/mock.ts`: file deleted · removed const X_THREAD_IDS, const X_T1_M1, const XT1_M, const XT2_M, const XT3_M, const dallasPlumber, const mikeTorres, const hometipsDal, const drainpatrol, const listeningkit, const drainpatrolMessages, const listeningkitMessages, const X_SEEDS
+- `site/apps/web/src/lib/messaging/twitter/server.ts`: file deleted · removed const xMessagingApp, const twitterMessagingApp
+- `site/apps/web/src/lib/messaging/types.ts`: file deleted · removed type MessagingPlatform, interface Participant, interface Thread, interface ChatMessage, interface ThreadsResponse, interface MessagesResponse, interface SendInput, interface StartThreadInput, interface ThreadResult, interface AckResponse
+- `site/apps/web/src/lib/messaging/uuid.ts`: file deleted · removed export from "../ids"
+- `site/apps/web/src/lib/mock-api.ts`: file deleted · removed const mockApiApp, type MockApiApp
+- `site/apps/web/src/lib/notifications/bark.ts`: file deleted · removed const DEFAULT_BARK_SERVER, const STORAGE_KEY, interface BarkPushInput, interface BarkConfig, function normalizeBarkServer, function assertDeviceKey, function barkPushUrl, interface BarkResponse, function sendBarkPush, function loadBarkConfig, function saveBarkConfig, const LIST_STORAGE_KEY, interface BarkConnection, const DEFAULT_BARK_LABEL, function barkConnectionId, function readList, function writeList, function getBarkConnections, function createBarkConnection, function saveBarkConnection, function deleteBarkConnection
+- `site/apps/web/src/lib/openapi.ts`: file deleted · removed const MOCK_SERVER_PORT, const ErrorEnvelopeSchema, const ACCOUNT_ISSUE_VALUES, const AccountIssueSchema, const ISSUE_FIX_VALUES, const IssueFixSchema, const RawSignalSchema, const AccountIssueInfoSchema, const ApiKeyScopeSchema, const ApiKeySchema, const CreateApiKeyInputSchema, const ApiKeyListSchema, const ApiKeyCreateSchema, const BrandSchema, const BrandPageSchema, const ConnectionRecordSchema, const CommunitySchema, const ListingRecordSchema, const KeywordSchema, const FeedItemSchema, const BrandResponseSchema, const BrandWithSourcesSchema, const SourcesResponseSchema, const AccountsResponseSchema, const AccountCreateResponseSchema, const AccountResolveResponseSchema, const CommunitiesResponseSchema, const CommunityResponseSchema, const CommunitySingleResponseSchema, const ListingsResponseSchema, const ListingResponseSchema, const ListingStatusResponseSchema, const KeywordsResponseSchema, const KeywordResponseSchema, const FeedResponseSchema, const ParticipantSchema, const ReplyToSchema, function threadSchema, const FacebookThreadSchema, const XThreadSchema, const RedditThreadSchema, function messageSchema, const FacebookMessageSchema, const XMessageSchema, const RedditMessageSchema, const SendMessageInputSchema, const StartThreadInputSchema, const AckSchema, function threadsJson, function messagesJson, function sendResultJson, const FacebookThreadsJson, const XThreadsJson, const RedditThreadsJson, const FacebookMessagesJson, const XMessagesJson, const RedditMessagesJson, const FacebookSendResultJson, const XSendResultJson, const RedditSendResultJson, const SendMessageInputJson, const StartThreadInputJson, const AckJson, function errorResponse, function json, const ErrorEnvelopeJson, const ApiKeyScopeJson, const ApiKeyJson, const CreateApiKeyInputJson, const ApiKeyListJson, const ApiKeyCreateJson, const BrandJson, const BrandResponseJson, const BrandWithSourcesJson, const SourcesResponseJson, const AccountsResponseJson, const AccountCreateResponseJson, const AccountResolveResponseJson, const CommunitiesResponseJson, const CommunityResponseJson, const CommunitySingleResponseJson, const ListingsResponseJson, const ListingResponseJson, const ListingStatusResponseJson, const KeywordsResponseJson, const KeywordResponseJson, const FeedResponseJson, function contractComponents, const openApiDocumentation
+- `site/apps/web/src/lib/persist.ts`: file deleted · removed const PREFIX, function storage, function loadPersistedState, function savePersistedState, function isRecord, function isArray
+- `site/apps/web/src/lib/plans.ts`: file deleted · removed type PlanCard, const PLAN_CARDS, const livePlanSchema, type LivePlan, const PLATFORM_LABELS, function platformLabel, function usageText, function phraseLimitReached
+- `site/apps/web/src/lib/platform-support.ts`: file deleted · removed const LIVE_PLATFORMS, function landingPath
+- `site/apps/web/src/lib/related-mentions.ts`: file deleted · removed interface RelatedMentionsContext, type RelatedMentionsEvent, function togglePick, const hasPicks, const relatedMentionsMachine
+- `site/apps/web/src/lib/request-log.ts`: file deleted · removed const REDACTED, const SENSITIVE_KEYS, const LOGGED_KEY, const MAX_LOGGED_CHARS, function sourceForPath, function redactForLog, type EnvRecord, function readEnvFlag, function isRequestLoggingEnabled, function requestLogger
+- `site/apps/web/src/lib/reveal/flow.ts`: file deleted · removed const GROUP_QUERIES
+- `site/apps/web/src/lib/reveal/suggest.ts`: file deleted · removed type KeywordSuggestion, function suggestKeywordsFromBrand
+- `site/apps/web/src/lib/transport.ts`: file deleted · removed type TokenProvider, const tokenProvider, function setApiTokenProvider, function requireApiToken, function apiMode, function apiRequest
+- `site/apps/web/src/lib/webhooks-live.ts`: file deleted · removed const platformSchema, const webhookSchema, const webhookListSchema, const deliveriesSchema, const createdSchema, const outcomeSchema, type Webhook, type Delivery, type CreatedWebhook, type TestOutcome, const MIN_SCORE_CHOICES, function webhooksAllowed, function describeDelivery, function describeWebhook, function run, function createWebhook, function setWebhookActive, function removeWebhook, function testWebhook
+- `site/apps/web/src/lib/website.ts`: file deleted · removed function websiteError, function isValidWebsite
+- `site/apps/web/src/main.tsx`: removed const publishableKey
+- `site/apps/web/src/pages/onboarding/OnboardingAuth.tsx`: file deleted · removed const appearance, const COPY, type OAuthProvider, const OAUTH_PROVIDERS, function startOAuth, function OAuthCards, function OnboardingAuth, function OnboardingAuthLoading
+- `site/apps/web/src/pages/onboarding/OnboardingLoading.tsx`: file deleted · removed const TONES, type OnboardingLoadingTone, function OnboardingLoading
+- `site/apps/web/src/pages/onboarding/OnboardingPage.tsx`: file deleted · removed function OnboardingPage
+- `site/apps/web/src/pages/onboarding/OnboardingShell.tsx`: file deleted · removed const EDGE_DITHER, const EDGE_MASK, const HERO_MASK, function OnboardingHero, function OnboardingShell
+- `site/apps/web/src/pages/onboarding/OnboardingSteps.tsx`: file deleted · removed type Step, const VIDEO_URL, const PLATFORM_SITES, const EXTENSION_ZIP, const EXTENSION_SOURCE, function OnboardingSteps
+- `site/apps/web/src/pages/onboarding/auth-handoff.ts`: file deleted · removed const KEY, function readAuthSource, function saveAuthSource, const WEBSITE_KEY, function saveLandingWebsite, function readLandingWebsite, function clearLandingWebsite, function clearAuthSource, const PROGRESS_KEY, type OnboardingProgress, const PROGRESS_ORDER, function saveOnboardingProgress, function readOnboardingProgress, function clearOnboardingProgress
+- `site/pnpm-lock.yaml`: edited
+- `site/scripts/build-site.mjs`: added const synced · changed function merge · removed const DEPLOYMENTS, const target, const tooBig, const MAX_PAGE_BYTES
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/adsPower/SKILL.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/humanMouse/SKILL.md`: edited
+- `skills/inspect/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `skills/xchatReplies/SKILL.md`: edited
+- `src/agentHooks/agentHooks.test.ts`: added test "finds an installed log command, and not git log"
+- `src/agentHooks/liveLog/index.ts`: added const FROM_CHECKOUT, const INSTALLED · changed function logCommandOf
+- `src/cli/inspect/index.ts`: changed const inspectCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/freshness/client.ts`: changed function staleServerLine
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `src/surface/readme/index.ts`: changed function renderSurface
+
+What changed: the README is now for setting log up: why use it, install, getting started, how we use it, getting the most out of it, and a map of the docs. Everything technical moved into docs/, a page per subject (install, mcp, twenty, howItWorks, signingIn, listingMonitor, browserSetup, layout, and the generated reference.md, which `buildDocs` now writes instead of a README section, with its links made relative to docs/). The Fumadocs site at /docs is built from docs/ on every site build (`scripts/docs/syncSiteDocs.mjs`): titles from each page's heading, README files as index pages, links rewritten, raw HTML made plain text, internal research left out. lefthook's `siteDocs` checks every published page has a title and every link resolves. Convex and the dashboard are gone from the site: the landing page plus the docs, no Clerk, no Convex client, 216 dead dashboard files and their tests, and the old dashboard-era docs pages. Docs, skills and messages say `log`, never `bun bin/log.ts`, and the agent hooks recognise a bare `log` command. Rule 103.
+Why: matt: the README is for how to set it up, everything technical in docs/ by subject with its Mermaid diagrams, the docs kept current by lefthook on every commit, Fumadocs kept, no Convex and no dashboard, and log runs as `log` from the npm package.
+Checked: every pre-commit gate but this entry passes on the whole tree, including the new `siteDocs` (442 pages); the hook tests pass with the new bare-log cases; the site builds with every docs page (1332 files), and the landing page, docs front page, MCP page, reference and a Mermaid diagram were checked in a browser.
+
+## 2026-10-31 08:50Z · sync/logCliTail
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/README.md`: edited
+- `docs/accounts.md`: new file
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browserSetup.md`: edited
+- `docs/browsers.md`: edited
+- `docs/commandNaming.md`: edited
+- `docs/conversations.md`: edited
+- `docs/deployment.md`: edited
+- `docs/groupListening.md`: edited
+- `docs/groupMembers.md`: edited
+- `docs/groupRead.md`: edited
+- `docs/howItWorks.md`: edited
+- `docs/install.md`: edited
+- `docs/knowledgeBase.md`: edited
+- `docs/layout.md`: edited
+- `docs/lifecycle.md`: edited
+- `docs/listingMedia.md`: edited
+- `docs/listingMonitor.md`: edited
+- `docs/listingPublish/README.md`: edited
+- `docs/listingPublish/captchaKraken.md`: edited
+- `docs/listingPublish/formFill.md`: edited
+- `docs/listingPublish/imagePipeline.md`: edited
+- `docs/listingPublish/sources.md`: edited
+- `docs/listingPublish/stateMachine.md`: edited
+- `docs/mcp.md`: edited
+- `docs/namingConventions.md`: edited
+- `docs/platformGuides/discord.md`: new file
+- `docs/platformGuides/facebook.md`: new file
+- `docs/platformGuides/linkedin.md`: new file
+- `docs/platformGuides/reddit.md`: new file
+- `docs/platformGuides/x.md`: new file
+- `docs/proxies.md`: edited
+- `docs/proxyVendors/README.md`: edited
+- `docs/proxyVendors/byteful.md`: edited
+- `docs/rea/README.md`: edited
+- `docs/rea/comparison.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/rea/publicExamples.md`: edited
+- `docs/rea/roadmap.md`: edited
+- `docs/rea/sources.md`: edited
+- `docs/rea/spec.md`: edited
+- `docs/recordToFlow.md`: edited
+- `docs/signingIn.md`: edited
+- `docs/site.json`: new file
+- `docs/status.md`: edited
+- `docs/twenty.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `docs/usingLog.md`: new file
+- `docs/voice/perPersonVoice.md`: edited
+- `scripts/docs/syncSiteDocs.mjs`: added const site, const privateRoots, const stripExt, const FOLDER_TITLES, const prettyFolder, function pageSlug, const placed, const tabMeta, function place, const all, const folderDirs · changed function listDocs, function rewriteLink, function titleAndBody, function render · removed const LEFT_OUT, const ORDER, function slugOf, const sources, const published
+- `site/apps/web/src/landing/LandingPage.tsx`: changed const PLUGS
+
+What changed: the docs site is laid out in five tabs the way Fern lays its docs out, set in one file, docs/site.json: Get started (install, add your accounts, connect your agent, using log well), Use cases, Platforms (a plain page each for X, Reddit, Facebook, Discord and LinkedIn), Reference (every command, error codes, agent guides) and How it works (the ideas, browsers and proxies, Facebook in depth, each platform's API, the diagrams, working on log). `syncSiteDocs` places every page from site.json into its tab, and its check refuses a page in no tab, a page in two, a missing file or a broken link. The pages were rewritten in plain words: short titles and summaries, no rule numbers, examples instead of internals; new pages for accounts, using log well and each platform. The README's docs map and the landing page's Works with links point at the new tabs.
+Why: matt: the docs were all over the place, confusing and too technical; manage them the way Fern does, by domain, and fix them.
+Checked: every pre-commit gate passes on the whole tree, siteDocs places 449 pages in 5 tabs; the site builds (1346 files) and the docs front page and the X platform page were checked in the browser with the five tabs in the sidebar.

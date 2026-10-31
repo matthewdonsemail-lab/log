@@ -48,5 +48,5 @@ export function staleServerLine(root: string, file = serverStampFile()): string 
   if (!alive(started.pid)) return null;
   const now = codeStamp(root);
   if (now <= started.stamp) return null;
-  return `>>> The log MCP server (pid ${started.pid}, started ${started.startedAt.slice(0, 16)}Z) is running older code than the checkout: log-cli changed at ${new Date(now).toISOString().slice(0, 16)}Z. Its tools and their descriptions are stale until it restarts (reconnect the log server with /mcp, or restart Claude). The terminal CLI (bun bin/log.ts) runs the current code.`;
+  return `>>> The log MCP server (pid ${started.pid}, started ${started.startedAt.slice(0, 16)}Z) is running older code than the checkout: log-cli changed at ${new Date(now).toISOString().slice(0, 16)}Z. Its tools and their descriptions are stale until it restarts (reconnect the log server with /mcp, or restart Claude). The terminal CLI (log) runs the current code.`;
 }

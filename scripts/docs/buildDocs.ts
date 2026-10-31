@@ -139,7 +139,13 @@ for (const file of readdirSync(diagramDir)) {
 }
 
 const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\r\n/g, "\n");
-put("README.md", withSurface(readme, renderSurface(entries, flows, all)));
+const referencePath = join(root, "docs/reference.md");
+const reference = existsSync(referencePath)
+  ? readFileSync(referencePath, "utf8").replace(/\r\n/g, "\n")
+  : "# Reference: every command, MCP tool and hook\n\nGenerated from the code by `bun run docs:build`, so it always matches what `log` does. The README covers why and how to start; this is the full list.\n";
+const fromDocs = (section: string) =>
+  section.replace(/\]\((?!https?:|#|\/|\.\.\/)([^)\s]+)\)/g, (_, target: string) => `](${target.startsWith("docs/") ? target.slice(5) : `../${target}`})`);
+put("docs/reference.md", withSurface(reference, fromDocs(renderSurface(entries, flows, all))));
 
 const filesUnder = (dir: string): string[] =>
   readdirSync(dir).flatMap((f) => {

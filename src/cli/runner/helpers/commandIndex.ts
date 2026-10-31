@@ -69,4 +69,6 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "read", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordReadCommand" },
   { name: "watch", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordWatchCommand" },
   { name: "send", platform: "discord", module: "src/cli/discord/index.ts", exportName: "discordSendCommand" },
+  { name: "session", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinSessionCommand" },
+  { name: "cookies", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinCookiesCommand" },
 ]

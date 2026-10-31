@@ -6,7 +6,7 @@ description: Take one Facebook account from imported (NEEDSLOGIN) to ACTIVE and 
 # accountToDryRun
 
 Every step is an `mcp__log__*` tool (the `log` MCP server, `bun run mcp`).
-The same thing works in a terminal as `bun bin/log.ts <command> <args>`.
+The same thing works in a terminal as `log <command> <args>`.
 Nothing here posts to Facebook. Going live is the last step, and only when
 matt says so.
 

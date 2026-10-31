@@ -1,65 +1,77 @@
 # The account lifecycle
 
-AGENTS.md rule 35, and the section at the top of AGENTS.md. Each account has
-one XState machine, `lifecycleMachine` in `src/marketplace/lifecycle/`, from
-its import to its host watching it every day. **The browser is opened once
-per local day and stays open; every step happens inside it.** Plan and
-reasons: `PLANS/LOG_CLI_ACCOUNT_LIFECYCLE_PLAN.md`; Listaro's own lifecycle:
-`RESEARCH/LISTARO_BROWSER_LIFECYCLE.md`.
+Every Facebook account in log moves through one state machine, from the day it
+is imported to the days its host watches it. The machine says what the account
+has done, what it still needs, and where to go back to after an interruption.
+Its main idea: **the account's browser opens once per local day and stays
+open, and every step happens inside it.** Read this when you onboard an
+account or want to know why a host is in the state it is in.
 
 ```bash
 log facebook lifecycle                     # every account: status, state, what onboarding has left
-log facebook lifecycle --account <name>    # one, with its standing
+log facebook lifecycle --account <name>    # one account, with its standing
 log facebook lifecycle states              # the machine's own state tree
-log facebook lifecycle states --write      # regenerates the tree at the end of this file
+log facebook lifecycle states --write      # regenerates the tree at the end of this page
 ```
+
+The machine is `lifecycleMachine` (XState) in `src/marketplace/lifecycle/`.
 
 ## Two lanes
 
-**Onboarding:** `proxying → opening → next → signingIn → checkingAccount →
-settingProfile → settingName → settingLocation → warming → attached`.
-`next` is a router: it picks the first step not done yet. So an account
-loaded from Twenty starts where it is, and an interruption comes back to the
-exact step it left.
+**Onboarding** gets a new account ready:
 
-**Host:** `opening → watching ⇄ checking`, with `ACT → acting`. Acting runs
-publish or a reply in a tab of the open browser, never a launch of its own.
-At the end of the day the host goes to `overnight`: it closes for
-`endOfActiveHours`, waits for the account's morning, and reopens.
+`proxying → opening → next → signingIn → checkingAccount → settingProfile → settingName → settingLocation → warming → attached`
 
-## The warm-up (a day, in the browser that stays open)
+`next` is a router: it picks the first step not done yet. So an account loaded
+from Twenty starts where it is, and an interruption comes back to the exact
+step it left.
 
-After the profile (photo and cover, rule 28), the name, and the Marketplace
-location, the account runs Listaro's five warm-up activities
-(`Listaro_backup/src/lib/account-warmup.ts`), in its stage order, spaced
-through one day (`activityGapMs`, default 2.5 h):
+**Host** looks after a ready account every day:
 
-| Activity | Listaro | What it does |
-| --- | --- | --- |
-| `feedBrowse` | stage 1 (`runStage1`, :92-130) | Home feed, 4-7 scrolls, 2-3 likes (only with `liveActions`, rule 8), a look at Marketplace |
-| `marketplaceBrowse` | stage 2 (`runStage2`, :135-174) | Marketplace, 3-5 scrolls, opens 2-4 listings and reads each |
-| `createAccessCheck` | stage 3 (`runStage3`, :181-209) | Opens /marketplace/create/item and checks it stays (posting allowed) |
-| `sellingVisit` | stage 4 (`runStage4or5`, :214-246) | Marketplace, 4-7 scrolls, then Marketplace > Selling |
-| `messagesVisit` | stage 5 | Stage 4, then Messages |
+`opening → watching ⇄ checking`, and `ACT → acting`
 
-Each activity is a flow recorded once in a headed `log inspect` session
-(`log facebook warmup stages record`, rule 36) and run by the warm-up machine in one open
-browser (`log facebook warmup stages run`), every step in the stage log (`log facebook warmup stages log
---follow`). Warm-up steps are `scroll 4-7 300-600` (wheel ticks, not jumps),
-`openAny /marketplace/item/ 2-4` (random listings, read, back), `clickAny
-button ^Like$ 2-3` (live, `--likes` only) and `dwell 3-5`, their ranges drawn
-on every run. Scripts: `src/marketplace/warmup/helpers/scripts.ts`.
+- Acting is meant to run a publish or a reply in a tab of the open browser,
+  never in a browser of its own. It is not built yet (see below).
+- At the end of the day the host goes `overnight`: it closes the browser for
+  `endOfActiveHours`, waits for the account's morning, and reopens.
+
+## The warm-up: one day, in the browser that stays open
+
+After the profile (photo and cover), the name and the Marketplace location,
+the account runs five warm-up activities in order, spaced through one day
+(`activityGapMs`, default 2.5 hours):
+
+| Activity | What it does |
+| --- | --- |
+| `feedBrowse` | Home feed, 4-7 scrolls, 2-3 likes (only with `liveActions`), a look at Marketplace |
+| `marketplaceBrowse` | Marketplace, 3-5 scrolls, opens 2-4 listings and reads each |
+| `createAccessCheck` | Opens /marketplace/create/item and checks the page stays (posting allowed) |
+| `sellingVisit` | Marketplace, 4-7 scrolls, then Marketplace > Selling |
+| `messagesVisit` | The same as `sellingVisit`, then Messages |
+
+How they run:
+
+- Each activity is a flow, recorded once in a visible `log inspect` session
+  (`log facebook warmup stages record`).
+- The warm-up machine runs the flows in one open browser
+  (`log facebook warmup stages run`).
+- Every step goes into the stage log (`log facebook warmup stages log --follow`).
+- The step types are `scroll 4-7 300-600` (wheel ticks, not jumps),
+  `openAny /marketplace/item/ 2-4` (random listings, read, then back),
+  `clickAny button ^Like$ 2-3` (live, with `--likes` only) and `dwell 3-5`.
+  Their ranges are drawn fresh on every run.
 
 The warm-up ends when every activity has run **and** a whole day
-(`warmupMs`, default 24 h) has passed since it began. Then the account is
+(`warmupMs`, default 24 hours) has passed since it began. Then the account is
 `attached` and `warmedAt` is set.
 
-What Listaro got wrong, and what this changes:
-- **It was never wired up.** No schedule and no button called it.
-- **It set no profile, no name and no location.** Here those come first.
-- **It never looked for checkpoints.** Here any step can raise an account issue.
-- **It closed the borrowed tab** (`account-warmup.ts:343-345`). Here an action only ever closes its own tab.
-- **It had posting caps it never enforced.** No listing is published until the account is attached.
+Compared with the warm-up this was based on:
+
+- It is wired up: the lifecycle runs it, nothing has to remember to.
+- Profile, name and location are set first.
+- Any step can raise an account issue, such as a checkpoint.
+- An action only ever closes its own tab.
+- No listing is published until the account is attached.
 
 ## Interruptions, and where each one goes back to
 
@@ -67,11 +79,11 @@ What Listaro got wrong, and what this changes:
 | --- | --- | --- |
 | `needsLogin` issue (login wall, session expired) | `onboarding.signingIn`, in the same browser | `next`, back to where it was |
 | `checkpoint` issue (checkpoint, video selfie) | `needsPerson`, with the window kept open for a person | `PERSON_DONE` → `checkingAccount` → `next` |
-| `limited` issue (rate limited) | `cooling`: closed for `rateLimited`, rested `limitedRestMs` | `opening` |
-| `restricted` issue (e.g. Pittsburgh, "everything you manage is restricted") | closed for `restricted` → `restricted` (final) | kept in Twenty (rule 13) |
+| `limited` issue (rate limited) | `cooling`: closed for `rateLimited`, rested for `limitedRestMs` | `opening` |
+| `restricted` issue (for example "everything you manage is restricted") | closed for `restricted` → `restricted` (final) | kept in Twenty |
 | `banned` issue (account disabled) | closed → `banned` (final) | kept in Twenty |
 | a retryable error | the same step once more after `retryMs` | then `stuck` |
-| `browserGone` in the host (crash, window closed) | `crashed` (close logged) → `opening` | one reopen a day; a second one goes to `stuck` (`opensSpent`) |
+| `browserGone` in the host (crash, window closed) | `crashed` (close logged) → `opening` | one reopen a day; a second goes to `stuck` (`opensSpent`) |
 | `PAUSE` / `RESUME` | `paused` | `opening` |
 | `SHUTDOWN` | closed for `shutdown` → `stopped` | — |
 | `LOST` | closed for `accountLost` → `lost` | — |
@@ -80,40 +92,54 @@ What Listaro got wrong, and what this changes:
 Opens are counted per local day: one, plus one reopen after a crash
 (`OPENS_PER_DAY = 2`).
 
-## What Twenty records (`socialAccounts`, all additive)
+## What Twenty records
+
+These fields on `socialAccounts` are all additions; none replaces an older
+field.
 
 | Field | Set when |
 | --- | --- |
 | `lifecycleState` | the host saves the machine's state as it moves |
 | `profileSetAt` | the photo and cover are saved (`log facebook profile setup --live`) |
-| `profileNamedAt` | the rename is saved. Backfilled 2026-10-19 for Bethlehem, Scranton and Lancaster from each run's `useFXIMUpdateNameMutation` answer (`"error": null`) |
-| `marketplaceLocationAt` | the Marketplace location is confirmed in the home city. Backfilled for Reading from its `CometMarketplaceSetBuyLocationMutation`, 2026-10-19 17:18 UTC |
+| `profileNamedAt` | the rename is saved (it can be backfilled from the run's `useFXIMUpdateNameMutation` answer, `"error": null`) |
+| `marketplaceLocationAt` | the Marketplace location is confirmed in the home city (it can be backfilled from the run's `CometMarketplaceSetBuyLocationMutation` answer) |
 | `warmupStartedAt`, `warmedAt` | the warm-up begins, and the account is attached |
 
-## What runs it
+## What runs each step
 
-The actors are the steps log-cli already has:
+The machine's actors are steps log already has:
 
 - **proxy:** `log proxy`
 - **open:** the gate, the device and the self-check
 - **sign-in:** the connect machine
-- **account check:** `classifySignal`, including `restrictedPolicy`
+- **account check:** `classifySignal`
 - **profile and name:** the profile machine and the `profileSetup` flow
 - **location:** `set_marketplace_location`
 - **acting:** publish and replies
-- **watching:** the Selling page review check and the inbox scan (rule 34)
+- **watching:** the account check: Marketplace status, each listing's state on
+  Selling, and the seller inbox
 
-The host keeps them in one open browser: `log facebook host start --account <a>`
-(`src/marketplace/host`, actors in `src/cli/host/helpers/hostActors.ts`,
-`skills/host/SKILL.md`). It saves the machine's snapshot and a resume record
-(`~/.logCli/host/<account>/progress.json`) on every change, so a restart picks
-up where it was (warm-up done, opens today), and takes `PERSON_DONE`, `PAUSE`,
-`RESUME`, `SHUTDOWN` and `LOST` from `log facebook host send`. Signed in is decided by
-the `c_user` and `xs` cookies, and the session is saved to Twenty as soon as
-it is. Every step's landing page is checked (`pageProblem`: checkpointed,
-loginWall, pageNotReached). Not built yet: `acting` (publish and replies as a
-tab) answers `actNotBuilt`, so the standalone commands still open their own
-browser for those: use them as few times as possible.
+## The host
+
+`log facebook host start --account <a>` keeps all of this in one open browser
+(`src/marketplace/host`, actors in `src/cli/host/helpers/hostActors.ts`, how-to
+in `skills/host/SKILL.md`).
+
+- It saves the machine's snapshot and a resume record
+  (`~/.logCli/runs/host/<account>/progress.json`) on every change, so a restart
+  picks up where it was (warm-up done, opens today).
+- It takes `PERSON_DONE`, `PAUSE`, `RESUME`, `SHUTDOWN` and `LOST` from
+  `log facebook host send`.
+- Signed in is decided by the `c_user` and `xs` cookies, and the session is
+  saved to Twenty as soon as it is.
+- Every step's landing page is checked (`pageProblem`: checkpointed,
+  loginWall, pageNotReached).
+
+**Not built yet:** `acting` (publish and replies as a tab) answers
+`actNotBuilt`. Until it is, the standalone commands still open their own
+browser for those, so use them as few times as possible.
+
+The rules behind this are in AGENTS.md.
 
 ## The machine's state tree
 

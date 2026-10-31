@@ -9,6 +9,9 @@ pre-commit:
     rdvwrTransport:
       run: bun run check:rdvwrTransport
 
+    linkedinTransport:
+      run: bun run check:linkedinTransport
+
     platforms:
       run: bun run check:platforms
 
@@ -27,6 +30,9 @@ pre-commit:
     docs:
       run: bun run check:docs
 
+    siteDocs:
+      run: bun run check:siteDocs
+
     useCases:
       run: bun run check:useCases
 
@@ -41,6 +47,9 @@ pre-push:
 
     rdvwrTransport:
       run: bun run check:rdvwrTransport
+
+    linkedinTransport:
+      run: bun run check:linkedinTransport
 
     platforms:
       run: bun run check:platforms
@@ -59,6 +68,9 @@ pre-push:
 
     docs:
       run: bun run check:docs
+
+    siteDocs:
+      run: bun run check:siteDocs
 
     typecheck:
       run: bun run typecheck

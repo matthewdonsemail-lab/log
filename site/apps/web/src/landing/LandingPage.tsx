@@ -14,34 +14,28 @@ import { Rasputin } from './rasputin'
 
 const PLUGS = [
   {
-    href: '/docs/guide/mcp.html#chatgpt',
-    label: 'ChatGPT',
-    src: '/logos/tools/chatgpt.svg',
-    setup: 'ChatGPT connectors cannot send an API key yet, so it cannot reach your Log server. The docs say what works instead.',
-  },
-  {
-    href: '/docs/guide/mcp.html#claude-code',
+    href: '/docs/getStarted/mcp#claude-code',
     label: 'Claude',
     src: '/logos/tools/claude-desktop.svg',
-    setup: 'Point Claude Code or Claude Desktop at the MCP server on your own Log deployment, then ask about your matches.',
+    setup: 'claude mcp add log -- logMcp, and Claude Code runs every log command as a tool.',
   },
   {
-    href: '/docs/guide/mcp.html#cursor',
+    href: '/docs/getStarted/mcp#codex',
+    label: 'Codex',
+    src: '/logos/tools/chatgpt.svg',
+    setup: 'codex mcp add log -- logMcp, and Codex runs every log command as a tool.',
+  },
+  {
+    href: '/docs/getStarted/mcp#cursor',
     label: 'Cursor',
     src: '/logos/tools/cursor.svg',
-    setup: 'Add your Log deployment\'s MCP server to Cursor and its agent can read your matches and manage your phrases.',
+    setup: 'Add logMcp to the MCP servers in Cursor, and its agent runs every log command as a tool.',
   },
   {
-    href: '/docs/guide/mcp.html#hermes',
-    label: 'Hermes',
-    src: '/logos/tools/hermes.svg',
-    setup: 'Register your Log deployment\'s MCP server in Hermes to query your matches from your workflows.',
-  },
-  {
-    href: '/docs/guide/mcp.html#any-other-mcp-client',
+    href: '/docs/getStarted/mcp#any-other-mcp-client',
     label: 'MCP',
     src: '/logos/tools/mcp.svg',
-    setup: 'Point any MCP client at the /mcp address of your own Log deployment. Read-only keys can only read.',
+    setup: 'Any MCP client: the command is logMcp. Anything that acts on an account needs your confirmation.',
   },
 ]
 
@@ -121,7 +115,6 @@ export function LandingPage() {
           <ul className="mt-5 flex list-none flex-wrap items-center gap-x-8 gap-y-4 p-0">
             {[
               { label: 'OpenMagPie', src: '/logos/stack/openmagpie.webp', whiten: true, showLabel: true },
-              { label: 'Convex', src: '/logos/stack/convex.svg', whiten: false, showLabel: false },
               { label: 'Firecrawl', src: '/logos/stack/firecrawl.svg', whiten: true, showLabel: true },
               { label: 'Treg', src: '/logos/stack/treg.svg', whiten: false, showLabel: true },
               { label: 'TypeSafe', src: '/logos/tools/typesafe.svg', whiten: true, showLabel: true },

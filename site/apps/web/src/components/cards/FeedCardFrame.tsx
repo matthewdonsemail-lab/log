@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { Badge, useComposedRef, useSquircleClip } from '@listeningkit/ui'
 import { Bot, Zap } from 'lucide-react'
-import { intentLabel } from '@/lib/live-keywords'
+import { intentLabel } from '@/lib/intent'
 
 /**
  * Uniform feed wrapper: squircles the card, scales oversized Paper designs

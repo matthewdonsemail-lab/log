@@ -1,10 +1,12 @@
-# Browsers (rule 44)
+# Browsers
 
-Every browser log-cli drives works the same way, so a session never asks which browser
-it is in. The browser is chosen per account in Twenty (`socialAccounts.browserDriver`:
-`adsPower` or `camoufox`, empty for Camoufox).
+log can drive more than one browser, and every one of them works the same way,
+so a session never needs to know which browser it is in. Each account picks
+its browser in Twenty (`socialAccounts.browserDriver`: `adsPower` or
+`camoufox`; empty means Camoufox). Read this to understand how a browser is
+opened and held to the same checks, or to add a new one.
 
-## One Playwright layer, for every browser
+## One Playwright layer for every browser
 
 ```text
 TS  log facebook host / log inspect / log flow / log facebook warmup
@@ -15,39 +17,49 @@ Py  inspectSession.py
            adsPower: gate_attached → profile proxy → Local API start → connect_over_cdp
                      → the profile's context → SessionHar → check_attached
       └─ the same Playwright context and page for everything after:
-           HumanMouse (rule 32), scrollMotion, Recorder (per-step HAR), the flows, saveState
+           HumanMouse, scrollMotion, Recorder (per-step HAR), the flows, saveState
 ```
 
-All the Playwright work is async (`playwright.async_api`). AdsPower is Chromium and Camoufox
-is Firefox, but both are driven through the same Playwright API. Neither uses Puppeteer:
-`ws.puppeteer` is only the name AdsPower's Local API gives the CDP websocket it returns,
-which Playwright's `connect_over_cdp` takes.
+- All the Playwright work is async (`playwright.async_api`).
+- AdsPower is Chromium and Camoufox is Firefox, but both are driven through the
+  same Playwright API.
+- Neither uses Puppeteer. `ws.puppeteer` is only the name AdsPower's Local API
+  gives the CDP websocket it returns, which Playwright's `connect_over_cdp`
+  takes.
 
-In TypeScript, each browser is a domain under `src/browser/`, with the same parts:
-- **`src/browser/driver`:** the session machine (XState v5) and the capability list every browser fills;
-- **`src/browser/<name>/types.ts`:** its row of the table below;
+In TypeScript, each browser is a folder under `src/browser/` with the same
+parts:
+
+- **`src/browser/driver`:** the session machine (XState v5) and the list of
+  capabilities every browser fills;
+- **`src/browser/<name>/types.ts`:** its row of the parity table below;
 - **`src/browser/<name>/client.ts`:** its `BrowserDriver`;
 - **`src/browser/<name>/<name>.test.ts`:** its tests.
 
-## Listaro's primitives, kept
+## How AdsPower is used
 
-From `Listaro_backup/src/lib/adspower-client.ts` and its AdsPower server plan (2026-04-08):
+These practices come from an earlier production setup that ran on AdsPower,
+and are kept here:
 
-| Listaro | log-cli |
+| Practice | In log |
 | --- | --- |
-| The Local API client: start, stop and list profiles, then Playwright over CDP | `src/browser/adsPower/client.ts` (v2 endpoints) and `python/browser/adsPowerBrowser.py` |
-| One AdsPower window per account, held open | `log facebook host` (rule 35) opens the account's profile once a day and keeps it open; every action is a tab |
+| A Local API client: start, stop and list profiles, then Playwright over CDP | `src/browser/adsPower/client.ts` (v2 endpoints) and `python/browser/adsPowerBrowser.py` |
+| One AdsPower window per account, held open | `log facebook host` opens the account's profile once a day and keeps it open; every action is a tab |
 | Never close the AdsPower context | Sessions close only their own tabs. The profile is stopped through the Local API at the end, never by `context.close()` |
-| No stealth scripts for AdsPower | Nothing is injected into any page (rule 32) |
-| No cookie injection for AdsPower: the profile keeps its own cookies | The profile keeps its own. Twenty's session is carried in once, only into a profile that has no Facebook login yet |
+| No stealth scripts | Nothing is injected into any page |
+| No cookie injection: the profile keeps its own cookies | The profile keeps its own. Twenty's session is carried in once, only into a profile that has no Facebook login yet |
 | The login check still applies | The connect steps, the page check and `signIn` run the same in either browser |
-| The fallback is kept | Camoufox stays: an account without `browserDriver` runs on it |
+| Keep a fallback | Camoufox stays: an account without `browserDriver` runs on it |
 
 ## Parity table
 
-`bun run check:browsers` (pre-commit and pre-push) refuses a browser without its domain,
-row, driver, tests, Python opener or column below. A capability may be **not built**:
-it is listed on every commit, not refused.
+Every browser must fill the same capabilities. `bun run check:browsers`
+(pre-commit and pre-push) refuses a browser that is missing its folder, row,
+driver, tests, Python opener or column below. A capability may be marked
+**not built**: that is listed on every commit, not refused.
+
+The table is generated from `src/browser/<name>/types.ts`; edit those, not the
+table.
 
 <!-- browsers:start · generated by `bun run browsers:docs` from src/browser/<name>/types.ts. Not edited by hand. -->
 
@@ -73,6 +85,12 @@ it is listed on every commit, not refused.
 ## Adding a browser
 
 1. Add its name to `BROWSER_DRIVERS` (`src/browser/driver/types.ts`).
-2. Write `src/browser/<name>/`: `types.ts` with its capabilities row, `client.ts` with its driver, `index.ts`, and `<name>.test.ts`.
-3. Add its opener to `python/browser/browserDriver.py` (`BROWSERS` and `OPENERS`). It must return a gated, self-checked Playwright context and record a session HAR.
+2. Write `src/browser/<name>/`: `types.ts` with its capabilities row,
+   `client.ts` with its driver, `index.ts`, and `<name>.test.ts`.
+3. Add its opener to `python/browser/browserDriver.py` (`BROWSERS` and
+   `OPENERS`). It must return a gated, self-checked Playwright context and
+   record a session HAR.
 4. Run `bun run browsers:docs`, and commit.
+
+Setting a browser up: [Browser setup](browserSetup.md). The rules behind this
+are in AGENTS.md.
