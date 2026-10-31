@@ -1190,6 +1190,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     entirely, and a session a run captures or refreshes is saved back to
     the file. Listings, groups and conversations stay in Twenty.
 
+98. 2026-10-31 · matt: "So the opener always relevant. Don't just go in
+    for the jugular. Go in with the opener." A first message to someone
+    matt has never talked with is the opener and nothing else: about them
+    and something they posted (or reposted, or that they reposted him),
+    always relevant, and never the ask: no pitch, no "you using treg yet",
+    no call, no link to his own stuff. The ask waits until they have
+    answered. `log voice` fails a first message with an ask in it
+    (`openerOnly`, `src/twitter/copy/voice`), and someone with nothing
+    relevant to open on isn't messaged yet. `docs/useCases/twitter/engagerDms.md`,
+    `networkMaxing.md`, `GUIDES/MATT_WRITING_STYLE.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

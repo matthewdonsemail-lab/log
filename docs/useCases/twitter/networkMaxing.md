@@ -28,11 +28,12 @@ Say: **"go on docs/useCases/twitter/networkMaxing.md"**. The agent reads this pa
 | 7 | Who: from a source the owner named (people who engaged with his post, a topic search) | [engagerDms.md](engagerDms.md) steps 1 to 4 | a short list, each with a user id and one recent tweet of theirs |
 | 8 | Follow them first. Never send a cold message to someone the owner doesn't follow | `twitterFollow`, then `twitterFollowLive` { userId, approvedBy, confirmLive: true } | X's answer is `sent` (or already followed) |
 | 9 | Like the tweet the message is about, before the message | `twitterLike`, then `twitterLikeLive` { tweet, approvedBy, confirmLive: true } | X's answer is `sent` |
-| 10 | Then the message: their tweet forwarded first, then one informal line, the cold DM way in [engagerDms.md](engagerDms.md). Gated like every send | `voice`, then `twitterDmLive` | X's answer is `sent` |
+| 10 | Then the message: their tweet forwarded first, then one informal line about it, the cold DM way in [engagerDms.md](engagerDms.md). The opener only, always relevant to them, never an ask (no pitch, no "you using `<tool>`"). Gated like every send | `voice`, then `twitterDmLive` | X's answer is `sent` |
 
 ## What to know
 
 - Follow, like and message are each a write, and they all count against the account's writes for the day (each line of a message is one). Spend today's writes on the people who messaged first, then new people with what's left.
 - Never act on the account in quick succession: a few minutes between people, the follow, like and message to one new person spread out, never back to back. A drop or a 429 stops the run, and the next action waits for the owner (rule 94).
+- **The opener is never the ask.** A first message to someone new is about them and what they posted, nothing else. The ask comes once they've answered. On 2026-10-31 five openers went out ending "you using treg for anything", and the owner said: go in with the opener, never for the jugular.
 - Answer what they actually said. Read far enough back first, and never ask something they already told the owner.
 - A message the owner already sent, with them not answering yet, isn't waiting on him: leave it.

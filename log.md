@@ -9152,3 +9152,22 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: accounts run locally on every platform. `log localAccount pull` copies every Twenty account (fields, cookies, login secrets) into ~/.logCli/localAccounts.json under its Twenty id, keeping one already local unless --refresh; a row in the file is local by being there, so its updates and secrets go to the file while listings and groups still find it by id. `LOG_ACCOUNTS=local` is set in .env.local (template in .env.example). Session lines say `Local accounts:` or `Twenty:` by where the account lives (`accountStore`). X's write budget is 90 a day (`WRITES_PER_DAY`), handed to the X engine's governor in each spec and shown in the status line and usage. New `log twitter repost` (twikit `retweet`, code 327 is already reposted). Rules 96 and 97 in AGENTS.md and the MCP instructions; use-case pages and the xPosting skill say 90.
 Why: matt asked for everything done locally, every social account pre-configured, and the new X budget of 90; he approved a like and repost that log-cli couldn't do without a repost command (rule 94: no hand-rolled calls).
 Checked: `bun run check` (1196 pass); `log localAccount pull` added 36 accounts; with LOG_ACCOUNTS=local the X and Discord session checks answered loggedIn from the local file; three approved X replies sent (dry run, then live, minutes apart); `log twitter repost --live` answered sent on deepman's post.
+
+## 2026-10-31 04:45Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/engagerDms.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/cli/twitter/helpers/voice.ts`: changed const VOICE_USAGE, function renderVoice
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: changed interface VoiceReading
+- `src/twitter/copy/voice/voice.test.ts`: added test "a first message that goes in with an ask fails, however good the opener" · changed const answering
+
+What changed: rule 98, a first message to someone matt never talked with is the opener only, always relevant, never the ask. `log voice` asks SubQ a new question, `openerOnly` (a first dm with no pitch, no question about his tools, no call), shown as `opener only` and needed to pass. engagerDms.md and networkMaxing.md say the opener stops before any ask, the examples drop "you using <tool>", and someone with nothing relevant to open on isn't messaged yet; the MCP instructions carry rule 98 and the voice and twitterDm tools cite it. GUIDES/MATT_WRITING_STYLE.md (outside the repo) has the same line.
+Why: five openers went out ending "you using treg for anything"; matt: "the opener always relevant ... don't just go in for the jugular, go in with the opener."
+Checked: `bun run check` (1197 pass); live, the gate failed jamesfuller_dev's opener with the treg ask (opener only 0.08) and passed the same opener without it (1.00).
