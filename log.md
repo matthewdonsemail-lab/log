@@ -9232,3 +9232,30 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an opened message with no reply is a follow-up too, not only a reaction (rule 100 widened). Each thread carries `openedByThem`: the old DM engine sets it when the other person's `last_read_event_id` is past matt's last message, and the X Chat sync sets it when the other person's read receipt (an event of kind Unknown, sent by the reader right after the other side's message: 20 of 20 from them followed matt's message, 14 of 14 from matt followed theirs) is newer than matt's last message. `openedNoReply` and `followUpDue` (src/twitter/dm/person) decide it, mergeThreads keeps it across a person's two threads, and `log twitter dms --waiting` lists every follow-up apart ("they opened it, no reply yet: follow up"). Rule 101: X goes to 240 writes a day (`WRITES_PER_DAY`), with the use cases, the xPosting skill and the MCP instructions saying 240. networkMaxing.md's section is now "Everyone who opened it", read with limit 200.
 Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
 Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.
+
+## 2026-10-30 18:15Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now has the node02 log MCP stack (`/home/deepman/services/logMcp`). It covers the bare repo the PC pushes to, the `log-mcp` container and its Dockerfile and compose file, what the `.env` holds (names only), the data folders, the planned Tailscale Funnel on `:8443` with only `/mcp`, `/oauth` and `/.well-known`, the chat-xdk source build with juicebox-sdk 0.3.7, the separate X governor and how to update it. The SSH line now says `deepman@`, since the tailnet policy refuses `root`. `log-mcp-token.txt` is listed with the other logins.
+Why: mandeep asked to set log-cli up with HTTPS, on node02 through Tailscale, for claude.ai/Duet connectors and for Claude Code elsewhere.
+Checked: on node02 the container answers 401 with no token. With the token, `initialize` and `tools/list` return 148 tools, and the OAuth metadata names `https://node02.tail4fcf85.ts.net:8443`. Funnel itself is still waiting on the tailnet policy.
+
+## 2026-10-30 18:52Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now says log MCP's public address `https://node02.tail4fcf85.ts.net:8443/mcp` is live through Tailscale Funnel: only `/mcp`, `/oauth` and `/.well-known`, and what it took (node02 allowed for Funnel, deepman as Tailscale operator). It adds how to connect a claude.ai or Duet connector (the sign-in browser must be on the tailnet, since Twenty is tailnet only) and Claude Code elsewhere (`claude mcp add --transport http` with the bearer token).
+Why: mandeep allowed node02 for Funnel and set the operator, then asked to finish the HTTPS setup.
+Checked: fetched from outside the tailnet (treg tinyfish.web.fetch): the protected-resource and authorization-server metadata answer, `:8443/` is 404, and `https://node02.tail4fcf85.ts.net/` (Twenty) is unreachable.
+
+## 2026-10-30 19:30Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now gives log MCP's fixed address, `https://mcp.listeningkit.com/mcp`, served by the Cloudflare tunnel `listeningkit-node02`. That tunnel has an ingress rule for only `/mcp`, `/oauth/*` and `/.well-known/*` to `http://172.17.0.1:7337`, and a proxied `mcp` CNAME. The doc covers the container listening on the Docker bridge (`command:` in `compose.yaml`), `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, why `log.listeningkit.com` wasn't used (it points at Vercel), how to connect, and that the Tailscale Funnel on `:8443` is off. Twenty has a matching Note, "Infrastructure: log MCP server (mcp.listeningkit.com)".
+Why: mandeep asked for a proper domain name that stays the same, with the details in Twenty.
+Checked: from the internet, `/mcp` with no token gives 401, with the token `initialize` answers, both OAuth metadata documents name `https://mcp.listeningkit.com`, and `/` and `/admin` give 404. From the `listeningkit-twenty_internal` network, `172.17.0.1:7337` answers 401.
