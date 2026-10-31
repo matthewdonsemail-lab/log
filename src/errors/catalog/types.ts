@@ -210,7 +210,7 @@ export const ERROR_CATALOG = {
   },
   textMissing: {
     layer: 'twitter',
-    meaning: 'A reply, quote or dm was given no text.',
+    meaning: 'A reply, quote, post or dm was given no text.',
     retryable: false,
     raisedIn: ['twitter/post/send'],
     action: 'Give the approved copy with --text.'
@@ -228,6 +228,13 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
     action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
+  },
+  mediaInvalid: {
+    layer: 'twitter',
+    meaning: "A post's --media can't go on X: a file that isn't there or is empty, a type X doesn't take, one over X's size (5 MB an image, 15 MB a gif, 512 MB a video), a video or gif beside other files, more than 4 images, or media on something that isn't a post.",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Give one .mp4/.mov video or one .gif, or up to 4 .jpg/.png/.webp images, as --media <file>[,<file>].'
   },
   queueInvalid: {
     layer: 'twitter',

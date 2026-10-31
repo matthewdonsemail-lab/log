@@ -2,11 +2,11 @@ import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { TwentyError } from '../../../twenty/graphql/index'
+import { TwentyError, accountStore } from '../../../twenty/graphql/index'
 import type { TwentyClient } from '../../../twenty/graphql/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../../marketplace/socialAccount/index'
-import { twitterStateRoot, writeLocalSession } from '../../../directApi/engine/index'
+import { twitterStateRoot, writeLocalSession, writesPerDayOf } from '../../../directApi/engine/index'
 import type { TwitterEngineRun, TwitterEngineSpec, TwitterGate, TwitterSessionAnswer, XChatLiveEvent } from './types'
 
 const ENGINE = join(import.meta.dir, '..', '..', '..', '..', 'python', 'twitterApi', 'engine.py')
@@ -78,7 +78,7 @@ export function runTwitterEngine(account: TwitterAccount, request: TwitterEngine
     const pinPath = chatPin ? join(dir, 'chatPin.txt') : undefined
     if (pinPath) writeFileSync(pinPath, chatPin!, { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
+    writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
     const run = spawnSync(process.env.LOG_PYTHON || 'python', [ENGINE, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, windowsHide: true })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: TwitterSessionAnswer
@@ -103,7 +103,7 @@ export function runTwitterEngineLive(account: TwitterAccount, request: TwitterEn
   const pinPath = chatPin ? join(dir, 'chatPin.txt') : undefined
   if (pinPath) writeFileSync(pinPath, chatPin!, { mode: 0o600 })
   const spec = join(dir, 'spec.json')
-  writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
+  writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
   return new Promise((resolve) => {
     const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', ENGINE, spec], { windowsHide: true })
     let buffer = ''
@@ -170,5 +170,5 @@ export async function recordTwitterSession(twenty: TwentyClient, account: Twitte
   account.sessionCheckedAt = now.toISOString()
   if (cookiesChanged) account.cookies = merged as never
   await twenty.update(SOCIAL_ACCOUNTS, account.id, update as never)
-  return [`Twenty: ${account.accountName} sessionState ${state} (X's own answer)${cookiesChanged ? ', its refreshed cookies merged back' : ''}.`]
+  return [`${accountStore(account.id)}: ${account.accountName} sessionState ${state} (X's own answer)${cookiesChanged ? ', its refreshed cookies merged back' : ''}.`]
 }

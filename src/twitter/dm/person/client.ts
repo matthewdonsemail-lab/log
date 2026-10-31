@@ -37,6 +37,7 @@ export function mergeThreads(threads: readonly TwitterDmThread[]): TwitterDmThre
       return {
         ...newest,
         unread: group.some((t) => t.unread),
+        openedByThem: newest.lastFromMe && group.some((t) => t.lastFromMe && t.openedByThem),
         messagesLoaded: group.reduce((n, t) => n + t.messagesLoaded, 0),
         conversationIds: group.map((t) => t.conversationId),
         boxes: [...new Set(group.map((t) => t.box))],
@@ -53,4 +54,20 @@ export function dropMirrors<T extends MirrorMessage>(messages: readonly T[], sec
     kept.push(m)
   }
   return kept
+}
+
+export function reactedOnly(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText'>): boolean {
+  return !thread.lastFromMe && /^\(reacted [^)]*\)$/.test((thread.lastText ?? '').trim())
+}
+
+export function waitingOnYou(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText'>): boolean {
+  return !thread.lastFromMe && !reactedOnly(thread)
+}
+
+export function openedNoReply(thread: Pick<TwitterDmThread, 'lastFromMe' | 'openedByThem'>): boolean {
+  return thread.lastFromMe && Boolean(thread.openedByThem)
+}
+
+export function followUpDue(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText' | 'openedByThem'>): boolean {
+  return reactedOnly(thread) || openedNoReply(thread)
 }

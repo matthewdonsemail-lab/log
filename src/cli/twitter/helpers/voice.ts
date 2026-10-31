@@ -15,7 +15,7 @@ import type { Command, CommandContext, CommandInput, CommandResult } from "../..
 export const VOICE_USAGE = [
   "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--json]",
   "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
-  "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, and whether it reads like a mate texting. A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
+  "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
   "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass).",
   "Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.",
 ].join("\n");
@@ -46,7 +46,7 @@ export const VOICE_INPUT: CommandInput = {
 export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder() };
 
 export function renderVoice(reading: VoiceReading & { notHere?: string[] }): string {
-  const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
+  const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
   const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
   return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;

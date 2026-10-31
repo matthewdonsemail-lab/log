@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { platformStateRoot, writeLocalSession, writesPerDayOf } from '../../directApi/engine/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../marketplace/socialAccount/index'
-import { TwentyError } from '../../twenty/graphql/index'
+import { TwentyError, accountStore } from '../../twenty/graphql/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import type { PlatformAnswer, PlatformEngineRun, PlatformEngineSpec, PlatformGate, PlatformShape } from './types'
 
@@ -174,5 +174,5 @@ export async function recordPlatformSession(twenty: TwentyClient, shape: Platfor
   if (cookiesBack) update.cookies = mergeCookieShape(account.cookies, run.refreshed!, cookieDomain)
   await twenty.update(SOCIAL_ACCOUNTS, account.id, update as never)
   writeLocalSession(account.accountName, state, now, platformStateRoot(shape.platform))
-  return [`Twenty: ${account.accountName} sessionState ${state} (${shape.label}'s own answer)${cookiesBack ? ', its refreshed cookies merged back' : ''}.`]
+  return [`${accountStore(account.id)}: ${account.accountName} sessionState ${state} (${shape.label}'s own answer)${cookiesBack ? ', its refreshed cookies merged back' : ''}.`]
 }

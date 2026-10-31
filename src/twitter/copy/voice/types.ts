@@ -18,6 +18,7 @@ export interface VoiceReading {
   voice: number
   inContext: number
   friendLike: number
+  openerOnly: number
   toThem: number | null
   neverSays: string[]
   pass: boolean
