@@ -9298,3 +9298,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the `log` and `logMcp` bins in package.json are `bin/log.ts` and `bin/logMcp.ts`, without the leading `./`, and the version is 0.1.1.
 Why: npm 11 dropped both bins when publishing 0.1.0 ("bin[log] script name bin/log.ts was invalid and removed"), so 0.1.0 installs without a `log` command. 0.1.1 goes out with them.
 Checked: `npm publish --dry-run` no longer warns about either bin, where it did with `./`. A copy with only the bins changed published clean in a dry run.
+
+## 2026-10-31 07:35Z · feat/publicInstall
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `package.json`: edited
+
+What changed: the root package.json names Node 24 in `engines` beside Bun.
+Why: Vercel saw log-cli's bun.lock and Bun engine at the repo root and built the site on a Bun image with no Node ("Node.js version changed from 24.x to 1.4.x", then "env: node: No such file or directory"), so `cd site && pnpm install` failed on #10 and #11.
+Checked: read the failed deployment's log with `vercel inspect --logs`. The preview build this push starts is the real check.
