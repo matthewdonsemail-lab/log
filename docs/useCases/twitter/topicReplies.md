@@ -30,7 +30,7 @@ Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <articl
 ## What the runs taught
 
 - **Check past replies before approving.** One run replied to someone the account had already answered several times; that's where the one-reply-per-person rule came from.
-- **Big lists take days.** At 90 writes a day, a list of a hundred and more is planned day by day with `limit`.
+- **Big lists take days.** At 240 writes a day, a list of a hundred and more is planned day by day with `limit`.
 
 ## Not built yet
 

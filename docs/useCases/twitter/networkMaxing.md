@@ -16,20 +16,20 @@ Say: **"go on docs/useCases/twitter/networkMaxing.md"**. The agent reads this pa
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Who wrote last, message requests included; anyone whose last event is a reaction is listed apart, for "Everyone who reacted" | `twitterDms` { account, waiting: true, limit: "50" } | the list, newest first |
+| 1 | Who wrote last, message requests included; anyone who opened the owner's message without replying is listed apart, for "Everyone who opened it" | `twitterDms` { account, waiting: true, limit: "50" } | the list, newest first |
 | 2 | Read each in full, old DM thread and X Chat merged. Drop spam, pitches and bots: a real person who said something real stays | `twitterDms` { account, with: "<handle>" } | what each one said, and whether they're real |
 | 3 | How the owner writes to this person | `voice` { to, with, context: "<what they said>" } | the owner's own lines to draft from |
 | 4 | Draft something nice that keeps it going and asks for nothing: answer what they said, say something true about them or their work, and get to know them (what they're doing, how it's going). Leave the door open. Never a pitch, never "let's hop on a call". Every draft reads differently | the agent | one draft per person |
 | 5 | Gate each draft, rewrite until it passes | `voice` { to, with, context, text } | the gate passes |
 | 6 | Send each one, one message per line, a few minutes between people | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true } | X's answer is `sent` |
 
-### Everyone who reacted
+### Everyone who opened it
 
-A reaction to the owner's message means they opened it and liked it enough to react, without typing back. That's an open door, so it gets a follow-up.
+Someone who opened the owner's message without typing back is an open door, so they get a follow-up. They opened it when they reacted to it, or when their read receipt is past it (X Chat sends one each time a person reads, and some old DM threads show how far the other person has read). Only people who keep read receipts on show the second kind.
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 6a | Who reacted last: `twitterDms` { waiting: true } lists them apart, after the people waiting on a reply | `twitterDms` { account, waiting: true } | the reacted list |
+| 6a | Who opened it: `twitterDms` { waiting: true, limit: "200" } lists them apart, after the people waiting on a reply (the default 20 only looks at the newest threads) | `twitterDms` { account, waiting: true, limit: "200" } | the opened list |
 | 6b | Read the thread and what they've posted lately, then follow up about them and what they're doing: pick up where it left off, never repeat the opener, never the ask | `twitterDms` { with }, treg's posts read, `voice` | the gate passes |
 | 6c | Send it, a few minutes between people | `twitterDmLive` | X's answer is `sent` |
 

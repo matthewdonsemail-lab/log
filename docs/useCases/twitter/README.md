@@ -28,7 +28,7 @@ DMs are their own pages. Recruiting is public replies only.
 | House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
 | The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Nudge`, `Status` |
-| Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 90 writes a day per account, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
+| Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 240 writes a day per account, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
 
 ## The queue, step by step
 

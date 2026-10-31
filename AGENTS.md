@@ -1213,14 +1213,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     repo. `docs/useCases/twitter/networkMaxing.md`.
 
 100. 2026-10-31 · matt: "reactions are indicators of open messages, so we
-    can then add that as a thing we can follow up on." When someone's last
-    event is a reaction to matt's message, they opened it and didn't type
-    back: it isn't a reply waiting on him, it's a follow-up to send. `log
-    twitter dms --waiting` lists those apart (`reactedOnly`, `waitingOnYou`,
-    `src/twitter/dm/person`; `--json` gives `followUps`), and the follow-up
+    can then add that as a thing we can follow up on", then "for our already
+    opened messages". When someone's last event is a reaction to matt's
+    message, or their read receipt is past his last message (X Chat's
+    read-marker events, the old DM API's `last_read_event_id`), they opened
+    it and didn't type back: it isn't a reply waiting on him, it's a
+    follow-up to send. `log twitter dms --waiting` lists those apart
+    (`reactedOnly`, `openedNoReply`, `followUpDue`, `src/twitter/dm/person`;
+    `openedByThem` on each thread; `--json` gives `followUps`), and the follow-up
     is the network-maxing kind: about them and what they're doing, never the
     opener again and never the ask. `docs/useCases/twitter/networkMaxing.md`
     ("Everyone who reacted"), `dmInbox.md`.
+
+101. 2026-10-31 · matt: "increase it to be 240 writes to twitter". An X
+    account makes up to 240 writes a day, not 90 (this replaces rule 96's
+    number; `WRITES_PER_DAY`, `src/directApi/engine`). X's own answer still
+    decides: a 344 stops the run and nothing more goes out until matt says
+    so. Discord keeps 60, every other platform 40.
 
 ## Checks
 

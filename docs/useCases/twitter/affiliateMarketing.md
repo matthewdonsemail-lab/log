@@ -39,7 +39,7 @@ Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<a
 ## What to know
 
 - X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`). Without it, X Chat messages show who and when, not what.
-- Every DM counts as a write against the account's 90 a day. `--force` goes past it only when the owner says so.
+- Every DM counts as a write against the account's 240 a day. `--force` goes past it only when the owner says so.
 - A DM only lands if the person accepts DMs from accounts they don't follow.
 
 ## Not built yet

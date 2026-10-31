@@ -88,6 +88,7 @@ export interface TwitterDmThread {
   lastFromMe: boolean
   lastText?: string | null
   unread: boolean
+  openedByThem?: boolean
   messagesLoaded: number
   conversationIds?: string[]
   boxes?: TwitterDmThread['box'][]

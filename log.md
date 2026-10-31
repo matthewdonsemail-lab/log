@@ -9206,3 +9206,29 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: rule 100, a reaction as someone's last event means they opened matt's message, so it's a follow-up, not a reply waiting on him. `reactedOnly` and `waitingOnYou` (src/twitter/dm/person) decide it; `log twitter dms --waiting` lists reacted threads apart ("reacted, so they opened it: follow up"), counts them as `reactedToYou`, and `--json` gives them as `followUps`. networkMaxing.md gains "Everyone who reacted" (follow up about them, never the opener again, never the ask) and dmInbox.md says what a reaction means; the usage, MCP instructions and the twitterDms tool cite rule 100.
 Why: matt: "reactions are indicators of open messages, so we can then add that as a thing we can follow up on."
 Checked: `bun run check` (1199 pass) with tests for both helpers; live, `log twitter dms --waiting` moved @dave_xt's ❤️ out of waiting and into the follow-up list.
+
+## 2026-10-31 06:30Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/affiliateMarketing.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: edited
+- `python/twitterApi/engine.py`: changed def thread_of
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function threadLine, function render, function onePerPerson, const dmsCommand
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/twitter/account/session/types.ts`: changed interface TwitterDmThread
+- `src/twitter/dm/person/client.ts`: added function openedNoReply, function followUpDue · changed function mergeThreads
+- `src/twitter/dm/person/person.test.ts`: added test "matt sent last and their read receipt is past it: opened, a follow-up", test "no read receipt, or they replied after it, is not an opened follow-up"
+
+What changed: an opened message with no reply is a follow-up too, not only a reaction (rule 100 widened). Each thread carries `openedByThem`: the old DM engine sets it when the other person's `last_read_event_id` is past matt's last message, and the X Chat sync sets it when the other person's read receipt (an event of kind Unknown, sent by the reader right after the other side's message: 20 of 20 from them followed matt's message, 14 of 14 from matt followed theirs) is newer than matt's last message. `openedNoReply` and `followUpDue` (src/twitter/dm/person) decide it, mergeThreads keeps it across a person's two threads, and `log twitter dms --waiting` lists every follow-up apart ("they opened it, no reply yet: follow up"). Rule 101: X goes to 240 writes a day (`WRITES_PER_DAY`), with the use cases, the xPosting skill and the MCP instructions saying 240. networkMaxing.md's section is now "Everyone who opened it", read with limit 200.
+Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
+Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.

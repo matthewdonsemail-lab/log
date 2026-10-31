@@ -336,6 +336,8 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
     last_id = str(conversation.get("max_entry_id") or (last or {}).get("id") or "")
     last_from_me = bool(last and last["senderId"] == me)
     unread = id_key(last_id) > id_key(read_up_to) if read_up_to else bool(last and not last_from_me)
+    their_read = max((str(p.get("last_read_event_id") or "") for p in participants if str(p.get("user_id")) != me and p.get("last_read_event_id")), key=id_key, default="")
+    opened = bool(last_from_me and their_read and id_key(their_read) >= id_key(str(last["id"])))
     return {
         "conversationId": cid,
         "box": box,
@@ -346,6 +348,7 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
         "lastFromMe": last_from_me,
         "lastText": (last or {}).get("text"),
         "unread": bool(unread and not last_from_me),
+        "openedByThem": opened,
         "messagesLoaded": len(mine),
     }
 

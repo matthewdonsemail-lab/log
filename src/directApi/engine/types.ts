@@ -53,7 +53,7 @@ export interface DirectRoute {
 
 export const WRITES_PER_DAY_DEFAULT = 40
 
-export const WRITES_PER_DAY: Record<string, number> = { discord: 60, twitter: 90 }
+export const WRITES_PER_DAY: Record<string, number> = { discord: 60, twitter: 240 }
 
 export function writesPerDayOf(platform: string): number {
   return WRITES_PER_DAY[platform] ?? WRITES_PER_DAY_DEFAULT

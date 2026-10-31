@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import type { TwitterDmThread } from '../../account/session/index'
 import { onePerPerson } from '../../../search/conversations/helpers/index'
 import { newMessages } from '../../../inbox/watch/client'
-import { dropMirrors, mergeThreads, personKeyOf, reactedOnly, waitingOnYou } from './index'
+import { dropMirrors, followUpDue, mergeThreads, openedNoReply, personKeyOf, reactedOnly, waitingOnYou } from './index'
 
 const thread = (conversationId: string, lastAt: string, over: Partial<TwitterDmThread> = {}): TwitterDmThread => ({
   conversationId,
@@ -83,5 +83,20 @@ describe('a reaction is a follow-up, not a reply waiting on matt', () => {
     expect(reactedOnly({ lastFromMe: false, lastText: 'they (reacted 🔥) to it lol' })).toBe(false)
     expect(reactedOnly({ lastFromMe: true, lastText: '(reacted 😂)' })).toBe(false)
     expect(waitingOnYou({ lastFromMe: true, lastText: 'yo' })).toBe(false)
+  })
+})
+
+describe('an opened message with no reply is a follow-up too', () => {
+  test('matt sent last and their read receipt is past it: opened, a follow-up', () => {
+    const opened = { lastFromMe: true, lastText: 'saw this', openedByThem: true }
+    expect(openedNoReply(opened)).toBe(true)
+    expect(followUpDue(opened)).toBe(true)
+    expect(waitingOnYou(opened)).toBe(false)
+  })
+
+  test('no read receipt, or they replied after it, is not an opened follow-up', () => {
+    expect(followUpDue({ lastFromMe: true, lastText: 'saw this', openedByThem: false })).toBe(false)
+    expect(followUpDue({ lastFromMe: true, lastText: 'saw this' })).toBe(false)
+    expect(openedNoReply({ lastFromMe: false, openedByThem: true })).toBe(false)
   })
 })
