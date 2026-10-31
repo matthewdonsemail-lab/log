@@ -9232,3 +9232,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an opened message with no reply is a follow-up too, not only a reaction (rule 100 widened). Each thread carries `openedByThem`: the old DM engine sets it when the other person's `last_read_event_id` is past matt's last message, and the X Chat sync sets it when the other person's read receipt (an event of kind Unknown, sent by the reader right after the other side's message: 20 of 20 from them followed matt's message, 14 of 14 from matt followed theirs) is newer than matt's last message. `openedNoReply` and `followUpDue` (src/twitter/dm/person) decide it, mergeThreads keeps it across a person's two threads, and `log twitter dms --waiting` lists every follow-up apart ("they opened it, no reply yet: follow up"). Rule 101: X goes to 240 writes a day (`WRITES_PER_DAY`), with the use cases, the xPosting skill and the MCP instructions saying 240. networkMaxing.md's section is now "Everyone who opened it", read with limit 200.
 Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
 Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.
+
+## 2026-10-31 06:44Z · move/logCliIn
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `bunfig.toml`: edited
+- `scripts/checks/checkNoComments.ts`: changed const SKIPPED
+- `site/apps/web/tsconfig.json`: edited
+- `site/apps/web/tsconfig.node.json`: edited
+
+What changed: log-cli's whole history (298 commits) is merged into the log repo, which is its home from now on. Of the old hackathon log, only the marketing site is kept, in `site/` as its own pnpm workspace, and the root `vercel.json` builds it from there. Our checks now leave `site/` alone: `noComments` skips it (`SKIPPED`), and `bun test` ignores it (`pathIgnorePatterns` in bunfig.toml). The site's two tsconfigs look for type packages only inside `site/` (`typeRoots`), so the repo root's `@types/bun` no longer breaks its build. The README opens with what log is and has a "Set it up" section: Bun, Python, `LOG_ACCOUNTS=local`, `localAccount add`, `cookies save`, `session check` and the MCP server.
+Why: matt: move everything from log-cli into the log repository and carry on our work there, so people can set it up from the README. Everything can be public. The site is just our marketing site.
+Checked: gitleaks over log-cli's full history found 70 hits, all false positives, public upstream fbk samples or short-lived page tokens; no `.env`, HAR or login.json was ever committed. On the merged tree, `lefthook run pre-commit --all-files` and `pre-push --all-files` pass: 1200 tests pass, typecheck, naming, docs, facebookClientDocs. `node site/scripts/build-site.mjs` builds the web app and adds 524 docs files.

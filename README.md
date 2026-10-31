@@ -1,4 +1,11 @@
-# log-cli
+# log
+
+ListeningKit's own go-to-market tool, open-sourced so you can run the same thing.
+One CLI and one MCP server run our accounts on X, Reddit, Facebook and Discord:
+listening, replies, DMs, Marketplace listings and group work. Every step is
+decided by the platform's own answer. It isn't a SaaS: you run it on your own
+machine, with your own accounts. How to set it up: [Set it up](#set-it-up).
+The marketing site for log.listeningkit.com lives in [`site/`](site/).
 
 ## Rule one: if we don't know, we do this
 
@@ -84,18 +91,46 @@ printing, and a [Clack](https://github.com/bombshell-dev/clack) guided menu
 
 What log-cli is built to do, with every step's command and MCP tool and what decides each step worked: [everything on X](docs/useCases/twitter/README.md) (recruiting, topic replies, answering engagers, DMing likers, the DM inbox, follower checks), [from accounts to live Marketplace listings](docs/useCases/facebook/marketplaceListings.md) and [listening to local Facebook groups](docs/useCases/facebook/groups.md). The index is [docs/useCases](docs/useCases/README.md).
 
-## Run it
+## Set it up
+
+**You need:**
+- [Bun](https://bun.sh) 1.4 or newer
+- Python 3.12 for the direct-API engines (X, Reddit, Discord, Facebook)
+- [AdsPower](https://www.adspower.com) Global, only for the platforms that run in a browser
+
+**1. Clone and install.** `bun install` also installs the git hooks (lefthook), so every commit runs the same checks we do.
 
 ```bash
+git clone https://github.com/matthewdonsemail-lab/log
+cd log
 bun install
-cp .env.example .env.local     # TWENTY_BASE_URL, TWENTY_API_KEY, LOG_PYTHON, CAPTCHA_KRAKEN_API_KEY, 2CAPTCHA_API_KEY, BYTEFUL_*
-bun run launch                 # guided menu (needs a terminal)
-bun bin/log.ts facebook accounts                              # Facebook accounts in Twenty, and whether each may run
-bun bin/log.ts facebook listings --status READY
-bun bin/log.ts facebook publish --listing <agencyListingId>   # dry run
-bun bin/log.ts twitter session check --account <accountName>  # X: is the saved session still signed in
-bun bin/log.ts reddit session check --account <accountName>   # Reddit: the same
 ```
+
+**2. Install the Python side,** into the Python you'll point `LOG_PYTHON` at:
+
+```bash
+python -m pip install -r vendor/twikit/requirements.txt
+python -m pip install -e vendor/fbk -e vendor/endcord
+python -m pip install vendor/chatXdk/wheels/chatxdk-0.5.2-cp310-abi3-win_amd64.whl   # X Chat (encrypted DMs); Windows wheel, other systems build vendor/chatXdk from source
+```
+
+**3. Configure.** Copy the template, then set `LOG_PYTHON` to that Python. Set `LOG_ACCOUNTS=local` so your accounts live in a file on your machine (`~/.logCli/localAccounts.json`) and nothing needs a CRM. Every other key in `.env.example` is optional and says what it's for (captcha solvers, proxies, Twenty if you use it).
+
+```bash
+cp .env.example .env.local
+```
+
+**4. Add an account, then check it's signed in.** The cookies are typed into a masked prompt, never passed as flags.
+
+```bash
+bun bin/log.ts localAccount add --platform twitter --account <name>
+bun bin/log.ts twitter cookies save --account <name>      # paste the account's cookies when it asks
+bun bin/log.ts twitter session check --account <name>     # X's own answer: loggedIn, loggedOut or restricted
+```
+
+**5. Use it from your agent.** `.mcp.json` already runs the MCP server (`bun bin/logMcp.ts`), so Claude Code or Codex opened in this folder sees every tool. The first call is `getGuide({ topic: "logMcpInstructions" })`, which lists every use case.
+
+**6. Everything else.** `bun run launch` gives a guided menu. Every command takes `--json` and never prompts, so scripts and agents can call it. Every command and flag is in [Commands, MCP tools and hooks](#commands-mcp-tools-and-hooks) below, generated from the code.
 
 `LOG_PYTHON` points at the Python with the vendored clients' dependencies
 (curl_cffi and the rest); the direct-API engines and their tests run on it.
