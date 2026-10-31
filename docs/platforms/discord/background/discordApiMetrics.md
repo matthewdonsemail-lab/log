@@ -10,10 +10,10 @@
 | Path | `discord.com/api/metrics` |
 | Sends | `metrics`, `client_info` |
 | Reads | — |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_c044bb75a567c0c7673d359b648023d7488c9723f940f8fd7fe3c98efd8fb9a2` |
 
-Seen 5 time(s) in 2 run(s).
+Seen 6 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,10 +22,104 @@ Seen 5 time(s) in 2 run(s).
 | inspect | step 11: type e2625 | 1 | 204 | 337 ms | 21744 ms | — |
 | inspect | step 28: press Enter | 1 | 204 | 373 ms | 29174 ms | — |
 | inspect | step 32: snapshot | 1 | 204 | 359 ms | 60949 ms | — |
+| inspect | step 3: snapshot | 1 | 204 | 301 ms | 13477 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 3: snapshot: 204, 301 ms
+
+Sent:
+
+```json
+{
+  "metrics": [
+    {
+      "name": "badge_directory_catalog_fetch",
+      "type": "distribution",
+      "tags": [
+        "design_id:2",
+        "viewed_user:self",
+        "result:success",
+        "catalog_state:non_empty",
+        "attempt:initial",
+        "platform:web",
+        "… 1 more"
+      ],
+      "value": 903
+    },
+    {
+      "name": "quest_content_impression",
+      "type": "count",
+      "tags": [
+        "design_id:2",
+        "quest_content:QUEST_BAR_V2",
+        "platform:web",
+        "release_channel:stable"
+      ]
+    },
+    {
+      "name": "wasm_asset_fetch_duration",
+      "type": "distribution",
+      "tags": [
+        "design_id:2",
+        "br:true",
+        "delivery:network",
+        "platform:web",
+        "release_channel:stable"
+      ],
+      "value": 437
+    },
+    {
+      "name": "wasm_asset_body_duration",
+      "type": "distribution",
+      "tags": [
+        "design_id:2",
+        "br:true",
+        "delivery:network",
+        "platform:web",
+        "release_channel:stable"
+      ],
+      "value": 321
+    },
+    {
+      "name": "wasm_asset_encoded_bytes",
+      "type": "distribution",
+      "tags": [
+        "design_id:2",
+        "br:true",
+        "delivery:network",
+        "platform:web",
+        "release_channel:stable"
+      ],
+      "value": 706201
+    },
+    {
+      "name": "wasm_asset_decoded_bytes",
+      "type": "distribution",
+      "tags": [
+        "design_id:2",
+        "br:true",
+        "delivery:network",
+        "platform:web",
+        "release_channel:stable"
+      ],
+      "value": 2261175
+    }
+  ],
+  "client_info": {
+    "built_at": "1793344820826",
+    "build_number": "657850"
+  }
+}
+```
+
+Answered:
+
+```json
+null
+```
 
 **runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 2: snapshot: 204, 367 ms
 
@@ -203,102 +297,6 @@ Sent:
         "release_channel:stable"
       ],
       "value": 773
-    },
-    "… 3 more"
-  ],
-  "client_info": {
-    "built_at": "1793113957288",
-    "build_number": "652418"
-  }
-}
-```
-
-Answered:
-
-```json
-null
-```
-
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 11: type e2625: 204, 337 ms
-
-Sent:
-
-```json
-{
-  "metrics": [
-    {
-      "name": "badge_directory_catalog_fetch",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "viewed_user:self",
-        "result:success",
-        "catalog_state:non_empty",
-        "attempt:initial",
-        "platform:web",
-        "… 1 more"
-      ],
-      "value": 627
-    },
-    {
-      "name": "wasm_asset_fetch_duration",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "br:true",
-        "delivery:network",
-        "platform:web",
-        "release_channel:stable"
-      ],
-      "value": 644
-    },
-    {
-      "name": "wasm_asset_body_duration",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "br:true",
-        "delivery:network",
-        "platform:web",
-        "release_channel:stable"
-      ],
-      "value": 577
-    },
-    {
-      "name": "wasm_asset_encoded_bytes",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "br:true",
-        "delivery:network",
-        "platform:web",
-        "release_channel:stable"
-      ],
-      "value": 705769
-    },
-    {
-      "name": "wasm_asset_decoded_bytes",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "br:true",
-        "delivery:network",
-        "platform:web",
-        "release_channel:stable"
-      ],
-      "value": 2260349
-    },
-    {
-      "name": "wasm_asset_fetch_duration",
-      "type": "distribution",
-      "tags": [
-        "design_id:2",
-        "br:true",
-        "delivery:network",
-        "platform:web",
-        "release_channel:stable"
-      ],
-      "value": 591
     },
     "… 3 more"
   ],

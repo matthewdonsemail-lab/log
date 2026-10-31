@@ -9039,3 +9039,67 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: accounts can live in a local file instead of Twenty. `withLocalAccounts` wraps the Twenty client: rows in `~/.logCli/localAccounts.json` (moved by `LOG_LOCAL_ACCOUNTS`) are found by accountName, a local row wins over a Twenty row of the same name, and a captured session (`keepSession`) saves back to the file. `LOG_ACCOUNTS=local` leaves Twenty out entirely. New `log localAccount add|list` manages the rows (`--adsPower` sets the profile and the adsPower driver). `log discord read --limit` goes up to 1000, and a 429 now stops the read with what was read so far instead of retrying (rule 94). New use case `docs/useCases/discord/groupChatRead.md` writes the read down step by step, and the use-case index now names local accounts.
 Why: the Discord account wasn't in Twenty, and the owner wanted log-cli to work locally without Twenty at all. The 200 cap only reached about 1h45 of a busy group chat.
 Checked: `bun run check` (1194 pass); `log localAccount add` then `log inspect start --account sourcedandsoldtothehighestbidder` opened AdsPower profile k1ifqe1s, the owner signed in, stopping it saved 12 cookies and the token to the local file, `log discord session check` answered loggedIn, and `log discord read --limit 800` read 226 messages from the `log` group.
+
+## 2026-10-31 02:31Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: edited
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: edited
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: edited
+- `docs/platforms/discord/background/discordApiExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiGames.md`: edited
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: edited
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: edited
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: edited
+- `docs/platforms/discord/background/discordApiMetrics.md`: edited
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: edited
+- `docs/platforms/discord/background/discordApiPromotions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: edited
+- `docs/platforms/discord/background/discordApiScience.md`: edited
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: edited
+- `docs/platforms/discord/background/discordApiTokens.md`: edited
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeGiftIntentDismissals.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: edited
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: edited
+- `docs/platforms/discord/background/discordAssets.md`: edited
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: edited
+- `docs/platforms/discord/background/discordBadHashDelta.md`: new file
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: edited
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: edited
+- `docs/platforms/discord/operations.json`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` rebuilt the platform capture docs from the newest inspect runs: the Discord background operation pages and both operations.json files, plus two new Discord pages.
+Why: the Discord inspect run that captured the local account's session was newer than the built docs, so the facebookClientDocs pre-push check failed.
+Checked: the new lines hold the same kind of shapes and ids the committed pages already had, with no message text, tokens or keys; the pre-push checks.

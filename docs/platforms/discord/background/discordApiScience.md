@@ -10,15 +10,15 @@
 | Path | `discord.com/api/science` |
 | Sends | `events` |
 | Reads | — |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_620ebcb5dfaa90f9e0b1faa4acfb8a7aa1550b8ad0abca135d2cd2b71c07c518` |
 
-Seen 116 time(s) in 3 run(s).
+Seen 129 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /channels/@me/<id> | 5 | 204 | 273–485 ms | 9009–12359 ms | — |
-| inspect | step 2: snapshot | 6 | 204 | 297–424 ms | 8909–22188 ms | — |
+| inspect | step 2: snapshot | 16 | 204 | 287–485 ms | 8909–52433 ms | — |
 | inspect | step 4: press Enter | 6 | 204 | 267–490 ms | 7564–10902 ms | — |
 | inspect | step 5: wait 75s | 25 | 204 | 273–727 ms | 75767–412983 ms | — |
 | inspect | step 1: goto /login | 8 | 204 | 294–466 ms | 3263–19363 ms | — |
@@ -42,10 +42,218 @@ Seen 116 time(s) in 3 run(s).
 | inspect | step 29: type e3276 | 1 | 204 | 324 ms | 7422 ms | — |
 | inspect | step 31: wait 60s | 3 | 204 | 280–567 ms | 40027–243549 ms | — |
 | inspect | step 2: wait 8s | 6 | 204 | 273–319 ms | 22473–28128 ms | — |
+| inspect | step 1: goto /channels/@me | 3 | 204 | 301–321 ms | 10837–12629 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 204, 321 ms
+
+Sent:
+
+```json
+{
+  "events": [
+    {
+      "type": "libdiscore_loaded",
+      "properties": {
+        "client_track_timestamp": 1793399045821,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 1,
+        "success": true,
+        "experimental_features": [
+          "2026-10-wasm-precompressed-brotli:1"
+        ],
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 0,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    {
+      "type": "client_heartbeat",
+      "properties": {
+        "client_track_timestamp": 1793399045844,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 2,
+        "client_heartbeat_initialization_timestamp": 1793399045821,
+        "client_heartbeat_version": 31,
+        "is_idle": false,
+        "idle_duration_ms": 1793399045843,
+        "is_afk": false,
+        "is_system_suspended": false,
+        "is_system_locked": false,
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 0,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    {
+      "type": "client_ad_heartbeat",
+      "properties": {
+        "client_track_timestamp": 1793399049622,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 3,
+        "client_ad_session_id": "7aa0183c-a722-4bb4-a9c7-700cd2fff0fa",
+        "client_heartbeat_initialization_timestamp": 1793399049480,
+        "client_heartbeat_version": 3,
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 4,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    {
+      "type": "dismissible_content_shown_before_connection_open",
+      "properties": {
+        "client_track_timestamp": 1793399049624,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 4,
+        "content_type": "NITRO_FILE_UPLOAD_1GB_UPSELL",
+        "group_name": null,
+        "latest_version": null,
+        "guild_id": null,
+        "snowflake_id": null,
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 4,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    {
+      "type": "session_start_client",
+      "properties": {
+        "client_track_timestamp": 1793399049866,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 5,
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 4,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    {
+      "type": "gateway_connected",
+      "properties": {
+        "client_track_timestamp": 1793399049926,
+        "client_heartbeat_session_id": "89078896-68d6-43c2-8cf6-7676bb88761e",
+        "event_sequence_number": 6,
+        "num_failed_connect_attempts": 0,
+        "gateway_url": "wss://gateway.discord.gg",
+        "is_reconnect": false,
+        "is_fast_connect": false,
+        "duration_ms_since_first_connect_attempt": 430,
+        "duration_ms_since_connect_attempt_start": 430,
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 4,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1793399050810
+      }
+    },
+    "… 2 more"
+  ]
+}
+```
+
+Answered:
+
+```json
+null
+```
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 204, 373 ms
+
+Sent:
+
+```json
+{
+  "events": [
+    {
+      "type": "keyboard_shortcut_used",
+      "properties": {
+        "client_track_timestamp": 1793399122735,
+        "event_sequence_number": 14,
+        "shortcut_name": "tab_navigation",
+        "source_class_list": [
+          "input__0ed4f",
+          "inputField_d64f22"
+        ],
+        "location_object": "INPUT",
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 77,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_uuid": "ICBArccHuxX4SIMXebvpjqEBAAAFAAAA",
+        "client_send_timestamp": 1793399122785
+      }
+    },
+    {
+      "type": "keyboard_mode_toggled",
+      "properties": {
+        "client_track_timestamp": 1793399122744,
+        "event_sequence_number": 15,
+        "enabled": true,
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 77,
+        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_uuid": "ICBArccHuxX4SIMXebvpjqEBAAAGAAAA",
+        "client_send_timestamp": 1793399122785
+      }
+    }
+  ]
+}
+```
+
+Answered:
+
+```json
+null
+```
 
 **runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 204, 389 ms
 
@@ -251,233 +459,6 @@ Sent:
       }
     },
     "… 6 more"
-  ]
-}
-```
-
-Answered:
-
-```json
-null
-```
-
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 2: wait 8s: 204, 319 ms
-
-Sent:
-
-```json
-{
-  "events": [
-    {
-      "type": "quest_hover",
-      "properties": {
-        "client_track_timestamp": 1793173389738,
-        "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
-        "event_sequence_number": 25,
-        "content_id": 47,
-        "content_name": "QUEST_HOME_ENTRYPOINT",
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 79,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_uuid": "UABCI2oq6BP4QB0Hnkp1gaEBAAAQAAAA",
-        "client_send_timestamp": 1793173389750
-      }
-    }
-  ]
-}
-```
-
-Answered:
-
-```json
-null
-```
-
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 204, 310 ms
-
-Sent:
-
-```json
-{
-  "events": [
-    {
-      "type": "libdiscore_loaded",
-      "properties": {
-        "client_track_timestamp": 1793170332937,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 1,
-        "success": true,
-        "experimental_features": [
-          "2026-10-wasm-precompressed-brotli:1"
-        ],
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 0,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    {
-      "type": "client_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793170332980,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 2,
-        "client_heartbeat_initialization_timestamp": 1793169102300,
-        "client_heartbeat_version": 31,
-        "is_idle": false,
-        "idle_duration_ms": 1793170332979,
-        "is_afk": false,
-        "is_system_suspended": false,
-        "is_system_locked": false,
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 0,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    {
-      "type": "client_ad_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793170334440,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 3,
-        "client_ad_session_id": "c139cbba-8718-4677-a6a8-4401494e07df",
-        "client_heartbeat_initialization_timestamp": 1793170334269,
-        "client_heartbeat_version": 3,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    {
-      "type": "gateway_connected",
-      "properties": {
-        "client_track_timestamp": 1793170334440,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 4,
-        "num_failed_connect_attempts": 0,
-        "gateway_url": "wss://gateway.discord.gg",
-        "is_reconnect": false,
-        "is_fast_connect": true,
-        "duration_ms_since_first_connect_attempt": 7,
-        "duration_ms_since_connect_attempt_start": 7,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    {
-      "type": "dismissible_content_shown_before_connection_open",
-      "properties": {
-        "client_track_timestamp": 1793170334442,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 5,
-        "content_type": "NITRO_FILE_UPLOAD_1GB_UPSELL",
-        "group_name": null,
-        "latest_version": null,
-        "guild_id": null,
-        "snowflake_id": null,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    {
-      "type": "ready_payload_received",
-      "properties": {
-        "client_track_timestamp": 1793170337277,
-        "client_heartbeat_session_id": "76647484-56eb-47e1-a676-e51ce70342ac",
-        "event_sequence_number": 6,
-        "compressed_byte_size": 755550,
-        "uncompressed_byte_size": 6945986,
-        "compression_algorithm": "zlib-stream",
-        "packing_algorithm": "json",
-        "unpack_duration_ms": 49,
-        "identify_total_server_duration_ms": 602,
-        "identify_api_duration_ms": 441,
-        "identify_guilds_duration_ms": 60,
-        "num_guilds": 97,
-        "num_guild_channels": 7396,
-        "num_guild_category_channels": 846,
-        "presences_size": 2,
-        "users_size": 271809,
-        "read_states_size": 222107,
-        "private_channels_size": 48230,
-        "user_settings_size": 14566,
-        "experiments_size": 8671,
-        "user_guild_settings_size": 288046,
-        "relationships_size": 105470,
-        "remaining_data_size": 10359,
-        "guild_channels_size": 4293752,
-        "guild_members_size": 26074,
-        "guild_presences_size": 2,
-        "guild_roles_size": 904218,
-        "guild_emojis_size": 418590,
-        "guild_threads_size": 13524,
-        "guild_stickers_size": 72143,
-        "guild_events_size": 16394,
-        "guild_features_size": 37385,
-        "guild_remaining_data_size": 6068969,
-        "size_metrics_duration_ms": 63,
-        "duration_ms_since_identify_start": -1793170327926.2,
-        "duration_ms_since_connection_start": -1793170327923.2,
-        "duration_ms_since_emit_start": 1793170329780.2,
-        "is_reconnect": false,
-        "is_fast_connect": true,
-        "did_force_clear_guild_hashes": false,
-        "identify_uncompressed_byte_size": 0,
-        "identify_compressed_byte_size": 0,
-        "had_cache_at_startup": false,
-        "used_cache_at_startup": false,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 4,
-        "launch_signature": "fb6d2ee3-b1a1-4522-9616-ca296a4d367b",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_uuid": "UABCI2oq6BMSvZt4d9lHgaEBAAAAAAAA",
-        "client_send_timestamp": 1793170338433
-      }
-    },
-    "… 3 more"
   ]
 }
 ```
