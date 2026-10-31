@@ -126,6 +126,8 @@ Never in the repo, the knowledge base or chat. On matt's PC, in
 - `log-mcp-token.txt`: the bearer token for log MCP on node02 (also
   `LOG_MCP_TOKEN` in `~/services/logMcp/.env` there).
 
+Every key file, the SubQ and treg keys included: `docs/infra/apiKeys.md`.
+
 On node02 the stack's secrets are in `.env` (mode 600, owner deepman).
 
 ## 2026-10-23 breakage and the 2026-10-26/27 fix
