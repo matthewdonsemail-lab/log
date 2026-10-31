@@ -121,7 +121,7 @@ export const DISCORD_READ_INPUT: CommandInput = {
       flags: [
         DISCORD_ACCOUNT,
         { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id (a server channel by its id)" },
-        { name: "limit", kind: "string", description: "How many of the latest messages, default 20, at most 200" },
+        { name: "limit", kind: "string", description: "How many of the latest messages, default 20, at most 1000, read 100 a page as Discord's app scrolls back" },
         { name: "after", kind: "string", description: "Only messages after this message id" },
         JSON_FLAG,
       ],
@@ -154,7 +154,7 @@ export const discordReadCommand: Command = {
     if (parsed.positionals.length) return { code: 1, stderr: `log discord read: takes no words, only flags\n${DISCORD_READ_USAGE}` };
     const channel = String(parsed.flags["channel"]).trim();
     const limit = parsed.flags["limit"] === undefined ? 20 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log discord read: --limit must be 1 to 200\n${DISCORD_READ_USAGE}` };
+    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log discord read: --limit must be 1 to 1000\n${DISCORD_READ_USAGE}` };
     const after = typeof parsed.flags["after"] === "string" ? parsed.flags["after"].trim() : undefined;
     try {
       const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));

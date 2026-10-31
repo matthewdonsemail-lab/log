@@ -10,18 +10,36 @@
 | Path | `discord.com/api/auth/conditional/start` |
 | Sends | — |
 | Reads | `challenge`, `ticket` |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_40d9185a4b94d9dbc091f4ec513a2e000df94c107da998127a0f7bbc638ab45c` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /login | 1 | 200 | 432 ms | 5774 ms | — |
+| inspect | step 1: goto /channels/@me | 1 | 200 | 299 ms | 12301 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 200, 299 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "challenge": "{\"publicKey\":{\"challenge\":\"We7-A9RvlUdIVrsvAOjVuQ18ey5TGKFs895TLbjWqhs\",\"timeout\":300000,\"rpId\":\"discord.com\",\"allowCredentials\":[],\"userVerification\":\"required\",\"extensions\":{\"uvm\":true}},\"mediation\":\"conditional\"}",
+  "ticket": "f63d9936-74a3-482a-b441-9fd5fd8c4782"
+}
+```
 
 **runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 3: goto /login: 200, 432 ms
 

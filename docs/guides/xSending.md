@@ -15,7 +15,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "twitter/engagementReplies" })` | Answering the people who engaged with your posts | see the page |
 | `getGuide({ useCase: "twitter/engagerDms" })` | DMing the people who liked or reposted your post | see the page |
 | `getGuide({ useCase: "twitter/followUps" })` | Following up in your own voice | "follow up with these, not for anything in particular, just warming up the relationship", "say it was cool to meet him", "ask him for some advice on what he's doing", "take him up on the doc he offered". |
-| `getGuide({ useCase: "twitter/networkMaxing" })` | Network maxing: warm everyone up, then bring new people in | "all them people messaging me, just message them something nice, get the ball moving with the networking", "we're not even trying to get anything out of these people, network max", "throw some new people in the mixer", "follow them before you cold message them, and like the tweet you send them". |
+| `getGuide({ useCase: "twitter/networkMaxing" })` | Network maxing: grow the network, the niche map | "all them people messaging me, just message them something nice, get the ball moving with the networking", "we're not even trying to get anything out of these people, network max", "throw some new people in the mixer", "network max ... look at the nicheMap", "the whole point of it is to expand our network, which is the niche map", "follow them before you cold message them, and like the tweet you send them". |
 | `getGuide({ useCase: "twitter/recruiting" })` | Recruiting on X with a reply queue | see the page |
 | `getGuide({ useCase: "twitter/topicReplies" })` | Replying to everyone posting about one topic | see the page |
 
@@ -33,6 +33,8 @@ When the owner asks for one of these, follow its page step by step.
 | `twitterPostLive` | Make one original post on X with approved copy and…, live on X |
 | `twitterLike` | Like one post on X, on the direct-API engine |
 | `twitterLikeLive` | Like one post on X, on the direct-API engine, live on X |
+| `twitterRepost` | Repost one post on X, on the direct-API engine |
+| `twitterRepostLive` | Repost one post on X, on the direct-API engine, live on X |
 | `twitterFollow` | Follow one person on X, on the direct-API engine |
 | `twitterFollowLive` | Follow one person on X, on the direct-API engine, live on X |
 | `twitterDm` | Send one approved direct message on X, on the direct-API engine |
@@ -118,7 +120,7 @@ The parts every page uses:
   approve → plan → run → run --live`. It spaces sends at random and backs off
   when X throttles. Before any DM it drops people the account has already
   talked to on X Chat (rule 87).
-- **Pacing:** 40 writes a day per account, kept by the account's governor.
+- **Pacing:** 240 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86).
 
 ### 4. Copy styles
@@ -164,25 +166,25 @@ with `log kb search`.
 Gate a draft against matt's own writing guide with SubQ before it is sent, sending nothing.
 Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing
 log voice --to <handle> [--text "<draft>"] [--context "<what they said>"] [--with <person or chat>] [--json]
-Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, and whether it reads like a mate texting. A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
+Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
 --with names the chat or person the way matt says it ("the log group", "jilly", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass).
 Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/networkMaxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `voiceIndex`
 
 Build matt's voice per chat and person from the conversations log search saved.
 Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing
 log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)
-Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, and whether it reads like a mate texting. A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
+Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
 --with names the chat or person the way matt says it ("the log group", "jilly", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass).
 Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterReply`
 
@@ -190,7 +192,7 @@ Reply to one post on X with approved copy, on the direct-API engine; a dry run u
 Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live
 log twitter reply --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Reply to one post on X with approved copy, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits). Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterReplyLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -203,7 +205,7 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live
 log twitter reply --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Reply to one post on X with approved copy, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits). Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -215,7 +217,7 @@ Quote one post on X with approved copy, on the direct-API engine; a dry run unle
 Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live
 log twitter quote --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Quote one post on X with approved copy, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's create answer decides: a tweet id is sent, an empty result is a drop. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterQuoteLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -228,7 +230,7 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live
 log twitter quote --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Quote one post on X with approved copy, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's create answer decides: a tweet id is sent, an empty result is a drop. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -240,7 +242,7 @@ Make one original post on X with approved copy and optional media (a video, a gi
 Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine; a dry run unless --live
 log twitter post --account <accountName> --text "<copy>" [--media <file>[,<file>]] [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 Each file is uploaded first (a video in chunks, then X's own processing status must say succeeded before the post is made), then the post is created with the media ids. X's create answer decides: a tweet id is sent, an empty result is a drop and nothing was posted. A file X refuses stops it before anything is posted. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterPostLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -253,7 +255,7 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine; a dry run unless --live
 log twitter post --account <accountName> --text "<copy>" [--media <file>[,<file>]] [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 Each file is uploaded first (a video in chunks, then X's own processing status must say succeeded before the post is made), then the post is created with the media ids. X's create answer decides: a tweet id is sent, an empty result is a drop and nothing was posted. A file X refuses stops it before anything is posted. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
@@ -265,7 +267,7 @@ Like one post on X, on the direct-API engine; a dry run unless --live.
 Like one post on X, on the direct-API engine; a dry run unless --live
 log twitter like --account <accountName> --tweet <postUrl> [--approvedBy <who>] [--force] [--live] [--json]
 Like one post on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's favorite answer decides: Done (or already liked, code 139) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterLikeLive`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }).
@@ -279,10 +281,35 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Like one post on X, on the direct-API engine; a dry run unless --live
 log twitter like --account <accountName> --tweet <postUrl> [--approvedBy <who>] [--force] [--live] [--json]
 Like one post on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's favorite answer decides: Done (or already liked, code 139) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterRepost`
+
+Repost one post on X, on the direct-API engine; a dry run unless --live.
+Repost one post on X, on the direct-API engine; a dry run unless --live
+log twitter repost --account <accountName> --tweet <postUrl> [--approvedBy <who>] [--force] [--live] [--json]
+Repost one post on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+X's retweet answer decides: a created retweet (or already reposted, code 327) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+Fill the named fields; each value goes through whole. What acts on X is `twitterRepostLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterRepostLive`
+
+Repost one post on X, on the direct-API engine; a dry run unless --live.
+Live on X: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Repost one post on X, on the direct-API engine; a dry run unless --live
+log twitter repost --account <accountName> --tweet <postUrl> [--approvedBy <who>] [--force] [--live] [--json]
+Repost one post on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+X's retweet answer decides: a created retweet (or already reposted, code 327) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -292,7 +319,7 @@ Follow one person on X, on the direct-API engine; a dry run unless --live.
 Follow one person on X, on the direct-API engine; a dry run unless --live
 log twitter follow --account <accountName> --userId <id> [--approvedBy <who>] [--force] [--live] [--json]
 Follow one person on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's follow answer decides: the followed user back is sent, already following is sent too. Follow before a cold dm: nobody gets a cold message from an account that doesn't follow them. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterFollowLive`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }).
@@ -306,7 +333,7 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Follow one person on X, on the direct-API engine; a dry run unless --live
 log twitter follow --account <accountName> --userId <id> [--approvedBy <who>] [--force] [--live] [--json]
 Follow one person on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's follow answer decides: the followed user back is sent, already following is sent too. Follow before a cold dm: nobody gets a cold message from an account that doesn't follow them. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }).
@@ -319,12 +346,12 @@ Send one approved direct message on X, on the direct-API engine; a dry run unles
 Send one approved direct message on X, on the direct-API engine; a dry run unless --live
 log twitter dm --account <accountName> --userId <id> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--asOne] [--force] [--live] [--json]
 Send one approved direct message on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). An old DM thread (<a>-<b>) and its X Chat thread (<a>:<b>) with one person are one conversation: X shows them in the same place, and a dm sent through the old DM API shows in their X Chat too. A sent answer is delivered whichever conversation id it names: never resend it and never call it the wrong inbox. A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterDmLive`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterDmLive`
 
@@ -333,12 +360,12 @@ Live on X: it acts there (posts, clicks, joins or changes something). Call it on
 Send one approved direct message on X, on the direct-API engine; a dry run unless --live
 log twitter dm --account <accountName> --userId <id> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--asOne] [--force] [--live] [--json]
 Send one approved direct message on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
-Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). An old DM thread (<a>-<b>) and its X Chat thread (<a>:<b>) with one person are one conversation: X shows them in the same place, and a dm sent through the old DM API shows in their X Chat too. A sent answer is delivered whichever conversation id it names: never resend it and never call it the wrong inbox. A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueBuild`
 
@@ -501,3 +528,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 87.** 2026-10-26 · matt: a cold dm never goes to someone he has already spoken to. X's newer encrypted Chat is a separate inbox that `log twitter dms` (twikit's legacy `dm/inbox_initial_state`) can't see, so a "never messaged" filter built on it is wrong: on 2026-10-26 a 40-person treg dm run reached 7 people matt already knew. `log twitter queue check` on a dm queue now reads the account's own X Chat inbox (`api.x.com/graphql` GetInitialXChatPageQuery, then paged with GetInboxPageRequestQuery; the account's session, no PIN, who and when are readable, the text isn't) and drops (status skipped, `priorConversation`) every pending dm whose recipient the account already has a conversation with. `--skipXChatCheck` bypasses it only when matt asks. The X Chat reads live in `vendor/twikit` (rule 81: `client.get_xchat_conversations()`, endpoints in `twikit/client/gql.py`), so the knowledge is in the client, not hand-rolled; the engine action `xchatContacts` (`python/twitterApi/engine.py`) calls it, read-only. `docs/platforms/x/xchat` / `RESEARCH/X_CHAT_ENCRYPTED_INBOX_API_2026-10-26.md`.
 
 **Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
+
+**Rule 98.** 2026-10-31 · matt: "So the opener always relevant. Don't just go in for the jugular. Go in with the opener." A first message to someone matt has never talked with is the opener and nothing else: about them and something they posted (or reposted, or that they reposted him), always relevant, and never the ask: no pitch, no "you using treg yet", no call, no link to his own stuff. The ask waits until they have answered. `log voice` fails a first message with an ask in it (`openerOnly`, `src/twitter/copy/voice`), and someone with nothing relevant to open on isn't messaged yet. `docs/useCases/twitter/engagerDms.md`, `networkMaxing.md`, `GUIDES/MATT_WRITING_STYLE.md`.

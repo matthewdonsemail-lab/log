@@ -9011,3 +9011,224 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: new `docs/infra/buzzMembers.md` explains how existing members join ListeningKit's self-hosted Buzz from desktop or phone, how to join with an identity already on the phone, how to move an existing identity to a new phone through `nostrpair://` device pairing or an `nsec` backup, how an owner/admin adds a new member's `npub`, the common join errors, and the known media/Git migration limits. `docs/infra/node02.md` links to it from the Buzz relay section.
 Why: members need a safe, copyable guide for using the new `wss://buzz.listeningkit.com` community without creating replacement identities or exposing their private keys.
 Checked: `bun run check`; the public relay and pairing endpoint were already verified live, and the guide was checked against the mobile NIP-AB pairing flow (`nostrpair://`, SAS confirmation, desktop-generated code).
+
+## 2026-10-31 02:20Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/discord.md`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/discord/groupChatRead.md`: new file
+- `python/discordApi/engine.py`: changed def history_of, def read_of
+- `src/cli/discord/index.ts`: changed const DISCORD_READ_INPUT, const discordReadCommand
+- `src/cli/localAccount/index.ts`: added const LOCAL_ACCOUNT_USAGE, const localAccountCommand
+- `src/cli/runner/client.ts`: changed function createContext
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twenty/graphql/helpers/index.ts`: added export from "./localAccounts"
+- `src/twenty/graphql/helpers/localAccounts.ts`: added type Row, const ACCOUNTS, const LOCAL_ID_PREFIX, function localAccountsPath, function localOnly, function isLocalId, function readLocalAccounts, function writeLocalAccounts, function upsertLocalAccount, function withLocalAccounts
+- `src/twenty/graphql/localAccounts.test.ts`: added function setup, test "an account only in the local file is found by its accountName, Twenty never having it", test "a local row wins over a Twenty row of the same accountName, so the lookup is not ambiguous", test "a session saved to a local account goes to the file and leaves Twenty alone", test "LOG_ACCOUNTS=local leaves Twenty out of accounts entirely"
+
+What changed: accounts can live in a local file instead of Twenty. `withLocalAccounts` wraps the Twenty client: rows in `~/.logCli/localAccounts.json` (moved by `LOG_LOCAL_ACCOUNTS`) are found by accountName, a local row wins over a Twenty row of the same name, and a captured session (`keepSession`) saves back to the file. `LOG_ACCOUNTS=local` leaves Twenty out entirely. New `log localAccount add|list` manages the rows (`--adsPower` sets the profile and the adsPower driver). `log discord read --limit` goes up to 1000, and a 429 now stops the read with what was read so far instead of retrying (rule 94). New use case `docs/useCases/discord/groupChatRead.md` writes the read down step by step, and the use-case index now names local accounts.
+Why: the Discord account wasn't in Twenty, and the owner wanted log-cli to work locally without Twenty at all. The 200 cap only reached about 1h45 of a busy group chat.
+Checked: `bun run check` (1194 pass); `log localAccount add` then `log inspect start --account sourcedandsoldtothehighestbidder` opened AdsPower profile k1ifqe1s, the owner signed in, stopping it saved 12 cookies and the token to the local file, `log discord session check` answered loggedIn, and `log discord read --limit 800` read 226 messages from the `log` group.
+
+## 2026-10-31 02:31Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiApexExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiApplicationsPublic.md`: edited
+- `docs/platforms/discord/background/discordApiAuthConditionalStart.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLocationMetadata.md`: edited
+- `docs/platforms/discord/background/discordApiAuthLogin.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessages.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsMessagesAck.md`: edited
+- `docs/platforms/discord/background/discordApiChannelsTyping.md`: edited
+- `docs/platforms/discord/background/discordApiContentInventoryUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiDismissibleContentArbitrate.md`: edited
+- `docs/platforms/discord/background/discordApiExperiments.md`: edited
+- `docs/platforms/discord/background/discordApiGames.md`: edited
+- `docs/platforms/discord/background/discordApiGamesAutocomplete.md`: edited
+- `docs/platforms/discord/background/discordApiGamesDetectableExclusions.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsIntegrations.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsMigrateCommandScope.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsPowerups.md`: edited
+- `docs/platforms/discord/background/discordApiGuildsTopEmojis.md`: edited
+- `docs/platforms/discord/background/discordApiInvitesLogin.md`: edited
+- `docs/platforms/discord/background/discordApiMetrics.md`: edited
+- `docs/platforms/discord/background/discordApiPartnerSdkStorefrontConfig.md`: edited
+- `docs/platforms/discord/background/discordApiPromotions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsDecision.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsGetDecisions.md`: edited
+- `docs/platforms/discord/background/discordApiQuestsMe.md`: edited
+- `docs/platforms/discord/background/discordApiScience.md`: edited
+- `docs/platforms/discord/background/discordApiStorePublishedListingsSkus.md`: edited
+- `docs/platforms/discord/background/discordApiTokens.md`: edited
+- `docs/platforms/discord/background/discordApiUsersBadges.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMe.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesGuilds.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeAffinitiesUsers.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeApplicationsEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingCheckoutRecovery.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingPaymentSources.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingSubscriptions.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeBillingUserOffer.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeCollectiblesMarketing.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeEntitlements.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeGiftIntentDismissals.md`: new file
+- `docs/platforms/discord/background/discordApiUsersMeMfaWebauthnCredentials.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeNotes.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeReferralsEligibility.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSavedMessages.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSettingsProto.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeSurvey.md`: edited
+- `docs/platforms/discord/background/discordApiUsersMeUnclaimedGames.md`: edited
+- `docs/platforms/discord/background/discordApiUsersProfile.md`: edited
+- `docs/platforms/discord/background/discordAssets.md`: edited
+- `docs/platforms/discord/background/discordAssetsVersionStableJson.md`: edited
+- `docs/platforms/discord/background/discordBadHashDelta.md`: new file
+- `docs/platforms/discord/background/discordCdnCgiChallengePlatformHGJsdOneshot.md`: edited
+- `docs/platforms/discord/background/statusApiScheduledMaintenancesUpcomingJson.md`: edited
+- `docs/platforms/discord/operations.json`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` rebuilt the platform capture docs from the newest inspect runs: the Discord background operation pages and both operations.json files, plus two new Discord pages.
+Why: the Discord inspect run that captured the local account's session was newer than the built docs, so the facebookClientDocs pre-push check failed.
+Checked: the new lines hold the same kind of shapes and ids the committed pages already had, with no message text, tokens or keys; the pre-push checks.
+
+## 2026-10-31 02:33Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiUsersMeGiftIntentDismissals.md`: edited
+- `docs/platforms/discord/background/discordBadHashDelta.md`: edited
+
+What changed: the two new Discord capture pages (gift-intent-dismissals, bad-hash-delta) have their What it does / What our machine does / What can go wrong written: both are background loads Discord's client makes, and nothing in log-cli depends on them.
+Why: the facebookClientDocs pre-push check stops a push while a page still has a toWrite section.
+Checked: no toWrite left in either page; the pre-push checks.
+
+## 2026-10-31 02:54Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/affiliateMarketing.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: edited
+- `python/twitterApi/engine.py`: changed const WRITES, def governor_for, def governor_status, def send, def refusal_of, def run, def main
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/localAccount/index.ts`: changed const LOCAL_ACCOUNT_USAGE, const localAccountCommand
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/send.ts`: added const repostCommand · changed const SHAPES, function usageOf, function renderSent
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES, function platformEngineText, function allEngineStates, function recordSessionState
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/platformKit/session/client.ts`: changed function recordPlatformSession
+- `src/twenty/graphql/helpers/localAccounts.ts`: added function accountStore, function pullLocalAccounts · changed function withLocalAccounts
+- `src/twenty/graphql/localAccounts.test.ts`: added test "pull copies every Twenty account in under its Twenty id, keeps one already local, and its updates then go to the file", test "pull --refresh replaces a local copy with what Twenty has"
+- `src/twitter/account/session/client.ts`: changed function runTwitterEngine, function runTwitterEngineLive, function recordTwitterSession
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, interface TwitterSessionAnswer
+- `src/twitter/post/send/send.test.ts`: changed test "live needs who approved it; a dry run does not"
+- `src/twitter/post/send/types.ts`: changed type SendAction
+
+What changed: accounts run locally on every platform. `log localAccount pull` copies every Twenty account (fields, cookies, login secrets) into ~/.logCli/localAccounts.json under its Twenty id, keeping one already local unless --refresh; a row in the file is local by being there, so its updates and secrets go to the file while listings and groups still find it by id. `LOG_ACCOUNTS=local` is set in .env.local (template in .env.example). Session lines say `Local accounts:` or `Twenty:` by where the account lives (`accountStore`). X's write budget is 90 a day (`WRITES_PER_DAY`), handed to the X engine's governor in each spec and shown in the status line and usage. New `log twitter repost` (twikit `retweet`, code 327 is already reposted). Rules 96 and 97 in AGENTS.md and the MCP instructions; use-case pages and the xPosting skill say 90.
+Why: matt asked for everything done locally, every social account pre-configured, and the new X budget of 90; he approved a like and repost that log-cli couldn't do without a repost command (rule 94: no hand-rolled calls).
+Checked: `bun run check` (1196 pass); `log localAccount pull` added 36 accounts; with LOG_ACCOUNTS=local the X and Discord session checks answered loggedIn from the local file; three approved X replies sent (dry run, then live, minutes apart); `log twitter repost --live` answered sent on deepman's post.
+
+## 2026-10-31 04:45Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/engagerDms.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/cli/twitter/helpers/voice.ts`: changed const VOICE_USAGE, function renderVoice
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: changed interface VoiceReading
+- `src/twitter/copy/voice/voice.test.ts`: added test "a first message that goes in with an ask fails, however good the opener" · changed const answering
+
+What changed: rule 98, a first message to someone matt never talked with is the opener only, always relevant, never the ask. `log voice` asks SubQ a new question, `openerOnly` (a first dm with no pitch, no question about his tools, no call), shown as `opener only` and needed to pass. engagerDms.md and networkMaxing.md say the opener stops before any ask, the examples drop "you using <tool>", and someone with nothing relevant to open on isn't messaged yet; the MCP instructions carry rule 98 and the voice and twitterDm tools cite it. GUIDES/MATT_WRITING_STYLE.md (outside the repo) has the same line.
+Why: five openers went out ending "you using treg for anything"; matt: "the opener always relevant ... don't just go in for the jugular, go in with the opener."
+Checked: `bun run check` (1197 pass); live, the gate failed jamesfuller_dev's opener with the treg ask (opener only 0.08) and passed the same opener without it (1.00).
+
+## 2026-10-31 04:53Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+
+What changed: rule 99, network maxing grows matt's network, which is his niche map. networkMaxing.md opens with that, step 4 gets to know them, step 7 takes new people from the niche map first (real roles, closest first, not yet talked to), "Keep it about them" is added, and writing back to the niche map is listed as not built. Both use-case indexes list the page; the MCP instructions carry rule 99. The niche map's path is in the agent memory, since use-case pages never name the owner's files.
+Why: matt: "the conversation will be getting to know about them and what they're doing. But the whole point of it is to expand our network, which is the niche map."
+Checked: `bun run check` (1197 pass); docs build; the use-case review passed every page.
+
+## 2026-10-31 05:56Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function threadLine, function render, function onePerPerson, const dmsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed interface TwitterSessionAnswer
+- `src/twitter/dm/person/client.ts`: added function reactedOnly, function waitingOnYou
+- `src/twitter/dm/person/person.test.ts`: added test "their reaction as the last event means they opened it: a follow-up, never waiting on you", test "their words are waiting on you, and matt sending last is neither"
+
+What changed: rule 100, a reaction as someone's last event means they opened matt's message, so it's a follow-up, not a reply waiting on him. `reactedOnly` and `waitingOnYou` (src/twitter/dm/person) decide it; `log twitter dms --waiting` lists reacted threads apart ("reacted, so they opened it: follow up"), counts them as `reactedToYou`, and `--json` gives them as `followUps`. networkMaxing.md gains "Everyone who reacted" (follow up about them, never the opener again, never the ask) and dmInbox.md says what a reaction means; the usage, MCP instructions and the twitterDms tool cite rule 100.
+Why: matt: "reactions are indicators of open messages, so we can then add that as a thing we can follow up on."
+Checked: `bun run check` (1199 pass) with tests for both helpers; live, `log twitter dms --waiting` moved @dave_xt's ❤️ out of waiting and into the follow-up list.
+
+## 2026-10-31 06:30Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/affiliateMarketing.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: edited
+- `python/twitterApi/engine.py`: changed def thread_of
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function threadLine, function render, function onePerPerson, const dmsCommand
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/twitter/account/session/types.ts`: changed interface TwitterDmThread
+- `src/twitter/dm/person/client.ts`: added function openedNoReply, function followUpDue · changed function mergeThreads
+- `src/twitter/dm/person/person.test.ts`: added test "matt sent last and their read receipt is past it: opened, a follow-up", test "no read receipt, or they replied after it, is not an opened follow-up"
+
+What changed: an opened message with no reply is a follow-up too, not only a reaction (rule 100 widened). Each thread carries `openedByThem`: the old DM engine sets it when the other person's `last_read_event_id` is past matt's last message, and the X Chat sync sets it when the other person's read receipt (an event of kind Unknown, sent by the reader right after the other side's message: 20 of 20 from them followed matt's message, 14 of 14 from matt followed theirs) is newer than matt's last message. `openedNoReply` and `followUpDue` (src/twitter/dm/person) decide it, mergeThreads keeps it across a person's two threads, and `log twitter dms --waiting` lists every follow-up apart ("they opened it, no reply yet: follow up"). Rule 101: X goes to 240 writes a day (`WRITES_PER_DAY`), with the use cases, the xPosting skill and the MCP instructions saying 240. networkMaxing.md's section is now "Everyone who opened it", read with limit 200.
+Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
+Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.

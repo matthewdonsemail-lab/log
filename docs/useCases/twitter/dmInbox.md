@@ -24,10 +24,11 @@ Who wrote last is already in context at the start of a session: the SessionStart
 - `twitterDms` reads the inbox, the message requests and X's encrypted Chat. X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`); without it X Chat threads show who and when, not what.
 - A person can have both an old DM thread and an X Chat thread. Read them together with `twitterDms` { account, with: "<handle>" } before answering, so nothing they said in X Chat is missed.
 - Every X Chat message opens with the saved PIN: a reaction shows as `(reacted 🔥)`, an edit as `(edited) …`, a photo as `(image: name.jpg)`, a shared post or link as its URL, and a read marker is hidden, so "they read it and haven't answered" never looks like a message waiting on you. A message still showing "could not open" is reopened the next time its chat is read, and each sync reopens a few on its own. Group chats are read with `twitterDms` { account, conversation: "g…" }.
+- **Opened with no reply is a follow-up.** When their last event is a reaction to the owner's message (`(reacted ❤️)`), or their read receipt is past his last message, they opened it and didn't type back. It isn't a reply waiting on him: `twitterDms` { waiting: true, limit: "200" } lists it apart ("they opened it, no reply yet: follow up"), and the follow-up is the network-maxing kind (networkMaxing.md, "Everyone who opened it"). X Chat read receipts come through as events of an unknown type, sent by the reader right after the other side's message; they're never shown as messages.
 - Before answering, check who actually wrote last: a thread where the owner's message is the newest real one isn't waiting on him, even if the list put it there.
-- X has its own daily limit on tweets and messages (code 344, about 40 writes a day on matthewsoldit, likes and follows included), and going past the governor doesn't get past it. Spend the day's writes on people who answered first. After a 344 nothing more goes out until the owner says so.
+- X has its own daily limit on tweets and messages (code 344; the governor allows 240 writes a day, likes, reposts and follows included, and X can still stop it before that), and going past the governor doesn't get past it. Spend the day's writes on people who answered first. After a 344 nothing more goes out until the owner says so.
 - To find something said in any conversation, search instead of reading every thread: `search` { query, with, after } after `searchIndex`.
-- A DM send counts as a write against the account's 40 a day.
+- A DM send counts as a write against the account's 240 a day.
 
 ## Not built yet
 

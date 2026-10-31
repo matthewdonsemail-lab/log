@@ -1,3 +1,4 @@
+import { writesPerDayOf } from "../../../directApi/engine/index.ts";
 import { fileSize, mediaKindOf, planSend } from "../../../twitter/post/send/index.ts";
 import type { SendAction } from "../../../twitter/post/send/index.ts";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
@@ -35,6 +36,7 @@ const SHAPES: Record<SendAction, SendShape> = {
   reply: { action: "reply", verb: "reply to", target: "tweet", text: true, summary: "Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits)" },
   quote: { action: "quote", verb: "quote", target: "tweet", text: true, summary: "Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live", says: "X's create answer decides: a tweet id is sent, an empty result is a drop" },
   like: { action: "like", verb: "like", target: "tweet", text: false, summary: "Like one post on X, on the direct-API engine; a dry run unless --live", says: "X's favorite answer decides: Done (or already liked, code 139) is sent" },
+  repost: { action: "repost", verb: "repost", target: "tweet", text: false, summary: "Repost one post on X, on the direct-API engine; a dry run unless --live", says: "X's retweet answer decides: a created retweet (or already reposted, code 327) is sent" },
   follow: { action: "follow", verb: "follow", target: "userId", text: false, summary: "Follow one person on X, on the direct-API engine; a dry run unless --live", says: "X's follow answer decides: the followed user back is sent, already following is sent too. Follow before a cold dm: nobody gets a cold message from an account that doesn't follow them" },
   post: { action: "post", verb: "post", target: "none", text: true, summary: "Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine; a dry run unless --live", says: "Each file is uploaded first (a video in chunks, then X's own processing status must say succeeded before the post is made), then the post is created with the media ids. X's create answer decides: a tweet id is sent, an empty result is a drop and nothing was posted. A file X refuses stops it before anything is posted" },
   dm: { action: "dm", verb: "dm", target: "userId", text: true, summary: "Send one approved direct message on X, on the direct-API engine; a dry run unless --live", says: `A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). ${ONE_INBOX_NOTE} A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed` },
@@ -47,7 +49,7 @@ function usageOf(shape: SendShape): string {
   return [
     `Usage: log twitter ${shape.action} --account <accountName>${target ? ` ${target}` : ""}${text} [--approvedBy <who>]${skip} [--force] [--live] [--json]`,
     `${shape.summary.replace(", on the direct-API engine; a dry run unless --live", "")}, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).`,
-    `Without --live it is a dry run: the target${shape.text ? ", the text and its house style" : ""} are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.`,
+    `Without --live it is a dry run: the target${shape.text ? ", the text and its house style" : ""} are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (${writesPerDayOf("twitter")} a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.`,
     `${shape.says}. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.`,
   ].join("\n");
 }
@@ -60,6 +62,7 @@ function inputOf(shape: SendShape): CommandInput {
 export function renderSent(label: string, account: string, answer: TwitterSessionAnswer): string {
   if (answer.ok && answer.event === "sent") {
     if (answer.liked) return `log ${label}: ${account} liked ${answer.tweetId}${answer.already ? " (it was already liked)" : ""}.`;
+    if (answer.reposted) return `log ${label}: ${account} reposted ${answer.tweetId}${answer.already ? " (it was already reposted)" : ""}.`;
     if (answer.followed) return `log ${label}: ${account} follows ${answer.handle ? `@${answer.handle}` : answer.userId}${answer.already ? " (already did)" : ""}.`;
     if (answer.conversationId) return `log ${label}: ${account} sent the dm (conversation ${answer.conversationId}): delivered, it shows in their X Chat too, so it is never resent.`;
     return `log ${label}: ${account} posted https://x.com/${account}/status/${answer.tweetId}.${answer.forcedPast ? ` Forced past the governor: ${answer.forcedPast}.` : ""}`;
@@ -170,6 +173,7 @@ function sendCommand(shape: SendShape): Command {
 export const replyCommand = sendCommand(SHAPES.reply);
 export const quoteCommand = sendCommand(SHAPES.quote);
 export const likeCommand = sendCommand(SHAPES.like);
+export const repostCommand = sendCommand(SHAPES.repost);
 export const followCommand = sendCommand(SHAPES.follow);
 export const dmCommand = sendCommand(SHAPES.dm);
 export const postCommand = sendCommand(SHAPES.post);

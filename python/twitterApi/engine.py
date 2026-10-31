@@ -18,7 +18,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "dm", "follow", "post")
+WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
 ACTIONS = READS + WRITES
 
 
@@ -85,14 +85,19 @@ def redact(text: Any, cookies: dict[str, str]) -> str:
     return out
 
 
-def governor_for(account: str) -> Any:
-    from governor import RequestGovernor
+def governor_for(account: str, writes_per_day: int | None = None) -> Any:
+    from dataclasses import replace
 
-    return RequestGovernor(state_path=state_dir(account) / "governor_state.json")
+    from governor import GovernorConfig, RequestGovernor
+
+    config = GovernorConfig.from_env()
+    if writes_per_day and "FBK_GOVERNOR_MUTATION_DAILY" not in os.environ:
+        config = replace(config, mutation_daily_cap=int(writes_per_day))
+    return RequestGovernor(config=config, state_path=state_dir(account) / "governor_state.json")
 
 
-def governor_status(account: str) -> dict[str, Any]:
-    return {"ok": True, "account": account, "governor": governor_for(account).status()}
+def governor_status(account: str, writes_per_day: int | None = None) -> dict[str, Any]:
+    return {"ok": True, "account": account, "governor": governor_for(account, writes_per_day).status()}
 
 
 async def session_answer(client: Any) -> int:
@@ -331,6 +336,8 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
     last_id = str(conversation.get("max_entry_id") or (last or {}).get("id") or "")
     last_from_me = bool(last and last["senderId"] == me)
     unread = id_key(last_id) > id_key(read_up_to) if read_up_to else bool(last and not last_from_me)
+    their_read = max((str(p.get("last_read_event_id") or "") for p in participants if str(p.get("user_id")) != me and p.get("last_read_event_id")), key=id_key, default="")
+    opened = bool(last_from_me and their_read and id_key(their_read) >= id_key(str(last["id"])))
     return {
         "conversationId": cid,
         "box": box,
@@ -341,6 +348,7 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
         "lastFromMe": last_from_me,
         "lastText": (last or {}).get("text"),
         "unread": bool(unread and not last_from_me),
+        "openedByThem": opened,
         "messagesLoaded": len(mine),
     }
 
@@ -786,6 +794,15 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if errors or ((data or {}).get("data") or {}).get("favorite_tweet") != "Done":
             raise RuntimeError(f"x did not like the post: {json.dumps(data)[:300]}")
         return {"ok": True, "event": "sent", "liked": True, "tweetId": tweet_id}
+    if action == "repost":
+        tweet_id = tweet_id_from_url(spec["tweetUrl"])
+        data, _ = await client.gql.retweet(tweet_id)
+        errors = data.get("errors") if isinstance(data, dict) else None
+        if errors and any(e.get("code") == 327 for e in errors):
+            return {"ok": True, "event": "sent", "reposted": True, "already": True, "tweetId": tweet_id}
+        if errors or not ((data or {}).get("data") or {}).get("create_retweet"):
+            raise RuntimeError(f"x did not repost the post: {json.dumps(data)[:300]}")
+        return {"ok": True, "event": "sent", "reposted": True, "tweetId": tweet_id}
     if action == "follow":
         user_id = str(spec["userId"])
         before = await client.get_user_by_id(user_id)
@@ -823,7 +840,7 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "notLive", "detail": f"{action} sends on X: the engine only sends with live set (rule 8)"}
     if action in WRITES and not str(spec.get("approvedBy") or "").strip():
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
-    if action in ("reply", "quote", "like") and not spec.get("tweetUrl"):
+    if action in ("reply", "quote", "like", "repost") and not spec.get("tweetUrl"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
@@ -900,7 +917,7 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
     if refused:
         return refused
     account = spec["account"]
-    governor = governor_for(account)
+    governor = governor_for(account, spec.get("writesPerDay"))
     forced_past = None
     try:
         governor.before_request(is_mutation=action in WRITES, quiet=True)
@@ -941,7 +958,7 @@ def main() -> int:
     if os.name == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    out = governor_status(spec["account"]) if spec.get("governorStatus") else asyncio.run(run(spec))
+    out = governor_status(spec["account"], spec.get("writesPerDay")) if spec.get("governorStatus") else asyncio.run(run(spec))
     print(json.dumps(out, default=str))
     return 0 if out.get("ok") else 1
 

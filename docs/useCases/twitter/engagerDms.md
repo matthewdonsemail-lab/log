@@ -22,18 +22,22 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 
 ## How a cold DM opens
 
+The first message is the opener and nothing else: always relevant to them, never an ask. No pitch, no "you using `<tool>` yet", no call, no link to the owner's own stuff. Going in for the kill on a first message is what a template does. The ask comes later, once they've answered and there's a conversation. `voice` fails a first message with an ask in it (`opener only`).
+
 Never open cold with a line built from their bio. Build the context of the conversation from what they posted:
 
 1. **Find one of their own recent tweets that's relevant** (an original post, not a reply or a repost), with treg's posts read for that handle.
 2. **Forward it into the DM:** the tweet's link goes first, so X shows it as a card in the chat.
-3. **Then one informal line:** "saw this", then what's true about how you're connected ("also saw we follow each other but never chatted", or "saw you followed me but we ain't chatted yet" when you don't follow them back; check with `twitterFollows`), then something brief about their tweet, then the ask.
-4. **No usable tweet:** don't forward anything. Send the plain opener: "mate we follow each other but ain't chatted yet lad whats up".
+3. **Then one informal line:** "saw this", then what's true about how you're connected ("also saw we follow each other but never chatted", or "saw you followed me but we ain't chatted yet" when you don't follow them back; check with `twitterFollows`), then something brief and true about their tweet. Stop there: no ask.
+4. **No usable original tweet:** use what else they've been posting or reposting lately (treg's posts read gives replies and reposts too), or that they reposted the owner. With nothing relevant to them at all, don't message them yet: a generic opener could go to anyone, and the gate fails it.
 
 Never: "saw you're `<bio thing>`", their name, made-up camaraderie, or "thanks for following".
 
-> `https://x.com/<them>/status/<id>` saw this and noticed we follow each other but haven't spoken 4249 live ads for one product is insane you using `<tool>` for pulling ad data yet
+> `https://x.com/<them>/status/<id>` saw this and noticed we follow each other but haven't spoken
+> 4249 live ads for one product is insane
 
-> mate we follow each other but ain't chatted yet lad whats up
+> hey we follow each other and havent had a chat yet
+> been seeing you share all the world model stuff genie 4 looked mad
 
 ## What to know
 
