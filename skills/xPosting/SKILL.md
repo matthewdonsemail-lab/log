@@ -70,7 +70,7 @@ The parts every page uses:
   approve → plan → run → run --live`. It spaces sends at random and backs off
   when X throttles. Before any DM it drops people the account has already
   talked to on X Chat (rule 87).
-- **Pacing:** 40 writes a day per account, kept by the account's governor.
+- **Pacing:** 240 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86).
 
 ## 4. Copy styles

@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-28T07:50:38.259Z",
-  "runs": 3,
+  "builtAt": "2026-10-31T02:30:26.618Z",
+  "runs": 4,
   "operations": [
     {
       "name": "discordApiApexExperiments",
@@ -8,7 +8,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiApexExperiments.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_a64b05e48c276709c27b357936a7aee1e141b61f2b23b631b32b2d8d3630ec28",
       "seen": 1
     },
     {
@@ -17,8 +17,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiApplicationsPublic.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 8
+      "reaEvidenceId": "ev_eb014398735ad98f64ee5a2f8aed88227c3b5a496163bfd005ffa92e0817c2bd",
+      "seen": 10
     },
     {
       "name": "discordApiAuthConditionalStart",
@@ -26,8 +26,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiAuthConditionalStart.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_40d9185a4b94d9dbc091f4ec513a2e000df94c107da998127a0f7bbc638ab45c",
+      "seen": 2
     },
     {
       "name": "discordApiAuthLocationMetadata",
@@ -35,8 +35,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiAuthLocationMetadata.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 2
+      "reaEvidenceId": "ev_49556872f8f66dc07bc7e339c6807a3b727f41a1da26a72cdf8df9d0dcaabc35",
+      "seen": 3
     },
     {
       "name": "discordApiAuthLogin",
@@ -44,8 +44,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiAuthLogin.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_9d4607252f6e6d7bb80eebe8778b219811a8790dd69d5d1e99c5d4a4778c41ec",
+      "seen": 4
     },
     {
       "name": "discordApiChannelsMessages",
@@ -53,7 +53,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiChannelsMessages.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_be5713d0a7e00e2bc42948622a2922ca79ad33e02be8114f1ddd33369fa5e33d",
       "seen": 12
     },
     {
@@ -62,8 +62,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiChannelsMessagesAck.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 17
+      "reaEvidenceId": "ev_36f3e003aa265795aae2f8a15f5c3794503f4b4cf194cbadce737706963c7cf5",
+      "seen": 19
     },
     {
       "name": "discordApiChannelsTyping",
@@ -71,7 +71,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiChannelsTyping.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_6119fe72f99134fbef670119da123bcabb589ebd6d5afddeec960f67b7a55a94",
       "seen": 8
     },
     {
@@ -80,8 +80,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiContentInventoryUsersMe.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_ba410cc3625a6ee149a5d9435eca0203647b35526580bf847066097876040036",
+      "seen": 6
     },
     {
       "name": "discordApiDismissibleContentArbitrate",
@@ -89,8 +89,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiDismissibleContentArbitrate.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 3
+      "reaEvidenceId": "ev_479b2aee3d345f79854b86d6e6aeb9ffae976b866a8095714fadf4420bbf3ec9",
+      "seen": 5
     },
     {
       "name": "discordApiExperiments",
@@ -98,8 +98,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiExperiments.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 2
+      "reaEvidenceId": "ev_6943a83805d5f437880ab842f8991101c4f1542258da543e0ea301bbbfb47894",
+      "seen": 3
     },
     {
       "name": "discordApiGames",
@@ -107,8 +107,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGames.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 6
+      "reaEvidenceId": "ev_6aa5286f991ad79923fc015425a4f7a7c804c4f4533a7191990656362364f121",
+      "seen": 7
     },
     {
       "name": "discordApiGamesAutocomplete",
@@ -116,7 +116,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGamesAutocomplete.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_fe406e7b4878d94107f8f5e73e47b78bd67d20cfb340d788becfa43f53438919",
       "seen": 3
     },
     {
@@ -125,8 +125,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGamesDetectableExclusions.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_1a170798fe573c6b4e5f1df5ab4504ba6d11a5c4ccde0ece827a82e86040f673",
+      "seen": 6
     },
     {
       "name": "discordApiGuildsEntitlements",
@@ -134,7 +134,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGuildsEntitlements.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_88379ad094d64d9ea6f5277b1142b979ad5ca7a0dabec20d99447c6f56adb8ba",
       "seen": 1
     },
     {
@@ -143,7 +143,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGuildsIntegrations.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_967efd47ea834b4d881d4b3ca8fcdb37ce0e4bfdc1786dbf0b8969f876f70d09",
       "seen": 1
     },
     {
@@ -152,7 +152,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGuildsMigrateCommandScope.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_dadbd95fb21b945c562fcb3bbb06e0161c4350fc5569a3fe856a9eab6080d04e",
       "seen": 1
     },
     {
@@ -161,7 +161,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGuildsPowerups.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_c4f4f1eee09d386f85fa6e14546cf86b324212d18493518b782685e91307461d",
       "seen": 1
     },
     {
@@ -170,7 +170,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiGuildsTopEmojis.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_c57fa87be549c1f54d646040779e1b36c509854df8e7ac7a60af29fedb9d02a4",
       "seen": 1
     },
     {
@@ -179,7 +179,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiInvitesLogin.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_ab0521f4dcf8f9bda37b4666be9c5cfe01a84dea7d56ecbaecf4c049c26eba66",
       "seen": 1
     },
     {
@@ -188,8 +188,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiMetrics.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_c044bb75a567c0c7673d359b648023d7488c9723f940f8fd7fe3c98efd8fb9a2",
+      "seen": 6
     },
     {
       "name": "discordApiPartnerSdkStorefrontConfig",
@@ -197,8 +197,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiPartnerSdkStorefrontConfig.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_58cec49184d295d9ee859d8e0946b02802bbe562d043c1d0966692ee692bf054",
+      "seen": 6
     },
     {
       "name": "discordApiPromotions",
@@ -206,8 +206,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiPromotions.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_16a96b33771007173e65ccc52dee395b3f36dbd19123270484281f1912ba77b0",
+      "seen": 6
     },
     {
       "name": "discordApiQuestsDecision",
@@ -215,8 +215,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiQuestsDecision.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_03bcffcd69a918fd135e1ae1b5e039a12252bf3b33ae9c150c92f932462ca60e",
+      "seen": 7
     },
     {
       "name": "discordApiQuestsGetDecisions",
@@ -224,8 +224,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiQuestsGetDecisions.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_ec1010ba98796ae785c25f50b1fe44fad72faab3fbfa9962b96b403294e8503b",
+      "seen": 6
     },
     {
       "name": "discordApiQuestsMe",
@@ -233,8 +233,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiQuestsMe.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_f63ec3ce30f1dcdf44a1080bce85b4030f3ff4162c49ca4d7939192758652a79",
+      "seen": 7
     },
     {
       "name": "discordApiScience",
@@ -242,8 +242,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiScience.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 116
+      "reaEvidenceId": "ev_620ebcb5dfaa90f9e0b1faa4acfb8a7aa1550b8ad0abca135d2cd2b71c07c518",
+      "seen": 129
     },
     {
       "name": "discordApiStorePublishedListingsSkus",
@@ -251,7 +251,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiStorePublishedListingsSkus.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_cccc82e9e5093e6e6ee5437d3cbab6bf5868e3051862726f5e7fc609bdc3d1c6",
       "seen": 1
     },
     {
@@ -260,7 +260,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiTokens.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_48174794d4b728059c774b67357fe2adfd01d50d16a107ad8a4dc7ce521dc437",
       "seen": 4
     },
     {
@@ -269,8 +269,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersBadges.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 6
+      "reaEvidenceId": "ev_642ca361b01be710c2c9f83ccd414bfd279e70cc81dc0988cc6298251fd4ec31",
+      "seen": 7
     },
     {
       "name": "discordApiUsersMe",
@@ -278,8 +278,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMe.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_4327916a10ef26cc086aa18f9840be4affb522107ffbe7e78a08b02a4a64c3ef",
+      "seen": 2
     },
     {
       "name": "discordApiUsersMeAffinitiesGuilds",
@@ -287,8 +287,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeAffinitiesGuilds.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_8c9edac51822acaebad98c9bb94f99c793f02a06f34eaac2f20823823abda639",
+      "seen": 2
     },
     {
       "name": "discordApiUsersMeAffinitiesUsers",
@@ -296,8 +296,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeAffinitiesUsers.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_8d92cfbe277de13f841b1037596ed967e7a920f12878227be6d91a12dcb3e634",
+      "seen": 2
     },
     {
       "name": "discordApiUsersMeApplicationsEntitlements",
@@ -305,8 +305,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeApplicationsEntitlements.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 3
+      "reaEvidenceId": "ev_b714eff50c5699e3e4e8f839e2cfa1b60f5ac414510cf0376fde3fae46998b14",
+      "seen": 4
     },
     {
       "name": "discordApiUsersMeBillingCheckoutRecovery",
@@ -314,8 +314,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeBillingCheckoutRecovery.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_94703f49e64f45c325f91e109d858477fea1b39856d837296030095618fa643f",
+      "seen": 6
     },
     {
       "name": "discordApiUsersMeBillingPaymentSources",
@@ -323,7 +323,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeBillingPaymentSources.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_f4663be90a0bbc0146ba70687b49f95097df30d7afbad8f48ebbc7cb38c81bff",
       "seen": 2
     },
     {
@@ -332,7 +332,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeBillingSubscriptions.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_743d15f9310db1eace8ccf94f2f25a6a0d81ed2c1c7c6d8157178ded83595c4c",
       "seen": 2
     },
     {
@@ -341,8 +341,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeBillingUserOffer.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_e990004e4a667cfe60975ac207aae3431a537ae2d0b6995a17ea941f94caf824",
+      "seen": 6
     },
     {
       "name": "discordApiUsersMeCollectiblesMarketing",
@@ -350,8 +350,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeCollectiblesMarketing.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_70b67e412f34ddb8a20979545a2d9c3a052c8fc1463aecc0a5e9404cc5110992",
+      "seen": 6
     },
     {
       "name": "discordApiUsersMeEntitlements",
@@ -359,8 +359,17 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeEntitlements.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 2
+      "reaEvidenceId": "ev_a8897d732f859cdb15e4e03701b1e07fa4f2bf4b364e3087ab915ae075455e45",
+      "seen": 3
+    },
+    {
+      "name": "discordApiUsersMeGiftIntentDismissals",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/discordApiUsersMeGiftIntentDismissals.md",
+      "reaEvidenceId": "ev_f1900320004494e789cdd0aea1eb81900d94d3fca6915fc52e0c0b182836bdb6",
+      "seen": 1
     },
     {
       "name": "discordApiUsersMeMfaWebauthnCredentials",
@@ -368,8 +377,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeMfaWebauthnCredentials.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_db2f8e1cb78875626b07e0120a86e052f21157376620084b36478c84f5cb80c1",
+      "seen": 6
     },
     {
       "name": "discordApiUsersMeNotes",
@@ -377,7 +386,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeNotes.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_fe676e6a19cbf2340194703b493665bd6dc207981f580e770a39bfb146750fb5",
       "seen": 1
     },
     {
@@ -386,8 +395,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeReferralsEligibility.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_54d8f80792367f7de1abf49804004bf806243e62306b8c24cbc48b308b87507d",
+      "seen": 7
     },
     {
       "name": "discordApiUsersMeSavedMessages",
@@ -395,8 +404,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeSavedMessages.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_3bbd0ef6f30c2412c1a0bca127a78d4ad057591c538a4d9e8365ee088387f17b",
+      "seen": 6
     },
     {
       "name": "discordApiUsersMeSettingsProto",
@@ -404,7 +413,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeSettingsProto.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_82865bb4a82a75e0cefe18b95441659c35190864b7e290ede692a55ad9f2fd30",
       "seen": 4
     },
     {
@@ -413,8 +422,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeSurvey.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 1
+      "reaEvidenceId": "ev_a93644375be3f808d5c0fd61d8f73f57faaea1c6491ab8a7a6a51c6c961c680a",
+      "seen": 2
     },
     {
       "name": "discordApiUsersMeUnclaimedGames",
@@ -422,7 +431,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersMeUnclaimedGames.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_3581c840b66ce81c589836ec6cf4ec6d2e75e41452d0e642ffff3e21f0eaea88",
       "seen": 1
     },
     {
@@ -431,7 +440,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordApiUsersProfile.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
+      "reaEvidenceId": "ev_f67bde0fc141b6222c4c9e93f281276a04781d3b146dd59344fb59998dfaf3cc",
       "seen": 4
     },
     {
@@ -440,8 +449,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordAssets.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 11
+      "reaEvidenceId": "ev_3e7d1436b616f626727a3463361f1a2b50b309056e732e9c5f36954cc14e42e6",
+      "seen": 12
     },
     {
       "name": "discordAssetsVersionStableJson",
@@ -449,8 +458,17 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordAssetsVersionStableJson.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 5
+      "reaEvidenceId": "ev_e22164425135feecd14d85decba5692bb2c43805b9e833a30de32de1373b51d9",
+      "seen": 6
+    },
+    {
+      "name": "discordBadHashDelta",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/discordBadHashDelta.md",
+      "reaEvidenceId": "ev_9648b0d4a67d10262e1cab398c2eefdedefa150e3fd443a11c6f6064f4e5c8b1",
+      "seen": 1
     },
     {
       "name": "discordCdnCgiChallengePlatformHGJsdOneshot",
@@ -458,8 +476,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/discordCdnCgiChallengePlatformHGJsdOneshot.md",
-      "reaEvidenceId": "ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33",
-      "seen": 2
+      "reaEvidenceId": "ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c",
+      "seen": 3
     },
     {
       "name": "statusApiScheduledMaintenancesUpcomingJson",
@@ -467,8 +485,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/statusApiScheduledMaintenancesUpcomingJson.md",
-      "reaEvidenceId": "ev_0b9e8638c708d23e0eafbf94a992d31b28202ab915f0909b372b749417d2a866",
-      "seen": 5
+      "reaEvidenceId": "ev_47a4beb204f955e674b76416a65f5657484f4170026f07eb71bde5adf2f7eb12",
+      "seen": 6
     }
   ]
 }

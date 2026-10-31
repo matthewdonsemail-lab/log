@@ -2,11 +2,11 @@ import { describe, expect, test } from 'bun:test'
 import type { DecisionRequest } from '../../../subq/decisions/index'
 import { neverSaysIn, readVoice } from './index'
 
-const answering = (voice: number, inContext = 0.95, friendLike = 0.95) => {
+const answering = (voice: number, inContext = 0.95, friendLike = 0.95, openerOnly = 0.95) => {
   const asked: DecisionRequest[] = []
   const decide = async (request: DecisionRequest) => {
     asked.push(request)
-    return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: voice }, inContext: { type: 'noul' as const, noul: inContext }, friendLike: { type: 'noul' as const, noul: friendLike } }, usage: { input_tokens: 1, output_tokens: 1 } }
+    return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: voice }, inContext: { type: 'noul' as const, noul: inContext }, friendLike: { type: 'noul' as const, noul: friendLike }, openerOnly: { type: 'noul' as const, noul: openerOnly } }, usage: { input_tokens: 1, output_tokens: 1 } }
   }
   return { asked, decide }
 }
@@ -20,6 +20,13 @@ describe('the voice gate', () => {
     expect(state.howMattWrites).toBe('GUIDE')
     expect(state.whatTheySaid).toBe('we should chop it up some time')
     expect((state.dmsMattWroteHimself as string[]).length).toBeGreaterThan(0)
+  })
+
+  test('a first message that goes in with an ask fails, however good the opener', async () => {
+    const { asked, decide } = answering(0.95, 0.95, 0.95, 0.2)
+    const reading = await readVoice({ to: 'someone', text: 'saw this the cascade pattern makes so much sense\nyou using treg yet', context: 'matt and they follow each other, never chatted' }, 'GUIDE', decide)
+    expect(reading.pass).toBe(false)
+    expect(Object.keys(asked[0].questions)).toContain('openerOnly')
   })
 
   test('a draft that sounds like ai fails on voice', async () => {

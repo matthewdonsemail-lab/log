@@ -1170,7 +1170,68 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     or uncovered work stops the commit until the page is updated or
     written and staged.
 
-96. 2026-10-30 · mandeep: LinkedIn goes out looking like a browser, the
+96. 2026-10-31 · matt: "the new twitter budget 90". An X account makes up
+    to 90 writes a day (dms, replies, quotes, likes, reposts, follows,
+    posts), not 40 (`WRITES_PER_DAY`, `src/directApi/engine`, handed to the
+    X engine's governor in each run's spec). Discord keeps 60, every other
+    platform 40. X's own answer still decides: a 344 (its daily limit) stops
+    the run, and nothing more goes out until matt says so. `log twitter
+    repost` (MCP `twitterRepost`, `twitterRepostLive`) reposts one post,
+    a write like the others.
+
+97. 2026-10-31 · matt: "the ability to have everything done locally".
+    Accounts live in a local file, `~/.logCli/localAccounts.json`
+    (`LOG_LOCAL_ACCOUNTS` moves it), on every platform, and this narrows
+    rule 13 for accounts only. `log localAccount pull` copies every
+    Twenty account in, cookies and login included, each keeping its
+    Twenty id so its listings and groups still find it; `add` makes one
+    Twenty never had (with its AdsPower profile); `list` shows them.
+    `LOG_ACCOUNTS=local` (`.env.local`) leaves Twenty out of accounts
+    entirely, and a session a run captures or refreshes is saved back to
+    the file. Listings, groups and conversations stay in Twenty.
+
+98. 2026-10-31 · matt: "So the opener always relevant. Don't just go in
+    for the jugular. Go in with the opener." A first message to someone
+    matt has never talked with is the opener and nothing else: about them
+    and something they posted (or reposted, or that they reposted him),
+    always relevant, and never the ask: no pitch, no "you using treg yet",
+    no call, no link to his own stuff. The ask waits until they have
+    answered. `log voice` fails a first message with an ask in it
+    (`openerOnly`, `src/twitter/copy/voice`), and someone with nothing
+    relevant to open on isn't messaged yet. `docs/useCases/twitter/engagerDms.md`,
+    `networkMaxing.md`, `GUIDES/MATT_WRITING_STYLE.md`.
+
+99. 2026-10-31 · matt: "network maxing is basically making it so the
+    conversation will be getting to know about them and what they're
+    doing. But the whole point of it is to expand our network, which is
+    the niche map." Network maxing grows the niche map (the people around
+    the communities and creators in his niche, with their role, whether
+    they follow him and how close they are). New people come from it
+    first: real roles, closest first, not yet talked to. Every message is
+    about them and what they're doing, never what matt sells (rule 98 for
+    the opener). Where the map lives is in the agent memory, not in the
+    repo. `docs/useCases/twitter/networkMaxing.md`.
+
+100. 2026-10-31 · matt: "reactions are indicators of open messages, so we
+    can then add that as a thing we can follow up on", then "for our already
+    opened messages". When someone's last event is a reaction to matt's
+    message, or their read receipt is past his last message (X Chat's
+    read-marker events, the old DM API's `last_read_event_id`), they opened
+    it and didn't type back: it isn't a reply waiting on him, it's a
+    follow-up to send. `log twitter dms --waiting` lists those apart
+    (`reactedOnly`, `openedNoReply`, `followUpDue`, `src/twitter/dm/person`;
+    `openedByThem` on each thread; `--json` gives `followUps`), and the follow-up
+    is the network-maxing kind: about them and what they're doing, never the
+    opener again and never the ask. `docs/useCases/twitter/networkMaxing.md`
+    ("Everyone who reacted"), `dmInbox.md`.
+
+101. 2026-10-31 · matt: "increase it to be 240 writes to twitter". An X
+    account makes up to 240 writes a day, not 90 (this replaces rule 96's
+    number; `WRITES_PER_DAY`, `src/directApi/engine`). X's own answer still
+    decides: a 344 stops the run and nothing more goes out until matt says
+    so. Discord keeps 60, every other platform 40.
+
+102. 2026-10-30 · mandeep: LinkedIn goes out looking like a browser, the
     way X does (rule 81). `vendor/openLinkedinApi` reaches LinkedIn only
     through one curl_cffi `Session` in `open_linkedin_api/transport.py`,
     pinned to one impersonation target (`IMPERSONATE`, `chrome150`, the

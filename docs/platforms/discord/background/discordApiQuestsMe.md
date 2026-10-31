@@ -9,11 +9,11 @@
 | doc_id | — |
 | Path | `discord.com/api/quests/@me` |
 | Sends | — |
-| Reads | `quests`, `excluded_quests`, `quest_enrollment_blocked_until`, `quest_access_suspended_until` |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Reads | `message`, `code`, `quests`, `excluded_quests`, `quest_enrollment_blocked_until`, `quest_access_suspended_until` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_f63ec3ce30f1dcdf44a1080bce85b4030f3ff4162c49ca4d7939192758652a79` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 7 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,10 +22,136 @@ Seen 5 time(s) in 3 run(s).
 | inspect | step 9: goto /channels/@me | 1 | 200 | 583 ms | 3040 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 728 ms | 2403 ms | — |
 | inspect | step 1: goto /login | 1 | 200 | 553 ms | 11373 ms | — |
+| inspect | step 1: goto /channels/@me | 1 | 401 | 344 ms | 9529 ms | — |
+| inspect | step 2: snapshot | 1 | 200 | 705 ms | 48663 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 401, 344 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "message": "401: Unauthorized",
+  "code": 0
+}
+```
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 705 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "quests": [
+    {
+      "id": "1550379237335367680",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMVE1KUG1Dc3hDR1ZJU1pqWVlNWmQ1NlZKck5KKzdYTFlQMVl1NmRMWE5jcFlZRmE0N2VZUzdkZWhJdlFMNEVMTXhOd3hNY0pRRmlRancxN1RNOFdaNTlYZENxNU01RlltSXVJSkFpWGVHak1WTm1hamdDemVQYmNUVHRkMVJmRzIycVZnaE0yNVo2YjJjOGZhQzROTVFaS1hlMzNibUN0WmR3R0RvOVFoSHNkTEl6bmdqIn0="
+    },
+    {
+      "id": "1547647018090893312",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLS2REUkdCMjRxNkx3RnNwM3RUS2dnZ0ZRUzV0c3gyK1BxblBnZWNBWExoSFV4YVdVSDB1YkV5dWNndkY1eTRhNzJMMElRSUlxMG90czFZL2xPb2VzMkZKWUN3RnlHcy9TejN1SlBvcnhGQkM5S25ydlIyQ0FQQzQ4SE9lTkV4ZUlpU0U4ODMzWGR0QmZxc0xoTVdSSU0zTm1LbXNVd1NEdjVoblJtckZkWHA5dldweE1iIn0="
+    },
+    {
+      "id": "1550081499628441600",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMVEQwQ3BnZ2VUTzNZQzVtRVB5elhpaWtxQUEyc2owYnRwZFBYZ1F5Rk5yREFNc0U4T3REWSs2NHQrOUlvcUx2LzdkMk9EUklXYUZ3UzRIMXVobDhHbWlDOW9yTzJNVUhFVVErRWVIdnNRSGxwU2ZvK2dwc0JlMzNqb2djMTkvTWxKVnhRSGUxUjRJYWFGNG01NEZMVktoRHhwNU9ZbUxqeG9oR2EzeUhrS2wvSnVZUVF1In0="
+    },
+    {
+      "id": "1553154139435835392",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKd3QvQnd5UnpRZWIvQkZnV3FNMTUrOUFZMXFRampMc2R2azRucU1qaEVRb1NmMDJnbjFSSitpR3lIWlpWaHBmZFNydXhNczc4ZTcxZTV3WkxZK05kRk52SG81MEJyWFc3VExTUGdSNmU3SnVnUGR4aHBLcFRMc2ZPZEh1elBXQnorMEFEazdTR2ZlcFR3bklmYk1CSjlMdHlNbVh6RVRrSXoraG5ib3pYVUgxYzM3bFoxIn0="
+    },
+    {
+      "id": "1558112706446368769",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMZUxsN3l0cFpIaGhtVG9kb3NjSldtZnNaWWhsM2FJMld3bm9oNlEyR3RhTUpoV3NkK2d5RU1ldHR2dDVCU09ldlBVUGN1dUJ5clpxUHRQQ1BXNWhjeUsrQ2JpYWEwOEhSOUFkUU9YQ1BmMXRkTnFrTzNha2M4ZDFneGIrVkl1VENIWDBDaUdXOFhyUitDc3lLL2tSYmcwTVVjbkFhaFJobnhzZFVoS2NEcTU2VEUyOEZTIn0="
+    },
+    {
+      "id": "1555158122522349568",
+      "config": "(13 fields)",
+      "user_status": null,
+      "targeted_content": "(0 items)",
+      "ad_context": null,
+      "preview": false,
+      "traffic_metadata_raw": "EAIYAQ==",
+      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMS2ErSHVhZmowNTRWZXJJRmQ3V01tZWVzMDNlZE1pL01XRHU5OFk2Yyt5MWNWZnJtZUl4THhCQVFENGU1aSs0aXEvRlhmczQyZ1YxYlZWSTVWU2tKTHZDWkQxejAwMzNnYjJGSUN3R21pY04rdEl2Tm55ZmkySzV3ZlNZM0NibGNqS1Z4aDVubWprYVlKVTRzcUlOQ1dNZz09In0=",
+      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJalViTHRFdkYrVUw4ZE1sMm8vUjdzamJxSWhUVnZQMDZoYnZOeE8vaS9EVXZudW53Z3FRVHdKRmI5dkZxeDlmcUdSUEtTaFNnc3BCOVplcmxoZFFXY3NMN3VLK05wMlM0MHdicGhPY2MxNTBoWFJWQ1NoWE1kdjE1WENSZmt1V0FPRHFyWnFsbzhyRm56MTZhZWYyUTFML0l5SW94L2hVMS94QlY4NStrUlN0WnNTNmdiIn0="
+    },
+    "… 69 more"
+  ],
+  "excluded_quests": [
+    {
+      "id": "1549087389715013632"
+    },
+    {
+      "id": "1558176501663272961"
+    },
+    {
+      "id": "1553392150924890112"
+    },
+    {
+      "id": "1541371710417272834"
+    },
+    {
+      "id": "1565032458741612545"
+    },
+    {
+      "id": "1541369647985594369"
+    },
+    "… 75 more"
+  ],
+  "quest_enrollment_blocked_until": null,
+  "quest_access_suspended_until": null
+}
+```
 
 **runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 200, 553 ms
 
@@ -128,220 +254,6 @@ Answered:
       "id": "1552026570229813258"
     },
     "… 73 more"
-  ],
-  "quest_enrollment_blocked_until": null,
-  "quest_access_suspended_until": null
-}
-```
-
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 651 ms
-
-Sent:
-
-```json
-null
-```
-
-Answered:
-
-```json
-{
-  "quests": [
-    {
-      "id": "1550379237335367680",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJeCtGdURuTHRXdzRyWEgrK1h2QnFLTkp2dmdqUUVXdHZvTU9haHNDV2tlc2FkVGg1YTE5TjZvM2I4Wk1NRzNmRjBZRGZ5TnFHQkd1NElUeXlINHdmVlp5ZTFVV0dUOUtHYjQ0Z1p3VEw3MENnMDhlU2dGM3FZYUNiWGVBQ1c5cFhSUUFXWmxlbVBSTCs5bkZjTTNTVHNEZFV4enFWb0YrcjZBNGg2ZmZKTEl6TVNrRkhWIn0="
-    },
-    {
-      "id": "1547647018090893312",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKZzJKakQxQXZXeUNqekhjd3NTTVdSSDlaeW9iTkJ1dTMvQldHK1U1N2Q3OGNXMmlwRitvODJLazZnenRDOGJJTndJMnJFUjJSRVpWRUczUitjTmVzbkpicGprZXlocnhVeEZ0ekpCT1ppNzlweDVPTGM2ckpFYzRIeVgzNnRVWlVWaDZsZjVhYUhCNTFEQjZ2T29qZjc2c0VJbXdSRkRhQzU1Uzg0NWw1ZkdxblRFRlQyIn0="
-    },
-    {
-      "id": "1550081499628441600",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKbk1TVXhYMXlTSDFOMmpkc1B0Uy8wVk44eUtqZ1pkNURGckNlRWgvMHpubE0rWU9jNis3dEdpSnUwSjkwYTQzUm9rOTVMYjJrYVViUnRLb1JQMjRROW5UZ1BwdjdCUHo0azRweUFYSzc5TVZWazVBeDBRVG9RWUp6U2tmWXlTbGhCV0dETjR6bUJIK0xXRTJyZncwRXp6Y0VtK3BzQm1QWklFQXhJbzBWNkl0M1VHK0F6In0="
-    },
-    {
-      "id": "1548040517420449792",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKN2pHVHJSbktVZDRSM25CTWIrcHdTQzVIZFNLUmVoQldVRllPZW9Hc1NHdlo2OFlGSjlvWWVRdGVEK3JaV0UrUU5ZRExPbEFkcXBDRVBneVJpTGhMNHJCRDZFMjAxd0F5dzE2UzRQSFJSUFpwUjhtZW41TkZ1Vk1LUzExL1RJNDJ6TEtxbCtNazJNM0V5ZmtvbkdySlBOeE4wV2dBQ3ppL2FvREpWVml5WHZzcjdCRjdyIn0="
-    },
-    {
-      "id": "1553154139435835392",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLTkJ2andkS3JKbkFOWTJGU3hTUStsUEZuVFk4UUx5Q3RPQm5nKytFWUJVWkRRcGt3UWQxWFpNVjhjVERrcEU0djc4THlya0xIU3I5ZHFGS20vbTFINEZ4N25qK280dW9naDlnNGJ6VlUwdWluRnFKNXVkSS9Pcko3VGlMUUdzVE43SHRvSWZ6SldOR1QxL1JFZGZxSnN3d0VEMjRhWG03NTdxQXF3SDJOb3gxM0JWZEFoIn0="
-    },
-    {
-      "id": "1558112706446368769",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLU010dnFXTkVETndpTXpYUit4NEFHM0FkUHhERWJNVlJKUXd3VnhkNGFhR01Jak1BWWcrR01iZCttejRrZ3lCa0toRDV0b2dZVGNxVHJncG52YmY0a20wd1hoRldNS0FvSnhSNmF5cnVRMHB6aU0vb0hYRW9hRjZrRE10TnAifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJYi8xUHk4VGRmK0o4NVR5UmhJaHhPTVJZQnVFcDl2QjEzZzZqaFJjc0hyU1NMdjc4NmIrMkFLMW5HTS9sUjNlZEZJcUdyQUJ5MlM1YWY4VFY0V3gwWENBZzhydDZnOW1pczBPN1NyQnVRSXNEaDk4SFBJODhUMTdPaGxRUG9vTDF2bGV1QnZmeUcxRUdYcjZHUXN4NTlhV053M3FVS0xFbkNKVkh5RTAwaGd3dWU2NnRiIn0="
-    },
-    "… 73 more"
-  ],
-  "excluded_quests": [
-    {
-      "id": "1549087389715013632"
-    },
-    {
-      "id": "1558176501663272961"
-    },
-    {
-      "id": "1553392150924890112"
-    },
-    {
-      "id": "1541371710417272834"
-    },
-    {
-      "id": "1541369647985594369"
-    },
-    {
-      "id": "1552026570229813258"
-    },
-    "… 74 more"
-  ],
-  "quest_enrollment_blocked_until": null,
-  "quest_access_suspended_until": null
-}
-```
-
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 608 ms
-
-Sent:
-
-```json
-null
-```
-
-Answered:
-
-```json
-{
-  "quests": [
-    {
-      "id": "1550379237335367680",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJWlZpTUxYMlV4VVVqN1M5b21ScUZGNit1c0lZZnloMHI1djZTYWRqOEVvNFk1QjRUTlkrdkF3S2hWOHdBa2NzTG1CdG1BYkxvQ3VLMXVYU2JUS1JiYUhXUk5RMlVJSGwzS2xxSDZpSHVNQ3dwbVc2NkNEV1RhNDFJWnppUlorMnEyZzNtbHgyR1FWcEpxSmxoVlE1VDJOTDdDWk9HZ09qT0lIYzEycCtCZk5uQnZjc0hwIn0="
-    },
-    {
-      "id": "1547647018090893312",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKZlZoZ1RXWkRiWWVSMHFJZWo0UENyWitCSm9tOGRjcVFCRE94YnJTWnAvZjF6aWxSOEVKU3NjRzNpb2dSWmFVTm1LcC9FNTkyK21JdTBRU2RJbEgyYzM0dFZzZ0tVWU5ReEsreURTQ3dSYlpCT1ZvMlRXZm8xeXp0eFBXRzJlOUVaemk2S3piOVdHbWVsd01obUpyV3lWeTBESy9TS2hDQ1dla2N5MDFRa2xrUFFidGlPIn0="
-    },
-    {
-      "id": "1550081499628441600",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJcUcraGp4ekhsaVpEMEpqNlAxMEwzSk9ia0NDT3YwTFVWU3M2TmIwdTgvWVI5em1TZEFLWDk4QVZFSkVpQW5wa0FKR2diMVhQYlpwNlhBa0NHNDQ4N1htQnlldFFBVzBtN2lVVGcrSFBNaURRQm51R0Y1OTBKcm4xQ1NQUUIzVXFORkp3eDlLSTVtVWc3MnVGd1ZWNlNGSHVrakMvb0ZEY1AyUC9Mc0V2NVJhYzQ3bjNVIn0="
-    },
-    {
-      "id": "1548040517420449792",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKaWlNL0VlUkdtWGJYVE5qbkNEckkzTkc0bjJ5TWZlb2luUEh5ckdjTHZDVmNGT2ljQU04MGd2ZDQvZmVOT09GYTFNakR2Wm9qUVpuZEdkTDBhNEFRUmdOVWd4bUxWbTdic3FtdUV1M1gwODRzYitjRWcyOUdsWWRobnBUNy9ONjFFOFJtb2czYm1ORk5zRC83TnBiRi9vRjd1SXVWbjBzdHQyc1hOVVRTVnRRdm5xZWFPIn0="
-    },
-    {
-      "id": "1553154139435835392",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJQkhvQk95Wk9Mc0EzRC9EelM2alNSNVBYOGF2eFJmcWpPZEVlRGJndUxQWVNIT2dVblNIVVMxK1VmU0NrZnlqWUZ0SFhDZ09GNUVYNTMvRytaVVhhRWlINDVIUDl2SlV2ZlhPd3V4QmRsWktjeS9RZFk4OVhLY2ZpSVBIYjVLTXlkbXJTaWlwRFMrVnJEcVR0ckZDNitUdWNscmgvSXpEc2lTY3VKdGQwcHF1SzZ3THIxIn0="
-    },
-    {
-      "id": "1558112706446368769",
-      "config": "(13 fields)",
-      "user_status": null,
-      "targeted_content": "(0 items)",
-      "ad_context": null,
-      "preview": false,
-      "traffic_metadata_raw": "EAIYAQ==",
-      "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKWkxNZDFMN0dJYnpIVWJJUHlhRHV0T1ozN2RqcDRSZVBqNENKRTY0L3p0aU5Ta21VcVdSdThXMDhKVEhhWjlFTnlheEpQcFJMNDFkdmlDSHNwdHUvc2JkcDhDcjBDYVBiWXcyUy9tTDdJQTQ0S3VRc0dScHlaNktkMHZaYngifQ==",
-      "provenance_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dJenhkUVdiM0c2RHJPeGFyN2NLYmcrU3Y1SEc5RXEyanVGY0Y5VVplWERzTjhUVWZJYnBaT3VxSXNvMVVHY1JhN0kvTTVVL1BqVmtTVllWeEVVTU43bG5KL1ZHSVhaaU53WlZ4dXpMT1QwdU5DcWpNUE9xdU5CdFhLeGFHOG93c3I2bE5Ycm5VbnF1QWFRL3FqVGhzcGtCMnRVWFJhVjRRMlVUYnF0ZlpQMXQ0Q0tmQ0Y1In0="
-    },
-    "… 73 more"
-  ],
-  "excluded_quests": [
-    {
-      "id": "1549087389715013632"
-    },
-    {
-      "id": "1558176501663272961"
-    },
-    {
-      "id": "1553392150924890112"
-    },
-    {
-      "id": "1541371710417272834"
-    },
-    {
-      "id": "1541369647985594369"
-    },
-    {
-      "id": "1552026570229813258"
-    },
-    "… 74 more"
   ],
   "quest_enrollment_blocked_until": null,
   "quest_access_suspended_until": null

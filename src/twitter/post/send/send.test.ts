@@ -14,6 +14,8 @@ describe('planSend', () => {
   test('live needs who approved it; a dry run does not', () => {
     expect(planSend({ action: 'like', tweetUrl: POST, live: true })).toMatchObject({ ok: false, problem: { code: 'notApproved' } })
     expect(planSend({ action: 'like', tweetUrl: POST, live: false }).ok).toBe(true)
+    expect(planSend({ action: 'repost', tweetUrl: POST, live: true })).toMatchObject({ ok: false, problem: { code: 'notApproved' } })
+    expect(planSend({ action: 'repost', tweetUrl: POST, live: false }).ok).toBe(true)
   })
 
   test('the target, the text and the style are checked before X is called', () => {
