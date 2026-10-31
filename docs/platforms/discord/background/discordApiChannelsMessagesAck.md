@@ -10,10 +10,10 @@
 | Path | `discord.com/api/channels/messages/ack` |
 | Sends | `version`, `read_state_type`, `last_viewed` |
 | Reads | `token` |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_36f3e003aa265795aae2f8a15f5c3794503f4b4cf194cbadce737706963c7cf5` |
 
-Seen 17 time(s) in 3 run(s).
+Seen 19 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,10 +29,28 @@ Seen 17 time(s) in 3 run(s).
 | inspect | step 28: press Enter | 1 | 200 | 350 ms | 3015 ms | — |
 | inspect | step 31: wait 60s | 1 | 200 | 301 ms | 39716 ms | — |
 | inspect | step 1: goto /login | 2 | 204 | 309–334 ms | 19948–20049 ms | — |
+| inspect | step 2: snapshot | 2 | 204 | 301–410 ms | 57834–57944 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 204, 410 ms
+
+Sent:
+
+```json
+{
+  "version": 2,
+  "read_state_type": 0
+}
+```
+
+Answered:
+
+```json
+null
+```
 
 **runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 204, 334 ms
 
@@ -66,24 +84,6 @@ Answered:
 
 ```json
 null
-```
-
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 4: press Enter: 200, 285 ms
-
-Sent:
-
-```json
-{
-  "last_viewed": 4319
-}
-```
-
-Answered:
-
-```json
-{
-  "token": null
-}
 ```
 
 <!-- facts:end -->

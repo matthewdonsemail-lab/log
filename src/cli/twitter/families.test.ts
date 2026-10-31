@@ -169,6 +169,27 @@ describe("log twitter reply, quote, like, dm", () => {
     expect(JSON.parse(dropped.out)).toMatchObject({ event: "dropped", code: "xSentNothing", approvedBy: "matt" });
   });
 
+  test("post: a dry run checks the copy and the media and contacts nothing; --live uploads and posts once", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "logPost"));
+    const clip = join(dir, "clip.mp4");
+    writeFileSync(clip, Buffer.alloc(2048, 1));
+    const h = harness((spec) => ({ ok: true, event: "sent", mode: "post", tweetId: "888", mediaIds: (spec.media ?? []).map((_, i) => `m${i}`) }));
+    const dry = await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", clip]);
+    expect(dry.code).toBe(0);
+    expect(dry.out).toContain("dry run: xTwo would make a new post with video");
+    expect(h.calls).toEqual([]);
+    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", join(dir, "nope.mp4")])).err).toContain("mediaInvalid");
+    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", `${clip},${clip}`])).err).toContain("alone");
+    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "One in 173.", "--approvedBy", "mandeep", "--live"])).err).toContain("styleFailed");
+    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--live"])).err).toContain("notApproved");
+    expect(h.calls).toEqual([]);
+    const sent = await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", clip, "--approvedBy", "mandeep", "--live"]);
+    expect(sent.code).toBe(0);
+    expect(sent.out).toContain("posted https://x.com/xTwo/status/888");
+    expect(sent.err).toContain("uploading 1 file to X first (video)");
+    expect(h.calls).toEqual([{ action: "post", live: true, approvedBy: "mandeep", text: "one in 173", media: [clip] }]);
+  });
+
   test("a dm drafted on several lines goes out one message per line, --asOne as one, and a drop stops the rest", async () => {
     twitterSendDeps.profiles = () => ({});
     const h = harness(() => ({ ok: true, event: "sent", conversationId: "42-1" }));

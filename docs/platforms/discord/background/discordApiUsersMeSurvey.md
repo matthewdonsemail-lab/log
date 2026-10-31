@@ -10,18 +10,42 @@
 | Path | `discord.com/api/users/@me/survey` |
 | Sends | — |
 | Reads | `message`, `retry_after`, `global` |
-| Called from | `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:160 app_store_parental_revocation`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1059.js:1 parse`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script0.js:158 2242` |
-| rea | `ev_2070dc40e13af93274e72f1888affeb563d50467d7eb14b18189f1443a1c0d33` |
+| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| rea | `ev_a93644375be3f808d5c0fd61d8f73f57faaea1c6491ab8a7a6a51c6c961c680a` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 429 | 394 ms | 5298 ms | — |
+| inspect | step 2: snapshot | 1 | 429 | 363 ms | 47817 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 429, 363 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "disable_auto_seen": "true"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "message": "You are being rate limited.",
+  "retry_after": 15997.079,
+  "global": false
+}
+```
 
 **runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 429, 394 ms
 

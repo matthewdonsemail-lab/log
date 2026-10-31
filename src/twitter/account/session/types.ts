@@ -9,9 +9,9 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'dm' | 'follow'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'repost' | 'dm' | 'follow' | 'post'
 
-export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow']
+export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post']
 
 export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
 
@@ -31,6 +31,7 @@ export interface TwitterEngineSpec {
   export?: boolean
   full?: boolean
   seconds?: number
+  media?: string[]
 }
 
 export interface TwitterInboxSync {
@@ -87,6 +88,7 @@ export interface TwitterDmThread {
   lastFromMe: boolean
   lastText?: string | null
   unread: boolean
+  openedByThem?: boolean
   messagesLoaded: number
   conversationIds?: string[]
   boxes?: TwitterDmThread['box'][]
@@ -138,10 +140,12 @@ export interface TwitterSessionAnswer {
   event?: TwitterEvent
   checked?: TwitterFollow[]
   tweetId?: string
+  mediaIds?: string[]
   conversationId?: string
   messageId?: string
   mode?: string
   liked?: boolean
+  reposted?: boolean
   followed?: boolean
   handle?: string
   already?: boolean
@@ -149,6 +153,7 @@ export interface TwitterSessionAnswer {
   pages?: number
   threads?: TwitterDmThread[]
   waitingOnYou?: number
+  reactedToYou?: number
   messages?: TwitterDmMessage[]
   conversations?: TwitterDmConversation[]
   sync?: TwitterInboxSync

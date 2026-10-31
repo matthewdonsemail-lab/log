@@ -8,6 +8,7 @@ import { homeOf, outsideActiveHours } from '../../marketplace/home/index'
 import { parseProxyUrl } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 import { setStatusAndReplace } from '../../marketplace/replacement/index'
+import { accountStore } from '../../twenty/graphql/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } from './helpers/index'
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
@@ -23,7 +24,9 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   twitterDms: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'inbox', when: 'dms read (the inbox, or one conversation)', seam: 'directTwitter' },
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
+  twitterPost: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'post (media uploaded first with upload_media)', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
+  twitterRepost: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'retweet', when: 'repost', seam: 'directTwitter' },
   twitterFollow: { platform: 'twitter', library: 'twikit', only: true, surface: 'users', method: 'follow_user', when: 'follow', seam: 'directTwitter' },
   twitterDm: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'send_dm', when: 'dm', seam: 'directTwitter' },
   twitterQueue: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'queue run --live (each like and reply)', seam: 'directTwitter' },
@@ -48,7 +51,7 @@ export function engineHead(route: DirectRoute): string {
 }
 
 export function platformEngineText(platform: string): string {
-  if (platform === 'twitter') return `X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
+  if (platform === 'twitter') return `X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, ${writesPerDayOf('twitter')} a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
   if (platform !== 'facebook') {
     const label = isPlatform(platform) ? PLATFORM_LABELS[platform] : platform
     return `${label}'s own answer decides. Each account has its own governor under ~/.logCli/${platform}/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.`
@@ -76,7 +79,7 @@ export function platformStateRoot(platform: string): string {
 
 export function allEngineStates(now: Date = new Date()): LocalEngineState[] {
   const others = PLATFORMS.filter((p) => p !== 'facebook' && p !== 'twitter').flatMap((p) => localEngineStates(platformStateRoot(p), now).map((s) => ({ ...s, account: `${p} ${s.account}`, writesPerDay: writesPerDayOf(p) })))
-  return [...localEngineStates(fbkStateRoot(), now), ...localEngineStates(twitterStateRoot(), now).map((s) => ({ ...s, account: `twitter ${s.account}` })), ...others]
+  return [...localEngineStates(fbkStateRoot(), now), ...localEngineStates(twitterStateRoot(), now).map((s) => ({ ...s, account: `twitter ${s.account}`, writesPerDay: writesPerDayOf('twitter') })), ...others]
 }
 
 function readJson<T>(path: string): T | null {
@@ -183,10 +186,10 @@ export async function recordSessionState(twenty: TwentyClient, account: Facebook
   if (!state) return []
   await twenty.update('socialAccounts', account.id, { sessionState: state, sessionCheckedAt: now.toISOString() } as never)
   writeLocalSession(account.accountName, state, now)
-  const lines = [`Twenty: ${account.accountName} sessionState ${state} (Facebook's own page, read by the direct-API engine).`]
+  const lines = [`${accountStore(account.id)}: ${account.accountName} sessionState ${state} (Facebook's own page, read by the direct-API engine).`]
   if (state === 'checkpoint' && account.status !== 'deactivated') {
     await setStatusAndReplace(twenty, account, 'deactivated', 'checkpointed', "the direct-API engine's bootstrap read is_checkpointed", now)
-    lines.push(`Twenty: ${account.accountName} is checkpointed, so it is DEACTIVATED and its listings are marked lost.`)
+    lines.push(`${accountStore(account.id)}: ${account.accountName} is checkpointed, so it is DEACTIVATED and its listings are marked lost.`)
   }
   return lines
 }

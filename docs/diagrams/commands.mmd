@@ -8,6 +8,7 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_adsPower["adsPower"]
+    c_localAccount["localAccount"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
@@ -62,7 +63,9 @@ flowchart TB
     c_twitterFollowers["followers"]
     c_twitterReply["reply"]
     c_twitterQuote["quote"]
+    c_twitterPost["post"]
     c_twitterLike["like"]
+    c_twitterRepost["repost"]
     c_twitterFollow["follow"]
     c_twitterDm["dm"]
     c_twitterQueue["queue"]
@@ -89,6 +92,8 @@ flowchart TB
   mcp --> c_account
   cli --> c_adsPower
   mcp --> c_adsPower
+  cli --> c_localAccount
+  mcp --> c_localAccount
   cli --> c_lifecycle
   mcp --> c_lifecycle
   cli --> c_preflight
@@ -192,8 +197,12 @@ flowchart TB
   mcp --> c_twitterReply
   cli --> c_twitterQuote
   mcp --> c_twitterQuote
+  cli --> c_twitterPost
+  mcp --> c_twitterPost
   cli --> c_twitterLike
   mcp --> c_twitterLike
+  cli --> c_twitterRepost
+  mcp --> c_twitterRepost
   cli --> c_twitterFollow
   mcp --> c_twitterFollow
   cli --> c_twitterDm
