@@ -58,12 +58,12 @@ Answered:
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Fetches the changes (`ADDED`, `REMOVED`) to the list of known bad link and file hashes Discord's client checks messages against.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing in log-cli waits for it or reads it. The client loads it in the background; a read, a watch or a send never depends on it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+A failure only means the client keeps its older hash list; the run carries on.

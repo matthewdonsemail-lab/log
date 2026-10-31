@@ -9103,3 +9103,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log facebook capture --docs` rebuilt the platform capture docs from the newest inspect runs: the Discord background operation pages and both operations.json files, plus two new Discord pages.
 Why: the Discord inspect run that captured the local account's session was newer than the built docs, so the facebookClientDocs pre-push check failed.
 Checked: the new lines hold the same kind of shapes and ids the committed pages already had, with no message text, tokens or keys; the pre-push checks.
+
+## 2026-10-31 02:33Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/discord/background/discordApiUsersMeGiftIntentDismissals.md`: edited
+- `docs/platforms/discord/background/discordBadHashDelta.md`: edited
+
+What changed: the two new Discord capture pages (gift-intent-dismissals, bad-hash-delta) have their What it does / What our machine does / What can go wrong written: both are background loads Discord's client makes, and nothing in log-cli depends on them.
+Why: the facebookClientDocs pre-push check stops a push while a page still has a toWrite section.
+Checked: no toWrite left in either page; the pre-push checks.
