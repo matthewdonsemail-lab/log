@@ -41,6 +41,35 @@ export function upsertLocalAccount(fields: Record<string, unknown> & { accountNa
   return row
 }
 
+export function accountStore(id: string, env: Record<string, string | undefined> = process.env): string {
+  return isLocalId(id) || readLocalAccounts(localAccountsPath(env)).some((r) => r.id === id) ? 'Local accounts' : 'Twenty'
+}
+
+export async function pullLocalAccounts(remote: TwentyClient, options: { platform?: string; refresh?: boolean } = {}, path = localAccountsPath()): Promise<{ added: Row[]; refreshed: Row[]; kept: Row[] }> {
+  const filter = options.platform ? { platform: { eq: options.platform } } : undefined
+  const theirs = (await remote.list(ACCOUNTS, filter as TwentyObjects[typeof ACCOUNTS]['filter'])) as unknown as Row[]
+  const rows = readLocalAccounts(path)
+  const out = { added: [] as Row[], refreshed: [] as Row[], kept: [] as Row[] }
+  for (const row of theirs) {
+    const accountName = String(row.accountName || row.name || '')
+    if (!accountName) continue
+    const held = rows.find((r) => r.id === row.id || (r.platform === row.platform && r.accountName === accountName))
+    if (held && !options.refresh) {
+      out.kept.push(held)
+      continue
+    }
+    const secrets = (await remote.loginSecrets(row.id)) ?? {}
+    const filled = Object.fromEntries(Object.entries(secrets).filter(([, value]) => value))
+    const pulled: Row = { ...row, ...filled, accountName, name: accountName, twentyId: row.id, pulledAt: new Date().toISOString() }
+    const index = held ? rows.indexOf(held) : -1
+    if (index >= 0) rows[index] = { ...held, ...pulled, id: held!.id }
+    else rows.push(pulled)
+    ;(held ? out.refreshed : out.added).push(pulled)
+  }
+  writeLocalAccounts(rows, path)
+  return out
+}
+
 export function withLocalAccounts(remote: TwentyClient, env: Record<string, string | undefined> = process.env): TwentyClient {
   const path = localAccountsPath(env)
   const only = localOnly(env)
@@ -66,18 +95,18 @@ export function withLocalAccounts(remote: TwentyClient, env: Record<string, stri
       return upsertLocalAccount({ ...fields, accountName: String(fields.accountName ?? fields.name ?? '') }, path) as unknown as TwentyObjects[K]['row']
     },
     async update<K extends TwentyObject>(object: K, id: string, data: TwentyObjects[K]['update']) {
-      if (object !== ACCOUNTS || !isLocalId(id)) return remote.update(object, id, data)
+      if (object !== ACCOUNTS) return remote.update(object, id, data)
       const rows = readLocalAccounts(path)
       const row = rows.find((r) => r.id === id)
+      if (!row && !isLocalId(id) && !only) return remote.update(object, id, data)
       if (!row) throw new Error(`localAccounts: no socialAccount ${id} in ${path}`)
       Object.assign(row, data, { updatedAt: new Date().toISOString() })
       writeLocalAccounts(rows, path)
       return { ...row } as unknown as TwentyObjects[K]['row']
     },
     async loginSecrets(accountId: string): Promise<LoginSecrets | null> {
-      if (!isLocalId(accountId)) return only ? null : remote.loginSecrets(accountId)
       const row = readLocalAccounts(path).find((r) => r.id === accountId)
-      if (!row) return null
+      if (!row) return isLocalId(accountId) || only ? null : remote.loginSecrets(accountId)
       const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
       return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret), messengerPin: text(row.messengerPin) }
     }

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createMemoryTwenty, readLocalAccounts, upsertLocalAccount, withLocalAccounts } from './helpers/index'
+import { createMemoryTwenty, pullLocalAccounts, readLocalAccounts, upsertLocalAccount, withLocalAccounts } from './helpers/index'
 import { findAccount } from '../../marketplace/socialAccount/index'
 
 function setup(only = false) {
@@ -45,5 +45,25 @@ describe('withLocalAccounts', () => {
     const names = (await twenty.list('socialAccounts')).map((r) => r.accountName).sort()
     expect(names).toEqual(['both', 'onlyLocal'])
     expect(await twenty.get('socialAccounts', 't1')).toBeNull()
+  })
+
+  test('pull copies every Twenty account in under its Twenty id, keeps one already local, and its updates then go to the file', async () => {
+    const { twenty, remote, path } = setup()
+    const pulled = await pullLocalAccounts(remote, {}, path)
+    expect(pulled.added.map((r) => r.accountName)).toEqual(['onTwenty'])
+    expect(pulled.kept.map((r) => r.accountName)).toEqual(['both'])
+    expect((await findAccount(twenty, 'onTwenty')).id).toBe('t1')
+    await twenty.update('socialAccounts', 't1', { sessionState: 'loggedIn' })
+    expect(readLocalAccounts(path).find((r) => r.id === 't1')?.sessionState).toBe('loggedIn')
+    expect((await remote.get('socialAccounts', 't1'))?.sessionState).toBeUndefined()
+  })
+
+  test('pull --refresh replaces a local copy with what Twenty has', async () => {
+    const { remote, path } = setup()
+    await pullLocalAccounts(remote, {}, path)
+    await remote.update('socialAccounts', 't1', { sessionState: 'loggedOut' })
+    const pulled = await pullLocalAccounts(remote, { refresh: true }, path)
+    expect(pulled.refreshed.map((r) => r.accountName).sort()).toEqual(['both', 'onTwenty'])
+    expect(readLocalAccounts(path).find((r) => r.id === 't1')?.sessionState).toBe('loggedOut')
   })
 })

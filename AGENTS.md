@@ -1170,6 +1170,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     or uncovered work stops the commit until the page is updated or
     written and staged.
 
+96. 2026-10-31 · matt: "the new twitter budget 90". An X account makes up
+    to 90 writes a day (dms, replies, quotes, likes, reposts, follows,
+    posts), not 40 (`WRITES_PER_DAY`, `src/directApi/engine`, handed to the
+    X engine's governor in each run's spec). Discord keeps 60, every other
+    platform 40. X's own answer still decides: a 344 (its daily limit) stops
+    the run, and nothing more goes out until matt says so. `log twitter
+    repost` (MCP `twitterRepost`, `twitterRepostLive`) reposts one post,
+    a write like the others.
+
+97. 2026-10-31 · matt: "the ability to have everything done locally".
+    Accounts live in a local file, `~/.logCli/localAccounts.json`
+    (`LOG_LOCAL_ACCOUNTS` moves it), on every platform, and this narrows
+    rule 13 for accounts only. `log localAccount pull` copies every
+    Twenty account in, cookies and login included, each keeping its
+    Twenty id so its listings and groups still find it; `add` makes one
+    Twenty never had (with its AdsPower profile); `list` shows them.
+    `LOG_ACCOUNTS=local` (`.env.local`) leaves Twenty out of accounts
+    entirely, and a session a run captures or refreshes is saved back to
+    the file. Listings, groups and conversations stay in Twenty.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

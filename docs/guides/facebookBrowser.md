@@ -499,10 +499,11 @@ AGENTS.md (log://agents): rules 42, 44, 78, 84, 30, 38, 39, 40, 41. When matt sa
 
 ### `localAccount`
 
-log localAccount <add|list> [--platform <p>] [--account <a>] [--adsPower <id>] [--proxy <url>] [--home <CC>] [--json]
-Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, or list them
+log localAccount <add|list|pull> [--platform <p>] [--account <a>] [--adsPower <id>] [--proxy <url>] [--home <CC>] [--refresh] [--json]
+Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them
 Usage: log localAccount add --platform <facebook|twitter|reddit|discord> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]
        log localAccount list [--json]
+       log localAccount pull [--platform <p>] [--refresh] [--json]   (copies every account Twenty has, cookies and login included, into the file; an account already there is kept unless --refresh; each keeps its Twenty id, so listings and groups still find it)
 A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves it), not in Twenty. Every command finds it by its accountName, a local row winning over a Twenty row of the same name, and the session a run captures is saved back to the file. LOG_ACCOUNTS=local leaves Twenty out of accounts entirely.
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }).

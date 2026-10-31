@@ -9113,3 +9113,42 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the two new Discord capture pages (gift-intent-dismissals, bad-hash-delta) have their What it does / What our machine does / What can go wrong written: both are background loads Discord's client makes, and nothing in log-cli depends on them.
 Why: the facebookClientDocs pre-push check stops a push while a page still has a toWrite section.
 Checked: no toWrite left in either page; the pre-push checks.
+
+## 2026-10-31 02:54Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/affiliateMarketing.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/topicReplies.md`: edited
+- `python/twitterApi/engine.py`: changed const WRITES, def governor_for, def governor_status, def send, def refusal_of, def run, def main
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/localAccount/index.ts`: changed const LOCAL_ACCOUNT_USAGE, const localAccountCommand
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/send.ts`: added const repostCommand · changed const SHAPES, function usageOf, function renderSent
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES, function platformEngineText, function allEngineStates, function recordSessionState
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/platformKit/session/client.ts`: changed function recordPlatformSession
+- `src/twenty/graphql/helpers/localAccounts.ts`: added function accountStore, function pullLocalAccounts · changed function withLocalAccounts
+- `src/twenty/graphql/localAccounts.test.ts`: added test "pull copies every Twenty account in under its Twenty id, keeps one already local, and its updates then go to the file", test "pull --refresh replaces a local copy with what Twenty has"
+- `src/twitter/account/session/client.ts`: changed function runTwitterEngine, function runTwitterEngineLive, function recordTwitterSession
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, interface TwitterSessionAnswer
+- `src/twitter/post/send/send.test.ts`: changed test "live needs who approved it; a dry run does not"
+- `src/twitter/post/send/types.ts`: changed type SendAction
+
+What changed: accounts run locally on every platform. `log localAccount pull` copies every Twenty account (fields, cookies, login secrets) into ~/.logCli/localAccounts.json under its Twenty id, keeping one already local unless --refresh; a row in the file is local by being there, so its updates and secrets go to the file while listings and groups still find it by id. `LOG_ACCOUNTS=local` is set in .env.local (template in .env.example). Session lines say `Local accounts:` or `Twenty:` by where the account lives (`accountStore`). X's write budget is 90 a day (`WRITES_PER_DAY`), handed to the X engine's governor in each spec and shown in the status line and usage. New `log twitter repost` (twikit `retweet`, code 327 is already reposted). Rules 96 and 97 in AGENTS.md and the MCP instructions; use-case pages and the xPosting skill say 90.
+Why: matt asked for everything done locally, every social account pre-configured, and the new X budget of 90; he approved a like and repost that log-cli couldn't do without a repost command (rule 94: no hand-rolled calls).
+Checked: `bun run check` (1196 pass); `log localAccount pull` added 36 accounts; with LOG_ACCOUNTS=local the X and Discord session checks answered loggedIn from the local file; three approved X replies sent (dry run, then live, minutes apart); `log twitter repost --live` answered sent on deepman's post.
