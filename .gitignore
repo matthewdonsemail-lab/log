@@ -1,0 +1,26 @@
+node_modules/
+.scratch/
+.env
+.env.local
+__pycache__/
+
+# vendor orders carry live cookies, tokens and 2FA secrets
+docs/vendors/*.txt
+
+# matt's messages and everything built from them stay on this machine (~/.logCli), never in git
+.logCli/
+pairs.json
+profiles.json
+readings.jsonl
+**/conversations/**/*.json
+**/search/voice/
+**/MATT_COMMUNICATION_MAP/
+
+# AdsPower's own skill, installed by `npx skills add https://github.com/adspower/adspower-browser --skill adspower-browser`
+# (vendor kebab-case names, kept out of git per rule 1; skills/adsPower/SKILL.md says how to reinstall)
+.agents/
+.claude/skills/adspower-browser
+skills/adspower-browser
+skills-lock.json
+# Playwright MCP console logs
+.playwright-mcp/

@@ -1,0 +1,22 @@
+Polling task: trun_088b9aad31744256a8d074caf5acadeb
+Track progress: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256a8d074caf5
+acadeb
+Will save to: cloudBrowsersAndAntidetect.json (+.md for text schema)
+
+Status: polling (0s)
+Status: running (0s)
+Status: running (46s)
+Status: running (1m31s)
+Status: running (2m16s)
+Status: running (3m02s)
+Status: running (3m47s)
+Status: running (4m32s)
+Status: running (5m18s)
+Status: running (6m03s)
+Status: running (6m48s)
+Status: running (7m33s)
+Status: running (8m19s)
+Status: completed (9m04s)
+Error: 'charmap' codec can't encode characters in position 2436-2437: character
+maps to <undefined>

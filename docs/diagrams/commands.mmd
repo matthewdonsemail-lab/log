@@ -1,0 +1,285 @@
+%% Every command, CLI and MCP. Each command is a CLI command and, unless terminal-only, an MCP tool; the long-running ones write the live log. Grouped by platform: a platform's command is `log <platform> <command>` (rule 63). Saved flows are MCP tools that run `log flow run`.
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart TB
+  cli["log (CLI)"]
+  mcp["MCP server log"]
+  live[("live log")]
+  terminal["terminal only"]
+  subgraph g_any["Any platform"]
+    c_launch["launch"]
+    c_adsPower["adsPower"]
+    c_localAccount["localAccount"]
+    c_inspect["inspect"]
+    c_flow["flow"]
+    c_proxy["proxy"]
+    c_errors["errors"]
+    c_graph["graph"]
+    c_runs["runs"]
+    c_browsers["browsers"]
+    c_job["job"]
+    c_mcp["mcp"]
+    c_login["login"]
+    c_logout["logout"]
+    c_whoami["whoami"]
+    c_voice["voice"]
+    c_search["search"]
+    c_kb["kb"]
+    c_new["new"]
+  end
+  subgraph g_byArgument["Platform named first"]
+    c_warmup["#lt;platform#gt; warmup"]
+  end
+  subgraph g_facebook["Facebook"]
+    c_listings["listings"]
+    c_listing["listing"]
+    c_accounts["accounts"]
+    c_account["account"]
+    c_lifecycle["lifecycle"]
+    c_preflight["preflight"]
+    c_doctor["doctor"]
+    c_connect["connect"]
+    c_profile["profile"]
+    c_host["host"]
+    c_join["join"]
+    c_read["read"]
+    c_poll["poll"]
+    c_check["check"]
+    c_scan["scan"]
+    c_status["status"]
+    c_watch["watch"]
+    c_publish["publish"]
+    c_campaign["campaign"]
+    c_conversations["conversations"]
+    c_conversation["conversation"]
+    c_messenger["messenger"]
+    c_capture["capture"]
+  end
+  subgraph g_twitter["X"]
+    c_twitterSession["session"]
+    c_twitterFollows["follows"]
+    c_twitterDms["dms"]
+    c_twitterChat["chat"]
+    c_twitterCookies["cookies"]
+    c_twitterFollowers["followers"]
+    c_twitterReply["reply"]
+    c_twitterQuote["quote"]
+    c_twitterPost["post"]
+    c_twitterLike["like"]
+    c_twitterRepost["repost"]
+    c_twitterFollow["follow"]
+    c_twitterDm["dm"]
+    c_twitterQueue["queue"]
+  end
+  subgraph g_reddit["Reddit"]
+    c_redditSession["session"]
+  end
+  subgraph g_discord["Discord"]
+    c_discordSession["session"]
+    c_discordChats["chats"]
+    c_discordRead["read"]
+    c_discordWatch["watch"]
+    c_discordSend["send"]
+  end
+  cli --> c_launch
+  c_launch -.- terminal
+  cli --> c_listings
+  mcp --> c_listings
+  cli --> c_listing
+  mcp --> c_listing
+  cli --> c_accounts
+  mcp --> c_accounts
+  cli --> c_account
+  mcp --> c_account
+  cli --> c_adsPower
+  mcp --> c_adsPower
+  cli --> c_localAccount
+  mcp --> c_localAccount
+  cli --> c_lifecycle
+  mcp --> c_lifecycle
+  cli --> c_preflight
+  mcp --> c_preflight
+  cli --> c_doctor
+  mcp --> c_doctor
+  c_doctor --> live
+  cli --> c_connect
+  mcp --> c_connect
+  c_connect --> live
+  cli --> c_profile
+  mcp --> c_profile
+  c_profile --> live
+  cli --> c_host
+  mcp --> c_host
+  c_host --> live
+  cli --> c_inspect
+  mcp --> c_inspect
+  c_inspect --> live
+  cli --> c_flow
+  mcp --> c_flow
+  c_flow --> live
+  cli --> c_warmup
+  mcp --> c_warmup
+  c_warmup --> live
+  cli --> c_join
+  mcp --> c_join
+  c_join --> live
+  cli --> c_read
+  mcp --> c_read
+  c_read --> live
+  cli --> c_poll
+  mcp --> c_poll
+  c_poll --> live
+  cli --> c_check
+  mcp --> c_check
+  c_check --> live
+  cli --> c_scan
+  mcp --> c_scan
+  c_scan --> live
+  cli --> c_status
+  mcp --> c_status
+  c_status --> live
+  cli --> c_watch
+  mcp --> c_watch
+  c_watch --> live
+  cli --> c_proxy
+  mcp --> c_proxy
+  cli --> c_publish
+  mcp --> c_publish
+  c_publish --> live
+  cli --> c_campaign
+  mcp --> c_campaign
+  c_campaign --> live
+  cli --> c_conversations
+  mcp --> c_conversations
+  cli --> c_conversation
+  mcp --> c_conversation
+  cli --> c_messenger
+  c_messenger -.- terminal
+  cli --> c_errors
+  mcp --> c_errors
+  cli --> c_graph
+  mcp --> c_graph
+  cli --> c_capture
+  mcp --> c_capture
+  c_capture --> live
+  cli --> c_runs
+  mcp --> c_runs
+  cli --> c_browsers
+  mcp --> c_browsers
+  cli --> c_job
+  mcp --> c_job
+  cli --> c_mcp
+  c_mcp -.- terminal
+  cli --> c_login
+  c_login -.- terminal
+  cli --> c_logout
+  mcp --> c_logout
+  cli --> c_whoami
+  mcp --> c_whoami
+  cli --> c_twitterSession
+  mcp --> c_twitterSession
+  cli --> c_twitterFollows
+  mcp --> c_twitterFollows
+  cli --> c_twitterDms
+  mcp --> c_twitterDms
+  cli --> c_twitterChat
+  c_twitterChat -.- terminal
+  cli --> c_twitterCookies
+  c_twitterCookies -.- terminal
+  cli --> c_voice
+  mcp --> c_voice
+  cli --> c_search
+  mcp --> c_search
+  cli --> c_kb
+  mcp --> c_kb
+  cli --> c_twitterFollowers
+  mcp --> c_twitterFollowers
+  cli --> c_twitterReply
+  mcp --> c_twitterReply
+  cli --> c_twitterQuote
+  mcp --> c_twitterQuote
+  cli --> c_twitterPost
+  mcp --> c_twitterPost
+  cli --> c_twitterLike
+  mcp --> c_twitterLike
+  cli --> c_twitterRepost
+  mcp --> c_twitterRepost
+  cli --> c_twitterFollow
+  mcp --> c_twitterFollow
+  cli --> c_twitterDm
+  mcp --> c_twitterDm
+  cli --> c_twitterQueue
+  mcp --> c_twitterQueue
+  c_twitterQueue --> live
+  cli --> c_new
+  mcp --> c_new
+  cli --> c_redditSession
+  mcp --> c_redditSession
+  cli --> c_discordSession
+  mcp --> c_discordSession
+  cli --> c_discordChats
+  mcp --> c_discordChats
+  cli --> c_discordRead
+  mcp --> c_discordRead
+  c_discordRead --> live
+  cli --> c_discordWatch
+  mcp --> c_discordWatch
+  c_discordWatch --> live
+  cli --> c_discordSend
+  mcp --> c_discordSend
+  f_deletePost["flowDeletePost: flow run deletePost"]
+  mcp --> f_deletePost
+  f_deletePost --> c_flow
+  f_facebookLanguageEnglish["flowFacebookLanguageEnglish: flow run facebookLanguageEnglish"]
+  mcp --> f_facebookLanguageEnglish
+  f_facebookLanguageEnglish --> c_flow
+  f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
+  mcp --> f_groupHeaderMenus
+  f_groupHeaderMenus --> c_flow
+  f_groupMembers["flowGroupMembers: flow run groupMembers"]
+  mcp --> f_groupMembers
+  f_groupMembers --> c_flow
+  f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
+  mcp --> f_groupPostComments
+  f_groupPostComments --> c_flow
+  f_groupPostDialog["flowGroupPostDialog: flow run groupPostDialog"]
+  mcp --> f_groupPostDialog
+  f_groupPostDialog --> c_flow
+  f_groupTabs["flowGroupTabs: flow run groupTabs"]
+  mcp --> f_groupTabs
+  f_groupTabs --> c_flow
+  f_marketplaceListingDelete["flowMarketplaceListingDelete: flow run marketplaceListingDelete"]
+  mcp --> f_marketplaceListingDelete
+  f_marketplaceListingDelete --> c_flow
+  f_marketplaceListingPublish["flowMarketplaceListingPublish: flow run marketplaceListingPublish"]
+  mcp --> f_marketplaceListingPublish
+  f_marketplaceListingPublish --> c_flow
+  f_messengerPinCreate["flowMessengerPinCreate: flow run messengerPinCreate"]
+  mcp --> f_messengerPinCreate
+  f_messengerPinCreate --> c_flow
+  f_postComment["flowPostComment: flow run postComment"]
+  mcp --> f_postComment
+  f_postComment --> c_flow
+  f_profilePhotoPost["flowProfilePhotoPost: flow run profilePhotoPost"]
+  mcp --> f_profilePhotoPost
+  f_profilePhotoPost --> c_flow
+  f_profilePost["flowProfilePost: flow run profilePost"]
+  mcp --> f_profilePost
+  f_profilePost --> c_flow
+  f_profileSetup["flowProfileSetup: flow run profileSetup"]
+  mcp --> f_profileSetup
+  f_profileSetup --> c_flow
+  f_warmupCreateAccessCheck["flowWarmupCreateAccessCheck: flow run warmupCreateAccessCheck"]
+  mcp --> f_warmupCreateAccessCheck
+  f_warmupCreateAccessCheck --> c_flow
+  f_warmupFeedBrowse["flowWarmupFeedBrowse: flow run warmupFeedBrowse"]
+  mcp --> f_warmupFeedBrowse
+  f_warmupFeedBrowse --> c_flow
+  f_warmupMarketplaceBrowse["flowWarmupMarketplaceBrowse: flow run warmupMarketplaceBrowse"]
+  mcp --> f_warmupMarketplaceBrowse
+  f_warmupMarketplaceBrowse --> c_flow
+  f_warmupMessagesVisit["flowWarmupMessagesVisit: flow run warmupMessagesVisit"]
+  mcp --> f_warmupMessagesVisit
+  f_warmupMessagesVisit --> c_flow
+  f_warmupSellingVisit["flowWarmupSellingVisit: flow run warmupSellingVisit"]
+  mcp --> f_warmupSellingVisit
+  f_warmupSellingVisit --> c_flow

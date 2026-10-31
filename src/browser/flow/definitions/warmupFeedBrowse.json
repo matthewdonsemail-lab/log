@@ -1,0 +1,157 @@
+{
+  "name": "warmupFeedBrowse",
+  "summary": "Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_goto",
+      "action": "goto",
+      "url": "https://www.facebook.com/",
+      "answers": [
+        {
+          "call": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "says": [
+            {
+              "answer": "data.user.id",
+              "home": "uid"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 51188,
+        "reaEvidenceId": "ev_e341cadab219a4d1edb87e0a6124f2b5162c089a0f15018b6ee042631fae405a",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "FeedComposerCometRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_dwell",
+      "action": "dwell",
+      "args": [
+        "3-5"
+      ],
+      "recorded": {
+        "step": "02_dwell35s",
+        "ms": 8359,
+        "reaEvidenceId": "ev_8b17ac975a97ee0782de3bebb8d729284eea306c4ae08d616d68f57e2dbe89e4",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_scroll",
+      "action": "scroll",
+      "args": [
+        "4-7",
+        "300-600"
+      ],
+      "answers": [
+        {
+          "call": "CometNewsFeedPaginationQuery",
+          "says": [
+            {
+              "answer": "first.data.viewer.news_feed",
+              "present": true
+            }
+          ],
+          "ifSent": true
+        }
+      ],
+      "recorded": {
+        "step": "03_scroll47X",
+        "ms": 31453,
+        "reaEvidenceId": "ev_7ae1c0a30cf066f417fd1305af192253b09f82057d70298cc4fdfe4b8c0f2697",
+        "requests": [
+          "CometNewsFeedPaginationQuery",
+          "useInstreamAdsHaloFetcherQuery",
+          "CometNewsFeedPaginationQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "04_gotoHttpsWwwFacebook",
+        "ms": 23610,
+        "reaEvidenceId": "ev_23709d00eac049d029c7267e2b4df5942d7dd6c775ad174cbe341099a3c3e798",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometFeedInlineComposerQuery",
+          "CometModernHomeFeedQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometMegaphoneRootQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery",
+          "StoriesTrayRectangularRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_dwell",
+      "action": "dwell",
+      "args": [
+        "3-5"
+      ],
+      "recorded": {
+        "step": "05_dwell35s",
+        "ms": 7968,
+        "reaEvidenceId": "ev_9ccd48ac0491d60ab90e1fcb351b2aef0ce14971a6ef1aaf2f30e9887ddf4f3d",
+        "requests": []
+      }
+    },
+    {
+      "id": "s06_scroll",
+      "action": "scroll",
+      "args": [
+        "1",
+        "400-800"
+      ],
+      "recorded": {
+        "step": "06_scroll1X400",
+        "ms": 10641,
+        "reaEvidenceId": "ev_20fa79f5a71e1927e5e84ecf5433de4525e0af0545a4b83c7229f87a32eb8ff9",
+        "requests": []
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T09:20:18.331Z"
+  }
+}

@@ -1,0 +1,15 @@
+- main [ref=e99]:
+  - button "Profile picture actions" [ref=e133] [cursor=pointer]:
+    - img [ref=e134]
+- dialog "What happened" [ref=e1389]:
+  - heading "What happened" [active] [level=2] [ref=e1392]:
+    - generic [ref=e1394]: What happened
+  - button "Close" [ref=e1396] [cursor=pointer]
+  - generic [ref=e1399]:
+    - generic [ref=e1402]:
+      - heading "Sep 9, 2026" [level=2] [ref=e1405]:
+        - generic [ref=e1411]: Sep 9, 2026
+      - button "Ended on Sep 10, 2026" [ref=e1424] [cursor=pointer]:
+        - generic [ref=e1435]: Ended on Sep 10, 2026
+    - button "See why" [ref=e1443] [cursor=pointer]:
+      - generic [ref=e1446]: See why

@@ -1,0 +1,6 @@
+- main [ref=e99]:
+  - button "Profile picture actions" [ref=e133] [cursor=pointer]:
+    - img [ref=e134]
+- alertdialog [ref=e1380]:
+  - generic [ref=e1381]: To allow or block browser notifications from Facebook, go to your browser settings.
+  - button [ref=e1382]: Close

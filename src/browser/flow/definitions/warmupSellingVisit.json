@@ -1,0 +1,115 @@
+{
+  "name": "warmupSellingVisit",
+  "summary": "Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "17_gotoHttpsWwwFacebook",
+        "ms": 24704,
+        "reaEvidenceId": "ev_d9351766fac493942cc0621ac21b317a38b335299ef37ff2d0ad9793da3141f8",
+        "requests": [
+          "FBScreenTimeLogger_syncMutation",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometFeedInlineComposerQuery",
+          "CometModernHomeFeedQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometMegaphoneRootQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery",
+          "StoriesTrayRectangularRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_scroll",
+      "action": "scroll",
+      "args": [
+        "4-7",
+        "300-600"
+      ],
+      "recorded": {
+        "step": "18_scroll47X",
+        "ms": 21266,
+        "reaEvidenceId": "ev_c97f31377e9a64d9d5921ae3e157de0f96e4c31b590a4c7920064ac9c2ddcdcf",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_gotomarketplaceYouSelling",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/you/selling",
+      "answers": [
+        {
+          "call": "page /marketplace/you/selling",
+          "says": [
+            {
+              "answer": "fields.current_marketplace.id",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "19_gotoHttpsWwwFacebook",
+        "ms": 24218,
+        "reaEvidenceId": "ev_f2393440a0cd486d6ca181d75cb9c6ba9fbec88865d0433e017a6be80b1796b8",
+        "requests": [
+          "MarketplaceCometBrowseFeedLightPaginationQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s04_dwell",
+      "action": "dwell",
+      "args": [
+        "2-4"
+      ],
+      "recorded": {
+        "step": "20_dwell24s",
+        "ms": 5344,
+        "reaEvidenceId": "ev_d2a4fd79c4aabb3bf4bd473b0cdc5110da20a4b19aa5ec8806966390f03708c3",
+        "requests": []
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T09:20:18.338Z"
+  }
+}

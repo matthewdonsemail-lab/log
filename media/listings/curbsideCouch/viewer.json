@@ -1,0 +1,8 @@
+{
+  "place": "Reading",
+  "frames": {
+    "before": { "when": "October 22  8:52 AM", "clock": "12:20", "battery": 81, "faces": [{ "x": 1075, "y": 605, "w": 110, "h": 155 }] },
+    "action": { "when": "October 22  10:36 AM", "clock": "12:21", "battery": 81, "faces": [{ "x": 1140, "y": 605, "w": 115, "h": 155 }, { "x": 220, "y": 875, "w": 115, "h": 170 }] },
+    "after": { "when": "October 22  11:14 AM", "clock": "12:22", "battery": 80, "faces": [{ "x": 1062, "y": 985, "w": 100, "h": 150 }] }
+  }
+}

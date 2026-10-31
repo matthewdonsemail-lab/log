@@ -1,0 +1,42 @@
+[
+  {
+    "id": "harAndScripts",
+    "name": "Playwright HAR plus saved scripts, REA offline",
+    "description": "The gated Camoufox session records a HAR of responses the page itself made, and writes the script bodies to a private temp directory. rea inspect-web-network-capture and static JavaScript analysis read those files. REA never attaches. humanize, the proxy gate and launch_kwargs stay as they are."
+  },
+  {
+    "id": "harOnly",
+    "name": "Playwright HAR only, REA offline",
+    "description": "Same session, but the only artifact is a HAR. rea inspect-web-network-capture reads it. Scripts are not saved. The derived API surface may omit bodies, headers and query values."
+  },
+  {
+    "id": "scriptsOnly",
+    "name": "Saved scripts only, REA offline",
+    "description": "The session writes loaded script bytes, in the style of NativeResponseAdapter (listen, do not call). rea analyze-javascript-application reads the directory. No HAR, so request names are whatever the scripts contain as literals."
+  },
+  {
+    "id": "forkReaForJuggler",
+    "name": "Change REA so it speaks Playwright Firefox / Juggler",
+    "description": "Patch or wrap rea-agents so its page tools attach to a live Camoufox window over Firefox's protocol instead of Chrome CDP. This is a fork of REA. No public REA provider does this today."
+  },
+  {
+    "id": "cdpOnCamoufox",
+    "name": "Expose Chrome CDP from the Camoufox window",
+    "description": "Try to make the live Camoufox process accept REA's existing inspect-web-page attach. Camoufox is Firefox. REA's browser contract is Chrome-family CDP."
+  },
+  {
+    "id": "chromeInstead",
+    "name": "Drive Facebook in Chrome so stock REA can attach",
+    "description": "Stop using Camoufox for the create page. Use a Chrome-family Playwright browser so rea inspect-web-page can attach. Leaves the humanize float, the cursor, and the Camoufox device pin."
+  },
+  {
+    "id": "adsPowerLikeListaro",
+    "name": "Listaro's AdsPower Chromium, REA attached over CDP",
+    "description": "Open the create page in AdsPower and attach REA with connectOverCDP, as Listaro's poster already attaches Playwright. The account would not pass log-cli's Camoufox gate."
+  },
+  {
+    "id": "noRea",
+    "name": "Do not add REA; keep the DOM driver",
+    "description": "Leave publishSession.py and visibleBrowser.py as they are. Selectors stay the ones in docs/listingPublish. No HAR, no script export, no REA process."
+  }
+]

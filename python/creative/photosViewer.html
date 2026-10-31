@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=393">
+<title>Photos viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; width: 393px; height: 852px; overflow: hidden; background: #000; color: #fff; }
+  body { font-family: -apple-system, "SF Pro Text", Inter, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; }
+  #photo { position: absolute; left: 0; width: 393px; }
+  #scribbles { position: absolute; inset: 0; width: 393px; height: 852px; }
+
+  #status { position: absolute; top: 0; left: 0; right: 0; height: 50px; }
+  #clock { position: absolute; left: 34px; top: 13px; font-size: 16.5px; font-weight: 600; letter-spacing: -0.2px; }
+  #status .right { position: absolute; right: 22px; top: 15px; display: flex; align-items: center; gap: 6px; }
+
+  .glass {
+    position: absolute;
+    background: rgba(28, 28, 30, 0.72);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.22), inset 0 -0.5px 0 rgba(255,255,255,0.06), 0 0 0 0.5px rgba(255,255,255,0.08);
+  }
+  .circle { width: 41px; height: 41px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  #back { left: 19px; top: 42px; }
+  #more { right: 19px; top: 42px; }
+  #title { left: 50%; transform: translateX(-50%); top: 42px; min-width: 151px; height: 41px; padding: 0 22px; border-radius: 21px; box-sizing: border-box;
+           display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #title .l1 { font-size: 14.5px; font-weight: 600; line-height: 17px; letter-spacing: -0.2px; white-space: nowrap; }
+  #title .l2 { font-size: 10.5px; font-weight: 500; line-height: 13px; color: rgba(255,255,255,0.92); letter-spacing: 0.1px; white-space: nowrap; }
+
+  #strip { position: absolute; left: 0; right: 0; top: 732px; height: 29px; }
+  #strip img { position: absolute; top: 0; height: 28px; object-fit: cover; }
+  #strip img.current { top: -1px; height: 30px; }
+
+  #share { left: 27px; top: 779px; width: 45px; height: 45px; }
+  #actions { left: 50%; transform: translateX(-50%); top: 779px; width: 150px; height: 45px; border-radius: 23px; display: flex; align-items: center; justify-content: space-around; padding: 0 12px; box-sizing: border-box; }
+  #trash { right: 27px; top: 779px; width: 45px; height: 45px; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="photo" alt="">
+  <svg id="scribbles" viewBox="0 0 393 852" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <div id="status">
+    <div id="clock"></div>
+    <div class="right">
+      <svg id="signal" width="18" height="12" viewBox="0 0 18 12"></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.2 5.6 8.7a3.4 3.4 0 0 1 4.8 0z" fill="#fff"/><path d="M3.3 6.4a6.6 6.6 0 0 1 9.4 0l-1.3 1.3a4.8 4.8 0 0 0-6.8 0z" fill="#fff"/><path d="M1 4.1a9.9 9.9 0 0 1 14 0l-1.3 1.3a8.1 8.1 0 0 0-11.4 0z" fill="#fff"/></svg>
+      <svg width="27" height="13" viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="23" height="12" rx="3.8" fill="none" stroke="rgba(255,255,255,0.4)"/><rect id="batteryFill" x="2" y="2" width="20" height="9" rx="2.4" fill="#fff"/><path d="M25 4.4v4.2a2.2 2.2 0 0 0 0-4.2z" fill="rgba(255,255,255,0.45)"/></svg>
+    </div>
+  </div>
+
+  <div id="back" class="glass circle"><svg width="12" height="20" viewBox="0 0 12 20"><path d="M10 2 2 10l8 8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div id="title" class="glass"><div class="l1" id="l1"></div><div class="l2" id="l2"></div></div>
+  <div id="more" class="glass circle"><svg width="20" height="4" viewBox="0 0 20 4"><circle cx="2" cy="2" r="2" fill="#fff"/><circle cx="10" cy="2" r="2" fill="#fff"/><circle cx="18" cy="2" r="2" fill="#fff"/></svg></div>
+
+  <div id="strip"></div>
+
+  <div id="share" class="glass circle"><svg width="18" height="23" viewBox="0 0 18 23" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 8.5H3.2A1.7 1.7 0 0 0 1.5 10.2v9.6a1.7 1.7 0 0 0 1.7 1.7h11.6a1.7 1.7 0 0 0 1.7-1.7v-9.6a1.7 1.7 0 0 0-1.7-1.7h-2.3"/><path d="M9 14.5V1.8M5 5.6 9 1.6l4 4"/></svg></div>
+  <div id="actions" class="glass">
+    <svg width="22" height="20" viewBox="0 0 22 20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><path d="M11 18.6S1.4 12.8 1.4 6.4A4.8 4.8 0 0 1 11 4.3a4.8 4.8 0 0 1 9.6 2.1c0 6.4-9.6 12.2-9.6 12.2z"/></svg>
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="11" cy="11" r="9.6"/><path d="M11 10v6M9 16h4M9 10h2" stroke-linecap="round"/><circle cx="11" cy="6.6" r="1.1" fill="#fff" stroke="none"/></svg>
+    <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 3h19M1.5 9h19M1.5 15h19"/><circle cx="14" cy="3" r="2" fill="#000"/><circle cx="7" cy="9" r="2" fill="#000"/><circle cx="12" cy="15" r="2" fill="#000"/></svg>
+  </div>
+  <div id="trash" class="glass circle"><svg width="19" height="22" viewBox="0 0 19 22" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 4.5h16.6M6.5 4.5V2.6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1.9M3 4.5l1 14.8a1.6 1.6 0 0 0 1.6 1.5h7.8a1.6 1.6 0 0 0 1.6-1.5L16 4.5M7.3 8.5v8.5M11.7 8.5v8.5"/></svg></div>
+</div>
+
+<script>
+const q = new URLSearchParams(location.search)
+document.getElementById('clock').textContent = q.get('clock') || '2:21'
+document.getElementById('l1').textContent = q.get('place') || 'Bethlehem'
+document.getElementById('l2').textContent = q.get('when') || 'October 21  10:12 AM'
+const battery = Number(q.get('battery') || 72)
+document.getElementById('batteryFill').setAttribute('width', String(Math.max(1.5, battery / 100 * 20)))
+const bars = Number(q.get('signal') || 4)
+document.getElementById('signal').innerHTML = [0, 1, 2, 3].map((i) => {
+  const h = 3.2 + i * 2.6
+  return `<rect x="${i * 4.6}" y="${11.8 - h}" width="3.1" height="${h}" rx="0.9" fill="${i < bars ? '#fff' : 'rgba(255,255,255,0.32)'}"/>`
+}).join('')
+
+let seed = Number(q.get('seed') || 7)
+const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646 }
+
+const photo = document.getElementById('photo')
+photo.src = q.get('img')
+
+function layoutPhoto() {
+  const h = 393 * photo.naturalHeight / photo.naturalWidth
+  photo.style.height = h + 'px'
+  photo.style.top = ((852 - h) / 2) + 'px'
+  return { scale: 393 / photo.naturalWidth, top: (852 - h) / 2 }
+}
+
+function scribble(face, fit) {
+  const cx = (face.x + face.w / 2) * fit.scale, cy = fit.top + (face.y + face.h / 2) * fit.scale
+  const rx = face.w * fit.scale * 0.68, ry = face.h * fit.scale * 0.66
+  const width = Math.max(2.2, Math.min(rx, ry) * 0.36)
+  const wobble = [rand() * 6.28, rand() * 6.28, 0.1 + rand() * 0.08]
+  const edge = (a) => 1 + wobble[2] * Math.sin(3 * a + wobble[0]) + 0.07 * Math.sin(5 * a + wobble[1])
+
+  function chord(theta, v) {
+    const ux = Math.cos(theta), uy = Math.sin(theta), vx = -uy, vy = ux
+    const hits = []
+    for (let t = -2.2 * Math.max(rx, ry); t <= 2.2 * Math.max(rx, ry); t += 0.6) {
+      const x = ux * t + vx * v, y = uy * t + vy * v
+      const a = Math.atan2(y / ry, x / rx)
+      if ((x / rx) ** 2 + (y / ry) ** 2 <= edge(a) ** 2) hits.push([x, y])
+    }
+    return hits.length ? [hits[0], hits[hits.length - 1]] : null
+  }
+
+  function burst(theta, spacing) {
+    const R = Math.max(rx, ry) * 1.25
+    const pts = []
+    let flip = rand() < 0.5
+    for (let v = -R; v <= R; v += spacing * (0.75 + rand() * 0.5)) {
+      const c = chord(theta, v)
+      if (!c) continue
+      const [a, b] = flip ? [c[1], c[0]] : c
+      const over = rand() < 0.18 ? 1.12 + rand() * 0.15 : 0.92 + rand() * 0.12
+      pts.push([b[0] * over + (rand() - 0.5) * width * 0.5, b[1] * over + (rand() - 0.5) * width * 0.5])
+      flip = !flip
+      if (!pts.length || rand() < 0.5) pts.push([a[0] * (0.95 + rand() * 0.1), a[1] * (0.95 + rand() * 0.1)])
+    }
+    if (pts.length < 2) return ''
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`
+    for (let i = 1; i < pts.length; i++) {
+      const [px, py] = pts[i - 1], [x, y] = pts[i]
+      const bend = (rand() - 0.5) * width * 1.6
+      d += ` Q${((px + x) / 2 + bend).toFixed(1)},${((py + y) / 2 - bend * 0.6).toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`
+    }
+    return d
+  }
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+  g.setAttribute('transform', `translate(${cx.toFixed(1)},${cy.toFixed(1)}) rotate(${((rand() - 0.5) * 30).toFixed(1)})`)
+  const base = rand() * Math.PI
+  const bursts = [[base, width * 0.62, 1], [base + 1.1 + rand() * 0.4, width * 0.7, 0.85], [base + 2.2 + rand() * 0.4, width * 0.8, 0.75]]
+  for (const [theta, spacing, thick] of bursts) {
+    const d = burst(theta, spacing)
+    if (!d) continue
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    p.setAttribute('d', d)
+    p.setAttribute('fill', 'none')
+    p.setAttribute('stroke', q.get('pen') || '#ff3b30')
+    p.setAttribute('stroke-width', (width * thick).toFixed(1))
+    p.setAttribute('stroke-linecap', 'round')
+    p.setAttribute('stroke-linejoin', 'round')
+    g.appendChild(p)
+  }
+  document.getElementById('scribbles').appendChild(g)
+}
+
+function strip() {
+  const thumbs = JSON.parse(q.get('thumbs') || '[]')
+  const current = Number(q.get('current') || Math.floor(thumbs.length / 2))
+  const el = document.getElementById('strip')
+  const small = 19.5, big = 29, gap = 2, margin = 8
+  let x = 196.5 - big / 2 - margin
+  for (let i = current - 1; i >= 0 && x > -small; i--) { x -= small; add(thumbs[i], x, small, false); x -= gap }
+  add(q.get('img'), 196.5 - big / 2, big, true)
+  x = 196.5 + big / 2 + margin
+  for (let i = current + 1; i < thumbs.length && x < 393; i++) { add(thumbs[i], x, small, false); x += small + gap }
+  function add(src, left, width, cur) {
+    if (!src) return
+    const im = document.createElement('img')
+    im.src = src
+    im.style.left = left + 'px'
+    im.style.width = width + 'px'
+    if (cur) im.className = 'current'
+    el.appendChild(im)
+  }
+}
+
+photo.onload = () => {
+  const fit = layoutPhoto()
+  for (const f of JSON.parse(q.get('faces') || '[]')) scribble(f, fit)
+  strip()
+  document.fonts.ready.then(() => setTimeout(() => { document.body.dataset.ready = '1' }, 300))
+}
+</script>
+</body>
+</html>

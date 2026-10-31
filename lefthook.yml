@@ -1,0 +1,70 @@
+pre-commit:
+  commands:
+    noComments:
+      run: bun run check:noComments
+
+    twikitTransport:
+      run: bun run check:twikitTransport
+
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
+
+    platforms:
+      run: bun run check:platforms
+
+    layout:
+      run: bun run check:layout
+
+    commitLog:
+      run: node scripts/commitLog/commitLog.mjs
+
+    browserParity:
+      run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
+
+    useCases:
+      run: bun run check:useCases
+
+pre-push:
+  parallel: false
+  commands:
+    noComments:
+      run: bun run check:noComments
+
+    twikitTransport:
+      run: bun run check:twikitTransport
+
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
+
+    platforms:
+      run: bun run check:platforms
+
+    naming:
+      run: bun run check:naming
+
+    layout:
+      run: bun run check:layout
+
+    browserParity:
+      run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
+
+    typecheck:
+      run: bun run typecheck
+
+    test:
+      run: bun test
+
+    facebookClientDocs:
+      run: bun run check:facebookClientDocs

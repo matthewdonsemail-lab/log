@@ -1,0 +1,28 @@
+{
+ "log": {
+  "entries": [
+   {
+    "request": {
+     "method": "POST",
+     "url": "https://www.facebook.com/api/graphql/",
+     "postData": {
+      "mimeType": "application/x-www-form-urlencoded",
+      "params": [
+       {
+        "name": "fb_api_req_friendly_name",
+        "value": "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+       }
+      ]
+     }
+    },
+    "response": {
+     "status": 200,
+     "content": {
+      "mimeType": "text/html; charset=\"utf-8\"",
+      "text": "{\"data\":{\"node\":{\"__typename\":\"Group\",\"id\":\"3549906855288164\",\"new_members\":{\"edges\":[{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100009167217962\",\"name\":\"Gary Bousquet\",\"url\":\"https://www.facebook.com/gary.bousquet.576457\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Owner at NEED-it-GONE 4Seasons Services LLC\"}}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595686440309\",\"name\":\"Moving Hauling Deliveries\",\"url\":\"https://www.facebook.com/profile.php?id=61595686440309\",\"profile_plus_category_display_name\":\"Home removal company\",\"follower_count\":0,\"bio_text\":{\"text\":\"Montgomery, Alabama\"}}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61594976551486\",\"name\":\"George Bruce\",\"url\":\"https://www.facebook.com/profile.php?id=61594976551486\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Washington D.C.\"}}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595337106979\",\"name\":\"Junk Ninja\",\"url\":\"https://www.facebook.com/profile.php?id=61595337106979\",\"profile_plus_category_display_name\":\"Product/service\",\"follower_count\":1,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61593943073686\",\"name\":\"Thabile Giqwa\",\"url\":\"https://www.facebook.com/profile.php?id=61593943073686\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100003196268976\",\"name\":\"Michael Baldwin\",\"url\":\"https://www.facebook.com/michael.baldwin.900\",\"profile_plus_category_display_name\":\"Digital creator\",\"follower_count\":1208,\"bio_text\":{\"text\":\"Works at Self-employed\"}}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61593672886379\",\"name\":\"Shamim Hossain\",\"url\":\"https://www.facebook.com/profile.php?id=61593672886379\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Dhaka, Bangladesh\"}}},{\"join_status_text\":{\"text\":\"Joined on Wednesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61594989200813\",\"name\":\"Joseph Damifunre\",\"url\":\"https://www.facebook.com/profile.php?id=61594989200813\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100090559526132\",\"name\":\"William Szozda\",\"url\":\"https://www.facebook.com/william.szozda.2025\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100002289204232\",\"name\":\"Gary Hollie\",\"url\":\"https://www.facebook.com/yunggzz.getnit\",\"profile_plus_category_display_name\":\"Digital creator\",\"follower_count\":961,\"bio_text\":{\"text\":\"Valley View High School (Ontario, California)\"}}}],\"page_info\":{\"has_next_page\":true,\"end_cursor\":\"AQHTENtLJm078h7kgWIEr091XlmTtPx2NTOg0Kgxap0brxQNT24iwI_mpedfa-ckek_h-P9cGYpXUipp80RE-iY1Yg\"}}}},\"extensions\":{\"is_final\":true}}"
+     }
+    }
+   }
+  ]
+ }
+}

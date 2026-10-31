@@ -1,0 +1,38 @@
+  - dialog "Choose two-factor authentication method" [ref=e60]:
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - heading "Choose two-factor authentication method" [active] [level=2] [ref=e69]:
+          - generic [ref=e70]: Choose two-factor authentication method
+        - button "Close" [ref=e72] [cursor=pointer]:
+      - generic [ref=e81]:
+        - generic [ref=e83]:
+          - heading "Choose a way to confirm it’s you" [level=2] [ref=e84]:
+            - generic [ref=e85]: Choose a way to confirm it’s you
+          - generic [ref=e89]: These are your available confirmation methods.
+        - radiogroup "Number options" [ref=e94]:
+          - generic [ref=e97]:
+            - generic [ref=e106]:
+              - generic [ref=e107]: Passkey
+              - generic [ref=e108]: Use face scan, fingerprint or screen lock.
+            - radio "Passkey Use face scan, fingerprint or screen lock." [checked] [ref=e113] [cursor=pointer]
+          - separator [ref=e114]
+          - generic [ref=e117]:
+            - generic [ref=e131]:
+              - generic [ref=e132]: Authentication app
+              - generic [ref=e133]: Get a code from your authentication app.
+            - radio "Authentication app Get a code from your authentication app." [ref=e137] [cursor=pointer]
+          - separator [ref=e138]
+          - generic [ref=e141]:
+            - generic [ref=e152]:
+              - generic [ref=e153]: Backup code
+              - generic [ref=e154]: Use a backup code you saved.
+            - radio "Backup code Use a backup code you saved." [ref=e158] [cursor=pointer]
+        - generic [ref=e163]:
+          - generic [ref=e170]:
+            - heading "Need another option?" [level=2] [ref=e171]:
+              - generic [ref=e172]: Need another option?
+            - generic [ref=e174]:
+              - button "account recovery" [ref=e175] [cursor=pointer]
+              - text: .
+      - button "Continue" [ref=e184] [cursor=pointer]:
+        - generic [ref=e187]: Continue

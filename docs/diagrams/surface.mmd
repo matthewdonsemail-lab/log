@@ -1,0 +1,44 @@
+%% How a call reaches log-cli. From a shell or over MCP, both run the same commands through `runCli`, write the same live log, and pass through the same hooks. `commandEngine` sends each command to the platform's direct API or to the account's browser.
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart LR
+  agent["Agent (Claude Code, Codex)"]
+  matt["matt, in a terminal"]
+  shell["Bash / PowerShell / Monitor"]
+  mcp["MCP server log: 114 command tools + saved flows"]
+  bin["bin/log.ts"]
+  runCli["runCli: 63 commands (COMMANDS)"]
+  live[("~/.logCli/mcp/day.log: the live log")]
+  engine{"commandEngine: DIRECT_ROUTES"}
+  direct["Direct-API engine: fbk, twikit, rdvwr, endcord (vendor/), the account's saved session, a governor per account"]
+  browser["The account's browser (one per day, rule 35)"]
+  api["The platform's internal API: its answer decides (rule 73)"]
+  twenty[("Twenty: socialAccounts.sessionState, refreshed cookies")]
+  agent --> shell
+  matt --> bin
+  shell --> bin
+  agent -->|mcp__log__tool| mcp
+  bin --> runCli
+  mcp -->|runToolCall| runCli
+  runCli --> engine
+  engine -->|direct API| direct
+  engine -->|browser| browser
+  direct --> api
+  browser --> api
+  direct --> twenty
+  bin -->|cli:command lines| live
+  mcp -->|tool lines| live
+  live -.->|tail -f, under Monitor| agent
+  pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
+  post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
+  post1{{"PostToolUse: pageState.ts"}} -.->|after| agent
+  turn0{{"SessionStart: pageState.ts"}} -.-> agent
+  turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
+  turn2{{"SessionStart: storage.ts"}} -.-> agent
+  turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
+  turn4{{"SessionStart: engines.ts"}} -.-> agent
+  turn5{{"UserPromptSubmit: engines.ts"}} -.-> agent
+  turn6{{"SessionStart: knowledge.ts"}} -.-> agent
+  turn7{{"SessionStart: inbox.ts"}} -.-> agent
+  turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
+  turn9{{"Stop: pageState.ts"}} -.-> agent
+  browser -.->|each step's snapshot| post0

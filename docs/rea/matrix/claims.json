@@ -1,0 +1,12 @@
+[
+  { "id": "noReaOnMeta", "statement": "The Parallel meta report found no public implementation that uses morluto/rea against Facebook, Instagram, WhatsApp, Messenger, the Graph API, or Marketplace." },
+  { "id": "reaIsChromeCdp", "statement": "REA's documented page inspection attaches to a Chrome-family browser over the Chrome DevTools Protocol, not to Firefox or Camoufox." },
+  { "id": "harNeverFetches", "statement": "rea inspect-web-network-capture is offline: recorded URLs are never fetched, and it starts no browser and no proxy listener." },
+  { "id": "humanizeIsFloat", "statement": "Camoufox humanize must be a float in seconds. A boolean hangs mouse.move. log-cli sets 1.5 in python/browser/visibleBrowser.py." },
+  { "id": "cdpClearsPlatform", "statement": "REA's browser-observation doc says Chromium can clear another client's navigator.platform emulation when REA's CDP session disconnects." },
+  { "id": "listaroIsNotCamoufox", "statement": "Listaro's live poster attaches Playwright to AdsPower Chromium with connectOverCDP. It is not the Camoufox publish path." },
+  { "id": "adapterDoesNotCall", "statement": "facebook-camofox-client NativeResponseAdapter listens to responses the page already made and does not construct or replay requests." },
+  { "id": "canvasAndGpuOpen", "statement": "Of the 22 identity-leak vectors, canvas hash churn and shared WebGL pixels are still open decisions. REA cannot change the pixels." },
+  { "id": "harFitsRea", "statement": "A HAR written by Playwright is an input rea inspect-web-network-capture documents (HAR 1.2), including a note that Playwright's tracer can emit a null postData.text." },
+  { "id": "forkHasNoPublicCase", "statement": "No public REA release documents a Juggler or Camoufox browser provider we could turn on instead of writing one." }
+]

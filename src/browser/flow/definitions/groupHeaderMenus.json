@@ -1,0 +1,208 @@
+{
+  "name": "groupHeaderMenus",
+  "summary": "Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked",
+  "params": [
+    {
+      "name": "groupId",
+      "kind": "text",
+      "description": "the group's numeric id, from its URL"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotogroups",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/{groupId}/",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 27391,
+        "reaEvidenceId": "ev_08ee3372ed9790e46019fd8699391203ada2c19f39482b50711f064ea98496d9",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometNotificationsDropdownQuery",
+          "useGroupsCometVisitMutation",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickSearchWithinThisGroup",
+      "action": "click",
+      "role": "button",
+      "name": "Search within this group",
+      "recorded": {
+        "step": "12_clickroleButtonSearchWithin",
+        "ms": 8391,
+        "reaEvidenceId": "ev_c69ea049a10589fdb647d3c7949430f2a8e4e70940dd5ed3749256b3d3dd2024",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "GroupsEntityScopedCometTypeaheadDialogQuery",
+          "withSearchCometTypeaheadSERPWarmCallDecoratorQuery",
+          "useGroupsEntityScopedRecentSearchAndExploreDataSourceQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_pressEscape",
+      "action": "press",
+      "args": [
+        "Escape"
+      ],
+      "recorded": {
+        "step": "13_pressEscape",
+        "ms": 9265,
+        "reaEvidenceId": "ev_a7b34caafa2bb28d05cfa086aff52ebe27e668842d01b2f5303ee7cd8f37425b",
+        "requests": [
+          "GroupsCometFeedRegularStoriesPaginationQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_clickMore",
+      "action": "click",
+      "role": "button",
+      "name": "More",
+      "recorded": {
+        "step": "14_clickroleButtonMore",
+        "ms": 9656,
+        "reaEvidenceId": "ev_ea31d5fcb66b56938cf3e695854f1909598db42cff680e1937e93558fd10011d",
+        "requests": [
+          "GroupsCometMoreActionMenuQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_pressEscape",
+      "action": "press",
+      "args": [
+        "Escape"
+      ],
+      "recorded": {
+        "step": "15_pressEscape",
+        "ms": 4875,
+        "reaEvidenceId": "ev_4a34d8c82a97cf8695516775f628febbf8ba954c822fefba2424c81feb4ac924",
+        "requests": []
+      }
+    },
+    {
+      "id": "s06_clickJoined",
+      "action": "click",
+      "role": "button",
+      "name": "Joined",
+      "recorded": {
+        "step": "16_clickroleButtonJoined",
+        "ms": 7422,
+        "reaEvidenceId": "ev_89a85c860ed225d74646ad675f858ead193d86f1572478a8dbf89c61decf2bdc",
+        "requests": [
+          "GroupsCometJoinedActionMenuQuery"
+        ]
+      }
+    },
+    {
+      "id": "s07_pressEscape",
+      "action": "press",
+      "args": [
+        "Escape"
+      ],
+      "recorded": {
+        "step": "17_pressEscape",
+        "ms": 6078,
+        "reaEvidenceId": "ev_f6ef0b09eb192500908d5fee7c506f9e267ac35fd3e1d5efc4adac23bc7500e5",
+        "requests": []
+      }
+    },
+    {
+      "id": "s08_clickInvite",
+      "action": "click",
+      "role": "button",
+      "name": "Invite",
+      "recorded": {
+        "step": "18_clickroleButtonInvite",
+        "ms": 8125,
+        "reaEvidenceId": "ev_9c3d0701a87a7cfc7aa359f15bb7c71451660801abaaafe3ea2a510cf8fc4779",
+        "requests": [
+          "GroupsCometInviteFriendsDialogQuery",
+          "triggerGroupsCometHeaderInviteWithEmailExposureQuery",
+          "GroupsCometInviteFriendsCategorizedInviteSearchQuery"
+        ]
+      }
+    },
+    {
+      "id": "s09_pressEscape",
+      "action": "press",
+      "args": [
+        "Escape"
+      ],
+      "recorded": {
+        "step": "19_pressEscape",
+        "ms": 4750,
+        "reaEvidenceId": "ev_022dfecaaf2630a47762b81360075e77d48fcb99b5d1045603cf34b865a8c4fd",
+        "requests": []
+      }
+    },
+    {
+      "id": "s10_clickShareGroup",
+      "action": "click",
+      "role": "button",
+      "name": "Share group",
+      "expect": "useLinkSharingCreateWrappedUrlMutation",
+      "answers": [
+        {
+          "call": "useLinkSharingCreateWrappedUrlMutation",
+          "says": [
+            {
+              "answer": "data.xfb_create_share_url_wrapper.share_url_wrapper",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "20_clickroleButtonShareGroup",
+        "ms": 14656,
+        "reaEvidenceId": "ev_0b976565afc0e0dcd4479902f7a0ccaf454950c7e725d478ce5d1d717af6df68",
+        "requests": [
+          "UnifiedShareSheetMessengerSectionQuery",
+          "CometUnifiedShareSheetDialogQuery",
+          "CometLinkSharingInlineDisclosureCountQuery",
+          "useLinkSharingCreateWrappedUrlMutation",
+          "MAWFetchXMAData_fetchXmaPreviewDataQuery",
+          "useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery",
+          "useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
+          "useFeedComposerCometMentionsBootloadDataSourceQuery",
+          "useIncrementLinkSharingDisclosureImpressionCountMutation",
+          "MAWFetchXMAData_fetchXmaPreviewDataQuery"
+        ]
+      }
+    },
+    {
+      "id": "s11_pressEscape",
+      "action": "press",
+      "args": [
+        "Escape"
+      ],
+      "recorded": {
+        "step": "21_pressEscape",
+        "ms": 6235,
+        "reaEvidenceId": "ev_a332fef8abbb2405bb0087468f16b531cd6d7a306f7585641c9a0bb29a70b349",
+        "requests": [
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupHeaderMenus",
+    "account": "groupHeaderMenus",
+    "builtAt": "2026-10-20T15:51:59.614Z"
+  }
+}

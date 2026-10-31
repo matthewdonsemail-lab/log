@@ -1,0 +1,96 @@
+{
+  "name": "postComment",
+  "summary": "Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live).",
+  "params": [
+    {
+      "name": "comment",
+      "kind": "text",
+      "description": "typed into textbox \"Write a comment…\""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotoprofilePhp",
+      "action": "goto",
+      "url": "https://www.facebook.com/profile.php?id={uid}",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 20672,
+        "reaEvidenceId": "ev_74b042e2afc0256a1336d27b608b10b6cf9940721c6ed74f02030277b7b8c36e",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "ProfileCometTimelineFeedRefetchQuery",
+          "ProfileCometTilesFeedPaginationQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometNotificationsDropdownQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "ComposerStoryCreateMutation",
+          "CometHovercardQueryRendererQuery",
+          "ProfileCometAboutAppSectionQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_fillWriteAComment",
+      "action": "fill",
+      "role": "textbox",
+      "name": "Write a comment…",
+      "value": "{comment}",
+      "recorded": {
+        "step": "07_typeE2129",
+        "ms": 6500,
+        "reaEvidenceId": "ev_ccb036275699151565bb0c968034c2ac11d0b4097008f38a78bbd6eaa5c57783",
+        "requests": [
+          "ProfileCometAboutAppSectionQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery",
+          "useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
+          "CometUFIConversationGuideContainerQuery",
+          "CometUFILiveTypingBroadcastMutation_StartMutation"
+        ]
+      }
+    },
+    {
+      "id": "s03_clickPostComment",
+      "action": "click",
+      "role": "button",
+      "name": "Post comment",
+      "expect": "useCometUFICreateCommentMutation",
+      "answers": [
+        {
+          "call": "useCometUFICreateCommentMutation",
+          "says": [
+            {
+              "answer": "data.comment_create.feedback_comment_edge",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "08_clickroleButtonPostComment",
+        "ms": 17219,
+        "reaEvidenceId": "ev_73b85d5dd1461e566a801bdac3cf500cc122a6bd707b6d0d3bfde325f19fba7d",
+        "requests": [
+          "CometUFILiveTypingBroadcastMutation_StartMutation",
+          "CometUFILiveTypingBroadcastMutation_StopMutation",
+          "useCometUFICreateCommentMutation",
+          "CometUFILiveTypingBroadcastMutation_StartMutation",
+          "CometHovercardQueryRendererQuery",
+          "CometUFILiveTypingBroadcastMutation_StartMutation",
+          "CometUFILiveTypingBroadcastMutation_StopMutation"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T162343_61594063207669/sequences/postComment",
+    "account": "postComment",
+    "builtAt": "2026-10-20T16:35:31.915Z"
+  }
+}

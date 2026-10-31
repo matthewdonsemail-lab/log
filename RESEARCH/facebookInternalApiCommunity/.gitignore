@@ -1,0 +1,6 @@
+*.jsonl
+*.log
+*.sh
+*.mjs
+*.json
+names.txt

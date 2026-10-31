@@ -1,0 +1,170 @@
+{
+  "name": "warmupCreateAccessCheck",
+  "summary": "Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "11_gotoHttpsWwwFacebook",
+        "ms": 23593,
+        "reaEvidenceId": "ev_15ef310b804cb8c7a58466aac6cc548bcc38404e39d2ff4fc262e407975550df",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometFeedInlineComposerQuery",
+          "CometModernHomeFeedQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometMegaphoneRootQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery",
+          "StoriesTrayRectangularRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_dwell",
+      "action": "dwell",
+      "args": [
+        "2-4"
+      ],
+      "recorded": {
+        "step": "12_dwell24s",
+        "ms": 6516,
+        "reaEvidenceId": "ev_cac6289decfb3253c51e1027e560c200e106bfc6a4082824e5eb98be5222e709",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_gotomarketplaceCreateItem",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/create/item",
+      "answers": [
+        {
+          "call": "page /marketplace/create/item",
+          "says": [
+            {
+              "answer": "fields.marketplace_new_seller_can_post_item",
+              "is": true,
+              "code": "marketplaceMayNotPost"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.country_alpha_two",
+              "home": "country",
+              "code": "marketplaceLocationWrong"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "13_gotoHttpsWwwFacebook",
+        "ms": 23625,
+        "reaEvidenceId": "ev_74fbe25295d2e676e928184ac9e635f7ff232d3a746fcfa4cf9126e04dcf1c8e",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "useMarketplaceComposerAttributesQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s04_dwell",
+      "action": "dwell",
+      "args": [
+        "2-3"
+      ],
+      "recorded": {
+        "step": "14_dwell23s",
+        "ms": 5797,
+        "reaEvidenceId": "ev_95fd02e1be8e43e6f24e30fcfeca2c0fd3ce8800d3c94f5888efe894fc5a7b5e",
+        "requests": []
+      }
+    },
+    {
+      "id": "s05_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "15_gotoHttpsWwwFacebook",
+        "ms": 21969,
+        "reaEvidenceId": "ev_3276a151a4de6a672c9404023f59d68d8f85faf182cfb6069eb2434ba905e5f7",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s06_scroll",
+      "action": "scroll",
+      "args": [
+        "1",
+        "300-600"
+      ],
+      "recorded": {
+        "step": "16_scroll1X300",
+        "ms": 9172,
+        "reaEvidenceId": "ev_c4a7e7c02d98bb8758f3b0c84ebcc60360a4d4a500c87f5fb7d63b142b9de475",
+        "requests": []
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T09:20:18.336Z"
+  }
+}

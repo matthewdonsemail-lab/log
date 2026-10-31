@@ -1,0 +1,262 @@
+# usePseudoBlockedUserInterstitialF3Query
+
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+
+| | |
+| --- | --- |
+| Domain | checkpoint |
+| Kind | query |
+| doc_id | `40106045909008763` |
+| Path | `/api/graphql/` |
+| Sends | — |
+| Reads | — |
+| Called from | `usePseudoBlockedUserInterstitial` |
+| rea | `ev_0af321f259e00b80718e9782609166cc4663c54cd29bf4e28174a8254484422f` |
+
+Seen 196 time(s) in 44 run(s).
+
+| Action | Our step | Times | Status | Took | After step start | Errors |
+| --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 4 | 200 | 341–388 ms | 6785–20768 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 366–487 ms | 4024–5358 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 364–456 ms | 3153–5551 ms | — |
+| warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 345 ms | 4532 ms | — |
+| warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 353 ms | 2407 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 395–505 ms | 3059–15128 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 354–392 ms | 3039–10375 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 355–359 ms | 2857–3123 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 342–395 ms | 2343–3720 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 357–369 ms | 2519–8339 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 405–551 ms | 3814–4635 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 396–485 ms | 2319–2457 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 397–541 ms | 2638–3630 ms | — |
+| warmup | scroll: +459px in 11 wheel steps, 500 ms | 1 | 200 | 356 ms | 1136 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 376 ms | 4237 ms | — |
+| warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 371 ms | 1778 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 7 | 200 | 347–464 ms | 3118–6294 ms | — |
+| inspect | step 6: scroll 2 x 700px | 1 | 200 | 435 ms | 710 ms | — |
+| inspect | step 7: scroll 2 x 700px | 1 | 200 | 427 ms | 427 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 394 ms | 6544 ms | — |
+| inspect | step 1: goto /profile.php | 1 | 200 | 428 ms | 7454 ms | — |
+| inspect | step 7: clickRole tab "…" | 1 | 200 | 559 ms | 2247 ms | — |
+| inspect | step 11: clickRole tab "…" | 1 | 200 | 382 ms | 2960 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 354 ms | 5734 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 1352 ms | 5136 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 506 ms | 6059 ms | — |
+| inspect | step 1: goto /groups/<id> | 2 | 200 | 348–386 ms | 5609–6614 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 477–594 ms | 5761–8804 ms | — |
+| inspect | step 7: goto / | 2 | 200 | 362–453 ms | 4922–4944 ms | — |
+| inspect | step 34: goto /marketplace/ | 1 | 200 | 471 ms | 6052 ms | — |
+| inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 470 ms | 3584 ms | — |
+| inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 452 ms | 1989 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 809 ms | 7820 ms | — |
+| inspect | step 22: goto /marketplace/ | 1 | 200 | 550 ms | 6211 ms | — |
+| inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 463 ms | 4047 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 450 ms | 5222 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 464 ms | 5295 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 332–388 ms | 3372–8697 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 357 ms | 4001 ms | — |
+| inspect | step 14: goto /reel/<id> | 1 | 200 | 1721 ms | 4126 ms | — |
+| inspect | step 23: goto /reel/<id> | 1 | 200 | 370 ms | 4961 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 391 ms | 5831 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 653 ms | 5247 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 2153 ms | 2827 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 3020 ms | 2940 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1315 ms | 5511 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 334 ms | 5589 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 344 ms | 3256 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 380–1541 ms | 6854–10003 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 882 ms | 3697 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 823 ms | 3811 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 594 ms | 2814 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 386–586 ms | 6118–9996 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 602 ms | 5300 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 383 ms | 2906 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 394 ms | 4498 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–436 ms | 6897–19747 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 2 | 200 | 357–602 ms | 5300–6297 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 569 ms | 5476 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 772 ms | 2437 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 725 ms | 4757 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 524 ms | 2742 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1227 ms | 2498 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 678 ms | 2523 ms | — |
+| inspect | step 1: goto /marketplace/status | 4 | 200 | 339–536 ms | 6064–9500 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 4 | 200 | 356–566 ms | 3626–4589 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 11 | 200 | 347–789 ms | 3598–1357574 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1197 ms | 3044 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2606 ms | 2300 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2477 ms | 3001 ms | — |
+| inspect | step 4: goto /marketplace/status | 2 | 200 | 401–780 ms | 3431–4379 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 2 | 200 | 445–800 ms | 2219–2291 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 4 | 200 | 381–889 ms | 2140–1515276 ms | — |
+| inspect | step 2: goto /marketplace/ | 1 | 200 | 369 ms | 6353 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 808 ms | 8215 ms | — |
+| flow | step 1: goto /marketplace/ | 4 | 200 | 440–683 ms | 4256–6749 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 377–451 ms | 3189–5293 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 389 ms | 4152 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 421 ms | 3410 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 545 ms | 5526 ms | — |
+| warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 399 ms | 285 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 352 ms | 1568 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 358 ms | 3048 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 364 ms | 3743 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 610 ms | 5748 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 497 ms | 5280 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 366 ms | 6640 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 2 | 200 | 324–352 ms | 5831–8899 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 551 ms | 4619 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 335 ms | 4182 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 484 ms | 6327 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 421 ms | 11396 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 373 ms | 9644 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 344 ms | 3396 ms | — |
+| host | step 7: goto /me | 1 | 200 | 360 ms | 3993 ms | — |
+| host | step 12: goto /me | 1 | 200 | 386 ms | 3988 ms | — |
+| host | step 17: goto /me | 1 | 200 | 405 ms | 3714 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 430–481 ms | 2988–5222 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 567 ms | 22309 ms | — |
+| host | step 28: clickRole button "…" | 1 | 200 | 358 ms | 8278 ms | — |
+| host | step 31: goto /marketplace/status | 1 | 200 | 381 ms | 6221 ms | — |
+| host | step 32: goto /me | 1 | 200 | 378 ms | 5580 ms | — |
+| host | step 40: goto /marketplace/create/item | 1 | 200 | 533 ms | 8052 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 414 ms | 6254 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 430–447 ms | 616772–657502 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 201–475 ms | 3624–4921 ms | — |
+| host | step 4: goto /marketplace/status | 2 | 200 | 189–215 ms | 3036–5708 ms | — |
+| host | step 5: goto /me | 1 | 200 | 160 ms | 5054 ms | — |
+| host | step 12: goto /marketplace/create/item | 1 | 200 | 176 ms | 9279 ms | — |
+| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 180 ms | 6405 ms | — |
+| host | step 16: goto / | 1 | 200 | 297 ms | 5510 ms | — |
+| host | step 19: goto /marketplace/ | 1 | 200 | 168 ms | 3466 ms | — |
+| host | step 22: goto /marketplace/ | 1 | 200 | 171 ms | 2744 ms | — |
+| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 173 ms | 1143 ms | — |
+| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 173 ms | 1219 ms | — |
+| host | step 26: goto /marketplace/ | 1 | 200 | 178 ms | 3353 ms | — |
+| host | step 28: goto /marketplace/create/item | 1 | 200 | 178 ms | 2179 ms | — |
+| host | step 30: goto /marketplace/ | 1 | 200 | 168 ms | 2850 ms | — |
+| host | step 32: goto /marketplace/ | 1 | 200 | 329 ms | 2735 ms | — |
+| host | step 34: goto /marketplace/you/selling | 1 | 200 | 163 ms | 4815 ms | — |
+| host | step 36: goto /marketplace/ | 1 | 200 | 167 ms | 2099 ms | — |
+| host | step 38: goto /marketplace/you/selling | 1 | 200 | 167 ms | 2292 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 171 ms | 3988 ms | — |
+| host | step 18: clickRole button "…" | 1 | 200 | 195 ms | 9809 ms | — |
+| host | step 21: goto /marketplace/status | 1 | 200 | 171 ms | 8993 ms | — |
+
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 475 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": true
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793037999958,
+      "time_at_flush_ms": 1793037999984
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 189 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": true
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038028391,
+      "time_at_flush_ms": 1793038028416
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 160 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": true
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038043594,
+      "time_at_flush_ms": 1793038043618
+    },
+    "is_final": true
+  }
+}
+```
+
+<!-- facts:end -->
+
+## What it does
+
+Asks whether the account is "pseudo-blocked" (restricted, shown an interstitial instead of the page). It reads nothing back on a healthy account. It fires on every signed-in page: 11 of our runs, 0.3 s each.
+
+## What our machine does with it
+
+Nothing waits for it today. It is the cleanest health signal we have: every signed-in run sends it, so its answer can be compared across runs and accounts.
+
+## What can go wrong
+
+If its response ever carries data, Facebook is restricting the account: stop the run and read it back (rule 25). Not yet seen with data. A missing sighting on a signed-in page would mean the page did not finish loading.
