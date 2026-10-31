@@ -1170,6 +1170,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     or uncovered work stops the commit until the page is updated or
     written and staged.
 
+96. 2026-10-30 · mandeep: LinkedIn goes out looking like a browser, the
+    way X does (rule 81). `vendor/openLinkedinApi` reaches LinkedIn only
+    through one curl_cffi `Session` in `open_linkedin_api/transport.py`,
+    pinned to one impersonation target (`IMPERSONATE`, `chrome150`, the
+    closest to the Chrome its cookies come from), sending the target's own
+    user agent, never the library's fixed one or plain `requests`.
+    `python/checks/linkedinTransport.py` refuses anything else (`bun run
+    check:linkedinTransport`, pre-commit and pre-push). Every LinkedIn call
+    runs through the account's governor (`python/platformKit/engine.py`), and
+    a LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not
+    40 (rule 91).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

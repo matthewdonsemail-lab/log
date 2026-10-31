@@ -1,8 +1,7 @@
-import requests
 import logging
 from open_linkedin_api.cookie_repository import CookieRepository
+from open_linkedin_api.transport import COOKIE_DOMAIN, Cookies, new_session
 from bs4 import BeautifulSoup, Tag
-from requests.cookies import RequestsCookieJar
 import json
 
 logger = logging.getLogger(__name__)
@@ -25,13 +24,6 @@ class Client(object):
     LINKEDIN_BASE_URL = "https://www.linkedin.com"
     API_BASE_URL = f"{LINKEDIN_BASE_URL}/voyager/api"
     REQUEST_HEADERS = {
-        "user-agent": " ".join(
-            [
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5)",
-                "AppleWebKit/537.36 (KHTML, like Gecko)",
-                "Chrome/83.0.4103.116 Safari/537.36",
-            ]
-        ),
         # "accept": "application/vnd.linkedin.normalized+json+2.1",
         "accept-language": "en-AU,en-GB;q=0.9,en-US;q=0.8,en;q=0.7",
         "x-li-lang": "en_US",
@@ -51,8 +43,7 @@ class Client(object):
     def __init__(
         self, *, debug=False, refresh_cookies=False, proxies={}, cookies_dir: str = ""
     ):
-        self.session = requests.session()
-        self.session.proxies.update(proxies)
+        self.session = new_session(proxies)
         self.session.headers.update(Client.REQUEST_HEADERS)
         self.proxies = proxies
         self.logger = logger
@@ -68,17 +59,21 @@ class Client(object):
         """
         self.logger.debug("Requesting new cookies.")
 
-        res = requests.get(
+        res = self.session.get(
             f"{Client.LINKEDIN_BASE_URL}/uas/authenticate",
             headers=Client.AUTH_REQUEST_HEADERS,
-            proxies=self.proxies,
         )
         return res.cookies
 
-    def _set_session_cookies(self, cookies: RequestsCookieJar):
+    def _set_session_cookies(self, cookies):
         """
         Set cookies of the current session and save them to a file named as the username.
         """
+        if isinstance(cookies, dict):
+            jar = Cookies()
+            for name, value in cookies.items():
+                jar.set(name, value, domain=COOKIE_DOMAIN, path="/")
+            cookies = jar
         self.session.cookies = cookies
         self.session.headers["csrf-token"] = self.session.cookies["JSESSIONID"].strip(
             '"'
@@ -107,11 +102,9 @@ class Client(object):
 
         Store this data in self.metadata
         """
-        res = requests.get(
+        res = self.session.get(
             f"{Client.LINKEDIN_BASE_URL}",
-            cookies=self.session.cookies,
             headers=Client.AUTH_REQUEST_HEADERS,
-            proxies=self.proxies,
         )
 
         soup = BeautifulSoup(res.text, "lxml")
@@ -149,12 +142,10 @@ class Client(object):
             "JSESSIONID": self.session.cookies["JSESSIONID"],
         }
 
-        res = requests.post(
+        res = self.session.post(
             f"{Client.LINKEDIN_BASE_URL}/uas/authenticate",
             data=payload,
-            cookies=self.session.cookies,
             headers=Client.AUTH_REQUEST_HEADERS,
-            proxies=self.proxies,
         )
 
         data = res.json()

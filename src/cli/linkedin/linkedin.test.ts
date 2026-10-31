@@ -7,6 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { LINKEDIN_PLATFORM } from "../../linkedin/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
+import { writesPerDayOf } from "../../directApi/engine/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -44,6 +45,16 @@ describe("log linkedin session check", () => {
     expect(r.code).toBe(1);
     expect(r.err).toContain("accountNotFound");
     expect(r.calls).toEqual([]);
+  });
+
+  test("a LinkedIn account writes at most 10 times a day", () => {
+    expect(writesPerDayOf("linkedin")).toBe(10);
+  });
+
+  test("the engine reaches LinkedIn through curl_cffi pinned to Chrome, never plain requests", () => {
+    const probe = spawnSync(process.env.LOG_PYTHON || "python", ["-c", "import sys; sys.path[:0]=['python','vendor/openLinkedinApi']; from linkedinApi.engine import session_of; s=session_of({'li_at':'x','JSESSIONID':'ajax:1'}).client.session; print(type(s).__module__, s.impersonate, s.headers.get('user-agent'))"], { encoding: "utf8" });
+    if (probe.error) return;
+    expect(probe.stdout.trim()).toBe("curl_cffi.requests.session chrome150 None");
   });
 
   test("the engine refuses cookies without li_at and JSESSIONID before calling LinkedIn", () => {

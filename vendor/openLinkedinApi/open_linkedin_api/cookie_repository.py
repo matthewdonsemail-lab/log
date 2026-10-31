@@ -2,7 +2,7 @@ import os
 import pickle
 import time
 import open_linkedin_api.settings as settings
-from requests.cookies import RequestsCookieJar
+from http.cookiejar import CookieJar
 from typing import Optional
 
 
@@ -32,7 +32,7 @@ class CookieRepository(object):
         with open(cookiejar_filepath, "wb") as f:
             pickle.dump(cookies, f)
 
-    def get(self, username: str) -> Optional[RequestsCookieJar]:
+    def get(self, username: str) -> Optional[CookieJar]:
         cookies = self._load_cookies_from_cache(username)
         if cookies and not CookieRepository._is_token_still_valid(cookies):
             raise LinkedinSessionExpired
@@ -49,7 +49,7 @@ class CookieRepository(object):
         """
         return "{}{}.jr".format(self.cookies_dir, username)
 
-    def _load_cookies_from_cache(self, username: str) -> Optional[RequestsCookieJar]:
+    def _load_cookies_from_cache(self, username: str) -> Optional[CookieJar]:
         cookiejar_filepath = self._get_cookies_filepath(username)
         try:
             with open(cookiejar_filepath, "rb") as f:
@@ -59,7 +59,7 @@ class CookieRepository(object):
             return None
 
     @staticmethod
-    def _is_token_still_valid(cookiejar: RequestsCookieJar):
+    def _is_token_still_valid(cookiejar: CookieJar):
         _now = time.time()
         for cookie in cookiejar:
             if cookie.name == "JSESSIONID" and cookie.value:

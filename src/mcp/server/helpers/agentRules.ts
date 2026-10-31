@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 95;
+export const RULES_REVIEWED_THROUGH = 96;
 
 export const AGENTS_URI = "log://agents";
 
@@ -31,6 +31,7 @@ export const CORE_PRINCIPLES = [
   "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
   "25. Never act on an account in quick succession: every platform call goes through log-cli's own commands and their governor, never a hand-rolled script with an account's token or cookies; a 429 or a failed send stops the run with nothing retried and the next action waits for matt; a bulk read of a server, group or member list is its own session, never in the same one as sending; cold DMs go out a few a day, minutes apart, each new DM channel counted as a write; after a block, disable, captcha or cooldown nothing resumes on that account until matt says so. One person's X Chat is opened as X's app opens it (`twitterDms` with `with`), never by reading the whole inbox (rule 94).",
   "26. The work matt asks for again and again is a use case (docs/useCases/<platform>/<page>.md): how he asks for it, then its steps, each naming its tool. When he asks for work a use case covers, read it with `getGuide({ useCase })` and follow it step by step, never improvise; each tool names the use cases that call it. The pre-commit review asks SubQ whether this session's work left a page stale or uncovered (rule 95).",
+  "27. LinkedIn is reached only through vendor/openLinkedinApi's one curl_cffi Session pinned to Chrome (`IMPERSONATE`), never plain `requests`, and every call goes through the account's governor; a LinkedIn account writes at most 10 times a day (rule 96).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -110,8 +111,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordRead: [13, 63, 64, 73, 83, 94],
   discordWatch: [13, 26, 63, 64, 73, 83, 94],
   discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94],
-  linkedinSession: [13, 63, 64, 73, 83],
-  linkedinCookies: [13, 21, 63, 64, 73, 83],
+  linkedinSession: [13, 63, 64, 73, 83, 96],
+  linkedinCookies: [13, 21, 63, 64, 73, 83, 96],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

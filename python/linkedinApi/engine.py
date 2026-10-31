@@ -17,7 +17,6 @@ PLATFORM = "linkedin"
 LIBRARY = "vendor/openLinkedinApi"
 WRITES: tuple[str, ...] = ()
 SESSION_COOKIES = ("li_at", "JSESSIONID")
-COOKIE_DOMAIN = ".linkedin.com"
 
 
 def no_wait() -> None:
@@ -26,16 +25,12 @@ def no_wait() -> None:
 
 def session_of(cookies: dict[str, str]) -> Any:
     from open_linkedin_api import Linkedin
-    from requests.cookies import RequestsCookieJar
 
-    jar = RequestsCookieJar()
-    for name, value in cookies.items():
-        jar.set(name, value, domain=COOKIE_DOMAIN, path="/")
-    return Linkedin("", "", cookies=jar)
+    return Linkedin("", "", cookies=dict(cookies))
 
 
 def refreshed_of(api: Any, cookies: dict[str, str]) -> dict[str, str]:
-    now = {c.name: c.value for c in api.client.session.cookies}
+    now = {c.name: c.value for c in api.client.session.cookies.jar if c.value}
     return {k: v for k, v in now.items() if k in SESSION_COOKIES and cookies.get(k) != v}
 
 
