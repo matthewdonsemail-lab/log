@@ -9289,3 +9289,12 @@ Checked: tests, a package dry run, a real Windows install from the packed tarbal
   The test install and its launchers were removed afterwards.
 - `twentySetup.mjs` dry run on matt's Twenty plans no new object or base field. It only lists the DISCORD platform option, which was missing before this change.
 - `install.sh` isn't run here (no Unix shell with curl and uv on this machine).
+
+## 2026-10-31 07:26Z · feat/publicInstall
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `package.json`: edited
+
+What changed: the `log` and `logMcp` bins in package.json are `bin/log.ts` and `bin/logMcp.ts`, without the leading `./`, and the version is 0.1.1.
+Why: npm 11 dropped both bins when publishing 0.1.0 ("bin[log] script name bin/log.ts was invalid and removed"), so 0.1.0 installs without a `log` command. 0.1.1 goes out with them.
+Checked: `npm publish --dry-run` no longer warns about either bin, where it did with `./`. A copy with only the bins changed published clean in a dry run.

@@ -1,11 +1,11 @@
 {
   "name": "@listeningkit/log",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "ListeningKit's go-to-market tool, open-sourced: one CLI and MCP server that runs your accounts on X, Reddit, Facebook and Discord, self-hosted.",
   "type": "module",
   "bin": {
-    "log": "./bin/log.ts",
-    "logMcp": "./bin/logMcp.ts"
+    "log": "bin/log.ts",
+    "logMcp": "bin/logMcp.ts"
   },
   "files": [
     "bin",
