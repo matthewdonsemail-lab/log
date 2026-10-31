@@ -9233,6 +9233,79 @@ What changed: an opened message with no reply is a follow-up too, not only a rea
 Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
 Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.
 
+## 2026-10-30 18:15Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now has the node02 log MCP stack (`/home/deepman/services/logMcp`). It covers the bare repo the PC pushes to, the `log-mcp` container and its Dockerfile and compose file, what the `.env` holds (names only), the data folders, the planned Tailscale Funnel on `:8443` with only `/mcp`, `/oauth` and `/.well-known`, the chat-xdk source build with juicebox-sdk 0.3.7, the separate X governor and how to update it. The SSH line now says `deepman@`, since the tailnet policy refuses `root`. `log-mcp-token.txt` is listed with the other logins.
+Why: mandeep asked to set log-cli up with HTTPS, on node02 through Tailscale, for claude.ai/Duet connectors and for Claude Code elsewhere.
+Checked: on node02 the container answers 401 with no token. With the token, `initialize` and `tools/list` return 148 tools, and the OAuth metadata names `https://node02.tail4fcf85.ts.net:8443`. Funnel itself is still waiting on the tailnet policy.
+
+## 2026-10-30 18:52Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now says log MCP's public address `https://node02.tail4fcf85.ts.net:8443/mcp` is live through Tailscale Funnel: only `/mcp`, `/oauth` and `/.well-known`, and what it took (node02 allowed for Funnel, deepman as Tailscale operator). It adds how to connect a claude.ai or Duet connector (the sign-in browser must be on the tailnet, since Twenty is tailnet only) and Claude Code elsewhere (`claude mcp add --transport http` with the bearer token).
+Why: mandeep allowed node02 for Funnel and set the operator, then asked to finish the HTTPS setup.
+Checked: fetched from outside the tailnet (treg tinyfish.web.fetch): the protected-resource and authorization-server metadata answer, `:8443/` is 404, and `https://node02.tail4fcf85.ts.net/` (Twenty) is unreachable.
+
+## 2026-10-30 19:30Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now gives log MCP's fixed address, `https://mcp.listeningkit.com/mcp`, served by the Cloudflare tunnel `listeningkit-node02`. That tunnel has an ingress rule for only `/mcp`, `/oauth/*` and `/.well-known/*` to `http://172.17.0.1:7337`, and a proxied `mcp` CNAME. The doc covers the container listening on the Docker bridge (`command:` in `compose.yaml`), `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, why `log.listeningkit.com` wasn't used (it points at Vercel), how to connect, and that the Tailscale Funnel on `:8443` is off. Twenty has a matching Note, "Infrastructure: log MCP server (mcp.listeningkit.com)".
+Why: mandeep asked for a proper domain name that stays the same, with the details in Twenty.
+Checked: from the internet, `/mcp` with no token gives 401, with the token `initialize` answers, both OAuth metadata documents name `https://mcp.listeningkit.com`, and `/` and `/admin` give 404. From the `listeningkit-twenty_internal` network, `172.17.0.1:7337` answers 401.
+
+## 2026-10-29 02:05Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/cookies.test.ts`: added const TWID · changed test "a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", test "an existing handle has its cookies replaced, not a second row", test "cookies X refuses, or for another handle, save nothing"
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const COOKIES_INPUT, const cookiesCommand
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+
+What changed: `log twitter cookies save` asks for a third cookie, twid, after auth_token and ct0, and saves it with them. The usage, the terminal-only note and `skills/xPosting` name all three.
+Why: the first real save (@deepman_1) was refused with twidMissing: X accepted auth_token and ct0, but the engine reads the account's id from twid, so the ping can't finish without it.
+Checked: @deepman_1 saved to Twenty with the three cookies, loggedIn as 2039389784808853504, and `log twitter session check --account deepman_1` answers loggedIn; the cookie-save tests pass with twid (31 pass in src/cli/twitter).
+
+## 2026-10-29 02:13Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills/xPosting/SKILL.md`: edited
+
+What changed: `skills/xPosting` gains the growth loop matt runs on @matthewsoldit, in order: one original post by the playbook, every comment answered in the first 2 hours, a trend quoted an hour later, DMs to the likers and reposters the cold DM way, topic replies every day inside 40 writes, the inbox answered (never a cold template to someone already talked to), followers scored weekly with treg, leads into Twenty. Each step names its use-case page and commands. It also says `log voice` judges by matt's own writing, so another account writes in its `copyStyle`, and it gives the playbook's Twenty note ids (node02 and legacy).
+Why: asked to find through log how matt connects and grows on X, and how to do it the same way from @deepman_1.
+Checked: read from the knowledge base (`log kb search`: engagerDms, engagementReplies, topicReplies, perPersonVoice, xchatReplies, the matt X memory note); treg 0.25.0 installed here; the playbook note created in node02's Twenty (201).
+
+## 2026-10-29 02:17Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: new file
+- `docs/infra/node02.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/subq/decisions/client.ts`: added function subqKeyFile · changed function subqKey, function createDecisionsClient
+- `src/subq/decisions/decisions.test.ts`: added test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads `~/.config/listeningkit/subq-api-key.txt` after `SUBQ_API_KEY` and before `.env.local` (`subqKeyFile`), with a test. `docs/infra/apiKeys.md` lists every key file in `~/.config/listeningkit` (SubQ, treg, Twenty, kb-redis, Cloudflare, the X cookie how-to): what each one is and what reads it, never its value. `docs/infra/node02.md` links to it. `skills/xPosting` gets an account-plan table: @matthewsoldit's from his memory note, and @deepman_1's Mandeep + InferenceSaver Social Growth Plan (inferencesaver `docs/project/social-growth-plan.md`), with where it gives way to the X discipline.
+Why: asked to keep the treg and SubQ keys in a text file that log uses and that is findable from Twenty for every future session, and whether the small-founder growth plan had been used (it hadn't).
+Checked: `bun run check` green (1163 pass, 0 fail), with the new key-file test. `treg-api-key.txt` was copied from `~/.treg/config.json` without printing it. `subq-api-key.txt` was created empty for the key to be pasted in.
+
+## 2026-10-29 02:21Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: edited
+- `src/subq/decisions/client.ts`: changed function subqKey
+- `src/subq/decisions/decisions.test.ts`: added test "a key file in NAME=value lines gives its SUBQ_API_KEY line only" · changed test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads the key file's `SUBQ_API_KEY=` line when it has one, and a file of bare `NAME=value` lines without it gives no key. A file holding only the key works as before. `docs/infra/apiKeys.md` says both layouts work.
+Why: the key was saved as two lines (`SUBQ_BASE_URL=…` and `SUBQ_API_KEY=…`), and the reader took the whole file as the key.
+Checked: the reader gives a 40-character, one-line key. An empty request to `api.subq.ai/v1/systemone` with it answers 422 (a validation error, so the key is accepted), and a wrong key answers 401. Nothing was billed. The SubQ tests pass, 17 of 17.
+
 ## 2026-10-30 23:06Z · feat/linkedinPlatform
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
