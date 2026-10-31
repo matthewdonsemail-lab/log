@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import "../src/config/userEnv/autoload.ts";
 import { resolve } from "node:path";
 import { recordServerStart } from "../src/mcp/freshness/index.ts";
 import { startLogMcpHttp, startLogMcpServer } from "../src/mcp/server/index.ts";

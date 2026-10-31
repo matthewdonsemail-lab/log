@@ -93,47 +93,110 @@ What log-cli is built to do, with every step's command and MCP tool and what dec
 
 ## Set it up
 
-**You need:**
-- [Bun](https://bun.sh) 1.4 or newer
-- Python 3.12 for the direct-API engines (X, Reddit, Discord, Facebook)
-- [AdsPower](https://www.adspower.com) Global, only for the platforms that run in a browser
+### Install in one line
 
-**1. Clone and install.** `bun install` also installs the git hooks (lefthook), so every commit runs the same checks we do.
+macOS and Linux:
+
+```bash
+curl -fsSL https://log.listeningkit.com/install.sh | sh
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://log.listeningkit.com/install.ps1 | iex
+```
+
+What the installer does (it's safe to run again):
+1. installs [Bun](https://bun.sh) if you don't have it
+2. installs the `log` and `logMcp` commands (`bun add -g @listeningkit/log`)
+3. installs Python 3.12 with [uv](https://docs.astral.sh/uv), in its own folder at `~/.logCli/python`, with everything the X, Reddit, Discord and Facebook engines need
+4. writes your settings to `~/.logCli/.env`: `LOG_PYTHON` pointing at that Python, and `LOG_ACCOUNTS=local` so your accounts live in `~/.logCli/localAccounts.json` on your machine
+
+Nothing leaves your machine. Already have Bun? `bun add -g @listeningkit/log` installs the commands on their own.
+
+On macOS, the system already has a `log` command. Bun's folder (`~/.bun/bin`) comes first on your PATH after installing Bun, so `log` is this one. Check with `which log`.
+
+### Add an account, then check it's signed in
+
+The cookies are typed into a masked prompt, never passed as flags.
+
+```bash
+log localAccount add --platform twitter --account <name>
+log twitter cookies save --account <name>      # paste the account's cookies when it asks
+log twitter session check --account <name>     # X's own answer: loggedIn, loggedOut or restricted
+```
+
+### Use it from your agent
+
+Add the MCP server to Claude Code, Codex or any MCP client. The command is `logMcp`. The first call is `getGuide({ topic: "logMcpInstructions" })`, which lists every use case.
+
+```bash
+claude mcp add log -- logMcp
+```
+
+Every command takes `--json` and never prompts, so scripts and agents can call it. `log launch` gives a guided menu. Every command and flag is in [Commands, MCP tools and hooks](#commands-mcp-tools-and-hooks) below, generated from the code.
+
+### Settings
+
+Settings come from `~/.logCli/.env`. A `.env.local` in the folder you run from wins over it. Every key is in [`.env.example`](.env.example), and every one beyond `LOG_PYTHON` and `LOG_ACCOUNTS` is optional:
+- captcha solvers
+- proxies
+- AdsPower, for the platforms that run in a browser
+- Twenty, for many accounts
+
+### From source (to work on log)
 
 ```bash
 git clone https://github.com/matthewdonsemail-lab/log
 cd log
-bun install
+bun install      # also installs the git hooks (lefthook): every commit runs the same checks we do
+uv venv --python 3.12 .venv
+uv pip install --python .venv -r vendor/twikit/requirements.txt ./vendor/fbk ./vendor/endcord
+cp .env.example .env.local      # set LOG_PYTHON to .venv's python, and LOG_ACCOUNTS=local
+bun bin/log.ts --help
 ```
 
-**2. Install the Python side,** into the Python you'll point `LOG_PYTHON` at:
-
-```bash
-python -m pip install -r vendor/twikit/requirements.txt
-python -m pip install -e vendor/fbk -e vendor/endcord
-python -m pip install vendor/chatXdk/wheels/chatxdk-0.5.2-cp310-abi3-win_amd64.whl   # X Chat (encrypted DMs); Windows wheel, other systems build vendor/chatXdk from source
-```
-
-**3. Configure.** Copy the template, then set `LOG_PYTHON` to that Python. Set `LOG_ACCOUNTS=local` so your accounts live in a file on your machine (`~/.logCli/localAccounts.json`) and nothing needs a CRM. Every other key in `.env.example` is optional and says what it's for (captcha solvers, proxies, Twenty if you use it).
-
-```bash
-cp .env.example .env.local
-```
-
-**4. Add an account, then check it's signed in.** The cookies are typed into a masked prompt, never passed as flags.
-
-```bash
-bun bin/log.ts localAccount add --platform twitter --account <name>
-bun bin/log.ts twitter cookies save --account <name>      # paste the account's cookies when it asks
-bun bin/log.ts twitter session check --account <name>     # X's own answer: loggedIn, loggedOut or restricted
-```
-
-**5. Use it from your agent.** `.mcp.json` already runs the MCP server (`bun bin/logMcp.ts`), so Claude Code or Codex opened in this folder sees every tool. The first call is `getGuide({ topic: "logMcpInstructions" })`, which lists every use case.
-
-**6. Everything else.** `bun run launch` gives a guided menu. Every command takes `--json` and never prompts, so scripts and agents can call it. Every command and flag is in [Commands, MCP tools and hooks](#commands-mcp-tools-and-hooks) below, generated from the code.
+`.mcp.json` runs the MCP server from the checkout (`bun bin/logMcp.ts`), so Claude Code or Codex opened in the folder sees every tool. X Chat (encrypted DMs) also needs its wheel, `vendor/chatXdk/wheels/` on Windows, or built from `vendor/chatXdk` elsewhere.
 
 `LOG_PYTHON` points at the Python with the vendored clients' dependencies
 (curl_cffi and the rest); the direct-API engines and their tests run on it.
+
+## Many accounts: Twenty
+
+**What Twenty is.** [Twenty](https://twenty.com) is an open-source CRM. You use it hosted, or you run it yourself with Docker. It gives you a database you can see and edit in a normal app (tables, filters, boards), plus a REST and GraphQL API. log uses it as the one place every account and everything about it lives.
+
+**Why it works.** In Twenty, every account is one row in `socialAccounts`:
+- its platform and handle
+- its cookies and proxy
+- its status (ACTIVE, NEEDS_LOGIN, CHECKPOINT, BANNED…)
+- its home city and country
+- its browser profile
+
+Listings (`agencyListings`), campaigns (`agencyCampaigns`) and conversations (`agencyConversations`, `agencyMessages`) are rows linked to the account they belong to. Before each run log reads the row, and after it writes back what happened: refreshed cookies, a new status, a listing's state. So the row is always the truth. Because it's one shared database, every machine, every agent and every person on your team sees the same accounts, and you can check or fix one by hand in Twenty's UI.
+
+**When you'd use it.**
+- **One person with a few accounts:** stay local (`LOG_ACCOUNTS=local`). It's simpler and needs nothing else.
+- **Switch to Twenty when:**
+  - you run many accounts across platforms
+  - more than one machine or person works on them
+  - you group listings into campaigns
+  - you want every account's status in one place you can edit
+
+**How to set it up.**
+
+1. Get a Twenty workspace: [hosted](https://twenty.com), or [self-hosted](https://twenty.com/developers) with Docker.
+2. Create an API key in the workspace's settings.
+3. In `.env.local`, set `LOG_TWENTY_BASE_URL` (your workspace's address) and `LOG_TWENTY_API_KEY`, and remove `LOG_ACCOUNTS=local`.
+4. Create everything log needs: the objects above, their fields and the links between them.
+
+   ```bash
+   node scripts/twenty/twentySetup.mjs           # lists what it will create, changes nothing
+   node scripts/twenty/twentySetup.mjs --apply   # creates it
+   ```
+
+   It only ever adds. It never renames or deletes a field, so it's safe on a workspace you already use.
+5. Add your accounts: as rows in Twenty, or with `cookies save`. `log localAccount pull` copies Twenty's accounts into the local file if you ever want to work offline.
 
 Every command takes `--json` and never prompts, so scripts and agents can use it.
 
@@ -1508,8 +1571,9 @@ A draft written on several lines goes out one message per line, wherever it is s
 
 ## Twenty
 
-- `scripts/twenty/twentySetup.mjs` adds the fields log-cli needs (additive only; prints
-  the plan, `--apply` creates them).
+- What Twenty is, why log uses it and how to set it up: [Many accounts: Twenty](#many-accounts-twenty).
+- `scripts/twenty/twentySetup.mjs` creates the objects, fields and relations log needs on any
+  workspace, a fresh one included (additive only; prints the plan, `--apply` creates them).
 - `bun run twenty:client` regenerates `src/twenty/graphql/generated` from the live
   workspace (twenty-client-sdk), the same way blaster (`pnpm twenty:client`) and the
   dialer (`bun run api:client`) do. `bun run twenty:client:check` fails when it is stale.
