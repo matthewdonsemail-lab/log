@@ -24,13 +24,13 @@ checked with the same analyser that measured him.
 
 ```bash
 # 1. his hand: open a page with our cursor still, record 60 s, analyse
-bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/marketplace/ --noIdleMouse --proxyMs 12000
+log inspect start --account <a> --url https://www.facebook.com/marketplace/ --noIdleMouse --proxyMs 12000
 python python/human/recordMouse.py 60                 # "GO": matt uses the window; prints the summary
 #   -> ~/.logCli/mouse/<time>.json and .analysis.json
 
 # 2. ours: a session with the idle loop, a long wait step, the same analyser
-bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/marketplace/ --now --proxyMs 12000
-bun bin/log.ts inspect do wait 60
+log inspect start --account <a> --url https://www.facebook.com/marketplace/ --now --proxyMs 12000
+log inspect do wait 60
 python python/human/recordMouse.py --analyze ~/.logCli/runs/inspect/<run>/steps/02_wait60s/mouseSamples.json
 ```
 

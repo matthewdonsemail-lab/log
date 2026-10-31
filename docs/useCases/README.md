@@ -22,7 +22,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 ## The parts every use case is built from
 
 - **An account in Twenty** (`socialAccounts`): its home, its session, its status. Or a local account in `~/.logCli/localAccounts.json` (`log localAccount add`), which wins over a Twenty row of the same name; `LOG_ACCOUNTS=local` leaves Twenty out.
-- **An engine:** the direct API where there is one (twikit for X, fbk for Facebook reads), the account's own browser otherwise. The README's Engines section says which command uses which.
+- **An engine:** the direct API where there is one (twikit for X, fbk for Facebook reads), the account's own browser otherwise. The [reference](../reference.md)'s Engines section says which command uses which.
 - **The platform's own answer decides:** every step reads what the platform sent back, never the screen or a timer.
 - **A dry run first:** anything that acts on a platform does nothing without `--live`, and over MCP it is a separate `…Live` tool that needs `confirmLive`.
 - **Pacing:** each account has its own governor, local hours and limits.

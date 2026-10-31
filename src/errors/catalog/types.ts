@@ -111,7 +111,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['twitter/account/session'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Save the account's cookies from a normal manual login: `bun bin/log.ts twitter cookies save --account <handle>` in a terminal."
+    action: "Save the account's cookies from a normal manual login: `log twitter cookies save --account <handle>` in a terminal."
   },
   twitterCookiesRefused: {
     layer: 'account',

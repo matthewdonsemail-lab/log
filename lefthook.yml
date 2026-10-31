@@ -30,6 +30,9 @@ pre-commit:
     docs:
       run: bun run check:docs
 
+    siteDocs:
+      run: bun run check:siteDocs
+
     useCases:
       run: bun run check:useCases
 
@@ -65,6 +68,9 @@ pre-push:
 
     docs:
       run: bun run check:docs
+
+    siteDocs:
+      run: bun run check:siteDocs
 
     typecheck:
       run: bun run typecheck

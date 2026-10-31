@@ -1,5 +1,16 @@
 # Record → document → machine → command → MCP
 
+`log inspect` drives the account's browser (AdsPower or Camoufox, through the
+driver), gated and headed, a step at a time, and records every step (snapshot,
+screenshot, HAR, rea). `log flow fromInspect` turns that
+recording into a flow: its docs, an XState machine, `log flow run <name>` for
+any account, and an MCP tool of its own (`flowProfileSetup`). The whole
+pipeline, the actions, the saved flows and what the recordings showed:
+`docs/recordToFlow.md`. It works on every platform with a browser path
+(Facebook, Reddit, rule 84), and every request a platform's pages made is
+documented, read by rea from its code, in `docs/platforms/<platform>/`
+(`log facebook capture --docs`, rule 85).
+
 How log-cli learns a Facebook procedure and then runs it on any account. Built
 2026-10-19 (rules 25-31 in AGENTS.md). Everything here runs live and headed,
 through every gate a run passes (proxy, device, locale, self-check, waking

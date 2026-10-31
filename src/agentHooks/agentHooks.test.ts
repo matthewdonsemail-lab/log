@@ -95,6 +95,16 @@ describe("live logs hook", () => {
     expect(logCommandOf("git status")).toBeNull();
   });
 
+  test("finds an installed log command, and not git log", () => {
+    expect(logCommandOf("log twitter dms --account a")).toBe("dms");
+    expect(logCommandOf("cd repo && log facebook capture --docs | tail -3")).toBe("capture");
+    expect(logCommandOf("LOG_ACCOUNTS=local log localAccount list")).toBe("localAccount");
+    expect(logCommandOf("git log --oneline -3")).toBeNull();
+    expect(logCommandOf("git log origin/main..HEAD")).toBeNull();
+    expect(buffersOutput("log facebook capture --docs 2>&1 | tail -20")).toBe(true);
+    expect(buffersOutput("log facebook capture --docs 2>&1 | tee run.log")).toBe(false);
+  });
+
   test("tail/head buffer; tail -f and tee don't", () => {
     expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tail -20")).toBe(true);
     expect(buffersOutput("bun bin/log.ts facebook capture --docs | head")).toBe(true);

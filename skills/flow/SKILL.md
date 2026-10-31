@@ -41,18 +41,18 @@ command → MCP tool.
 
 ```bash
 # 1. record (skills/inspect)
-bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/me --bypass --now
-bun bin/log.ts inspect do click <ref> --live ...   # one step at a time
-bun bin/log.ts inspect do stop
+log inspect start --account <a> --url https://www.facebook.com/me --bypass --now
+log inspect do click <ref> --live ...   # one step at a time
+log inspect do stop
 
 # 2. recording → definition + docs (params renamed from text1/file1)
-bun bin/log.ts flow fromInspect ~/.logCli/runs/inspect/<run> --name profileSetup \
+log flow fromInspect ~/.logCli/runs/inspect/<run> --name profileSetup \
   --rename text1=firstName --rename text2=lastName --rename file1=profilePhoto --rename file2=coverPhoto
 
 # 3. run it on another account (dry run first: lists the filled steps, opens nothing)
-bun bin/log.ts flow run profileSetup --account <a> --set firstName=Bethlehem --set lastName=Trash \
+log flow run profileSetup --account <a> --set firstName=Bethlehem --set lastName=Trash \
   --set profilePhoto=<path|url> --set coverPhoto=<path|url>
-bun bin/log.ts flow run profileSetup --account <a> ... --live --bypass --now
+log flow run profileSetup --account <a> ... --live --bypass --now
 ```
 
 Over MCP the same run is the tool `flowProfileSetup` with `account`, the

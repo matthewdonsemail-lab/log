@@ -217,7 +217,7 @@ export const inspectCommand: Command = {
       const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString(), messengerPin, goal };
       return withRun(context, "inspect", account, run, async () => {
         writeCurrentInspect(current);
-        context.err(`Inspect session for ${account.accountName}: ${runDir}. Send steps from another terminal: bun bin/log.ts inspect do snapshot`);
+        context.err(`Inspect session for ${account.accountName}: ${runDir}. Send steps from another terminal: log inspect do snapshot`);
         let code: number;
         const checkpointWatch = watchCheckpoint(context, account, runDir);
         try {

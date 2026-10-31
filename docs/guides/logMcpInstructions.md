@@ -200,43 +200,43 @@ none of them prompt unless you run `log launch` in a terminal.
 bun run launch                                          # Clack menu over everything below
 
 ## Twenty data
-bun bin/log.ts facebook accounts                                  # FACEBOOK accounts, and whether each may run
-bun bin/log.ts facebook account show galwayOne
-bun bin/log.ts facebook account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
-bun bin/log.ts facebook listings [--status READY] [--account galwayOne] [--campaign <id>]
-bun bin/log.ts facebook listing <agencyListingId>
-bun bin/log.ts facebook listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
+log facebook accounts                                  # FACEBOOK accounts, and whether each may run
+log facebook account show galwayOne
+log facebook account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
+log facebook listings [--status READY] [--account galwayOne] [--campaign <id>]
+log facebook listing <agencyListingId>
+log facebook listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
 
 ## sign in to log itself (Twenty OAuth through blaster's web app, same as `blaster login`)
-bun bin/log.ts login | whoami | logout
+log login | whoami | logout
 
 ## proxies (rule 12): check before anything else
-bun bin/log.ts proxy check --account galwayOne           # exit IP + country, no browser, saved to Twenty
-bun bin/log.ts proxy assign --account galwayOne          # a 2Captcha proxy in its home city, checked, then saved
-bun bin/log.ts proxy assign --missing                    # every FACEBOOK account without a proxy
-bun bin/log.ts proxy assign --account lancasterOne --region pennsylvania   # pin the state; exits over 100 km from home are retried, then proxyTooFar
-bun bin/log.ts proxy balance                             # 2Captcha traffic left
+log proxy check --account galwayOne           # exit IP + country, no browser, saved to Twenty
+log proxy assign --account galwayOne          # a 2Captcha proxy in its home city, checked, then saved
+log proxy assign --missing                    # every FACEBOOK account without a proxy
+log proxy assign --account lancasterOne --region pennsylvania   # pin the state; exits over 100 km from home are retried, then proxyTooFar
+log proxy balance                             # 2Captcha traffic left
 
 ## live (launches Camoufox through the proxy)
-bun bin/log.ts facebook doctor                                    # setup check, which accounts may run
-bun bin/log.ts facebook connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
-bun bin/log.ts facebook connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
-bun bin/log.ts facebook scan --account galwayOne                  # Marketplace > Selling, written back to the listings
-bun bin/log.ts facebook status <facebookListingId> --account galwayOne
+log facebook doctor                                    # setup check, which accounts may run
+log facebook connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
+log facebook connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
+log facebook scan --account galwayOne                  # Marketplace > Selling, written back to the listings
+log facebook status <facebookListingId> --account galwayOne
 
 ## the monitor (XState), every step printed live
-bun bin/log.ts facebook watch --account galwayOne [--checks 0 --interval 240] [--json]
+log facebook watch --account galwayOne [--checks 0 --interval 240] [--json]
 
 ## publish one Twenty listing (XState), every step printed live. Dry run unless --live
-bun bin/log.ts facebook publish --listing <agencyListingId>
-bun bin/log.ts facebook publish --listing <agencyListingId> --live
+log facebook publish --listing <agencyListingId>
+log facebook publish --listing <agencyListingId> --live
 ## against the local copy of the create form (no Facebook)
-bun bin/log.ts facebook publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
+log facebook publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
 
 ## campaigns: one ad on N accounts in one place (docs/accountsAndListings.md)
-bun bin/log.ts facebook campaign fill --campaign <id> --from <agencyListingId> --accounts 10
-bun bin/log.ts facebook campaign run --campaign <id> [--live]
-bun bin/log.ts facebook campaign heal --campaign <id>
+log facebook campaign fill --campaign <id> --from <agencyListingId> --accounts 10
+log facebook campaign run --campaign <id> [--live]
+log facebook campaign heal --campaign <id>
 ```
 
 ### As an MCP server

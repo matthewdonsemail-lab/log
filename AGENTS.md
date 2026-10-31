@@ -1243,6 +1243,25 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     a LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not
     40 (rule 91).
 
+103. 2026-10-31 · matt: log-cli moves into the public log repo, and we work
+    there. log-cli on GitHub is archived. "The readme is specifically for how
+    to set up": why use it, what it's for, how to install and use it, and how
+    we use it, about this project and nothing else of ours. Everything
+    technical lives in `docs/`, a page per subject: the generated reference
+    (`docs/reference.md`, from `bun run docs:build`, which replaces rule 56's
+    README section), the guides, the use cases, the platforms, MCP setup
+    (`docs/mcp.md`) and the Mermaid diagrams (`docs/diagrams`). Rule one stays
+    first in AGENTS.md and the MCP instructions, no longer in the README
+    (this narrows rule 76). The docs site at log.listeningkit.com/docs is
+    Fumadocs, built from `docs/` on every site build
+    (`scripts/docs/syncSiteDocs.mjs`). lefthook's `siteDocs` (`bun run
+    check:siteDocs`, pre-commit and pre-push) refuses a page without a title
+    or a link to a file that doesn't exist, beside `docs`. log is installed
+    as the npm package `@listeningkit/log` and runs as `log` and `logMcp`:
+    docs, skills and messages say `log …`, never `bun bin/log.ts`. "We don't
+    use Convex at all": no Convex, and no dashboard. The site is the landing
+    page plus the docs.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

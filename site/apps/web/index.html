@@ -38,7 +38,7 @@
       // container (GTM-PGJ4QDZC), shared with gg and the member sites. Its "GA4 - log - google tag" sends
       // Log's page views to G-VL1WDMNEER (only on these hosts, so nothing is double-counted), and
       // "GA4 - funnel events" forwards the repo modal's dataLayer events (src/landing/track.ts).
-      if (['log.listeningkit.com', 'tremendous-seahorse-330.convex.site'].includes(location.hostname)) {
+      if (['log.listeningkit.com'].includes(location.hostname)) {
         (function (w, d, s, l, i) {
           w[l] = w[l] || []
           w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
@@ -53,7 +53,7 @@
   <body>
     <script>
       // Matches the head snippet's domain gate, so the noscript fallback (browsers with JS off) is consistent with it.
-      if (['log.listeningkit.com', 'tremendous-seahorse-330.convex.site'].includes(location.hostname)) {
+      if (['log.listeningkit.com'].includes(location.hostname)) {
         document.write(
           '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGJ4QDZC" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>'
         )

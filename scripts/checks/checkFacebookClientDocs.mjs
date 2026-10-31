@@ -9,7 +9,7 @@ const indexPath = join(docsDir, 'operations.json');
 const problems = [];
 
 if (!existsSync(indexPath)) {
-  console.error('facebookClient docs: docs/platforms/facebook/operations.json is missing. Run `bun bin/log.ts facebook capture --docs`.');
+  console.error('facebookClient docs: docs/platforms/facebook/operations.json is missing. Run `log facebook capture --docs`.');
   process.exit(1);
 }
 const index = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -54,7 +54,7 @@ const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
 if (existsSync(flowsDir)) {
   for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {
     const name = file.slice(0, -5);
-    if (!existsSync(join(docsDir, 'flows', `${name}.md`))) problems.push(`flow ${name}: no docs/platforms/facebook/flows/${name}.md (run \`bun bin/log.ts flow docs ${name}\`)`);
+    if (!existsSync(join(docsDir, 'flows', `${name}.md`))) problems.push(`flow ${name}: no docs/platforms/facebook/flows/${name}.md (run \`log flow docs ${name}\`)`);
   }
 }
 
@@ -72,7 +72,7 @@ const walk = (dir, depth) => {
   if (depth > 0) for (const name of names) if (statSync(join(dir, name), { throwIfNoEntry: false })?.isDirectory()) walk(join(dir, name), depth - 1);
 };
 for (const top of ['runs', 'publish']) walk(join(captures, top), 6);
-if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`bun bin/log.ts facebook capture --docs\``);
+if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`log facebook capture --docs\``);
 
 const documented = new Set(index.operations.map((o) => o.name));
 const named = new Map();

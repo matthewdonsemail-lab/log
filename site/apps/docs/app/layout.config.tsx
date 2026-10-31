@@ -31,13 +31,13 @@ export const baseOptions: BaseLayoutProps = {
   },
   links: [
     {
-      text: "Dashboard",
-      url: "http://localhost:3000",
+      text: "GitHub",
+      url: "https://github.com/matthewdonsemail-lab/log",
       external: true,
     },
     {
-      text: "Onboarding",
-      url: "http://localhost:3000/onboarding",
+      text: "npm",
+      url: "https://www.npmjs.com/package/@listeningkit/log",
       external: true,
     },
   ],
