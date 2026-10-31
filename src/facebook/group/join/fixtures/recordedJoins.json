@@ -1,0 +1,716 @@
+{
+ "recorded": "Bethlehem (61594063207669) in AdsPower, 2026-10-20, run 20261019T224900; each group is its click step's answers, cut to the group fields (rule 19)",
+ "groups": {
+  "recommendationsOfBethlehem": {
+   "step": "04_clickroleButtonJoinGroup",
+   "entries": [
+    {
+     "operation": "GroupCometJoinForumMutation",
+     "status": 200,
+     "data": {
+      "viewer_join_state": "MEMBER"
+     }
+    },
+    {
+     "operation": "GroupsCometRequestToParticipateOnJoinDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "4191018610937243",
+       "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region",
+       "membership_questions": [],
+       "community_participation_questions": [],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "forum_admin_join_only_participation_request_questionnaire": {
+        "group_metatext": "You're now a member of this public group.",
+        "additional_info": "Do not enter your password or other sensitive information here, even if you're asked to by the Recommendations of Bethlehem, PA and Greater Lehigh Valley Region admins.",
+        "headline": "Get started by submitting a request to participate",
+        "body": "Everyone in this public group is reviewed by admins before they can post or comment for the first time. Read and agree to the group rules to submit your request.",
+        "title": "Participant questions"
+       },
+       "if_viewer_can_see_membership_questions": null,
+       "if_viewer_can_see_participation_questions": {
+        "questions": [],
+        "id": "4191018610937243"
+       },
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "4191219140917190",
+          "rule_title": "Be kind and courteous",
+          "description_with_entities": {
+           "text": "We're all in this together to create a welcoming environment. Let's treat everyone with respect. Healthy debates are natural, but kindness is required."
+          }
+         },
+         {
+          "id": "4191219150917189",
+          "rule_title": "No hate speech or bullying",
+          "description_with_entities": {
+           "text": "Make sure everyone feels safe. Bullying of any kind isn't allowed, and degrading comments about things like race, religion, culture, sexual orientation, gender or identity will not be tolerated."
+          }
+         },
+         {
+          "id": "4191219144250523",
+          "rule_title": "Respect everyone's privacy",
+          "description_with_entities": {
+           "text": "Being part of this group requires mutual trust. Authentic, expressive discussions make groups great, but may also be sensitive and private. What's shared in the group should stay in the group."
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "friendsOfBethlehem": {
+   "step": "09_clickroleButtonJoinGroup",
+   "entries": [
+    {
+     "operation": "GroupCometJoinForumMutation",
+     "status": 200,
+     "data": {
+      "viewer_join_state": "MEMBER"
+     }
+    },
+    {
+     "operation": "GroupsCometRequestToParticipateOnJoinDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "690588814407464",
+       "name": "Friends of Bethlehem PA",
+       "membership_questions": [],
+       "community_participation_questions": [
+        {
+         "id": "2365312223601773",
+         "participation_question": "What is your connection to Bethlehem, Pennsylvania and what do you hope to gain from participating in this group?",
+         "participation_question_type": "PARAGRAPH",
+         "participation_question_options": {
+          "edges": []
+         }
+        },
+        {
+         "id": "2728028100663515",
+         "participation_question": "What is the name of the big festival hosted in Bethlehem each August?",
+         "participation_question_type": "PARAGRAPH",
+         "participation_question_options": {
+          "edges": []
+         }
+        }
+       ],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "forum_admin_join_only_participation_request_questionnaire": {
+        "group_metatext": "You're now a member of this public group.",
+        "additional_info": "Do not enter your password or other sensitive information here, even if you're asked to by the Friends of Bethlehem PA admins.",
+        "headline": "Get started by submitting a request to participate",
+        "body": "Everyone in this public group is reviewed by admins before they can post or comment for the first time. Read and agree to the group rules to submit your request.",
+        "title": "Participant questions"
+       },
+       "if_viewer_can_see_membership_questions": null,
+       "if_viewer_can_see_participation_questions": {
+        "questions": [
+         {
+          "id": "2365312223601773",
+          "can_viewer_report": true,
+          "question": "What is your connection to Bethlehem, Pennsylvania and what do you hope to gain from participating in this group?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         },
+         {
+          "id": "2728028100663515",
+          "can_viewer_report": true,
+          "question": "What is the name of the big festival hosted in Bethlehem each August?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         }
+        ],
+        "id": "690588814407464"
+       },
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "1805075729625428",
+          "rule_title": "On Topic",
+          "description_with_entities": {
+           "text": "Please keep posts about Bethlehem Pennsylvania"
+          }
+         },
+         {
+          "id": "2573248936141433",
+          "rule_title": "Let's find a solution",
+          "description_with_entities": {
+           "text": "If you’re going to complain about something you have to also suggest a way that we can fix it. This is not the place to complain for its own sake."
+          }
+         },
+         {
+          "id": "2538263626306631",
+          "rule_title": "Not a Recommendations Group",
+          "description_with_entities": {
+           "text": "If you would like to ask for recommendations, we highly suggest Recommendations of Bethlehem, PA and Greater Lehigh Valley Region. \nFriends of Bethlehem has been getting an over abundance of recommendation posts which are basically the same recommendations over and over again. Google is quicker for sure. \nWe want to have the best content we can, so we will limit those types of posts."
+          }
+         },
+         {
+          "id": "1805075722958762",
+          "rule_title": "Not a Buy/Sell or Fundraising Group",
+          "description_with_entities": {
+           "text": "This isn't a place to advertise your business, real estate, job listings, or to buy/sell things, or to give things away for free. This is not a place to advertise your fundraiser or charity. It's not a place ask for employment or real estate advice. This is also not a place to advertise foreign exchange student placements (seriously, we get a ton of these)."
+          }
+         },
+         {
+          "id": "3650866365046346",
+          "rule_title": "Not a Lost Pets Group",
+          "description_with_entities": {
+           "text": "Losing a pet is a big deal. To report a lost pet we recommend posting it to Lost & Found Pets - Lehigh Valley, Pennsylvania"
+          }
+         },
+         {
+          "id": "1849855448480789",
+          "rule_title": "No Nicknames; Don't Turn Off Commenting",
+          "description_with_entities": {
+           "text": "We don't allow anonymous posting in this group, so unless there is a really good reason, nickname posts and comments will all be declined. This feature has been used in other groups with undesirable results.\n\nShutting down comments is against the spirit of this group. Posts where this has been observed will be removed unless there is a good reason not to."
+          }
+         },
+         {
+          "id": "1805075726292095",
+          "rule_title": "Be Kind and Courteous. Don't be a jerk",
+          "description_with_entities": {
+           "text": "Make sure everyone feels safe. Bullying, threats, or intimidation of any kind isn't allowed, and degrading comments about things like race, religion, culture, sexual orientation, gender or identity will not be tolerated.\n\nWe're all in this together to create a welcoming environment. Let's treat everyone with respect. Healthy debates are natural, but kindness is required. Foul language is not appreciated."
+          }
+         },
+         {
+          "id": "2233485273451136",
+          "rule_title": "Make Sure The Content You're Sharing Is Public",
+          "description_with_entities": {
+           "text": "If a Facebook post you share isn't set to public, we'll get a \"This content isn't available right now\" message, so double-check that you see the little globe icon to indicate everyone can view it.\n\nPlease only share links to external sites that are not behind a paywall."
+          }
+         },
+         {
+          "id": "2010672305732435",
+          "rule_title": "[citation needed]",
+          "description_with_entities": {
+           "text": "Discussions about controversial topics that directly affect Bethlehem are allowed, but please cite a reputable source of information."
+          }
+         },
+         {
+          "id": "2284092295057100",
+          "rule_title": "Don't block admins or moderators",
+          "description_with_entities": {
+           "text": "If there is a questionable post or comment we may need to follow up with the poster to clarify. If you block the moderation team we can't do that."
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "bethlehemNeighborhood": {
+   "step": "12_clickroleButtonJoinGroup",
+   "entries": [
+    {
+     "operation": "GroupCometJoinForumMutation",
+     "status": 200,
+     "data": {
+      "viewer_join_state": "MEMBER"
+     }
+    }
+   ]
+  },
+  "complainersOfBethlehem": {
+   "step": "15_clickroleButtonJoinGroup",
+   "entries": [
+    {
+     "operation": "GroupsCometMembershipQuestionsPreloadedDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "1640115596230023",
+       "name": "Complainers of Bethlehem, PA",
+       "membership_questions": [
+        {
+         "id": "2345806658994243"
+        },
+        {
+         "id": "2345807182327524"
+        }
+       ],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "viewer_must_answer_membership_question_to_submit": true,
+       "viewer_forum_join_state": "CANNOT_JOIN",
+       "participation_questionnaire_explanation_text": "You're almost ready to post and comment. Help admins get to know you by answering these questions.",
+       "if_viewer_can_see_membership_questions": {
+        "questions": [
+         {
+          "id": "2345806658994243",
+          "can_viewer_report": true,
+          "question": "Answering these questions is required to be accepted into the group.\n\nHave you in the past, or currently, reside in Bethlehem?",
+          "question_type": "CHECKBOXES",
+          "question_options": [
+           {
+            "__typename": "GroupMembershipQuestionOption",
+            "id": "2345806655660910",
+            "question_option": "Yes"
+           },
+           {
+            "__typename": "GroupMembershipQuestionOption",
+            "id": "2345806652327577",
+            "question_option": "No"
+           }
+          ]
+         },
+         {
+          "id": "2345807182327524",
+          "can_viewer_report": true,
+          "question": "What is a general complaint you have about Bethlehem?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         }
+        ],
+        "id": "1640115596230023"
+       },
+       "if_viewer_can_see_participation_questions": null,
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "2291758961065680",
+          "rule_title": "Topics",
+          "description_with_entities": {
+           "text": "This group is for complaining about Bethlehem. If it isn't a complaint, or it isn't specific to Bethlehem, it may be removed. We let it slide on occasion."
+          }
+         },
+         {
+          "id": "2291755551066021",
+          "rule_title": "Harassment",
+          "description_with_entities": {
+           "text": "Harassment/Bullying. If you have a problem with someone, block them. It will save a lot of heartache in the long run."
+          }
+         },
+         {
+          "id": "2291755181066058",
+          "rule_title": "No Doxing",
+          "description_with_entities": {
+           "text": "No Doxing (Leaking personal information of a person or persons)"
+          }
+         },
+         {
+          "id": "2656097244631848",
+          "rule_title": "Public Health and Safety",
+          "description_with_entities": {
+           "text": "Posts and comments that flagrantly disregard or promote the disregard of public health and safety will be removed and you will likely be blocked without notice."
+          }
+         },
+         {
+          "id": "2291755437732699",
+          "rule_title": "Protected Classes",
+          "description_with_entities": {
+           "text": "No attacks against Race, Color, Religion or creed, National origin or ancestry, Sex, Age, Physical or mental disability, Veteran status, Citizenship."
+          }
+         },
+         {
+          "id": "2291757274399182",
+          "rule_title": "Moderators",
+          "description_with_entities": {
+           "text": "The moderation team reserves the right to remove your post at will. This will not be rampant or abused. If your post is removed and you aren't sure why, message the moderators."
+          }
+         },
+         {
+          "id": "2713228578918714",
+          "rule_title": "No blocking Admins or Moderators",
+          "description_with_entities": {
+           "text": "Blocking modmins impedes our ability to moderate the group. You'll be kicked without warning."
+          }
+         },
+         {
+          "id": "2291757651065811",
+          "rule_title": "Attachments",
+          "description_with_entities": {
+           "text": "If you share an attachment to the group, please make sure the post is view able as \"Public\" or no one will be able to view the attachment. If not, the post will be deleted."
+          }
+         },
+         {
+          "id": "2451736155067959",
+          "rule_title": "No Turning Off Comments",
+          "description_with_entities": {
+           "text": "Users cannot turn off comments on their posts. If a user repeatedly turns off commenting they may be removed from the group."
+          }
+         }
+        ]
+       }
+      }
+     }
+    },
+    {
+     "operation": "useGroupRequestToJoinMutation",
+     "status": 200,
+     "data": {
+      "viewer_join_state": "REQUESTED"
+     }
+    },
+    {
+     "operation": "GroupsCometMembershipQuestionsPreloadedDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "1640115596230023",
+       "name": "Complainers of Bethlehem, PA",
+       "membership_questions": [
+        {
+         "id": "2345806658994243"
+        },
+        {
+         "id": "2345807182327524"
+        }
+       ],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "viewer_must_answer_membership_question_to_submit": true,
+       "viewer_forum_join_state": "CANNOT_JOIN",
+       "participation_questionnaire_explanation_text": "You're almost ready to post and comment. Help admins get to know you by answering these questions.",
+       "if_viewer_can_see_membership_questions": {
+        "questions": [
+         {
+          "id": "2345806658994243",
+          "can_viewer_report": true,
+          "question": "Answering these questions is required to be accepted into the group.\n\nHave you in the past, or currently, reside in Bethlehem?",
+          "question_type": "CHECKBOXES",
+          "question_options": [
+           {
+            "__typename": "GroupMembershipQuestionOption",
+            "id": "2345806655660910",
+            "question_option": "Yes"
+           },
+           {
+            "__typename": "GroupMembershipQuestionOption",
+            "id": "2345806652327577",
+            "question_option": "No"
+           }
+          ]
+         },
+         {
+          "id": "2345807182327524",
+          "can_viewer_report": true,
+          "question": "What is a general complaint you have about Bethlehem?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         }
+        ],
+        "id": "1640115596230023"
+       },
+       "if_viewer_can_see_participation_questions": null,
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "2291758961065680",
+          "rule_title": "Topics",
+          "description_with_entities": {
+           "text": "This group is for complaining about Bethlehem. If it isn't a complaint, or it isn't specific to Bethlehem, it may be removed. We let it slide on occasion."
+          }
+         },
+         {
+          "id": "2291755551066021",
+          "rule_title": "Harassment",
+          "description_with_entities": {
+           "text": "Harassment/Bullying. If you have a problem with someone, block them. It will save a lot of heartache in the long run."
+          }
+         },
+         {
+          "id": "2291755181066058",
+          "rule_title": "No Doxing",
+          "description_with_entities": {
+           "text": "No Doxing (Leaking personal information of a person or persons)"
+          }
+         },
+         {
+          "id": "2656097244631848",
+          "rule_title": "Public Health and Safety",
+          "description_with_entities": {
+           "text": "Posts and comments that flagrantly disregard or promote the disregard of public health and safety will be removed and you will likely be blocked without notice."
+          }
+         },
+         {
+          "id": "2291755437732699",
+          "rule_title": "Protected Classes",
+          "description_with_entities": {
+           "text": "No attacks against Race, Color, Religion or creed, National origin or ancestry, Sex, Age, Physical or mental disability, Veteran status, Citizenship."
+          }
+         },
+         {
+          "id": "2291757274399182",
+          "rule_title": "Moderators",
+          "description_with_entities": {
+           "text": "The moderation team reserves the right to remove your post at will. This will not be rampant or abused. If your post is removed and you aren't sure why, message the moderators."
+          }
+         },
+         {
+          "id": "2713228578918714",
+          "rule_title": "No blocking Admins or Moderators",
+          "description_with_entities": {
+           "text": "Blocking modmins impedes our ability to moderate the group. You'll be kicked without warning."
+          }
+         },
+         {
+          "id": "2291757651065811",
+          "rule_title": "Attachments",
+          "description_with_entities": {
+           "text": "If you share an attachment to the group, please make sure the post is view able as \"Public\" or no one will be able to view the attachment. If not, the post will be deleted."
+          }
+         },
+         {
+          "id": "2451736155067959",
+          "rule_title": "No Turning Off Comments",
+          "description_with_entities": {
+           "text": "Users cannot turn off comments on their posts. If a user repeatedly turns off commenting they may be removed from the group."
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  "youKnowYoureFromBethlehem": {
+   "step": "18_clickroleButtonJoinGroup",
+   "entries": [
+    {
+     "operation": "GroupsCometMembershipQuestionsPreloadedDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "253754297985363",
+       "name": "You know you're from Bethlehem, PA...",
+       "membership_questions": [
+        {
+         "id": "4238909862803100"
+        },
+        {
+         "id": "4585278361499580"
+        },
+        {
+         "id": "7487292241298163"
+        }
+       ],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "viewer_must_answer_membership_question_to_submit": true,
+       "viewer_forum_join_state": "CANNOT_JOIN",
+       "participation_questionnaire_explanation_text": "You're almost ready to post and comment. Help admins get to know you by answering these questions.",
+       "if_viewer_can_see_membership_questions": {
+        "questions": [
+         {
+          "id": "4238909862803100",
+          "can_viewer_report": true,
+          "question": "When you are approved for membership, click on the “FEATURE TAB” under the cover photo.",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         },
+         {
+          "id": "4585278361499580",
+          "can_viewer_report": true,
+          "question": "What is your connection to Bethlehem?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         },
+         {
+          "id": "7487292241298163",
+          "can_viewer_report": true,
+          "question": "What is your favorite place in Bethlehem that would only be known by someone who lived here? Be specific",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         }
+        ],
+        "id": "253754297985363"
+       },
+       "if_viewer_can_see_participation_questions": null,
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "3163956073631823",
+          "rule_title": "Be Kind and Courteous",
+          "description_with_entities": {
+           "text": "Healthy debates are natural, but kindness is required."
+          }
+         },
+         {
+          "id": "3163956093631821",
+          "rule_title": "No Hate Speech or Bullying",
+          "description_with_entities": {
+           "text": "Bullying of any kind isn't allowed, and degrading comments about things like race, religion, culture, sexual orientation, gender or identity will not be tolerated."
+          }
+         },
+         {
+          "id": "3163956086965155",
+          "rule_title": "No profanity",
+          "description_with_entities": {
+           "text": "If you post/comment using profanity, it will be deleted"
+          }
+         },
+         {
+          "id": "3163956090298488",
+          "rule_title": "No Complaining",
+          "description_with_entities": {
+           "text": "This group is not for complaining about Bethlehem. Please do it elsewhere"
+          }
+         },
+         {
+          "id": "3163956083631822",
+          "rule_title": "No Advertising or Spam",
+          "description_with_entities": {
+           "text": "Do not post advertisements or spam"
+          }
+         },
+         {
+          "id": "3163956080298489",
+          "rule_title": "No political,religious or racist posts or comments",
+          "description_with_entities": {
+           "text": ""
+          }
+         },
+         {
+          "id": "4043712668989488",
+          "rule_title": "No selling, Fundraising or animal sales/giveaway",
+          "description_with_entities": {
+           "text": "Do not post items for sale or fund raising. No animals sales or giving away them away. Yard sales are okay"
+          }
+         },
+         {
+          "id": "5840084232685647",
+          "rule_title": "Do not block admins",
+          "description_with_entities": {
+           "text": "If you block an admin, we can still see your posts but you won’t be able to see ours. Your account will be on a list available for us to see. If you block a member of the admin panel, you will be suspended or removed from the group"
+          }
+         }
+        ]
+       }
+      }
+     }
+    },
+    {
+     "operation": "useGroupRequestToJoinMutation",
+     "status": 200,
+     "data": {
+      "viewer_join_state": "REQUESTED"
+     }
+    },
+    {
+     "operation": "GroupsCometMembershipQuestionsPreloadedDialogQuery",
+     "status": 200,
+     "data": {
+      "group": {
+       "id": "253754297985363",
+       "name": "You know you're from Bethlehem, PA...",
+       "membership_questions": [
+        {
+         "id": "4238909862803100"
+        },
+        {
+         "id": "4585278361499580"
+        },
+        {
+         "id": "7487292241298163"
+        }
+       ],
+       "has_email_verification_question": false,
+       "is_rules_agreement_enabled": true,
+       "viewer_must_answer_membership_question_to_submit": true,
+       "viewer_forum_join_state": "CANNOT_JOIN",
+       "participation_questionnaire_explanation_text": "You're almost ready to post and comment. Help admins get to know you by answering these questions.",
+       "if_viewer_can_see_membership_questions": {
+        "questions": [
+         {
+          "id": "4238909862803100",
+          "can_viewer_report": true,
+          "question": "When you are approved for membership, click on the “FEATURE TAB” under the cover photo.",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         },
+         {
+          "id": "4585278361499580",
+          "can_viewer_report": true,
+          "question": "What is your connection to Bethlehem?",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         },
+         {
+          "id": "7487292241298163",
+          "can_viewer_report": true,
+          "question": "What is your favorite place in Bethlehem that would only be known by someone who lived here? Be specific",
+          "question_type": "PARAGRAPH",
+          "question_options": []
+         }
+        ],
+        "id": "253754297985363"
+       },
+       "if_viewer_can_see_participation_questions": null,
+       "group_rules": {
+        "nodes": [
+         {
+          "id": "3163956073631823",
+          "rule_title": "Be Kind and Courteous",
+          "description_with_entities": {
+           "text": "Healthy debates are natural, but kindness is required."
+          }
+         },
+         {
+          "id": "3163956093631821",
+          "rule_title": "No Hate Speech or Bullying",
+          "description_with_entities": {
+           "text": "Bullying of any kind isn't allowed, and degrading comments about things like race, religion, culture, sexual orientation, gender or identity will not be tolerated."
+          }
+         },
+         {
+          "id": "3163956086965155",
+          "rule_title": "No profanity",
+          "description_with_entities": {
+           "text": "If you post/comment using profanity, it will be deleted"
+          }
+         },
+         {
+          "id": "3163956090298488",
+          "rule_title": "No Complaining",
+          "description_with_entities": {
+           "text": "This group is not for complaining about Bethlehem. Please do it elsewhere"
+          }
+         },
+         {
+          "id": "3163956083631822",
+          "rule_title": "No Advertising or Spam",
+          "description_with_entities": {
+           "text": "Do not post advertisements or spam"
+          }
+         },
+         {
+          "id": "3163956080298489",
+          "rule_title": "No political,religious or racist posts or comments",
+          "description_with_entities": {
+           "text": ""
+          }
+         },
+         {
+          "id": "4043712668989488",
+          "rule_title": "No selling, Fundraising or animal sales/giveaway",
+          "description_with_entities": {
+           "text": "Do not post items for sale or fund raising. No animals sales or giving away them away. Yard sales are okay"
+          }
+         },
+         {
+          "id": "5840084232685647",
+          "rule_title": "Do not block admins",
+          "description_with_entities": {
+           "text": "If you block an admin, we can still see your posts but you won’t be able to see ours. Your account will be on a list available for us to see. If you block a member of the admin panel, you will be suspended or removed from the group"
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  }
+ }
+}

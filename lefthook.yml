@@ -1,11 +1,70 @@
-# Git hooks managed by lefthook (https://github.com/evilmartians/lefthook).
-# Install after cloning: pnpm exec lefthook install
+pre-commit:
+  commands:
+    noComments:
+      run: bun run check:noComments
+
+    twikitTransport:
+      run: bun run check:twikitTransport
+
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
+
+    platforms:
+      run: bun run check:platforms
+
+    layout:
+      run: bun run check:layout
+
+    commitLog:
+      run: node scripts/commitLog/commitLog.mjs
+
+    browserParity:
+      run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
+
+    useCases:
+      run: bun run check:useCases
 
 pre-push:
-  jobs:
-    - name: hackathon log updated within 30 min
-      run: node scripts/check-hackathon-log.mjs
-    - name: no monospace fonts (brand rule)
-      run: node scripts/check-no-font-mono.mjs
-    - name: no tracking-* utilities (brand rule)
-      run: node scripts/check-no-tracking.mjs
+  parallel: false
+  commands:
+    noComments:
+      run: bun run check:noComments
+
+    twikitTransport:
+      run: bun run check:twikitTransport
+
+    rdvwrTransport:
+      run: bun run check:rdvwrTransport
+
+    platforms:
+      run: bun run check:platforms
+
+    naming:
+      run: bun run check:naming
+
+    layout:
+      run: bun run check:layout
+
+    browserParity:
+      run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
+
+    typecheck:
+      run: bun run typecheck
+
+    test:
+      run: bun test
+
+    facebookClientDocs:
+      run: bun run check:facebookClientDocs

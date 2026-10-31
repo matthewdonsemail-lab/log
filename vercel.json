@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "node scripts/build-site.mjs",
-  "outputDirectory": "apps/web/dist",
+  "installCommand": "npm install -g pnpm@10.5.2 && export PATH=\"$(npm prefix -g)/bin:$PATH\" && pnpm --version && cd site && pnpm install --frozen-lockfile",
+  "buildCommand": "export PATH=\"$(npm prefix -g)/bin:$PATH\" && cd site && node scripts/build-site.mjs",
+  "outputDirectory": "site/apps/web/dist",
   "rewrites": [
     { "source": "/api/kit/subscribe", "destination": "https://listeningkit.com/api/kit/subscribe" },
     { "source": "/docs/:path+", "destination": "/docs/:path+.html" },

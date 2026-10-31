@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "log": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["bin/logMcp.ts"]
+    }
+  }
+}

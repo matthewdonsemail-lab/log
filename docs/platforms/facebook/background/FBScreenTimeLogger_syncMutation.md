@@ -1,0 +1,278 @@
+# FBScreenTimeLogger_syncMutation
+
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+
+| | |
+| --- | --- |
+| Domain | background |
+| Kind | mutation |
+| doc_id | `28969188822673160` |
+| Path | `/api/graphql/` |
+| Sends | `input` |
+| Reads | `screen_time_sync.aggs` |
+| Called from | `FBScreenTimeLogger.react` |
+| rea | `ev_68e9ef803913efd9a768f3bca0ebdc2e2449065f0d511e1716262b1ed86b31d2` |
+
+Seen 107 time(s) in 32 run(s).
+
+| Action | Our step | Times | Status | Took | After step start | Errors |
+| --- | --- | --- | --- | --- | --- | --- |
+| warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 496 ms | 145 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 1 | 200 | 503 ms | 6848 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 1 | 200 | 631 ms | 16495 ms | — |
+| warmup | scroll: +531px in 14 wheel steps, 765 ms | 1 | 200 | 514 ms | 8077 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 421–2294 ms | 151337–1651976 ms | — |
+| inspect | step 13: wait 8s | 1 | 200 | 542 ms | 26897 ms | — |
+| inspect | step 23: press Escape | 1 | 200 | 633 ms | 5741 ms | — |
+| inspect | step 39: snapshot | 1 | 200 | 2124 ms | 4241 ms | — |
+| inspect | step 22: dwell 21.38s | 1 | 200 | 764 ms | 20848 ms | — |
+| inspect | post: "…", 50 words, 0 image(s), scrolled 742 px | 1 | 200 | 912 ms | 443 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 538 ms | 6418 ms | — |
+| inspect | step 31: clickRole button "…" | 1 | 200 | 660 ms | 96068 ms | — |
+| inspect | post: "…", 106 words, 1 image(s) | 1 | 200 | 845 ms | 5619 ms | — |
+| inspect | scroll: +783px in 18 wheel steps, 797 ms | 2 | 200 | 539–704 ms | 216636–516909 ms | — |
+| inspect | step 64: clickRole button "…" | 1 | 200 | 497 ms | 1245 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 3 | 200 | 396–426 ms | 219147–519435 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 447 ms | 4790 ms | — |
+| inspect | step 24: clickRole button "…" | 6 | 200 | 426–5897 ms | 266562–1767309 ms | — |
+| inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 412 ms | 36 ms | — |
+| inspect | step 44: dwell 18s | 1 | 200 | 474 ms | 790 ms | — |
+| inspect | step 82: dwell 1s | 1 | 200 | 425 ms | 5069 ms | — |
+| inspect | step 96: clickRole button "…" | 6 | 200 | 386–1201 ms | 184115–1686233 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 662 ms | 7270 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 1332 ms | 11562 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 464 ms | 10781 ms | — |
+| inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 1542 ms | 40440 ms | — |
+| inspect | step 5: wait 5s | 2 | 200 | 491–494 ms | 216260–516495 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 524 ms | 26832 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 10 | 200 | 430–1377 ms | 223677–1728919 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 6 | 200 | 572–2282 ms | 252472–1753170 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 558 ms | 10373 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 420 ms | 1941 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 806 ms | 6666 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 514 ms | 19383 ms | — |
+| inspect | step 20: dwell 2s | 2 | 200 | 497–801 ms | 171530–471647 ms | — |
+| inspect | scroll: +425px in 10 wheel steps, 360 ms | 1 | 200 | 419 ms | 937 ms | — |
+| inspect | scroll: +517px in 12 wheel steps, 500 ms | 1 | 200 | 417 ms | 3612 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 4 | 200 | 433–1378 ms | 278596–1179741 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 2 | 200 | 430–1366 ms | 96579–396929 ms | — |
+| inspect | step 8: wait 5s | 6 | 200 | 414–1661 ms | 144927–1646063 ms | error 1357053: Please review your account |
+| host | step 20: uploadRole button "…" | 1 | 200 | 695 ms | 277 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 6 | 200 | 684–794 ms | 274722–1776454 ms | — |
+| flow | step 13: fillRole textbox "…" | 1 | 200 | 615 ms | 12276 ms | — |
+| host | step 41: sellLocation | 5 | 200 | 543–621 ms | 149464–1350100 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 567–622 ms | 150003–450500 ms | — |
+| host | step 31: scroll 1 x 300-600px | 1 | 200 | 261 ms | 517 ms | — |
+| host | scroll: +270px in 8 wheel steps, 7023 ms | 1 | 200 | 300 ms | 66765 ms | — |
+| host | step 3: saveState | 1 | 200 | 327 ms | 15797 ms | — |
+| host | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 285 ms | 241632 ms | — |
+
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/host/20261026T180628_61594285317994**, step 31: scroll 1 x 300-600px: 200, 261 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594285317994",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-26T18:11:41.793Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1793038301",
+        "device_timezone": "America/Vancouver",
+        "intervals": [
+          {
+            "end_timestamp": "1793038301",
+            "start_timestamp": "1793038000"
+          }
+        ],
+        "local_storage_id": "69249927",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1793038000,
+        "today_s": 0
+      },
+      "trigger_reason": "EMPTY_STATE"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 875,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038300805,
+      "time_at_flush_ms": 1793038300916
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T180628_61594285317994**, scroll: +270px in 8 wheel steps, 7023 ms: 200, 300 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "521482085",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594285317994",
+      "client_mutation_id": "2",
+      "device_time_iso": "2026-10-26T18:16:45.552Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1793038605",
+        "device_timezone": "America/Vancouver",
+        "intervals": [
+          {
+            "end_timestamp": "1793038605",
+            "start_timestamp": "1793038000"
+          }
+        ],
+        "local_storage_id": "37892307",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1793038301,
+        "today_s": 875
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=521482085"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1179,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038604595,
+      "time_at_flush_ms": 1793038604706
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261026T170006_61594285317994**, step 3: saveState: 200, 327 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594285317994",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-26T17:01:11.176Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1793034071",
+        "device_timezone": "America/Vancouver",
+        "intervals": [
+          {
+            "end_timestamp": "1793033988",
+            "start_timestamp": "1793033464"
+          },
+          {
+            "end_timestamp": "1793034071",
+            "start_timestamp": "1793034021"
+          }
+        ],
+        "local_storage_id": "87908900",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1793033767,
+        "today_s": 303
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 574,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793034070391,
+      "time_at_flush_ms": 1793034070505
+    },
+    "is_final": true
+  }
+}
+```
+
+<!-- facts:end -->
+
+## What it does
+
+Logs time spent on screen.
+
+## What our machine does with it
+
+Nothing. The flow generator ignores it as a confirmation.
+
+## What can go wrong
+
+Harmless.

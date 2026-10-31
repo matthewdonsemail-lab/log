@@ -1,0 +1,68 @@
+%% Known page states (rule 54). From `PAGE_STATES` (`src/browser/flow/helpers/pageState.ts`), first match wins. The hooks report each with its resolver; only a person's state stops the account.
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart LR
+  page["A step lands on a page"]
+  person["Stop the account, tell matt"]
+  disabled["disabled: the account is disabled"]
+  page --> disabled
+  disabled --> person
+  videoSelfie["videoSelfie: Facebook's video selfie check"]
+  page --> videoSelfie
+  videoSelfie --> person
+  identityVerificationHold["identityVerificationHold: Facebook holds the listings until a person confirms their identity (Selling: #quot;Confirm your identity to publish this and any future listings#quot;#59; MarketplaceYourListingDialogQuery: INTEGRITY_NEEDS_VERIFICATION_VH)"]
+  page --> identityVerificationHold
+  identityVerificationHold --> person
+  textCaptcha["textCaptcha: a text captcha (#quot;Enter the text from the image#quot;)"]
+  page --> textCaptcha
+  textCaptcha -->|"log inspect do solve --live --account #lt;a#gt;"| nexttextCaptcha(["next state"])
+  checkpointStart["checkpointStart: a checkpoint's first page (#quot;confirm that you're human to use your account#quot;)"]
+  page --> checkpointStart
+  checkpointStart -->|"click Continue"| nextcheckpointStart(["next state"])
+  automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
+  page --> automatedBehaviour
+  automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  browserNotificationsNotice["browserNotificationsNotice: Facebook's browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)"]
+  page --> browserNotificationsNotice
+  browserNotificationsNotice -->|"press Escape"| nextbrowserNotificationsNotice(["next state"])
+  pastNoticeDialog["pastNoticeDialog: Facebook's #quot;What happened#quot; dialog about a limit on the account that has ended (#quot;Ended on #lt;date#gt;#quot;), over the page (Hazleton, host 20261024T211541 step 14)"]
+  page --> pastNoticeDialog
+  pastNoticeDialog -->|"press Escape"| nextpastNoticeDialog(["next state"])
+  messengerPinCreate["messengerPinCreate: Messenger's #quot;Create a PIN to access your chats on any device#quot;: the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)"]
+  page --> messengerPinCreate
+  messengerPinCreate -->|"run the recorded flow with the PIN from Twenty"| nextmessengerPinCreate(["next state"])
+  messengerPinEnter["messengerPinEnter: Messenger asks for the account's PIN to open its chats here (a PIN set before, met on another browser or device). Mapped 2026-10-22 before its first recording"]
+  page --> messengerPinEnter
+  messengerPinEnter -->|"type the PIN from Twenty"| nextmessengerPinEnter(["next state"])
+  marketplacePartnerListings["marketplacePartnerListings: Marketplace's #quot;Discover more when you shop#quot; (partner shops, shown where the Marketplace location is in Europe#59; Bethlehem was sent to Granada by a bare zip, 20261022T110738 step 2)"]
+  page --> marketplacePartnerListings
+  marketplacePartnerListings -->|"press its Update by ref"| nextmarketplacePartnerListings(["next state"])
+  marketplaceCreateLimitReached["marketplaceCreateLimitReached: Marketplace's create page answers that this account may not post now: its HTML says `marketplace_new_seller_can_post_item: false` and the page shows #quot;Limit reached#quot; (Bethlehem, inspect 20261023T045453 step 01#59; the same field was true on 2026-10-22, runs 20261022T105341 and 20261022T110738)"]
+  page --> marketplaceCreateLimitReached
+  marketplaceCreateLimitReached --> person
+  marketplacePartnerFeed["marketplacePartnerFeed: Marketplace answers with partner shops' listings (`product_details_type: PARTNER_LISTING`, a `partner_brand_name` and a `partner_listing_location`), from Europe though the account is in the US (Bethlehem, inspect 20261023T045453 step 03: Catawiki in Italy and buycycle-es, while `buy_location` was Bethlehem, Pennsylvania)"]
+  page --> marketplacePartnerFeed
+  marketplacePartnerFeed -->|"read the Marketplace location from its own answer"| nextmarketplacePartnerFeed(["next state"])
+  marketplaceDeleteSurvey["marketplaceDeleteSurvey: Marketplace's #quot;Did you sell this item?#quot; survey, shown after a listing is deleted (the delete is already done: `useCometMarketplaceForSaleItemDeleteMutation` answered its id#59; Bethlehem, inspect 20261023T173652 step 05)"]
+  page --> marketplaceDeleteSurvey
+  marketplaceDeleteSurvey -->|"click radio #quot;No, haven't sold#quot;"| nextmarketplaceDeleteSurvey(["next state"])
+  groupMembersList["groupMembersList: a group's People tab answered with more of its newest members: `GroupsCometMembersPageNewMembersSectionRefetchQuery` gave `new_members` edges, about 10 a call, each a profile with its bio, page category, followers and when they joined (61594063207669, inspect 20261024T060921 steps 04-21)"]
+  page --> groupMembersList
+  groupMembersList -->|"nothing to resolve"| nextgroupMembersList(["carry on"])
+  rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
+  page --> rememberPassword
+  rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
+  twoStepMethodPicker["twoStepMethodPicker: Facebook's two-step method picker (#quot;Choose a way to confirm it's you#quot;: Passkey, Authentication app, Backup code)#59; `TwoStepVerificationChallengePickerDialogQuery` lists them as `PASSKEY`, `TOTP`, `BACKUP_CODES` (Mountain Top, host 20261024T222706 step 15)"]
+  page --> twoStepMethodPicker
+  twoStepMethodPicker -->|"choose #quot;Authentication app#quot;"| nexttwoStepMethodPicker(["next state"])
+  twoStepPasskey["twoStepPasskey: Facebook asks for a passkey (#quot;Use face scan, fingerprint or screen lock to confirm it's you#quot;): no code box on the page, so `code` finds nothing (Mountain Top, host 20261024T222706 steps 08-14)"]
+  page --> twoStepPasskey
+  twoStepPasskey -->|"press #quot;Try another way#quot;"| nexttwoStepPasskey(["next state"])
+  twoStepCode["twoStepCode: two-step: the code field"]
+  page --> twoStepCode
+  twoStepCode -->|"log inspect do code --live --account #lt;a#gt;"| nexttwoStepCode(["next state"])
+  loginForm["loginForm: the login form"]
+  page --> loginForm
+  loginForm -->|"log inspect do signIn --live --account #lt;a#gt;"| nextloginForm(["next state"])
+  checkpoint["checkpoint: a Facebook checkpoint not mapped yet"]
+  page --> checkpoint
+  checkpoint -->|"take a snapshot, read the page, press its Continue/next control to see the next state"| nextcheckpoint(["next state"])

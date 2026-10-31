@@ -1,0 +1,20 @@
+import { hostOnPlatforms } from '../../../cli/runner/helpers/platforms'
+import { placeProblem } from '../../../facebook/marketplace/location/index'
+import type { InspectAction } from '../types'
+
+const ARITY: Record<InspectAction, number> = { goto: 1, snapshot: 0, click: 1, type: 2, press: 1, solve: 0, upload: 2, signIn: 0, code: 0, pin: 0, back: 0, wait: 0, stop: 0, clickRole: 2, fillRole: 3, uploadRole: 3, waitRole: 2, highlight: 2, scroll: 0, scrollIn: 2, openAny: 1, clickAny: 2, dwell: 0, saveState: 0, pageText: 0, sellLocation: 0, setLocation: 1, closeTab: 0, nextPost: 0, likePost: 0, postButton: 1 }
+
+export const LIVE_ACTIONS: readonly InspectAction[] = ['click', 'type', 'press', 'solve', 'upload', 'signIn', 'code', 'pin', 'clickRole', 'fillRole', 'uploadRole', 'clickAny', 'setLocation', 'likePost', 'postButton']
+
+export function parseInspectAction(argv: string[]): { ok: true; action: InspectAction; args: string[] } | { ok: false; error: string } {
+  const [name, ...args] = argv
+  if (!name || !(name in ARITY)) return { ok: false, error: `unknown action "${name ?? ''}" (one of ${Object.keys(ARITY).join(', ')})` }
+  const action = name as InspectAction
+  if (args.length < ARITY[action]) return { ok: false, error: `${action} needs ${ARITY[action]} argument(s)` }
+  if (action === 'goto' && !hostOnPlatforms(args[0])) return { ok: false, error: 'goto takes a https URL on a platform log-cli knows (facebook.com, x.com, …)' }
+  if (action === 'setLocation') {
+    const place = placeProblem(args.join(' '))
+    if (place) return { ok: false, error: `${place.code}: ${place.detail}` }
+  }
+  return { ok: true, action, args }
+}

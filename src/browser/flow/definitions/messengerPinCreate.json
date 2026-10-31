@@ -1,0 +1,106 @@
+{
+  "name": "messengerPinCreate",
+  "summary": "Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22.",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotomessages",
+      "action": "goto",
+      "url": "https://www.facebook.com/messages/",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 20547,
+        "reaEvidenceId": "ev_31ee052f4e1aa158657551e69b2d553d0a5bf8c7f5a80023f34474272e934eac",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "MWQuickPromotionThreadlistBannerQuery",
+          "FBScreenTimeLogger_syncMutation"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickCreatePin",
+      "action": "click",
+      "role": "button",
+      "name": "Create PIN",
+      "recorded": {
+        "step": "03_clickE225",
+        "ms": 7406,
+        "reaEvidenceId": "ev_baeb7441149ba17753b8f83e5843ba86a3fc57de0a03960c9e24a2e6b8ff983a",
+        "requests": [
+          "CometFeedInlineComposerQuery",
+          "CometModernHomeFeedQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometMegaphoneRootQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery",
+          "StoriesTrayRectangularRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_pin",
+      "action": "pin",
+      "recorded": {
+        "step": "05_pin",
+        "ms": 8953,
+        "reaEvidenceId": "ev_3bf0c2437b290b07e199d761b06b8c3ece65248fc26d4dba415daa8b3f4b686a",
+        "requests": [
+          "CometFeedInlineComposerQuery",
+          "CometHomeContentQuery",
+          "CometClassicHomeLeftRailContainerQuery",
+          "CometRightSideHeaderCardsQuery",
+          "CometHomeContactChannelsContainerQuery",
+          "CometHomeContactCommunityChatsContainerQuery",
+          "CometHomeContactGroupsContainerQuery",
+          "CometHomeContactsContainerQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_pin",
+      "action": "pin",
+      "expect": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+      "answers": [
+        {
+          "call": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+          "says": [
+            {
+              "answer": "data.fbid_based_auth_layer_vesta_begin_register.base64url_encoded_opaque_challenge",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "06_pin",
+        "ms": 8593,
+        "reaEvidenceId": "ev_031e8c6efccc3f884348046897eb76e9e7ad4e489c82f4ccd3ac0af2bd1a1ba1",
+        "requests": [
+          "VestaServerGraphQLRegisterProviderInitQuery",
+          "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+          "VestaServerGraphQLRegisterProviderFinishRegisterMutation",
+          "EBFetchBackupIdsSharedFragmentQuery",
+          "EBFetchBackupIdsSharedFragmentQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261022T100521_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T10:08:06.426Z"
+  }
+}

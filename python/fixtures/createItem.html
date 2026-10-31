@@ -1,0 +1,112 @@
+<!doctype html>
+<!--
+  A stand-in for facebook.com/marketplace/create/item, built from the markup
+  the live runs recorded (docs/listingPublish/formFill.md): label[role=combobox]
+  pickers, a hidden image input with an "N / 10" counter, div[role=button]
+  Next/Publish gated on aria-disabled, a Location combobox with suggestions.
+  Used to drive python/publishSession.py through a real Camoufox without
+  touching Facebook:  log publish ... --formUrl file:///.../createItem.html
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Marketplace | Create item (fixture)</title>
+<style>
+  body { font-family: sans-serif; max-width: 520px; margin: 24px auto; }
+  label { display: block; margin: 12px 0; border: 1px solid #ccc; padding: 8px; border-radius: 6px; }
+  [role="button"] { display: inline-block; padding: 8px 16px; background: #1877f2; color: #fff; border-radius: 6px; cursor: pointer; margin: 8px 0; }
+  [role="button"][aria-disabled="true"] { background: #aaa; cursor: default; }
+  [role="dialog"], [role="listbox"] { border: 1px solid #888; padding: 6px; background: #fff; }
+  [role="option"] { padding: 4px; cursor: pointer; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main role="main">
+  <div id="form">
+    <h1>Item for sale</h1>
+    <div id="photos">Photos · <span id="photoCount">0</span> / 10 - You can add up to 10 photos.</div>
+    <input id="file" type="file" accept="image/*,image/heif,image/heic" multiple style="display:none">
+    <label><span>Title</span><input id="title" type="text"></label>
+    <label><span>Price</span><input id="price" type="text"></label>
+    <label id="category" role="combobox" aria-expanded="false"><span>Category</span> <span class="value"></span> <svg width="10" height="10"><path d="M0 0L5 5L10 0"/></svg></label>
+    <label id="condition" role="combobox" aria-expanded="false"><span>Condition</span> <span class="value"></span> <svg width="10" height="10"><path d="M0 0L5 5L10 0"/></svg></label>
+    <label><span>Description</span><textarea id="description"></textarea></label>
+    <input id="location" role="combobox" aria-label="Location" type="text" value="">
+    <div id="locationList" role="listbox" class="hidden"></div>
+    <div id="next" role="button" aria-label="Next" aria-disabled="true">Next</div>
+  </div>
+  <div id="publishPage" class="hidden">
+    <p>Choose where to list</p>
+    <div id="publish" role="button" aria-label="Publish">Publish</div>
+  </div>
+  <div id="done" class="hidden">Listing published</div>
+</main>
+<div id="portal"></div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const portal = $('portal');
+  let photos = 0;
+  const closePortal = () => { portal.innerHTML = ''; for (const c of ['category', 'condition']) $(c).setAttribute('aria-expanded', 'false'); };
+  const gate = () => {
+    const ready = photos > 0 && $('title').value && $('price').value && $('category').querySelector('.value').textContent;
+    $('next').setAttribute('aria-disabled', ready ? 'false' : 'true');
+  };
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePortal(); });
+  for (const id of ['title', 'price']) $(id).addEventListener('input', gate);
+
+  // Hidden file input: the counter moves a moment later, like FB's upload.
+  $('file').addEventListener('change', () => {
+    const n = $('file').files.length;
+    setTimeout(() => { photos = Math.min(10, photos + n); $('photoCount').textContent = String(photos); gate(); }, 700);
+  });
+
+  // Category: a taxonomy dialog with a search box and buttons.
+  $('category').addEventListener('click', () => {
+    closePortal();
+    $('category').setAttribute('aria-expanded', 'true');
+    const names = ['Furniture', 'Household', 'Miscellaneous', 'Tools', 'Garden'];
+    portal.innerHTML = '<div role="dialog"><input type="search" placeholder="Search categories">' +
+      names.map((n) => `<div role="button" data-cat="${n}">${n}</div>`).join('') + '</div>';
+    for (const b of portal.querySelectorAll('[data-cat]')) b.addEventListener('click', () => {
+      $('category').querySelector('.value').textContent = b.dataset.cat; closePortal(); gate();
+    });
+  });
+
+  // Condition: a listbox with en-dash labels.
+  $('condition').addEventListener('click', () => {
+    closePortal();
+    $('condition').setAttribute('aria-expanded', 'true');
+    const names = ['New', 'Used – like new', 'Used – good', 'Used – fair'];
+    portal.innerHTML = '<div role="listbox">' + names.map((n) => `<div role="option">${n}</div>`).join('') + '</div>';
+    for (const o of portal.querySelectorAll('[role="option"]')) o.addEventListener('click', () => {
+      $('condition').querySelector('.value').textContent = o.textContent; closePortal();
+    });
+  });
+
+  // Location: suggestions appear while typing.
+  $('location').addEventListener('input', () => {
+    const typed = $('location').value.split(',');
+    const q = typed[0].trim();
+    // Like Facebook: the country typed, plus a same-named place elsewhere to catch a wrong pick.
+    const country = typed.length > 1 ? typed[typed.length - 1].trim() : 'Ireland';
+    const list = $('locationList');
+    if (q.length < 3) { list.classList.add('hidden'); return; }
+    list.innerHTML = [`${q}, United Kingdom`, `${q}, ${country}`, `${q} Bay, Ireland`].map((n) => `<div role="option">${n}</div>`).join('');
+    list.classList.remove('hidden');
+    for (const o of list.querySelectorAll('[role="option"]')) o.addEventListener('click', () => {
+      $('location').value = o.textContent; list.classList.add('hidden');
+    });
+  });
+
+  $('next').addEventListener('click', () => {
+    if ($('next').getAttribute('aria-disabled') === 'true') return;
+    $('form').classList.add('hidden'); $('publishPage').classList.remove('hidden');
+  });
+  $('publish').addEventListener('click', () => {
+    $('publishPage').classList.add('hidden'); $('done').classList.remove('hidden');
+    location.hash = '/marketplace/item/998877665544332';
+  });
+</script>
+</body>
+</html>

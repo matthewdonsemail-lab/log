@@ -1,0 +1,172 @@
+{
+  "name": "warmupMessagesVisit",
+  "summary": "Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "21_gotoHttpsWwwFacebook",
+        "ms": 22954,
+        "reaEvidenceId": "ev_965bc0e3fb58ce867ccd73708a95188d2510aed34b694b05f925aceec5d05411",
+        "requests": [
+          "CometMarketplaceNUXUpdateStateMutation",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s02_scroll",
+      "action": "scroll",
+      "args": [
+        "4-7",
+        "300-600"
+      ],
+      "answers": [
+        {
+          "call": "MarketplaceCometBrowseFeedLightPaginationQuery",
+          "says": [
+            {
+              "answer": "first.data.marketplace_home_feed",
+              "present": true
+            }
+          ],
+          "ifSent": true
+        }
+      ],
+      "recorded": {
+        "step": "22_scroll47X",
+        "ms": 24406,
+        "reaEvidenceId": "ev_a2451a6375caec28cd04791c67a3a179e20c585c82b992ae7f6b07e9b68a034c",
+        "requests": [
+          "MarketplaceCometBrowseFeedLightPaginationQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_gotomarketplaceYouSelling",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/you/selling",
+      "answers": [
+        {
+          "call": "page /marketplace/you/selling",
+          "says": [
+            {
+              "answer": "fields.current_marketplace.id",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "23_gotoHttpsWwwFacebook",
+        "ms": 18797,
+        "reaEvidenceId": "ev_87944fad03ad881236b0f70f9388cc39bb7fc0c4f37a6e34614060d3bf6107aa",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s04_dwell",
+      "action": "dwell",
+      "args": [
+        "2-4"
+      ],
+      "recorded": {
+        "step": "24_dwell24s",
+        "ms": 7187,
+        "reaEvidenceId": "ev_6725cf1f5466e3a60178efde92611df2bf01367d3b8bfede1de127a1ddb1c427",
+        "requests": []
+      }
+    },
+    {
+      "id": "s05_gotomessages",
+      "action": "goto",
+      "url": "https://www.facebook.com/messages/",
+      "answers": [
+        {
+          "call": "page /messages/",
+          "says": []
+        }
+      ],
+      "recorded": {
+        "step": "25_gotoHttpsWwwFacebook",
+        "ms": 11187,
+        "reaEvidenceId": "ev_46a1bfb437154469ec5a8e987feaafeae15869be2e545fbd6e88ffc8995824e1",
+        "requests": []
+      }
+    },
+    {
+      "id": "s06_dwell",
+      "action": "dwell",
+      "args": [
+        "2-3"
+      ],
+      "recorded": {
+        "step": "26_dwell23s",
+        "ms": 6469,
+        "reaEvidenceId": "ev_6ecb4dd07b2554f4b42bb5031b997b09f06be9263873f2818aad526a2625d94b",
+        "requests": [
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "RTWebCallBlockSettingHooksQuery",
+          "MWQuickPromotionThreadlistBannerQuery"
+        ]
+      }
+    },
+    {
+      "id": "s07_scroll",
+      "action": "scroll",
+      "args": [
+        "1",
+        "200-400"
+      ],
+      "recorded": {
+        "step": "27_scroll1X200",
+        "ms": 7641,
+        "reaEvidenceId": "ev_d27ea99c5886ec024edd47e333b6e025657d079733999782318f120664fe9ba3",
+        "requests": []
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T09:20:18.339Z"
+  }
+}

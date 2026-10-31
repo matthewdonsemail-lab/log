@@ -1,0 +1,77 @@
+# useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation
+
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+
+| | |
+| --- | --- |
+| Domain | background |
+| Kind | mutation |
+| doc_id | `25406806015621469` |
+| Path | `/api/graphql/` |
+| Sends | `is_new_user_soft_block`, `is_new_user_upsell` |
+| Reads | `xfb_mw_eb_log_auto_eb_high_friction_upsell_impression.did_log_impression`, `xfb_mw_eb_log_auto_eb_high_friction_upsell_impression.next_evergreen_pin_upsell_display_timestamp` |
+| Called from | `useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation` |
+| rea | `ev_062b90cc4064c410414e9804fa5d824221bb0d2a4d78d7648b090ef9987bac68` |
+
+Seen 4 time(s) in 4 run(s).
+
+| Action | Our step | Times | Status | Took | After step start | Errors |
+| --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 25: goto /messages/ | 2 | 200 | 390–498 ms | 2688–3681 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3318 ms | — |
+| host | step 40: goto /messages/ | 1 | 200 | 344 ms | 4643 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 344 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "is_new_user_upsell": true,
+    "is_new_user_soft_block": false
+  },
+  "doc_id": "25406806015621469"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_mw_eb_log_auto_eb_high_friction_upsell_impression": {
+      "did_log_impression": true,
+      "next_evergreen_pin_upsell_display_timestamp": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793038455289,
+      "time_at_flush_ms": 1793038455488
+    },
+    "is_final": true
+  }
+}
+```
+
+<!-- facts:end -->
+
+## What it does
+
+Logs that Messenger showed its PIN prompt for the encrypted chats (the "high friction upsell": the "Create a PIN to access your chats on any device" dialog). It sends whether the account is a new user being soft-blocked or upsold (`is_new_user_soft_block`, `is_new_user_upsell`), and reads back whether the impression was logged and when the PIN prompt may show again (`next_evergreen_pin_upsell_display_timestamp`). Both times it fired 2.7-3.7 s after step 25 opened /messages/, as the dialog became visible.
+
+## What our machine does with it
+
+It is the request that confirms the PIN dialog is on the page: it marks the `messengerPinCreate` state from the network side, as the snapshot's heading does from the page side. Today nothing waits for it: the state is read from the snapshot, and only matt's PIN clears it (`log facebook messenger pin`, then `log inspect do pin --live`). The PIN flow recorded from the Create PIN screens is to use it as its first step's confirming request.
+
+## What can go wrong
+
+None seen: both calls answered 200 in 390-498 ms. A failure would only lose Facebook's count of the prompt; the dialog itself still blocks the inbox until a PIN is set.

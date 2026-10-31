@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <script
+      src="https://www.google.com/recaptcha/enterprise.js?render=post-site-key"
+    ></script>
+  </head>
+  <body>
+    <reputation-recaptcha site-key="post-site-key"></reputation-recaptcha>
+    <r-post-composer-form
+      id="post-submit-form"
+      action="/svc/shreddit/graphql"
+      method="post"
+      enctype="application/json"
+      allowed-post-types='["TEXT","IMAGE","VIDEO","GALLERY","LINK","POLL","AMA"]'
+    >
+      <input name="subredditId" value="t5_2qh23" />
+      <input name="subredditName" value="test" />
+      <input name="prefixedName" value="r/test" />
+      <input name="recaptchaToken" value="" />
+      <input name="type" value="TEXT" />
+    </r-post-composer-form>
+    <community-author-flair>
+      <faceplate-radio-input
+        name="flairTemplateId"
+        value="efb7460c-7590-11ef-bb9f-562a77a80903"
+      >♡ ♡ Escapee ♡ ♡</faceplate-radio-input>
+    </community-author-flair>
+  </body>
+</html>

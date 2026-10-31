@@ -1,0 +1,3 @@
+[test]
+preload = ["./scripts/tests/preload.ts"]
+pathIgnorePatterns = ["site/**"]

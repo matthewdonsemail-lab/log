@@ -1,0 +1,42 @@
+{
+  "name": "log-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The marketing site and docs for log, served at log.listeningkit.com.",
+  "homepage": "https://log.listeningkit.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matthewdonsemail-lab/log.git"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@10.5.2",
+  "scripts": {
+    "dev": "concurrently -n web,docs -c blue,green \"pnpm --filter web dev\" \"pnpm --filter docs dev\"",
+    "dev:web": "pnpm --filter web dev",
+    "dev:docs": "pnpm --filter docs dev",
+    "build": "node scripts/build-site.mjs",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "preview": "pnpm --filter web preview",
+    "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\"",
+    "check:brand": "node scripts/check-no-font-mono.mjs && node scripts/check-no-tracking.mjs"
+  },
+  "devDependencies": {
+    "@shadcn/lint": "^0.1.0",
+    "@types/node": "^22",
+    "concurrently": "^9.1.0",
+    "oxlint": "^1.83.0",
+    "typescript": "~5.6.2",
+    "vitest": "^3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "overrides": {
+      "fumadocs-ui": "15.7.8",
+      "fumadocs-core": "15.7.8"
+    }
+  }
+}

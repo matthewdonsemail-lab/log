@@ -1,0 +1,331 @@
+{
+  "name": "marketplaceListingPublish",
+  "summary": "Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review).",
+  "params": [
+    {
+      "name": "location",
+      "kind": "text",
+      "description": "the Marketplace location, \"City, State\" with the state written out (\"Bethlehem, Pennsylvania\")"
+    },
+    {
+      "name": "photo1",
+      "kind": "file",
+      "description": "uploaded through button \"Add photos or drag and drop\""
+    },
+    {
+      "name": "photo2",
+      "kind": "file",
+      "description": "uploaded through button \"Add photo\""
+    },
+    {
+      "name": "title",
+      "kind": "text",
+      "description": "typed into textbox \"Title\""
+    },
+    {
+      "name": "price",
+      "kind": "text",
+      "description": "typed into textbox \"Price\""
+    },
+    {
+      "name": "description",
+      "kind": "text",
+      "description": "typed into textbox \"Description\""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 9329,
+        "reaEvidenceId": "ev_883b421fab42f69ac7b85774b2a38d61df529a8234cf3b4c527ff69e3e99af26",
+        "requests": []
+      }
+    },
+    {
+      "id": "s02_setLocation",
+      "action": "setLocation",
+      "value": "{location}",
+      "expect": "CometMarketplaceSetBuyLocationMutation",
+      "answers": [
+        {
+          "call": "CometMarketplaceSetBuyLocationMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_set_buy_location.viewer.marketplace_settings.buy_location.reverse_geocode.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "10_clickE1174",
+        "ms": null,
+        "reaEvidenceId": null,
+        "requests": [
+          "CometMarketplaceSetBuyLocationMutation"
+        ]
+      }
+    },
+    {
+      "id": "s03_gotomarketplaceCreateItem",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/create/item",
+      "answers": [
+        {
+          "call": "page /marketplace/create/item",
+          "says": [
+            {
+              "answer": "fields.marketplace_new_seller_can_post_item",
+              "is": true,
+              "code": "marketplaceMayNotPost"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.country_alpha_two",
+              "home": "country",
+              "code": "marketplaceLocationWrong"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "11_gotoHttpsWwwFacebook",
+        "ms": 20047,
+        "reaEvidenceId": "ev_a0092efb66b957f30eaf9c87e8c603a08eb9df937cce78c74683b12e950bf0d2",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "useMarketplaceComposerAttributesQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "FBScreenTimeLogger_syncMutation"
+        ]
+      }
+    },
+    {
+      "id": "s04_uploadAddPhotosOrDrag",
+      "action": "upload",
+      "role": "button",
+      "name": "Add photos or drag and drop",
+      "value": "{photo1}",
+      "recorded": {
+        "step": "13_uploadE155",
+        "ms": 7047,
+        "reaEvidenceId": "ev_b2efe202299190db4bfdd725157f407330673ef6ffcac8702e2cf258a8ab9036",
+        "requests": [
+          "CometNotificationsDropdownQuery",
+          "CometNotificationsDropdownQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_uploadAddPhoto",
+      "action": "upload",
+      "role": "button",
+      "name": "Add photo",
+      "value": "{photo2}",
+      "recorded": {
+        "step": "15_uploadE460",
+        "ms": 7328,
+        "reaEvidenceId": "ev_fc26424e2daf719dfc9b18e9306917e227ca8de815401de79e361f709434f318",
+        "requests": []
+      }
+    },
+    {
+      "id": "s06_fillTitle",
+      "action": "fill",
+      "role": "textbox",
+      "name": "Title",
+      "value": "{title}",
+      "recorded": {
+        "step": "16_typeE232",
+        "ms": 17657,
+        "reaEvidenceId": "ev_4b5985ac5a7cf1009395a4dc24cdbed1b99ca802050c53ebd6bff8de4491538d",
+        "requests": [
+          "useMarketplaceComposerPricePredictionQuery",
+          "CometNotificationsDropdownQuery",
+          "CometHomeCreateMenuContentQuery",
+          "CometHomeMegaMenuAllProductsQuery",
+          "CometHomeMegaMenuShortcutsQuery"
+        ]
+      }
+    },
+    {
+      "id": "s07_fillPrice",
+      "action": "fill",
+      "role": "textbox",
+      "name": "Price",
+      "value": "{price}",
+      "recorded": {
+        "step": "17_typeE241",
+        "ms": 7297,
+        "reaEvidenceId": "ev_bd5c2cf9410ef5e98b30b32f20b68980ded9e1ece4a814114f3fb3dc8e47bf22",
+        "requests": []
+      }
+    },
+    {
+      "id": "s08_clickCategory",
+      "action": "click",
+      "role": "combobox",
+      "name": "Category",
+      "recorded": {
+        "step": "18_clickE249",
+        "ms": 7547,
+        "reaEvidenceId": "ev_3b18f86931af1f538f8d92a73ff1f64d39710556ae7cd1171613cd620ec6679a",
+        "requests": []
+      }
+    },
+    {
+      "id": "s09_clickMiscellaneous",
+      "action": "click",
+      "role": "button",
+      "name": "Miscellaneous",
+      "recorded": {
+        "step": "19_clickE992",
+        "ms": 13531,
+        "reaEvidenceId": "ev_46da423377f2bfbe1edaafd81bf5fd8284cbe04bb312602ed64fb5c7f42c4c81",
+        "requests": [
+          "MarketplaceComposerAIPricingDialogImplSimilarListingsQuery",
+          "useMarketplaceComposerAttributesQuery",
+          "useMarketplaceComposerPricePredictionQuery",
+          "useMarketplaceComposerBISNumberEligibilityRefetchQuery",
+          "useListingShippableEligibilityCheckQuery"
+        ]
+      }
+    },
+    {
+      "id": "s10_clickCondition",
+      "action": "click",
+      "role": "combobox",
+      "name": "Condition",
+      "recorded": {
+        "step": "20_clickE264",
+        "ms": 6109,
+        "reaEvidenceId": "ev_50126ac7aad5b71aeb75a11349ee06367df45a5531706fa2dfa6b1375c490182",
+        "requests": []
+      }
+    },
+    {
+      "id": "s11_clickNew",
+      "action": "click",
+      "role": "option",
+      "name": "New",
+      "recorded": {
+        "step": "21_clickE1157",
+        "ms": 6235,
+        "reaEvidenceId": "ev_48388807c5240e6ff0a12e5e5c065c6468f2b80f9d2b0e6187440d998cbc6ff0",
+        "requests": []
+      }
+    },
+    {
+      "id": "s12_fillDescription",
+      "action": "fill",
+      "role": "textbox",
+      "name": "Description",
+      "value": "{description}",
+      "recorded": {
+        "step": "23_typeE281",
+        "ms": 7625,
+        "reaEvidenceId": "ev_7f9060167875b1c10f86bd2490dce8af8601ed85ab2d122cdfdde8de85899a01",
+        "requests": []
+      }
+    },
+    {
+      "id": "s13_clickNext",
+      "action": "click",
+      "role": "button",
+      "name": "Next",
+      "recorded": {
+        "step": "24_clickE367",
+        "ms": 7078,
+        "reaEvidenceId": "ev_304d69ef2ffbafd4fe65053150c0bd7a754649e28a77f3209d7c4091846bd7d1",
+        "requests": []
+      }
+    },
+    {
+      "id": "s14_clickPublish",
+      "action": "click",
+      "role": "button",
+      "name": "Publish",
+      "expect": "useCometMarketplaceListingCreateMutation",
+      "answers": [
+        {
+          "call": "useCometMarketplaceListingCreateMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_listing_create.listing.id",
+              "present": true,
+              "code": "noListingId"
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "25_clickE1241",
+        "ms": 8718,
+        "reaEvidenceId": "ev_f690809a6a60c7e4bf0d92cd883f0be2853a4cec8b9cb587b882a0a593d3edfd",
+        "requests": [
+          "useCometMarketplaceListingCreateMutation",
+          "FBScreenTimeLogger_syncMutation",
+          "MarketplaceYouSellingUpsellCardQuery",
+          "CometMarketplaceBoostListingPostPublishNuxDialogQuery"
+        ]
+      }
+    },
+    {
+      "id": "s15_clickClose",
+      "action": "click",
+      "role": "button",
+      "name": "Close",
+      "expect": "CometMarketplaceNUXUpdateStateMutation",
+      "answers": [
+        {
+          "call": "CometMarketplaceNUXUpdateStateMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_nux_update_state.viewer",
+              "present": true
+            }
+          ]
+        }
+      ],
+      "recorded": {
+        "step": "27_clickE1541",
+        "ms": 6343,
+        "reaEvidenceId": "ev_db4931f97e51ebdef060a918af30dda6481c052c4c9bdf7a032115c0472e31b9",
+        "requests": [
+          "CometMarketplaceNUXUpdateStateMutation"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261022T110738_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T11:22:19.791Z"
+  }
+}

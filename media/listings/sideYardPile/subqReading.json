@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-23T14:03:07.420Z",
+  "model": "subq-snap-1.1",
+  "images": [
+    "iosScribbled/before.jpg",
+    "iosScribbled/action.jpg",
+    "iosScribbled/after.jpg"
+  ],
+  "answers": {
+    "sceneMatchesWinners": {
+      "type": "noul",
+      "noul": 0.9939947724342346
+    },
+    "sameAngle": {
+      "type": "noul",
+      "noul": 0.9555899500846863
+    },
+    "hasAction": {
+      "type": "noul",
+      "noul": 0.958598792552948
+    },
+    "readsInstantly": {
+      "type": "noul",
+      "noul": 0.9648486375808716
+    },
+    "looksReal": {
+      "type": "noul",
+      "noul": 0.9958307147026062
+    },
+    "peopleConsistent": {
+      "type": "noul",
+      "noul": 0.9777117967605591
+    },
+    "authenticity": {
+      "type": "score",
+      "score": 1.9633554443717003,
+      "legend": {
+        "0": "staged or stock",
+        "1": "mixed",
+        "2": "raw phone snapshot"
+      },
+      "probabilities": {
+        "0": 0.0016820474993437529,
+        "1": 0.0332803949713707,
+        "2": 0.9650375247001648
+      },
+      "confidence": 0.9450332650449127
+    },
+    "closeness": {
+      "type": "score",
+      "score": 1.606360763311386,
+      "legend": {
+        "0": "unlike the winners",
+        "1": "partly like the winners",
+        "2": "in the winners' composition"
+      },
+      "probabilities": {
+        "0": 0.008027874864637852,
+        "1": 0.3775833547115326,
+        "2": 0.6143887042999268
+      },
+      "confidence": 0.40954134333878756
+    },
+    "missingElement": {
+      "type": "choice",
+      "choice": "truckOrTrailerAtHouse",
+      "probabilities": {
+        "none": 0.10957645624876022,
+        "truckOrTrailerAtHouse": 0.8114483952522278,
+        "crewInAction": 0.041724275797605515,
+        "sameAngleAfter": 0.021078765392303467,
+        "messLevel": 0.010068178176879883,
+        "phoneSnapshotLook": 0.006104041822254658
+      },
+      "confidence": 0.7737380743026734
+    }
+  },
+  "usage": {
+    "input_tokens": 17663,
+    "output_tokens": 0
+  }
+}

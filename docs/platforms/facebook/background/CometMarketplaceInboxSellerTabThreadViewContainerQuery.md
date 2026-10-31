@@ -1,0 +1,182 @@
+# CometMarketplaceInboxSellerTabThreadViewContainerQuery
+
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
+
+| | |
+| --- | --- |
+| Domain | background |
+| Kind | query |
+| doc_id | `28084990444460312` |
+| Path | `/api/graphql/` |
+| Sends | `availabilities`, `filterLabels`, `listingId`, `lookBackInDays`, `search`, `unreadOnly` |
+| Reads | `viewer....CometMarketplaceInboxSellerTabThreadView_viewer` |
+| Called from | `CometMarketplaceInboxSellerTabThreadViewContainer.react` |
+| rea | `ev_fc63e98f46e063737ab32b1a0cc16802e92ec469b6ff41b72407ec3fa04b31f8` |
+
+Seen 13 time(s) in 6 run(s).
+
+| Action | Our step | Times | Status | Took | After step start | Errors |
+| --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 659–1209 ms | 6540–20812 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 753 ms | 4340 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 635 ms | 2167 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 531–868 ms | 3154–70619 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2088 ms | 2644 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 525–1205 ms | 1806–1514806 ms | — |
+
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261025T065539_61593939852820**, step 3: goto /marketplace/inbox: 200, 868 ms
+
+Sent:
+
+```json
+{
+  "__jssesw": "341",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911408676,
+      "time_at_flush_ms": 1792911409211
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T064655_61593981307720**, step 6: goto /marketplace/inbox: 200, 525 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911301642,
+      "time_at_flush_ms": 1792911301803
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 2088 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792674437397,
+      "time_at_flush_ms": 1792674437679
+    },
+    "is_final": true
+  }
+}
+```
+
+<!-- facts:end -->
+
+## What it does
+
+The seller tab of Marketplace's inbox (`/marketplace/inbox?targetTab=SELLER`): the account's buyer chats about its listings (`marketplaceInboxSellerMessageThreads.edges`, with `page_info`). It sends the inbox's filters (`listingId`, `unreadOnly`, `lookBackInDays`, `search`, `filterLabels`, `availabilities`). On Bethlehem (inspect 20261022T113536) it fired as the inbox loaded and answered with no threads (`edges: []`).
+
+## What our machine does with it
+
+It is what the Marketplace check reads for chats (`sellerInboxOf`, `src/facebook/marketplace/check`; rule 69): every host round and `log facebook check`. With no threads it says so; with some it counts them and keeps them as sent in the run folder, because a thread's own fields aren't mapped until a recording holds a real one (rule 29). Mapping them is how chats will reach Twenty's conversations (rule 34).
+
+## What can go wrong
+
+None seen: three calls, 200 in 659-1209 ms. If it failed or didn't fire, the check says "the seller inbox didn't load" and moves Twenty nothing; the host's next round reads it again.

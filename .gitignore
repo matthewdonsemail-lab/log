@@ -1,71 +1,26 @@
-# deps
 node_modules/
-.pnpm-store/
-
-# builds
-dist/
-dist-ssr/
-*.local
-
-# fumadocs (runs as its own Next server on :3001, proxied by the web app)
-apps/docs/.next/
-apps/docs/.source/
-apps/docs/out/
-
-# vite
-.vite/
-vite.config.*.timestamp-*
-
-# tsc
-*.tsbuildinfo
-
-# editors / OS
-.vscode/*
-!.vscode/extensions.json
-.idea/
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# env
+.scratch/
 .env
 .env.local
-.env.*.local
-
-# logs
-logs/
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# turbo / misc
-.turbo/
-.vercel/
-
-# playwright-cli artifacts
-.playwright-cli/
-
-# railcode deploy sync state (per-folder; never commit)
-.railcode
-
-# audio / video / captions (never commit binary media or transcripts)
-*.mp3
-*.mp4
-*.srt
-
-# per-route screen-recording scripts for the "How does {Route} work?" videos
-HowToUseVideoScripts/
-
-# documents (never commit binary office files)
-*.docx
-
 __pycache__/
-*.pyc
 
-.vercel
-.env*
+# vendor orders carry live cookies, tokens and 2FA secrets
+docs/vendors/*.txt
+
+# matt's messages and everything built from them stay on this machine (~/.logCli), never in git
+.logCli/
+pairs.json
+profiles.json
+readings.jsonl
+**/conversations/**/*.json
+**/search/voice/
+**/MATT_COMMUNICATION_MAP/
+
+# AdsPower's own skill, installed by `npx skills add https://github.com/adspower/adspower-browser --skill adspower-browser`
+# (vendor kebab-case names, kept out of git per rule 1; skills/adsPower/SKILL.md says how to reinstall)
+.agents/
+.claude/skills/adspower-browser
+skills/adspower-browser
+skills-lock.json
+# Playwright MCP console logs
+.playwright-mcp/
