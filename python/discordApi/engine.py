@@ -102,15 +102,9 @@ def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[
     before = None
     while len(out) < limit:
         url = f"/api/v9/channels/{channel_id}/messages?limit={min(100, limit - len(out))}" + (f"&before={before}" if before else "")
-        for _ in range(4):
-            data, status = client.request("GET", url, None, client.header)
-            if status != 429:
-                break
-            try:
-                wait = float(json.loads(data).get("retry_after", 2))
-            except Exception:
-                wait = 2.0
-            time.sleep(min(wait, 30) + 0.2)
+        data, status = client.request("GET", url, None, client.header)
+        if status == 429:
+            return out, "messages answered 429: the read stops here, nothing retried (rule 94)"
         if status != 200:
             return out, f"messages answered {status}"
         page = prepare_messages(json.loads(data))
@@ -165,7 +159,7 @@ def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str
         return {"ok": False, "code": "platformError", "detail": f"channel {channel}: {problem}", "loginState": "loggedIn"}
     me = str(client.my_id)
     picked = [m for m in reversed(messages) if not after or int(m["id"]) > int(after)]
-    return {"ok": True, "loginState": "loggedIn", "channelId": channel, "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": problem} if problem else {}), "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:

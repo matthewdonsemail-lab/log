@@ -16,10 +16,11 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Following up in your own voice](twitter/followUps.md) | drafts each follow-up from how you write to that person, gates it, and sends one message per line after you say yes |
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |
+| Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
 
 ## The parts every use case is built from
 
-- **An account in Twenty** (`socialAccounts`): its home, its session, its status. Nothing else holds accounts.
+- **An account in Twenty** (`socialAccounts`): its home, its session, its status. Or a local account in `~/.logCli/localAccounts.json` (`log localAccount add`), which wins over a Twenty row of the same name; `LOG_ACCOUNTS=local` leaves Twenty out.
 - **An engine:** the direct API where there is one (twikit for X, fbk for Facebook reads), the account's own browser otherwise. The README's Engines section says which command uses which.
 - **The platform's own answer decides:** every step reads what the platform sent back, never the screen or a timer.
 - **A dry run first:** anything that acts on a platform does nothing without `--live`, and over MCP it is a separate `…Live` tool that needs `confirmLive`.

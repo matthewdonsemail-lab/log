@@ -8,6 +8,7 @@ flowchart TB
   subgraph g_any["Any platform"]
     c_launch["launch"]
     c_adsPower["adsPower"]
+    c_localAccount["localAccount"]
     c_inspect["inspect"]
     c_flow["flow"]
     c_proxy["proxy"]
@@ -90,6 +91,8 @@ flowchart TB
   mcp --> c_account
   cli --> c_adsPower
   mcp --> c_adsPower
+  cli --> c_localAccount
+  mcp --> c_localAccount
   cli --> c_lifecycle
   mcp --> c_lifecycle
   cli --> c_preflight

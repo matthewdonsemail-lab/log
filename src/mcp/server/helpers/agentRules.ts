@@ -69,6 +69,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   doctor: [12],
   proxy: [12, 33, 41, 43, 51, 52],
   adsPower: [42, 44, 78, 84],
+  localAccount: [42, 44, 78, 84],
   capture: [19, 22, 26, 27, 46, 48, 85],
   account: [13, 37, 78],
   accounts: [13],

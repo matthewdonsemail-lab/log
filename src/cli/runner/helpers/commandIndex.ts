@@ -12,6 +12,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "accounts", platform: "facebook", module: "src/cli/account/index.ts", exportName: "accountsCommand" },
   { name: "account", platform: "facebook", module: "src/cli/account/index.ts", exportName: "accountCommand" },
   { name: "adsPower", platform: "any", module: "src/cli/adsPower/index.ts", exportName: "adsPowerCommand" },
+  { name: "localAccount", platform: "any", module: "src/cli/localAccount/index.ts", exportName: "localAccountCommand" },
   { name: "lifecycle", platform: "facebook", module: "src/cli/lifecycle/index.ts", exportName: "lifecycleCommand" },
   { name: "preflight", platform: "facebook", module: "src/cli/preflight/index.ts", exportName: "preflightCommand" },
   { name: "doctor", platform: "facebook", module: "src/cli/live/index.ts", exportName: "doctorCommand" },

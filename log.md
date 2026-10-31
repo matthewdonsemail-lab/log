@@ -9011,3 +9011,31 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: new `docs/infra/buzzMembers.md` explains how existing members join ListeningKit's self-hosted Buzz from desktop or phone, how to join with an identity already on the phone, how to move an existing identity to a new phone through `nostrpair://` device pairing or an `nsec` backup, how an owner/admin adds a new member's `npub`, the common join errors, and the known media/Git migration limits. `docs/infra/node02.md` links to it from the Buzz relay section.
 Why: members need a safe, copyable guide for using the new `wss://buzz.listeningkit.com` community without creating replacement identities or exposing their private keys.
 Checked: `bun run check`; the public relay and pairing endpoint were already verified live, and the guide was checked against the mobile NIP-AB pairing flow (`nostrpair://`, SAS confirmation, desktop-generated code).
+
+## 2026-10-31 02:20Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/discord.md`: edited
+- `docs/guides/facebookBrowser.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/discord/groupChatRead.md`: new file
+- `python/discordApi/engine.py`: changed def history_of, def read_of
+- `src/cli/discord/index.ts`: changed const DISCORD_READ_INPUT, const discordReadCommand
+- `src/cli/localAccount/index.ts`: added const LOCAL_ACCOUNT_USAGE, const localAccountCommand
+- `src/cli/runner/client.ts`: changed function createContext
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twenty/graphql/helpers/index.ts`: added export from "./localAccounts"
+- `src/twenty/graphql/helpers/localAccounts.ts`: added type Row, const ACCOUNTS, const LOCAL_ID_PREFIX, function localAccountsPath, function localOnly, function isLocalId, function readLocalAccounts, function writeLocalAccounts, function upsertLocalAccount, function withLocalAccounts
+- `src/twenty/graphql/localAccounts.test.ts`: added function setup, test "an account only in the local file is found by its accountName, Twenty never having it", test "a local row wins over a Twenty row of the same accountName, so the lookup is not ambiguous", test "a session saved to a local account goes to the file and leaves Twenty alone", test "LOG_ACCOUNTS=local leaves Twenty out of accounts entirely"
+
+What changed: accounts can live in a local file instead of Twenty. `withLocalAccounts` wraps the Twenty client: rows in `~/.logCli/localAccounts.json` (moved by `LOG_LOCAL_ACCOUNTS`) are found by accountName, a local row wins over a Twenty row of the same name, and a captured session (`keepSession`) saves back to the file. `LOG_ACCOUNTS=local` leaves Twenty out entirely. New `log localAccount add|list` manages the rows (`--adsPower` sets the profile and the adsPower driver). `log discord read --limit` goes up to 1000, and a 429 now stops the read with what was read so far instead of retrying (rule 94). New use case `docs/useCases/discord/groupChatRead.md` writes the read down step by step, and the use-case index now names local accounts.
+Why: the Discord account wasn't in Twenty, and the owner wanted log-cli to work locally without Twenty at all. The 200 cap only reached about 1h45 of a busy group chat.
+Checked: `bun run check` (1194 pass); `log localAccount add` then `log inspect start --account sourcedandsoldtothehighestbidder` opened AdsPower profile k1ifqe1s, the owner signed in, stopping it saved 12 cookies and the token to the local file, `log discord session check` answered loggedIn, and `log discord read --limit 800` read 226 messages from the `log` group.
