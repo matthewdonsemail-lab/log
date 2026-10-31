@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 98;
+export const RULES_REVIEWED_THROUGH = 99;
 
 export const AGENTS_URI = "log://agents";
 
@@ -33,6 +33,7 @@ export const CORE_PRINCIPLES = [
   "26. The work matt asks for again and again is a use case (docs/useCases/<platform>/<page>.md): how he asks for it, then its steps, each naming its tool. When he asks for work a use case covers, read it with `getGuide({ useCase })` and follow it step by step, never improvise; each tool names the use cases that call it. The pre-commit review asks SubQ whether this session's work left a page stale or uncovered (rule 95).",
   "27. An X account makes up to 90 writes a day (sends, likes, reposts, follows), Discord 60, every other platform 40; X's own answer (344) still stops it (rule 96).",
   "28. A first message to someone matt has never talked with is the opener only: about them and what they posted, always relevant, never the ask (no pitch, no \"you using treg\", no call); the ask waits until they answer, and `voice` fails a first message with one (rule 98).",
+  "29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 

@@ -9171,3 +9171,19 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: rule 98, a first message to someone matt never talked with is the opener only, always relevant, never the ask. `log voice` asks SubQ a new question, `openerOnly` (a first dm with no pitch, no question about his tools, no call), shown as `opener only` and needed to pass. engagerDms.md and networkMaxing.md say the opener stops before any ask, the examples drop "you using <tool>", and someone with nothing relevant to open on isn't messaged yet; the MCP instructions carry rule 98 and the voice and twitterDm tools cite it. GUIDES/MATT_WRITING_STYLE.md (outside the repo) has the same line.
 Why: five openers went out ending "you using treg for anything"; matt: "the opener always relevant ... don't just go in for the jugular, go in with the opener."
 Checked: `bun run check` (1197 pass); live, the gate failed jamesfuller_dev's opener with the treg ask (opener only 0.08) and passed the same opener without it (1.00).
+
+## 2026-10-31 04:53Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+
+What changed: rule 99, network maxing grows matt's network, which is his niche map. networkMaxing.md opens with that, step 4 gets to know them, step 7 takes new people from the niche map first (real roles, closest first, not yet talked to), "Keep it about them" is added, and writing back to the niche map is listed as not built. Both use-case indexes list the page; the MCP instructions carry rule 99. The niche map's path is in the agent memory, since use-case pages never name the owner's files.
+Why: matt: "the conversation will be getting to know about them and what they're doing. But the whole point of it is to expand our network, which is the niche map."
+Checked: `bun run check` (1197 pass); docs build; the use-case review passed every page.

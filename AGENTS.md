@@ -1201,6 +1201,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     relevant to open on isn't messaged yet. `docs/useCases/twitter/engagerDms.md`,
     `networkMaxing.md`, `GUIDES/MATT_WRITING_STYLE.md`.
 
+99. 2026-10-31 · matt: "network maxing is basically making it so the
+    conversation will be getting to know about them and what they're
+    doing. But the whole point of it is to expand our network, which is
+    the niche map." Network maxing grows the niche map (the people around
+    the communities and creators in his niche, with their role, whether
+    they follow him and how close they are). New people come from it
+    first: real roles, closest first, not yet talked to. Every message is
+    about them and what they're doing, never what matt sells (rule 98 for
+    the opener). Where the map lives is in the agent memory, not in the
+    repo. `docs/useCases/twitter/networkMaxing.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
