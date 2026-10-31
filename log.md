@@ -9316,3 +9316,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: vercel.json's install command installs pnpm 10.5.2 before `cd site && pnpm install --frozen-lockfile`.
 Why: with Node back, Vercel's default pnpm ignored the site's pnpm 10 lockfile ("Ignoring not compatible lockfile", ERR_PNPM_FROZEN_LOCKFILE_WITH_OUTDATED_LOCKFILE). The old root package.json pinned pnpm@10.5.2 through packageManager; the root is log-cli's now, so the install command pins it.
 Checked: read the second failed deployment's log with `vercel inspect --logs`. The preview build this push starts is the real check.
+
+## 2026-10-31 07:40Z · feat/publicInstall
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vercel.json`: edited
+
+What changed: vercel.json puts npm's global bin first on PATH in both the install and build commands, so the pnpm 10.5.2 it installs is the one that runs, and the install prints `pnpm --version`.
+Why: with pnpm 10.5.2 installed, the third preview still said "Ignoring not compatible lockfile", the same as before. The lockfile installs with 10.5.2 here, so Vercel's own pnpm was still the one on PATH.
+Checked: vercel.json parses. The build log's pnpm version line and the preview build this push starts are the real check.
