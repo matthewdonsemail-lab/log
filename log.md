@@ -9307,3 +9307,12 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the root package.json names Node 24 in `engines` beside Bun.
 Why: Vercel saw log-cli's bun.lock and Bun engine at the repo root and built the site on a Bun image with no Node ("Node.js version changed from 24.x to 1.4.x", then "env: node: No such file or directory"), so `cd site && pnpm install` failed on #10 and #11.
 Checked: read the failed deployment's log with `vercel inspect --logs`. The preview build this push starts is the real check.
+
+## 2026-10-31 07:38Z · feat/publicInstall
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vercel.json`: edited
+
+What changed: vercel.json's install command installs pnpm 10.5.2 before `cd site && pnpm install --frozen-lockfile`.
+Why: with Node back, Vercel's default pnpm ignored the site's pnpm 10 lockfile ("Ignoring not compatible lockfile", ERR_PNPM_FROZEN_LOCKFILE_WITH_OUTDATED_LOCKFILE). The old root package.json pinned pnpm@10.5.2 through packageManager; the root is log-cli's now, so the install command pins it.
+Checked: read the second failed deployment's log with `vercel inspect --logs`. The preview build this push starts is the real check.
