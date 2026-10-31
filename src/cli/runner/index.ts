@@ -36,6 +36,7 @@ import { dispatchWith, runWith } from "./client.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
 import { discordChatsCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
+import { linkedinCookiesCommand, linkedinSessionCommand } from "../linkedin/index.ts";
 
 export * from "./helpers/index.ts";
 export { ALIASES, createContext, defaultSendInspect, runFast, takeProxyMs } from "./client.ts";
@@ -105,6 +106,8 @@ export const COMMANDS: Command[] = [
   discordReadCommand,
   discordWatchCommand,
   discordSendCommand,
+  linkedinSessionCommand,
+  linkedinCookiesCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

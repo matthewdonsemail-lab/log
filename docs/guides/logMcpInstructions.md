@@ -117,6 +117,7 @@ Its rules are matt's, in AGENTS.md (read the resource log://agents; the newest r
 28. A first message to someone matt has never talked with is the opener only: about them and what they posted, always relevant, never the ask (no pitch, no "you using treg", no call); the ask waits until they answer, and `voice` fails a first message with one (rule 98).
 29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).
 30. A reaction to matt's message, or their read receipt past it, means they opened it: `twitterDms` { waiting: true, limit: "200" } lists it apart as a follow-up to send (about them and what they're doing, never the opener again, never the ask), not a reply they're waiting on (rule 100).
+31. LinkedIn is reached only through vendor/openLinkedinApi's one curl_cffi Session pinned to Chrome (`IMPERSONATE`), never plain `requests`, and every call goes through the account's governor; a LinkedIn account writes at most 10 times a day (rule 102).
 A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.
 
 ## Which guide for which work
@@ -134,6 +135,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `xAccount` | An X account's session: saving and checking its cookies, and who follows whom |
 | `discord` | A Discord account: its session, chats, reading, the live gateway watch and sending |
 | `reddit` | A Reddit account's session |
+| `linkedin` | A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn |
 | `accountsAndProxies` | Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base and the conversation search, keyword and meaning at once |
@@ -459,3 +461,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 100.** 2026-10-31 · matt: "reactions are indicators of open messages, so we can then add that as a thing we can follow up on", then "for our already opened messages". When someone's last event is a reaction to matt's message, or their read receipt is past his last message (X Chat's read-marker events, the old DM API's `last_read_event_id`), they opened it and didn't type back: it isn't a reply waiting on him, it's a follow-up to send. `log twitter dms --waiting` lists those apart (`reactedOnly`, `openedNoReply`, `followUpDue`, `src/twitter/dm/person`; `openedByThem` on each thread; `--json` gives `followUps`), and the follow-up is the network-maxing kind: about them and what they're doing, never the opener again and never the ask. `docs/useCases/twitter/networkMaxing.md` ("Everyone who reacted"), `dmInbox.md`.
 
 **Rule 101.** 2026-10-31 · matt: "increase it to be 240 writes to twitter". An X account makes up to 240 writes a day, not 90 (this replaces rule 96's number; `WRITES_PER_DAY`, `src/directApi/engine`). X's own answer still decides: a 344 stops the run and nothing more goes out until matt says so. Discord keeps 60, every other platform 40.
+
+**Rule 102.** 2026-10-30 · mandeep: LinkedIn goes out looking like a browser, the way X does (rule 81). `vendor/openLinkedinApi` reaches LinkedIn only through one curl_cffi `Session` in `open_linkedin_api/transport.py`, pinned to one impersonation target (`IMPERSONATE`, `chrome150`, the closest to the Chrome its cookies come from), sending the target's own user agent, never the library's fixed one or plain `requests`. `python/checks/linkedinTransport.py` refuses anything else (`bun run check:linkedinTransport`, pre-commit and pre-push). Every LinkedIn call runs through the account's governor (`python/platformKit/engine.py`), and a LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not 40 (rule 91).

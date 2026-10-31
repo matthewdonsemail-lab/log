@@ -9233,6 +9233,153 @@ What changed: an opened message with no reply is a follow-up too, not only a rea
 Why: matt: "for our already opened messages" follow up as well; then "increase it to be 240 writes to twitter".
 Checked: `bun run check` (1201 pass) with tests for both helpers; live, `log twitter dms --waiting --limit 200` listed clicknify and jeffersonighalo as opened from their read receipts, beside the reactions; the 10 old-DM threads that show the other person's read position were checked by hand.
 
+## 2026-10-30 18:15Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now has the node02 log MCP stack (`/home/deepman/services/logMcp`). It covers the bare repo the PC pushes to, the `log-mcp` container and its Dockerfile and compose file, what the `.env` holds (names only), the data folders, the planned Tailscale Funnel on `:8443` with only `/mcp`, `/oauth` and `/.well-known`, the chat-xdk source build with juicebox-sdk 0.3.7, the separate X governor and how to update it. The SSH line now says `deepman@`, since the tailnet policy refuses `root`. `log-mcp-token.txt` is listed with the other logins.
+Why: mandeep asked to set log-cli up with HTTPS, on node02 through Tailscale, for claude.ai/Duet connectors and for Claude Code elsewhere.
+Checked: on node02 the container answers 401 with no token. With the token, `initialize` and `tools/list` return 148 tools, and the OAuth metadata names `https://node02.tail4fcf85.ts.net:8443`. Funnel itself is still waiting on the tailnet policy.
+
+## 2026-10-30 18:52Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now says log MCP's public address `https://node02.tail4fcf85.ts.net:8443/mcp` is live through Tailscale Funnel: only `/mcp`, `/oauth` and `/.well-known`, and what it took (node02 allowed for Funnel, deepman as Tailscale operator). It adds how to connect a claude.ai or Duet connector (the sign-in browser must be on the tailnet, since Twenty is tailnet only) and Claude Code elsewhere (`claude mcp add --transport http` with the bearer token).
+Why: mandeep allowed node02 for Funnel and set the operator, then asked to finish the HTTPS setup.
+Checked: fetched from outside the tailnet (treg tinyfish.web.fetch): the protected-resource and authorization-server metadata answer, `:8443/` is 404, and `https://node02.tail4fcf85.ts.net/` (Twenty) is unreachable.
+
+## 2026-10-30 19:30Z · docs/logMcpNode02
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/node02.md`: edited
+
+What changed: `docs/infra/node02.md` now gives log MCP's fixed address, `https://mcp.listeningkit.com/mcp`, served by the Cloudflare tunnel `listeningkit-node02`. That tunnel has an ingress rule for only `/mcp`, `/oauth/*` and `/.well-known/*` to `http://172.17.0.1:7337`, and a proxied `mcp` CNAME. The doc covers the container listening on the Docker bridge (`command:` in `compose.yaml`), `LOG_MCP_PUBLIC_URL=https://mcp.listeningkit.com`, why `log.listeningkit.com` wasn't used (it points at Vercel), how to connect, and that the Tailscale Funnel on `:8443` is off. Twenty has a matching Note, "Infrastructure: log MCP server (mcp.listeningkit.com)".
+Why: mandeep asked for a proper domain name that stays the same, with the details in Twenty.
+Checked: from the internet, `/mcp` with no token gives 401, with the token `initialize` answers, both OAuth metadata documents name `https://mcp.listeningkit.com`, and `/` and `/admin` give 404. From the `listeningkit-twenty_internal` network, `172.17.0.1:7337` answers 401.
+
+## 2026-10-29 02:05Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/cookies.test.ts`: added const TWID · changed test "a new handle: checked with X first, then a TWITTER row with the cookies, loggedIn and its style; nothing secret printed", test "an existing handle has its cookies replaced, not a second row", test "cookies X refuses, or for another handle, save nothing"
+- `src/cli/twitter/helpers/cookies.ts`: changed const COOKIES_USAGE, const COOKIES_INPUT, const cookiesCommand
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+
+What changed: `log twitter cookies save` asks for a third cookie, twid, after auth_token and ct0, and saves it with them. The usage, the terminal-only note and `skills/xPosting` name all three.
+Why: the first real save (@deepman_1) was refused with twidMissing: X accepted auth_token and ct0, but the engine reads the account's id from twid, so the ping can't finish without it.
+Checked: @deepman_1 saved to Twenty with the three cookies, loggedIn as 2039389784808853504, and `log twitter session check --account deepman_1` answers loggedIn; the cookie-save tests pass with twid (31 pass in src/cli/twitter).
+
+## 2026-10-29 02:13Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills/xPosting/SKILL.md`: edited
+
+What changed: `skills/xPosting` gains the growth loop matt runs on @matthewsoldit, in order: one original post by the playbook, every comment answered in the first 2 hours, a trend quoted an hour later, DMs to the likers and reposters the cold DM way, topic replies every day inside 40 writes, the inbox answered (never a cold template to someone already talked to), followers scored weekly with treg, leads into Twenty. Each step names its use-case page and commands. It also says `log voice` judges by matt's own writing, so another account writes in its `copyStyle`, and it gives the playbook's Twenty note ids (node02 and legacy).
+Why: asked to find through log how matt connects and grows on X, and how to do it the same way from @deepman_1.
+Checked: read from the knowledge base (`log kb search`: engagerDms, engagementReplies, topicReplies, perPersonVoice, xchatReplies, the matt X memory note); treg 0.25.0 installed here; the playbook note created in node02's Twenty (201).
+
+## 2026-10-29 02:17Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: new file
+- `docs/infra/node02.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/subq/decisions/client.ts`: added function subqKeyFile · changed function subqKey, function createDecisionsClient
+- `src/subq/decisions/decisions.test.ts`: added test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads `~/.config/listeningkit/subq-api-key.txt` after `SUBQ_API_KEY` and before `.env.local` (`subqKeyFile`), with a test. `docs/infra/apiKeys.md` lists every key file in `~/.config/listeningkit` (SubQ, treg, Twenty, kb-redis, Cloudflare, the X cookie how-to): what each one is and what reads it, never its value. `docs/infra/node02.md` links to it. `skills/xPosting` gets an account-plan table: @matthewsoldit's from his memory note, and @deepman_1's Mandeep + InferenceSaver Social Growth Plan (inferencesaver `docs/project/social-growth-plan.md`), with where it gives way to the X discipline.
+Why: asked to keep the treg and SubQ keys in a text file that log uses and that is findable from Twenty for every future session, and whether the small-founder growth plan had been used (it hadn't).
+Checked: `bun run check` green (1163 pass, 0 fail), with the new key-file test. `treg-api-key.txt` was copied from `~/.treg/config.json` without printing it. `subq-api-key.txt` was created empty for the key to be pasted in.
+
+## 2026-10-29 02:21Z · fix/xCookiesTwid
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/infra/apiKeys.md`: edited
+- `src/subq/decisions/client.ts`: changed function subqKey
+- `src/subq/decisions/decisions.test.ts`: added test "a key file in NAME=value lines gives its SUBQ_API_KEY line only" · changed test "the environment wins, then the key file in ~/.config/listeningkit"
+
+What changed: `subqKey()` reads the key file's `SUBQ_API_KEY=` line when it has one, and a file of bare `NAME=value` lines without it gives no key. A file holding only the key works as before. `docs/infra/apiKeys.md` says both layouts work.
+Why: the key was saved as two lines (`SUBQ_BASE_URL=…` and `SUBQ_API_KEY=…`), and the reader took the whole file as the key.
+Checked: the reader gives a 40-character, one-line key. An empty request to `api.subq.ai/v1/systemone` with it answers 422 (a validation error, so the key is accepted), and a wrong key answers 401. Nothing was billed. The SubQ tests pass, 17 of 17.
+
+## 2026-10-30 23:06Z · feat/linkedinPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/linkedin.md`: new file
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/platforms/linkedin/README.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/linkedinApi/__init__.py`: new file, no top-level declarations
+- `python/linkedinApi/engine.py`: added const ROOT, const VENDOR, const PLATFORM, const LIBRARY, const SESSION_COOKIES, const COOKIE_DOMAIN, def no_wait, def session_of, def refreshed_of, def check, def ping, const ACTIONS
+- `scripts/twenty/twentySetup.mjs`: changed const PLATFORM_ADDITIONS
+- `src/cli/linkedin/cookies.test.ts`: added const realDeps, function typed, function run, const LI_AT, const JSESSION, const LOGGED_IN, test "a new profile: checked with LinkedIn first, then a LINKEDIN row loggedIn; nothing secret printed", test "cookies LinkedIn refuses, or for another profile, save nothing", test "it needs a terminal, and a public id is read from a profile url"
+- `src/cli/linkedin/helpers/cookies.ts`: added const LINKEDIN_COOKIES_USAGE, interface CookiePrompts, const linkedinCookiesDeps, const LINKEDIN_COOKIES_INPUT, function isLiAt, function isJsessionId, function publicIdOf, function existing, const linkedinCookiesCommand
+- `src/cli/linkedin/helpers/index.ts`: added export from "./cookies.ts"
+- `src/cli/linkedin/index.ts`: added const LINKEDIN_SESSION_USAGE, const LINKEDIN_SESSION_INPUT, function render, const linkedinSessionCommand, export from "./helpers/index.ts"
+- `src/cli/linkedin/linkedin.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the engine refuses cookies without li_at and JSESSIONID before calling LinkedIn"
+- `src/cli/runner/client.ts`: changed function createContext
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/linkedin/account/index.ts`: added export from "./session/index.ts"
+- `src/linkedin/account/session/client.ts`: added const LINKEDIN_PLATFORM, const LINKEDIN_COOKIE_DOMAIN, function findLinkedinAccount, function linkedinGate, function runLinkedinEngine, function recordLinkedinSession
+- `src/linkedin/account/session/index.ts`: added export from "./client"
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `vendor/openLinkedinApi/LICENSE`: new file
+- `vendor/openLinkedinApi/README.md`: new file
+- `vendor/openLinkedinApi/UPSTREAM`: new file
+- `vendor/openLinkedinApi/open_linkedin_api/__init__.py`: added const __all__
+- `vendor/openLinkedinApi/open_linkedin_api/client.py`: added const logger, class ChallengeException, class UnauthorizedException, class Client
+- `vendor/openLinkedinApi/open_linkedin_api/cookie_repository.py`: added class Error, class LinkedinSessionExpired, class CookieRepository
+- `vendor/openLinkedinApi/open_linkedin_api/linkedin.py`: added const logger, def default_evade, class Linkedin
+- `vendor/openLinkedinApi/open_linkedin_api/settings.py`: added const HOME_DIR, const ROOT_DIR, const LINKEDIN_API_USER_DIR, const COOKIE_PATH
+- `vendor/openLinkedinApi/open_linkedin_api/utils/__init__.py`: new file, no top-level declarations
+- `vendor/openLinkedinApi/open_linkedin_api/utils/helpers.py`: added def get_id_from_urn, def get_urn_from_raw_update, def get_update_author_name, def get_update_old, def get_update_content, def get_update_author_profile, def get_update_url, def append_update_post_field_to_posts_list, def parse_list_raw_urns, def parse_list_raw_posts, def get_list_posts_sorted_without_promoted, def generate_trackingId_as_charString, def generate_trackingId
+- `vendor/openLinkedinApi/pyproject.toml`: new file
+
+What changed: LinkedIn is log-cli's fifth platform, made with `log new platform linkedin` (rule 83). `vendor/openLinkedinApi` is EseToni/open-linkedin-api (MIT) vendored at 5feee360ec26719d07d5e67638045e751b48a74c (`UPSTREAM`). It is the maintained fork of the original linkedin-api, which is gone from GitHub. It reads LinkedIn's internal Voyager API with the session cookies. `python/linkedinApi/engine.py` `ping` reads `/voyager/api/me` with the account's `li_at` and `JSESSIONID`, no redirects followed: a redirect, 401 or 403 is loggedOut, 999 or 429 is throttled, and 200 gives the public id, name and member id. Changed session cookies go back to Twenty. New `log linkedin cookies save --account <publicId>` (terminal only, like `log twitter cookies save`) takes `li_at` and `JSESSIONID` from a masked Clack prompt. It checks them with LinkedIn, saves only cookies signed in as that same profile, to a new or existing LINKEDIN socialAccounts row, and prints nothing secret. A profile url is read as its public id. New error codes `linkedinCookiesRefused`, `linkedinCookiesWrongAccount`, a `linkedin` MCP guide topic, the routes and rules, and `LINKEDIN` in twentySetup's platform additions (node02's Twenty already has the option).
+Why: mandeep asked for `log linkedin`, so LinkedIn works through log the way X does, starting with the account's session. Posting comes next, from a recording of linkedin.com (the library has no post call).
+Checked: `bun test` (1197 pass), with new cookies tests (saved when LinkedIn says loggedIn as that profile, refused or wrong account saves nothing, no cookie in any output, needs a terminal) and the engine refusing cookies without li_at and JSESSIONID before calling LinkedIn. Also `bun run typecheck`, and the platforms, docs, agentHooks, naming and noComments checks. twentySetup's dry run lists no LINKEDIN change. No live session check yet: it waits for mandeep's cookies.
+
+## 2026-10-31 02:44Z · feat/linkedinPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/linkedin.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/platforms/linkedin/README.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/checks/linkedinTransport.py`: added const ROOT, const PACKAGE, const TRANSPORT, const FORBIDDEN, const SESSION_NAMES, def forbidden, def problems_in, def tracked, def main
+- `python/linkedinApi/engine.py`: changed def session_of, def refreshed_of · removed const COOKIE_DOMAIN
+- `scripts/checks/checkLinkedinTransport.ts`: added const root, function python, const mode, const run
+- `src/cli/linkedin/linkedin.test.ts`: added test "a LinkedIn account writes at most 10 times a day", test "the engine reaches LinkedIn through curl_cffi pinned to Chrome, never plain requests"
+- `src/directApi/engine/types.ts`: changed const WRITES_PER_DAY
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `vendor/openLinkedinApi/open_linkedin_api/client.py`: changed class Client
+- `vendor/openLinkedinApi/open_linkedin_api/cookie_repository.py`: changed class CookieRepository
+- `vendor/openLinkedinApi/open_linkedin_api/transport.py`: added const IMPERSONATE, const COOKIE_DOMAIN, const __all__, def new_session
+
+What changed: LinkedIn now goes out looking like Chrome, the way X goes out looking like Safari (rule 96, after rule 81). `vendor/openLinkedinApi` reaches LinkedIn only through one curl_cffi `Session` in the new `open_linkedin_api/transport.py`, pinned to `IMPERSONATE` (`chrome150`, the closest target to mandeep's Chrome 156). It sends that target's own user agent, never plain `requests` or the library's fixed Chrome 83 one. The sign-in calls that used module-level `requests` now use the same session, and the cookie repository types use `http.cookiejar`. The engine passes the cookies as a dict (set on `.linkedin.com`) and reads refreshed ones from the session's jar. New `python/checks/linkedinTransport.py` (`bun run check:linkedinTransport`, in `bun run check` and lefthook pre-commit and pre-push) refuses a `requests`, httpx, urllib3 or socket import anywhere in the package, a curl_cffi session made outside transport.py, a session not pinned to `IMPERSONATE`, or any count other than one. A LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not 40. Rule 96 is in AGENTS.md, the MCP instructions (`RULES_REVIEWED_THROUGH` 96) and the LinkedIn commands' rules, and `docs/platforms/linkedin/README.md` says how log reaches LinkedIn.
+Why: mandeep asked whether LinkedIn used the same stealth as X ("yes try it"). It sent Python `requests`' fingerprint with a Chrome 83 user agent, which LinkedIn checks harder than X does. Every call already went through the account's governor (4 s floor, 12 s mean, 120 an hour, 500 a day, 15 min pause after a throttle), so pacing is unchanged.
+Checked: `bun run check` (1199 pass, every check green), with new tests for the 10-a-day cap and the engine's session being curl_cffi on chrome150 with no fixed user agent. Against linkedin.com with dummy cookies, `/voyager/api/me` answered 302 through the chrome150 session (read as loggedOut). browserleaks showed chrome150's own Chrome 150 user agent and JA4. The check passes on the package and flags an added `import requests`. No live session check yet: it waits for mandeep's cookies.
+
 ## 2026-10-31 06:44Z · move/logCliIn
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):

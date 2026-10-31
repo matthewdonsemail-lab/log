@@ -63,7 +63,7 @@ one to open, and where a new workflow or style goes.
 
 | Step | Command | Where it lands |
 | --- | --- | --- |
-| Copy `auth_token` and `ct0` from a browser signed in to x.com (DevTools → Application → Cookies → `https://x.com`) | none | your clipboard only |
+| Copy `auth_token`, `ct0` and `twid` from a browser signed in to x.com (DevTools → Application → Cookies → `https://x.com`) | none | your clipboard only |
 | Save them, checked with X first | `bun bin/log.ts twitter cookies save --account <handle> [--style house] [--name "<label>"]` in a terminal (a masked Clack prompt; never a flag, never over MCP) | Twenty `socialAccounts`: a TWITTER row with `accountName` = handle, `cookies`, `sessionState`, `copyStyle` |
 | Check it any time | `log twitter session check --account <handle>` (MCP `twitterSession`) | `sessionState` in Twenty, and the governor in `~/.logCli/twitter/<handle>` |
 | X Chat PIN, to read encrypted DMs | `bun bin/log.ts twitter chat pin --account <handle>` in a terminal | `socialAccounts.messengerPin` |
@@ -83,7 +83,9 @@ comment, the quote an hour later).
 
 - Repo: `listeningkit-frontend`, `docs/okf/operations/social-posting-playbook.md`
   (branch `docs/social-posting-playbook`).
-- Twenty: Notes → "Social posting playbook (ListeningKit)".
+- Twenty: Notes → "Social posting playbook (ListeningKit)", in node02's
+  Twenty (`a9afec1f-50e0-45a7-a51f-0f1bbf70e94c`) and the legacy one
+  (`a41908eb-adc7-4b40-a0c5-b8fa31c522e5`).
 - Knowledge base: `log kb search "social posting playbook"`.
 
 Post the original with `log twitter post --account <handle> --text "<copy>" --media <video.mp4>` (MCP `twitterPost`, `twitterPostLive`).
@@ -122,6 +124,49 @@ The parts every page uses:
   talked to on X Chat (rule 87).
 - **Pacing:** 240 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86).
+
+### 3b. The growth loop (how matt grows @matthewsoldit)
+
+What worked for matt (`log kb show memory:-buzz/listeningkit-real-state`): a
+text post about treg ("$10 -> 30 conversations") did 205K views and 1,182
+likes, and his followers went from 308 to 352 in four days. He then turned
+the attention into conversations. Every account runs the same loop, in this
+order:
+
+| # | When | What | How |
+| --- | --- | --- | --- |
+| 1 | Post day | One original post. The text carries it (a video open counts almost nothing). One best post per feed window, when the audience is online, never several in a row | the social posting playbook (section 2), sent by hand |
+| 2 | The first 2 hours | Answer every comment. Unanswered questions are the best openers. Replies between mutuals score highest | `docs/useCases/twitter/engagementReplies.md`: treg comments read, then a queue of replies |
+| 3 | About 1 hour after | Quote a matching trend, never before your own post | playbook "Riding a trend", `log twitter quote` |
+| 4 | The next days | DM the people who liked or reposted it, opening with one of their own tweets, then one informal line | `docs/useCases/twitter/engagerDms.md` (the cold DM way), queue `action: dm` |
+| 5 | Every day | Reply to people posting about your topic, one line about their post backed by your own fact, inside 40 writes a day | `docs/useCases/twitter/topicReplies.md`, the queue's `limit` |
+| 6 | Always | Answer whoever writes back. Never send a cold template to someone you already talk to | `log twitter dms --account <a> [--with <handle>]`, `chat watch` (needs the X Chat PIN), rule 87 |
+| 7 | Weekly | Score the followers (treg profiles and their posts), and talk to the best ones by hand | `docs/useCases/twitter/followers.md`, treg `anyapi.x.user.profile` |
+| 8 | Always | Leads from posts and DMs go into Twenty | `agencyProspects` |
+
+Finding people and posts is always treg (`treg call anyapi.x.search.posts
+--file q.json`, `anyapi.x.user.profile`, `treg.x.user.posts`). On Windows,
+pass `--file` rather than `--data`, and set `PYTHONUTF8=1`. A big treg sweep
+costs money: say the price first.
+
+**Each account's own plan.** The loop is how to post and follow up. What an
+account posts about comes from its own plan:
+
+| Account | Plan | What it sets |
+| --- | --- | --- |
+| @matthewsoldit | `log kb show memory:-buzz/listeningkit-real-state` | ListeningKit, treg and Go Getters. The follower atlas |
+| @deepman_1 | Mandeep + InferenceSaver Social Growth Plan: `inferencesaver` repo, `docs/project/social-growth-plan.md` | positioning ("I test AI tools, coding agents, and API infrastructure so builders can save money and build faster"), 5 content pillars, a 70/20/10 ratio (helpful, build in public, InferenceSaver), the hook and CTA banks, the 30-day and 90-day plans, DM openers (stack review, soft pitch, demo invite), leads in Twenty, the weekly review |
+
+Where they disagree, the X discipline wins on X. The plan's comment
+prompts ("comment your AI stack") read as engagement bait there, so on X
+ask a real question in the post instead. A cold DM opens the cold DM way
+(their own tweet first). The plan's DM opener is for someone who has
+already commented.
+
+**Voice.** `log voice` gates drafts against matt's own writing. Its guide
+and his saved conversations are on matt's machine, so on any other account it
+judges by matt's voice. For an account of your own, write in its
+`copyStyle`, and keep each line about the other person's post.
 
 ### 4. Copy styles
 
