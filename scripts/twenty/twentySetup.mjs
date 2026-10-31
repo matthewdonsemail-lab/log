@@ -400,7 +400,7 @@ if (accountMissing.length) {
   })
 }
 
-const PLATFORM_ADDITIONS = [option('DISCORD', 'Discord', 'purple', 0)]
+const PLATFORM_ADDITIONS = [option('DISCORD', 'Discord', 'purple', 0), option('LINKEDIN', 'LinkedIn', 'blue', 0)]
 const accountPlatform = objects.get('socialAccount').fields.get('platform')
 const platformExisting = Array.isArray(accountPlatform?.options) ? accountPlatform.options : []
 const platformMissing = accountPlatform ? PLATFORM_ADDITIONS.filter((add) => !platformExisting.some((o) => o.value === add.value)) : []
