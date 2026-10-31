@@ -5,13 +5,13 @@ import { saveConversations, twitterConversationOf } from "../../../search/conver
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
-import { dropMirrors, mergeThreads, ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
+import { dropMirrors, mergeThreads, ONE_INBOX_NOTE, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--json]",
   "Reads the account's X direct messages on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
-  "Without --conversation it syncs the inbox the way X's own chat app does (dm-core): the first read takes the whole X Chat inbox (GetInitialXChatPageQuery, then GetInboxPageRequestQuery pages) and the old DM inbox (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and keeps them in ~/.logCli/twitter/<account>/inboxSync.json with the newest event's sequence id; every read after that asks X only for what is newer (GetMessageEventsPageQuery from that sequence id, beside one dm/inbox_initial_state), unlocks the PIN and decrypts only when something is new, opening just those conversations' keys (GetInboxPageConversationDataQuery), and keeps each event once by its id. --full reads everything again. Each read saves its conversations for log search and updates the search index in the background with only the chunks that changed. It then lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply. --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.",
+  "Without --conversation it syncs the inbox the way X's own chat app does (dm-core): the first read takes the whole X Chat inbox (GetInitialXChatPageQuery, then GetInboxPageRequestQuery pages) and the old DM inbox (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and keeps them in ~/.logCli/twitter/<account>/inboxSync.json with the newest event's sequence id; every read after that asks X only for what is newer (GetMessageEventsPageQuery from that sequence id, beside one dm/inbox_initial_state), unlocks the PIN and decrypts only when something is new, opening just those conversations' keys (GetInboxPageConversationDataQuery), and keeps each event once by its id. --full reads everything again. Each read saves its conversations for log search and updates the search index in the background with only the chunks that changed. It then lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply, and lists apart the ones whose last event is their reaction to yours: they opened it, so each is a follow-up to send, not a reply they're waiting on (--json: followUps). --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.",
   "--with <handle> reads everything with one person by their handle and nobody else: their user id, their legacy thread (dm/conversation) and their X Chat thread (read the way X's own chat app opens a chat, from its dm-core: GetInboxPageConversationDataQuery for that one conversation, then GetConversationPageQuery from the oldest message held, its fetchOlderMessages, up to 5 pages 1.5 s apart while X says there is more), merged into one timeline, oldest first, a message mirrored into both shown once. It never reads the whole inbox. A 429 stops the read with nothing retried, as X's app does (it retries only 5xx), and pauses the account's governor (rule 94). X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
 ].join("\n");
 
@@ -42,7 +42,7 @@ const oneLine = (text: string | null | undefined, max = 140): string => {
 const whoOf = (thread: TwitterDmThread): string => thread.name || thread.with.map((p) => (p.handle ? `@${p.handle}` : p.userId)).join(", ") || "?";
 
 function threadLine(thread: TwitterDmThread, index: number): string {
-  const flags = [thread.box === "request" ? "request" : null, thread.unread ? "unread" : null, thread.lastFromMe ? "you sent last" : "waiting on you"].filter(Boolean).join(", ");
+  const flags = [thread.box === "request" ? "request" : null, thread.unread ? "unread" : null, thread.lastFromMe ? "you sent last" : reactedOnly(thread) ? "reacted, so they opened it: follow up" : "waiting on you"].filter(Boolean).join(", ");
   return `  ${index + 1}. ${whoOf(thread)} · ${thread.lastAt ?? "?"} · ${flags}\n     ${thread.lastFromMe ? "you" : "them"}: ${oneLine(thread.lastText) || "(no text)"}\n     conversation ${(thread.conversationIds ?? [thread.conversationId]).join(" + ")}`;
 }
 
@@ -53,9 +53,12 @@ function messageLine(message: TwitterDmMessage): string {
 function render(account: string, answer: TwitterSessionAnswer, waiting: boolean): string {
   if (!answer.ok) return `log twitter dms: ${account}: ${answer.code}${answer.loginState ? ` (${answer.loginState})` : ""}: ${answer.detail ?? ""}`;
   if (answer.messages) return [`log twitter dms: @${account}, conversation ${answer.conversationId}, ${answer.messages.length} message${answer.messages.length === 1 ? "" : "s"}, oldest first, via the direct-API engine (no browser):`, ...answer.messages.map(messageLine)].join("\n");
-  const threads = (answer.threads ?? []).filter((t) => !waiting || !t.lastFromMe);
+  const all = answer.threads ?? [];
+  const threads = waiting ? all.filter(waitingOnYou) : all;
+  const reacted = all.filter(reactedOnly);
   const head = `log twitter dms: @${answer.screenName ?? account}, ${threads.length} conversation${threads.length === 1 ? "" : "s"}${waiting ? " waiting on a reply" : `, ${answer.waitingOnYou ?? 0} waiting on a reply`}, newest first, via the direct-API engine (no browser):`;
-  return [head, ...threads.map(threadLine)].join("\n");
+  const followUps = waiting && reacted.length ? [`${reacted.length} reacted to your last message, so they opened it: each is a follow-up to send (networkMaxing use case), not a reply they're waiting on:`, ...reacted.map(threadLine)] : [];
+  return [head, ...threads.map(threadLine), ...followUps].join("\n");
 }
 
 export const twitterDmsDeps: { reindex: () => void } = {
@@ -81,7 +84,7 @@ function keepForSearch(account: string, answer: TwitterSessionAnswer): number {
 
 function onePerPerson(answer: TwitterSessionAnswer): TwitterSessionAnswer {
   const threads = mergeThreads(answer.threads ?? []);
-  return { ...answer, threads, waitingOnYou: threads.filter((t) => !t.lastFromMe).length };
+  return { ...answer, threads, waitingOnYou: threads.filter(waitingOnYou).length, reactedToYou: threads.filter(reactedOnly).length };
 }
 
 export const dmsCommand: Command = {
@@ -138,7 +141,7 @@ export const dmsCommand: Command = {
       const run = lean.ok && lean.threads ? { ...raw, answer: onePerPerson(lean) } : { ...raw, answer: lean };
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {
-        const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter((t) => !t.lastFromMe) } : run.answer;
+        const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter(waitingOnYou), followUps: run.answer.threads.filter(reactedOnly) } : run.answer;
         return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer }, null, 2) };
       }
       const governor = governorLine(run);

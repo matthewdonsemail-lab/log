@@ -152,6 +152,7 @@ export interface TwitterSessionAnswer {
   pages?: number
   threads?: TwitterDmThread[]
   waitingOnYou?: number
+  reactedToYou?: number
   messages?: TwitterDmMessage[]
   conversations?: TwitterDmConversation[]
   sync?: TwitterInboxSync

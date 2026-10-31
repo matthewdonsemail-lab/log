@@ -9187,3 +9187,22 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: rule 99, network maxing grows matt's network, which is his niche map. networkMaxing.md opens with that, step 4 gets to know them, step 7 takes new people from the niche map first (real roles, closest first, not yet talked to), "Keep it about them" is added, and writing back to the niche map is listed as not built. Both use-case indexes list the page; the MCP instructions carry rule 99. The niche map's path is in the agent memory, since use-case pages never name the owner's files.
 Why: matt: "the conversation will be getting to know about them and what they're doing. But the whole point of it is to expand our network, which is the niche map."
 Checked: `bun run check` (1197 pass); docs build; the use-case review passed every page.
+
+## 2026-10-31 05:56Z · feat/localAccounts
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/useCases/twitter/dmInbox.md`: edited
+- `docs/useCases/twitter/networkMaxing.md`: edited
+- `src/cli/twitter/helpers/dms.ts`: changed const DMS_USAGE, function threadLine, function render, function onePerPerson, const dmsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed interface TwitterSessionAnswer
+- `src/twitter/dm/person/client.ts`: added function reactedOnly, function waitingOnYou
+- `src/twitter/dm/person/person.test.ts`: added test "their reaction as the last event means they opened it: a follow-up, never waiting on you", test "their words are waiting on you, and matt sending last is neither"
+
+What changed: rule 100, a reaction as someone's last event means they opened matt's message, so it's a follow-up, not a reply waiting on him. `reactedOnly` and `waitingOnYou` (src/twitter/dm/person) decide it; `log twitter dms --waiting` lists reacted threads apart ("reacted, so they opened it: follow up"), counts them as `reactedToYou`, and `--json` gives them as `followUps`. networkMaxing.md gains "Everyone who reacted" (follow up about them, never the opener again, never the ask) and dmInbox.md says what a reaction means; the usage, MCP instructions and the twitterDms tool cite rule 100.
+Why: matt: "reactions are indicators of open messages, so we can then add that as a thing we can follow up on."
+Checked: `bun run check` (1199 pass) with tests for both helpers; live, `log twitter dms --waiting` moved @dave_xt's ❤️ out of waiting and into the follow-up list.

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import type { TwitterDmThread } from '../../account/session/index'
 import { onePerPerson } from '../../../search/conversations/helpers/index'
 import { newMessages } from '../../../inbox/watch/client'
-import { dropMirrors, mergeThreads, personKeyOf } from './index'
+import { dropMirrors, mergeThreads, personKeyOf, reactedOnly, waitingOnYou } from './index'
 
 const thread = (conversationId: string, lastAt: string, over: Partial<TwitterDmThread> = {}): TwitterDmThread => ({
   conversationId,
@@ -68,5 +68,20 @@ describe('one conversation per person', () => {
     expect(first.messages).toHaveLength(1)
     const again = newMessages('twitter', 'matthewsoldit', [{ ...reply, conversationId: '1-2', box: 'inbox' }], first.seen, now)
     expect(again.messages).toHaveLength(0)
+  })
+})
+
+describe('a reaction is a follow-up, not a reply waiting on matt', () => {
+  test('their reaction as the last event means they opened it: a follow-up, never waiting on you', () => {
+    const reacted = { lastFromMe: false, lastText: '(reacted ❤️)' }
+    expect(reactedOnly(reacted)).toBe(true)
+    expect(waitingOnYou(reacted)).toBe(false)
+  })
+
+  test('their words are waiting on you, and matt sending last is neither', () => {
+    expect(waitingOnYou({ lastFromMe: false, lastText: 'Sweet will do!' })).toBe(true)
+    expect(reactedOnly({ lastFromMe: false, lastText: 'they (reacted 🔥) to it lol' })).toBe(false)
+    expect(reactedOnly({ lastFromMe: true, lastText: '(reacted 😂)' })).toBe(false)
+    expect(waitingOnYou({ lastFromMe: true, lastText: 'yo' })).toBe(false)
   })
 })

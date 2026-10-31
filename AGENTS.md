@@ -1212,6 +1212,16 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the opener). Where the map lives is in the agent memory, not in the
     repo. `docs/useCases/twitter/networkMaxing.md`.
 
+100. 2026-10-31 · matt: "reactions are indicators of open messages, so we
+    can then add that as a thing we can follow up on." When someone's last
+    event is a reaction to matt's message, they opened it and didn't type
+    back: it isn't a reply waiting on him, it's a follow-up to send. `log
+    twitter dms --waiting` lists those apart (`reactedOnly`, `waitingOnYou`,
+    `src/twitter/dm/person`; `--json` gives `followUps`), and the follow-up
+    is the network-maxing kind: about them and what they're doing, never the
+    opener again and never the ask. `docs/useCases/twitter/networkMaxing.md`
+    ("Everyone who reacted"), `dmInbox.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

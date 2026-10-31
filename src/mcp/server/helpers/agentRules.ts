@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 99;
+export const RULES_REVIEWED_THROUGH = 100;
 
 export const AGENTS_URI = "log://agents";
 
@@ -34,6 +34,7 @@ export const CORE_PRINCIPLES = [
   "27. An X account makes up to 90 writes a day (sends, likes, reposts, follows), Discord 60, every other platform 40; X's own answer (344) still stops it (rule 96).",
   "28. A first message to someone matt has never talked with is the opener only: about them and what they posted, always relevant, never the ask (no pitch, no \"you using treg\", no call); the ask waits until they answer, and `voice` fails a first message with one (rule 98).",
   "29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).",
+  "30. A reaction to matt's message means they opened it: `twitterDms` { waiting: true } lists it apart as a follow-up to send (about them and what they're doing, never the opener again, never the ask), not a reply they're waiting on (rule 100).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -84,7 +85,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   check: [8, 13, 18, 22, 29, 35, 69, 73],
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81],
   voice: [30, 39, 41, 63, 64, 98],

@@ -54,3 +54,11 @@ export function dropMirrors<T extends MirrorMessage>(messages: readonly T[], sec
   }
   return kept
 }
+
+export function reactedOnly(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText'>): boolean {
+  return !thread.lastFromMe && /^\(reacted [^)]*\)$/.test((thread.lastText ?? '').trim())
+}
+
+export function waitingOnYou(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText'>): boolean {
+  return !thread.lastFromMe && !reactedOnly(thread)
+}
