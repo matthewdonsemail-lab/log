@@ -1,107 +1,85 @@
-# Record → document → machine → command → MCP
+# From a recording to a reusable flow
 
-`log inspect` drives the account's browser (AdsPower or Camoufox, through the
-driver), gated and headed, a step at a time, and records every step (snapshot,
-screenshot, HAR, rea). `log flow fromInspect` turns that
-recording into a flow: its docs, an XState machine, `log flow run <name>` for
-any account, and an MCP tool of its own (`flowProfileSetup`). The whole
-pipeline, the actions, the saved flows and what the recordings showed:
-`docs/recordToFlow.md`. It works on every platform with a browser path
-(Facebook, Reddit, rule 84), and every request a platform's pages made is
-documented, read by rea from its code, in `docs/platforms/<platform>/`
-(`log facebook capture --docs`, rule 85).
+This is how log learns to do something on a website once and then repeat it on any account. You do the task step by step with `log inspect`, which records everything; log turns that recording into a flow, a state machine, a command and an MCP tool. Read this if you want to automate a new task, or understand where the saved flows come from.
 
-How log-cli learns a Facebook procedure and then runs it on any account. Built
-2026-10-19 (rules 25-31 in AGENTS.md). Everything here runs live and headed,
-through every gate a run passes (proxy, device, locale, self-check, waking
-hours, launch budget, raw HAR).
+It works on every platform with a browser path (Facebook, Reddit). Every run passes the same gates as any other: proxy, device, locale, self-check, active hours, launch budget and a raw recording of the network (HAR).
 
 ## The pipeline
 
 | Stage | Command | What it produces |
 | --- | --- | --- |
-| 1. Look | `log inspect start --account <a> --url <facebook url>`, then `log inspect do <action>` | One headed Camoufox (async API) kept open; every step recorded in order: accessibility snapshot with refs, screenshot, the step's own HAR, rea's reading of that HAR at once |
-| 2. Read | `log facebook capture --docs` | `docs/platforms/facebook/<domain>/<request>.md`: every request Facebook's pages made, with what it sends and reads, which step fires it, timings, errors, reasoning and rea Evidence (rule 27) |
-| 3. Map | `log inspect map [<run>] [--all]` | The recording as states and transitions (`flow.md`, `machine.json`); `--all` collates every run |
-| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/browser/flow/definitions/<n>.json`: each step's element by role and name, each step's confirming request, params; and `docs/platforms/facebook/flows/<n>.md` |
-| 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, `failed` on the first step that fails |
-| 6. Run | `log flow run <n> --account <a> --set k=v … [--live]` | Dry run lists the filled steps; `--live` runs the machine through an inspect session, so the run is recorded again and mapped |
-| 7. MCP | the `log` MCP server | Every saved flow is a tool of its own (`flowProfileSetup`), params by name, `live` needs `confirmLive` |
+| 1. Look | `log inspect start --account <a> --url <url>`, then `log inspect do <action>` | One visible browser kept open. Every step is recorded in order: an accessibility snapshot with element refs, a screenshot, the step's own HAR, and rea's reading of that HAR. |
+| 2. Read | `log facebook capture --docs` | `docs/platforms/<platform>/<domain>/<request>.md`: every request the site's pages made, what it sends and reads, which step fires it, timings, errors, and rea's evidence from the site's own code. |
+| 3. Map | `log inspect map [<run>] [--all]` | The recording as states and transitions (`flow.md`, `machine.json`). `--all` combines every run. |
+| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/browser/flow/definitions/<n>.json`: each step's element by role and name, the request that confirms each step, and the parameters. Plus its doc in `docs/platforms/facebook/flows/<n>.md`. |
+| 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, and `failed` on the first step that fails. |
+| 6. Run | `log flow run <n> --account <a> --set k=v … [--live]` | A dry run lists the filled-in steps. `--live` runs the machine through an inspect session, so the run is recorded and mapped again. |
+| 7. MCP | the `log` MCP server | Every saved flow becomes its own tool (for example `flowProfileSetup`), with parameters by name. The live version needs `confirmLive`. |
 
 ## Inspect actions
 
-| Action | Acts on Facebook (needs `--live`) | Does |
+| Action | Changes anything on the site? (needs `--live`) | What it does |
 | --- | --- | --- |
-| `goto <url>`, `snapshot`, `back`, `wait [s]` | no | Move or look |
-| `click <ref>`, `type <ref> <text>`, `press <key>`, `upload <ref> <file>` | yes | One action by the snapshot's ref |
-| `solve` | yes | Facebook's text captcha → 2Captcha's image solver → type and send (`solve.json`) |
-| `signIn`, `code` | yes | Email, password and authenticator code from the private login.json (rule 21) |
-| `clickRole`, `fillRole`, `uploadRole`, `waitRole` | yes | The flow runner's steps: an element by role and accessible name, plus `expect` (the request that confirms it) |
-| `stop` | no | Close, save the session |
+| `goto <url>`, `snapshot`, `back`, `wait [s]` | no | Move around or look. |
+| `click <ref>`, `type <ref> <text>`, `press <key>`, `upload <ref> <file>` | yes | One action on the element the snapshot gave that ref. |
+| `solve` | yes | Reads the site's text captcha, sends it to an image solver, then types and sends the answer (`solve.json`). |
+| `signIn`, `code` | yes | Types the email, password and authenticator code from the run's private login file. |
+| `clickRole`, `fillRole`, `uploadRole`, `waitRole` | yes | The flow runner's steps: an element found by role and accessible name, plus `expect` (the request that confirms it worked). |
+| `stop` | no | Close and save the session. |
 
-Each step settles when the network has been quiet 1.5 s (up to 15 s, longer
-while an `expect` is pending). Typed values are redacted in snapshots. A HAR
-over rea's 32 MB limit gets a copy without static bodies for rea; the raw HAR
-is kept (rule 19). `--now` skips only the 10-minute launch gap (rule 30).
+Details:
 
-## The cursor (rule 32)
+- A step settles when the network has been quiet for 1.5 s (up to 15 s, longer while an `expect` is pending).
+- Typed values are hidden in snapshots.
+- A HAR over rea's 32 MB limit gets a copy without static file bodies for rea; the raw HAR is kept.
+- `--now` skips only the 10-minute gap between launches.
 
-`python/human/humanMouse.py`, used by every session. Fitted to matt's own mouse,
-recorded by `python/human/recordMouse.py` (run it for N seconds, then it analyses
-the recording; `--analyze <file>` re-analyses one). What the recording showed
-and the module reproduces: one continuous velocity profile per move, an early
-speed peak and a long settle, overshoot-and-return about half the time, loose
-loops around whatever is being looked at, short pauses, ~25 % still. Every
-step writes `mouse.json` (its legs) and `mouseSamples.json` (every emitted
-point, in the recorder's format), so the same analyser compares ours with his:
+## The mouse
+
+Every session moves the cursor with `python/human/humanMouse.py`, which is fitted to a recording of a real person's mouse made with `python/human/recordMouse.py`. What it reproduces:
+
+- one smooth speed curve per move, peaking early and settling slowly;
+- overshooting and coming back about half the time;
+- loose loops around whatever is being looked at;
+- short pauses, and staying still about 25% of the time.
+
+Every step writes `mouse.json` (its moves) and `mouseSamples.json` (every point, in the recorder's format), so the same analyser can compare the two:
 
 ```bash
-python python/human/recordMouse.py 60                      # record your hand, then analyse
+python python/human/recordMouse.py 60                      # record your own mouse for 60 s, then analyse it
 python python/human/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
 ```
 
-Camoufox's humanize stays on but is capped to 20 ms per hop in these
-sessions (`launch_kwargs(…, own_trajectory=True)`): measured, its default
-cost ~100 ms per 5 px hop, which is what made earlier motion crawl.
+Camoufox's own humanize setting stays on, but is capped at 20 ms per hop in these sessions (`launch_kwargs(…, own_trajectory=True)`). Its default cost about 100 ms per 5 px hop, which made earlier movement crawl.
 
 ## Saved flows
 
-| Flow | Recorded on | Proven on | Steps |
-| --- | --- | --- | --- |
-| `profileSetup` | Lancaster (`61593967241658`) | Bethlehem (`61594063207669`), 13/13 | profile picture, cover photo, name; confirmed by `ProfileCometProfilePictureSetMutation`, `ProfileCometCoverPhotoUpdateMutation`, `useFXIMUpdateNameMutation` |
+| Flow | Steps | Confirmed by |
+| --- | --- | --- |
+| `profileSetup` | profile picture, cover photo, name | `ProfileCometProfilePictureSetMutation`, `ProfileCometCoverPhotoUpdateMutation`, `useFXIMUpdateNameMutation` |
 
-## What the recordings showed (2026-10-19)
+It was recorded on one account and then ran 13 out of 13 steps on another.
 
-- **A first sign-in on a vendor account is flagged at once.** Lancaster's and
-  Bethlehem's first sign-ins went to "We suspect automated behaviour"
-  (`/checkpoint/601051028565049/`); Dismiss sends `FBScrapingWarningMutation`
-  and lands signed in.
-- **The lock path, in order** (Allentown, the same as Philadelphia):
-  "Confirm that you're human to use your account" [Continue] →
-  `useUFACSubmitActionMutation` (5 s) → text captcha → 2Captcha (1.5 s) →
-  [Continue] → `useUFACSubmitActionMutation` (3 s) → "Confirm your identity
-  with a video selfie". Only a person clears the last screen. A second visit
-  resumes at the step it was left on.
-- **Allentown was locked between 09:21 and 10:40 UTC with no run of ours in
-  between.** Philadelphia's sign-ins came from three exit IPs in 90 minutes and
-  15 launches; Allentown's and the new accounts' exit IPs stayed fixed.
-- **Connect reads the page 1 s after Enter**, sees the login form still there,
-  and tries a second time; the first Enter had worked. Its next read must wait
-  for the page to change.
-- **The listing's location is not set by any request in the run**: it arrives
-  in the create page itself (`sell_location`), so a wrong Marketplace location
-  is an account setting.
+## What early recordings showed
+
+- **A first sign-in on a new account can land on "We suspect automated behaviour"** (`/checkpoint/601051028565049/`). Pressing Dismiss sends `FBScrapingWarningMutation` and lands signed in.
+- **A locked account goes through these screens in order:** "Confirm that you're human to use your account" [Continue] → `useUFACSubmitActionMutation` (5 s) → a text captcha → solver (1.5 s) → [Continue] → `useUFACSubmitActionMutation` (3 s) → "Confirm your identity with a video selfie". Only a person can clear the last screen. A second visit picks up at the step it was left on.
+- **Changing exit IPs stood out.** One account signed in from three exit IPs in 90 minutes over 15 launches; accounts whose exit IP stayed fixed fared differently.
+- **Connect read the page too soon.** It read 1 s after pressing Enter, saw the login form still there, and tried again, although the first Enter had worked. It must wait for the page to change.
+- **The listing's location isn't set by any request in a run.** It arrives in the create page itself (`sell_location`), so a wrong Marketplace location is an account setting.
 
 ## Where things are
 
 | Path | What |
 | --- | --- |
-| `python/session/inspectSession.py` | The inspect session (async Camoufox) |
+| `python/session/inspectSession.py` | The inspect session |
 | `src/browser/inspect/` | Talking to it: commands, replies, rendering |
 | `src/rea/inspectMap/` | Recording → states and transitions |
 | `src/browser/flow/` | Recording → definition, machine, docs; `definitions/` |
 | `src/cli/inspect/`, `src/cli/flow/` | The commands |
 | `src/mcp/server/helpers/toolsFromFlows.ts` | Flows as MCP tools |
 | `src/rea/facebookClient/` | The per-request docs build |
-| `skills/inspect`, `skills/flow`, `skills/profileSetup`, `skills/reaCapture` | The routines |
+| `skills/inspect`, `skills/flow`, `skills/profileSetup`, `skills/reaCapture` | How-to routines |
 | `~/.logCli/runs/{inspect,flow}/<time>_<account>/` | Recordings (local, never committed) |
+
+The rules behind this are in AGENTS.md.

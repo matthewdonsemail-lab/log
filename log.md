@@ -9817,3 +9817,64 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the README is now for setting log up: why use it, install, getting started, how we use it, getting the most out of it, and a map of the docs. Everything technical moved into docs/, a page per subject (install, mcp, twenty, howItWorks, signingIn, listingMonitor, browserSetup, layout, and the generated reference.md, which `buildDocs` now writes instead of a README section, with its links made relative to docs/). The Fumadocs site at /docs is built from docs/ on every site build (`scripts/docs/syncSiteDocs.mjs`): titles from each page's heading, README files as index pages, links rewritten, raw HTML made plain text, internal research left out. lefthook's `siteDocs` checks every published page has a title and every link resolves. Convex and the dashboard are gone from the site: the landing page plus the docs, no Clerk, no Convex client, 216 dead dashboard files and their tests, and the old dashboard-era docs pages. Docs, skills and messages say `log`, never `bun bin/log.ts`, and the agent hooks recognise a bare `log` command. Rule 103.
 Why: matt: the README is for how to set it up, everything technical in docs/ by subject with its Mermaid diagrams, the docs kept current by lefthook on every commit, Fumadocs kept, no Convex and no dashboard, and log runs as `log` from the npm package.
 Checked: every pre-commit gate but this entry passes on the whole tree, including the new `siteDocs` (442 pages); the hook tests pass with the new bare-log cases; the site builds with every docs page (1332 files), and the landing page, docs front page, MCP page, reference and a Mermaid diagram were checked in a browser.
+
+## 2026-10-31 08:50Z · sync/logCliTail
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/README.md`: edited
+- `docs/accounts.md`: new file
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browserSetup.md`: edited
+- `docs/browsers.md`: edited
+- `docs/commandNaming.md`: edited
+- `docs/conversations.md`: edited
+- `docs/deployment.md`: edited
+- `docs/groupListening.md`: edited
+- `docs/groupMembers.md`: edited
+- `docs/groupRead.md`: edited
+- `docs/howItWorks.md`: edited
+- `docs/install.md`: edited
+- `docs/knowledgeBase.md`: edited
+- `docs/layout.md`: edited
+- `docs/lifecycle.md`: edited
+- `docs/listingMedia.md`: edited
+- `docs/listingMonitor.md`: edited
+- `docs/listingPublish/README.md`: edited
+- `docs/listingPublish/captchaKraken.md`: edited
+- `docs/listingPublish/formFill.md`: edited
+- `docs/listingPublish/imagePipeline.md`: edited
+- `docs/listingPublish/sources.md`: edited
+- `docs/listingPublish/stateMachine.md`: edited
+- `docs/mcp.md`: edited
+- `docs/namingConventions.md`: edited
+- `docs/platformGuides/discord.md`: new file
+- `docs/platformGuides/facebook.md`: new file
+- `docs/platformGuides/linkedin.md`: new file
+- `docs/platformGuides/reddit.md`: new file
+- `docs/platformGuides/x.md`: new file
+- `docs/proxies.md`: edited
+- `docs/proxyVendors/README.md`: edited
+- `docs/proxyVendors/byteful.md`: edited
+- `docs/rea/README.md`: edited
+- `docs/rea/comparison.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/rea/publicExamples.md`: edited
+- `docs/rea/roadmap.md`: edited
+- `docs/rea/sources.md`: edited
+- `docs/rea/spec.md`: edited
+- `docs/recordToFlow.md`: edited
+- `docs/signingIn.md`: edited
+- `docs/site.json`: new file
+- `docs/status.md`: edited
+- `docs/twenty.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `docs/usingLog.md`: new file
+- `docs/voice/perPersonVoice.md`: edited
+- `scripts/docs/syncSiteDocs.mjs`: added const site, const privateRoots, const stripExt, const FOLDER_TITLES, const prettyFolder, function pageSlug, const placed, const tabMeta, function place, const all, const folderDirs · changed function listDocs, function rewriteLink, function titleAndBody, function render · removed const LEFT_OUT, const ORDER, function slugOf, const sources, const published
+- `site/apps/web/src/landing/LandingPage.tsx`: changed const PLUGS
+
+What changed: the docs site is laid out in five tabs the way Fern lays its docs out, set in one file, docs/site.json: Get started (install, add your accounts, connect your agent, using log well), Use cases, Platforms (a plain page each for X, Reddit, Facebook, Discord and LinkedIn), Reference (every command, error codes, agent guides) and How it works (the ideas, browsers and proxies, Facebook in depth, each platform's API, the diagrams, working on log). `syncSiteDocs` places every page from site.json into its tab, and its check refuses a page in no tab, a page in two, a missing file or a broken link. The pages were rewritten in plain words: short titles and summaries, no rule numbers, examples instead of internals; new pages for accounts, using log well and each platform. The README's docs map and the landing page's Works with links point at the new tabs.
+Why: matt: the docs were all over the place, confusing and too technical; manage them the way Fern does, by domain, and fix them.
+Checked: every pre-commit gate passes on the whole tree, siteDocs places 449 pages in 5 tabs; the site builds (1346 files) and the docs front page and the X platform page were checked in the browser with the five tabs in the sidebar.

@@ -1,79 +1,104 @@
-# How log decides what happened
+# How log works
 
-The number one rule of log-cli, above everything below. We already know most
-of the states a platform can be in. When a step lands somewhere we don't know:
+log runs social accounts from the terminal or from an AI agent. Every account
+lives in one place, every action goes through the platform's own API or the
+account's own browser, and the platform's answers decide whether a step worked.
+Read this page first if you want to know how log thinks before you read the
+code.
 
-1. **Read the internal API.** Every step's internal API calls are taken out
-   of its recording by code: what we sent and what came back, in seconds from
-   our action (`exchanges.json`, `exchanges.md`). The answers decide, never the
-   screen, a timer, or the fact that a step ran. What we sent counts as much
-   as the answer (`viewer_coordinates` placed Bethlehem's search in Lima).
-2. **Collate everything about that moment.** The goal, the account (home,
+## The big idea: the platform's answer decides
+
+When log does something (a click, a search, a post), the platform's own client
+makes internal API calls. log records them and reads them. Those answers decide
+what happened, never the screen, a timer, or the fact that a step ran. What we
+sent matters as much as what came back: one search sent coordinates that placed
+the account in the wrong city, and only the request showed it.
+
+## When a step lands somewhere new
+
+log already knows most of the states a platform can be in. When a step lands
+somewhere it doesn't know, it follows the same seven steps:
+
+1. **Read the internal API.** Code pulls each step's calls out of its
+   recording: what we sent, what came back, and how many seconds after our
+   action (`exchanges.json`, `exchanges.md`).
+2. **Put everything about that moment together.** The goal, the account (home,
    platform, browser, the proxy's exit), what we did (the action, the mouse,
-   how long it took), every internal API call, the page, the screenshot and
-   the earlier steps, together, never in silos.
-3. **Ask SubQ what it means.** Not what to do next: was the goal met, does
+   how long it took), every internal call, the page, the screenshot and the
+   earlier steps.
+3. **Ask SubQ what it means.** Not what to do next, but: was the goal met, does
    everything fit the account, should something never have come up, does the
-   page agree with the API, did our action cause it, and what each call says
-   about the goal.
+   page agree with the API, did our action cause it, and what does each call
+   say about the goal.
 4. **Say it loudly.** The reading comes first in the step's result
-   (`>>> UNKNOWN STATE`) and goes into the agent's context through the hook.
-5. **Keep going until the goal is reached.** The Stop hook holds the turn
+   (`>>> UNKNOWN STATE`), and a hook puts it into the agent's context.
+5. **Keep going until the goal is reached.** A Stop hook holds the agent's turn
    until a step's reading says the goal is met.
-6. **Write what went wrong as P.E.E.** Point (the issue, one sentence),
-   Evidence (quoted from the step's reading), Explain (why it shows it, what
-   caused it), and, once the goal is reached, how it was fixed
-   (`log inspect finding`, `goalFindings.md`).
-7. **Name the state,** so next time it is known and nobody has to find it
-   out again.
+6. **Write down what went wrong as P.E.E.** Point (the issue, in one sentence),
+   Evidence (quoted from the step's reading), Explain (why it shows that, and
+   what caused it). Once the goal is reached, add how it was fixed.
+7. **Name the state,** so next time it is known and nobody has to work it out
+   again.
 
-The same on every platform. In practice:
+It works the same on every platform. In practice:
 
 ```bash
-log inspect start --account <a> --goal "Set the Marketplace location to Bethlehem, Pennsylvania" --detach
+log inspect start --account <a> --goal "Set the Marketplace location to Galway, Ireland" --detach
 log inspect do <action>                                  # reads the step; >>> UNKNOWN STATE when we don't know
 log inspect finding --account <a> --step <step> --point "<the issue>" --explain "<why, and what caused it>"
 log inspect finding --account <a> --fixes 1 --fix "<how it was fixed>"
 log inspect goal --account <a>                           # the goal, whether it is reached, every finding
 ```
 
-AGENTS.md rules 73-76.
+## Where accounts live
 
-The command line for ListeningKit's social accounts, on every platform they
-live on. Accounts live in Twenty as `socialAccounts` (one row per account, its
-platform, session and proxy), Marketplace listings as `agencyListings`, reached
-through the same generated GraphQL client blaster and the dialer use. Every
-result is written back to Twenty.
+Accounts live in [Twenty](twenty.md) as `socialAccounts`: one row per account,
+with its platform, session and proxy. Marketplace listings are
+`agencyListings`. log reads the row before a run and writes the result back
+after it. A single user can keep accounts in a local file instead.
 
-log-cli is **platform-agnostic**. Three platforms so far:
+## Platforms
+
+log is **platform-agnostic**. Each platform has its own engine:
 
 - **Facebook:** Marketplace listings (publish, check, campaigns) and groups
-  (join, read, poll, members), on its direct API (fbk, `vendor/fbk`) first and
-  the account's browser behind it, always through a proxy in the account's
-  home country (rule 12).
+  (join, read, poll, members). It uses Facebook's direct API first (fbk,
+  `vendor/fbk`) and the account's browser behind it, always through a proxy in
+  the account's home country.
 - **X:** session checks, follows, replies, quotes, likes, DMs and a reply
-  queue, on its direct API only (twikit, `vendor/twikit`), with no proxy and no
-  browser (rule 80).
+  queue. Direct API only (twikit, `vendor/twikit`): no proxy and no browser.
 - **Reddit:** the session check on its direct API (rdvwr, `vendor/rdvwr`), and
-  `log inspect` in the account's browser with no proxy (rule 84).
+  `log inspect` in the account's browser with no proxy.
 
-A command that acts on one platform names it first (`log facebook publish`,
-`log twitter reply`, `log reddit session check`, rule 63). A new platform is
-one command, `log new platform <name>` (rule 83). Every platform's internal
-calls go through rea, their code as well as their network (rule 85), into
+A command that acts on one platform names it first: `log facebook publish`,
+`log twitter reply`, `log reddit session check`. A new platform is one
+command, `log new platform <name>`. Every platform's internal calls are read
+with rea (their code as well as their network) and documented under
 `docs/platforms/<platform>/`.
 
-log-cli is **browser-agnostic** too. Each account's browser is a driver picked
-from Twenty: **AdsPower** first (one profile per account, Listaro's browser),
-Camoufox kept, and more browser providers to come, each one more driver
-(`src/browser/<name>`). Every driver opens through the same gates: the proxy
-the platform needs (rules 12, 84), the launch self-check (rule 17), a raw HAR
-of everything (rule 22), and one human mouse (rule 32). Which platform runs
-where, and which commands run on the account's browser, is in
-[The platforms](#the-platforms) and [The browser layer](#the-browser-layer)
-below, generated from the code.
+The current list of platforms, and which commands run where, is in
+[the reference](reference.md#the-platforms), generated from the code.
 
-Built the same way as the Rank CLI from the Nebius hackathon: a command registry
-that generates its own usage, commands that return results rather than
-printing, and a [Clack](https://github.com/bombshell-dev/clack) guided menu
-(`log launch`) on top of the scriptable commands.
+## Browsers
+
+log is **browser-agnostic** too. Each account's browser is a driver chosen in
+Twenty: AdsPower first (one profile per account), Camoufox kept, and more to
+come, each one more driver (`src/browser/<name>`). Every driver opens through
+the same gates:
+
+- the proxy the platform needs;
+- the launch self-check;
+- a raw recording (HAR) of every request;
+- one human-like mouse.
+
+Details: [Browsers](browsers.md) and
+[the browser layer](reference.md#the-browser-layer).
+
+## How the CLI is built
+
+- A command registry that generates its own usage.
+- Commands return results instead of printing them, so they are easy to test.
+- A [Clack](https://github.com/bombshell-dev/clack) guided menu (`log launch`)
+  on top of the scriptable commands.
+
+The rules behind all of this are in AGENTS.md.

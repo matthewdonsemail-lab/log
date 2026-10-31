@@ -85,18 +85,17 @@ Each of those is a [use case](docs/useCases/README.md), written step by step: wh
 
 ## Documentation
 
-| Read | For |
+The full docs are at [log.listeningkit.com/docs](https://log.listeningkit.com/docs), built from [docs/](docs/README.md):
+
+| Tab | What's in it |
 |---|---|
-| [docs/install.md](docs/install.md) | installing, settings, and running from source |
-| [docs/mcp.md](docs/mcp.md) | connecting Claude Code, Codex, Cursor or any MCP client |
-| [docs/useCases](docs/useCases/README.md) | the plays, step by step |
-| [docs/reference.md](docs/reference.md) | every command, flag, MCP tool and hook, generated from the code |
-| [docs/guides](docs/guides) | the guides your agent loads, one per kind of work |
-| [docs/platforms](docs/platforms) | what each platform's own API does, request by request |
-| [docs/diagrams](docs/diagrams) | how the pieces fit, as Mermaid diagrams |
-| [docs/twenty.md](docs/twenty.md) | many accounts in Twenty |
-| [docs/howItWorks.md](docs/howItWorks.md) | how log decides what happened on a platform |
-| [docs/README.md](docs/README.md) | everything else in docs/ |
+| Get started | [install](docs/install.md), [add your accounts](docs/accounts.md), [connect your agent](docs/mcp.md), [using log well](docs/usingLog.md) |
+| Use cases | [the plays, step by step](docs/useCases/README.md) |
+| Platforms | what you can do on [X](docs/platformGuides/x.md), [Reddit](docs/platformGuides/reddit.md), [Facebook](docs/platformGuides/facebook.md), [Discord](docs/platformGuides/discord.md) and [LinkedIn](docs/platformGuides/linkedin.md) |
+| Reference | [every command, MCP tool and hook](docs/reference.md), [error codes](docs/errorCatalog.md), [agent guides](docs/guides) |
+| How it works | [how log decides what happened](docs/howItWorks.md), Twenty, browsers, proxies, each platform's API and the diagrams |
+
+Where each page sits is set in [docs/site.json](docs/site.json), and a commit check refuses a page that isn't placed.
 
 ## Contributing
 

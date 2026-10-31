@@ -14,25 +14,25 @@ import { Rasputin } from './rasputin'
 
 const PLUGS = [
   {
-    href: '/docs/mcp#claude-code',
+    href: '/docs/getStarted/mcp#claude-code',
     label: 'Claude',
     src: '/logos/tools/claude-desktop.svg',
     setup: 'claude mcp add log -- logMcp, and Claude Code runs every log command as a tool.',
   },
   {
-    href: '/docs/mcp#codex',
+    href: '/docs/getStarted/mcp#codex',
     label: 'Codex',
     src: '/logos/tools/chatgpt.svg',
     setup: 'codex mcp add log -- logMcp, and Codex runs every log command as a tool.',
   },
   {
-    href: '/docs/mcp#cursor',
+    href: '/docs/getStarted/mcp#cursor',
     label: 'Cursor',
     src: '/logos/tools/cursor.svg',
     setup: 'Add logMcp to the MCP servers in Cursor, and its agent runs every log command as a tool.',
   },
   {
-    href: '/docs/mcp#any-other-mcp-client',
+    href: '/docs/getStarted/mcp#any-other-mcp-client',
     label: 'MCP',
     src: '/logos/tools/mcp.svg',
     setup: 'Any MCP client: the command is logMcp. Anything that acts on an account needs your confirmation.',
