@@ -9245,3 +9245,47 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: log-cli's whole history (298 commits) is merged into the log repo, which is its home from now on. Of the old hackathon log, only the marketing site is kept, in `site/` as its own pnpm workspace, and the root `vercel.json` builds it from there. Our checks now leave `site/` alone: `noComments` skips it (`SKIPPED`), and `bun test` ignores it (`pathIgnorePatterns` in bunfig.toml). The site's two tsconfigs look for type packages only inside `site/` (`typeRoots`), so the repo root's `@types/bun` no longer breaks its build. The README opens with what log is and has a "Set it up" section: Bun, Python, `LOG_ACCOUNTS=local`, `localAccount add`, `cookies save`, `session check` and the MCP server.
 Why: matt: move everything from log-cli into the log repository and carry on our work there, so people can set it up from the README. Everything can be public. The site is just our marketing site.
 Checked: gitleaks over log-cli's full history found 70 hits, all false positives, public upstream fbk samples or short-lived page tokens; no `.env`, HAR or login.json was ever committed. On the merged tree, `lefthook run pre-commit --all-files` and `pre-push --all-files` pass: 1200 tests pass, typecheck, naming, docs, facebookClientDocs. `node site/scripts/build-site.mjs` builds the web app and adds 524 docs files.
+
+## 2026-10-31 07:16Z · feat/publicInstall
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `bin/log.ts`: no declaration changed (comments, formatting or line endings)
+- `bin/logMcp.ts`: no declaration changed (comments, formatting or line endings)
+- `package.json`: edited
+- `scripts/git/installHooks.ts`: added const git, const installed
+- `scripts/twenty/twentySetup.mjs`: added const selectOf, const text, const BASE_SOCIAL_ACCOUNT_FIELDS, const BASE_AGENCY_LISTING_FIELDS, const BASE_AGENCY_CAMPAIGN_FIELDS, const BASE_AGENCY_CONVERSATION_FIELDS, const BASE_AGENCY_MESSAGE_FIELDS, const BASE_OBJECTS · changed const NEW_OBJECTS, const missing
+- `site/apps/web/public/install.ps1`: new file
+- `site/apps/web/public/install.sh`: new file
+- `src/cli/runner/helpers/renderUsage.ts`: changed function renderUsage
+- `src/config/userEnv/autoload.ts`: new file, no top-level declarations
+- `src/config/userEnv/index.ts`: added function userEnvPath, function parseEnvFile, function loadUserEnv
+- `src/config/userEnv/userEnv.test.ts`: added test "reads keys, skips blanks and # lines, and unquotes values", test "fills only what isn't set, so a project's .env.local still wins", test "no file is no change", test "LOG_USER_ENV moves the file, otherwise it is ~/.logCli/.env"
+
+What changed: log installs in one line as the npm package `@listeningkit/log`, an installed `log` reads `~/.logCli/.env`, Twenty setup builds a fresh workspace, and the README explains Twenty.
+- **Install:** log installs in one line, `curl -fsSL https://log.listeningkit.com/install.sh | sh` or `irm …/install.ps1 | iex` on Windows. Both files are in `site/apps/web/public`. The installer:
+  - installs Bun if it's missing
+  - runs `bun add -g @listeningkit/log`
+  - finds the package by asking Bun for its global folder (`bun pm ls -g`)
+  - installs Python 3.12 with uv in `~/.logCli/python`, with the engines' dependencies (twikit's requirements, fbk, endcord, and chatXdk's wheel on Windows)
+  - writes `LOG_PYTHON` and `LOG_ACCOUNTS=local` to `~/.logCli/.env`
+- **Package:** package.json is the publishable package `@listeningkit/log`, with bins `log` and `logMcp`. Its files list leaves out tests, media and the site.
+- **Settings:** an installed `log` reads `~/.logCli/.env` (`loadUserEnv` in `src/config/userEnv`, loaded first by both bins). It only fills what isn't already set, so a folder's `.env.local` still wins.
+- **Hooks:** `prepare` runs `scripts/git/installHooks.ts`, so lefthook installs the same way from any shell. npm runs scripts in cmd.exe, where the old `;` line failed. The script fails loudly if lefthook can't install.
+- **Twenty setup:** `twentySetup.mjs` now creates the five base objects on a fresh Twenty (`socialAccount`, `agencyCampaign`, `agencyListing`, `agencyConversation`, `agencyMessage`) with their base fields, taken from the live workspace's schema. Before, it only added fields to objects that already existed.
+- **README:** opens "Set it up" with the one-line install, then adding an account, the MCP server, settings, and working from source. A new "Many accounts: Twenty" section says what Twenty is, why it works for log, when to use it over local accounts, and how to set it up.
+- **Help:** `log --help`'s title no longer says Facebook Marketplace only.
+
+Why: matt: explain what Twenty is, why it works and why we'd use it; make log installable; and set up the npm package now.
+Checked: tests, a package dry run, a real Windows install from the packed tarball, and a Twenty setup dry run.
+- `bun test src/config/userEnv`: 4 pass.
+- `npm pack --dry-run`: 1676 files, 7.8 MB packed. No tests, media, site or `.env` except the templates. Every packed file is tracked by git, apart from the new files in this commit.
+- `install.ps1` run for real against the packed tarball, with a throwaway `LOG_HOME`. It installed the package and Python 3.12 with 41 packages, and wrote the `.env`.
+- The installed `log`, run from an empty folder:
+  - read that `.env`
+  - `localAccount add`/`list` worked against the test file
+  - its Python imported curl_cffi, pydantic, bs4, pyotp and twikit 2.3.3
+
+  The test install and its launchers were removed afterwards.
+- `twentySetup.mjs` dry run on matt's Twenty plans no new object or base field. It only lists the DISCORD platform option, which was missing before this change.
+- `install.sh` isn't run here (no Unix shell with curl and uv on this machine).
