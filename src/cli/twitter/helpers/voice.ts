@@ -1,4 +1,8 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
+import { aiIndexDir, aiTellsLine, buildAiIndex, jinaEmbedder, openAiIndex, readAiTells } from "../../../voice/aiTells/index.ts";
+import type { AiEmbedder, AiReading } from "../../../voice/aiTells/index.ts";
 import { matchChat } from "../../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../../discord/chat/match/index.ts";
 import { loadConversations, localEmbedder } from "../../../search/conversations/index.ts";
@@ -15,6 +19,7 @@ import type { Command, CommandContext, CommandInput, CommandResult } from "../..
 
 export const VOICE_USAGE = [
   "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--json]",
+  "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; rule 112)",
   "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
   "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
   "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass).",
@@ -36,6 +41,12 @@ export const VOICE_INPUT: CommandInput = {
       ],
     },
     {
+      words: ["aiIndex"],
+      summary: "Build the AI tells index with Jina and measure matt's own messages against it",
+      positionals: [],
+      flags: [JSON_FLAG],
+    },
+    {
       words: ["index"],
       summary: "Build matt's voice per chat and person from the conversations log search saved",
       positionals: [],
@@ -44,14 +55,15 @@ export const VOICE_INPUT: CommandInput = {
   ],
 };
 
-export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder() };
+export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder(), aiEmbedder: () => jinaEmbedder() };
 
-export function renderVoice(reading: VoiceReading & { notHere?: string[] }): string {
+export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTells?: AiReading }): string {
   const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
   const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
   const watermark = reading.watermark ? `\n  ${watermarkLine(reading.watermark)}` : "";
-  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
+  const ai = reading.aiTells ? `\n  ${aiTellsLine(reading.aiTells)}` : "";
+  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${ai}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
 }
 
 function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {
@@ -117,10 +129,25 @@ export const voiceCommand: Command = {
   effect: "read",
   input: VOICE_INPUT,
   summary: "Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing",
-  args: "--to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <chat>] [--json] | index",
+  args: "--to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <chat>] [--json] | index | aiIndex",
   async run(context, argv) {
-    if (argv[0] === "index") {
+    if (argv[0] === "aiIndex") {
       const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[1], words: [] }] }));
+      if (!parsed.ok) return { code: 1, stderr: `log voice aiIndex: ${parsed.error}\n${VOICE_USAGE}` };
+      try {
+        const pairsFile = join(voiceDir(), "pairs.json");
+        const replies = existsSync(pairsFile) ? (JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply) : [];
+        if (!replies.length) context.err("voice aiIndex: no voice index yet, so there is no baseline of matt's own messages: build it with `log voice index` first");
+        const started = Date.now();
+        const meta = await buildAiIndex(voiceDeps.aiEmbedder(), replies, aiIndexDir(), undefined, undefined, (line) => context.err(line));
+        const line = `log voice aiIndex: ${meta.phrases.length} AI phrases embedded with ${meta.model}; matt's own ${meta.baseline.messages} messages sit at p50 ${meta.baseline.p50.toFixed(3)}, p99 ${meta.baseline.p99.toFixed(3)} from them; ${meta.baseline.mutedRules.length} vale rules muted because he uses them himself (${meta.baseline.mutedRules.join(", ") || "none"}); ${((Date.now() - started) / 1000).toFixed(1)} s at ${aiIndexDir()}`;
+        return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify({ phrases: meta.phrases.length, model: meta.model, baseline: meta.baseline }, null, 2) : line };
+      } catch (error) {
+        return refuseError("voice aiIndex", error);
+      }
+    }
+    if (argv[0] === "index") {
+      const parsed = parseArgs(argv.slice(1), parserSpecOf({ forms: [{ ...VOICE_INPUT.forms[2], words: [] }] }));
       if (!parsed.ok) return { code: 1, stderr: `log voice index: ${parsed.error}\n${VOICE_USAGE}` };
       try {
         const conversations = loadConversations();
@@ -159,7 +186,10 @@ export const voiceCommand: Command = {
       context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")} against matt's writing guide${evidence ? ` and his real replies in ${evidence.chat}` : ""}`);
       const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}) }, guide, voiceDeps.decisions());
       const notHere = evidence ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
-      const reading = { ...scored, notHere, pass: scored.pass && !notHere.length };
+      const aiIndex = openAiIndex();
+      if (!aiIndex) context.err("voice: no AI tells index yet, so AI phrasing isn't checked: build it with `log voice aiIndex`");
+      const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;
+      const reading = { ...scored, notHere, ...(aiTells ? { aiTells } : {}), pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) };
       if (parsed.flags["json"]) return { code: reading.pass ? 0 : 1, stdout: JSON.stringify(reading, null, 2) };
       return { code: reading.pass ? 0 : 1, stdout: renderVoice(reading) };
     } catch (error) {

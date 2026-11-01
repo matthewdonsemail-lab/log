@@ -278,6 +278,15 @@
     ],
     "action": "Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it."
   },
+  "jinaKeyMissing": {
+    "layer": "twitter",
+    "meaning": "The AI tells index and the voice gate embed and rerank with Jina, and JINA_API_KEY is not set.",
+    "retryable": false,
+    "raisedIn": [
+      "voice/aiTells"
+    ],
+    "action": "Put JINA_API_KEY=<key> in log-cli/.env.local, then run it again."
+  },
   "aiArtifacts": {
     "layer": "twitter",
     "meaning": "The copy carries what AI chat interfaces leave in text and nobody types: zero-width or other hidden characters, unusual Unicode spaces, or pasted Claude HTML classes and data attributes (vendor/claudeArtifactDetector). The statistical watermark itself cannot be checked (no public detector).",
