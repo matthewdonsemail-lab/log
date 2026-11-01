@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { appendFileSync, existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { planSend } from '../../post/send/index'
 import type { BuildTarget, EventKind, PlanEvent, PlanOptions, Queue, QueueAction, QueueItem, Rng } from './types'
 import { ITEM_STATUSES, QUEUE_ACTIONS } from './types'
@@ -207,4 +207,63 @@ export function planQueue(queue: Queue, options: PlanOptions, rng: Rng, now: Dat
   const order = interleave(kinds.flatMap((k) => k.kinds.map((kind) => ({ n: k.n, kind }))), rng)
   const events: PlanEvent[] = order.map((e, i) => ({ ...e, at: new Date(Math.round(times[i]) * 1000).toISOString() }))
   return { ...queue, randomRun: { planned: now.toISOString(), window: options.window, minGap: options.minGap, events } }
+}
+
+export const incomingPathOf = (path: string) => `${stem(path)}.incoming.jsonl`
+
+export interface QueueAddition {
+  action: QueueAction
+  targets: BuildTarget[]
+  approvedBy: string
+  window: string
+  minGap?: number
+  at: string
+}
+
+export function fitTimes(taken: readonly number[], count: number, start: number, span: number, minGap: number, rng: Rng): number[] {
+  const busy = [...taken]
+  const out: number[] = []
+  for (let i = 0; i < count; i++) {
+    let placed: number | null = null
+    for (let tries = 0; tries < 400 && placed === null; tries++) {
+      const t = start + rng() * span
+      if (busy.every((b) => Math.abs(b - t) >= minGap)) placed = t
+    }
+    if (placed === null) placed = Math.max(start, ...busy) + minGap + rng() * minGap
+    busy.push(placed)
+    out.push(placed)
+  }
+  return out.sort((a, b) => a - b)
+}
+
+export function addToQueue(queue: Queue, addition: QueueAddition, rng: Rng, now: Date): PlanEvent[] {
+  const built = buildQueue({ account: queue.account, action: addition.action, targets: addition.targets, lines: [], sources: [], seed: 1, now })
+  const taken = new Set(queue.items.map((i) => `${i.action}:${targetOfItem(i)}:${i.text}`))
+  let next = Math.max(0, ...queue.items.map((i) => i.n)) + 1
+  const fresh = built.items.filter((i) => !taken.has(`${i.action}:${targetOfItem(i)}:${i.text}`)).map((i) => ({ ...i, n: next++ }))
+  queue.items.push(...fresh)
+  const minGap = Math.max(MIN_GAP_FLOOR, addition.minGap ?? queue.randomRun?.minGap ?? 120)
+  const pending = (queue.randomRun?.events ?? []).filter((e) => !e.done && !e.skipped).map((e) => new Date(e.at).getTime() / 1000)
+  const start = now.getTime() / 1000 + 30
+  const times = fitTimes(pending, fresh.length, start, parseSpan(addition.window), minGap, rng)
+  const order = shuffle(fresh, rng)
+  const events: PlanEvent[] = order.map((item, i) => ({ n: item.n, kind: 'reply' as EventKind, at: new Date(Math.round(times[i]) * 1000).toISOString() }))
+  queue.randomRun = queue.randomRun ?? { planned: now.toISOString(), window: addition.window, minGap, events: [] }
+  queue.randomRun.events.push(...events)
+  queue.approval = approveQueue(queue, addition.approvedBy, now).approval
+  return events
+}
+
+export function takeIncoming(path: string): QueueAddition[] {
+  const file = incomingPathOf(path)
+  if (!existsSync(file)) return []
+  const taking = `${file}.taking`
+  renameSync(file, taking)
+  const lines = readFileSync(taking, 'utf8').split(/\r?\n/).filter((l) => l.trim())
+  rmSync(taking, { force: true })
+  return lines.map((l) => JSON.parse(l) as QueueAddition)
+}
+
+export function sendIncoming(path: string, addition: QueueAddition): void {
+  appendFileSync(incomingPathOf(path), JSON.stringify(addition) + '\n', 'utf8')
 }
