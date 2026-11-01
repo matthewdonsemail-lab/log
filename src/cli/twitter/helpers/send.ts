@@ -1,5 +1,6 @@
 import { writesPerDayOf } from "../../../directApi/engine/index.ts";
 import { fileSize, mediaKindOf, planSend } from "../../../twitter/post/send/index.ts";
+import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import type { SendAction } from "../../../twitter/post/send/index.ts";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -132,6 +133,7 @@ function sendCommand(shape: SendShape): Command {
         const { account, engine } = opened;
         const plan = planSend({ ...request, style: account.copyStyle });
         if (!plan.ok) return refuse(label, plan.problem.code, plan.problem.detail);
+        if (plan.watermark) context.err(`${account.accountName}: ${watermarkLine(plan.watermark)}`);
         const split = shape.action === "dm" && plan.spec.text ? dmSplit(plan.spec.text, plan.target, parsed.flags["asOne"] === true) : null;
         if (!live) {
           if (split) {

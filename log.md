@@ -10198,3 +10198,37 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: when the live X Chat watch can't open a message because its signature doesn't verify against the sender's cached signing key, `_xchat_open` drops that sender's cached key, fetches it again (`_xchat_signers`, `get_xchat_public_keys`) and opens the message, instead of pushing "(could not open: Crypto error: Signature verification failed ... no matching signing key)". The host session cached each sender's key once for its whole life, so a sender who signed in on a new device stayed unreadable.
 Why: archieldroberts sent seven messages between 00:19 and 00:22 matt's time that all reached the inbox hook as "could not open ... Signature verification failed", while later ones from him opened. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
 Checked: a new twikit test drives `_xchat_open` with a chat that only verifies after the sender's key is fetched again, and checks it was fetched twice and the text came back; the xchat tests pass (16).
+
+## 2026-11-01 18:07Z · feat/watermarkReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand
+- `src/cli/twitter/helpers/send.ts`: changed function sendCommand
+- `src/cli/twitter/helpers/voice.ts`: changed function renderVoice
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/copy/index.ts`: added export from "./watermark/index.ts"
+- `src/twitter/copy/voice/client.ts`: changed function readVoice
+- `src/twitter/copy/voice/types.ts`: changed interface VoiceReading
+- `src/twitter/copy/watermark/client.ts`: added function watermarkReadingOf, function watermarkLine
+- `src/twitter/copy/watermark/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/copy/watermark/types.ts`: added type WatermarkLevel, interface WatermarkFinding, interface WatermarkReading, const STATISTICAL_NOTE
+- `src/twitter/copy/watermark/watermark.test.ts`: added test "plain house-style copy is clean and says the statistical watermark is unknown", test "a hidden zero-width character is an artifact, and the send is refused", test "an em dash or curly quote is only stylistic and the reading goes with the plan"
+- `src/twitter/post/send/client.ts`: changed function planSend
+- `src/twitter/post/send/send.test.ts`: changed test "a reply with house-style copy plans the engine spec, live only when asked", test "a post needs no target, only its text, and carries its media as full paths"
+- `src/twitter/post/send/types.ts`: changed type SendProblemCode, type SendPlan
+- `vendor/claudeArtifactDetector/LICENSE`: new file
+- `vendor/claudeArtifactDetector/README.md`: new file
+- `vendor/claudeArtifactDetector/UPSTREAM_COMMIT`: new file
+- `vendor/claudeArtifactDetector/package.json`: new file
+- `vendor/claudeArtifactDetector/src/artifacts.test.ts`: added const SAMPLE, function kinds, function countOf, test "clean text produces no findings", test "claude-html-class: double and single quoted", test "ai-html-attr: the data-is-* family, not just enumerated members", test "zero-width: ZWSP, ZWNJ, ZWJ, word joiner, BOM", test "nbsp is counted apart from the exotic spaces", test "exotic-space: the U+2000–U+200A family plus the strays", test "smart-punctuation is counted but marked stylistic", test "em-dash is counted but marked stylistic", test "the deterministic/stylistic split is exactly as advertised", test "the sample paste carries every artifact class", test "clean() output re-detects as empty", test "clean() leaves the prose intact", test "opt-outs are honoured and reported honestly", test "an explicit undefined does not silently disable a default", test "cleaning is idempotent", test "line endings normalise without eating structure", test "describe() covers every kind", test "large input stays fast enough to run on every keystroke"
+- `vendor/claudeArtifactDetector/src/artifacts.ts`: added type ArtifactKind, interface Finding, interface CleanOptions, const DEFAULT_CLEAN_OPTIONS, const ZERO_WIDTH, const EXOTIC_SPACE, const NBSP, const CLAUDE_CLASS, const CLAUDE_CLASS_SQ, const AI_DATA_ATTR, const SMART_QUOTES, const EM_DASH, const ARTIFACT_CLASSES, const CLASS_BY_KIND, function countMatches, function counts, function detect, interface CleanResult, function withDefaults, function clean, function total, function describe
+- `vendor/claudeArtifactDetector/src/index.ts`: added export from "./artifacts.js"
+
+What changed: every send's copy gets a watermark reading. `OfirYC/claude-watermark-checker` (MIT, no dependencies, its source, tests, licence and upstream commit) is vendored at `vendor/claudeArtifactDetector`, and `watermarkReadingOf` (`src/twitter/copy/watermark`) reads a text as `clean`, `stylistic` (curly quotes, em dashes) or `artifacts` (zero-width and other hidden characters, unusual spaces, pasted Claude HTML classes and data attributes), always with `statistical: unknown` and why. `planSend` refuses a dm, reply, quote or post that carries artifacts (`aiArtifacts`, in the error catalog) and carries the reading in its plan; `log voice` shows the reading and fails a draft with artifacts; a direct send and each queue send log the reading. Rule 111.
+Why: matt asked for deep research into GitHub repos "good for claude watermarking ... so we're able to pass it through context into the sends so that we can see how likely it is to be watermarked". The research (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`) found Claude's own watermark is statistical, keyed and checked only by Anthropic's private-preview detector, so no public repo can score it; the artifact checker is the one that can run on every send, and it says plainly what it can't see.
+Checked: `bun run check` passes (1290 tests, the vendored detector's 18 among them); new tests: plain copy is clean with the statistical watermark unknown, a zero-width character is refused as `aiArtifacts`, an em dash is only stylistic and the reading goes with the plan.

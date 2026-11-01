@@ -6,7 +6,7 @@ const POST = 'https://x.com/someone/status/1900000000000000000'
 
 describe('planSend', () => {
   test('a reply with house-style copy plans the engine spec, live only when asked', () => {
-    expect(planSend({ action: 'reply', tweetUrl: POST, text: 'love this', live: false })).toEqual({ ok: true, target: POST, spec: { action: 'reply', live: false, approvedBy: undefined, tweetUrl: POST, text: 'love this' } })
+    expect(planSend({ action: 'reply', tweetUrl: POST, text: 'love this', live: false })).toMatchObject({ ok: true, target: POST, watermark: { level: 'clean', statistical: 'unknown' }, spec: { action: 'reply', live: false, approvedBy: undefined, tweetUrl: POST, text: 'love this' } })
     const live = planSend({ action: 'reply', tweetUrl: POST, text: 'love this', approvedBy: 'matt', live: true })
     expect(live.ok && live.spec).toMatchObject({ live: true, approvedBy: 'matt' })
   })
@@ -31,7 +31,7 @@ describe('planSend', () => {
     const sizes: Record<string, number> = { [resolve('clip.mp4')]: 3_000_000 }
     const sizeOf = (p: string) => sizes[p] ?? null
     const plan = planSend({ action: 'post', text: 'one in 173', media: ['clip.mp4'], live: false }, sizeOf)
-    expect(plan).toEqual({ ok: true, target: NEW_POST, spec: { action: 'post', live: false, approvedBy: undefined, text: 'one in 173', media: [resolve('clip.mp4')] } })
+    expect(plan).toMatchObject({ ok: true, target: NEW_POST, watermark: { level: 'clean' }, spec: { action: 'post', live: false, approvedBy: undefined, text: 'one in 173', media: [resolve('clip.mp4')] } })
     expect(planSend({ action: 'post', live: false })).toMatchObject({ ok: false, problem: { code: 'textMissing' } })
     expect(planSend({ action: 'post', text: 'Hello, world.', live: false })).toMatchObject({ ok: false, problem: { code: 'styleFailed' } })
     expect(planSend({ action: 'post', text: 'one in 173', media: ['clip.mp4'], live: true }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'notApproved' } })

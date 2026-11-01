@@ -35,6 +35,7 @@ import { createInspector, formatTraceLine } from "../../../observability/trace/i
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec, PositionalSpec } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
+import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import { activityOf, contextChangesSince } from "../../../twitter/dm/person/index.ts";
 import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
@@ -246,6 +247,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
         send: async (item, kind): Promise<TwitterSessionAnswer> => {
           const plan = specFor(item, kind, approvedBy, opened.account.copyStyle);
           if (!plan.ok) return { ok: false, code: plan.problem.code, detail: plan.problem.detail };
+          if (plan.watermark) log(`#${item.n} @${item.handle ?? "?"}: ${watermarkLine(plan.watermark)}`);
           const spec = flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
           if (kind === "like" || item.action !== "dm" || !plan.spec.text || !item.userId) return (await opened.engine(spec)).answer;
           const split = dmSplit(plan.spec.text, item.userId, false);

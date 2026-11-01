@@ -1,3 +1,4 @@
+import type { WatermarkReading } from '../watermark/types'
 export interface VoiceEvidence {
   chat: string
   profile: unknown
@@ -21,6 +22,7 @@ export interface VoiceReading {
   openerOnly: number
   toThem: number | null
   neverSays: string[]
+  watermark: WatermarkReading
   pass: boolean
   model: string | null
 }

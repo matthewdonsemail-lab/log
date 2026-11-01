@@ -278,6 +278,16 @@
     ],
     "action": "Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it."
   },
+  "aiArtifacts": {
+    "layer": "twitter",
+    "meaning": "The copy carries what AI chat interfaces leave in text and nobody types: zero-width or other hidden characters, unusual Unicode spaces, or pasted Claude HTML classes and data attributes (vendor/claudeArtifactDetector). The statistical watermark itself cannot be checked (no public detector).",
+    "retryable": false,
+    "raisedIn": [
+      "twitter/post/send",
+      "twitter/queue/plan"
+    ],
+    "action": "Retype the copy as plain text so only what matt would type is in it, then send again."
+  },
   "mediaInvalid": {
     "layer": "twitter",
     "meaning": "A post's --media can't go on X: a file that isn't there or is empty, a type X doesn't take, one over X's size (5 MB an image, 15 MB a gif, 512 MB a video), a video or gif beside other files, more than 4 images, or media on something that isn't a post.",
