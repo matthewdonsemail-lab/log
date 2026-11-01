@@ -1,0 +1,56 @@
+{
+  "name": "claude-artifact-detector",
+  "version": "1.0.0",
+  "description": "Detect and remove the copy-paste artifacts AI chat interfaces leave in text: Claude HTML classes, provider data-attributes, zero-width characters, exotic spaces, smart punctuation, em dashes. Zero dependencies. Does not claim to detect statistical watermarks.",
+  "keywords": [
+    "claude",
+    "anthropic",
+    "watermark",
+    "ai-detection",
+    "zero-width",
+    "unicode",
+    "artifacts",
+    "chatgpt",
+    "text-cleaning"
+  ],
+  "homepage": "https://claudewatermark.xyz",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "artifact-detector": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.test.json && node --test test-build/*.test.js",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": ">=18",
+    "typescript": ">=5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OfirYC/claude-artifact-detector.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OfirYC/claude-artifact-detector/issues"
+  }
+}

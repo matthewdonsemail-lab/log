@@ -1,3 +1,4 @@
+import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import { matchChat } from "../../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../../discord/chat/match/index.ts";
 import { loadConversations, localEmbedder } from "../../../search/conversations/index.ts";
@@ -49,7 +50,8 @@ export function renderVoice(reading: VoiceReading & { notHere?: string[] }): str
   const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
   const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
-  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
+  const watermark = reading.watermark ? `\n  ${watermarkLine(reading.watermark)}` : "";
+  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
 }
 
 function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import type { DecisionsClient } from '../../../subq/decisions/index'
 import { CONTEXT_PASS, MATT_DMS, NEVER_SAYS, VOICE_MODEL, VOICE_PASS } from './types'
 import type { VoiceDraft, VoiceReading } from './types'
+import { watermarkReadingOf } from '../watermark/index'
 
 export function guidePath(env: Record<string, string | undefined> = process.env): string {
   if (env.LOG_VOICE_GUIDE) return env.LOG_VOICE_GUIDE
@@ -41,5 +42,6 @@ export async function readVoice(draft: VoiceDraft, guide: string, decide: Decisi
   const friendLike = answers.friendLike?.noul ?? 0
   const openerOnly = answers.openerOnly?.noul ?? 0
   const toThem = draft.evidence ? answers.toThem?.noul ?? 0 : null
-  return { to: draft.to, voice, inContext, friendLike, openerOnly, toThem, neverSays, pass: !neverSays.length && voice >= VOICE_PASS && inContext >= CONTEXT_PASS && friendLike >= CONTEXT_PASS && openerOnly >= CONTEXT_PASS && (toThem === null || toThem >= CONTEXT_PASS), model: response.model ?? null }
+  const watermark = watermarkReadingOf(draft.text)
+  return { to: draft.to, voice, inContext, friendLike, openerOnly, toThem, neverSays, watermark, pass: !neverSays.length && watermark.level !== 'artifacts' && voice >= VOICE_PASS && inContext >= CONTEXT_PASS && friendLike >= CONTEXT_PASS && openerOnly >= CONTEXT_PASS && (toThem === null || toThem >= CONTEXT_PASS), model: response.model ?? null }
 }

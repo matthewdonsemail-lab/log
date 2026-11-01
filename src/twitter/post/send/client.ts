@@ -1,6 +1,7 @@
 import { existsSync, statSync } from 'node:fs'
 import { extname, resolve } from 'node:path'
 import { DEFAULT_COPY_STYLE, styleHint, styleProblems } from '../../copy/style/index'
+import { watermarkReadingOf } from '../../copy/watermark/index'
 import type { SendAction, SendPlan, SendProblem, SendRequest } from './types'
 
 export const TWEET_URL = /^https?:\/\/(?:www\.)?(?:x|twitter)\.com\/[A-Za-z0-9_]+\/status\/\d+/
@@ -60,6 +61,8 @@ export function planSend(request: SendRequest, sizeOf: SizeOf = fileSize): SendP
     const problems = styleProblems(text, style)
     if (problems.length) return { ok: false, problem: { code: 'styleFailed', detail: `the ${style} style check failed: ${problems.join(', ')} (${styleHint(style)})` } }
   }
+  const watermark = text ? watermarkReadingOf(text) : null
+  if (watermark?.level === 'artifacts') return { ok: false, problem: { code: 'aiArtifacts', detail: `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(', ')}` } }
   const media = (request.media ?? []).map((m) => m.trim()).filter(Boolean).map((m) => resolve(m))
   if (media.length && request.action !== 'post') return { ok: false, problem: { code: 'mediaInvalid', detail: `${request.action} takes no media: only a post does` } }
   const badMedia = mediaProblem(media, sizeOf)
@@ -69,6 +72,7 @@ export function planSend(request: SendRequest, sizeOf: SizeOf = fileSize): SendP
   return {
     ok: true,
     target,
+    ...(watermark ? { watermark } : {}),
     spec: {
       action: request.action,
       live: request.live,

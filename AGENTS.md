@@ -1389,6 +1389,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the last 2 minutes (`notificationsFresh`). A queue run never sends two
     things closer than its minGap, and items added to it keep that gap.
 
+111. 2026-11-02 · matt: find GitHub repos "good for claude watermarking ...
+    so we're able to pass it through context into the sends so that we can
+    see how likely it is to be watermarked". Claude's own watermark is
+    statistical (word choice under a secret key) and Anthropic's text
+    detector is private preview, so no public repo can score it
+    (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`). What can be read is
+    what AI chat interfaces leave in text: `OfirYC/claude-watermark-checker`
+    is vendored at `vendor/claudeArtifactDetector` (MIT, no dependencies)
+    and every send's copy is read by it (`watermarkReadingOf`,
+    `src/twitter/copy/watermark`): `clean`, `stylistic` (curly quotes, em
+    dashes) or `artifacts` (zero-width or other hidden characters, odd
+    spaces, pasted Claude HTML), with `statistical: unknown` always said.
+    `planSend` refuses a send with artifacts (`aiArtifacts`) and carries the
+    reading in its plan; `log voice` shows it and fails a draft with
+    artifacts; a direct send and each queue send log it.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
