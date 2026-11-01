@@ -228,7 +228,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
   const chatPin = secrets?.messengerPin ?? undefined;
   const contextChanged = async (item: QueueItem): Promise<string[]> => {
-    const since = item.draftedAt ?? queue.approval?.at ?? queue.created;
+    const since = item.draftedAt ?? queue.created;
     const kept = readNotificationStore(notificationStorePath(queue.account));
     const notes = notificationsFresh(kept, new Date(nowMs())) ? null : await opened.engine({ action: "notifications", screenName: queue.account });
     if (notes && !notes.answer.ok) log(`#${item.n}: notifications read before sending failed (${notes.answer.code ?? "?"}), checking the thread only`);
