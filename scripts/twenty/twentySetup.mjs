@@ -207,7 +207,78 @@ const AGENCY_MESSAGE_FIELDS = [
   { name: 'media', label: 'Media', type: 'RAW_JSON', description: 'log-cli: photos or files in the message: [{ url, kind }]' }
 ]
 
+const selectOf = (values) => values.map((value, position) => option(value, value.charAt(0) + value.slice(1).toLowerCase().replace(/_/g, ' '), 'gray', position))
+const text = (name, label) => ({ name, label, type: 'TEXT', description: 'log-cli base field' })
+
+const BASE_SOCIAL_ACCOUNT_FIELDS = [
+  text('accountName', 'Account name'),
+  { name: 'platform', label: 'Platform', type: 'SELECT', description: 'log-cli base field', options: selectOf(['YOUTUBE', 'TIKTOK', 'INSTAGRAM', 'LINKEDIN', 'TWITTER', 'FACEBOOK', 'UPWORK', 'REDDIT', 'DISCORD']) },
+  { name: 'cookies', label: 'Cookies', type: 'RAW_JSON', description: 'log-cli base field' },
+  text('profileUrl', 'Profile URL'),
+  text('linkedTo', 'Linked to'),
+  text('email', 'Email'),
+  text('password', 'Password'),
+  text('emailPassword', 'Email password'),
+  text('phoneNumber', 'Phone number'),
+  text('proxy', 'Proxy')
+]
+
+const BASE_AGENCY_LISTING_FIELDS = [
+  text('title', 'Title'),
+  text('listingId', 'Listing id'),
+  text('locationQuery', 'Location query'),
+  { name: 'price', label: 'Price', type: 'NUMBER', description: 'log-cli base field' },
+  { name: 'status', label: 'Status', type: 'SELECT', description: 'log-cli base field', options: selectOf(['ACTIVE', 'UNDER_REVIEW', 'DUPLICATE_TAKEDOWN', 'DELETED_BY_FB', 'POLICY_VIOLATION', 'COMMERCE_BAN', 'CHECKPOINT_REQUIRED', 'SOLD', 'RETRY_EXHAUSTED', 'UNKNOWN', 'DRAFT', 'READY', 'PUBLISHING', 'UNCONFIRMED', 'FAILED', 'BLOCKED', 'REMOVED', 'ACCOUNT_LOST', 'REPLACED']) },
+  text('rootListingId', 'Root listing id'),
+  text('parentListingId', 'Parent listing id'),
+  text('supersededById', 'Superseded by id'),
+  { name: 'generation', label: 'Generation', type: 'NUMBER', description: 'log-cli base field' },
+  text('lastError', 'Last error'),
+  { name: 'nextCheckAt', label: 'Next check at', type: 'DATE_TIME', description: 'log-cli base field' },
+  { name: 'clicksCount', label: 'Clicks', type: 'NUMBER', description: 'log-cli base field' },
+  text('htmlReceiptUrl', 'HTML receipt URL'),
+  text('screenshotUrl', 'Screenshot URL'),
+  text('offerId', 'Offer id'),
+  text('agencyLeadId', 'Agency lead id')
+]
+
+const BASE_AGENCY_CAMPAIGN_FIELDS = [
+  { name: 'status', label: 'Status', type: 'SELECT', description: 'log-cli base field', options: selectOf(['ACTIVE', 'INACTIVE', 'DRAFT']) },
+  { name: 'campaignType', label: 'Campaign type', type: 'SELECT', description: 'log-cli base field', options: selectOf(['OUTBOUND', 'INBOUND', 'BLENDED', 'REFERRAL', 'COLD_CALL', 'WEBSITE', 'TWENTY_IMPORT', 'OTHER']) },
+  text('urlKey', 'URL key')
+]
+
+const BASE_AGENCY_CONVERSATION_FIELDS = [
+  text('status', 'Status'),
+  { name: 'messageCount', label: 'Messages', type: 'NUMBER', description: 'log-cli base field' },
+  text('latestPreview', 'Latest preview'),
+  { name: 'latestMessageAt', label: 'Latest message at', type: 'DATE_TIME', description: 'log-cli base field' },
+  text('latestMessageId', 'Latest message id'),
+  text('latestDirection', 'Latest direction'),
+  text('pairKey', 'Pair key'),
+  text('peerPhone', 'Peer phone')
+]
+
+const BASE_AGENCY_MESSAGE_FIELDS = [
+  text('body', 'Body'),
+  text('direction', 'Direction'),
+  text('status', 'Status'),
+  text('errorCode', 'Error code'),
+  text('errorMessage', 'Error message'),
+  text('fromNumber', 'From number'),
+  text('toNumber', 'To number')
+]
+
+const BASE_OBJECTS = [
+  { nameSingular: 'socialAccount', namePlural: 'socialAccounts', labelSingular: 'Social account', labelPlural: 'Social accounts', description: 'log-cli: one account on one platform', icon: 'IconUserCircle' },
+  { nameSingular: 'agencyCampaign', namePlural: 'agencyCampaigns', labelSingular: 'Agency campaign', labelPlural: 'Agency campaigns', description: 'log-cli: listings grouped into one campaign', icon: 'IconSpeakerphone' },
+  { nameSingular: 'agencyListing', namePlural: 'agencyListings', labelSingular: 'Agency listing', labelPlural: 'Agency listings', description: 'log-cli: one Marketplace listing on one account', icon: 'IconTag' },
+  { nameSingular: 'agencyConversation', namePlural: 'agencyConversations', labelSingular: 'Agency conversation', labelPlural: 'Agency conversations', description: 'log-cli: a conversation with one person', icon: 'IconMessages' },
+  { nameSingular: 'agencyMessage', namePlural: 'agencyMessages', labelSingular: 'Agency message', labelPlural: 'Agency messages', description: 'log-cli: one message in a conversation', icon: 'IconMessage' }
+]
+
 const NEW_OBJECTS = [
+  ...BASE_OBJECTS,
   { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' },
   { nameSingular: 'agencyGroupPost', namePlural: 'agencyGroupPosts', labelSingular: 'Agency group post', labelPlural: 'Agency group posts', description: 'log-cli: a post in a Facebook group, as log facebook read group read it', icon: 'IconNews' },
   { nameSingular: 'agencyGroupComment', namePlural: 'agencyGroupComments', labelSingular: 'Agency group comment', labelPlural: 'Agency group comments', description: 'log-cli: a comment or reply on a Facebook group post', icon: 'IconMessageCircle' }
@@ -335,10 +406,11 @@ for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyC
 
 const plan = []
 for (const [objectName, specs] of [
-  ['socialAccount', SOCIAL_ACCOUNT_FIELDS],
-  ['agencyListing', AGENCY_LISTING_FIELDS],
-  ['agencyConversation', AGENCY_CONVERSATION_FIELDS],
-  ['agencyMessage', AGENCY_MESSAGE_FIELDS],
+  ['socialAccount', [...BASE_SOCIAL_ACCOUNT_FIELDS, ...SOCIAL_ACCOUNT_FIELDS]],
+  ['agencyCampaign', BASE_AGENCY_CAMPAIGN_FIELDS],
+  ['agencyListing', [...BASE_AGENCY_LISTING_FIELDS, ...AGENCY_LISTING_FIELDS]],
+  ['agencyConversation', [...BASE_AGENCY_CONVERSATION_FIELDS, ...AGENCY_CONVERSATION_FIELDS]],
+  ['agencyMessage', [...BASE_AGENCY_MESSAGE_FIELDS, ...AGENCY_MESSAGE_FIELDS]],
   ['agencyGroup', AGENCY_GROUP_FIELDS],
   ['agencyGroupPost', AGENCY_GROUP_POST_FIELDS],
   ['agencyGroupComment', AGENCY_GROUP_COMMENT_FIELDS]
@@ -381,7 +453,7 @@ for (const rel of RELATIONS) {
 }
 const status = objects.get('agencyListing').fields.get('status')
 const existing = Array.isArray(status?.options) ? status.options : []
-const missing = STATUS_ADDITIONS.filter((add) => !existing.some((o) => o.value === add.value))
+const missing = status ? STATUS_ADDITIONS.filter((add) => !existing.some((o) => o.value === add.value)) : []
 if (missing.length) {
   plan.push({
     what: `agencyListing.status + ${missing.map((o) => o.value).join(', ')} (keeps ${existing.length} existing options and their ids)`,
@@ -400,7 +472,7 @@ if (accountMissing.length) {
   })
 }
 
-const PLATFORM_ADDITIONS = [option('DISCORD', 'Discord', 'purple', 0)]
+const PLATFORM_ADDITIONS = [option('DISCORD', 'Discord', 'purple', 0), option('LINKEDIN', 'LinkedIn', 'blue', 0)]
 const accountPlatform = objects.get('socialAccount').fields.get('platform')
 const platformExisting = Array.isArray(accountPlatform?.options) ? accountPlatform.options : []
 const platformMissing = accountPlatform ? PLATFORM_ADDITIONS.filter((add) => !platformExisting.some((o) => o.value === add.value)) : []

@@ -86,11 +86,11 @@ export interface ToolResult {
 
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
-  login: "opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal.",
-  mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
-  chat: "asks matt for the X Chat PIN in a Clack prompt (masked). He runs `bun bin/log.ts twitter chat pin --account <a>` in a terminal.",
-  cookies: "asks for an X account's auth_token and ct0 in a Clack prompt (masked) and checks them with X before saving. Run `bun bin/log.ts twitter cookies save --account <handle>` in a terminal.",
-  messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal.",
+  login: "opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal.",
+  mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
+  chat: "asks matt for the X Chat PIN in a Clack prompt (masked). He runs `log twitter chat pin --account <a>` in a terminal.",
+  cookies: "asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, or a LinkedIn account's. Run `log twitter cookies save --account <handle>` or `log linkedin cookies save --account <publicId>` in a terminal.",
+  messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `log facebook messenger pin --account <a>` in a terminal.",
 };
 
 export const NO_PROMPT: Readonly<Record<string, string>> = {

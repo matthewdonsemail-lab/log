@@ -6,7 +6,7 @@ const NOTES = [
 ];
 
 export function renderUsage(commands: Command[], binary = "log"): string {
-  const lines: string[] = [`${binary} — Facebook Marketplace listings from the command line`, "", "Usage"];
+  const lines: string[] = [`${binary} — run your accounts on X, Reddit, Facebook and Discord from the command line`, "", "Usage"];
   const invocations = commands.map((command) => `  ${binary} ${command.name}${command.args ? ` ${command.args}` : ""}`);
   const width = Math.max(...invocations.map((line) => line.length)) + 2;
   commands.forEach((command, i) => lines.push(invocations[i].padEnd(width) + command.summary));

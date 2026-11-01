@@ -27,13 +27,13 @@ itself can't be used here: its browser server is headless-only on Windows
 
 ```bash
 # terminal 1 (or Monitor): the browser stays open until `do stop` or 30 idle minutes
-bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/me 2>&1 | tee <log>
+log inspect start --account <a> --url https://www.facebook.com/me 2>&1 | tee <log>
 
 # terminal 2: one step at a time
-bun bin/log.ts inspect do snapshot
-bun bin/log.ts inspect do goto https://www.facebook.com/me
-bun bin/log.ts inspect do click e12 --live        # only when matt asked
-bun bin/log.ts inspect do stop
+log inspect do snapshot
+log inspect do goto https://www.facebook.com/me
+log inspect do click e12 --live        # only when matt asked
+log inspect do stop
 ```
 
 Each `do` prints where the page is, the requests the step made to Facebook
@@ -47,7 +47,7 @@ page's elements with their refs. Everything is kept in order in
 Give the session its goal when you open it, in plain words:
 
 ```bash
-bun bin/log.ts inspect start --account <a> --goal "Set the Marketplace location to Bethlehem, Pennsylvania" --detach
+log inspect start --account <a> --goal "Set the Marketplace location to Bethlehem, Pennsylvania" --detach
 ```
 
 Every `do` then reads its own step:
@@ -72,7 +72,7 @@ Every `do` then reads its own step:
   and the second "reached" (78%). A goal set with `inspect goal --set`
   counts only the steps after it.
 - `--goal` on one `do` overrides the session's goal for that step.
-- `bun bin/log.ts inspect read <run>/steps/NN_action --account <a> --goal "..."`
+- `log inspect read <run>/steps/NN_action --account <a> --goal "..."`
   reads a recorded step again (over MCP: `inspectRead`).
 
 Each reading is one SubQ call ($0.04 per million input tokens; the West Bank
@@ -89,7 +89,7 @@ is reached. The page-state hook holds the Stop and says what's missing:
    step, as P.E.E.:
 
    ```bash
-   bun bin/log.ts inspect finding --account <a> --step 04_setlocationBethlehemPa \
+   log inspect finding --account <a> --step 04_setlocationBethlehemPa \
      --point "Typing Bethlehem, PA saved the location in the West Bank." \
      --explain "Facebook matched PA to the West Bank, and the account was already in Lima, so the search ranked from Peru."
    ```
@@ -101,9 +101,9 @@ is reached. The page-state hook holds the Stop and says what's missing:
    - **Explain:** why the evidence shows it, and what caused it.
 2. **The goal isn't reached yet.** Take the next inspect step towards it.
 3. **The goal is reached.** Say how each finding was fixed:
-   `bun bin/log.ts inspect finding --account <a> --fixes 1 --fix "Typed the state out in full (rule 72)."`
+   `log inspect finding --account <a> --fixes 1 --fix "Typed the state out in full (rule 72)."`
 
-`bun bin/log.ts inspect goal --account <a>` shows the goal, whether it's
+`log inspect goal --account <a>` shows the goal, whether it's
 reached, and every finding. The run keeps them as `goalFindings.md`. What
 only a person can clear (an ID, a video selfie) never holds the turn: say it
 to matt.

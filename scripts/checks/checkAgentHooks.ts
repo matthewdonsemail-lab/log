@@ -34,7 +34,7 @@ try {
   const samples: Record<HookEvent, Record<string, unknown>> = {
     SessionStart: { hook_event_name: "SessionStart", source: "startup" },
     UserPromptSubmit: { hook_event_name: "UserPromptSubmit", prompt: "check" },
-    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "bun bin/log.ts facebook warmup feed run | tail -5" } },
+    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "log facebook warmup feed run | tail -5" } },
     PostToolUse: { hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: { command: "echo" } },
     Stop: { hook_event_name: "Stop", stop_hook_active: false },
   };

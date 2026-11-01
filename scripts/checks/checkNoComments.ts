@@ -7,7 +7,7 @@ import ts from "typescript";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const CODE = /\.(ts|tsx|js|mjs|cjs)$/;
 const PYTHON = /\.py$/;
-const SKIPPED = /(^|\/)(node_modules|generated|vendor)\//;
+const SKIPPED = /(^|\/)(node_modules|generated|vendor)\/|^site\//;
 
 export interface CommentRange {
   pos: number;

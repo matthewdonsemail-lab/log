@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Log by ListeningKit</title>
+    <meta name="description" content="Log by ListeningKit is a real-time social-listening tool that monitors Facebook, X, and Reddit for your keywords, scores buyer intent with AI, and notifies you instantly on hits." />
+    <meta property="description" content="Log by ListeningKit is a real-time social-listening tool that monitors Facebook, X, and Reddit for your keywords, scores buyer intent with AI, and notifies you instantly on hits." />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://log.listeningkit.com" />
+    <meta property="og:site_name" content="Log by ListeningKit" />
+    <meta property="og:title" content="Log by ListeningKit" />
+    <meta property="og:description" content="Log by ListeningKit is a real-time social-listening tool that monitors Facebook, X, and Reddit for your keywords, scores buyer intent with AI, and notifies you instantly on hits." />
+    <meta property="og:image" content="https://log.listeningkit.com/og/og.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://log.listeningkit.com" />
+    <meta property="twitter:title" content="Log by ListeningKit" />
+    <meta name="twitter:title" content="Log by ListeningKit" />
+    <meta property="twitter:description" content="Log by ListeningKit is a real-time social-listening tool that monitors Facebook, X, and Reddit for your keywords, scores buyer intent with AI, and notifies you instantly on hits." />
+    <meta name="twitter:description" content="Log by ListeningKit is a real-time social-listening tool that monitors Facebook, X, and Reddit for your keywords, scores buyer intent with AI, and notifies you instantly on hits." />
+    <meta property="twitter:image" content="https://log.listeningkit.com/og/og.png" />
+    <meta name="twitter:image" content="https://log.listeningkit.com/og/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Google Tag Manager, only on the two real public domains — never on localhost or a preview build,
+      // so local development and testing never get counted as real visits. This is the listeningkit.com
+      // container (GTM-PGJ4QDZC), shared with gg and the member sites. Its "GA4 - log - google tag" sends
+      // Log's page views to G-VL1WDMNEER (only on these hosts, so nothing is double-counted), and
+      // "GA4 - funnel events" forwards the repo modal's dataLayer events (src/landing/track.ts).
+      if (['log.listeningkit.com'].includes(location.hostname)) {
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || []
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+          var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''
+          j.async = true
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
+          f.parentNode.insertBefore(j, f)
+        })(window, document, 'script', 'dataLayer', 'GTM-PGJ4QDZC')
+      }
+    </script>
+  </head>
+  <body>
+    <script>
+      // Matches the head snippet's domain gate, so the noscript fallback (browsers with JS off) is consistent with it.
+      if (['log.listeningkit.com'].includes(location.hostname)) {
+        document.write(
+          '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PGJ4QDZC" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>'
+        )
+      }
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

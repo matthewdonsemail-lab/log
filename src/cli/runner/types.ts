@@ -43,6 +43,7 @@ export interface CommandContext {
   directReddit?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
   directDiscord?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
   directDiscordLive?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void) => Promise<import("../../platformKit/session/index.ts").PlatformEngineRun>;
+  directLinkedin?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
 }
 
 export interface FlagSpec {

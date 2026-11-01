@@ -1,0 +1,281 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@listeningkit/ui";
+import type { LucideIcon } from "lucide-react";
+import { BrainIcon, DotIcon } from "lucide-react";
+import { motion } from "motion/react";
+import type { ComponentProps, ReactNode } from "react";
+import { memo } from "react";
+import type { ChainTone } from "./chain-joints";
+
+export type ChainOfThoughtProps = ComponentProps<"div">;
+
+export const ChainOfThought = memo(
+  ({ className, children, ...props }: ChainOfThoughtProps) => (
+    <div className={cn("not-prose w-full space-y-4", className)} {...props}>
+      {children}
+    </div>
+  )
+);
+
+export type ChainOfThoughtHeaderProps = ComponentProps<"div">;
+
+export const ChainOfThoughtHeader = memo(
+  ({ className, children, ...props }: ChainOfThoughtHeaderProps) => (
+    <div
+      className={cn("flex w-full items-center gap-2 text-sm", className)}
+      {...props}
+    >
+      <BrainIcon className="size-4" />
+      <span className="flex-1 text-left">{children ?? "Chain of Thought"}</span>
+    </div>
+  )
+);
+
+export type ChainOfThoughtStepProps = ComponentProps<"div"> & {
+  icon?: LucideIcon;
+  label: ReactNode;
+  description?: ReactNode;
+  status?: "complete" | "active" | "pending";
+  /**
+   * Color tone. `white` (default) is the onboarding look — white rails,
+   * white elbows, white icon boxes with blue glyphs — for chains sitting on
+   * blue panels. `brand-blue` flips it for the white card — brand-blue
+   * rails/elbows, blue icon boxes with white glyphs, navy labels. Pass the
+   * same tone to the chain-joints so the label ink matches.
+   */
+  tone?: ChainTone;
+  /** Optional per-chain accent used by branded comparison columns. */
+  accentColor?: string;
+  /**
+   * Nested sub-chain joints. The pattern, end to end:
+   *
+   * 1. TRUNK (parent step): a fixed-height straight rail (`bottom-auto` +
+   *    explicit `h-[Npx]` override) plus `overflow-visible` on the content
+   *    column, so the entry elbow below isn't clipped. The trunk stops above
+   *    the nested chain on purpose — it must NOT run full height, or it
+   *    doubles the nested rails into one long line.
+   * 2. ENTRY (`elbow` / `"in"`, first nested step): an SVG elbow branching
+   *    off the trunk and curving right into this icon. Renders alongside
+   *    this step's own straight rail.
+   * 3. MIDDLE steps: `compact` rails — flush under the icon, 4px tuck past
+   *    the row bottom so short joints meet with no overshoot, no hairline gap.
+   * 4. EXIT (`elbow="out"`, last nested step): the mirrored SVG elbow curving
+   *    back out to the left, rejoining the trunk below. This REPLACES the
+   *    straight rail — it doesn't render alongside it, or the joint doubles.
+   * 5. TERMINAL (question step after the chain): `bottom-0` rail override so
+   *    the final rail ends flush at its row instead of dangling past it.
+   */
+  elbow?: boolean | "in" | "out";
+  /**
+   * Compact rows (tight sub-steps): the rail starts flush under the icon and
+   * ends 4px past the row bottom, tucking behind the next icon so short
+   * joints meet with no overshoot and no hairline gap.
+   */
+  compact?: boolean;
+};
+
+const stepStatusStyles = {
+  active: "border-white/30 bg-white text-[#2A8CFF]",
+  complete: "bg-white text-[#2A8CFF]",
+  pending: "bg-black/5 text-muted-foreground/50",
+};
+
+const stepStatusStylesBrandBlue = {
+  active: "border-[#2A8CFF]/30 bg-[#2A8CFF] text-white",
+  complete: "bg-[#2A8CFF] text-white",
+  pending: "bg-black/5 text-muted-foreground/50",
+};
+
+export const ChainOfThoughtStep = memo(
+  ({
+    className,
+    icon: Icon = DotIcon,
+    label,
+    description,
+    status = "complete",
+    tone = "white",
+    accentColor,
+    elbow = false,
+    compact = false,
+    children,
+    ...props
+  }: ChainOfThoughtStepProps) => {
+    const elbowMode = elbow === true ? "in" : elbow;
+    const styles = tone === "brand-blue" ? stepStatusStylesBrandBlue : stepStatusStyles;
+    const railColor = tone === "brand-blue" ? "bg-[#2A8CFF]" : "bg-white";
+    const elbowStroke = tone === "brand-blue" ? "#2A8CFF" : "white";
+
+    return (
+      <div className={cn("flex gap-2 text-sm", className)} {...props}>
+        <div className="relative shrink-0">
+        <span
+          className={cn(
+            "shadow-hard flex size-7 items-center justify-center rounded-md",
+            styles[status]
+          )}
+          style={accentColor ? { backgroundColor: accentColor, color: "white" } : undefined}
+        >
+            <Icon className="size-4" />
+          </span>
+
+          {elbowMode === "in" ? (
+            <motion.svg
+              aria-hidden="true"
+              className="absolute -top-2 left-[-29px] z-10"
+              width="30"
+              height="26"
+              viewBox="0 0 30 26"
+              fill="none"
+            >
+              <motion.path
+                d="M1 0 L1 13 Q1 25 13 25 L29 25"
+                stroke={accentColor ?? elbowStroke}
+                strokeWidth="2.25"
+                strokeLinecap="butt"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: status === "complete" ? 1 : 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: status === "complete" ? 0.3 : 0,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              />
+            </motion.svg>
+          ) : null}
+
+          {elbowMode === "out" ? (
+            // Vertical mirror of the "in" joint: instead of the trunk
+            // entering from the top and curving down-right into the icon,
+            // this icon's own rail curves out to the left at the BOTTOM,
+            // then a plain straight rail (below) picks up at the trunk's
+            // x-offset and keeps running down to whatever follows — same
+            // top/-bottom-6 handoff convention as every other sibling
+            // connector in this file. If the joint doesn't sit flush once
+            // rendered, nudge `top-5` / `top-[46px]` a few px to match your
+            // icon size/spacing.
+            <>
+              <motion.svg
+                aria-hidden="true"
+                className="absolute top-[13px] left-[-29px] z-10"
+                width="30"
+                height="26"
+                viewBox="0 0 30 26"
+                fill="none"
+              >
+                <motion.path
+                  d="M1 26 L1 13 Q1 1 13 1 L29 1"
+                  stroke={accentColor ?? elbowStroke}
+                  strokeWidth="2.25"
+                  strokeLinecap="butt"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: status === "complete" ? 1 : 0 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </motion.svg>
+              <motion.div
+                className={cn("absolute top-[38px] -bottom-8 left-[-29px] w-[2.25px] origin-top", railColor)}
+                style={accentColor ? { backgroundColor: accentColor } : undefined}
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: status === "complete" ? 1 : 0 }}
+                transition={{ duration: 0.45, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </>
+          ) : null}
+
+          {elbowMode !== "out" ? (
+            <motion.div
+              className={
+                compact
+                  ? cn("absolute top-7 -bottom-1 left-1/2 ml-[-1.125px] w-[2.25px] origin-top", railColor)
+                  : cn("absolute top-7 -bottom-6 left-1/2 ml-[-1.125px] mt-2 w-[2.25px] origin-top", railColor)
+              }
+              style={accentColor ? { backgroundColor: accentColor } : undefined}
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: status === "complete" ? 1 : 0 }}
+              transition={
+                elbowMode === "in"
+                  ? { duration: 0.45, delay: 0.55, ease: [0.22, 1, 0.36, 1] }
+                  : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+              }
+            />
+          ) : null}
+        </div>
+        <div className="flex-1 space-y-1 overflow-hidden pb-1">
+          <div
+            className={cn(
+              tone === "brand-blue"
+                ? "text-[#0B3E91]"
+                : status === "active"
+                  ? "text-foreground"
+                  : "text-muted-foreground"
+            )}
+            style={accentColor ? { color: accentColor } : undefined}
+          >
+            {label}
+          </div>
+          {description && (
+            <div className="text-muted-foreground text-xs">{description}</div>
+          )}
+          {children}
+        </div>
+      </div>
+    );
+  }
+);
+
+export type ChainOfThoughtSearchResultsProps = ComponentProps<"div">;
+
+export const ChainOfThoughtSearchResults = memo(
+  ({ className, ...props }: ChainOfThoughtSearchResultsProps) => (
+    <div className={cn("flex flex-wrap items-center gap-2", className)} {...props} />
+  )
+);
+
+export type ChainOfThoughtSearchResultProps = ComponentProps<typeof Badge>;
+
+export const ChainOfThoughtSearchResult = memo(
+  ({ className, children, ...props }: ChainOfThoughtSearchResultProps) => (
+    <Badge
+      className={cn("gap-1 px-2 py-0.5 font-normal text-xs", className)}
+      variant="secondary"
+      {...props}
+    >
+      {children}
+    </Badge>
+  )
+);
+
+export type ChainOfThoughtContentProps = ComponentProps<"div">;
+
+export const ChainOfThoughtContent = memo(
+  ({ className, children, ...props }: ChainOfThoughtContentProps) => (
+    <div className={cn("mt-2 space-y-3", className)} {...props}>
+      {children}
+    </div>
+  )
+);
+
+export type ChainOfThoughtImageProps = ComponentProps<"div"> & {
+  caption?: string;
+};
+
+export const ChainOfThoughtImage = memo(
+  ({ className, children, caption, ...props }: ChainOfThoughtImageProps) => (
+    <div className={cn("mt-2 space-y-2", className)} {...props}>
+      <div className="relative flex max-h-[22rem] items-center justify-center overflow-hidden rounded-lg bg-muted p-3">
+        {children}
+      </div>
+      {caption && <p className="text-muted-foreground text-xs">{caption}</p>}
+    </div>
+  )
+);
+
+ChainOfThought.displayName = "ChainOfThought";
+ChainOfThoughtHeader.displayName = "ChainOfThoughtHeader";
+ChainOfThoughtStep.displayName = "ChainOfThoughtStep";
+ChainOfThoughtSearchResults.displayName = "ChainOfThoughtSearchResults";
+ChainOfThoughtSearchResult.displayName = "ChainOfThoughtSearchResult";
+ChainOfThoughtContent.displayName = "ChainOfThoughtContent";
+ChainOfThoughtImage.displayName = "ChainOfThoughtImage";

@@ -6,8 +6,11 @@ export interface LiveLogVerdict {
   context: string | null;
 }
 
+const FROM_CHECKOUT = /\bbin[\\/]log\.ts["']?\s+([A-Za-z]+)(?:\s+([A-Za-z]+))?/;
+const INSTALLED = /^\s*(?:\(\s*)?(?:[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*(?:\S*[\\/])?log(?:\.exe)?\s+([A-Za-z]+)(?:\s+([A-Za-z]+))?/;
+
 export function logCommandOf(command: string): string | null {
-  const match = /\bbin[\\/]log\.ts["']?\s+([A-Za-z]+)(?:\s+([A-Za-z]+))?/.exec(command);
+  const match = FROM_CHECKOUT.exec(command) ?? command.split(/;|&&|\|\||\||\n/).map((part) => INSTALLED.exec(part)).find((m) => m !== null);
   if (!match) return null;
   return isPlatform(match[1]) && match[2] ? match[2] : match[1];
 }

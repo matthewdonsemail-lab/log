@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import "../src/config/userEnv/autoload.ts";
 import { runFast } from "../src/cli/runner/client.ts";
 import { appendLiveLine, liveLogDir } from "../src/observability/liveLog/index.ts";
 import { setLogSink } from "../src/observability/processLog/index.ts";

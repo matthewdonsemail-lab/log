@@ -1,11 +1,56 @@
 {
-  "name": "log-cli",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@listeningkit/log",
+  "version": "0.1.1",
+  "description": "ListeningKit's go-to-market tool, open-sourced: one CLI and MCP server that runs your accounts on X, Reddit, Facebook and Discord, self-hosted.",
   "type": "module",
-  "description": "Bun CLI for the ListeningKit log Facebook Marketplace data: listings, their accounts, and the listing state machine.",
   "bin": {
-    "log": "./bin/log.ts"
+    "log": "bin/log.ts",
+    "logMcp": "bin/logMcp.ts"
+  },
+  "files": [
+    "bin",
+    "src",
+    "python",
+    "vendor",
+    "scripts",
+    "docs",
+    "skills",
+    "skills.md",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    ".env.example",
+    "tsconfig.json",
+    "bunfig.toml",
+    "!**/*.test.ts",
+    "!**/__pycache__",
+    "!**/*.pyc"
+  ],
+  "engines": {
+    "node": "24.x",
+    "bun": ">=1.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewdonsemail-lab/log.git"
+  },
+  "homepage": "https://log.listeningkit.com",
+  "bugs": {
+    "url": "https://github.com/matthewdonsemail-lab/log/issues"
+  },
+  "keywords": [
+    "cli",
+    "mcp",
+    "social-listening",
+    "twitter",
+    "reddit",
+    "facebook",
+    "discord",
+    "go-to-market",
+    "self-hosted"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "start": "bun run bin/log.ts",
@@ -21,6 +66,7 @@
     "check:layout": "bun scripts/checks/checkLayout.ts",
     "check:noComments": "bun scripts/checks/checkNoComments.ts",
     "check:twikitTransport": "bun scripts/checks/checkTwikitTransport.ts",
+    "check:linkedinTransport": "bun scripts/checks/checkLinkedinTransport.ts",
     "check:rdvwrTransport": "bun scripts/checks/checkRdvwrTransport.ts",
     "check:platforms": "bun scripts/checks/checkPlatforms.ts",
     "docs:build": "bun scripts/docs/buildDocs.ts",
@@ -28,10 +74,11 @@
     "check:docs": "bun scripts/docs/buildDocs.ts --check",
     "browsers:docs": "bun scripts/checks/checkBrowserParity.ts --write",
     "errors:export": "bun bin/log.ts errors --json > python/errors/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
-    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:rdvwrTransport && bun run check:platforms && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run typecheck && bun run test",
-    "prepare": "git config --unset core.hooksPath; lefthook install",
+    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:rdvwrTransport && bun run check:linkedinTransport && bun run check:platforms && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run check:siteDocs && bun run typecheck && bun run test",
+    "prepare": "bun scripts/git/installHooks.ts",
     "twenty:client": "node scripts/twenty/emitTwentyClient.mjs",
-    "twenty:client:check": "node scripts/twenty/emitTwentyClient.mjs --check"
+    "twenty:client:check": "node scripts/twenty/emitTwentyClient.mjs --check",
+    "check:siteDocs": "node scripts/docs/syncSiteDocs.mjs --check"
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",

@@ -28,12 +28,12 @@ description: Give every Facebook account in Twenty its AdsPower profile, check t
 ## Commands
 
 ```bash
-bun bin/log.ts adsPower status                 # the Local API answers
-bun bin/log.ts adsPower profiles               # AdsPower's profiles, and the Twenty account of each
-bun bin/log.ts adsPower sync                   # dry run: release / create / relink / linked / skip per account
-bun bin/log.ts adsPower sync --apply           # give back DEACTIVATED and out-of-home profiles, make the missing ones, link them in Twenty
-bun bin/log.ts adsPower sync --apply --homes US  # this run's homes (default LOG_ADSPOWER_HOMES, rule 78)
-bun bin/log.ts adsPower sync --apply --account <accountName>
+log adsPower status                 # the Local API answers
+log adsPower profiles               # AdsPower's profiles, and the Twenty account of each
+log adsPower sync                   # dry run: release / create / relink / linked / skip per account
+log adsPower sync --apply           # give back DEACTIVATED and out-of-home profiles, make the missing ones, link them in Twenty
+log adsPower sync --apply --homes US  # this run's homes (default LOG_ADSPOWER_HOMES, rule 78)
+log adsPower sync --apply --account <accountName>
 ```
 
 Run `sync --apply` through Monitor (rule 26): it prints one line per account as it goes.

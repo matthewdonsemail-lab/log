@@ -21,7 +21,7 @@ DMs are their own pages. Recruiting is public replies only.
 
 | Part | What | Where |
 | --- | --- | --- |
-| The account | a TWITTER row in Twenty `socialAccounts`. Its cookies live there and nowhere else. A new account is added with `bun bin/log.ts twitter cookies save --account <handle>` in a terminal (`skills/xPosting/SKILL.md`) | Twenty |
+| The account | a TWITTER row in Twenty `socialAccounts`. Its cookies live there and nowhere else. A new account is added with `log twitter cookies save --account <handle>` in a terminal (`skills/xPosting/SKILL.md`) | Twenty |
 | Copy style | the account's `copyStyle` (empty: house). Every send and queue check holds the copy to it | `src/twitter/copy/style` |
 | Session check | first call of every run, sends nothing | `twitterSessionCheck` / `log twitter session check --account <account>` |
 | Finding people and posts | an outside search, never X itself (rule 53). Say the price before a big sweep | treg's X search, profile, posts and comments reads |

@@ -50,9 +50,9 @@ Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
 `publish` do the same.
 
 ```bash
-bun bin/log.ts facebook connect --account <a> --noPrompt   # the login, step by step
-bun bin/log.ts facebook scan --account <a>
-bun bin/log.ts facebook publish <listingId>                # dry run; the HAR records the whole session
+log facebook connect --account <a> --noPrompt   # the login, step by step
+log facebook scan --account <a>
+log facebook publish <listingId>                # dry run; the HAR records the whole session
 ```
 
 Where: `~/.logCli/runs/<action>/<time>_<account>/<browser>/` (`adsPower`, `camoufox`, or `firefox` for runs before 2026-10-20) (`LOG_RUNS_DIR`
@@ -79,7 +79,7 @@ notes print
 `log facebook publish` runs these itself. To re-run on any HAR:
 
 ```bash
-bun bin/log.ts facebook capture --har <path> --out <dir>      # --noRea to only write the files
+log facebook capture --har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
 ```
 
@@ -97,7 +97,7 @@ is read per request instead (step 2b).
 ### 2b. The Facebook client docs (per request, rules 25 and 27)
 
 ```bash
-bun bin/log.ts facebook capture --docs          # run it live (Monitor), every stage prints
+log facebook capture --docs          # run it live (Monitor), every stage prints
 ```
 
 1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request

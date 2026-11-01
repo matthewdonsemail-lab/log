@@ -1,0 +1,62 @@
+{
+  "front": "README.md",
+  "tabs": [
+    {
+      "id": "getStarted",
+      "title": "Get started",
+      "description": "Install log, add an account, connect your agent",
+      "sections": [
+        { "title": "Start here", "pages": ["install.md", "accounts.md", "mcp.md"] },
+        { "title": "Using log well", "pages": ["usingLog.md"] }
+      ]
+    },
+    {
+      "id": "useCases",
+      "title": "Use cases",
+      "description": "The plays, step by step",
+      "sections": [{ "title": "Use cases", "folder": "useCases" }]
+    },
+    {
+      "id": "platforms",
+      "title": "Platforms",
+      "description": "What you can do on each platform",
+      "sections": [
+        {
+          "title": "Platforms",
+          "pages": ["platformGuides/x.md", "platformGuides/reddit.md", "platformGuides/facebook.md", "platformGuides/discord.md", "platformGuides/linkedin.md"]
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "title": "Reference",
+      "description": "Every command, MCP tool, hook and error code",
+      "sections": [
+        { "title": "Commands and tools", "pages": ["reference.md", "errorCatalog.md", "commandNaming.md"] },
+        { "title": "Agent guides", "folder": "guides" }
+      ]
+    },
+    {
+      "id": "howItWorks",
+      "title": "How it works",
+      "description": "How log works inside, for contributors",
+      "sections": [
+        { "title": "The ideas", "pages": ["howItWorks.md", "accountsAndListings.md", "lifecycle.md", "twenty.md", "signingIn.md", "status.md"] },
+        { "title": "Browsers and proxies", "pages": ["browsers.md", "browserSetup.md", "adsPower.md", "proxies.md"], "folders": ["proxyVendors"] },
+        {
+          "title": "Facebook in depth",
+          "pages": ["groupListening.md", "groupMembers.md", "groupRead.md", "conversations.md", "listingMonitor.md", "listingMedia.md", "recordToFlow.md"],
+          "folders": ["listingPublish"]
+        },
+        { "title": "Platform APIs", "folder": "platforms" },
+        { "title": "Diagrams", "folder": "diagrams" },
+        {
+          "title": "Working on log",
+          "pages": ["layout.md", "namingConventions.md", "knowledgeBase.md", "deployment.md", "twitterPlatform.md"],
+          "folders": ["rea", "voice"]
+        }
+      ]
+    }
+  ],
+  "private": ["identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation", "vendors", "infra", "site.json"]
+}

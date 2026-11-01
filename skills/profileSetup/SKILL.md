@@ -39,7 +39,7 @@ does that for one account, both photos in one run (matt's choice).
 3. Dry run:
 
    ```bash
-   bun bin/log.ts facebook profile setup --account <a> 2>&1 | tee <log>
+   log facebook profile setup --account <a> 2>&1 | tee <log>
    ```
 
    It prints each photo as `would upload`, `no photo set in Twenty` or
@@ -56,7 +56,7 @@ does that for one account, both photos in one run (matt's choice).
 6. Rebuild the Facebook client docs (rule 27): the profile requests are new.
 
    ```bash
-   bun bin/log.ts facebook capture --docs
+   log facebook capture --docs
    ```
 
 ## Codes

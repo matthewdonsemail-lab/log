@@ -80,6 +80,10 @@ flowchart TB
     c_discordWatch["watch"]
     c_discordSend["send"]
   end
+  subgraph g_linkedin["LinkedIn"]
+    c_linkedinSession["session"]
+    c_linkedinCookies["cookies"]
+  end
   cli --> c_launch
   c_launch -.- terminal
   cli --> c_listings
@@ -226,6 +230,10 @@ flowchart TB
   c_discordWatch --> live
   cli --> c_discordSend
   mcp --> c_discordSend
+  cli --> c_linkedinSession
+  mcp --> c_linkedinSession
+  cli --> c_linkedinCookies
+  c_linkedinCookies -.- terminal
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
