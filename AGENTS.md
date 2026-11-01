@@ -1262,6 +1262,25 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     use Convex at all": no Convex, and no dashboard. The site is the landing
     page plus the docs.
 
+104. 2026-11-01 · matt: "the timing stuff there i saw you hand rolled the
+    outbound stuff when it should be queued and it has to have random
+    intervals, but the bundle itself actually reveals more information".
+    On 2026-11-01 matthewsoldit got a soft block, then X's 226 ("looks
+    automated") on a reply. The live log showed 8 thread reads fired in
+    0.2 s by two parallel helpers while sends went out from a hand-written
+    loop, and every `log twitter` call was a fresh client that loaded
+    x.com's home page and its signer before acting, so a 3-line dm was 3
+    cold starts in 9 s. X's own web client (`sign.o` in its x-web bundle,
+    read 2026-11-01) loads the page once and signs every call from it.
+    From now on: more than one send goes through the queue (`log twitter
+    queue build|plan|run`, random times), never a hand-rolled loop and
+    never helpers reading or sending on one account in parallel. The X
+    engine takes one call per account at a time (`engine.lock`, refused
+    with `accountBusy` after 15 min), waits 4 to 11 s after the last call,
+    and keeps the transaction key in `clientTransaction.json` for 3 hours
+    (`python/twitterApi/engine.py`, `vendor/twikit` `ClientTransaction.state`
+    and `restore`).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

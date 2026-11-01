@@ -9937,3 +9937,33 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: below 1024px the Socials section is a light stacked version (photo and headline, then the full Octolens vs ListeningKit comparison in normal flow, started when in view) instead of the pinned scroll effect, and the comparison wordmark shrinks on small screens. Below 768px the 3D platform and how-we-think mocks lie flat (no perspective or tilt), the orbit pop-up card centres on its profile and wraps, and the card text and commands wrap inside their cards. The header pill uses CSS rounded corners instead of rebuilding a squircle clip path every frame. Built with shows the real SubQ, Treg, Twenty and AdsPower logos in brand blue on white tiles, and the setup line and the star-the-repo line use the handwritten, cv-bluekey style.
 Why: matt: the Socials scroll lagged on mobile and cut the comparison off, the 3D sections and pop-ups went out of bounds on phones, card text did not wrap, the header animation was slow, and Built with and two lines did not match the design system.
 Checked: every pre-commit gate but this entry passes and the site typechecks; at 375px nothing in Socials, the platform or how-we-think cards runs off the screen, the comparison plays to the end, and 26 orbit pop-ups stayed inside the card; the logos and restyled lines were checked in the browser.
+## 2026-11-01 14:18Z · fix/xEngineOneCallAtATime
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const TRANSACTION_SECONDS, const LOCK_WAIT_SECONDS, const SPACING_SECONDS, const UNLOCKED, def transaction_path, def restore_transaction, def keep_transaction, class AccountBusy, class AccountLock, def last_call_path, def spacing_wait, def mark_call, def run_locked · changed def run
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/twitter/account/session/engineCalls.test.ts`: added const python, function engine, test "the first call on an account waits for nothing", test "a call right after another waits out the drawn gap", test "a call long after the last one waits for nothing", test "the gap is drawn between 4 and 11 seconds", test "a second call on the same account waits until the first lets go", test "a call that waits too long for the account is refused, not run", test "a kept key is restored on the next call, so the home page is not loaded again", test "a key kept more than 3 hours ago is worked out again", test "an account with no kept key starts from the home page as before"
+- `vendor/twikit/tests/test_transaction_cache.py`: added const KEY, const STATE, def test_a_fresh_transaction_has_no_state, def test_state_round_trips_through_restore, def test_restore_refuses_a_state_without_its_keys, def test_restored_ids_match_the_ids_of_the_same_keys, def test_a_restored_client_never_loads_the_home_page
+- `vendor/twikit/twikit/x_client_transaction/transaction.py`: changed class ClientTransaction
+
+What changed: the X engine now takes one call per account at a time, across processes (`AccountLock` on `engine.lock`, `accountBusy` after 15 min; the X Chat watch is left out), waits 4 to 11 s after the account's last call (`spacing_wait`, `mark_call`), and keeps twikit's transaction key in `clientTransaction.json` for 3 hours (`ClientTransaction.state` and `restore` in vendor/twikit; `restore_transaction`, `keep_transaction`), so x.com's home page and signer are no longer loaded before every call. Rule 104 in AGENTS.md and the MCP instructions: more than one send goes through the queue, never a hand-rolled loop or parallel helpers on one account. `accountBusy` in the error catalog covers the engine too. Findings: RESEARCH/X_226_AUTOMATED_2026-11-01.md.
+Why: matt: "the timing stuff there i saw you hand rolled the outbound stuff when it should be queued and it has to have random intervals, but the bundle itself actually reveals more information". matthewsoldit got a soft block then X's 226 "looks automated" on 2026-11-01; the live log showed 8 reads in 0.2 s from parallel helpers beside a hand-written send loop, every call a cold client loading x.com first, while X's own x-web client (sign.o, decoded 2026-11-01: same obfiowerehiring keyword) loads once and signs every call from it.
+Checked: `bun run check` (1210 pass), with 9 engine tests (lock order, accountBusy, spacing, kept key restored and expired) and 5 twikit tests (state round trip, a restored client never loads the home page); not yet run live, the account is paused.
+
+## 2026-11-01 14:29Z · fix/xEngineOneCallAtATime
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `site/apps/web/public/claybound/PROVENANCE.md`: new file
+- `site/apps/web/public/claybound/cloud.glb`: new file
+- `site/apps/web/src/landing/ClayClouds.tsx`: added type Layer, const LAYERS, const DEFAULT_SRC, const BOTTOM_FRACTION, const CAMERA_Z, const FOV, function loadDeps, function ClaySky, function ClayClouds
+- `site/apps/web/src/landing/LandingPage.tsx`: changed function LandingPage
+- `site/apps/web/src/lib/clayDither.ts`: added const BAYER_GLSL, const CLAY_DITHER_GLSL, type ClayDitherOptions, function applyClayDither
+
+What changed: the landing hero's flat twemoji cloud band is replaced by the website's 3D clay clouds (`ClayClouds`, ported from website `packages/ui/src/components/clay-clouds.tsx`): three.js renders `public/claybound/cloud.glb` in four depth layers drifting at different speeds, lit by a warm key, sky fill and rim light, with the website's two-colour clay dither (`src/lib/clayDither.ts`). three.js and the model load lazily and in parallel; the sky stays plain until the scene is ready, motion stops under reduced motion, and the old `Clouds` band shows only if WebGL or the model fails. Claybound's PROVENANCE.md comes with the model.
+Why: matt: go through REPOS/website, find how the clouds are done on its landing page and bring that into our landing page.
+Checked: `pnpm typecheck` in site/apps/web; in the browser at 1440x900 and in the narrow pane the canvas renders the dithered clouds with the 2D band absent (the model loaded, 380 KB), no new console errors.

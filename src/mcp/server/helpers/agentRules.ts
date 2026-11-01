@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 103;
+export const RULES_REVIEWED_THROUGH = 104;
 
 export const AGENTS_URI = "log://agents";
 
@@ -36,6 +36,7 @@ export const CORE_PRINCIPLES = [
   "29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).",
   "30. A reaction to matt's message, or their read receipt past it, means they opened it: `twitterDms` { waiting: true, limit: \"200\" } lists it apart as a follow-up to send (about them and what they're doing, never the opener again, never the ask), not a reply they're waiting on (rule 100).",
   "31. LinkedIn is reached only through vendor/openLinkedinApi's one curl_cffi Session pinned to Chrome (`IMPERSONATE`), never plain `requests`, and every call goes through the account's governor; a LinkedIn account writes at most 10 times a day (rule 102).",
+  "32. More than one send on an account goes through the queue (`twitterQueueBuild`, plan, run), whose random times space them like a person; never a hand-rolled loop of sends and never helpers reading or sending on the same account in parallel. The X engine takes one call per account at a time (`engine.lock`, `accountBusy` after 15 min), spaces each 4 to 11 s after the last, and keeps the transaction key for 3 hours instead of loading x.com before every call (rule 104).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
