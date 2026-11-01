@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { homedir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { BASELINE_SAMPLE, MUTE_IF_MATT_USES } from './types'
+import { BASELINE_SAMPLE, MATT_SAYS_IT_TIMES, MUTE_IF_MATT_USES, X_COMPLAINT, X_COMPLAINT_KEEP } from './types'
 import type { AiBaseline, AiCloseMatch, AiEmbedder, AiIndex, AiIndexMeta, AiPhrase, AiReading, AiTellHit, AiTellRule } from './types'
 
 const REGEX_CHARS = /[\\()[\]{}^$*+?|.]/
@@ -44,7 +44,7 @@ export function ruleHits(text: string, rules: readonly AiTellRule[], muted: Read
     if (!pattern) continue
     for (const m of text.matchAll(pattern)) {
       const match = m[0].trim()
-      if (!match || rule.exceptions.some((e) => match.toLowerCase().includes(e))) continue
+      if (!match || rule.exceptions.some((e) => match.toLowerCase().includes(e)) || muted.has(match.toLowerCase())) continue
       hits.push({ rule: rule.name, match, message: rule.message.replace('%s', match) })
     }
   }
@@ -86,6 +86,8 @@ export function aiPhrases(dir = aiTellsDir(), rules = valeRules(join(dir, 'valeA
     const data = Bun.YAML.parse(readFileSync(slop, 'utf8')) as { phrases?: string[] }
     for (const phrase of data.phrases ?? []) if (!String(phrase).startsWith('re:')) add(String(phrase), 'SLOP_Detector')
   }
+  const complaints = join(dir, 'xComplaints', 'complaints.json')
+  if (existsSync(complaints)) for (const phrase of (JSON.parse(readFileSync(complaints, 'utf8')) as { phrases?: string[] }).phrases ?? []) add(phrase, X_COMPLAINT)
   const examples = join(dir, 'aiExamples')
   if (existsSync(examples)) for (const file of readdirSync(examples)) {
     for (const sentence of readFileSync(join(examples, file), 'utf8').replace(/[#*>`_]/g, ' ').split(/(?<=[.!?])\s+|\n+/)) if (sentence.split(/\s+/).length >= 4) add(sentence, `aiExample ${file}`)
@@ -150,9 +152,20 @@ export function mutedRules(replies: readonly string[], rules: readonly AiTellRul
   return rules.filter((rule) => replies.filter((r) => ruleHits(r, [rule]).length).length / replies.length > share).map((r) => r.name)
 }
 
+export function mattsOwnPhrases(replies: readonly string[], rules: readonly AiTellRule[], atLeast = MATT_SAYS_IT_TIMES): string[] {
+  const counts = new Map<string, number>()
+  for (const reply of replies) for (const match of new Set(ruleHits(reply, rules).map((h) => h.match.toLowerCase()))) counts.set(match, (counts.get(match) ?? 0) + 1)
+  return [...counts].filter(([, n]) => n >= atLeast).map(([match]) => match).sort()
+}
+
 export async function buildAiIndex(embedder: AiEmbedder, replies: readonly string[], dir = aiIndexDir(), phrases = aiPhrases(), rules = valeRules(), log: (line: string) => void = () => {}): Promise<AiIndexMeta> {
   log(`ai tells: embedding ${phrases.length} AI phrases with ${embedder.model}`)
-  const vectors = await embedder.embed(phrases.map((p) => p.text))
+  const embedded = await embedder.embed(phrases.map((p) => p.text))
+  const curated = embedded.filter((_, i) => phrases[i].source !== X_COMPLAINT)
+  const kept = phrases.map((p, i) => p.source !== X_COMPLAINT || Math.max(...curated.map((c) => cosine(embedded[i], c))) >= X_COMPLAINT_KEEP)
+  log(`ai tells: ${kept.filter((k, i) => k && phrases[i].source === X_COMPLAINT).length} of ${phrases.filter((p) => p.source === X_COMPLAINT).length} phrases quoted on X kept, the ones close in meaning to a curated AI phrase`)
+  phrases = phrases.filter((_, i) => kept[i])
+  const vectors = embedded.filter((_, i) => kept[i])
   const index = { vectors: vectors.map((v) => Float32Array.from(v)) }
   const sample = replies.filter((r) => r.trim().split(/\s+/).length >= 3).slice(-BASELINE_SAMPLE)
   log(`ai tells: measuring how close ${sample.length} of matt's own messages sit to them`)
@@ -165,7 +178,7 @@ export async function buildAiIndex(embedder: AiEmbedder, replies: readonly strin
     at += chunks.length
     scores.push(Math.max(...bestPerChunk(mine, index).map((b) => b.cosine)))
   }
-  const baseline: AiBaseline = { messages: scores.length, p50: percentile(scores, 50), p99: percentile(scores, 99), mutedRules: mutedRules(replies, rules) }
+  const baseline: AiBaseline = { messages: scores.length, p50: percentile(scores, 50), p99: percentile(scores, 99), mutedRules: mutedRules(replies, rules), mattsPhrases: mattsOwnPhrases(replies, rules) }
   const meta: AiIndexMeta = { model: embedder.model, dimensions: embedder.dimensions, builtAt: new Date().toISOString(), phrases, baseline }
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'index.json'), JSON.stringify(meta))
@@ -185,7 +198,7 @@ export function openAiIndex(dir = aiIndexDir()): AiIndex | null {
 }
 
 export async function readAiTells(text: string, index: AiIndex, embedder: AiEmbedder, rules = valeRules(), words = overusedWords(), top = 8): Promise<AiReading> {
-  const hits = ruleHits(text, rules, new Set(index.baseline.mutedRules))
+  const hits = ruleHits(text, rules, new Set([...index.baseline.mutedRules, ...(index.baseline.mattsPhrases ?? [])]))
   const overused = [...new Set(text.toLowerCase().match(/[a-z]+/g) ?? [])].filter((w) => words.has(w)).map((w) => ({ word: w, ratio: words.get(w)! }))
   const chunks = chunksOf(text)
   const best = chunks.length ? bestPerChunk(await embedder.embed(chunks), index) : []

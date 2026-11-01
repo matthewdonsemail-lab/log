@@ -1421,7 +1421,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     is cut into lines and word windows, every chunk's closest AI phrase found
     by cosine, the closest reranked with `jina-reranker-v2-base-multilingual`,
     and the draft fails when a vale rule hits or it sits closer to AI
-    phrasing than matt's own p99. `src/voice/aiTells`.
+    phrasing than matt's own p99. `src/voice/aiTells`. A phrase vale flags
+    that matt says himself in 5 or more of his own messages ("to be honest",
+    "for example") is his voice and never fails a draft (`mattsOwnPhrases`).
+    Phrases people quote on X as AI tells (treg's X search,
+    `vendor/aiTells/xComplaints`) are indexed only when they sit close in
+    meaning (cosine 0.6) to a curated phrase.
 
 ## Checks
 

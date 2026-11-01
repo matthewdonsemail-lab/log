@@ -10,4 +10,5 @@ Read by `src/voice/aiTells` to find AI phrasing in a draft before it is sent (ru
 | `sicarius` | github.com/SicariusSicariiStuff/SLOP_Detector | slop phrase dictionary |
 | `lexaIndex` | github.com/fsu-nlp/lexa-index | words Claude and GPT write far more often than people, with ratios |
 | `lists` | Aboudjem/humanizer-skill, seyedehsanhadi/sloptrim, dcadolph/slop-chop, NulightJens/humanizer-stack, maxsancheez/humanizer-skill, AUAggy/deslop | their pattern write-ups, kept as they are |
+| `xComplaints` | X posts calling out AI phrasing, found with treg's X search (2026-11-02) | the phrases people quoted as AI tells; only the ones close in meaning to a curated phrase are indexed |
 | `aiExamples` | benjaminjackson/sloplint, mandakan/llm-slop-detector | real AI-written sample text |

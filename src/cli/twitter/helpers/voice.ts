@@ -140,7 +140,7 @@ export const voiceCommand: Command = {
         if (!replies.length) context.err("voice aiIndex: no voice index yet, so there is no baseline of matt's own messages: build it with `log voice index` first");
         const started = Date.now();
         const meta = await buildAiIndex(voiceDeps.aiEmbedder(), replies, aiIndexDir(), undefined, undefined, (line) => context.err(line));
-        const line = `log voice aiIndex: ${meta.phrases.length} AI phrases embedded with ${meta.model}; matt's own ${meta.baseline.messages} messages sit at p50 ${meta.baseline.p50.toFixed(3)}, p99 ${meta.baseline.p99.toFixed(3)} from them; ${meta.baseline.mutedRules.length} vale rules muted because he uses them himself (${meta.baseline.mutedRules.join(", ") || "none"}); ${((Date.now() - started) / 1000).toFixed(1)} s at ${aiIndexDir()}`;
+        const line = `log voice aiIndex: ${meta.phrases.length} AI phrases embedded with ${meta.model}; matt's own ${meta.baseline.messages} messages sit at p50 ${meta.baseline.p50.toFixed(3)}, p99 ${meta.baseline.p99.toFixed(3)} from them; ${meta.baseline.mutedRules.length} vale rules muted because he uses them himself (${meta.baseline.mutedRules.join(", ") || "none"}); ${meta.baseline.mattsPhrases?.length ?? 0} phrases vale flags that he says himself in 5 or more messages, never held against a draft; ${((Date.now() - started) / 1000).toFixed(1)} s at ${aiIndexDir()}`;
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify({ phrases: meta.phrases.length, model: meta.model, baseline: meta.baseline }, null, 2) : line };
       } catch (error) {
         return refuseError("voice aiIndex", error);
