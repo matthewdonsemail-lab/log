@@ -253,7 +253,7 @@ export function fitTimes(taken: readonly number[], count: number, start: number,
       const t = start + rng() * span
       if (busy.every((b) => Math.abs(b - t) >= minGap)) placed = t
     }
-    if (placed === null) placed = inWindow ? start + rng() * Math.min(span, minGap) : Math.max(start, ...busy) + minGap + rng() * minGap
+    if (placed === null) placed = inWindow ? Math.max(start, ...out.map((o) => o + minGap)) + rng() * minGap * 0.5 : Math.max(start, ...busy) + minGap + rng() * minGap
     busy.push(placed)
     out.push(placed)
   }

@@ -10157,3 +10157,17 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: when the live X Chat watch can't open a message because the conversation moved to a key version the session doesn't hold, and priming the newest inbox page doesn't bring it, `_xchat_open` now fetches that conversation's key changes the way the full read already does (`_xchat_missing_keys`, `_xchat_fetch_key_changes`, X's `GetConversationPageQuery`), loads them and opens the message, instead of pushing "(could not open: ... no matching key found)" to the inbox hook.
 Why: RVAClassic's "i just posted it now" reached the hook as "(could not open: Crypto error: Decryption failed: Message encrypted with key version '1793245813830' but no matching key found ...)", while `twitterDms` { with: "RVAClassic" } opened it fine. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
 Checked: a new twikit test drives `_xchat_open` with a chat that only opens the message after key changes are loaded, and checks they were fetched and the text came back; the xchat tests pass (15).
+
+## 2026-11-01 17:00Z · fix/queueGapAndFastContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/dms.ts`: changed const dmsCommand
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand
+- `src/twitter/notification/feed/client.ts`: added function notificationsFresh
+- `src/twitter/queue/plan/client.ts`: changed function fitTimes
+- `src/twitter/queue/run/client.ts`: changed function runQueue
+- `src/twitter/queue/run/queueAdd.test.ts`: added test "many replies added with no free slot still go out at least the gap apart, never bunched (rule 94)", test "the run never sends two things closer than the gap, whatever the plan says"
+
+What changed: three fixes to the queue. Items added while a run is going and finding no free slot in their window are now placed one after another at least the queue's minGap apart (`fitTimes` with `inWindow`), where before they all landed inside the first minGap. The run itself now never sends two things closer than its minGap: an event due sooner than that after the last send is moved back and logged (`runQueue`, `lastActed`), whatever the plan says. And a person's full-context read skips the notifications pull when the kept notifications were synced in the last 2 minutes (`notificationsFresh`), in `log twitter dms --with` and in the queue's check before each send, so reading a batch of people pulls notifications once.
+Why: adding 11 YC replies to the running queue planned 8 of them between 16:57 and 17:03, 20 to 90 seconds apart; the run was cancelled at 16:56:52 before any went out (rule 94: never act on an account in quick succession). matt: "why is this taking so long" about reading 12 people, each read pulling notifications again.
+Checked: new queue tests: eight items added with no free slot come out at least 420 s apart, and a run given three events 20 s apart sends them at least 300 s apart. The twitter and twitter CLI tests pass (105).

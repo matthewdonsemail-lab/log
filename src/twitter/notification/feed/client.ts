@@ -59,3 +59,7 @@ export function engagersOf(rows: readonly TwitterNotification[]): NotificationEn
   const total = (e: NotificationEngager) => Object.values(e.kinds).reduce((a, b) => a + (b ?? 0), 0)
   return [...people.values()].sort((a, b) => total(b) - total(a) || (b.lastAt ?? '').localeCompare(a.lastAt ?? ''))
 }
+
+export function notificationsFresh(store: NotificationStore | null, now: Date, seconds = 120): boolean {
+  return Boolean(store?.syncedAt && now.getTime() - Date.parse(store.syncedAt) < seconds * 1000)
+}

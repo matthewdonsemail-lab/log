@@ -41,6 +41,34 @@ describe('one queue per account: what is added is fitted into the same plan', ()
     for (let i = 1; i < planned.length; i++) expect(planned[i] - planned[i - 1]).toBeGreaterThanOrEqual(420)
   })
 
+  test('many replies added with no free slot still go out at least the gap apart, never bunched (rule 94)', () => {
+    const times = fitTimes([1000, 1480, 1960, 2440, 2920], 8, 900, 4 * 3600, 420, seededRandom(6), true)
+    const sorted = [...times].sort((a, b) => a - b)
+    for (let i = 1; i < sorted.length; i++) expect(sorted[i] - sorted[i - 1]).toBeGreaterThanOrEqual(420)
+  })
+
+  test('the run never sends two things closer than the gap, whatever the plan says', async () => {
+    const built = buildQueue({ account: 'matthewsoldit', action: 'dm', targets: ['a', 'b', 'c'].map((h, i) => ({ handle: h, userId: String(i + 1), text: `yo ${h}` })), lines: [], sources: [], seed: 1, now: new Date(START) })
+    built.randomRun = { planned: new Date(START).toISOString(), window: '1h', minGap: 300, events: [1, 2, 3].map((n) => ({ n, kind: 'reply' as const, at: new Date(START + n * 20_000).toISOString() })) }
+    const queue = approveQueue(built, 'matt', new Date(START))
+    const clock = { now: START }
+    const sentAt: number[] = []
+    await runQueue(queue, {
+      send: async () => (sentAt.push(clock.now), { ok: true, event: 'sent', conversationId: 'c' }),
+      nowMs: () => clock.now,
+      sleep: async (ms) => {
+        clock.now += ms
+      },
+      rng: seededRandom(3),
+      log: () => {},
+      alert: () => {},
+      takeNudge: () => 0,
+      save: () => {},
+    })
+    expect(sentAt).toHaveLength(3)
+    for (let i = 1; i < sentAt.length; i++) expect(sentAt[i] - sentAt[i - 1]).toBeGreaterThanOrEqual(300_000)
+  })
+
   test('spacing out only moves sends later, never the ones held in place', () => {
     const fixed = { n: 9, kind: 'reply' as const, at: new Date(START + 100_000).toISOString() }
     const events = [{ n: 1, kind: 'reply' as const, at: new Date(START + 50_000).toISOString() }, fixed, { n: 2, kind: 'reply' as const, at: new Date(START + 200_000).toISOString() }]
