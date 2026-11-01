@@ -163,11 +163,14 @@ def xchat_threads(state: dict[str, Any], me: str, decrypted: bool) -> list[dict[
         last_ms, sender = conv.get("lastMs"), conv.get("lastSender")
         newest = visible[-1] if visible else None
         markers = {m.get("time_ms") for m in conv["messages"] if not shown(m)}
-        if newest is not None and last_ms in markers:
+        held = {m.get("time_ms") for m in conv["messages"]}
+        if newest is not None and (last_ms in markers or (last_ms is not None and last_ms not in held and int(last_ms) > int(newest.get("time_ms") or 0))):
             last_ms, sender = newest.get("time_ms"), newest.get("sender_id")
         if said and (last_ms is None or (said[-1].get("time_ms") or 0) >= int(last_ms)):
             last_ms, sender = said[-1].get("time_ms"), said[-1].get("sender_id")
         from_me = str(sender or "") == me
+        read_by_them = [int(m.get("time_ms") or 0) for m in conv["messages"] if m.get("kind") == "Unknown" and str(m.get("sender_id") or "") not in ("", me)]
+        opened = bool(from_me and last_ms is not None and read_by_them and max(read_by_them) >= int(last_ms))
         if last_ms is None:
             text = None
         elif said and said[-1].get("time_ms") == last_ms:
@@ -186,6 +189,7 @@ def xchat_threads(state: dict[str, Any], me: str, decrypted: bool) -> list[dict[
             "lastFromMe": from_me,
             "lastText": text,
             "unread": bool(last_ms is not None and not from_me),
+            "openedByThem": opened,
             "messagesLoaded": len(said),
         })
     return out
