@@ -6,6 +6,7 @@ import { faDiscord, faFacebook, faLinkedin, faReddit, faXTwitter } from '@fortaw
 import { faClockRotateLeft, faCodeFork, faStar } from '@fortawesome/free-solid-svg-icons'
 import { BrandMark, type BrandMarkId } from './BrandMark'
 import { PLATFORM_DEMOS } from './PlatformDemos'
+import { TILT_QUERY, useMediaQuery } from './useMediaQuery'
 
 type Platform = {
   id: string
@@ -186,6 +187,7 @@ function PlatformCard({
   go: (index: number) => void
   stats: RepoStats | null
 }) {
+  const tilt = useMediaQuery(TILT_QUERY)
   const Demo = PLATFORM_DEMOS[platform.id]
   return (
     <div
@@ -218,8 +220,8 @@ function PlatformCard({
             } as CSSProperties
           }
         />
-        <div className="relative grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
-          <div className="flex flex-col items-start gap-4">
+        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center md:gap-12">
+          <div className="flex min-w-0 flex-col items-start gap-4">
             <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span className="text-4xl leading-none md:text-5xl">
                 <span className={STICKER}>{platform.label}</span>
@@ -254,7 +256,7 @@ function PlatformCard({
             <p className="text-xl leading-snug text-white md:text-2xl" style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}>
               <Stickered text={platform.body} />
             </p>
-            <code className="block max-w-full overflow-x-auto whitespace-nowrap rounded-md bg-[#0D2A4C] px-3 py-2 font-mono text-[13px] text-white shadow-[0_3px_0_#061a33]">
+            <code className="block max-w-full whitespace-pre-wrap [overflow-wrap:anywhere] rounded-md bg-[#0D2A4C] px-3 py-2 font-mono text-[13px] text-white shadow-[0_3px_0_#061a33]">
               <span className="text-[#5CA7FF]">$ </span>
               {platform.example}
             </code>
@@ -295,11 +297,11 @@ function PlatformCard({
               ) : null}
             </div>
           </div>
-          <div className="mx-auto w-full min-w-0 max-w-md py-6 [perspective:1400px] [zoom:0.85]">
+          <div className="mx-auto w-full min-w-0 max-w-md py-6 md:[perspective:1400px] [zoom:0.85]">
             <motion.div
               className="demo-3d"
-              animate={{ rotateY: [-18, -9, -18], rotateX: [9, 4, 9] }}
-              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+              animate={tilt ? { rotateY: [-18, -9, -18], rotateX: [9, 4, 9] } : { rotateY: 0, rotateX: 0 }}
+              transition={tilt ? { duration: 9, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }}
             >
               <Demo />
             </motion.div>

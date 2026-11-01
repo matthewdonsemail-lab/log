@@ -15,6 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { BrandMark } from './BrandMark'
 import { SESSION } from './agentSessionScript'
+import { DownArrow } from './VideoCarousel'
 
 const STEP_MS = { user: 2400, tool: 1700, assistant: 3400 }
 const END_PAUSE_MS = 5000
@@ -321,10 +322,26 @@ export function AgentSession() {
           step {Math.max(visible, 1)} of {SESSION.length}
         </span>
       </div>
-      <p className="m-0 text-sm text-[#0D2A4C]/60">
-        Connect it once with <code className="rounded bg-[#F3F6FA] px-1.5 py-0.5 text-[#0D2A4C]">claude mcp add log -- logMcp</code> or{' '}
-        <code className="rounded bg-[#F3F6FA] px-1.5 py-0.5 text-[#0D2A4C]">codex mcp add log -- logMcp</code>
-      </p>
+      <div className="mt-2 flex flex-col items-center gap-3">
+        <p className="m-0 flex items-center gap-1 text-2xl text-[#0D2A4C]" style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}>
+          connect it <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">once</span>
+          <DownArrow />
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {[
+            { mark: 'claude' as const, command: 'claude mcp add log -- logMcp' },
+            { mark: 'chatgpt' as const, command: 'codex mcp add log -- logMcp' },
+          ].map((item) => (
+            <code
+              key={item.command}
+              className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 font-mono text-[14px] font-bold text-[#2A8CFF] shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]"
+            >
+              <BrandMark id={item.mark} className="size-4" />
+              {item.command}
+            </code>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

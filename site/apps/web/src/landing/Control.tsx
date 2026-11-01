@@ -3,6 +3,7 @@ import Dither from '@/components/Dither'
 import type { ReactNode } from 'react'
 import { AgentSession } from './AgentSession'
 import { BigGithubButton } from './BigGithubButton'
+import { DownArrow } from './VideoCarousel'
 
 function Dashed({ children }: { children: ReactNode }) {
   return <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">{children}</span>
@@ -147,10 +148,12 @@ export function Control() {
         </p>
         <AgentSession />
         <p
-          className="mx-auto mt-12 max-w-4xl text-center text-lg text-slate-500 sm:text-xl md:text-2xl lg:whitespace-nowrap"
+          className="mx-auto mt-14 flex max-w-4xl flex-wrap items-center justify-center gap-x-1.5 text-center text-2xl text-[#0D2A4C] md:text-3xl"
           style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}
         >
-          Check out our repo and leave a star you&apos;ll definitely not regret it
+          check out our repo and leave a <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">star</span> you&apos;ll
+          definitely not regret it
+          <DownArrow />
         </p>
         <BigGithubButton className="mt-4" />
         <div className="mt-12 flex flex-col items-center justify-center gap-4 px-2 sm:flex-row sm:gap-5">

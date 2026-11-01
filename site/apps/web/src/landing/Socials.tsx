@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { motion, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
+import { motion, useInView, useMotionValueEvent, useScroll, useTransform } from 'motion/react'
 import { SocialsExplainerWithComparison } from './SocialsExplainer'
 
 const HEADLINE = 'LISTENINNNNNN EVERYWHEREEEEEEEEEEEEEEE'
@@ -20,7 +20,7 @@ const FONT = "'Satoshi', 'Inter', system-ui, sans-serif"
   * the final logo lockup is rendered once, correctly, by SocialsExplainer's
   * plain HTML header when the opaque end card cuts in.
  */
-export function Socials() {
+function SocialsScroll() {
   const ref = useRef<HTMLElement | null>(null)
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const measureRef = useRef<SVGTextElement | null>(null)
@@ -219,4 +219,42 @@ export function Socials() {
       </div>
     </section>
   )
+}
+
+const WIDE = '(min-width: 1024px)'
+
+function useWide() {
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia(WIDE).matches)
+  useEffect(() => {
+    const query = window.matchMedia(WIDE)
+    const update = () => setWide(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+  return wide
+}
+
+function SocialsStacked() {
+  const explainerRef = useRef<HTMLDivElement | null>(null)
+  const started = useInView(explainerRef, { once: true, amount: 0.15 })
+  return (
+    <section id="socials" className="relative w-full bg-white">
+      <div className="relative h-[70vh] overflow-hidden">
+        <img src="/images/mattlistening.webp" alt="" aria-hidden decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 grid place-items-center bg-black/25 px-6">
+          <h2 className="m-0 break-all text-center text-4xl font-black leading-[0.95] text-white sm:text-6xl" style={{ fontFamily: FONT }}>
+            {HEADLINE}
+          </h2>
+        </div>
+      </div>
+      <div ref={explainerRef} className="px-6 py-16 sm:px-10">
+        <SocialsExplainerWithComparison started={started} />
+      </div>
+    </section>
+  )
+}
+
+export function Socials() {
+  return useWide() ? <SocialsScroll /> : <SocialsStacked />
 }

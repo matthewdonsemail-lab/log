@@ -201,11 +201,11 @@ export function SocialsExplainer({
               src={logoSrc}
               alt={`${brandName} logo`}
               aria-hidden="true"
-              className="size-16 shrink-0 rounded-[22%] sm:size-24"
+              className="size-12 shrink-0 rounded-[22%] sm:size-16 lg:size-24"
             />
             <span className="flex flex-col items-start text-left">
               <span
-                className="text-6xl font-black leading-none sm:text-8xl"
+                className="text-4xl font-black leading-none sm:text-6xl lg:text-8xl"
                 style={{ fontFamily: FONT, color: accentColor }}
               >
                 {brandName}

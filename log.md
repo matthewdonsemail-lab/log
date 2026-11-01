@@ -9916,3 +9916,24 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the landing page says what log is now, a full social media suite for marketers at scale, not a listening tool. The hero and Built with band come from the docs (SubQ, Treg, Twenty, AdsPower); OpenMagpie, Firecrawl, TypeSafe and Convex are gone. New sections: a platform carousel (X, Facebook, Discord, Reddit, LinkedIn) with a 3D animated mock of each app and Ask AI links that brief the assistant on log; a Claude Code and Codex window playing a 43-step session built from real log sessions, anonymised; a how-we-think carousel with motion examples; and the go getters call to action ported from the gg page (video carousel on the vidstack player, the Whop apply form, who is on the waitlist, reviews). Font Awesome 6 icons, cv-bluekey styling throughout, the comparison table and old brand band removed. The page no longer scrolls sideways, the card walls are CSS animations paused off screen, the chain-of-thought rails meet, and the page base is white.
 Why: matt: the landing page still described the old version; make it match the docs and the website's look, show how log is actually used, and put the go getters page in as the call to action.
 Checked: every pre-commit gate but this entry passes; the site typechecks; each section was checked in the browser pane, the videos play through vidstack, the Whop form loads its questions (nothing submitted), the page is as wide as the window at desktop and phone width.
+
+## 2026-11-01 07:05Z · fix/landingMobile
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `site/apps/web/public/logos/stack/adspower-mark.png`: new file
+- `site/apps/web/public/logos/stack/adspower.svg`: new file
+- `site/apps/web/public/logos/stack/subq.svg`: new file
+- `site/apps/web/public/logos/stack/twenty.svg`: new file
+- `site/apps/web/src/landing/AgentSession.tsx`: changed function AgentSession
+- `site/apps/web/src/landing/Control.tsx`: changed function Control
+- `site/apps/web/src/landing/Header.tsx`: changed function HeaderPill
+- `site/apps/web/src/landing/HowWeThink.tsx`: changed function OrbitCard, function BeliefCard
+- `site/apps/web/src/landing/LandingPage.tsx`: changed const BUILT_WITH, function LandingPage
+- `site/apps/web/src/landing/PlatformSuite.tsx`: changed function PlatformCard
+- `site/apps/web/src/landing/Socials.tsx`: added function SocialsScroll, const WIDE, function useWide, function SocialsStacked · changed function Socials
+- `site/apps/web/src/landing/SocialsExplainer.tsx`: changed function SocialsExplainer
+- `site/apps/web/src/landing/useMediaQuery.ts`: added function useMediaQuery, const TILT_QUERY
+
+What changed: below 1024px the Socials section is a light stacked version (photo and headline, then the full Octolens vs ListeningKit comparison in normal flow, started when in view) instead of the pinned scroll effect, and the comparison wordmark shrinks on small screens. Below 768px the 3D platform and how-we-think mocks lie flat (no perspective or tilt), the orbit pop-up card centres on its profile and wraps, and the card text and commands wrap inside their cards. The header pill uses CSS rounded corners instead of rebuilding a squircle clip path every frame. Built with shows the real SubQ, Treg, Twenty and AdsPower logos in brand blue on white tiles, and the setup line and the star-the-repo line use the handwritten, cv-bluekey style.
+Why: matt: the Socials scroll lagged on mobile and cut the comparison off, the 3D sections and pop-ups went out of bounds on phones, card text did not wrap, the header animation was slow, and Built with and two lines did not match the design system.
+Checked: every pre-commit gate but this entry passes and the site typechecks; at 375px nothing in Socials, the platform or how-we-think cards runs off the screen, the comparison plays to the end, and 26 orbit pop-ups stayed inside the card; the logos and restyled lines were checked in the browser.

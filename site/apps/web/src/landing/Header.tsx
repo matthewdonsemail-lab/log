@@ -544,30 +544,20 @@ function HeaderPill({
   ref?: React.Ref<HTMLDivElement>
   layoutSize?: boolean
 }) {
-  const pill = useSquircleClip<HTMLDivElement>(16)
   const nodeRef = React.useRef<HTMLDivElement | null>(null)
-  const setRef = useComposedRef(pill.ref, ref, nodeRef)
+  const setRef = useComposedRef(ref, nodeRef)
   const tone = useHeaderTone()
   const light = tone === "light"
-
-  const syncClip = React.useCallback(() => {
-    const el = nodeRef.current
-    if (!el) return
-    const clipPath = squircleClipPath(el.offsetWidth, el.offsetHeight, 16)
-    if (clipPath) el.style.clipPath = clipPath
-  }, [])
 
   const motionProps = props as unknown as React.ComponentProps<typeof motion.div>
 
   return (
     <motion.div
       ref={setRef}
-      style={pill.style}
       layout={layoutSize ? "size" : false}
       transition={navCollapseTransition}
-      onUpdate={layoutSize ? syncClip : undefined}
       className={cn(
-        "site-header__pill px-3 py-1.5",
+        "site-header__pill rounded-2xl px-3 py-1.5 [contain:layout_paint]",
         light
           ? "bg-white text-ink [--header-focus:color-mix(in_oklab,#0D2A4C_35%,transparent)]"
           : "bg-ink text-paper [--header-focus:color-mix(in_oklab,#F5F1E6_55%,transparent)]",

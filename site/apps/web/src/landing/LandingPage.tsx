@@ -42,11 +42,11 @@ const PLUGS = [
   },
 ]
 
-const BUILT_WITH: { label: string; role: string; src?: string }[] = [
-  { label: 'SubQ', role: 'reads what each step did' },
+const BUILT_WITH: { label: string; role: string; src: string }[] = [
+  { label: 'SubQ', role: 'reads what each step did', src: '/logos/stack/subq.svg' },
   { label: 'Treg', role: 'finds people, groups and facts', src: '/logos/stack/treg.svg' },
-  { label: 'Twenty', role: 'holds your accounts' },
-  { label: 'AdsPower', role: 'one browser per account' },
+  { label: 'Twenty', role: 'holds your accounts', src: '/logos/stack/twenty.svg' },
+  { label: 'AdsPower', role: 'one browser per account', src: '/logos/stack/adspower-mark.png' },
 ]
 
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
@@ -123,13 +123,21 @@ export function LandingPage() {
           <ul className="mt-5 flex list-none flex-wrap items-start gap-x-10 gap-y-5 p-0">
             {BUILT_WITH.map((item) => (
               <li key={item.label} className="flex items-center gap-3">
-                {item.src ? (
-                  <img src={item.src} alt="" className="h-8 w-auto sm:h-9" />
-                ) : (
-                  <span aria-hidden className="flex size-8 items-center justify-center rounded-lg bg-white text-base font-black text-[#2a8cff] sm:size-9">
-                    {item.label[0]}
-                  </span>
-                )}
+                <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-lg bg-white p-1.5 shadow-[0_3px_0_#B5D6FF] sm:size-10">
+                  <span
+                    className="size-full bg-[#2A8CFF]"
+                    style={{
+                      maskImage: `url(${item.src})`,
+                      WebkitMaskImage: `url(${item.src})`,
+                      maskSize: 'contain',
+                      WebkitMaskSize: 'contain',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskPosition: 'center',
+                      WebkitMaskPosition: 'center',
+                    }}
+                  />
+                </span>
                 <span className="flex flex-col text-left leading-tight">
                   <span className="text-base font-bold text-white">{item.label}</span>
                   <span className="text-sm text-white/75">{item.role}</span>
