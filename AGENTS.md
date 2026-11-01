@@ -1281,6 +1281,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`python/twitterApi/engine.py`, `vendor/twikit` `ClientTransaction.state`
     and `restore`).
 
+105. 2026-11-01 · matt: "we cannot be opening multiple sessions there,
+    that defeats the core purpose of what we use this tool for ... it
+    should always be one, and then it needs to loudly create issues". An X
+    account has one session, always. Every X call (CLI, MCP, hooks, the
+    queue, the X Chat watch) goes through the account's one engine host
+    (`python/twitterApi/host.py`, started on the first call, closed after
+    30 idle minutes or when the engine code changes): one twikit client,
+    one connection, one cookie jar and one transaction key, the way X's
+    own web app keeps one page and signs every call from it (x-web
+    `startup-dynamic`, read with rea 2026-11-01). A second host can't
+    start (`host.lock`); a call that can't reach the host is refused with
+    `xSessionHostDown` and sends nothing, never falls back to a session of
+    its own. The hook's account line shows the open session (pid, since,
+    calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

@@ -9967,3 +9967,29 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the landing hero's flat twemoji cloud band is replaced by the website's 3D clay clouds (`ClayClouds`, ported from website `packages/ui/src/components/clay-clouds.tsx`): three.js renders `public/claybound/cloud.glb` in four depth layers drifting at different speeds, lit by a warm key, sky fill and rim light, with the website's two-colour clay dither (`src/lib/clayDither.ts`). three.js and the model load lazily and in parallel; the sky stays plain until the scene is ready, motion stops under reduced motion, and the old `Clouds` band shows only if WebGL or the model fails. Claybound's PROVENANCE.md comes with the model.
 Why: matt: go through REPOS/website, find how the clouds are done on its landing page and bring that into our landing page.
 Checked: `pnpm typecheck` in site/apps/web; in the browser at 1440x900 and in the narrow pane the canvas renders the dithered clouds with the 2D band absent (the model loaded, 380 KB), no new console errors.
+
+## 2026-11-01 15:11Z · fix/xOneSessionPerAccount
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/knowledgeAndSearch.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `package.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def client_for, const HOSTING · changed class AccountLock, def live_line, def run_locked, def main
+- `python/twitterApi/host.py`: added const ROOT, const IDLE_SECONDS, const START_WAIT_SECONDS, const CODE_FILES, def host_path, def host_log, def code_stamp, def pid_alive, def read_host, def live_host, class Host, def start_host, def ensure_host, def call, def main
+- `skills/xPosting/SKILL.md`: edited
+- `src/directApi/engine/client.ts`: added function openSession · changed function localEngineStates, function engineContext
+- `src/directApi/engine/types.ts`: changed interface LocalEngineState
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/account/session/engineHost.test.ts`: added const python, const engine, const host, const state, const account, const env, function call, function hostInfo, test "a call starts the account's session and is answered there", test "the next call is answered by the same session, not a new one", test "a second session for the same account refuses to start"
+
+What changed: an X account has one session, always. `python/twitterApi/host.py` is the account's engine host: the first `log twitter` call starts it (detached, `~/.logCli/twitter/<account>/host.json` with its pid, port and token, its output in `host.log`), and every call after (CLI, MCP, hooks, the queue, the X Chat watch) is sent to it over a local socket by `engine.py`, which no longer opens X itself. The host holds one twikit client per account (`client_for`, `SESSIONS`), so one connection, one cookie jar and one transaction key; it serves calls one at a time (the watch beside them), keeps rule 104's lock and spacing, streams the watch's live lines back, and closes after 30 idle minutes or when the engine code changes. A second host can't start (`host.lock`, it exits saying another X session holds the account), and a call that can't reach the host is refused with `xSessionHostDown`, sending nothing. Every answer carries `xSession` (pid, since, calls), and the hook's account line shows the open session. Error codes `xSessionHostDown`, `xSessionHostRefused`, `xSessionHostError`; rule 105 in AGENTS.md, the MCP instructions (core 33), every X tool's cited rules (104, 105) and the xPosting skill, so the xSending guide carries it. `LOG_TWITTER_HOST=inline` runs the old way, for tests. Package 0.1.2.
+Why: matt: "we cannot be opening multiple sessions there, that defeats the core purpose of what we use this tool for ... it should always be one, and then it needs to loudly create issues, and ensure it's passed into the context of the MCP and the guides". X's own web app keeps one page and one fetch client whose plugins sign every call and fold refreshed cookies back (x-web startup-dynamic, read with rea: ev_f101b6f4..., the transaction-id trace ev_1f689f05...); log opened a new client per call and the inbox watchers each held their own beside it.
+Checked: `bun run check` (1233 pass) with 3 host tests (a call starts the account's session and is answered there, the next call is answered by the same pid, a second host for the account exits); live on matthewsoldit, two `log twitter session check` calls were answered by the same session (pid 40036, calls 1 then 2, X answered loggedIn); the two old inbox watchers (since 17:56, each its own engine) were stopped and the hook restarted them through the hosts (matthewsoldit pid 40036, abelqxr pid 42028).
