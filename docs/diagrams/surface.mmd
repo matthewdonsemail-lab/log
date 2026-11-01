@@ -31,7 +31,8 @@ flowchart LR
   pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
   post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
   post1{{"PostToolUse: queue.ts"}} -.->|after| agent
-  post2{{"PostToolUse: pageState.ts"}} -.->|after| agent
+  post2{{"PostToolUse: xLive.ts"}} -.->|after| agent
+  post3{{"PostToolUse: pageState.ts"}} -.->|after| agent
   turn0{{"SessionStart: pageState.ts"}} -.-> agent
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
   turn2{{"SessionStart: storage.ts"}} -.-> agent
@@ -43,5 +44,7 @@ flowchart LR
   turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
   turn9{{"SessionStart: queue.ts"}} -.-> agent
   turn10{{"UserPromptSubmit: queue.ts"}} -.-> agent
-  turn11{{"Stop: pageState.ts"}} -.-> agent
+  turn11{{"SessionStart: xLive.ts"}} -.-> agent
+  turn12{{"UserPromptSubmit: xLive.ts"}} -.-> agent
+  turn13{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0

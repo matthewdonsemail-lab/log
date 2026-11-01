@@ -53,6 +53,13 @@ client with `log twitter session webClient --account <a>` into
 `~/.logCli/twitter/xOperations.json`. Run it again when X ships a new
 main.js. What X's composer sends is in `docs/platforms/x/compose.md`.
 
+**The account stays live in context (rule 115).** While its X Chat watch
+runs, the account reads X's own badge counts every 2 minutes, the way
+x.com does, and reads the new notifications when the count rises. Each
+Claude session gets what is new in a `>>> X LIVE` block. A reply, quote
+or mention there is someone talking to matt: read them and answer.
+How it works: `docs/platforms/x/live.md`.
+
 **Full context before every message (rule 109).** Before you write to
 anyone, and again right before it goes out, know everything between them
 and the account at that moment, never only the dm thread:

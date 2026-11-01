@@ -203,6 +203,22 @@ def live_operations_of(main_js: str, home_html: str) -> dict[str, Any]:
     return {"operations": operations, "featureValues": values}
 
 
+LIVE_CHUNKS = re.compile(r"DirectMessages|directMessagesData|loader\.MessageHandler|NotificationHandler|bundle\.Notifications|bundle\.Chat\b|XChatEmbed")
+
+
+def chunk_urls_of(home_html: str) -> dict[str, str]:
+    start = home_html.find("t.u=e=>")
+    if start < 0:
+        return {}
+    builder = home_html[start:home_html.find('a.js"', start)]
+    maps = re.findall(r"\(\{([^}]*)\}\)\[e\]", builder)
+    if len(maps) < 2:
+        return {}
+    names = dict(re.findall(r'(\d+):"([^"]+)"', maps[0]))
+    hashes = dict(re.findall(r'(\d+):"([^"]+)"', maps[1]))
+    return {names.get(k, k): f"https://abs.twimg.com/responsive-web/client-web/{names.get(k, k)}.{h}a.js" for k, h in hashes.items()}
+
+
 def load_live_operations() -> None:
     from twikit.client import gql
 
@@ -959,6 +975,8 @@ async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     html = home.text
     (folder / "home.html").write_text(html, encoding="utf-8")
     scripts = sorted(set(re.findall(r"https://abs\.twimg\.com/[^\"'\s]+?\.js", html)))
+    chunks = sorted(url for name, url in chunk_urls_of(html).items() if LIVE_CHUNKS.search(name))
+    scripts = scripts + [url for url in chunks if url not in scripts]
     saved = []
     for url in scripts:
         await asyncio.sleep(random.uniform(*READ_SPACING_SECONDS))
@@ -968,16 +986,93 @@ async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
             (folder / name).write_bytes(answer.content)
             saved.append({"url": url, "file": name, "bytes": len(answer.content)})
     main = next((folder / f["file"] for f in saved if f["file"].startswith("main.")), None)
-    live = live_operations_of(main.read_text(encoding="utf-8"), html) if main else None
+    code = "\n".join((folder / f["file"]).read_text(encoding="utf-8") for f in saved if f["file"].endswith(".js"))
+    live = live_operations_of(code, html) if main else None
     if live and live["operations"]:
         live["savedAt"] = datetime.now(timezone.utc).isoformat()
         live["from"] = main.name
         operations_path().write_text(json.dumps(live, indent=1), encoding="utf-8")
         load_live_operations()
-    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "saved": saved, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
+    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "chunks": chunks, "saved": saved, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
 
 
-async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
+VIEWER_BADGE_COUNTS = "https://x.com/i/api/graphql/q4Npr1-FYRWyXsRzPckwEA/ViewerBadgeCounts"
+POLLING_HEADERS = {"x-twitter-polling": "true"}
+BADGE_POLL_SECONDS = 120.0
+
+
+def badge_counts_of(answer: Any) -> dict[str, Any] | None:
+    result = (((answer or {}).get("data") or {}).get("viewer_v2") or {}).get("user_results", {}).get("result") or {}
+    counts = result.get("badge_counts") if result.get("__typename") == "User" else None
+    return counts if isinstance(counts, dict) else None
+
+
+def live_path(account: str) -> Path:
+    return state_dir(account) / "live.jsonl"
+
+
+def append_live(account: str, event: dict[str, Any]) -> None:
+    from datetime import datetime, timezone
+
+    with live_path(account).open("a", encoding="utf-8") as out:
+        out.write(json.dumps({"seenAt": datetime.now(timezone.utc).isoformat(), **event}, default=str) + "\n")
+
+
+def notification_rose(before: dict[str, Any] | None, after: dict[str, Any]) -> bool:
+    return before is not None and int(after.get("ntab_unread_count") or 0) > int(before.get("ntab_unread_count") or 0)
+
+
+async def new_notifications(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any) -> list[dict[str, Any]]:
+    from twitterApi.notifications import read_store
+
+    path = notifications_path(str(spec["account"]))
+    before = set((read_store(path) or {"rows": {}})["rows"])
+    answer = await notifications(client, cookies, {**spec, "full": False, "pages": 1}, governor)
+    if not answer.get("ok"):
+        return [{"type": "notificationsRefused", "code": answer.get("code"), "detail": answer.get("detail")}]
+    rows = (read_store(path) or {"rows": {}})["rows"]
+    return [{"type": "notification", **row} for key, row in rows.items() if key not in before]
+
+
+async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any, every: float = BADGE_POLL_SECONDS) -> None:
+    import random
+
+    account = str(spec["account"])
+    last: dict[str, Any] | None = None
+    while True:
+        try:
+            if governor is not None:
+                governor.before_request(is_mutation=False, quiet=True)
+            answer, _ = await client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS})
+            counts = badge_counts_of(answer)
+            if counts is not None and counts != last:
+                append_live(account, {"type": "badge", **counts})
+                live_line({"type": "badge", **counts})
+                if notification_rose(last, counts):
+                    for event in await new_notifications(client, cookies, spec, governor):
+                        append_live(account, event)
+                        live_line(event)
+                last = counts
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            append_live(account, {"type": "pollRefused", "error": redact(e, cookies)[:200]})
+            live_line({"type": "pollRefused", "error": redact(e, cookies)[:200]})
+            if "429" in str(e) or "GovernorBlocked" in type(e).__name__:
+                return
+        await asyncio.sleep(every * random.uniform(0.95, 1.05))
+
+
+async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any = None) -> dict[str, Any]:
+    poll = asyncio.create_task(badge_poll(client, cookies, spec, governor)) if spec.get("live") is not False else None
+    try:
+        return await xchat_stream(client, cookies, spec)
+    finally:
+        if poll is not None:
+            poll.cancel()
+
+
+async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
     from twitterApi import inboxSync
 
     me = own_user_id(cookies) or ""
@@ -995,7 +1090,7 @@ async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]
         if event.get("type") == "socket":
             live_line({**event, "error": redact(event["error"], cookies)[:200]} if event.get("error") else event)
             continue
-        if event.get("type") not in ("Message", None) or (event.get("kind") == "MarkRead" and event.get("text") is None):
+        if event.get("type") not in ("Message", None) or (event.get("kind") == "MarkRead" and event.get("text") is None) or not event.get("conversation_id"):
             continue
         sender = str(event.get("sender_id") or "")
         messages += 1
@@ -1105,7 +1200,7 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], govern
             return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with that PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
         return {"ok": True, "loginState": "loggedIn", "userId": own_user_id(cookies)}
     if action == "xchatWatch":
-        return await xchat_watch(client, cookies, spec)
+        return await xchat_watch(client, cookies, spec, governor)
     if action == "inbox":
         from twikit.errors import TooManyRequests
         limit = max(1, min(int(spec.get("limit") or 20), 200))

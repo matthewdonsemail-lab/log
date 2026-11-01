@@ -1468,6 +1468,29 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     redrafted from what changed, gated and put back (rule 109); a cool-off or
     stop means nothing more goes out until matt says so (rule 94).
 
+115. 2026-11-02 · matt: "go through the actual bundle itself for the actual
+    client ... pass the live context into the actual context ... persistent
+    realtime context ... scoped per session". X's own client stays live with
+    its notification refresher (`bundle.Notifications`, module 726194, read
+    with rea through the account's one session, `log twitter session
+    webClient`, which now also saves the DM, X Chat and notification chunks
+    the page loads on demand): every 30 s while the tab is in front, and only
+    every 120 s while its push is subscribed, it reads `ViewerBadgeCounts`
+    with `x-twitter-polling: true`, then the DM updates, and the notifications
+    when the count rises. The account's X Chat watch (the socket is our push)
+    now does the same through the one session: `ViewerBadgeCounts` with that
+    header every 120 s, and when `ntab_unread_count` rises, one page of new
+    notifications (`badge_poll`, `python/twitterApi/engine.py`). Each count
+    and each new like, retweet, reply, quote, mention or follow goes to
+    `~/.logCli/twitter/<account>/live.jsonl`. The X live hook
+    (`scripts/hooks/xLive.ts`, SessionStart, every prompt, every log tool or
+    shell call) puts it in front of the agent (`>>> X LIVE`,
+    `src/twitter/live/feed`), each Claude session with its own offsets
+    (`src/agentHooks/sessionOffsets`, keyed by the hook's `session_id`), so
+    two sessions both see every event once. The queue hook (rule 114) reads
+    per session the same way. A refused read stops the poll and is said to
+    matt (rule 94).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

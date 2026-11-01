@@ -109,8 +109,13 @@ export const chatCommand: Command = {
   },
 };
 
+export function isChatMessage(event: XChatLiveEvent): boolean {
+  return event.type !== "socket" && Boolean(event.conversationId);
+}
+
 export function liveLine(event: XChatLiveEvent): string {
   if (event.type === "socket") return `X Chat socket ${event.state}${event.error ? `: ${event.error}` : ""}`;
+  if (!isChatMessage(event)) return `X live ${event.type ?? "event"}: ${JSON.stringify({ ...event, type: undefined }).slice(0, 300)}`;
   const who = event.fromMe ? "you" : `@${event.from || event.senderId}`;
   return `${event.fromMe ? "" : ">>> NEW "}${event.time ?? "?"} ${who}: ${(event.text ?? "").replace(/\s+/g, " ")}`;
 }
@@ -141,10 +146,10 @@ async function watchChat(context: CommandContext, argv: string[]): Promise<Comma
   const run = await live(account, { action: "xchatWatch", ...(seconds ? { seconds } : {}), ...(chatPin ? { chatPin } : {}) }, (event) => {
     events.push(event);
     context.err(liveLine(event));
-    if (toInbox && event.type !== "socket" && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+    if (toInbox && isChatMessage(event) && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
   });
   for (const line of await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
-  const messages = events.filter((e) => e.type !== "socket");
+  const messages = events.filter(isChatMessage);
   if (json) return { code: run.answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, ...run.answer, events: messages }, null, 2) };
   if (!run.answer.ok) return { code: 1, stdout: `log twitter chat watch: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
   return { code: 0, stdout: `log twitter chat watch: @${account.accountName}, ${messages.length} message${messages.length === 1 ? "" : "s"} pushed by X while watching, nothing polled` };
