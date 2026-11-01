@@ -305,6 +305,21 @@ def message_of(decrypted: dict) -> dict:
     return out
 
 
+RECEIPT_KINDS = ('markConversationRead', 'markConversationUnread', 'messageTyping')
+
+
+def unopened_of(encoded: str | None, error: Exception | str) -> dict:
+    """An event chat-xdk couldn't open. A read receipt, an unread marker or
+    a typing notice says nothing, so it comes back as a marker
+    (``kind`` ``MarkRead``) whatever its signature; anything else keeps its
+    error."""
+    head = decode_event(encoded) if encoded else {}
+    text = str(error)
+    if (encoded and event_kind_of(encoded) in RECEIPT_KINDS) or 'ReadReceipt' in text:
+        return {**head, 'type': 'Message', 'kind': 'MarkRead', 'text': None}
+    return {**head, 'type': 'Message', 'text': None, 'error': text[:200]}
+
+
 def is_marker(message: dict) -> bool:
     """A decrypted event that says nothing: a read or unread marker, a
     reaction taken back, or a content type chat-xdk doesn't know."""

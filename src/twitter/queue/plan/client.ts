@@ -64,6 +64,30 @@ export const lockPathOf = (path: string) => `${stem(path)}.lock`
 
 export const nudgePathOf = (path: string) => `${stem(path)}.nudge`
 
+export function pidAlive(pid: number): boolean {
+  if (!pid) return false
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === 'EPERM'
+  }
+}
+
+export function clearDeadLock(lock: string, alive: (pid: number) => boolean = pidAlive): boolean {
+  if (!existsSync(lock)) return false
+  const pid = Number(readFileSync(lock, 'utf8').trim()) || 0
+  if (alive(pid)) return false
+  rmSync(lock, { force: true })
+  return true
+}
+
+export function liveLock(path: string, alive: (pid: number) => boolean = pidAlive): boolean {
+  const lock = lockPathOf(path)
+  clearDeadLock(lock, alive)
+  return existsSync(lock)
+}
+
 export function queueLog(path: string, line: string, now = new Date()): string {
   const stamped = `${now.toISOString().replace('T', ' ').slice(0, 19)} ${line}`
   appendFileSync(logPathOf(path), stamped + '\n', 'utf8')
@@ -114,7 +138,7 @@ export function buildQueue(input: { account: string; action: QueueAction; target
   const shuffled = shuffle(pool, seededRandom(input.seed))
   let next = 0
   const items: QueueItem[] = input.targets.map((target, i) => {
-    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const }
+    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const, draftedAt: input.now.toISOString() }
     if (input.action === 'dm') {
       if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a dm queue needs each recipient's id`)
       return { ...base, userId: String(target.userId) }
@@ -220,7 +244,7 @@ export interface QueueAddition {
   at: string
 }
 
-export function fitTimes(taken: readonly number[], count: number, start: number, span: number, minGap: number, rng: Rng): number[] {
+export function fitTimes(taken: readonly number[], count: number, start: number, span: number, minGap: number, rng: Rng, inWindow = false): number[] {
   const busy = [...taken]
   const out: number[] = []
   for (let i = 0; i < count; i++) {
@@ -229,11 +253,25 @@ export function fitTimes(taken: readonly number[], count: number, start: number,
       const t = start + rng() * span
       if (busy.every((b) => Math.abs(b - t) >= minGap)) placed = t
     }
-    if (placed === null) placed = Math.max(start, ...busy) + minGap + rng() * minGap
+    if (placed === null) placed = inWindow ? start + rng() * Math.min(span, minGap) : Math.max(start, ...busy) + minGap + rng() * minGap
     busy.push(placed)
     out.push(placed)
   }
   return out.sort((a, b) => a - b)
+}
+
+export function spaceOut(events: PlanEvent[], minGap: number, fixed: ReadonlySet<PlanEvent> = new Set()): void {
+  const seconds = (e: PlanEvent) => new Date(e.at).getTime() / 1000
+  events.sort((a, b) => seconds(a) - seconds(b))
+  const placed: number[] = events.filter((e) => fixed.has(e)).map(seconds)
+  for (const event of events) {
+    if (fixed.has(event)) continue
+    let t = seconds(event)
+    for (let clash = placed.find((b) => Math.abs(b - t) < minGap); clash !== undefined; clash = placed.find((b) => Math.abs(b - t) < minGap)) t = clash + minGap
+    placed.push(t)
+    event.at = new Date(Math.round(t) * 1000).toISOString()
+  }
+  events.sort((a, b) => seconds(a) - seconds(b))
 }
 
 export function addToQueue(queue: Queue, addition: QueueAddition, rng: Rng, now: Date): PlanEvent[] {
@@ -245,13 +283,38 @@ export function addToQueue(queue: Queue, addition: QueueAddition, rng: Rng, now:
   const minGap = Math.max(MIN_GAP_FLOOR, addition.minGap ?? queue.randomRun?.minGap ?? 120)
   const pending = (queue.randomRun?.events ?? []).filter((e) => !e.done && !e.skipped).map((e) => new Date(e.at).getTime() / 1000)
   const start = now.getTime() / 1000 + 30
-  const times = fitTimes(pending, fresh.length, start, parseSpan(addition.window), minGap, rng)
+  const times = fitTimes(pending, fresh.length, start, parseSpan(addition.window), minGap, rng, true)
   const order = shuffle(fresh, rng)
   const events: PlanEvent[] = order.map((item, i) => ({ n: item.n, kind: 'reply' as EventKind, at: new Date(Math.round(times[i]) * 1000).toISOString() }))
   queue.randomRun = queue.randomRun ?? { planned: now.toISOString(), window: addition.window, minGap, events: [] }
   queue.randomRun.events.push(...events)
+  spaceOut(queue.randomRun.events.filter((e) => !e.done && !e.skipped), minGap, new Set(events))
   queue.approval = approveQueue(queue, addition.approvedBy, now).approval
   return events
+}
+
+export function editItem(queue: Queue, n: number, text: string, by: string, rng: Rng, now: Date, window = '30m'): PlanEvent | null {
+  const item = queue.items.find((i) => i.n === n)
+  if (!item) throw new Error(`#${n} isn't in this queue`)
+  if (item.status !== 'pending' && item.status !== 'held') throw new Error(`#${n} is ${item.status}: only a pending or held item can be edited`)
+  if (!text.trim()) throw new Error('the new text is empty')
+  const wasHeld = item.status === 'held'
+  item.text = text.trim()
+  item.draftedAt = now.toISOString()
+  item.status = 'pending'
+  delete item.heldFor
+  delete item.result
+  let event: PlanEvent | null = null
+  if (queue.randomRun && (wasHeld || !queue.randomRun.events.some((e) => e.n === n && !e.done && !e.skipped))) {
+    const minGap = queue.randomRun.minGap
+    const pending = queue.randomRun.events.filter((e) => !e.done && !e.skipped).map((e) => new Date(e.at).getTime() / 1000)
+    const [at] = fitTimes(pending, 1, now.getTime() / 1000 + 30, parseSpan(window), minGap, rng, true)
+    event = { n, kind: 'reply', at: new Date(Math.round(at) * 1000).toISOString() }
+    queue.randomRun.events.push(event)
+    spaceOut(queue.randomRun.events.filter((e) => !e.done && !e.skipped), minGap, new Set([event]))
+  }
+  queue.approval = approveQueue(queue, by, now).approval
+  return event
 }
 
 export function takeIncoming(path: string): QueueAddition[] {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { join } from 'node:path'
 import { platformStateRoot } from '../../src/directApi/engine/index'
-import { ensureLiveWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startTwitterWatch, storedInboxContext, takePending, twitterAccounts } from '../../src/inbox/watch/index'
+import { clearDeadQueueLocks, codeStamp, ensureLiveWatchers, stopStaleWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startTwitterWatch, storedInboxContext, takePending, twitterAccounts } from '../../src/inbox/watch/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -20,6 +20,10 @@ try {
   event = (JSON.parse(raw || '{}') as { hook_event_name?: string }).hook_event_name ?? event
 } catch {}
 
+const stamp = codeStamp(repo)
+stopStaleWatchers('twitter', twitterAccounts(), stamp)
+stopStaleWatchers('discord', twitterAccounts(platformStateRoot('discord')), stamp)
+clearDeadQueueLocks()
 ensureLiveWatchers('twitter', twitterAccounts(), (account) => startTwitterWatch(account, repo))
 ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')), (account) => startDiscordWatch(account, repo))
 

@@ -1330,6 +1330,53 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `src/twitter/queue` (`addToQueue`, `fitTimes`, `takeIncoming`,
     `mergeAdded`).
 
+108. 2026-11-01 · matt: "if something doesn't seem to be working, you need
+    to fix it", "make sure it's always up to date", and "if someone responds
+    to me ... you have full authority to be able to send a follow-up message
+    to them if it is in the context of the right thing to do with that said
+    conversation". Three things:
+    - **Fix it, don't report it.** Something broken is never told to matt
+      as a fact and left. Find the cause and fix it in the same turn. Only
+      when the fix needs something from him, say exactly what (a restart, a
+      login, a key, a yes), and say that first.
+    - **Nothing runs stale.** The inbox hook runs a silent cleanup on every
+      event: a queue lock whose run died is cleared (and `queue run`, `add`
+      and `nudge` take it over themselves), and an inbox watcher started
+      before the newest code is stopped and started again
+      (`stopStaleWatchers`, `clearDeadQueueLocks`, `src/inbox/watch`). An X
+      session host closes when any of its code changes (`python/twitterApi`,
+      `python/platformKit`, `vendor/twikit`), even while an X Chat watch is
+      open on it, so the next call runs the new code. A read receipt X Chat
+      can't verify is a read marker, never a message (`unopened_of`,
+      `vendor/twikit`).
+    - **Answer straight away.** When someone answers matt, a reply that
+      answers what they said and fits that conversation is drafted, gated
+      and sent at once, then matt is told what they said and what went out.
+      Only a meeting, a promise, a price or money, or a conversation that
+      can't be placed waits for him. Hook times are in matt's own clock.
+
+109. 2026-11-01 · matt: "before you do an action with someone, you need to
+    figure out the context of that person ... if they liked something, if
+    they commented on something, if they replied to them recently, if I
+    send them a message outside of the tool". Full context at the time of
+    sending, every time, through the tool:
+    - **Before drafting,** `log twitter dms --with <handle>` (MCP
+      `twitterDms` { with }) gives the whole thread, read from X so it holds
+      what matt sent from anywhere, and what that person did on the
+      account's posts (likes, retweets, replies with their words, quotes,
+      mentions, follows), from a fresh notifications read
+      (`activityOf`, `src/twitter/dm/person`). Someone who already did the
+      action is thanked for it, never asked for it.
+    - **Right before each send,** the queue run reads both again and holds
+      the item (status `held`, `heldFor` saying what changed) when anything
+      happened since it was drafted (`draftedAt`): a message either way, a
+      like, retweet, reply, quote, mention or follow
+      (`contextChangesSince`, `contextChanged` in `src/twitter/queue/run`).
+    - **A held item** is redrafted from the new context, gated, and put back
+      with `log twitter queue edit <queue> --n --text --by` (MCP
+      `twitterQueueEdit`). A queue file is never edited by hand, and nothing
+      is sent around the queue to get past a hold (rule 106).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

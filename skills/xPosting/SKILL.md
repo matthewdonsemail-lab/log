@@ -47,6 +47,23 @@ the replies to its comments, the quote an hour later, and the DMs to the people 
 
 ## 3. Reaching people: `log twitter`
 
+**Full context before every message (rule 109).** Before you write to
+anyone, and again right before it goes out, know everything between them
+and the account at that moment, never only the dm thread:
+
+- `twitterDms` { account, with: "<handle>" } gives their whole thread (old
+  DMs and X Chat, read from X itself, so it also holds what matt sent them
+  from his phone or anywhere outside log) **and** what they did on the
+  account's posts: likes, retweets, replies (with what they said), quotes,
+  mentions and follows, newest first, from a fresh notifications read.
+- Draft from all of it. Someone who already retweeted gets thanked for it,
+  never asked to retweet; someone who replied gets their reply answered.
+- The queue reads it all again right before each send and holds the item
+  (status `held`, with what changed) if anything happened since it was
+  drafted. A held item is redrafted from the new context, gated with
+  `voice`, and put back with `twitterQueueEdit`. A queue file is never edited
+  by hand, and nothing is sent around the queue to get past a hold.
+
 Each job has its own page in `docs/useCases/twitter/`: topic replies,
 answering the people who comment on your posts, DMs to the people who like
 or repost them, affiliate follow-ups, recruiting, the inbox and followers.

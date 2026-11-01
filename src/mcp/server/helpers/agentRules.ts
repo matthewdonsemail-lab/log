@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 107;
+export const RULES_REVIEWED_THROUGH = 109;
 
 export const AGENTS_URI = "log://agents";
 
@@ -40,6 +40,8 @@ export const CORE_PRINCIPLES = [
   "33. One X session per account, always: every X call (CLI, MCP, hooks, queue, X Chat watch) goes through that account's one engine host (`python/twitterApi/host.py`), which holds one twikit client, one connection and one transaction key, as X's own web app holds one page. A second session can't start (`host.lock`); if the host can't be reached the call is refused loudly (`xSessionHostDown`) and nothing is sent. Never open another session or hand-roll a script to get around it. The hook's account line shows the open session (rule 105).",
   "34. Every log action goes through these MCP tools, never a hand-run `log …` or `bun bin/log.ts …` from a shell (the shell hook refuses one); only the terminal-only prompts are run in a terminal, by matt. Before changing log-cli code, read what is already changed and uncommitted (the hook says it loudly: `>>> UNCOMMITTED LOCAL CHANGES`) and never overwrite, revert, stage, publish or ship someone else's uncommitted work without matt (rule 106).",
   "35. An account has one queue and one run for everything it sends: dms, reply-guy replies and answers together. Put more in with `twitterQueueAdd` (even while it runs: each is fitted between what is planned, minGap apart) and keep it going with `keepOpen` on `twitterQueueRunLive`; never a second queue or run for the same account (rule 107).",
+  "36. If something isn't working, fix it: never report a broken thing to matt as a fact and stop. Find the cause and fix it in the same turn; only when the fix needs something from matt, say exactly what (a restart, a login, a key, a yes). Nothing runs stale: the hooks clear dead queue locks and restart inbox watchers and X session hosts that run older code than the checkout. When someone answers matt, a reply that answers them and fits that conversation is sent straight away (matt gave full authority); only a meeting, a promise, money or a conversation you can't place waits for him. Times are said in matt's own clock (rule 108).",
+  "37. Full context at the time of sending, every time: before drafting to anyone read `twitterDms` { with }, which gives their whole thread (including what matt sent from outside log) and what they did on the account's posts (likes, retweets, replies, quotes, mentions, follows); someone who already did the action is thanked, never asked. The queue reads it again right before each send and holds the item when anything changed since the draft; redraft it and put it back with `twitterQueueEdit`, never by editing the queue file (rule 109).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -55,6 +57,8 @@ export const SERVER_INSTRUCTIONS = [
   "5. One browser per account for its day; never act on an account in quick succession; a 429 stops the run (rules 35, 94).",
   "6. matt sees everything as it happens (rule 26): before a call that runs more than a few seconds, start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`. A client without a shell reads each result's `progress` instead.",
   "7. A refusal names its error code: the `errors` tool says what to do.",
+  "8. If something isn't working, fix it; ask matt only for exactly what the fix needs from him. A reply that answers someone and fits the conversation goes straight out (rule 108).",
+  "9. Before any message to someone, read their full context at that moment with `twitterDms` { with }: their thread and what they did on the account's posts (rule 109).",
   "",
   `Every rule is in AGENTS.md (${AGENTS_URI}), the newest at the bottom; each tool's description ends with the ones it falls under.`,
 ].join("\n");
@@ -90,7 +94,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   check: [8, 13, 18, 22, 29, 35, 69, 73],
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81, 104, 105],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
   voice: [30, 39, 41, 63, 64, 98],
@@ -104,8 +108,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],

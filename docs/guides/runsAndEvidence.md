@@ -4,6 +4,14 @@ What runs leave behind: run folders and pruning, captures and request docs, erro
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "twitter/getTheAction" })` | Getting people to do the thing: retweet, like, try it | "get me all them people who liked it ... yo cool to see that you liked that, would you give that a wee retweet", "notifications: people who like, comment, reply", "go through all the people there who need a message", "get them to retweet the thing", "would you do me a favour and give it a wee retweet", "I need them to retweet it so I can get some inbound leads", "I don't know what they're even talking about, explain the context", "make them do the action I need", "get the full context of everything on the account at the time of sending the message". |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -341,6 +349,7 @@ Stop a long run at its next browser step.
 Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait
 log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 10)
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
 AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

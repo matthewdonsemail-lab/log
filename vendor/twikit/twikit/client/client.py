@@ -3576,7 +3576,7 @@ class Client:
         return {'messages': opened, 'conversations': details}
 
     async def _xchat_decrypt(self, events: list, people: set) -> dict[str, list[dict]]:
-        from ..xchat import decode_event, message_of, signing_key_entry
+        from ..xchat import decode_event, message_of, signing_key_entry, unopened_of
 
         chat = self._xchat
         people = set(people) | {s for s in (decode_event(e).get('sender_id') for e in events) if s and str(s).isdigit()}
@@ -3600,10 +3600,10 @@ class Client:
             out.setdefault(message['conversation_id'], []).append(message)
         for index, error in (result.get('errors') or {}).items():
             raw = events[int(index)] if str(index).isdigit() and int(index) < len(events) else None
-            head = decode_event(raw) if raw else {}
-            cid = head.get('conversation_id')
+            unopened = unopened_of(raw, error)
+            cid = unopened.get('conversation_id')
             if cid:
-                out.setdefault(cid, []).append({**head, 'type': 'Message', 'text': None, 'error': str(error)[:200]})
+                out.setdefault(cid, []).append(unopened)
         for messages in out.values():
             messages.sort(key=lambda m: m.get('time_ms') or 0)
         return out
@@ -3736,7 +3736,7 @@ class Client:
             self._xchat.decrypt_events(events)
 
     async def _xchat_open(self, encoded: str) -> dict:
-        from ..xchat import decode_event, message_of
+        from ..xchat import decode_event, message_of, unopened_of
 
         head = decode_event(encoded)
         chat = getattr(self, '_xchat', None)
@@ -3747,13 +3747,21 @@ class Client:
             event = chat.decrypt_event(encoded)
         except Exception as error:
             if 'no matching key' not in str(error):
-                return {**head, 'type': None, 'text': None, 'error': str(error)[:200]}
+                return unopened_of(encoded, error)
             self._xchat_items = None
             try:
                 await self._xchat_prime_keys(pages=1)
                 event = chat.decrypt_event(encoded)
             except Exception as again:
-                return {**head, 'type': None, 'text': None, 'error': str(again)[:200]}
+                missing = self._xchat_missing_keys([encoded], {'errors': {'0': str(again)}})
+                found = await self._xchat_fetch_key_changes(missing) if missing else []
+                if not found:
+                    return unopened_of(encoded, again)
+                try:
+                    chat.decrypt_events(found)
+                    event = chat.decrypt_event(encoded)
+                except Exception as last:
+                    return unopened_of(encoded, last)
         return message_of({'event': event, 'original_b64': encoded})
 
     async def watch_xchat(self, seconds: float | None = None, keepalive: float = 30):

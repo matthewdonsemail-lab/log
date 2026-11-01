@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { addToQueue, approveQueue, buildQueue, fitTimes, seededRandom } from '../plan/index'
+import { addToQueue, approveQueue, buildQueue, fitTimes, seededRandom, spaceOut } from '../plan/index'
 import type { Queue, QueueAddition } from '../plan/index'
 import { runQueue } from './index'
 import type { RunDeps } from './types'
@@ -29,6 +29,25 @@ describe('one queue per account: what is added is fitted into the same plan', ()
     expect(queue.approval?.by).toBe('matt')
     const planned = queue.randomRun!.events.map((e) => Date.parse(e.at) / 1000)
     for (const t of planned) for (const o of planned) if (o !== t) expect(Math.abs(o - t)).toBeGreaterThanOrEqual(300)
+  })
+
+  test('a reply added with a short window lands inside it, and what was planned after it moves back to keep the gap (rule 108)', () => {
+    const queue = buildQueue({ account: 'matthewsoldit', action: 'dm', targets: ['a', 'b', 'c', 'd'].map((h, i) => ({ handle: h, userId: String(i + 1), text: `yo ${h}` })), lines: [], sources: [], seed: 1, now: new Date(START) })
+    queue.randomRun = { planned: new Date(START).toISOString(), window: '1h', minGap: 420, events: [1, 2, 3, 4].map((n) => ({ n, kind: 'reply' as const, at: new Date(START + n * 450_000).toISOString() })) }
+    approveQueue(queue, 'matt', new Date(START))
+    const [added] = addToQueue(queue, { action: 'dm', targets: [{ handle: 'shaw', userId: '9', text: 'cheers lad' }], approvedBy: 'matt', window: '15m', at: new Date(START).toISOString() }, seededRandom(3), new Date(START))
+    expect(Date.parse(added.at)).toBeLessThanOrEqual(START + 15 * 60_000 + 30_000)
+    const planned = queue.randomRun!.events.map((e) => Date.parse(e.at) / 1000).sort((a, b) => a - b)
+    for (let i = 1; i < planned.length; i++) expect(planned[i] - planned[i - 1]).toBeGreaterThanOrEqual(420)
+  })
+
+  test('spacing out only moves sends later, never the ones held in place', () => {
+    const fixed = { n: 9, kind: 'reply' as const, at: new Date(START + 100_000).toISOString() }
+    const events = [{ n: 1, kind: 'reply' as const, at: new Date(START + 50_000).toISOString() }, fixed, { n: 2, kind: 'reply' as const, at: new Date(START + 200_000).toISOString() }]
+    spaceOut(events, 300, new Set([fixed]))
+    expect(fixed.at).toBe(new Date(START + 100_000).toISOString())
+    const t = events.map((e) => Date.parse(e.at))
+    for (let i = 1; i < t.length; i++) expect(t[i] - t[i - 1]).toBeGreaterThanOrEqual(300_000)
   })
 
   test('adding the same item twice adds it once', () => {

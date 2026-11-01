@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { addPending, claimPoll, ensureLiveWatchers, inboxContext, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
+import { addPending, claimPoll, ensureLiveWatchers, inboxContext, localTime, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
@@ -80,10 +80,10 @@ describe("who is waiting, read from the local inbox store with no network", () =
     }));
     const found = storedWaiting("acct", root);
     expect(found.total).toBe(2);
-    expect(found.waiting.map((w) => [w.with, w.text])).toEqual([["@eight", "(could not decrypt)"], ["@seven", "sounds good"]]);
+    expect(found.waiting.map((w) => [w.with, w.text])).toEqual([["@eight", "(not loaded yet: twitterDms with their handle opens it)"], ["@seven", "sounds good"]]);
     const text = storedInboxContext(["acct", "nobody"], root)!;
-    expect(text).toContain("synced 2026-10-30 03:50 UTC");
-    expect(text).toContain('@seven at 2026-10-30 01:00 UTC: "sounds good"');
+    expect(text).toContain(`synced ${localTime("2026-10-30T03:50:00Z")}`);
+    expect(text).toContain(`@seven at ${localTime("2026-10-30T01:00:00Z")}: "sounds good"`);
     expect(text).not.toContain("9:100");
     expect(storedInboxContext(["nobody"], root)).toBeNull();
   });

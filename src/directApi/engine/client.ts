@@ -14,6 +14,13 @@ import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } 
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
 import { WRITES_PER_DAY_DEFAULT, writesPerDayOf } from './types'
 
+
+function localClock(iso: string): string {
+  const at = new Date(iso)
+  if (Number.isNaN(at.getTime())) return iso
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${at.getMonth() + 1}/${at.getDate()} ${pad(at.getHours())}:${pad(at.getMinutes())} matt's time`
+}
 export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
   twitterSession: { platform: 'twitter', library: 'twikit', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directTwitter' },
@@ -135,8 +142,8 @@ export function engineContext(states: LocalEngineState[] = allEngineStates(), no
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
     const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'
-    const open = s.session ? `, its one X session open (pid ${s.session.pid} since ${s.session.since.slice(11, 16)}Z, ${s.session.calls} calls)` : ''
-    lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${s.checkedAt.slice(0, 16)}Z)` : ''}, ${used}${pause}${open}`)
+    const open = s.session ? `, its one X session open (pid ${s.session.pid} since ${localClock(s.session.since)}, ${s.session.calls} calls)` : ''
+    lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${localClock(s.checkedAt)})` : ''}, ${used}${pause}${open}`)
   }
   return lines.join('\n')
 }

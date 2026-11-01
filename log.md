@@ -10089,3 +10089,71 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a new X use case, `docs/useCases/twitter/getTheAction.md`. It lists everyone waiting on the owner and everyone who opened or reacted, drops the noise, and reads each real person one call at a time. Before anything goes out it tells the owner in one table row per person who they are, what the conversation is about and their last message, word for word. Then it drafts a message that answers what they said and asks for the action in his words (a retweet of a post, with its link), gates each, holds anyone whose draft fails twice for asking too soon, and puts everyone who passed into the account's one queue (rules 104-107). Listed in the use cases README; the MCP guides were rebuilt so the new page is offered.
 Why: matt: "I don't even know what they're talking about ... All I care about is them doing the action that I need ... get them man to retweet the thing ... make this a guide on how to get shit done that needs to be done."
 Checked: `bun run check:docs` and the MCP and use-case tests (67 pass). It was run live today on matthewsoldit: 10 waiting threads, 4 dropped as noise; Jash, Thisath, Samuel, Johanes, Max and Gabe passed the gate with their retweet ask; DukAmok and SalesPsych0 were held, failing twice on asking too soon; the 6 went into one queue with the 16 unsent video dms, 22 in all over 3 hours.
+
+## 2026-11-01 16:20Z · fix/neverStale
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `python/twitterApi/engine.py`: changed def xchat_watch
+- `python/twitterApi/host.py`: added const CODE_ROOTS, def code_files · changed def code_stamp, class Host · removed const CODE_FILES
+- `scripts/hooks/inbox.ts`: added const stamp
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand, const queueCommand
+- `src/directApi/engine/client.ts`: added function localClock · changed function engineContext
+- `src/inbox/watch/cleanup.test.ts`: added test "a watcher started before the newest code is stopped, a fresh one is left", test "a queue lock whose run died is cleared, a live one is kept", test "queue run, add and nudge take over a dead run's lock", test "a new message says reply straight away when it fits, and the time is matt's own clock"
+- `src/inbox/watch/client.ts`: added const CODE_DIRS, const CODE_FILE, const stampPath, function newestIn, function codeStamp, function killTree, function stopStaleWatchers, function clearDeadQueueLocks, function localTime, const SEND_RULE · changed function discordContext, function twitterContext, function storedWaiting, function storedInboxContext
+- `src/inbox/watch/watch.test.ts`: changed test "lists the conversations where they wrote last, newest first, and says when the store was synced"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/twitter/queue/plan/client.ts`: added function pidAlive, function clearDeadLock, function liveLock, function spaceOut · changed function fitTimes, function addToQueue
+- `src/twitter/queue/run/client.ts`: changed function mergeAdded, function waitUntil, function runQueue
+- `src/twitter/queue/run/queueAdd.test.ts`: added test "a reply added with a short window lands inside it, and what was planned after it moves back to keep the gap (rule 108)", test "spacing out only moves sends later, never the ones held in place"
+- `vendor/twikit/tests/test_xchat_receipts.py`: added def test_a_read_receipt_that_cannot_be_verified_is_a_marker_not_a_message, def test_any_other_failure_keeps_its_error
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/xchat.py`: added const RECEIPT_KINDS, def unopened_of
+
+What changed: four fixes and rule 108. The X session host now restarts when any file in python/twitterApi, python/platformKit or vendor/twikit changes, even with an X Chat watch open on it: the watch used to count as an active call, so the host never went idle and kept running code from before the notifications merge (`actionUnknown: notifications`). The inbox hook runs a silent cleanup on every event: it stops inbox watchers started before the newest code and starts them again, and clears queue locks whose run died; `queue run`, `add` and `nudge` take over a dead run's lock themselves (`queueBusy` after an app restart). twikit turns a read receipt X Chat can't verify into a read marker (`unopened_of`), so it never shows up as a message or as "(could not open: ... ReadReceipt signature ...)", and the watch skips markers. The new-message hook says to send a reply straight away when it answers them and fits the conversation, and tells the owner after; hook times are in matt's own clock, not UTC. A reply added to a running queue now lands inside the window it was given (`fitTimes` with `inWindow`), and the sends planned around it move back to keep the gap (`spaceOut`, `mergeAdded` with the run's minGap): before, with sends every 7 minutes there was never a free slot, so shaw_gtm's reply added with a 15-minute window was put at the very end, 3.5 hours later. Rule 108 in AGENTS.md and the MCP instructions.
+Why: matt: "if something doesn't seem to be working, you need to fix it", "make sure it's always up to date", and "if someone responds to me ... you have full authority to be able to send a follow-up message to them if it is in the context of the right thing to do". He'd restarted the app about 8 times; the queue came back with `queueBusy` from the dead run's lock, the host from 22:09 his time refused notifications, and traviscurnutte's read receipt was pushed as an unopenable message.
+Checked: `bun run check` (tsc, naming, no comments, tests) plus pytest on twikit's xchat tests (14 pass); the new queue tests check an added reply lands in its 15-minute window and every planned send stays 420 s apart. Live: the abelqxr host restarted on its own with the new code (pid 23392 at 23:17) and its watcher restarted (23:19); after the old matthewsoldit host was stopped between queue sends, the new one decrypted shaw_gtm's "Best of luck", which the old one couldn't open.
+
+## 2026-11-01 16:36Z · fix/neverStale
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/runsAndEvidence.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `docs/useCases/twitter/getTheAction.md`: edited
+- `skills/xPosting/SKILL.md`: edited
+- `src/cli/twitter/families.test.ts`: changed test "--with <handle> reads only that person's legacy and X Chat threads, never the whole inbox, and merges them by time", test "run --live walks the machine: sent, gone, a throttle cools off and is retried once at the end", test "a dead session halts the run with exit 5 and the rest stays pending"
+- `src/cli/twitter/helpers/dms.ts`: changed const dmsCommand
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE, const QUEUE_INPUT, function runCommand, const queueCommand
+- `src/inbox/watch/client.ts`: changed function twitterContext
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/twitter/dm/person/client.ts`: added const ACTIVITY_WORDS, const short, function activityOf, function activityLine, function contextChangesSince
+- `src/twitter/queue/plan/client.ts`: added function editItem · changed function buildQueue
+- `src/twitter/queue/plan/types.ts`: changed type ItemStatus, const ITEM_STATUSES, interface QueueItem
+- `src/twitter/queue/run/client.ts`: changed function runQueue
+- `src/twitter/queue/run/fullContext.test.ts`: added const START, function queueOf, const row, test "a person who retweeted since the draft is held, not sent, and says why", test "a held item gets new copy through edit, is planned again inside its window and approved", test "a sent item can never be edited", test "what changed counts a message either way and anything they did on the posts after the draft, nothing before"
+- `src/twitter/queue/run/types.ts`: changed interface RunDeps
+
+What changed: full context of a person at the time of sending, through the tool. `log twitter dms --with <handle>` now reads a fresh notifications page after the thread and shows what that person did on the account's posts, newest first (likes, retweets, replies with their words, quotes, mentions, follows; `activityOf`, `activityLine`), and shows it even when there's no dm thread yet. The queue run reads that person's thread and the notifications again right before each send (`contextChanged`) and holds the item (status `held`, `heldFor`) when anything happened since it was drafted (`draftedAt`, set when an item is built or added; `contextChangesSince`): a message either way, including one matt sent from outside log, or anything they did on the posts. A held item gets new copy with `log twitter queue edit <queue> --n --text --by` (MCP `twitterQueueEdit`, `editItem`), which plans it again inside its window and approves the queue as it then stands, so a queue file is never edited by hand. Rule 109; the getTheAction use case, the xPosting skill, the inbox hook's read step and the MCP instructions say it.
+Why: matt: "before you do an action with someone, you need to figure out the context of that person ... if they liked something, if they commented on something, if they replied to them recently, if I send them a message outside of the tool ... That's context you're missing there", and "you didn't do that through the tool itself". Drafts queued earlier asked Mitchell, Quad and others to retweet after they already had, Mitchell's "I might open-source something soon too" and Thisath's "no one else has the balls to keep their stuff open source" weren't answered, and the queue's times and texts were changed by a hand-written script.
+Checked: `bun run check` (tsc, naming, no comments, docs, tests); new tests hold a person who retweeted since the draft and send the other, edit puts a held item back inside its window and approved, a sent item can't be edited, and the change list counts a message from outside the draft and the retweet and reply after it but nothing before. The dms and queue CLI tests now count the context reads apart from the sends.
+
+## 2026-11-01 16:42Z · fix/neverStale
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/twikit/tests/test_xchat_receipts.py`: added def test_a_live_message_under_a_key_not_held_fetches_the_key_changes_and_opens
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: when the live X Chat watch can't open a message because the conversation moved to a key version the session doesn't hold, and priming the newest inbox page doesn't bring it, `_xchat_open` now fetches that conversation's key changes the way the full read already does (`_xchat_missing_keys`, `_xchat_fetch_key_changes`, X's `GetConversationPageQuery`), loads them and opens the message, instead of pushing "(could not open: ... no matching key found)" to the inbox hook.
+Why: RVAClassic's "i just posted it now" reached the hook as "(could not open: Crypto error: Decryption failed: Message encrypted with key version '1793245813830' but no matching key found ...)", while `twitterDms` { with: "RVAClassic" } opened it fine. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
+Checked: a new twikit test drives `_xchat_open` with a chat that only opens the message after key changes are loaded, and checks they were fetched and the text came back; the xchat tests pass (15).

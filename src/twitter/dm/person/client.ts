@@ -1,4 +1,5 @@
-import type { TwitterDmThread } from '../../account/session/index'
+import type { NotificationKind, TwitterNotification } from '../../notification/feed/types'
+import type { TwitterDmMessage, TwitterDmThread } from '../../account/session/index'
 import { MIRROR_SECONDS } from './types'
 import type { MirrorMessage } from './types'
 
@@ -70,4 +71,34 @@ export function openedNoReply(thread: Pick<TwitterDmThread, 'lastFromMe' | 'open
 
 export function followUpDue(thread: Pick<TwitterDmThread, 'lastFromMe' | 'lastText' | 'openedByThem'>): boolean {
   return reactedOnly(thread) || openedNoReply(thread)
+}
+
+const ACTIVITY_WORDS: Record<NotificationKind, string> = { like: 'liked your post', repost: 'retweeted your post', reply: 'replied to your post', quote: 'quoted your post', follow: 'followed you', mention: 'mentioned you', other: 'did something on your account' }
+
+const short = (text: string | null | undefined, max = 120) => {
+  const one = (text ?? '').replace(/\s+/g, ' ').trim()
+  return one.length > max ? `${one.slice(0, max - 1)}…` : one
+}
+
+export function activityOf(rows: readonly TwitterNotification[], who: { userId?: string | null; handle?: string | null }, since?: string | null): TwitterNotification[] {
+  const handle = who.handle?.replace(/^@/, '').toLowerCase() ?? null
+  const after = since ? Date.parse(since) : null
+  return rows
+    .filter((r) => (who.userId && r.userId === who.userId) || (handle && r.handle?.toLowerCase() === handle))
+    .filter((r) => after === null || (r.at !== null && Date.parse(r.at) > after))
+    .sort((a, b) => Date.parse(b.at ?? '') - Date.parse(a.at ?? ''))
+}
+
+export function activityLine(row: TwitterNotification): string {
+  const said = row.text ? `: "${short(row.text)}"` : ''
+  const on = row.postText ? ` ("${short(row.postText, 60)}")` : ''
+  return `${row.at ?? 'unknown time'} they ${ACTIVITY_WORDS[row.kind]}${on}${said}`
+}
+
+export function contextChangesSince(messages: readonly TwitterDmMessage[], activity: readonly TwitterNotification[], since: string): string[] {
+  const after = Date.parse(since)
+  const said = messages
+    .filter((m) => m.time && Date.parse(m.time) > after)
+    .map((m) => `${m.time} ${m.fromMe ? 'you messaged them outside this draft' : 'they messaged you'}: "${short(m.text)}"`)
+  return [...said, ...activity.filter((r) => r.at && Date.parse(r.at) > after).map(activityLine)]
 }

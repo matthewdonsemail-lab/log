@@ -19,7 +19,11 @@ from twitterApi import engine as e
 
 IDLE_SECONDS = 1800
 START_WAIT_SECONDS = 30.0
-CODE_FILES = (Path(e.__file__), Path(__file__))
+CODE_ROOTS = (ROOT / "twitterApi", ROOT / "platformKit", ROOT.parent / "vendor" / "twikit" / "twikit")
+
+
+def code_files() -> list[Path]:
+    return [p for root in CODE_ROOTS if root.exists() for p in root.rglob("*.py")]
 
 
 def host_path(account: str) -> Path:
@@ -31,7 +35,7 @@ def host_log(account: str) -> Path:
 
 
 def code_stamp() -> float:
-    return max(p.stat().st_mtime for p in CODE_FILES)
+    return max((p.stat().st_mtime for p in code_files()), default=0.0)
 
 
 def pid_alive(pid: int) -> bool:
@@ -76,6 +80,7 @@ class Host:
         self.last = time.time()
         self.stamp = code_stamp()
         self.active = 0
+        self.watching = 0
         self.port = 0
         self.serial = asyncio.Lock()
 
@@ -105,7 +110,11 @@ class Host:
         self.active += 1
         try:
             if spec.get("action") in e.UNLOCKED:
-                return await e.run(spec)
+                self.watching += 1
+                try:
+                    return await e.run(spec)
+                finally:
+                    self.watching -= 1
             async with self.serial:
                 return await e.run(spec)
         finally:
@@ -151,7 +160,7 @@ class Host:
                     if self.active == 0 and idle > IDLE_SECONDS:
                         print(f"idle {int(idle)} s: closing the X session", flush=True)
                         break
-                    if self.active == 0 and code_stamp() != self.stamp:
+                    if self.active == self.watching and code_stamp() != self.stamp:
                         print("log's X engine code changed: closing so the next call starts the new code", flush=True)
                         break
         finally:

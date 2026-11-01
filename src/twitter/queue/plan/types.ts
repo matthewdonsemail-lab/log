@@ -2,9 +2,9 @@ export type QueueAction = 'reply' | 'quote' | 'dm'
 
 export const QUEUE_ACTIONS: readonly QueueAction[] = ['reply', 'quote', 'dm']
 
-export type ItemStatus = 'pending' | 'sent' | 'blocked' | 'gone' | 'failed' | 'skipped'
+export type ItemStatus = 'pending' | 'sent' | 'blocked' | 'gone' | 'failed' | 'skipped' | 'held'
 
-export const ITEM_STATUSES: readonly ItemStatus[] = ['pending', 'sent', 'blocked', 'gone', 'failed', 'skipped']
+export const ITEM_STATUSES: readonly ItemStatus[] = ['pending', 'sent', 'blocked', 'gone', 'failed', 'skipped', 'held']
 
 export interface QueueItem {
   n: number
@@ -21,6 +21,8 @@ export interface QueueItem {
   attemptedAt?: string
   likedAt?: string
   sentAtRun?: string
+  draftedAt?: string
+  heldFor?: string[]
 }
 
 export interface QueueApproval {

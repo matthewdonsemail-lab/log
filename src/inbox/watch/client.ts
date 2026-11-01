@@ -132,6 +132,70 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
+const CODE_DIRS = ['src', 'python', 'bin', join('vendor', 'twikit', 'twikit')]
+const CODE_FILE = /\.(ts|py)$/
+const stampPath = () => join(inboxRoot(), 'codeStamp.json')
+
+function newestIn(dir: string): number {
+  let newest = 0
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name === '__pycache__' || entry.name.startsWith('.')) continue
+    const path = join(dir, entry.name)
+    if (entry.isDirectory()) newest = Math.max(newest, newestIn(path))
+    else if (CODE_FILE.test(entry.name)) newest = Math.max(newest, statSync(path).mtimeMs)
+  }
+  return newest
+}
+
+export function codeStamp(repo: string, now: Date = new Date(), everyMs = 60_000): number {
+  const kept = readJson<{ stamp: number; checkedAt: number } | null>(stampPath(), null)
+  if (kept && now.getTime() - kept.checkedAt < everyMs) return kept.stamp
+  const stamp = Math.max(0, ...CODE_DIRS.map((d) => join(repo, d)).filter((d) => existsSync(d)).map(newestIn))
+  writeJson(stampPath(), { stamp, checkedAt: now.getTime() })
+  return stamp
+}
+
+export function killTree(pid: number): void {
+  if (process.platform === 'win32') {
+    spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' })
+    return
+  }
+  try {
+    process.kill(-pid, 'SIGTERM')
+  } catch {
+    try {
+      process.kill(pid, 'SIGTERM')
+    } catch {}
+  }
+}
+
+export function stopStaleWatchers(platform: string, accounts: readonly string[], stamp: number, alive: (pid: number) => boolean = processAlive, kill: (pid: number) => void = killTree): string[] {
+  const stopped: string[] = []
+  for (const account of accounts) {
+    const path = watchPidPath(platform, account)
+    if (!existsSync(path)) continue
+    const pid = Number(readFileSync(path, 'utf8').trim()) || 0
+    if (!pid || !alive(pid) || statSync(path).mtimeMs >= stamp) continue
+    kill(pid)
+    rmSync(path, { force: true })
+    stopped.push(account)
+  }
+  return stopped
+}
+
+export function clearDeadQueueLocks(root: string = join(homedir(), '.logCli', 'queues'), alive: (pid: number) => boolean = processAlive): string[] {
+  if (!existsSync(root)) return []
+  const cleared: string[] = []
+  for (const name of readdirSync(root).filter((n) => n.endsWith('.lock'))) {
+    const path = join(root, name)
+    const pid = Number(readFileSync(path, 'utf8').trim()) || 0
+    if (alive(pid)) continue
+    rmSync(path, { force: true })
+    cleared.push(name)
+  }
+  return cleared
+}
+
 export function startTwitterWatch(account: string, repo: string): number | null {
   const dir = join(inboxRoot(), 'twitter', account)
   mkdirSync(dir, { recursive: true })
@@ -158,15 +222,26 @@ export function startDiscordWatch(account: string, repo: string): number | null 
   }
 }
 
+export function localTime(iso: string): string {
+  const at = new Date(iso)
+  if (Number.isNaN(at.getTime())) return iso
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const offset = -at.getTimezoneOffset()
+  const zone = `UTC${offset >= 0 ? '+' : '-'}${Math.floor(Math.abs(offset) / 60)}${offset % 60 ? `:${pad(Math.abs(offset) % 60)}` : ''}`
+  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())} ${pad(at.getHours())}:${pad(at.getMinutes())} matt's time (${zone})`
+}
+
+const SEND_RULE = 'Send it straight away when it answers what they said and fits that conversation: matt has given full authority to reply and follow up (rule 108). Then tell matt what they said and what went out. Hold it and ask him only when it would book a meeting, make a promise, name a price or money, or you cannot tell what the conversation is about.'
+
 function discordContext(messages: readonly InboxMessage[]): string {
-  const lines = messages.map((m) => `  ${m.with} on discord ${m.account} (${m.box === 'dm' ? 'DM or group' : m.box === 'mention' ? 'mentioned you in a server channel' : 'replied to you in a server channel'}) at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (channel ${m.conversationId})`)
+  const lines = messages.map((m) => `  ${m.with} on discord ${m.account} (${m.box === 'dm' ? 'DM or group' : m.box === 'mention' ? 'mentioned you in a server channel' : 'replied to you in a server channel'}) at ${localTime(m.at)}: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (channel ${m.conversationId})`)
   const { account } = messages[0]
   return [
-    `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said. Then, for each one:`,
+    `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
     `  1. Read the chat around it: \`discordRead\` { account: "${account}", channel: "<channel>", limit: "20" }.`,
     '  2. Before writing a word, pull how matt really writes in that chat: `voice` { to: "<who>", with: "<channel>", context: "<what they said>" } (no text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
     '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
-    `  4. Show matt the draft and send only when he says (\`discordSendLive\` { account: "${account}", channel: "<channel>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
+    `  4. ${SEND_RULE} (\`discordSendLive\` { account: "${account}", channel: "<channel>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
     ...lines,
   ].join('\n')
 }
@@ -180,14 +255,14 @@ export function inboxContext(messages: readonly InboxMessage[]): string | null {
 }
 
 function twitterContext(messages: readonly InboxMessage[]): string {
-  const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${m.at.slice(0, 16).replace('T', ' ')} UTC: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
+  const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${localTime(m.at)}: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
   const { platform, account } = messages[0]
   return [
-    `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said. Then, for each person:`,
-    `  1. Read everything with them, the old DM thread and X Chat merged (one conversation, whichever id a message names): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
+    `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each person:`,
+    `  1. Read their full context right now, the old DM thread and X Chat merged (one conversation, whichever id a message names) and what they did on the account's posts (likes, retweets, replies, quotes), all in one call (rule 109): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
     '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } (no text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
     `  3. Gate it against the same person: \`voice\` { to, with, context, text: "<draft>" }. Rewrite until it passes.`,
-    `  4. Show matt the draft and send only when he says (\`twitterDmLive\` { account: "${account}", userId: "<id>", text: "<draft>", approvedBy: "matt", confirmLive: true }). Every step is the log MCP tool, never a hand-run command (rule 106).`,
+    `  4. ${SEND_RULE} One reply goes straight out with \`twitterDmLive\` { account: "${account}", userId: "<id>", text: "<draft>", approvedBy: "matt", confirmLive: true }; more than one goes into the account's one running queue (\`twitterQueueAdd\`, rule 107). Every step is the log MCP tool, never a hand-run command (rule 106).`,
     ...lines,
   ].join('\n')
 }
@@ -220,7 +295,7 @@ export function storedWaiting(account: string, root: string = twitterStateRoot()
     if (!c.lastMs || !c.lastSender || c.lastSender === state.userId) continue
     const said = (c.messages ?? []).filter((m) => m.text != null)
     const last = said[said.length - 1]
-    rows.push({ conversationId, with: (c.participants ?? []).map((id) => c.handles?.[id] ? `@${c.handles[id]}` : id).join(', ') || '?', at: new Date(c.lastMs).toISOString(), text: last && last.time_ms === c.lastMs ? String(last.text) : '(could not decrypt)', ms: c.lastMs })
+    rows.push({ conversationId, with: (c.participants ?? []).map((id) => c.handles?.[id] ? `@${c.handles[id]}` : id).join(', ') || '?', at: new Date(c.lastMs).toISOString(), text: last && last.time_ms === c.lastMs ? String(last.text) : '(not loaded yet: twitterDms with their handle opens it)', ms: c.lastMs })
   }
   rows.sort((a, b) => b.ms - a.ms)
   return { syncedAt: state.syncedAt ?? null, waiting: rows.slice(0, limit).map(({ ms: _ms, ...r }) => r), total: rows.length }
@@ -232,8 +307,8 @@ export function storedInboxContext(accounts: readonly string[], root: string = t
     const { syncedAt, waiting, total } = storedWaiting(account, root)
     if (!syncedAt || !total) continue
     parts.push([
-      `X inbox for ${account}, from the local store (synced ${syncedAt.slice(0, 16).replace('T', ' ')} UTC, live pushes added since; nothing was fetched for this): ${total} conversation${total === 1 ? '' : 's'} where they wrote last${total > waiting.length ? `, the newest ${waiting.length}` : ''}:`,
-      ...waiting.map((w) => `  ${w.with} at ${w.at.slice(0, 16).replace('T', ' ')} UTC: "${w.text.replace(/\s+/g, ' ').slice(0, 160)}" (conversation ${w.conversationId})`),
+      `X inbox for ${account}, from the local store (synced ${localTime(syncedAt)}, live pushes added since; nothing was fetched for this): ${total} conversation${total === 1 ? '' : 's'} where they wrote last${total > waiting.length ? `, the newest ${waiting.length}` : ''}:`,
+      ...waiting.map((w) => `  ${w.with} at ${localTime(w.at)}: "${w.text.replace(/\s+/g, ' ').slice(0, 160)}" (conversation ${w.conversationId})`),
       `  \`twitterDms\` { account: "${account}" } fetches only what is new since then (about 5 s); with: "<handle>" reads one person in full.`,
     ].join('\n'))
   }
