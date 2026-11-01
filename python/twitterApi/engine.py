@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import os
 import re
@@ -140,8 +141,8 @@ class AccountBusy(Exception):
 
 
 class AccountLock:
-    def __init__(self, account: str, wait_seconds: float = LOCK_WAIT_SECONDS) -> None:
-        self.path = state_dir(account) / "engine.lock"
+    def __init__(self, account: str, wait_seconds: float = LOCK_WAIT_SECONDS, name: str = "engine.lock") -> None:
+        self.path = state_dir(account) / name
         self.wait_seconds = wait_seconds
         self.handle: Any = None
 
@@ -180,6 +181,26 @@ class AccountLock:
             except OSError:
                 pass
         self.handle.close()
+
+
+SESSIONS: dict[str, Any] = {}
+
+
+def client_for(account: str, cookies: dict[str, str], make: Any) -> Any:
+    held = SESSIONS.get(account)
+    if held is not None and held.get_cookies().get("auth_token") == cookies.get("auth_token"):
+        return held
+    client = make(language="en-US")
+    client.set_cookies(cookies, clear_cookies=True)
+    if own_user_id(cookies):
+        client._user_id = own_user_id(cookies)
+    restore_transaction(client, account)
+    if HOSTING:
+        SESSIONS[account] = client
+    return client
+
+
+HOSTING = False
 
 
 def last_call_path(account: str) -> Path:
@@ -840,8 +861,16 @@ async def xchat_contacts(client: Any, cookies: dict[str, str]) -> dict[str, Any]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversations": len(convs), "contacts": sorted(contacts)}
 
 
+LIVE_WRITER: contextvars.ContextVar[Any] = contextvars.ContextVar("liveWriter", default=None)
+
+
 def live_line(event: dict[str, Any]) -> None:
-    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+    line = json.dumps({"liveEvent": event}, default=str)
+    writer = LIVE_WRITER.get()
+    if writer is not None:
+        writer.write((line + chr(10)).encode("utf-8"))
+        return
+    print(line, flush=True)
 
 
 async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -> str | None:
@@ -1041,11 +1070,7 @@ async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str,
         if spec.get("force") is not True:
             return {"ok": False, "code": "governorBlocked", "detail": str(e)}
         forced_past = str(e)
-    client = Client(language="en-US")
-    client.set_cookies(cookies, clear_cookies=True)
-    if own_user_id(cookies):
-        client._user_id = own_user_id(cookies)
-    restore_transaction(client, account)
+    client = client_for(account, cookies, Client)
     try:
         out = await act(client, cookies, spec)
     except TooManyRequests as e:
@@ -1076,7 +1101,13 @@ def main() -> int:
     if os.name == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    out = governor_status(spec["account"], spec.get("writesPerDay")) if spec.get("governorStatus") else asyncio.run(run(spec))
+    if spec.get("governorStatus"):
+        out = governor_status(spec["account"], spec.get("writesPerDay"))
+    elif os.environ.get("LOG_TWITTER_HOST") == "inline":
+        out = asyncio.run(run(spec))
+    else:
+        from twitterApi import host
+        out = host.call(spec)
     print(json.dumps(out, default=str))
     return 0 if out.get("ok") else 1
 

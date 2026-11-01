@@ -586,6 +586,33 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
   },
+  xSessionHostDown: {
+    layer: 'account',
+    meaning: "The account's one X session (its engine host, rule 105) didn't start or didn't answer, so the call was not sent and no second session was opened.",
+    retryable: true,
+    raisedIn: ['twitterApi/host'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Read the host's log named in the detail (~/.logCli/twitter/<account>/host.log), fix what stopped it, then call again. Never work around it with a second session or a hand-rolled script."
+  },
+  xSessionHostRefused: {
+    layer: 'account',
+    meaning: "A call reached an X session that isn't this account's, or without its token (rule 105). Nothing was sent.",
+    retryable: false,
+    raisedIn: ['twitterApi/host'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Delete the stale ~/.logCli/twitter/<account>/host.json only once its pid is gone, then call again; log starts the right session.'
+  },
+  xSessionHostError: {
+    layer: 'account',
+    meaning: "The account's X session failed inside, or closed without an answer (rule 105). What it sent before failing stays sent.",
+    retryable: false,
+    raisedIn: ['twitterApi/host'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Read the host's log (~/.logCli/twitter/<account>/host.log) and the detail; don't resend a write until you know whether X got it."
+  },
   accountBusy: {
     layer: 'account',
     meaning: "A job over MCP already holds this account (one browser per account, rule 35), or another X engine call held it for over 15 minutes (one call per account at a time, rule 104). Nothing started.",
