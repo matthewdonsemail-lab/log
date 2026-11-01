@@ -10425,3 +10425,26 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: three fixes. A phrase vale flags that matt says himself in 5 or more of his own messages is his voice and never fails a draft (`mattsOwnPhrases`, kept in the index's baseline as `mattsPhrases`; `log voice aiIndex` says how many). Phrases people quote on X as AI tells, found with treg's X search, are vendored in `vendor/aiTells/xComplaints` and indexed only when they sit within cosine 0.6 of a curated phrase, so quotes about other things drop out (`X_COMPLAINT`, `X_COMPLAINT_KEEP`). And a call to an X session that is restarting for new code waits for the new one and tries once more instead of failing (`connect_host`, `python/twitterApi/host.py`).
 Why: the gate flagged "honestly" in a draft, and matt says "to be honest" in 200 of his messages, "honestly" in 38 and "for example" in 271, so muting whole rules was too blunt. matt asked for X posts about AI phrasing as a source. At 18:26 UTC the queue halted with `xSessionHostDown` because the X session had just closed to load new code when the send came.
 Checked: `bun run check` passes (1296 tests); a new test keeps "to be honest" from failing a line matt wrote while "great question" still fails. The live index built before this change measured matt's 500 messages at p50 0.702 and p99 0.904.
+
+## 2026-11-01 19:24Z · fix/mattsPhrasesAndHostReconnect
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/platforms/x/compose.md`: new file
+- `docs/reference.md`: edited
+- `python/twitterApi/engine.py`: added def web_client · changed const READS, def act
+- `scripts/hooks/inbox.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/twitter/families.test.ts`: added test "saves X's signed-in client through the account's one session and says where, sending nothing"
+- `src/cli/twitter/index.ts`: changed const SESSION_USAGE, const SESSION_INPUT, const sessionCommand
+- `src/inbox/watch/cleanup.test.ts`: added test "an account in its governor cool-off gets no watcher restarts until it ends"
+- `src/inbox/watch/client.ts`: added function coolingDown · changed const CODE_DIRS
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/account/session/types.ts`: changed type TwitterAction
+
+What changed: the X Chat watcher is restarted only when the engine's own code changes (`python/`, `vendor/twikit`; `CODE_DIRS`), never on other edits, and never while the account's governor is cooling off (`coolingDown`, used by the inbox hook for X and Discord). `log twitter session webClient --account <a>` (MCP `twitterSessionWebClient`, engine read `webClient`) loads x.com/home through the account's one X session, as twikit already does to sign its calls, and saves the page and every abs.twimg.com script it lists, reads 0.8 to 2.5 s apart, so rea can read X's own signed-in composer. `docs/platforms/x/compose.md` says what hits an account's session and holds what rea finds about a reply. Rule 113.
+Why: matt: "what is hitting the session ... call the rea bundle checker for the exact actions and outline it and then force it to then be part of the MCP guides". On 2026-11-02 matthewsoldit had 30 session starts and 67 X Chat socket reconnects in an evening, nearly all from the watcher being restarted on code edits, and 18 restarts tried during a cool-off, then X answered 226 on a reply. X's CreateTweet isn't in the public x-web client's 1772 chunks, so its composer can only be read from the signed-in page.
+Checked: `bun run check` passes (1298 tests); new tests: an account cooling off gets no watcher restarts until it ends, and `session webClient` makes one engine call and says how many scripts it saved.

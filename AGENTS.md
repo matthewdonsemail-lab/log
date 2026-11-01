@@ -1428,6 +1428,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `vendor/aiTells/xComplaints`) are indexed only when they sit close in
     meaning (cosine 0.6) to a curated phrase.
 
+113. 2026-11-02 · matt: "what is hitting the session ... call the rea bundle
+    checker for the exact actions and outline it and then force it to then
+    be part of the MCP guides so we can then stop doing this handrolling".
+    On 2026-11-02 matthewsoldit had 30 X session starts and 67 X Chat socket
+    reconnects in an evening, then X's 226 on a reply: the stale-watcher
+    cleanup (rule 108) restarted the X Chat watcher on every code edit, and
+    each restart reopened X's chat socket, fetched the keys again and paged
+    the inbox, and during a governor cool-off the watcher was started again
+    on every hook. Now the watcher is restarted only when the engine's own
+    code changes (`python/`, `vendor/twikit`), never while the account's
+    governor is cooling off (`coolingDown`, `src/inbox/watch`), and a call
+    to a session that is restarting waits for the new one (`connect_host`).
+    What X's own signed-in client does is read with rea from its own
+    scripts, never guessed: `log twitter session webClient --account <a>`
+    (MCP `twitterSessionWebClient`) loads x.com/home through the account's
+    one session, as twikit already does to sign its calls, and saves the
+    page and its scripts for rea. What it shows about a reply is written in
+    `docs/platforms/x/compose.md` and the xPosting skill, and the engine
+    sends what X's client sends.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

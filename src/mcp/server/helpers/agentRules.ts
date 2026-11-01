@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 112;
+export const RULES_REVIEWED_THROUGH = 113;
 
 export const AGENTS_URI = "log://agents";
 
@@ -92,9 +92,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69, 73],
-  twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105],
+  twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81, 104, 105],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
   voice: [30, 39, 41, 63, 64, 98, 112],
@@ -109,7 +109,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
