@@ -6,7 +6,7 @@ import { localAccountId, twitterStateRoot } from "../../../directApi/engine/inde
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
-import { notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
+import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
@@ -126,12 +126,13 @@ export const dmsCommand: Command = {
         if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
         const answer = { ...person.answer, messages: dropMirrors(person.answer.messages ?? []).slice(-limit) };
         context.err(`${opened.account.accountName}: and what @${needle} did on the account's posts (its notifications, what is new read first)`);
-        const notes = await opened.engine({ action: "notifications", screenName: opened.account.accountName });
-        const store = readNotificationStore(notes.answer.storePath ?? notificationStorePath(opened.account.accountName));
+        const kept = readNotificationStore(notificationStorePath(opened.account.accountName));
+        const notes = notificationsFresh(kept, context.now?.() ?? new Date()) ? { answer: { ok: true } as TwitterSessionAnswer } : await opened.engine({ action: "notifications", screenName: opened.account.accountName });
+        const store = notes.answer.storePath ? readNotificationStore(notes.answer.storePath) : readNotificationStore(notificationStorePath(opened.account.accountName));
         const otherId = answer.messages.find((m) => !m.fromMe)?.senderId ?? null;
         const activity = activityOf(Object.values(store?.rows ?? {}), { userId: otherId, handle: needle }).slice(0, 30);
         if (!answer.messages.length && !activity.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation with this account and nothing of theirs is in its notifications`);
-        const merged = { ...notes, answer: { ...answer, governor: notes.answer.governor ?? answer.governor } };
+        const merged = { ...person, answer: { ...answer, governor: notes.answer.governor ?? answer.governor } };
         if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer, activity, notificationsRead: notes.answer.ok === true }, null, 2) };
         const governor = governorLine(merged);
         const thread = answer.messages.length ? render(opened.account.accountName, answer, false) : `log twitter dms: @${opened.account.accountName} has no conversation with @${needle} yet`;

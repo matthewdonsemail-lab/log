@@ -10157,3 +10157,44 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: when the live X Chat watch can't open a message because the conversation moved to a key version the session doesn't hold, and priming the newest inbox page doesn't bring it, `_xchat_open` now fetches that conversation's key changes the way the full read already does (`_xchat_missing_keys`, `_xchat_fetch_key_changes`, X's `GetConversationPageQuery`), loads them and opens the message, instead of pushing "(could not open: ... no matching key found)" to the inbox hook.
 Why: RVAClassic's "i just posted it now" reached the hook as "(could not open: Crypto error: Decryption failed: Message encrypted with key version '1793245813830' but no matching key found ...)", while `twitterDms` { with: "RVAClassic" } opened it fine. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
 Checked: a new twikit test drives `_xchat_open` with a chat that only opens the message after key changes are loaded, and checks they were fetched and the text came back; the xchat tests pass (15).
+
+## 2026-11-01 17:00Z · fix/queueGapAndFastContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/twitter/helpers/dms.ts`: changed const dmsCommand
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand
+- `src/twitter/notification/feed/client.ts`: added function notificationsFresh
+- `src/twitter/queue/plan/client.ts`: changed function fitTimes
+- `src/twitter/queue/run/client.ts`: changed function runQueue
+- `src/twitter/queue/run/queueAdd.test.ts`: added test "many replies added with no free slot still go out at least the gap apart, never bunched (rule 94)", test "the run never sends two things closer than the gap, whatever the plan says"
+
+What changed: three fixes to the queue. Items added while a run is going and finding no free slot in their window are now placed one after another at least the queue's minGap apart (`fitTimes` with `inWindow`), where before they all landed inside the first minGap. The run itself now never sends two things closer than its minGap: an event due sooner than that after the last send is moved back and logged (`runQueue`, `lastActed`), whatever the plan says. And a person's full-context read skips the notifications pull when the kept notifications were synced in the last 2 minutes (`notificationsFresh`), in `log twitter dms --with` and in the queue's check before each send, so reading a batch of people pulls notifications once.
+Why: adding 11 YC replies to the running queue planned 8 of them between 16:57 and 17:03, 20 to 90 seconds apart; the run was cancelled at 16:56:52 before any went out (rule 94: never act on an account in quick succession). matt: "why is this taking so long" about reading 12 people, each read pulling notifications again.
+Checked: new queue tests: eight items added with no free slot come out at least 420 s apart, and a run given three events 20 s apart sends them at least 300 s apart. The twitter and twitter CLI tests pass (105).
+
+## 2026-11-01 17:08Z · fix/queueGapAndFastContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `python/twitterApi/engine.py`: added const READ_SPACING_SECONDS · changed def spacing_wait, def notifications, def run
+- `src/cli/twitter/helpers/queue.ts`: changed function runCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/account/session/engineCalls.test.ts`: changed test "the gap is drawn between 4 and 11 seconds"
+
+What changed: the X engine spaces a read 0.8 to 2.5 s after the account's last call (`READ_SPACING_SECONDS`; inbox, a person's thread, notifications and their pages, follows, followers) and keeps 4 to 11 s only before a send (`SPACING_SECONDS`, `spacing_wait` now takes the action). The queue's check before a send counts what happened since the item was drafted or, for items from before `draftedAt`, since the queue was made, never since its last approval, which moves with every add and edit. Rule 110 in AGENTS.md and the MCP instructions.
+Why: matt: "we need to be faster with the mcp commands ... why is it taking so long for something which is not even something that should take long". One person's full-context read was two engine calls at 4 to 11 s each, 15 to 20 s per person; X's own app fires reads back to back when a screen opens, and the 226 block that set the 4 to 11 s was about sends.
+Checked: `bun run check` passes (1269 tests); the engine tests check a read waits at most 2.5 s and a send at least 4 s after a call.
+
+## 2026-11-01 17:25Z · fix/queueGapAndFastContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/twikit/tests/test_xchat_receipts.py`: added def test_a_message_signed_with_a_key_not_cached_refetches_the_senders_key_and_opens
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: when the live X Chat watch can't open a message because its signature doesn't verify against the sender's cached signing key, `_xchat_open` drops that sender's cached key, fetches it again (`_xchat_signers`, `get_xchat_public_keys`) and opens the message, instead of pushing "(could not open: Crypto error: Signature verification failed ... no matching signing key)". The host session cached each sender's key once for its whole life, so a sender who signed in on a new device stayed unreadable.
+Why: archieldroberts sent seven messages between 00:19 and 00:22 matt's time that all reached the inbox hook as "could not open ... Signature verification failed", while later ones from him opened. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
+Checked: a new twikit test drives `_xchat_open` with a chat that only verifies after the sender's key is fetched again, and checks it was fetched twice and the text came back; the xchat tests pass (16).

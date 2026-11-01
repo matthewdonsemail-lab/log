@@ -52,3 +52,40 @@ def test_a_live_message_under_a_key_not_held_fetches_the_key_changes_and_opens()
     out = asyncio.run(Client._xchat_open(fake, ''))
     assert out['text'] == 'i just posted it now'
     assert fetched
+
+
+def test_a_message_signed_with_a_key_not_cached_refetches_the_senders_key_and_opens():
+    import asyncio
+    import types
+    from twikit.client.client import Client
+
+    class Chat:
+        def __init__(self):
+            self.fresh = False
+
+        def decrypt_event(self, encoded):
+            if not self.fresh:
+                raise RuntimeError('Crypto error: Signature verification failed: Message signature could not be verified: signature missing or no matching signing key')
+            return {'type': 'Message', 'content': {'text': 'get in then merge'}, 'conversation_id': '1:2', 'sender_id': '7'}
+
+    chat = Chat()
+    fetched = []
+
+    async def signers(self, ids):
+        if '7' in self._xchat_signing:
+            return None
+        fetched.append(set(ids))
+        self._xchat_signing['7'] = {'key': 'new'}
+        chat.fresh = len(fetched) > 1
+
+    fake = types.SimpleNamespace(_xchat=chat, _xchat_items=None, _xchat_signing={})
+    fake._xchat_signers = types.MethodType(signers, fake)
+    import twikit.xchat as xchat
+    original = xchat.decode_event
+    xchat.decode_event = lambda encoded: {'sender_id': '7', 'conversation_id': '1:2'}
+    try:
+        out = asyncio.run(Client._xchat_open(fake, ''))
+    finally:
+        xchat.decode_event = original
+    assert out['text'] == 'get in then merge'
+    assert len(fetched) == 2

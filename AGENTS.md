@@ -1377,6 +1377,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       `twitterQueueEdit`). A queue file is never edited by hand, and nothing
       is sent around the queue to get past a hold (rule 106).
 
+110. 2026-11-02 · matt: "we need to be faster with the mcp commands ... why
+    is it taking so long for something which is not even something that
+    should take long". Reads on an X account are spaced 0.8 to 2.5 s after
+    the last call (`READ_SPACING_SECONDS`: inbox, a person's thread,
+    notifications and their pages, follows, followers), the way X's own app
+    fires reads back to back when a screen opens; only sends keep rule 104's
+    4 to 11 s (`SPACING_SECONDS`). Still one call per account at a time
+    through its one session (rules 104, 105). Reading a person's full
+    context (rule 109) pulls notifications only when they weren't synced in
+    the last 2 minutes (`notificationsFresh`). A queue run never sends two
+    things closer than its minGap, and items added to it keep that gap.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

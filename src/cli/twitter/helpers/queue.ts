@@ -36,7 +36,7 @@ import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../r
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec, PositionalSpec } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
 import { activityOf, contextChangesSince } from "../../../twitter/dm/person/index.ts";
-import { notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
+import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
 
 const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, description: "The queue file (.json)" };
@@ -228,10 +228,11 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
   const chatPin = secrets?.messengerPin ?? undefined;
   const contextChanged = async (item: QueueItem): Promise<string[]> => {
-    const since = item.draftedAt ?? queue.approval?.at ?? queue.created;
-    const notes = await opened.engine({ action: "notifications", screenName: queue.account });
-    if (!notes.answer.ok) log(`#${item.n}: notifications read before sending failed (${notes.answer.code ?? "?"}), checking the thread only`);
-    const store = readNotificationStore(notes.answer.storePath ?? notificationStorePath(queue.account));
+    const since = item.draftedAt ?? queue.created;
+    const kept = readNotificationStore(notificationStorePath(queue.account));
+    const notes = notificationsFresh(kept, new Date(nowMs())) ? null : await opened.engine({ action: "notifications", screenName: queue.account });
+    if (notes && !notes.answer.ok) log(`#${item.n}: notifications read before sending failed (${notes.answer.code ?? "?"}), checking the thread only`);
+    const store = notes ? readNotificationStore(notes.answer.storePath ?? notificationStorePath(queue.account)) : kept;
     const activity = activityOf(Object.values(store?.rows ?? {}), { userId: item.userId ?? null, handle: item.handle ?? null }, since);
     const messages = item.handle ? ((await opened.engine({ action: "inbox", limit: 50, withHandle: item.handle.replace(/^@/, ""), ...(chatPin ? { chatPin } : {}) })).answer.messages ?? []) : [];
     const changed = contextChangesSince(messages, activity, since);

@@ -3746,6 +3746,13 @@ class Client:
         try:
             event = chat.decrypt_event(encoded)
         except Exception as error:
+            if 'signature' in str(error).lower() and head.get('sender_id'):
+                getattr(self, '_xchat_signing', {}).pop(str(head['sender_id']), None)
+                await self._xchat_signers({str(head['sender_id'])})
+                try:
+                    return message_of({'event': chat.decrypt_event(encoded), 'original_b64': encoded})
+                except Exception as error_again:
+                    error = error_again
             if 'no matching key' not in str(error):
                 return unopened_of(encoded, error)
             self._xchat_items = None

@@ -104,6 +104,7 @@ def governor_status(account: str, writes_per_day: int | None = None) -> dict[str
 TRANSACTION_SECONDS = 3 * 3600
 LOCK_WAIT_SECONDS = 900
 SPACING_SECONDS = (4.0, 11.0)
+READ_SPACING_SECONDS = (0.8, 2.5)
 UNLOCKED = ("xchatWatch",)
 
 
@@ -207,13 +208,13 @@ def last_call_path(account: str) -> Path:
     return state_dir(account) / "lastCall.json"
 
 
-def spacing_wait(account: str, now: float | None = None, draw: Any = None) -> float:
+def spacing_wait(account: str, now: float | None = None, draw: Any = None, action: str | None = None) -> float:
     import random
     try:
         last = float(json.loads(last_call_path(account).read_text(encoding="utf-8")).get("at") or 0)
     except (OSError, json.JSONDecodeError, ValueError):
         return 0.0
-    gap = (draw or random.uniform)(*SPACING_SECONDS)
+    gap = (draw or random.uniform)(*(READ_SPACING_SECONDS if action in READS else SPACING_SECONDS))
     return max(0.0, last + gap - (now or time.time()))
 
 
@@ -881,7 +882,7 @@ async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, An
 
     async def pace() -> None:
         import random
-        await asyncio.sleep(random.uniform(*SPACING_SECONDS))
+        await asyncio.sleep(random.uniform(*READ_SPACING_SECONDS))
         if governor is not None:
             governor.before_request(is_mutation=False, quiet=True)
 
@@ -1087,7 +1088,7 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
         return await run_locked(spec, cookies, action, account)
     try:
         async with AccountLock(account):
-            wait = spacing_wait(account)
+            wait = spacing_wait(account, action=action)
             if wait:
                 await asyncio.sleep(wait)
             try:

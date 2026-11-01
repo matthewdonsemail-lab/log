@@ -124,6 +124,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
   let nudged = deps.takeNudge()
   let cools = 0
   let dailies = 0
+  let lastActed = Math.max(0, ...plan.events.filter((e) => e.done).map((e) => Date.parse(e.done!) / 1000))
   const more = async (): Promise<boolean> => {
     if (todo.length || !deps.takeAdded) return todo.length > 0
     mergeAdded(todo, deps.takeAdded())
@@ -142,6 +143,14 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     const item = byN.get(event.n)
     if (!item) return halt(`#${event.n} is in the plan but not in the queue: plan it again`)
     const due = atSeconds(event)
+    if (!nudged && lastActed && due < lastActed + plan.minGap) {
+      event.at = iso(lastActed + plan.minGap + uniform(deps.rng, 0, Math.min(60, plan.minGap)))
+      todo.push(event)
+      todo.sort((a, b) => atSeconds(a) - atSeconds(b))
+      deps.log(`[${state()}] #${event.n} was due ${Math.round(lastActed + plan.minGap - due)}s too soon after the last send, moved to ${event.at} to keep the ${plan.minGap}s gap`)
+      deps.save()
+      continue
+    }
     if (nudged) {
       await deps.sleep(uniform(deps.rng, 20, 60) * 1000)
       deps.log(`[${state()}] nudged: ${event.kind} #${event.n} @${item.handle ?? '?'} now (was ${event.at}, ${nudged} replies left in the nudge)`)
@@ -197,6 +206,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       }
       cools = 0
       dailies = 0
+      lastActed = deps.nowMs() / 1000
       event.done = now
       send({ type: 'ACTED' })
       deps.save()
