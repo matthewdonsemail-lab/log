@@ -67,7 +67,7 @@ class FakeGovernor:
 async def no_sleep(_):
     return None
 
-feed.asyncio.sleep = no_sleep
+engine.asyncio.sleep = no_sleep
 cookies = {"twid": "u%3D100"}
 out = {"parsed": parse_notifications_page(PAGES[None])}
 

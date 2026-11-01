@@ -1262,6 +1262,74 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     use Convex at all": no Convex, and no dashboard. The site is the landing
     page plus the docs.
 
+104. 2026-11-01 · matt: "the timing stuff there i saw you hand rolled the
+    outbound stuff when it should be queued and it has to have random
+    intervals, but the bundle itself actually reveals more information".
+    On 2026-11-01 matthewsoldit got a soft block, then X's 226 ("looks
+    automated") on a reply. The live log showed 8 thread reads fired in
+    0.2 s by two parallel helpers while sends went out from a hand-written
+    loop, and every `log twitter` call was a fresh client that loaded
+    x.com's home page and its signer before acting, so a 3-line dm was 3
+    cold starts in 9 s. X's own web client (`sign.o` in its x-web bundle,
+    read 2026-11-01) loads the page once and signs every call from it.
+    From now on: more than one send goes through the queue (`log twitter
+    queue build|plan|run`, random times), never a hand-rolled loop and
+    never helpers reading or sending on one account in parallel. The X
+    engine takes one call per account at a time (`engine.lock`, refused
+    with `accountBusy` after 15 min), waits 4 to 11 s after the last call,
+    and keeps the transaction key in `clientTransaction.json` for 3 hours
+    (`python/twitterApi/engine.py`, `vendor/twikit` `ClientTransaction.state`
+    and `restore`).
+
+105. 2026-11-01 · matt: "we cannot be opening multiple sessions there,
+    that defeats the core purpose of what we use this tool for ... it
+    should always be one, and then it needs to loudly create issues". An X
+    account has one session, always. Every X call (CLI, MCP, hooks, the
+    queue, the X Chat watch) goes through the account's one engine host
+    (`python/twitterApi/host.py`, started on the first call, closed after
+    30 idle minutes or when the engine code changes): one twikit client,
+    one connection, one cookie jar and one transaction key, the way X's
+    own web app keeps one page and signs every call from it (x-web
+    `startup-dynamic`, read with rea 2026-11-01). A second host can't
+    start (`host.lock`); a call that can't reach the host is refused with
+    `xSessionHostDown` and sends nothing, never falls back to a session of
+    its own. The hook's account line shows the open session (pid, since,
+    calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.
+
+106. 2026-11-01 · matt: "when doing stuff like changing the code or
+    anything, ensure that there hasn't been any changes to it locally, like
+    to the engine ... you're not allowed hand-rolled commands, it always has
+    to be through the MCP basically". Two things, enforced by the hooks:
+    - **Through the MCP only.** Every log action an agent takes goes through
+      the log MCP tools (`mcp__log__…`), never a hand-run `log …` or `bun
+      bin/log.ts …` from a shell. The PreToolUse hook (`liveLogs`,
+      `handRunDenial` in `src/agentHooks/liveLog`) refuses one and names the
+      MCP instead. Only the terminal-only prompts (`TERMINAL_ONLY`: launch,
+      login, mcp, chat pin, cookies save, messenger pin) are run in a
+      terminal, by matt. A stale MCP server is said to matt (restart the
+      app), never worked around.
+    - **Local changes first.** Before changing code, check what is already
+      changed and uncommitted in the checkout. The engines hook says it
+      loudly at session start and whenever it changes (`>>> UNCOMMITTED
+      LOCAL CHANGES`, `localChangesLine` in `src/mcp/freshness`): read each
+      one's diff, and never overwrite, revert, stage, publish or ship
+      someone else's uncommitted work without matt.
+
+107. 2026-11-01 · matt: "the queue connects to the one process, and it
+    can do these at the same time, yet it's only on one". An account has one
+    queue, and everything it sends goes into it: the dms, the reply-guy
+    replies and the answers to people who message, together (each item
+    keeps its own action). `log twitter queue add <queue> --targets <file>
+    --action dm|reply|quote --by <who>` puts more in, even while it runs:
+    the run takes them in as it waits and fits each one between what is
+    planned, at least the queue's minGap apart, and one due sooner than the
+    send it waits on goes first. `queue run --keepOpen` keeps the run going
+    once it has sent everything, taking in what is added, until it is
+    cancelled. So one run sends all of an account's work through its one X
+    session (rule 105), never a second queue or run beside it.
+    `src/twitter/queue` (`addToQueue`, `fitTimes`, `takeIncoming`,
+    `mergeAdded`).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

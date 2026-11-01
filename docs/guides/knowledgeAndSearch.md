@@ -124,7 +124,7 @@ Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meanin
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/whoNeedsYou" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchIndex`
 
@@ -135,7 +135,7 @@ Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meanin
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchBench`
 
@@ -145,7 +145,7 @@ log search bench [--rounds <n>]   (times realistic queries on the built index, c
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbSearch`
 
@@ -214,3 +214,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 89.** 2026-10-26 · matt: finding context in conversations is a search, never reading every thread. `log search "<query>"` (MCP `search`) runs BM25 (bm25s) and meaning search (verso-db HNSW over local all-MiniLM-L6-v2 embeddings, `@huggingface/transformers`) in parallel and fuses them with reciprocal rank fusion, with `--platform`, `--account`, `--with` and `--after` filters. `log search index` reads every conversation through the platform's engine in one export read (X Chat decrypted with the saved PIN, rule 88), keeps them in `~/.logCli/conversations` and the indexes in `~/.logCli/search`, which survive restarts. `log search bench` prints p50, p95 and p99, cold and warm, beside a linear scan. `src/search/conversations`.
 
 **Rule 93.** 2026-10-27 · matt: "we need to build a knowledge base inside of it", all of it, agent memory too, with Redis. The knowledge base lives in ListeningKit's Twenty on node02 (`knowledgeArticles`: key, kind, body, source, tags, author, content hash; reached over the tailnet at `node02.tail4fcf85.ts.net`, never through the public login gate) and is searched through Redis 8 on node02 (`kb-redis`, the search module's `kbIdx`: BM25 keyword and HNSW meaning over local all-MiniLM-L6-v2, fused with reciprocal rank fusion). `log kb sync` collects AGENTS.md's rules and sections, every skill, every doc (`docs/infra/` as infra, never `docs/vendors`), every Claude memory file, the known page states and the accounts from log-cli's Twenty (no credential, proxy URL or cookie), writes what changed to Twenty and re-indexes what changed into Redis; an article a person writes or edits in Twenty is indexed on the next sync. `log kb search "<query>" [--kind]` is how an agent finds context, `log kb remember "<text>"` saves an agent memory to both at once, `log kb show <key>` reads one in full. Secrets are scrubbed before anything is written (named keys, URLs with a login, JWTs, private keys, long random strings). The logins are files in `~/.config/listeningkit/`, never in the repo or the knowledge base. `src/knowledge/base`, `docs/knowledgeBase.md`.
+
+**Rule 105.** 2026-11-01 · matt: "we cannot be opening multiple sessions there, that defeats the core purpose of what we use this tool for ... it should always be one, and then it needs to loudly create issues". An X account has one session, always. Every X call (CLI, MCP, hooks, the queue, the X Chat watch) goes through the account's one engine host (`python/twitterApi/host.py`, started on the first call, closed after 30 idle minutes or when the engine code changes): one twikit client, one connection, one cookie jar and one transaction key, the way X's own web app keeps one page and signs every call from it (x-web `startup-dynamic`, read with rea 2026-11-01). A second host can't start (`host.lock`); a call that can't reach the host is refused with `xSessionHostDown` and sends nothing, never falls back to a session of its own. The hook's account line shows the open session (pid, since, calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.

@@ -62,11 +62,24 @@ export function dropPost(todo: PlanEvent[], n: number, why: string): void {
 
 const CANCELLED = -1
 
-async function waitUntil(deps: RunDeps, dueSeconds: number): Promise<number> {
+const ADDED = -2
+
+export function mergeAdded(todo: PlanEvent[], added: readonly PlanEvent[]): void {
+  todo.push(...added)
+  todo.sort((a, b) => atSeconds(a) - atSeconds(b))
+}
+
+async function waitUntil(deps: RunDeps, dueSeconds: number, todo?: PlanEvent[]): Promise<number> {
   let left = dueSeconds - deps.nowMs() / 1000
   while (left > 0) {
     await deps.sleep(Math.min(POLL_SECONDS, left) * 1000)
     if (deps.cancelled?.()) return CANCELLED
+    const added = todo && deps.takeAdded ? deps.takeAdded() : []
+    if (added.length) {
+      mergeAdded(todo!, added)
+      deps.log(`added ${added.length} to the queue while it runs, each fitted between what was already planned: ${added.map((e) => `#${e.n} at ${e.at}`).join(', ')}`)
+      if (added.some((e) => atSeconds(e) < dueSeconds)) return ADDED
+    }
     const nudged = deps.takeNudge()
     if (nudged) return nudged
     left = dueSeconds - deps.nowMs() / 1000
@@ -90,7 +103,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     return String(actor.getSnapshot().value)
   }
   const state = () => String(actor.getSnapshot().value)
-  const byN = new Map(queue.items.map((it) => [it.n, it]))
+  const byN = { get: (n: number) => queue.items.find((it) => it.n === n) }
   const sentTotal = () => queue.items.filter((i) => i.status === 'sent').length
   const halt = (message: string): RunResult => {
     send({ type: 'FAIL' })
@@ -104,12 +117,26 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     return { state: 'halted', reason: 'cancelled', sent: sentTotal(), skipped: plan.events.filter((e) => e.kind === 'reply' && e.skipped).length }
   }
   const todo = plan.events.filter((e) => !e.done && !e.skipped)
+  if (deps.takeAdded) mergeAdded(todo, deps.takeAdded())
   deps.log(`random run: ${todo.length} events from @${queue.account}, approved by ${queue.approval!.by}, window ${plan.window}, cool-off on blocks`)
   send({ type: 'BEGIN' })
   let nudged = deps.takeNudge()
   let cools = 0
   let dailies = 0
-  while (todo.length) {
+  const more = async (): Promise<boolean> => {
+    if (todo.length || !deps.takeAdded) return todo.length > 0
+    mergeAdded(todo, deps.takeAdded())
+    if (todo.length || !deps.keepOpen) return todo.length > 0
+    deps.log(`[${state()}] nothing left to send: kept open for what gets added (queue add), stop it with jobCancel`)
+    while (!todo.length) {
+      await deps.sleep(POLL_SECONDS * 1000)
+      if (deps.cancelled?.()) return false
+      mergeAdded(todo, deps.takeAdded())
+    }
+    deps.log(`[${state()}] ${todo.length} added, next at ${todo[0].at}`)
+    return true
+  }
+  while (await more()) {
     const event = todo.shift()!
     const item = byN.get(event.n)
     if (!item) return halt(`#${event.n} is in the plan but not in the queue: plan it again`)
@@ -122,8 +149,13 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       if (wait < -LATE_SECONDS) return halt(`fell behind: ${event.kind} #${event.n} was due at ${event.at}, plan it again before running`)
       if (wait > 0) {
         deps.log(`[${state()}] next ${event.kind} #${event.n} @${item.handle ?? '?'} at ${event.at}`)
-        nudged = await waitUntil(deps, due)
+        nudged = await waitUntil(deps, due, todo)
         if (nudged === CANCELLED) return stop(`while waiting for ${event.kind} #${event.n}`)
+        if (nudged === ADDED) {
+          nudged = 0
+          mergeAdded(todo, [event])
+          continue
+        }
         if (nudged) deps.log(`[${state()}] nudged: ${event.kind} #${event.n} @${item.handle ?? '?'} now (was ${event.at}, ${nudged} replies in the nudge)`)
       }
     }

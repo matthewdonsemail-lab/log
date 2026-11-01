@@ -1,5 +1,5 @@
 import type { TwitterSessionAnswer } from '../../account/session/index'
-import type { EventKind, QueueItem, Rng } from '../plan/index'
+import type { EventKind, PlanEvent, QueueItem, Rng } from '../plan/index'
 
 export const LATE_SECONDS = 10 * 60
 export const POLL_SECONDS = 5
@@ -27,6 +27,8 @@ export interface RunDeps {
   log: (line: string) => void
   alert: (message: string, mention: boolean) => void
   takeNudge: () => number
+  takeAdded?: () => PlanEvent[]
+  keepOpen?: boolean
   save: () => void
   cancelled?: () => boolean
 }

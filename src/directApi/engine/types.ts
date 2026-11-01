@@ -69,4 +69,5 @@ export interface LocalEngineState {
   mutations: number
   cooldownSeconds: number
   softBlocks: number
+  session?: { pid: number; since: string; calls: number } | null
 }

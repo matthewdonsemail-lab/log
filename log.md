@@ -9978,3 +9978,101 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log twitter notifications --account <a> [--type likes|reposts|replies|quotes|follows|all] [--since] [--post] [--full] [--pages] [--stored] [--limit] [--json]` (MCP `twitterNotifications`) reads the account's X notifications on the direct-API engine and keeps them in `~/.logCli/twitter/<account>/notifications.json`, one row per person per thing they did (like, repost, reply, quote, follow, mention), with which of the account's posts, when, and the reply or quote text. twikit gets `Client.get_notifications_page` and `parse_notifications_page`, which keep every person behind an aggregated notification and the reply, quote and mention tweet entries that twikit's `get_notifications` dropped. The engine action `notifications` reads what is new (the newest page, then older until it meets kept rows), and `--full` pages back through the history from where the last one stopped; pages are 40, at least 2 s apart, each through the governor, and a 429 or governor stop ends the read and keeps what came. `--stored` answers from the kept rows without calling X; `--json` adds counts by kind and the people ranked by how much they engaged. New use case `docs/useCases/twitter/notifications.md`, `engagerDms.md` step 1 now uses it, error `notificationQueryInvalid`, X's `cursor-top-<n>` / `cursor-bottom-<n>` entry ids allowed by the naming check.
 Why: matt posted his YC video and people are liking and replying; he wants to see all of it, past and new, from the notifications, and use it from the MCP so an agent can act on who engaged.
 Checked: `bun run check` passes after `errors:export` (1230 tests; the new ones parse a raw notifications page, page first/newest/full with a fake client, stop on a 429, and drive the command with no network). Live, read-only on matthewsoldit: 3 pages, 131 rows kept (71 like, 4 repost, 20 reply, 28 follow, 8 mention, back to 2026-10-27), no 429; the YC post had 5 likes, 2 replies and 1 repost in that window. The history (`--full`) wasn't read, to keep the read small while another session sends on the account.
+## 2026-11-01 14:18Z · fix/xEngineOneCallAtATime
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const TRANSACTION_SECONDS, const LOCK_WAIT_SECONDS, const SPACING_SECONDS, const UNLOCKED, def transaction_path, def restore_transaction, def keep_transaction, class AccountBusy, class AccountLock, def last_call_path, def spacing_wait, def mark_call, def run_locked · changed def run
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+- `src/twitter/account/session/engineCalls.test.ts`: added const python, function engine, test "the first call on an account waits for nothing", test "a call right after another waits out the drawn gap", test "a call long after the last one waits for nothing", test "the gap is drawn between 4 and 11 seconds", test "a second call on the same account waits until the first lets go", test "a call that waits too long for the account is refused, not run", test "a kept key is restored on the next call, so the home page is not loaded again", test "a key kept more than 3 hours ago is worked out again", test "an account with no kept key starts from the home page as before"
+- `vendor/twikit/tests/test_transaction_cache.py`: added const KEY, const STATE, def test_a_fresh_transaction_has_no_state, def test_state_round_trips_through_restore, def test_restore_refuses_a_state_without_its_keys, def test_restored_ids_match_the_ids_of_the_same_keys, def test_a_restored_client_never_loads_the_home_page
+- `vendor/twikit/twikit/x_client_transaction/transaction.py`: changed class ClientTransaction
+
+What changed: the X engine now takes one call per account at a time, across processes (`AccountLock` on `engine.lock`, `accountBusy` after 15 min; the X Chat watch is left out), waits 4 to 11 s after the account's last call (`spacing_wait`, `mark_call`), and keeps twikit's transaction key in `clientTransaction.json` for 3 hours (`ClientTransaction.state` and `restore` in vendor/twikit; `restore_transaction`, `keep_transaction`), so x.com's home page and signer are no longer loaded before every call. Rule 104 in AGENTS.md and the MCP instructions: more than one send goes through the queue, never a hand-rolled loop or parallel helpers on one account. `accountBusy` in the error catalog covers the engine too. Findings: RESEARCH/X_226_AUTOMATED_2026-11-01.md.
+Why: matt: "the timing stuff there i saw you hand rolled the outbound stuff when it should be queued and it has to have random intervals, but the bundle itself actually reveals more information". matthewsoldit got a soft block then X's 226 "looks automated" on 2026-11-01; the live log showed 8 reads in 0.2 s from parallel helpers beside a hand-written send loop, every call a cold client loading x.com first, while X's own x-web client (sign.o, decoded 2026-11-01: same obfiowerehiring keyword) loads once and signs every call from it.
+Checked: `bun run check` (1210 pass), with 9 engine tests (lock order, accountBusy, spacing, kept key restored and expired) and 5 twikit tests (state round trip, a restored client never loads the home page); not yet run live, the account is paused.
+
+## 2026-11-01 14:29Z · fix/xEngineOneCallAtATime
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `site/apps/web/public/claybound/PROVENANCE.md`: new file
+- `site/apps/web/public/claybound/cloud.glb`: new file
+- `site/apps/web/src/landing/ClayClouds.tsx`: added type Layer, const LAYERS, const DEFAULT_SRC, const BOTTOM_FRACTION, const CAMERA_Z, const FOV, function loadDeps, function ClaySky, function ClayClouds
+- `site/apps/web/src/landing/LandingPage.tsx`: changed function LandingPage
+- `site/apps/web/src/lib/clayDither.ts`: added const BAYER_GLSL, const CLAY_DITHER_GLSL, type ClayDitherOptions, function applyClayDither
+
+What changed: the landing hero's flat twemoji cloud band is replaced by the website's 3D clay clouds (`ClayClouds`, ported from website `packages/ui/src/components/clay-clouds.tsx`): three.js renders `public/claybound/cloud.glb` in four depth layers drifting at different speeds, lit by a warm key, sky fill and rim light, with the website's two-colour clay dither (`src/lib/clayDither.ts`). three.js and the model load lazily and in parallel; the sky stays plain until the scene is ready, motion stops under reduced motion, and the old `Clouds` band shows only if WebGL or the model fails. Claybound's PROVENANCE.md comes with the model.
+Why: matt: go through REPOS/website, find how the clouds are done on its landing page and bring that into our landing page.
+Checked: `pnpm typecheck` in site/apps/web; in the browser at 1440x900 and in the narrow pane the canvas renders the dithered clouds with the 2D band absent (the model loaded, 380 KB), no new console errors.
+
+## 2026-11-01 15:11Z · fix/xOneSessionPerAccount
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/guides/knowledgeAndSearch.md`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `package.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def client_for, const HOSTING · changed class AccountLock, def live_line, def run_locked, def main
+- `python/twitterApi/host.py`: added const ROOT, const IDLE_SECONDS, const START_WAIT_SECONDS, const CODE_FILES, def host_path, def host_log, def code_stamp, def pid_alive, def read_host, def live_host, class Host, def start_host, def ensure_host, def call, def main
+- `skills/xPosting/SKILL.md`: edited
+- `src/directApi/engine/client.ts`: added function openSession · changed function localEngineStates, function engineContext
+- `src/directApi/engine/types.ts`: changed interface LocalEngineState
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/account/session/engineHost.test.ts`: added const python, const engine, const host, const state, const account, const env, function call, function hostInfo, test "a call starts the account's session and is answered there", test "the next call is answered by the same session, not a new one", test "a second session for the same account refuses to start"
+
+What changed: an X account has one session, always. `python/twitterApi/host.py` is the account's engine host: the first `log twitter` call starts it (detached, `~/.logCli/twitter/<account>/host.json` with its pid, port and token, its output in `host.log`), and every call after (CLI, MCP, hooks, the queue, the X Chat watch) is sent to it over a local socket by `engine.py`, which no longer opens X itself. The host holds one twikit client per account (`client_for`, `SESSIONS`), so one connection, one cookie jar and one transaction key; it serves calls one at a time (the watch beside them), keeps rule 104's lock and spacing, streams the watch's live lines back, and closes after 30 idle minutes or when the engine code changes. A second host can't start (`host.lock`, it exits saying another X session holds the account), and a call that can't reach the host is refused with `xSessionHostDown`, sending nothing. Every answer carries `xSession` (pid, since, calls), and the hook's account line shows the open session. Error codes `xSessionHostDown`, `xSessionHostRefused`, `xSessionHostError`; rule 105 in AGENTS.md, the MCP instructions (core 33), every X tool's cited rules (104, 105) and the xPosting skill, so the xSending guide carries it. `LOG_TWITTER_HOST=inline` runs the old way, for tests. Package 0.1.2.
+Why: matt: "we cannot be opening multiple sessions there, that defeats the core purpose of what we use this tool for ... it should always be one, and then it needs to loudly create issues, and ensure it's passed into the context of the MCP and the guides". X's own web app keeps one page and one fetch client whose plugins sign every call and fold refreshed cookies back (x-web startup-dynamic, read with rea: ev_f101b6f4..., the transaction-id trace ev_1f689f05...); log opened a new client per call and the inbox watchers each held their own beside it.
+Checked: `bun run check` (1233 pass) with 3 host tests (a call starts the account's session and is answered there, the next call is answered by the same pid, a second host for the account exits); live on matthewsoldit, two `log twitter session check` calls were answered by the same session (pid 40036, calls 1 then 2, X answered loggedIn); the two old inbox watchers (since 17:56, each its own engine) were stopped and the hook restarted them through the hosts (matthewsoldit pid 40036, abelqxr pid 42028).
+
+## 2026-11-01 15:30Z · feat/mcpOnlyAndLocalChanges
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/reference.md`: edited
+- `package.json`: edited
+- `scripts/hooks/engines.ts`: added const repo · changed const text · removed const stale
+- `src/agentHooks/agentHooks.test.ts`: added test "a log command run by hand from a shell is refused and pointed at the MCP (rule 106)", test "the terminal-only prompts matt runs himself are not refused", test "shell commands that aren't log runs go through", test "uncommitted code files are named loudly", test "a clean checkout says nothing", test "git's porcelain lines become file paths" · removed test "a buffered log run is refused; a long one off a Monitor is reminded; Monitor with tee goes through"
+- `src/agentHooks/liveLog/index.ts`: added function handRunDenial · changed const FROM_CHECKOUT, function logCommandOf, function liveLogVerdict
+- `src/agentHooks/registry/index.ts`: changed const AGENT_HOOKS
+- `src/inbox/watch/client.ts`: changed function discordContext, function twitterContext, function storedInboxContext
+- `src/inbox/watch/watch.test.ts`: changed test "a Discord message pushed by the gateway is told with the Discord steps, beside X's"
+- `src/mcp/freshness/client.ts`: added const LOCAL_PATHS, function uncommittedFiles, function localChangesLine · changed function staleServerLine
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES
+
+What changed: rule 106. The shell PreToolUse hook (`liveLogs`, `handRunDenial` in `src/agentHooks/liveLog`) refuses any log action an agent runs by hand from Bash, PowerShell or Monitor (a `log …` or `bun bin/log.ts …` at the start of a command segment; quoted text and heredoc lines don't count) and points it at the log MCP tool; only the terminal-only prompts (`TERMINAL_ONLY`: launch, login, mcp, chat pin, cookies save, messenger pin) pass, for matt to run. The engines hook says loudly which of log-cli's code files have uncommitted local changes (`>>> UNCOMMITTED LOCAL CHANGES`, `uncommittedFiles` and `localChangesLine` in `src/mcp/freshness`), at session start and whenever the list changes, with the instruction to read each diff and never overwrite, revert, stage, publish or ship someone else's work. The stale-MCP-server line no longer says the terminal CLI runs the current code: it says to restart the app and never work around it by hand. The inbox hook's reply steps name the MCP tools (`twitterDms`, `voice`, `twitterDmLive`, `discordRead`, `discordSendLive`) instead of shell commands. AGENTS.md rule 106, MCP core 34, the hook list's reasons, docs rebuilt. Package 0.1.3.
+Why: matt: "when doing stuff like changing the code or anything, ensure that there hasn't been any changes to it locally, like to the engine ... you're not allowed hand-rolled commands, it always has to be through the MCP basically". Earlier today an agent ran the queues by hand from the CLI because the MCP server was stale, and the npm publish nearly carried someone else's uncommitted inboxSync edits.
+Checked: `bun run check` (1238 pass before the last fixes) and the hook, inbox and MCP tests after (89 pass): hand-run refused from Bash, PowerShell and Monitor, terminal-only prompts and non-log commands let through, a commit message, a heredoc and a quoted grep pattern that mention a log command let through, the local-changes line named loudly and silent on a clean checkout; the engines hook run on the real checkout listed the uncommitted files.
+
+## 2026-11-01 15:47Z · feat/oneQueuePerAccount
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `docs/useCases/twitter/followUps.md`: edited
+- `package.json`: edited
+- `src/cli/twitter/helpers/queue.ts`: changed const QUEUE_USAGE, const QUEUE_INPUT, function runCommand, const queueCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const CORE_PRINCIPLES, const COMMAND_RULES
+- `src/twitter/queue/plan/client.ts`: added const incomingPathOf, interface QueueAddition, function fitTimes, function addToQueue, function takeIncoming, function sendIncoming
+- `src/twitter/queue/run/client.ts`: added const ADDED, function mergeAdded · changed function waitUntil, function runQueue
+- `src/twitter/queue/run/queueAdd.test.ts`: added const START, function dmQueue, const replies, function fakeDeps, test "added items are kept apart from everything planned by at least the gap", test "replies added to a dm queue keep their own action, get the next numbers and are approved with it", test "adding the same item twice adds it once", test "replies added while the run waits are sent in the same run as the dms", test "kept open, a run that has sent everything waits for more instead of ending", test "an added item due before the one being waited on goes first"
+- `src/twitter/queue/run/types.ts`: changed interface RunDeps
+
+What changed: an account has one queue. `log twitter queue add <queue> --targets <file> --by <who> [--action dm|reply|quote] [--window] [--minGap]` (MCP `twitterQueueAdd`) puts more items in, each keeping its own action: with no run going it adds and plans them into the file; with a run going it hands them over in `<queue>.incoming.jsonl`, and the run takes them in as it waits (`takeAdded`, `takeIncoming`, `addToQueue`), fits each between what is already planned at least minGap apart (`fitTimes`), approves the queue again as it then stands, and if one is due before the send it waits on, sends that first (`mergeAdded`). `queue run --keepOpen` keeps the run going once everything is sent, taking in what is added, until it is cancelled. Adding the same item twice adds it once. AGENTS.md rule 107, MCP core 35 and the queue tool's rules, the followUps use case (two or more people go into the account's one queue), docs rebuilt. Package 0.1.4.
+Why: matt: "the queue connects to the one process, and it can do these at the same time, yet it's only on one". The DM queue and the reply-guy queue were two runs on one account, and the MCP's one-job-per-account rule made the replies wait for the DMs to end.
+Checked: `bun run check` (1244 pass) with 6 queue tests (added items kept at least minGap from every planned send, replies added to a dm queue keep their action and numbering and are approved, a repeat add adds nothing, replies added while a run waits go out in the same run, a kept-open run waits for more and sends it, an added item due sooner goes first); the useCases review asked for followUps.md, updated.

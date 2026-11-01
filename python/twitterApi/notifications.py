@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 from datetime import datetime, timezone
@@ -126,10 +125,10 @@ def add_rows(store: dict[str, Any], rows: list[dict[str, Any]]) -> int:
 
 
 Fetch = Callable[[str | None], Awaitable[dict[str, Any]]]
-Pace = Callable[[], None]
+Pace = Callable[[], Awaitable[None]]
 
 
-async def sync_notifications(fetch: Fetch, pace: Pace, path: Path, me: str, my_handle: str | None, full: bool, max_pages: int, seconds: float, log: Callable[[str], None]) -> dict[str, Any]:
+async def sync_notifications(fetch: Fetch, pace: Pace, path: Path, me: str, my_handle: str | None, full: bool, max_pages: int, log: Callable[[str], None]) -> dict[str, Any]:
     store = read_store(path) or empty_store(me)
     first = not store["rows"]
     pages = 0
@@ -139,8 +138,7 @@ async def sync_notifications(fetch: Fetch, pace: Pace, path: Path, me: str, my_h
     newest_cap = min(NEWEST_PAGES, max_pages) if first else max_pages
     while True:
         if pages:
-            await asyncio.sleep(seconds)
-            pace()
+            await pace()
         page = await fetch(cursor)
         pages += 1
         rows = rows_of(page, me, my_handle)
@@ -161,8 +159,7 @@ async def sync_notifications(fetch: Fetch, pace: Pace, path: Path, me: str, my_h
             stopped = "newestCap"
             break
     while full and not store["historyDone"] and store["bottomCursor"] and pages < max_pages:
-        await asyncio.sleep(seconds)
-        pace()
+        await pace()
         page = await fetch(store["bottomCursor"])
         pages += 1
         rows = rows_of(page, me, my_handle)

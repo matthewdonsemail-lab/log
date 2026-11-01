@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import os
 import re
@@ -98,6 +99,126 @@ def governor_for(account: str, writes_per_day: int | None = None) -> Any:
 
 def governor_status(account: str, writes_per_day: int | None = None) -> dict[str, Any]:
     return {"ok": True, "account": account, "governor": governor_for(account, writes_per_day).status()}
+
+
+TRANSACTION_SECONDS = 3 * 3600
+LOCK_WAIT_SECONDS = 900
+SPACING_SECONDS = (4.0, 11.0)
+UNLOCKED = ("xchatWatch",)
+
+
+def transaction_path(account: str) -> Path:
+    return state_dir(account) / "clientTransaction.json"
+
+
+def restore_transaction(client: Any, account: str, now: float | None = None) -> bool:
+    path = transaction_path(account)
+    try:
+        saved = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if (now or time.time()) - float(saved.get("savedAt") or 0) > TRANSACTION_SECONDS:
+        return False
+    return bool(client.client_transaction.restore(saved.get("state")))
+
+
+def keep_transaction(client: Any, account: str, now: float | None = None) -> None:
+    state = client.client_transaction.state()
+    if not state:
+        return
+    path = transaction_path(account)
+    try:
+        saved = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        saved = {}
+    if saved.get("state") == state:
+        return
+    path.write_text(json.dumps({"savedAt": now or time.time(), "state": state}), encoding="utf-8")
+
+
+class AccountBusy(Exception):
+    pass
+
+
+class AccountLock:
+    def __init__(self, account: str, wait_seconds: float = LOCK_WAIT_SECONDS, name: str = "engine.lock") -> None:
+        self.path = state_dir(account) / name
+        self.wait_seconds = wait_seconds
+        self.handle: Any = None
+
+    def _try(self) -> bool:
+        if os.name == "nt":
+            import msvcrt
+            try:
+                self.handle.seek(0)
+                msvcrt.locking(self.handle.fileno(), msvcrt.LK_NBLCK, 1)
+                return True
+            except OSError:
+                return False
+        import fcntl
+        try:
+            fcntl.flock(self.handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return True
+        except OSError:
+            return False
+
+    async def __aenter__(self) -> "AccountLock":
+        self.handle = open(self.path, "a+b")
+        deadline = time.time() + self.wait_seconds
+        while not self._try():
+            if time.time() > deadline:
+                self.handle.close()
+                raise AccountBusy(f"another log twitter call held this account for over {int(self.wait_seconds)} s")
+            await asyncio.sleep(0.5)
+        return self
+
+    async def __aexit__(self, *_: Any) -> None:
+        if os.name == "nt":
+            import msvcrt
+            try:
+                self.handle.seek(0)
+                msvcrt.locking(self.handle.fileno(), msvcrt.LK_UNLCK, 1)
+            except OSError:
+                pass
+        self.handle.close()
+
+
+SESSIONS: dict[str, Any] = {}
+
+
+def client_for(account: str, cookies: dict[str, str], make: Any) -> Any:
+    held = SESSIONS.get(account)
+    if held is not None and held.get_cookies().get("auth_token") == cookies.get("auth_token"):
+        return held
+    client = make(language="en-US")
+    client.set_cookies(cookies, clear_cookies=True)
+    if own_user_id(cookies):
+        client._user_id = own_user_id(cookies)
+    restore_transaction(client, account)
+    if HOSTING:
+        SESSIONS[account] = client
+    return client
+
+
+HOSTING = False
+
+
+def last_call_path(account: str) -> Path:
+    return state_dir(account) / "lastCall.json"
+
+
+def spacing_wait(account: str, now: float | None = None, draw: Any = None) -> float:
+    import random
+    try:
+        last = float(json.loads(last_call_path(account).read_text(encoding="utf-8")).get("at") or 0)
+    except (OSError, json.JSONDecodeError, ValueError):
+        return 0.0
+    gap = (draw or random.uniform)(*SPACING_SECONDS)
+    return max(0.0, last + gap - (now or time.time()))
+
+
+def mark_call(account: str, now: float | None = None) -> None:
+    last_call_path(account).write_text(json.dumps({"at": now or time.time()}), encoding="utf-8")
 
 
 async def session_answer(client: Any) -> int:
@@ -754,12 +875,13 @@ async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, An
     path = notifications_path(str(spec["account"]))
     full = spec.get("full") is True
     max_pages = max(1, min(int(spec.get("pages") or (25 if full else 5)), 200))
-    seconds = max(2.0, float(spec.get("seconds") or 3))
 
     async def fetch(cursor: str | None) -> dict[str, Any]:
         return await client.get_notifications_page("All", PAGE_SIZE, cursor)
 
-    def pace() -> None:
+    async def pace() -> None:
+        import random
+        await asyncio.sleep(random.uniform(*SPACING_SECONDS))
         if governor is not None:
             governor.before_request(is_mutation=False, quiet=True)
 
@@ -768,7 +890,7 @@ async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, An
 
     base = {"loginState": "loggedIn", "userId": me, "storePath": str(path)}
     try:
-        sync = await sync_notifications(fetch, pace, path, me, spec.get("screenName"), full, max_pages, seconds, log)
+        sync = await sync_notifications(fetch, pace, path, me, spec.get("screenName"), full, max_pages, log)
     except TooManyRequests as e:
         held = read_store(path) or {"rows": {}}
         return {**base, "ok": False, "code": "rateLimited", "event": "throttled", "detail": f"X answered 429 to a notifications page: the read stopped there, {len(held['rows'])} rows are kept ({redact(e, cookies)[:160]})", "rateLimitReset": getattr(e, "rate_limit_reset", None)}
@@ -778,8 +900,16 @@ async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, An
     return {**base, "ok": True, "notificationSync": sync}
 
 
+LIVE_WRITER: contextvars.ContextVar[Any] = contextvars.ContextVar("liveWriter", default=None)
+
+
 def live_line(event: dict[str, Any]) -> None:
-    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+    line = json.dumps({"liveEvent": event}, default=str)
+    writer = LIVE_WRITER.get()
+    if writer is not None:
+        writer.write((line + chr(10)).encode("utf-8"))
+        return
+    print(line, flush=True)
 
 
 async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -> str | None:
@@ -943,10 +1073,6 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], govern
 
 
 async def run(spec: dict[str, Any]) -> dict[str, Any]:
-    from governor import GovernorBlockedError
-    from twikit import Client
-    from twikit.errors import TooManyRequests
-
     action = spec.get("action")
     if action not in ACTIONS:
         return {"ok": False, "code": "actionUnknown", "detail": f"{action} is not one of {', '.join(ACTIONS)}"}
@@ -957,6 +1083,26 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
     if refused:
         return refused
     account = spec["account"]
+    if action in UNLOCKED:
+        return await run_locked(spec, cookies, action, account)
+    try:
+        async with AccountLock(account):
+            wait = spacing_wait(account)
+            if wait:
+                await asyncio.sleep(wait)
+            try:
+                return await run_locked(spec, cookies, action, account)
+            finally:
+                mark_call(account)
+    except AccountBusy as e:
+        return {"ok": False, "code": "accountBusy", "detail": str(e)}
+
+
+async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str, account: str) -> dict[str, Any]:
+    from governor import GovernorBlockedError
+    from twikit import Client
+    from twikit.errors import TooManyRequests
+
     governor = governor_for(account, spec.get("writesPerDay"))
     forced_past = None
     try:
@@ -965,10 +1111,7 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
         if spec.get("force") is not True:
             return {"ok": False, "code": "governorBlocked", "detail": str(e)}
         forced_past = str(e)
-    client = Client(language="en-US")
-    client.set_cookies(cookies, clear_cookies=True)
-    if own_user_id(cookies):
-        client._user_id = own_user_id(cookies)
+    client = client_for(account, cookies, Client)
     try:
         out = await act(client, cookies, spec, governor)
     except TooManyRequests as e:
@@ -985,6 +1128,7 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
         out["event"] = "throttled"
     if out.get("event") in ("throttled", "dropped", "automated", "dailyLimit"):
         governor.observe_soft_block()
+    keep_transaction(client, account)
     refreshed = client.get_cookies()
     if spec.get("refreshedPath") and refreshed:
         Path(spec["refreshedPath"]).write_text(json.dumps({k: v for k, v in refreshed.items() if k != "__cf_bm"}), encoding="utf-8")
@@ -998,7 +1142,13 @@ def main() -> int:
     if os.name == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    out = governor_status(spec["account"], spec.get("writesPerDay")) if spec.get("governorStatus") else asyncio.run(run(spec))
+    if spec.get("governorStatus"):
+        out = governor_status(spec["account"], spec.get("writesPerDay"))
+    elif os.environ.get("LOG_TWITTER_HOST") == "inline":
+        out = asyncio.run(run(spec))
+    else:
+        from twitterApi import host
+        out = host.call(spec)
     print(json.dumps(out, default=str))
     return 0 if out.get("ok") else 1
 

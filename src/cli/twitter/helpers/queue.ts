@@ -4,6 +4,7 @@ import type { TwitterSessionAnswer } from "../../../twitter/account/session/inde
 import { planSend } from "../../../twitter/post/send/index.ts";
 import { dmSplit, sendDmParts, splitLine } from "./send.ts";
 import {
+  addToQueue,
   approvalProblem,
   approveQueue,
   buildQueue,
@@ -18,6 +19,8 @@ import {
   QUEUE_ACTIONS,
   queueLog,
   saveQueue,
+  sendIncoming,
+  takeIncoming,
   statusCounts,
   systemRandom,
   targetOfItem,
@@ -40,10 +43,11 @@ export const QUEUE_USAGE = [
   "       log twitter queue status <queue.json> [--json]",
   "       log twitter queue approve <queue.json> --by <who>",
   "       log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]",
-  "       log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--live]",
+  "       log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--keepOpen] [--live]",
+  "       log twitter queue add <queue.json> --targets <targets.json> --by <who> [--action reply|quote|dm] [--window <2h|90m>] [--minGap <s>]",
   "       log twitter queue nudge <queue.json> [--replies <n>]",
   "A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).",
-  "build pairs each target with one unique line from the variations, shuffled; a target that carries its own text (written for that person's post) keeps it. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.",
+  "build pairs each target with one unique line from the variations, shuffled; a target that carries its own text (written for that person's post) keeps it. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now. One account has one queue: add puts more in (dms, replies, quotes together), even while it runs, each fitted between what is planned at least minGap apart, and the run takes them in as it waits; run --keepOpen stays running for more, so all of an account's sending is one run through its one X session (rule 105).",
   "run walks the plan as an XState machine (planned, waiting, liking, replying, cooling, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: a block or throttle cools off (15 min doubling to 4 h, or X's reset time, 24 h on the daily limit 344) and retries the post once at the end; a deleted post or replies off (385/433) is skipped; a dead session or 5 cool-offs in a row halts it and, with --alertChannel, tags matt in buzz. It saves after every step, so running it again resumes. --force sends every event past the account's governor (its pause and caps), only when matt asked (rule 86); X's answers and the run's own cool-offs still apply.",
 ].join("\n");
 
@@ -93,8 +97,22 @@ export const QUEUE_INPUT: CommandInput = {
         flag("alertReplyTo", "string", "A buzz event id to thread them under"),
         flag("alertMention", "string", "Pubkeys (hex) the halt tags, comma-separated"),
         flag("force", "boolean", "Go past the account's governor (its pause and caps) for every send, only when matt asked (rule 86)"),
+        flag("keepOpen", "boolean", "Stay running once everything is sent, taking in what queue add puts in, until cancelled"),
         flag("live", "boolean", "Send on X, only when matt asked (rule 8)", { live: true }),
         JSON_FLAG,
+      ],
+    },
+    {
+      words: ["add"],
+      effect: "write",
+      summary: "Add approved dms, replies or quotes to an account's queue, even while it runs: each is fitted between what is already planned, at least the queue's minGap apart, and sent through the same run and the account's one X session",
+      positionals: [QUEUE],
+      flags: [
+        flag("targets", "string", "The targets file: a list (or items) of {handle, tweet_url | post_url | user_id, post_text, text}; each target carries its own text", { required: true }),
+        flag("action", "enum", "What each added item sends (default reply)", { values: QUEUE_ACTIONS }),
+        flag("by", "string", "Who approved what is added (the queue is approved again as it then stands)", { required: true }),
+        flag("window", "string", "How far ahead to fit them: 2h or 90m (default 2h)"),
+        flag("minGap", "integer", "Seconds from any other planned send, at least 30 (default the queue's own)"),
       ],
     },
     { words: ["nudge"], effect: "write", summary: "Tell a running queue to send its next replies now", positionals: [QUEUE], flags: [flag("replies", "integer", "How many replies to send now (default 1)")] },
@@ -219,6 +237,13 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (said) log(said);
         },
         takeNudge: () => takeNudge(path),
+        takeAdded: () => {
+          const additions = takeIncoming(path);
+          const events = additions.flatMap((addition) => addToQueue(queue, addition, systemRandom, new Date(nowMs())));
+          if (additions.length) saveQueue(path, queue);
+          return events;
+        },
+        keepOpen: flags["keepOpen"] === true,
         save: () => saveQueue(path, queue),
       },
       createInspector((line) => context.err(formatTraceLine(line))),
@@ -238,13 +263,13 @@ export const queueCommand: Command = {
   effect: "write",
   input: QUEUE_INPUT,
   summary: "Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine",
-  args: "build|show|check|status|approve|plan|run|nudge <queue.json> …",
+  args: "build|show|check|status|approve|plan|run|add|nudge <queue.json> …",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(QUEUE_INPUT));
     if (!parsed.ok) return fail(parsed.error);
     const [word, path, ...extra] = parsed.positionals;
     const form = QUEUE_INPUT.forms.find((f) => f.words[0] === word);
-    if (!form) return fail("give build, show, check, status, approve, plan, run or nudge");
+    if (!form) return fail("give build, show, check, status, approve, plan, run, add or nudge");
     const allowed = new Set(form.flags.map((f) => f.name));
     const stray = Object.keys(parsed.flags).filter((name) => !allowed.has(name));
     if (stray.length) return fail(`${word} doesn't take --${stray.join(", --")}`);
@@ -335,6 +360,31 @@ export const queueCommand: Command = {
         return { code: 0, stdout: [`log twitter queue plan: ${events.length} events across ${queue.randomRun!.window} from ${start.toISOString()}, at least ${queue.randomRun!.minGap}s apart. Saved in ${file}; nothing sent.`, ...lines].join("\n") };
       }
       if (word === "run") return await runCommand(context, file, flags);
+      if (word === "add") {
+        let targets;
+        try {
+          targets = targetsOf(readJson(flags["targets"] as string));
+        } catch (error) {
+          return refuse("twitter queue add", "queueInvalid", error instanceof Error ? error.message : String(error));
+        }
+        const addition = { action: (flags["action"] as QueueAction | undefined) ?? "reply", targets, approvedBy: flags["by"] as string, window: typeof flags["window"] === "string" ? (flags["window"] as string) : "2h", minGap: flags["minGap"] === undefined ? undefined : wholeFlag(flags, "minGap", 120), at: now.toISOString() };
+        if (existsSync(lockPathOf(file))) {
+          sendIncoming(file, addition);
+          context.err(queueLog(file, `add: ${targets.length} ${addition.action} handed to the running run, approved by ${addition.approvedBy}`, now));
+          return { code: 0, stdout: `log twitter queue add: ${targets.length} ${addition.action} handed to the run going on ${file}; it fits them between what is planned and sends them through the account's one X session (log: ${logPathOf(file)}).` };
+        }
+        const queue = load(file);
+        let events;
+        try {
+          events = addToQueue(queue, addition, systemRandom, now);
+        } catch (error) {
+          return refuse("twitter queue add", "queueInvalid", error instanceof Error ? error.message : String(error));
+        }
+        saveQueue(file, queue);
+        const byN = new Map(queue.items.map((it) => [it.n, it]));
+        context.err(queueLog(file, `add: ${events.length} ${addition.action} added and planned, approved by ${addition.approvedBy}`, now));
+        return { code: 0, stdout: [`log twitter queue add: ${events.length} ${addition.action} added to ${file} and fitted into its plan; no run is going, so start one with queue run --live (--keepOpen to keep taking more).`, ...events.map((e) => `  ${e.at}  #${e.n} @${byN.get(e.n)?.handle ?? "?"}`)].join("\n") };
+      }
       let replies: number;
       try {
         replies = wholeFlag(flags, "replies", 1);

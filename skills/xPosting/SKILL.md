@@ -72,6 +72,16 @@ The parts every page uses:
   approve → plan → run → run --live`. It spaces sends at random and backs off
   when X throttles. Before any DM it drops people the account has already
   talked to on X Chat (rule 87).
+- **One session per account (rule 105):** every X call goes through the
+  account's one engine host (`python/twitterApi/host.py`). The first call starts
+  it; every call after, from the CLI, MCP, hooks, the queue or the X Chat watch,
+  is answered by that same session (one client, one connection, one transaction
+  key), one call at a time, 4 to 11 s apart (rule 104). The answer's
+  `xSession` names it (pid, since, calls), and the hook's account line shows it.
+  A second session can't start. If the host can't be reached the call is
+  refused (`xSessionHostDown`) and nothing is sent: read
+  `~/.logCli/twitter/<account>/host.log`, never work around it. More than one
+  send goes through the queue, never a hand-rolled loop (rule 104).
 - **Pacing:** 240 writes a day per account, kept by the account's governor.
   `--force` goes past it only when the owner says so (rule 86).
 

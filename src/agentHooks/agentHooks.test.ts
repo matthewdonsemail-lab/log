@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { appendLiveLine, logFileName } from "../observability/liveLog/index.ts";
 import { buffersOutput, liveLogVerdict, logCommandOf } from "./liveLog/index.ts";
+import { localChangesLine, uncommittedFiles } from "../mcp/freshness/index.ts";
 import { findingOf, hookReply, parseMemory } from "./pageState/index.ts";
 import type { BrowserAt } from "./pageState/index.ts";
 import { AGENT_HOOKS, hookCommand, hooksFor, toolIsHooked } from "./registry/index.ts";
@@ -115,12 +116,26 @@ describe("live logs hook", () => {
     expect(buffersOutput("cd repo && bun bin/log.ts facebook capture --docs | tail -3")).toBe(true);
   });
 
-  test("a buffered log run is refused; a long one off a Monitor is reminded; Monitor with tee goes through", () => {
-    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run | tail -5").deny).toContain("rule 26");
-    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log").context).toContain("Monitor");
-    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log")).toEqual({ deny: null, context: null });
-    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook accounts --json")).toEqual({ deny: null, context: null });
+  test("a log command run by hand from a shell is refused and pointed at the MCP (rule 106)", () => {
+    expect(liveLogVerdict("Bash", "bun bin/log.ts twitter queue run q.json --live").deny).toContain("rule 106");
+    expect(liveLogVerdict("PowerShell", "log twitter dm --account a --userId 1 --text hi --live").deny).toContain("mcp__log__");
+    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log").deny).toContain("rule 106");
+    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook accounts --json").deny).toContain("rule 106");
+  });
+
+  test("the terminal-only prompts matt runs himself are not refused", () => {
+    expect(liveLogVerdict("Bash", "log twitter chat pin --account a")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "log twitter cookies save --account a")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "log login")).toEqual({ deny: null, context: null });
+  });
+
+  test("shell commands that aren't log runs go through", () => {
     expect(liveLogVerdict("Bash", "ls | head")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Monitor", "tail -f ~/.logCli/mcp/2026-11-01.log")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "bun run check")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "git commit -m \"ran the queues with a hand-run `bun bin/log.ts twitter queue run`\"")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "python - <<'EOF'\ns='an agent ran bun bin/log.ts twitter dm by hand'\nEOF")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "grep -rn \"log twitter dms --account\\|log voice --to\" src")).toEqual({ deny: null, context: null });
   });
 });
 
@@ -135,5 +150,22 @@ describe("live log", () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("local changes are said before code is changed (rule 106)", () => {
+  test("uncommitted code files are named loudly", () => {
+    const line = localChangesLine("repo", ["python/twitterApi/engine.py", "src/a.ts"]);
+    expect(line).toContain("UNCOMMITTED LOCAL CHANGES");
+    expect(line).toContain("python/twitterApi/engine.py");
+    expect(line).toContain("rule 106");
+  });
+
+  test("a clean checkout says nothing", () => {
+    expect(localChangesLine("repo", [])).toBeNull();
+  });
+
+  test("git's porcelain lines become file paths", () => {
+    expect(uncommittedFiles("repo", () => " M python/twitterApi/inboxSync.py\n?? src/new.ts\n")).toEqual(["python/twitterApi/inboxSync.py", "src/new.ts"]);
   });
 });
