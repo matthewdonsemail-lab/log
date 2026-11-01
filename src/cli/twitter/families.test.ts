@@ -51,6 +51,16 @@ function harness(script: Script = () => ({ ok: false, code: "notExpected" }), st
   return { run, calls, twenty, clockAt: () => clock };
 }
 
+describe("log twitter session webClient", () => {
+  test("saves X's signed-in client through the account's one session and says where, sending nothing", async () => {
+    const h = harness(() => ({ ok: true, folder: "C:/x/webClient/20261102T020000Z", scripts: ["https://abs.twimg.com/responsive-web/client-web/main.abc.js"], saved: [{ url: "https://abs.twimg.com/responsive-web/client-web/main.abc.js", file: "main.abc.js", bytes: 4096 }] }));
+    const r = await h.run(["twitter", "session", "webClient", "--account", "xTwo"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("1 of 1 scripts saved");
+    expect(h.calls).toEqual([{ action: "webClient" }]);
+  });
+});
+
 describe("log twitter follows", () => {
   test("reads each handle once on the direct-API engine and sends nothing", async () => {
     const h = harness(() => ({ ok: true, screenName: "xtwo", checked: [{ handle: "alice", followsYou: true, youFollow: false }, { handle: "bob", followsYou: false, youFollow: true }] }));

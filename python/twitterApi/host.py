@@ -195,15 +195,27 @@ def ensure_host(account: str, wait_seconds: float = START_WAIT_SECONDS) -> dict[
     return None
 
 
+def connect_host(account: str) -> tuple[socket.socket | None, dict[str, Any] | None, str]:
+    error_text = ""
+    for attempt in range(2):
+        info = ensure_host(account)
+        if not info:
+            return None, None, f"the one X session for {account} didn't start in {int(START_WAIT_SECONDS)} s"
+        try:
+            return socket.create_connection(("127.0.0.1", int(info["port"])), timeout=10), info, ""
+        except OSError as error:
+            error_text = f"the X session for {account} (pid {info.get('pid')}) didn't answer on its port: {error}"
+            deadline = time.time() + START_WAIT_SECONDS
+            while attempt == 0 and pid_alive(int(info.get("pid") or 0)) and time.time() < deadline:
+                time.sleep(0.25)
+    return None, None, error_text
+
+
 def call(spec: dict[str, Any]) -> dict[str, Any]:
     account = spec["account"]
-    info = ensure_host(account)
-    if not info:
-        return {"ok": False, "code": "xSessionHostDown", "detail": f"the one X session for {account} didn't start in {int(START_WAIT_SECONDS)} s, so nothing was sent and no second session was opened (rule 104). Its log: {host_log(account)}"}
-    try:
-        sock = socket.create_connection(("127.0.0.1", int(info["port"])), timeout=10)
-    except OSError as error:
-        return {"ok": False, "code": "xSessionHostDown", "detail": f"the X session for {account} (pid {info.get('pid')}) didn't answer on its port: {error}. Nothing was sent (rule 104)"}
+    sock, info, error_text = connect_host(account)
+    if sock is None or info is None:
+        return {"ok": False, "code": "xSessionHostDown", "detail": f"{error_text}, so nothing was sent and no second session was opened (rule 104). Its log: {host_log(account)}"}
     with sock:
         sock.settimeout(None)
         sock.sendall((json.dumps({"token": info["token"], "spec": spec}) + "\n").encode("utf-8"))

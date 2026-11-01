@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { clearDeadQueueLocks, inboxContext, localTime, stopStaleWatchers } from "./index.ts";
+import { clearDeadQueueLocks, coolingDown, inboxContext, localTime, stopStaleWatchers } from "./index.ts";
 import { clearDeadLock, liveLock } from "../../twitter/queue/plan/index.ts";
 
 beforeEach(() => {
@@ -23,6 +23,15 @@ describe("nothing runs stale (rule 108)", () => {
     expect(killed).toEqual([111]);
     expect(existsSync(join(root, "twitter", "old", "watch.pid"))).toBe(false);
     expect(existsSync(join(root, "twitter", "fresh", "watch.pid"))).toBe(true);
+  });
+
+  test("an account in its governor cool-off gets no watcher restarts until it ends", () => {
+    const root = mkdtempSync(join(tmpdir(), "state"));
+    mkdirSync(join(root, "acct"), { recursive: true });
+    writeFileSync(join(root, "acct", "governor_state.json"), JSON.stringify({ cooldown_until: Date.now() / 1000 + 600 }));
+    expect(coolingDown(root, "acct")).toBe(true);
+    expect(coolingDown(root, "acct", new Date(Date.now() + 700_000))).toBe(false);
+    expect(coolingDown(root, "nobody")).toBe(false);
   });
 
   test("a queue lock whose run died is cleared, a live one is kept", () => {

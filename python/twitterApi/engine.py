@@ -18,7 +18,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "notifications", "xchatContacts", "xchatUnlock", "xchatWatch")
+READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch")
 WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
 ACTIONS = READS + WRITES
 
@@ -922,6 +922,27 @@ async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -
     return handles.get(user_id)
 
 
+async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    import random
+    from datetime import datetime, timezone
+
+    folder = state_dir(str(spec["account"])) / "webClient" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    folder.mkdir(parents=True, exist_ok=True)
+    home = await client.http.request("GET", "https://x.com/home", headers=client._base_headers)
+    html = home.text
+    (folder / "home.html").write_text(html, encoding="utf-8")
+    scripts = sorted(set(re.findall(r"https://abs\.twimg\.com/[^\"'\s]+?\.js", html)))
+    saved = []
+    for url in scripts:
+        await asyncio.sleep(random.uniform(*READ_SPACING_SECONDS))
+        answer = await client.http.request("GET", url, headers={"Referer": "https://x.com/"})
+        if answer.status_code == 200:
+            name = url.rsplit("/", 1)[-1]
+            (folder / name).write_bytes(answer.content)
+            saved.append({"url": url, "file": name, "bytes": len(answer.content)})
+    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "saved": saved}
+
+
 async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
     from twitterApi import inboxSync
 
@@ -1037,6 +1058,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], govern
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
     if action == "notifications":
         return await notifications(client, cookies, spec, governor)
+    if action == "webClient":
+        return await web_client(client, spec)
     if action == "xchatContacts":
         return await xchat_contacts(client, cookies)
     if action == "xchatUnlock":

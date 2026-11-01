@@ -116,6 +116,11 @@ export function processAlive(pid: number): boolean {
   }
 }
 
+export function coolingDown(stateRoot: string, account: string, now: Date = new Date()): boolean {
+  const state = readJson<{ cooldown_until?: number }>(join(stateRoot, account, 'governor_state.json'), {})
+  return typeof state.cooldown_until === 'number' && state.cooldown_until * 1000 > now.getTime()
+}
+
 export function ensureLiveWatchers(platform: string, accounts: readonly string[], start: (account: string) => number | null, alive: (pid: number) => boolean = processAlive): string[] {
   if (process.env.LOG_INBOX_POLL === 'off') return []
   const started: string[] = []
@@ -132,7 +137,7 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
-const CODE_DIRS = ['src', 'python', 'bin', join('vendor', 'twikit', 'twikit')]
+const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit')]
 const CODE_FILE = /\.(ts|py)$/
 const stampPath = () => join(inboxRoot(), 'codeStamp.json')
 
