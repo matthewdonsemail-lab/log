@@ -34,6 +34,27 @@ class ClientTransaction:
     def __init__(self):
         self.home_page_response = None
 
+    def state(self):
+        if not self.home_page_response:
+            return None
+        return {
+            "key": self.key,
+            "animationKey": self.animation_key,
+            "rowIndex": self.DEFAULT_ROW_INDEX,
+            "keyBytesIndices": self.DEFAULT_KEY_BYTES_INDICES,
+        }
+
+    def restore(self, state):
+        if not state or not state.get("key") or not state.get("animationKey"):
+            return False
+        self.key = state["key"]
+        self.key_bytes = self.get_key_bytes(key=self.key)
+        self.animation_key = state["animationKey"]
+        self.DEFAULT_ROW_INDEX = state.get("rowIndex")
+        self.DEFAULT_KEY_BYTES_INDICES = state.get("keyBytesIndices")
+        self.home_page_response = "restored"
+        return True
+
     async def init(self, session, headers):
         home_page_response = await handle_x_migration(session, headers)
 

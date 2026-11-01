@@ -692,14 +692,15 @@
   },
   "accountBusy": {
     "layer": "account",
-    "meaning": "A job over MCP already holds this account (one browser per account, rule 35). Nothing started.",
+    "meaning": "A job over MCP already holds this account (one browser per account, rule 35), or another X engine call held it for over 15 minutes (one call per account at a time, rule 102). Nothing started.",
     "retryable": true,
     "raisedIn": [
-      "mcp/jobs"
+      "mcp/jobs",
+      "twitterApi/engine"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again."
+    "action": "Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again. On X, find the other log twitter call still running on the account (a watch or a stuck run), let it end, then call again."
   },
   "launchTooSoon": {
     "layer": "account",
