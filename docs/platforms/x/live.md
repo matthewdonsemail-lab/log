@@ -42,3 +42,5 @@ The notification refresher lives in `bundle.Notifications` (module 726194). It i
 - **Each Claude session keeps its own offsets** (`src/agentHooks/sessionOffsets`, keyed by the hook's `session_id`), so two sessions open at once both see every event once.
   - A new session starts with the current counts, not the history.
   - The queue hook (rule 114) reads per session the same way.
+- **It is said loudly.** New activity comes first in the block (`>>> X LIVE, NEW ACTIVITY`), and the agent tells matt at once, before anything else. A count that changed with no new activity adds nothing to the block.
+- **It wakes the agent while idle.** A hook only runs on a prompt or a tool call, so on SessionStart the block tells the agent to start a Monitor on every account's `live.jsonl` (`LIVE_MONITOR`) for the whole session. Each like, retweet, reply, quote, mention or follow then wakes the agent the moment it lands.

@@ -20,10 +20,13 @@ describe("X's live client state in the agent context, per Claude session (rule 1
     appendFileSync(file, badge(1) + '\n' + reply + '\n')
     const text = xLiveContext(newLiveEvents(root, 'one'))!
     expect(text).toContain('@sam: 2026-11-01T20:14:00Z they replied to your post ("yc deadline is tomorrow"): "this is sick"')
+    expect(text).toContain('tell matt now, first thing in your reply')
     expect(text).toContain('answer when it fits')
-    expect(newLiveEvents(root, 'one')).toEqual([])
+    appendFileSync(file, badge(0) + '\n')
+    expect(xLiveContext(newLiveEvents(root, 'one'))).toBeNull()
+    expect(xLiveContext([], { sessionStart: true })).toContain('start a Monitor now')
     const other = newLiveEvents(root, 'two')
-    expect(other[0]!.latest?.ntab_unread_count).toBe(1)
+    expect(other[0]!.latest?.ntab_unread_count).toBe(0)
   })
 
   test("two Claude sessions each get the queue's events once", () => {

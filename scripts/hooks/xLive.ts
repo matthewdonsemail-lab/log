@@ -8,5 +8,5 @@ try {
   event = (JSON.parse(raw || '{}') as { hook_event_name?: string }).hook_event_name ?? event
 } catch {}
 
-const text = xLiveContext(newLiveEvents(undefined, sessionIdOf(raw)))
+const text = xLiveContext(newLiveEvents(undefined, sessionIdOf(raw)), { sessionStart: event === 'SessionStart' })
 if (text) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))

@@ -10542,3 +10542,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the badge poll now reads notifications on a watch's first poll whenever X's count is above zero. Before, it only read when the count rose, and the first poll after a restart has nothing to compare against. Only real activity reaches the live feed now: a like, retweet, reply, quote, mention or follow from the last 24 hours (`live_worthy`). X's own recommendation notifications (kind other) and an account's first-ever sync (its history) stay out.
 Why: matt asked whether it captures people who like stuff in general. It does, but on matthewsoldit the first poll after a restart saw 2 unread and read nothing. On abelqxr the first read put October's history and X's suggested posts into the feed as if they were new.
 Checked: live on both accounts. matthewsoldit's feed showed AniC_dev's and deepman_1's likes and AniC_dev's reply within one poll. `live_worthy` checked against a like, an "other", a month-old like and an empty store. `bun run check`: 1301 pass, 0 fail.
+
+## 2026-11-01 20:36Z · feat/xLiveLoud
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/x/live.md`: edited
+- `scripts/hooks/xLive.ts`: changed const text
+- `src/twitter/live/feed/client.ts`: added const LIVE_MONITOR, const sayingOf · changed function newLiveEvents, function xLiveContext
+- `src/twitter/live/feed/feed.test.ts`: changed test "a new session sees the current count, then only what is new for it"
+- `src/twitter/live/feed/types.ts`: changed interface AccountLive
+
+What changed: the X LIVE block now leads with new activity and tells the agent to say it to matt first, before anything else (`>>> X LIVE, NEW ACTIVITY`). A count change with no new activity adds nothing to the block. On SessionStart it tells the agent to start a Monitor on every account's `live.jsonl` for the whole session (`LIVE_MONITOR`), so each like, retweet, reply, quote, mention or follow wakes the agent the moment it lands, even while idle.
+Why: matt asked why a new like wasn't put in front of him, and why it wasn't announced loudly. A hook only runs on a prompt or a tool call, so NullTensor's like sat in the feed until his next message, and the block never told the agent to say it.
+Checked: the feed test covers the loud line, no block for a count-only change, and the Monitor line on SessionStart. A Monitor is running in this session on both accounts' feeds. `bun run check`: 1301 pass, 0 fail.
