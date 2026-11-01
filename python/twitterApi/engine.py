@@ -187,10 +187,36 @@ class AccountLock:
 SESSIONS: dict[str, Any] = {}
 
 
+def operations_path() -> Path:
+    return state_root() / "xOperations.json"
+
+
+def live_operations_of(main_js: str, home_html: str) -> dict[str, Any]:
+    operations = {}
+    for m in re.finditer(r'queryId:"([A-Za-z0-9_-]+)",operationName:"(\w+)",operationType:"(\w+)",metadata:\{featureSwitches:\[([^\]]*)\]', main_js):
+        operations[m.group(2)] = {"queryId": m.group(1), "type": m.group(3), "features": [f.strip('"') for f in m.group(4).split(",") if f.strip('"')]}
+    wanted = {f for op in operations.values() for f in op["features"]}
+    values = {}
+    for m in re.finditer(r'"(\w+)":\{"value":(true|false)\}', home_html):
+        if m.group(1) in wanted:
+            values[m.group(1)] = m.group(2) == "true"
+    return {"operations": operations, "featureValues": values}
+
+
+def load_live_operations() -> None:
+    from twikit.client import gql
+
+    try:
+        gql.set_live_operations(json.loads(operations_path().read_text(encoding="utf-8")))
+    except (OSError, json.JSONDecodeError):
+        gql.set_live_operations(None)
+
+
 def client_for(account: str, cookies: dict[str, str], make: Any) -> Any:
     held = SESSIONS.get(account)
     if held is not None and held.get_cookies().get("auth_token") == cookies.get("auth_token"):
         return held
+    load_live_operations()
     client = make(language="en-US")
     client.set_cookies(cookies, clear_cookies=True)
     if own_user_id(cookies):
@@ -928,19 +954,27 @@ async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
 
     folder = state_dir(str(spec["account"])) / "webClient" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     folder.mkdir(parents=True, exist_ok=True)
-    home = await client.http.request("GET", "https://x.com/home", headers=client._base_headers)
+    page_headers = {"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": f"{client.language},{client.language.split('-')[0]};q=0.9", "Cache-Control": "no-cache", "Referer": "https://x.com", "User-Agent": client._user_agent}
+    home = await client.http.request("GET", "https://x.com/home", headers=page_headers)
     html = home.text
     (folder / "home.html").write_text(html, encoding="utf-8")
     scripts = sorted(set(re.findall(r"https://abs\.twimg\.com/[^\"'\s]+?\.js", html)))
     saved = []
     for url in scripts:
         await asyncio.sleep(random.uniform(*READ_SPACING_SECONDS))
-        answer = await client.http.request("GET", url, headers={"Referer": "https://x.com/"})
+        answer = await client.http.request("GET", url, headers={"Referer": "https://x.com/", "User-Agent": client._user_agent})
         if answer.status_code == 200:
             name = url.rsplit("/", 1)[-1]
             (folder / name).write_bytes(answer.content)
             saved.append({"url": url, "file": name, "bytes": len(answer.content)})
-    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "saved": saved}
+    main = next((folder / f["file"] for f in saved if f["file"].startswith("main.")), None)
+    live = live_operations_of(main.read_text(encoding="utf-8"), html) if main else None
+    if live and live["operations"]:
+        live["savedAt"] = datetime.now(timezone.utc).isoformat()
+        live["from"] = main.name
+        operations_path().write_text(json.dumps(live, indent=1), encoding="utf-8")
+        load_live_operations()
+    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "saved": saved, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
 
 
 async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:

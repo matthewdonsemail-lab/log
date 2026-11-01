@@ -10458,3 +10458,22 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: in `xchat_threads` (`python/twitterApi/inboxSync.py`), when X's conversation list gives a chat a newer time than any message the store holds, with nothing behind it, that is the other person reading it, not a reply: the last message stays what was said, from whoever said it. And a chat whose last message is matt's, with a read marker from them at or after it, is `openedByThem`, which feeds the opened-but-no-reply follow-ups (rule 100).
 Why: read receipts were turning chats into "waiting on you" or "could not open" in the inbox and the hook. matt: "add it into what we're doing here" (this change sat uncommitted in the checkout and was already running live).
 Checked: a new case in the inbox sync test keeps "on it" as the last message, from matt and not unread, when the list's time moved with no message behind it; the full check passed with it in (1298 tests).
+
+## 2026-11-01 19:48Z · fix/xLiveOperations
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/guides/xInbox.md`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/platforms/x/compose.md`: edited
+- `python/twitterApi/engine.py`: added def operations_path, def live_operations_of, def load_live_operations · changed def client_for, def web_client
+- `python/twitterApi/host.py`: changed class Host
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills/xPosting/SKILL.md`: edited
+- `vendor/twikit/tests/test_live_operations.py`: added def test_a_call_uses_x_live_query_id_and_exactly_its_feature_flags_with_their_values, def test_without_live_operations_nothing_changes
+- `vendor/twikit/twikit/client/gql.py`: added def set_live_operations, def live_call · changed class GQLClient
+
+What changed: every X GraphQL call now uses X's live operation id and exactly the feature switches X's own client sends, with X's values. `log twitter session webClient` loads x.com/home with twikit's own page headers (it had sent the API headers and got 401), saves X's signed-in responsive-web scripts, and writes their operation table (104 operations: queryId, type, feature switches) and the page's switch values (47) to `~/.logCli/twitter/xOperations.json` (`live_operations_of`). Every session loads it (`load_live_operations`) and twikit's `gql_get` and `gql_post` take the live id and switches (`live_call`, `set_live_operations`). A closing X session closes its server and every open connection and exits at once, instead of `async with server` waiting forever on an open X Chat watch while its port is already shut (`writers`). `docs/platforms/x/compose.md` holds the finding; rule 113 and the xPosting skill say to send what X's client sends.
+Why: matt asked what is hitting the session and for rea on X's bundle to find the exact actions. X's signed-in main.js (main.1e03d4dd38cf6a4fa.js) showed twikit calling 22 of X's operations by old ids, CreateTweet `SiM_cAu83R0wnrpmKQQSEw` where X sends `l4hk8uVGvR-a8kzQ4nOhPA`, with 21 feature switches where X sends 39 (26 missing, 8 X dropped), so every reply was a call X's current client never makes; the 226s came on replies. Twice tonight a call met `xSessionHostDown` because the closing session was stuck half-closed by the watch.
+Checked: `bun run check` passes (1298 tests); new twikit tests: a call takes the live id and only the live switches with their values, and nothing changes without live operations. Live: webClient read matthewsoldit's client (homeStatus 200, 3 scripts) and wrote 104 operations; CreateTweet resolves to `l4hk8uVGvR-a8kzQ4nOhPA` with 39 switches.

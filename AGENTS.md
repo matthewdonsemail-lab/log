@@ -1446,7 +1446,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     one session, as twikit already does to sign its calls, and saves the
     page and its scripts for rea. What it shows about a reply is written in
     `docs/platforms/x/compose.md` and the xPosting skill, and the engine
-    sends what X's client sends.
+    sends what X's client sends. Read on 2026-11-02: twikit called 22 of
+    X's operations by old ids (CreateTweet `SiM_cAu…` where X's client
+    sends `l4hk8uVG…`) with the wrong feature switches (21 where X sends
+    39). Now `webClient` writes X's live operation table and switch values
+    to `~/.logCli/twitter/xOperations.json`, every session loads it, and
+    each GraphQL call takes X's live id and exactly X's switches with X's
+    values (`live_call`). A closing session drops its open connections and
+    exits at once, so an open X Chat watch can't hold it half-closed.
 
 ## Checks
 
