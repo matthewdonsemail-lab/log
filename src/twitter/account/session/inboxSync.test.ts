@@ -75,6 +75,8 @@ async def main():
     inboxSync.push_message(path, ME, {"event_id": "17", "sender_id": "7", "time_ms": 5000, "text": None, "kind": "MarkRead", "conversation_id": "7:100"}, "seven")
     marked = inboxSync.read_state(path)
     out["afterMarker"] = inboxSync.xchat_threads(marked, ME, True)[0]
+    marked["xchat"]["7:100"]["lastMs"], marked["xchat"]["7:100"]["lastSender"] = 6000, "7"
+    out["unstoredRead"] = inboxSync.xchat_threads(marked, ME, True)[0]
     out["groupRoutes"] = [engine.is_xchat_id(c) for c in ("g2004865989830476207", "7:100", "1234-5678")]
 
 asyncio.run(main())
@@ -120,6 +122,10 @@ describe("log twitter dms syncs the inbox the way X's app does: everything once,
   test("a read marker is never the last message: the thread still shows what was said, and a group id reads as X Chat", () => {
     expect(out.afterMarker).toMatchObject({ lastText: "on it", lastFromMe: true });
     expect(out.groupRoutes).toEqual([true, true, false]);
+  });
+
+  test("a later time from the conversation list with no message behind it is their read, not a reply: the last message stays what was said", () => {
+    expect(out.unstoredRead).toMatchObject({ lastText: "on it", lastFromMe: true, unread: false });
   });
 
   test("one person's chat shows every message the store holds, even when X answers with only the newest", () => {
