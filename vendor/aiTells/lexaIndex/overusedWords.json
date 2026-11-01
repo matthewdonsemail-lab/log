@@ -1,0 +1,13337 @@
+{
+"source": "fsu-nlp/lexa-index (AI-Associated Lexical Shifts, arXiv:2605.25358): words a model writes at least twice as often as people do in the same genre, with at least 40 uses",
+"models": {
+"claude-3-haiku science": [
+{
+"word": "careful",
+"ratio": 15.3,
+"ai": 175.0,
+"human": 11.0
+},
+{
+"word": "specialized",
+"ratio": 13.9,
+"ai": 62.0,
+"human": 4.0
+},
+{
+"word": "leverage",
+"ratio": 10.4,
+"ai": 129.0,
+"human": 12.0
+},
+{
+"word": "elucidate",
+"ratio": 9.9,
+"ai": 488.0,
+"human": 49.0
+},
+{
+"word": "mitigating",
+"ratio": 9.9,
+"ai": 54.0,
+"human": 5.0
+},
+{
+"word": "mechanistically",
+"ratio": 7.5,
+"ai": 176.0,
+"human": 23.0
+},
+{
+"word": "further",
+"ratio": 7.2,
+"ai": 1937.0,
+"human": 267.0
+},
+{
+"word": "heighten",
+"ratio": 7.2,
+"ai": 61.0,
+"human": 8.0
+},
+{
+"word": "crucial",
+"ratio": 6.4,
+"ai": 371.0,
+"human": 58.0
+},
+{
+"word": "warrant",
+"ratio": 6.4,
+"ai": 111.0,
+"human": 17.0
+},
+{
+"word": "disrupt",
+"ratio": 6.3,
+"ai": 275.0,
+"human": 43.0
+},
+{
+"word": "underlie",
+"ratio": 6.3,
+"ai": 267.0,
+"human": 42.0
+},
+{
+"word": "researcher",
+"ratio": 6.2,
+"ai": 326.0,
+"human": 52.0
+},
+{
+"word": "additionally",
+"ratio": 5.7,
+"ai": 1502.0,
+"human": 265.0
+},
+{
+"word": "disruption",
+"ratio": 5.7,
+"ai": 235.0,
+"human": 41.0
+},
+{
+"word": "conversely",
+"ratio": 5.7,
+"ai": 223.0,
+"human": 39.0
+},
+{
+"word": "investigation",
+"ratio": 5.5,
+"ai": 564.0,
+"human": 102.0
+},
+{
+"word": "minimize",
+"ratio": 5.4,
+"ai": 163.0,
+"human": 30.0
+},
+{
+"word": "foster",
+"ratio": 5.4,
+"ai": 45.0,
+"human": 8.0
+},
+{
+"word": "pronounce",
+"ratio": 5.3,
+"ai": 213.0,
+"human": 40.0
+},
+{
+"word": "dysregulation",
+"ratio": 5.3,
+"ai": 165.0,
+"human": 31.0
+},
+{
+"word": "poorer",
+"ratio": 5.2,
+"ai": 170.0,
+"human": 32.0
+},
+{
+"word": "immunohistochemical",
+"ratio": 5.1,
+"ai": 53.0,
+"human": 10.0
+},
+{
+"word": "underscore",
+"ratio": 5.0,
+"ai": 47.0,
+"human": 9.0
+},
+{
+"word": "valuable",
+"ratio": 4.8,
+"ai": 184.0,
+"human": 38.0
+},
+{
+"word": "cascade",
+"ratio": 4.6,
+"ai": 130.0,
+"human": 28.0
+},
+{
+"word": "carefully",
+"ratio": 4.6,
+"ai": 66.0,
+"human": 14.0
+},
+{
+"word": "neuroprotective",
+"ratio": 4.6,
+"ai": 52.0,
+"human": 11.0
+},
+{
+"word": "coordinated",
+"ratio": 4.5,
+"ai": 113.0,
+"human": 25.0
+},
+{
+"word": "with",
+"ratio": 4.4,
+"ai": 730.0,
+"human": 166.0
+},
+{
+"word": "gradual",
+"ratio": 4.4,
+"ai": 90.0,
+"human": 20.0
+},
+{
+"word": "dysregulate",
+"ratio": 4.3,
+"ai": 49.0,
+"human": 11.0
+},
+{
+"word": "suggest",
+"ratio": 4.2,
+"ai": 4140.0,
+"human": 995.0
+},
+{
+"word": "findings",
+"ratio": 4.2,
+"ai": 3148.0,
+"human": 743.0
+},
+{
+"word": "enabling",
+"ratio": 4.2,
+"ai": 753.0,
+"human": 180.0
+},
+{
+"word": "optimization",
+"ratio": 4.2,
+"ai": 179.0,
+"human": 42.0
+},
+{
+"word": "mitigate",
+"ratio": 4.2,
+"ai": 164.0,
+"human": 39.0
+},
+{
+"word": "navigated",
+"ratio": 4.2,
+"ai": 60.0,
+"human": 14.0
+},
+{
+"word": "tailored",
+"ratio": 4.1,
+"ai": 115.0,
+"human": 28.0
+},
+{
+"word": "interplay",
+"ratio": 4.1,
+"ai": 113.0,
+"human": 27.0
+},
+{
+"word": "mapk",
+"ratio": 4.1,
+"ai": 55.0,
+"human": 13.0
+},
+{
+"word": "similarly",
+"ratio": 4.0,
+"ai": 331.0,
+"human": 83.0
+},
+{
+"word": "impaired",
+"ratio": 4.0,
+"ai": 189.0,
+"human": 47.0
+},
+{
+"word": "accurately",
+"ratio": 4.0,
+"ai": 151.0,
+"human": 37.0
+},
+{
+"word": "exacerbate",
+"ratio": 3.8,
+"ai": 84.0,
+"human": 22.0
+},
+{
+"word": "access",
+"ratio": 3.8,
+"ai": 84.0,
+"human": 22.0
+},
+{
+"word": "contrast",
+"ratio": 3.7,
+"ai": 735.0,
+"human": 200.0
+},
+{
+"word": "potentially",
+"ratio": 3.7,
+"ai": 317.0,
+"human": 86.0
+},
+{
+"word": "attribute",
+"ratio": 3.7,
+"ai": 257.0,
+"human": 69.0
+},
+{
+"word": "precise",
+"ratio": 3.7,
+"ai": 136.0,
+"human": 36.0
+},
+{
+"word": "selectively",
+"ratio": 3.7,
+"ai": 104.0,
+"human": 28.0
+},
+{
+"word": "prompt",
+"ratio": 3.7,
+"ai": 72.0,
+"human": 19.0
+},
+{
+"word": "prioritize",
+"ratio": 3.7,
+"ai": 42.0,
+"human": 11.0
+},
+{
+"word": "allow",
+"ratio": 3.6,
+"ai": 1055.0,
+"human": 292.0
+},
+{
+"word": "specifically",
+"ratio": 3.6,
+"ai": 439.0,
+"human": 120.0
+},
+{
+"word": "demographic",
+"ratio": 3.6,
+"ai": 74.0,
+"human": 20.0
+},
+{
+"word": "this",
+"ratio": 3.5,
+"ai": 2009.0,
+"human": 576.0
+},
+{
+"word": "monitoring",
+"ratio": 3.5,
+"ai": 317.0,
+"human": 91.0
+},
+{
+"word": "likely",
+"ratio": 3.5,
+"ai": 253.0,
+"human": 72.0
+},
+{
+"word": "impact",
+"ratio": 3.5,
+"ai": 219.0,
+"human": 62.0
+},
+{
+"word": "socioeconomic",
+"ratio": 3.5,
+"ai": 91.0,
+"human": 26.0
+},
+{
+"word": "disparity",
+"ratio": 3.5,
+"ai": 64.0,
+"human": 18.0
+},
+{
+"word": "lead",
+"ratio": 3.4,
+"ai": 1525.0,
+"human": 453.0
+},
+{
+"word": "need",
+"ratio": 3.4,
+"ai": 764.0,
+"human": 227.0
+},
+{
+"word": "rapid",
+"ratio": 3.4,
+"ai": 349.0,
+"human": 103.0
+},
+{
+"word": "effectively",
+"ratio": 3.4,
+"ai": 335.0,
+"human": 99.0
+},
+{
+"word": "detrimental",
+"ratio": 3.4,
+"ai": 56.0,
+"human": 16.0
+},
+{
+"word": "such",
+"ratio": 3.3,
+"ai": 2126.0,
+"human": 650.0
+},
+{
+"word": "maintain",
+"ratio": 3.3,
+"ai": 559.0,
+"human": 168.0
+},
+{
+"word": "capture",
+"ratio": 3.3,
+"ai": 214.0,
+"human": 64.0
+},
+{
+"word": "hallmark",
+"ratio": 3.3,
+"ai": 51.0,
+"human": 15.0
+},
+{
+"word": "prefrontal",
+"ratio": 3.3,
+"ai": 51.0,
+"human": 15.0
+},
+{
+"word": "enhance",
+"ratio": 3.2,
+"ai": 1513.0,
+"human": 471.0
+},
+{
+"word": "exhibited",
+"ratio": 3.2,
+"ai": 1313.0,
+"human": 406.0
+},
+{
+"word": "nutrient",
+"ratio": 3.2,
+"ai": 150.0,
+"human": 46.0
+},
+{
+"word": "promise",
+"ratio": 3.2,
+"ai": 71.0,
+"human": 22.0
+},
+{
+"word": "play",
+"ratio": 3.1,
+"ai": 538.0,
+"human": 172.0
+},
+{
+"word": "critical",
+"ratio": 3.1,
+"ai": 507.0,
+"human": 165.0
+},
+{
+"word": "comprehensive",
+"ratio": 3.1,
+"ai": 278.0,
+"human": 90.0
+},
+{
+"word": "diverse",
+"ratio": 3.1,
+"ai": 263.0,
+"human": 85.0
+},
+{
+"word": "equipment",
+"ratio": 3.1,
+"ai": 81.0,
+"human": 26.0
+},
+{
+"word": "alzheimer",
+"ratio": 3.1,
+"ai": 63.0,
+"human": 20.0
+},
+{
+"word": "governing",
+"ratio": 3.1,
+"ai": 57.0,
+"human": 18.0
+},
+{
+"word": "accounting",
+"ratio": 3.1,
+"ai": 53.0,
+"human": 17.0
+},
+{
+"word": "compact",
+"ratio": 3.1,
+"ai": 45.0,
+"human": 14.0
+},
+{
+"word": "tight",
+"ratio": 3.1,
+"ai": 45.0,
+"human": 14.0
+},
+{
+"word": "need",
+"ratio": 3.0,
+"ai": 646.0,
+"human": 216.0
+},
+{
+"word": "insight",
+"ratio": 3.0,
+"ai": 455.0,
+"human": 153.0
+},
+{
+"word": "incorporate",
+"ratio": 3.0,
+"ai": 223.0,
+"human": 73.0
+},
+{
+"word": "ensure",
+"ratio": 3.0,
+"ai": 220.0,
+"human": 72.0
+},
+{
+"word": "impair",
+"ratio": 3.0,
+"ai": 182.0,
+"human": 61.0
+},
+{
+"word": "histological",
+"ratio": 3.0,
+"ai": 162.0,
+"human": 54.0
+},
+{
+"word": "homeostasis",
+"ratio": 3.0,
+"ai": 138.0,
+"human": 45.0
+},
+{
+"word": "neurological",
+"ratio": 3.0,
+"ai": 130.0,
+"human": 43.0
+},
+{
+"word": "integrity",
+"ratio": 3.0,
+"ai": 117.0,
+"human": 39.0
+},
+{
+"word": "typically",
+"ratio": 3.0,
+"ai": 105.0,
+"human": 35.0
+},
+{
+"word": "redox",
+"ratio": 3.0,
+"ai": 70.0,
+"human": 23.0
+},
+{
+"word": "disturbance",
+"ratio": 3.0,
+"ai": 65.0,
+"human": 21.0
+},
+{
+"word": "target",
+"ratio": 2.9,
+"ai": 670.0,
+"human": 228.0
+},
+{
+"word": "importantly",
+"ratio": 2.9,
+"ai": 351.0,
+"human": 120.0
+},
+{
+"word": "robust",
+"ratio": 2.9,
+"ai": 266.0,
+"human": 91.0
+},
+{
+"word": "serve",
+"ratio": 2.9,
+"ai": 213.0,
+"human": 72.0
+},
+{
+"word": "upregulation",
+"ratio": 2.9,
+"ai": 166.0,
+"human": 57.0
+},
+{
+"word": "ongoing",
+"ratio": 2.9,
+"ai": 166.0,
+"human": 57.0
+},
+{
+"word": "mechanistic",
+"ratio": 2.9,
+"ai": 162.0,
+"human": 55.0
+},
+{
+"word": "pathogenesis",
+"ratio": 2.9,
+"ai": 132.0,
+"human": 45.0
+},
+{
+"word": "synaptic",
+"ratio": 2.9,
+"ai": 103.0,
+"human": 35.0
+},
+{
+"word": "bonding",
+"ratio": 2.9,
+"ai": 65.0,
+"human": 22.0
+},
+{
+"word": "constraint",
+"ratio": 2.9,
+"ai": 57.0,
+"human": 19.0
+},
+{
+"word": "confound",
+"ratio": 2.9,
+"ai": 54.0,
+"human": 18.0
+},
+{
+"word": "maximize",
+"ratio": 2.9,
+"ai": 51.0,
+"human": 17.0
+},
+{
+"word": "ability",
+"ratio": 2.8,
+"ai": 702.0,
+"human": 254.0
+},
+{
+"word": "facilitate",
+"ratio": 2.8,
+"ai": 463.0,
+"human": 166.0
+},
+{
+"word": "able",
+"ratio": 2.8,
+"ai": 439.0,
+"human": 154.0
+},
+{
+"word": "distinct",
+"ratio": 2.8,
+"ai": 383.0,
+"human": 137.0
+},
+{
+"word": "particularly",
+"ratio": 2.8,
+"ai": 363.0,
+"human": 129.0
+},
+{
+"word": "modulate",
+"ratio": 2.8,
+"ai": 320.0,
+"human": 113.0
+},
+{
+"word": "underlying",
+"ratio": 2.8,
+"ai": 282.0,
+"human": 99.0
+},
+{
+"word": "capability",
+"ratio": 2.8,
+"ai": 186.0,
+"human": 65.0
+},
+{
+"word": "potent",
+"ratio": 2.8,
+"ai": 171.0,
+"human": 60.0
+},
+{
+"word": "transcriptional",
+"ratio": 2.8,
+"ai": 158.0,
+"human": 57.0
+},
+{
+"word": "engaged",
+"ratio": 2.8,
+"ai": 126.0,
+"human": 45.0
+},
+{
+"word": "evidenced",
+"ratio": 2.8,
+"ai": 114.0,
+"human": 40.0
+},
+{
+"word": "incorporation",
+"ratio": 2.8,
+"ai": 102.0,
+"human": 36.0
+},
+{
+"word": "remodeling",
+"ratio": 2.8,
+"ai": 92.0,
+"human": 32.0
+},
+{
+"word": "conformational",
+"ratio": 2.8,
+"ai": 54.0,
+"human": 19.0
+},
+{
+"word": "copper",
+"ratio": 2.8,
+"ai": 54.0,
+"human": 19.0
+},
+{
+"word": "progenitor",
+"ratio": 2.8,
+"ai": 52.0,
+"human": 18.0
+},
+{
+"word": "edema",
+"ratio": 2.8,
+"ai": 49.0,
+"human": 17.0
+},
+{
+"word": "contribute",
+"ratio": 2.7,
+"ai": 650.0,
+"human": 241.0
+},
+{
+"word": "complex",
+"ratio": 2.7,
+"ai": 510.0,
+"human": 191.0
+},
+{
+"word": "thereby",
+"ratio": 2.7,
+"ai": 242.0,
+"human": 88.0
+},
+{
+"word": "traditional",
+"ratio": 2.7,
+"ai": 228.0,
+"human": 85.0
+},
+{
+"word": "detailed",
+"ratio": 2.7,
+"ai": 189.0,
+"human": 69.0
+},
+{
+"word": "organization",
+"ratio": 2.7,
+"ai": 158.0,
+"human": 58.0
+},
+{
+"word": "regulator",
+"ratio": 2.7,
+"ai": 152.0,
+"human": 56.0
+},
+{
+"word": "synergistic",
+"ratio": 2.7,
+"ai": 148.0,
+"human": 55.0
+},
+{
+"word": "stabilize",
+"ratio": 2.7,
+"ai": 114.0,
+"human": 42.0
+},
+{
+"word": "deposition",
+"ratio": 2.7,
+"ai": 102.0,
+"human": 38.0
+},
+{
+"word": "histopathological",
+"ratio": 2.7,
+"ai": 90.0,
+"human": 33.0
+},
+{
+"word": "surrounding",
+"ratio": 2.7,
+"ai": 79.0,
+"human": 29.0
+},
+{
+"word": "nutritional",
+"ratio": 2.7,
+"ai": 60.0,
+"human": 22.0
+},
+{
+"word": "personalize",
+"ratio": 2.7,
+"ai": 58.0,
+"human": 21.0
+},
+{
+"word": "uniform",
+"ratio": 2.7,
+"ai": 55.0,
+"human": 20.0
+},
+{
+"word": "interfacial",
+"ratio": 2.7,
+"ai": 47.0,
+"human": 17.0
+},
+{
+"word": "enzymatic",
+"ratio": 2.7,
+"ai": 44.0,
+"human": 16.0
+},
+{
+"word": "highlight",
+"ratio": 2.6,
+"ai": 940.0,
+"human": 365.0
+},
+{
+"word": "like",
+"ratio": 2.6,
+"ai": 368.0,
+"human": 141.0
+},
+{
+"word": "over",
+"ratio": 2.6,
+"ai": 231.0,
+"human": 89.0
+},
+{
+"word": "advanced",
+"ratio": 2.6,
+"ai": 211.0,
+"human": 82.0
+},
+{
+"word": "monitor",
+"ratio": 2.6,
+"ai": 159.0,
+"human": 62.0
+},
+{
+"word": "integration",
+"ratio": 2.6,
+"ai": 146.0,
+"human": 55.0
+},
+{
+"word": "multivariate",
+"ratio": 2.6,
+"ai": 143.0,
+"human": 55.0
+},
+{
+"word": "reliable",
+"ratio": 2.6,
+"ai": 126.0,
+"human": 49.0
+},
+{
+"word": "lineage",
+"ratio": 2.6,
+"ai": 97.0,
+"human": 37.0
+},
+{
+"word": "flexibility",
+"ratio": 2.6,
+"ai": 89.0,
+"human": 34.0
+},
+{
+"word": "tolerated",
+"ratio": 2.6,
+"ai": 84.0,
+"human": 32.0
+},
+{
+"word": "think",
+"ratio": 2.6,
+"ai": 80.0,
+"human": 30.0
+},
+{
+"word": "timely",
+"ratio": 2.6,
+"ai": 53.0,
+"human": 20.0
+},
+{
+"word": "smooth",
+"ratio": 2.6,
+"ai": 52.0,
+"human": 20.0
+},
+{
+"word": "taxonomic",
+"ratio": 2.6,
+"ai": 40.0,
+"human": 15.0
+},
+{
+"word": "importance",
+"ratio": 2.5,
+"ai": 434.0,
+"human": 172.0
+},
+{
+"word": "inflammatory",
+"ratio": 2.5,
+"ai": 427.0,
+"human": 168.0
+},
+{
+"word": "link",
+"ratio": 2.5,
+"ai": 296.0,
+"human": 118.0
+},
+{
+"word": "optimized",
+"ratio": 2.5,
+"ai": 269.0,
+"human": 108.0
+},
+{
+"word": "guided",
+"ratio": 2.5,
+"ai": 210.0,
+"human": 84.0
+},
+{
+"word": "continue",
+"ratio": 2.5,
+"ai": 190.0,
+"human": 76.0
+},
+{
+"word": "certain",
+"ratio": 2.5,
+"ai": 166.0,
+"human": 65.0
+},
+{
+"word": "architecture",
+"ratio": 2.5,
+"ai": 117.0,
+"human": 46.0
+},
+{
+"word": "align",
+"ratio": 2.5,
+"ai": 77.0,
+"human": 30.0
+},
+{
+"word": "compromise",
+"ratio": 2.5,
+"ai": 77.0,
+"human": 30.0
+},
+{
+"word": "arise",
+"ratio": 2.5,
+"ai": 71.0,
+"human": 28.0
+},
+{
+"word": "radiographic",
+"ratio": 2.5,
+"ai": 68.0,
+"human": 27.0
+},
+{
+"word": "supportive",
+"ratio": 2.5,
+"ai": 65.0,
+"human": 26.0
+},
+{
+"word": "taxa",
+"ratio": 2.5,
+"ai": 56.0,
+"human": 22.0
+},
+{
+"word": "chemokine",
+"ratio": 2.5,
+"ai": 54.0,
+"human": 21.0
+},
+{
+"word": "implantation",
+"ratio": 2.5,
+"ai": 54.0,
+"human": 21.0
+},
+{
+"word": "encod",
+"ratio": 2.5,
+"ai": 53.0,
+"human": 21.0
+},
+{
+"word": "elicit",
+"ratio": 2.5,
+"ai": 44.0,
+"human": 17.0
+},
+{
+"word": "recruit",
+"ratio": 2.5,
+"ai": 44.0,
+"human": 17.0
+},
+{
+"word": "degeneration",
+"ratio": 2.5,
+"ai": 43.0,
+"human": 17.0
+},
+{
+"word": "across",
+"ratio": 2.4,
+"ai": 707.0,
+"human": 294.0
+},
+{
+"word": "structural",
+"ratio": 2.4,
+"ai": 434.0,
+"human": 179.0
+},
+{
+"word": "elevated",
+"ratio": 2.4,
+"ai": 393.0,
+"human": 162.0
+},
+{
+"word": "help",
+"ratio": 2.4,
+"ai": 390.0,
+"human": 160.0
+},
+{
+"word": "healthcare",
+"ratio": 2.4,
+"ai": 286.0,
+"human": 121.0
+},
+{
+"word": "viral",
+"ratio": 2.4,
+"ai": 258.0,
+"human": 109.0
+},
+{
+"word": "access",
+"ratio": 2.4,
+"ai": 252.0,
+"human": 104.0
+},
+{
+"word": "transport",
+"ratio": 2.4,
+"ai": 206.0,
+"human": 87.0
+},
+{
+"word": "turn",
+"ratio": 2.4,
+"ai": 146.0,
+"human": 60.0
+},
+{
+"word": "balance",
+"ratio": 2.4,
+"ai": 141.0,
+"human": 59.0
+},
+{
+"word": "lipid",
+"ratio": 2.4,
+"ai": 116.0,
+"human": 49.0
+},
+{
+"word": "preserve",
+"ratio": 2.4,
+"ai": 108.0,
+"human": 45.0
+},
+{
+"word": "adaptive",
+"ratio": 2.4,
+"ai": 88.0,
+"human": 36.0
+},
+{
+"word": "coordination",
+"ratio": 2.4,
+"ai": 85.0,
+"human": 35.0
+},
+{
+"word": "nervous",
+"ratio": 2.4,
+"ai": 73.0,
+"human": 30.0
+},
+{
+"word": "mesenchymal",
+"ratio": 2.4,
+"ai": 61.0,
+"human": 25.0
+},
+{
+"word": "intermediates",
+"ratio": 2.4,
+"ai": 58.0,
+"human": 24.0
+},
+{
+"word": "remote",
+"ratio": 2.4,
+"ai": 58.0,
+"human": 24.0
+},
+{
+"word": "geographic",
+"ratio": 2.4,
+"ai": 57.0,
+"human": 23.0
+},
+{
+"word": "powerful",
+"ratio": 2.4,
+"ai": 54.0,
+"human": 22.0
+},
+{
+"word": "posed",
+"ratio": 2.4,
+"ai": 53.0,
+"human": 22.0
+},
+{
+"word": "untreated",
+"ratio": 2.4,
+"ai": 52.0,
+"human": 21.0
+},
+{
+"word": "bioavailability",
+"ratio": 2.4,
+"ai": 46.0,
+"human": 19.0
+},
+{
+"word": "inherent",
+"ratio": 2.4,
+"ai": 43.0,
+"human": 18.0
+},
+{
+"word": "executive",
+"ratio": 2.4,
+"ai": 41.0,
+"human": 17.0
+},
+{
+"word": "compare",
+"ratio": 2.3,
+"ai": 3412.0,
+"human": 1516.0
+},
+{
+"word": "including",
+"ratio": 2.3,
+"ai": 2417.0,
+"human": 1059.0
+},
+{
+"word": "involve",
+"ratio": 2.3,
+"ai": 789.0,
+"human": 345.0
+},
+{
+"word": "cellular",
+"ratio": 2.3,
+"ai": 377.0,
+"human": 163.0
+},
+{
+"word": "matrix",
+"ratio": 2.3,
+"ai": 273.0,
+"human": 119.0
+},
+{
+"word": "unique",
+"ratio": 2.3,
+"ai": 254.0,
+"human": 108.0
+},
+{
+"word": "fully",
+"ratio": 2.3,
+"ai": 233.0,
+"human": 99.0
+},
+{
+"word": "resolution",
+"ratio": 2.3,
+"ai": 219.0,
+"human": 97.0
+},
+{
+"word": "nature",
+"ratio": 2.3,
+"ai": 197.0,
+"human": 85.0
+},
+{
+"word": "organic",
+"ratio": 2.3,
+"ai": 168.0,
+"human": 72.0
+},
+{
+"word": "extracellular",
+"ratio": 2.3,
+"ai": 170.0,
+"human": 75.0
+},
+{
+"word": "emotional",
+"ratio": 2.3,
+"ai": 157.0,
+"human": 67.0
+},
+{
+"word": "patient",
+"ratio": 2.3,
+"ai": 153.0,
+"human": 67.0
+},
+{
+"word": "platform",
+"ratio": 2.3,
+"ai": 143.0,
+"human": 61.0
+},
+{
+"word": "regimen",
+"ratio": 2.3,
+"ai": 106.0,
+"human": 46.0
+},
+{
+"word": "adapt",
+"ratio": 2.3,
+"ai": 96.0,
+"human": 41.0
+},
+{
+"word": "placement",
+"ratio": 2.3,
+"ai": 73.0,
+"human": 31.0
+},
+{
+"word": "visualization",
+"ratio": 2.3,
+"ai": 73.0,
+"human": 31.0
+},
+{
+"word": "flexible",
+"ratio": 2.3,
+"ai": 73.0,
+"human": 32.0
+},
+{
+"word": "intraoperative",
+"ratio": 2.3,
+"ai": 68.0,
+"human": 29.0
+},
+{
+"word": "conferred",
+"ratio": 2.3,
+"ai": 61.0,
+"human": 26.0
+},
+{
+"word": "instance",
+"ratio": 2.3,
+"ai": 61.0,
+"human": 26.0
+},
+{
+"word": "analyte",
+"ratio": 2.3,
+"ai": 55.0,
+"human": 24.0
+},
+{
+"word": "nonlinear",
+"ratio": 2.3,
+"ai": 44.0,
+"human": 19.0
+},
+{
+"word": "reveal",
+"ratio": 2.2,
+"ai": 1904.0,
+"human": 876.0
+},
+{
+"word": "period",
+"ratio": 2.2,
+"ai": 541.0,
+"human": 243.0
+},
+{
+"word": "efficient",
+"ratio": 2.2,
+"ai": 291.0,
+"human": 131.0
+},
+{
+"word": "cytokine",
+"ratio": 2.2,
+"ai": 284.0,
+"human": 129.0
+},
+{
+"word": "host",
+"ratio": 2.2,
+"ai": 266.0,
+"human": 123.0
+},
+{
+"word": "optimal",
+"ratio": 2.2,
+"ai": 226.0,
+"human": 101.0
+},
+{
+"word": "appropriate",
+"ratio": 2.2,
+"ai": 227.0,
+"human": 102.0
+},
+{
+"word": "accompanied",
+"ratio": 2.2,
+"ai": 137.0,
+"human": 62.0
+},
+{
+"word": "separation",
+"ratio": 2.2,
+"ai": 119.0,
+"human": 55.0
+},
+{
+"word": "kinetics",
+"ratio": 2.2,
+"ai": 111.0,
+"human": 51.0
+},
+{
+"word": "drivers",
+"ratio": 2.2,
+"ai": 94.0,
+"human": 43.0
+},
+{
+"word": "prolonged",
+"ratio": 2.2,
+"ai": 90.0,
+"human": 40.0
+},
+{
+"word": "immune",
+"ratio": 2.2,
+"ai": 86.0,
+"human": 39.0
+},
+{
+"word": "preclinical",
+"ratio": 2.2,
+"ai": 85.0,
+"human": 38.0
+},
+{
+"word": "proper",
+"ratio": 2.2,
+"ai": 83.0,
+"human": 37.0
+},
+{
+"word": "epigenetic",
+"ratio": 2.2,
+"ai": 80.0,
+"human": 36.0
+},
+{
+"word": "digital",
+"ratio": 2.2,
+"ai": 68.0,
+"human": 30.0
+},
+{
+"word": "harbor",
+"ratio": 2.2,
+"ai": 66.0,
+"human": 30.0
+},
+{
+"word": "stabilization",
+"ratio": 2.2,
+"ai": 60.0,
+"human": 27.0
+},
+{
+"word": "anatomical",
+"ratio": 2.2,
+"ai": 59.0,
+"human": 27.0
+},
+{
+"word": "immunosuppressive",
+"ratio": 2.2,
+"ai": 57.0,
+"human": 26.0
+},
+{
+"word": "entry",
+"ratio": 2.2,
+"ai": 51.0,
+"human": 23.0
+},
+{
+"word": "neurodegenerative",
+"ratio": 2.2,
+"ai": 45.0,
+"human": 20.0
+},
+{
+"word": "balance",
+"ratio": 2.2,
+"ai": 43.0,
+"human": 19.0
+},
+{
+"word": "accessible",
+"ratio": 2.2,
+"ai": 42.0,
+"human": 19.0
+},
+{
+"word": "format",
+"ratio": 2.2,
+"ai": 42.0,
+"human": 19.0
+},
+{
+"word": "trafficking",
+"ratio": 2.2,
+"ai": 40.0,
+"human": 18.0
+},
+{
+"word": "approach",
+"ratio": 2.1,
+"ai": 1113.0,
+"human": 521.0
+},
+{
+"word": "oxidative",
+"ratio": 2.1,
+"ai": 319.0,
+"human": 155.0
+},
+{
+"word": "cognitive",
+"ratio": 2.1,
+"ai": 279.0,
+"human": 132.0
+},
+{
+"word": "spatial",
+"ratio": 2.1,
+"ai": 190.0,
+"human": 90.0
+},
+{
+"word": "shift",
+"ratio": 2.1,
+"ai": 177.0,
+"human": 84.0
+},
+{
+"word": "cardiovascular",
+"ratio": 2.1,
+"ai": 173.0,
+"human": 82.0
+},
+{
+"word": "characteristic",
+"ratio": 2.1,
+"ai": 142.0,
+"human": 68.0
+},
+{
+"word": "provider",
+"ratio": 2.1,
+"ai": 136.0,
+"human": 64.0
+},
+{
+"word": "pharmacological",
+"ratio": 2.1,
+"ai": 130.0,
+"human": 61.0
+},
+{
+"word": "availability",
+"ratio": 2.1,
+"ai": 116.0,
+"human": 54.0
+},
+{
+"word": "calcium",
+"ratio": 2.1,
+"ai": 117.0,
+"human": 56.0
+},
+{
+"word": "developmental",
+"ratio": 2.1,
+"ai": 101.0,
+"human": 47.0
+},
+{
+"word": "microbiome",
+"ratio": 2.1,
+"ai": 101.0,
+"human": 48.0
+},
+{
+"word": "nitrogen",
+"ratio": 2.1,
+"ai": 98.0,
+"human": 46.0
+},
+{
+"word": "biochemical",
+"ratio": 2.1,
+"ai": 93.0,
+"human": 45.0
+},
+{
+"word": "downstream",
+"ratio": 2.1,
+"ai": 91.0,
+"human": 44.0
+},
+{
+"word": "replication",
+"ratio": 2.1,
+"ai": 89.0,
+"human": 42.0
+},
+{
+"word": "infiltration",
+"ratio": 2.1,
+"ai": 88.0,
+"human": 42.0
+},
+{
+"word": "ventricular",
+"ratio": 2.1,
+"ai": 89.0,
+"human": 43.0
+},
+{
+"word": "angiogenesis",
+"ratio": 2.1,
+"ai": 83.0,
+"human": 39.0
+},
+{
+"word": "localize",
+"ratio": 2.1,
+"ai": 81.0,
+"human": 38.0
+},
+{
+"word": "persisted",
+"ratio": 2.1,
+"ai": 80.0,
+"human": 37.0
+},
+{
+"word": "cycling",
+"ratio": 2.1,
+"ai": 71.0,
+"human": 34.0
+},
+{
+"word": "porous",
+"ratio": 2.1,
+"ai": 56.0,
+"human": 26.0
+},
+{
+"word": "bioactive",
+"ratio": 2.1,
+"ai": 56.0,
+"human": 27.0
+},
+{
+"word": "intravenous",
+"ratio": 2.1,
+"ai": 51.0,
+"human": 24.0
+},
+{
+"word": "emergence",
+"ratio": 2.1,
+"ai": 52.0,
+"human": 25.0
+},
+{
+"word": "vulnerable",
+"ratio": 2.1,
+"ai": 49.0,
+"human": 23.0
+},
+{
+"word": "reversible",
+"ratio": 2.1,
+"ai": 47.0,
+"human": 22.0
+},
+{
+"word": "pollution",
+"ratio": 2.1,
+"ai": 43.0,
+"human": 20.0
+},
+{
+"word": "holistic",
+"ratio": 2.1,
+"ai": 41.0,
+"human": 19.0
+},
+{
+"word": "neuroinflammation",
+"ratio": 2.1,
+"ai": 40.0,
+"human": 19.0
+},
+{
+"word": "parkinson",
+"ratio": 2.1,
+"ai": 40.0,
+"human": 19.0
+},
+{
+"word": "demonstrate",
+"ratio": 2.0,
+"ai": 1983.0,
+"human": 974.0
+},
+{
+"word": "indicate",
+"ratio": 2.0,
+"ai": 1779.0,
+"human": 873.0
+},
+{
+"word": "signaling",
+"ratio": 2.0,
+"ai": 875.0,
+"human": 443.0
+},
+{
+"word": "over",
+"ratio": 2.0,
+"ai": 793.0,
+"human": 399.0
+},
+{
+"word": "presence",
+"ratio": 2.0,
+"ai": 666.0,
+"human": 332.0
+},
+{
+"word": "immune",
+"ratio": 2.0,
+"ai": 425.0,
+"human": 214.0
+},
+{
+"word": "marker",
+"ratio": 2.0,
+"ai": 391.0,
+"human": 192.0
+},
+{
+"word": "enzyme",
+"ratio": 2.0,
+"ai": 380.0,
+"human": 188.0
+},
+{
+"word": "profile",
+"ratio": 2.0,
+"ai": 375.0,
+"human": 190.0
+},
+{
+"word": "testing",
+"ratio": 2.0,
+"ai": 280.0,
+"human": 140.0
+},
+{
+"word": "drive",
+"ratio": 2.0,
+"ai": 278.0,
+"human": 141.0
+},
+{
+"word": "environmental",
+"ratio": 2.0,
+"ai": 270.0,
+"human": 137.0
+},
+{
+"word": "composition",
+"ratio": 2.0,
+"ai": 256.0,
+"human": 126.0
+},
+{
+"word": "dynamics",
+"ratio": 2.0,
+"ai": 244.0,
+"human": 123.0
+},
+{
+"word": "resource",
+"ratio": 2.0,
+"ai": 230.0,
+"human": 116.0
+},
+{
+"word": "integrate",
+"ratio": 2.0,
+"ai": 217.0,
+"human": 109.0
+},
+{
+"word": "alteration",
+"ratio": 2.0,
+"ai": 210.0,
+"human": 104.0
+},
+{
+"word": "antioxidant",
+"ratio": 2.0,
+"ai": 201.0,
+"human": 99.0
+},
+{
+"word": "examination",
+"ratio": 2.0,
+"ai": 191.0,
+"human": 95.0
+},
+{
+"word": "processing",
+"ratio": 2.0,
+"ai": 193.0,
+"human": 97.0
+},
+{
+"word": "impairment",
+"ratio": 2.0,
+"ai": 158.0,
+"human": 80.0
+},
+{
+"word": "recognition",
+"ratio": 2.0,
+"ai": 140.0,
+"human": 70.0
+},
+{
+"word": "clinicians",
+"ratio": 2.0,
+"ai": 124.0,
+"human": 61.0
+},
+{
+"word": "tend",
+"ratio": 2.0,
+"ai": 118.0,
+"human": 58.0
+},
+{
+"word": "genomic",
+"ratio": 2.0,
+"ai": 116.0,
+"human": 59.0
+},
+{
+"word": "abnormality",
+"ratio": 2.0,
+"ai": 112.0,
+"human": 57.0
+},
+{
+"word": "assembly",
+"ratio": 2.0,
+"ai": 94.0,
+"human": 46.0
+},
+{
+"word": "standardize",
+"ratio": 2.0,
+"ai": 92.0,
+"human": 45.0
+},
+{
+"word": "demand",
+"ratio": 2.0,
+"ai": 81.0,
+"human": 40.0
+},
+{
+"word": "implicating",
+"ratio": 2.0,
+"ai": 78.0,
+"human": 39.0
+},
+{
+"word": "aggressive",
+"ratio": 2.0,
+"ai": 72.0,
+"human": 36.0
+},
+{
+"word": "clearance",
+"ratio": 2.0,
+"ai": 66.0,
+"human": 33.0
+},
+{
+"word": "sense",
+"ratio": 2.0,
+"ai": 65.0,
+"human": 33.0
+},
+{
+"word": "desire",
+"ratio": 2.0,
+"ai": 65.0,
+"human": 33.0
+},
+{
+"word": "triglyceride",
+"ratio": 2.0,
+"ai": 54.0,
+"human": 27.0
+},
+{
+"word": "geometry",
+"ratio": 2.0,
+"ai": 49.0,
+"human": 24.0
+},
+{
+"word": "alignment",
+"ratio": 2.0,
+"ai": 50.0,
+"human": 25.0
+},
+{
+"word": "atomic",
+"ratio": 2.0,
+"ai": 46.0,
+"human": 23.0
+},
+{
+"word": "workflows",
+"ratio": 2.0,
+"ai": 45.0,
+"human": 22.0
+},
+{
+"word": "around",
+"ratio": 2.0,
+"ai": 43.0,
+"human": 21.0
+},
+{
+"word": "suppressor",
+"ratio": 2.0,
+"ai": 43.0,
+"human": 21.0
+},
+{
+"word": "niche",
+"ratio": 2.0,
+"ai": 43.0,
+"human": 21.0
+},
+{
+"word": "perfusion",
+"ratio": 2.0,
+"ai": 41.0,
+"human": 20.0
+},
+{
+"word": "feeling",
+"ratio": 2.0,
+"ai": 40.0,
+"human": 20.0
+}
+],
+"gpt-5.2 science": [
+{
+"word": "prespecified",
+"ratio": 99.0,
+"ai": 49.0,
+"human": 0.0
+},
+{
+"word": "priori",
+"ratio": 87.0,
+"ai": 43.0,
+"human": 0.0
+},
+{
+"word": "immunoblotting",
+"ratio": 29.7,
+"ai": 44.0,
+"human": 1.0
+},
+{
+"word": "parallel",
+"ratio": 28.8,
+"ai": 158.0,
+"human": 5.0
+},
+{
+"word": "frame",
+"ratio": 28.3,
+"ai": 42.0,
+"human": 1.0
+},
+{
+"word": "baseline",
+"ratio": 26.2,
+"ai": 65.0,
+"human": 2.0
+},
+{
+"word": "comparatively",
+"ratio": 25.5,
+"ai": 191.0,
+"human": 7.0
+},
+{
+"word": "predefine",
+"ratio": 21.8,
+"ai": 54.0,
+"human": 2.0
+},
+{
+"word": "categorical",
+"ratio": 20.6,
+"ai": 51.0,
+"human": 2.0
+},
+{
+"word": "strata",
+"ratio": 17.3,
+"ai": 60.0,
+"human": 3.0
+},
+{
+"word": "merely",
+"ratio": 15.9,
+"ai": 55.0,
+"human": 3.0
+},
+{
+"word": "nonspecific",
+"ratio": 15.3,
+"ai": 53.0,
+"human": 3.0
+},
+{
+"word": "overt",
+"ratio": 13.7,
+"ai": 61.0,
+"human": 4.0
+},
+{
+"word": "operationalize",
+"ratio": 13.2,
+"ai": 59.0,
+"human": 4.0
+},
+{
+"word": "readout",
+"ratio": 12.5,
+"ai": 68.0,
+"human": 5.0
+},
+{
+"word": "reproducible",
+"ratio": 11.9,
+"ai": 77.0,
+"human": 6.0
+},
+{
+"word": "consistent",
+"ratio": 11.2,
+"ai": 1805.0,
+"human": 161.0
+},
+{
+"word": "pronounce",
+"ratio": 11.0,
+"ai": 379.0,
+"human": 34.0
+},
+{
+"word": "filter",
+"ratio": 10.8,
+"ai": 48.0,
+"human": 4.0
+},
+{
+"word": "eligibility",
+"ratio": 10.6,
+"ai": 47.0,
+"human": 4.0
+},
+{
+"word": "modest",
+"ratio": 10.3,
+"ai": 180.0,
+"human": 17.0
+},
+{
+"word": "comparability",
+"ratio": 10.1,
+"ai": 45.0,
+"human": 4.0
+},
+{
+"word": "broadly",
+"ratio": 9.8,
+"ai": 73.0,
+"human": 7.0
+},
+{
+"word": "complicate",
+"ratio": 9.7,
+"ai": 72.0,
+"human": 7.0
+},
+{
+"word": "routine",
+"ratio": 9.7,
+"ai": 53.0,
+"human": 5.0
+},
+{
+"word": "measurable",
+"ratio": 9.4,
+"ai": 98.0,
+"human": 10.0
+},
+{
+"word": "constraint",
+"ratio": 9.3,
+"ai": 172.0,
+"human": 18.0
+},
+{
+"word": "heighten",
+"ratio": 9.3,
+"ai": 60.0,
+"human": 6.0
+},
+{
+"word": "manufacturer",
+"ratio": 9.2,
+"ai": 41.0,
+"human": 4.0
+},
+{
+"word": "descriptive",
+"ratio": 9.1,
+"ai": 77.0,
+"human": 8.0
+},
+{
+"word": "constrain",
+"ratio": 8.9,
+"ai": 111.0,
+"human": 12.0
+},
+{
+"word": "minimize",
+"ratio": 8.8,
+"ai": 249.0,
+"human": 28.0
+},
+{
+"word": "handling",
+"ratio": 8.8,
+"ai": 101.0,
+"human": 11.0
+},
+{
+"word": "repeatedly",
+"ratio": 8.8,
+"ai": 57.0,
+"human": 6.0
+},
+{
+"word": "documentation",
+"ratio": 8.8,
+"ai": 57.0,
+"human": 6.0
+},
+{
+"word": "normalization",
+"ratio": 8.5,
+"ai": 63.0,
+"human": 7.0
+},
+{
+"word": "preced",
+"ratio": 8.5,
+"ai": 55.0,
+"human": 6.0
+},
+{
+"word": "interfacial",
+"ratio": 8.4,
+"ai": 129.0,
+"human": 15.0
+},
+{
+"word": "blind",
+"ratio": 8.4,
+"ai": 54.0,
+"human": 6.0
+},
+{
+"word": "grade",
+"ratio": 8.2,
+"ai": 61.0,
+"human": 7.0
+},
+{
+"word": "modestly",
+"ratio": 8.2,
+"ai": 53.0,
+"human": 6.0
+},
+{
+"word": "attributable",
+"ratio": 8.1,
+"ai": 150.0,
+"human": 18.0
+},
+{
+"word": "sociodemographic",
+"ratio": 8.1,
+"ai": 52.0,
+"human": 6.0
+},
+{
+"word": "assignment",
+"ratio": 7.9,
+"ai": 75.0,
+"human": 9.0
+},
+{
+"word": "recur",
+"ratio": 7.9,
+"ai": 43.0,
+"human": 5.0
+},
+{
+"word": "curvatures",
+"ratio": 7.9,
+"ai": 43.0,
+"human": 5.0
+},
+{
+"word": "parallel",
+"ratio": 7.7,
+"ai": 288.0,
+"human": 37.0
+},
+{
+"word": "typically",
+"ratio": 7.7,
+"ai": 249.0,
+"human": 32.0
+},
+{
+"word": "preserve",
+"ratio": 7.6,
+"ai": 309.0,
+"human": 40.0
+},
+{
+"word": "inconsistent",
+"ratio": 7.6,
+"ai": 79.0,
+"human": 10.0
+},
+{
+"word": "canonical",
+"ratio": 7.5,
+"ai": 116.0,
+"human": 15.0
+},
+{
+"word": "standardize",
+"ratio": 7.4,
+"ai": 313.0,
+"human": 42.0
+},
+{
+"word": "covariate",
+"ratio": 7.4,
+"ai": 158.0,
+"human": 21.0
+},
+{
+"word": "uncommon",
+"ratio": 7.4,
+"ai": 62.0,
+"human": 8.0
+},
+{
+"word": "subset",
+"ratio": 7.3,
+"ai": 376.0,
+"human": 51.0
+},
+{
+"word": "stratify",
+"ratio": 7.0,
+"ai": 207.0,
+"human": 29.0
+},
+{
+"word": "redox",
+"ratio": 7.0,
+"ai": 136.0,
+"human": 19.0
+},
+{
+"word": "accompany",
+"ratio": 6.9,
+"ai": 360.0,
+"human": 52.0
+},
+{
+"word": "uniform",
+"ratio": 6.9,
+"ai": 114.0,
+"human": 16.0
+},
+{
+"word": "whether",
+"ratio": 6.8,
+"ai": 563.0,
+"human": 82.0
+},
+{
+"word": "mark",
+"ratio": 6.8,
+"ai": 261.0,
+"human": 38.0
+},
+{
+"word": "proliferative",
+"ratio": 6.8,
+"ai": 57.0,
+"human": 8.0
+},
+{
+"word": "univariable",
+"ratio": 6.8,
+"ai": 44.0,
+"human": 6.0
+},
+{
+"word": "frequently",
+"ratio": 6.7,
+"ai": 576.0,
+"human": 86.0
+},
+{
+"word": "committee",
+"ratio": 6.7,
+"ai": 63.0,
+"human": 9.0
+},
+{
+"word": "attainment",
+"ratio": 6.7,
+"ai": 43.0,
+"human": 6.0
+},
+{
+"word": "across",
+"ratio": 6.6,
+"ai": 1812.0,
+"human": 274.0
+},
+{
+"word": "adjacent",
+"ratio": 6.6,
+"ai": 134.0,
+"human": 20.0
+},
+{
+"word": "uniformly",
+"ratio": 6.6,
+"ai": 49.0,
+"human": 7.0
+},
+{
+"word": "consent",
+"ratio": 6.5,
+"ai": 106.0,
+"human": 16.0
+},
+{
+"word": "representative",
+"ratio": 6.5,
+"ai": 100.0,
+"human": 15.0
+},
+{
+"word": "corroborate",
+"ratio": 6.5,
+"ai": 61.0,
+"human": 9.0
+},
+{
+"word": "routine",
+"ratio": 6.4,
+"ai": 222.0,
+"human": 34.0
+},
+{
+"word": "demographic",
+"ratio": 6.4,
+"ai": 124.0,
+"human": 19.0
+},
+{
+"word": "tone",
+"ratio": 6.4,
+"ai": 41.0,
+"human": 6.0
+},
+{
+"word": "quantify",
+"ratio": 6.3,
+"ai": 448.0,
+"human": 71.0
+},
+{
+"word": "window",
+"ratio": 6.3,
+"ai": 148.0,
+"human": 23.0
+},
+{
+"word": "next",
+"ratio": 6.3,
+"ai": 136.0,
+"human": 21.0
+},
+{
+"word": "eligible",
+"ratio": 6.3,
+"ai": 59.0,
+"human": 9.0
+},
+{
+"word": "underscor",
+"ratio": 6.3,
+"ai": 59.0,
+"human": 9.0
+},
+{
+"word": "group",
+"ratio": 6.2,
+"ai": 46.0,
+"human": 7.0
+},
+{
+"word": "exclude",
+"ratio": 6.1,
+"ai": 230.0,
+"human": 37.0
+},
+{
+"word": "reliance",
+"ratio": 6.1,
+"ai": 45.0,
+"human": 7.0
+},
+{
+"word": "rather",
+"ratio": 6.0,
+"ai": 509.0,
+"human": 84.0
+},
+{
+"word": "amplify",
+"ratio": 6.0,
+"ai": 122.0,
+"human": 20.0
+},
+{
+"word": "institutional",
+"ratio": 5.9,
+"ai": 137.0,
+"human": 23.0
+},
+{
+"word": "reflect",
+"ratio": 5.8,
+"ai": 601.0,
+"human": 104.0
+},
+{
+"word": "consistently",
+"ratio": 5.8,
+"ai": 352.0,
+"human": 60.0
+},
+{
+"word": "capture",
+"ratio": 5.8,
+"ai": 309.0,
+"human": 53.0
+},
+{
+"word": "remodeling",
+"ratio": 5.8,
+"ai": 158.0,
+"human": 27.0
+},
+{
+"word": "alongside",
+"ratio": 5.8,
+"ai": 72.0,
+"human": 12.0
+},
+{
+"word": "interquartile",
+"ratio": 5.7,
+"ai": 54.0,
+"human": 9.0
+},
+{
+"word": "coordinate",
+"ratio": 5.6,
+"ai": 120.0,
+"human": 21.0
+},
+{
+"word": "matrice",
+"ratio": 5.6,
+"ai": 64.0,
+"human": 11.0
+},
+{
+"word": "adjustment",
+"ratio": 5.5,
+"ai": 294.0,
+"human": 53.0
+},
+{
+"word": "architecture",
+"ratio": 5.5,
+"ai": 223.0,
+"human": 40.0
+},
+{
+"word": "translates",
+"ratio": 5.5,
+"ai": 113.0,
+"human": 20.0
+},
+{
+"word": "preservation",
+"ratio": 5.5,
+"ai": 63.0,
+"human": 11.0
+},
+{
+"word": "plausible",
+"ratio": 5.5,
+"ai": 46.0,
+"human": 8.0
+},
+{
+"word": "assess",
+"ratio": 5.4,
+"ai": 1087.0,
+"human": 202.0
+},
+{
+"word": "prolonged",
+"ratio": 5.4,
+"ai": 152.0,
+"human": 28.0
+},
+{
+"word": "structure",
+"ratio": 5.4,
+"ai": 147.0,
+"human": 27.0
+},
+{
+"word": "profiling",
+"ratio": 5.4,
+"ai": 138.0,
+"human": 25.0
+},
+{
+"word": "enzymatic",
+"ratio": 5.4,
+"ai": 67.0,
+"human": 12.0
+},
+{
+"word": "descriptor",
+"ratio": 5.4,
+"ai": 45.0,
+"human": 8.0
+},
+{
+"word": "continuity",
+"ratio": 5.4,
+"ai": 40.0,
+"human": 7.0
+},
+{
+"word": "recorded",
+"ratio": 5.3,
+"ai": 364.0,
+"human": 68.0
+},
+{
+"word": "repeat",
+"ratio": 5.3,
+"ai": 230.0,
+"human": 43.0
+},
+{
+"word": "predominantly",
+"ratio": 5.3,
+"ai": 208.0,
+"human": 39.0
+},
+{
+"word": "taxa",
+"ratio": 5.3,
+"ai": 108.0,
+"human": 20.0
+},
+{
+"word": "arrangement",
+"ratio": 5.3,
+"ai": 76.0,
+"human": 14.0
+},
+{
+"word": "ethics",
+"ratio": 5.3,
+"ai": 55.0,
+"human": 10.0
+},
+{
+"word": "record",
+"ratio": 5.2,
+"ai": 162.0,
+"human": 31.0
+},
+{
+"word": "incomplete",
+"ratio": 5.2,
+"ai": 112.0,
+"human": 21.0
+},
+{
+"word": "identical",
+"ratio": 5.2,
+"ai": 100.0,
+"human": 19.0
+},
+{
+"word": "infer",
+"ratio": 5.2,
+"ai": 70.0,
+"human": 13.0
+},
+{
+"word": "thereby",
+"ratio": 5.1,
+"ai": 401.0,
+"human": 78.0
+},
+{
+"word": "markedly",
+"ratio": 5.1,
+"ai": 295.0,
+"human": 58.0
+},
+{
+"word": "meaningful",
+"ratio": 5.1,
+"ai": 135.0,
+"human": 26.0
+},
+{
+"word": "geometry",
+"ratio": 5.1,
+"ai": 104.0,
+"human": 20.0
+},
+{
+"word": "refine",
+"ratio": 5.1,
+"ai": 63.0,
+"human": 12.0
+},
+{
+"word": "serial",
+"ratio": 5.1,
+"ai": 48.0,
+"human": 9.0
+},
+{
+"word": "explicitly",
+"ratio": 5.1,
+"ai": 48.0,
+"human": 9.0
+},
+{
+"word": "substantial",
+"ratio": 5.0,
+"ai": 350.0,
+"human": 70.0
+},
+{
+"word": "interpretation",
+"ratio": 5.0,
+"ai": 141.0,
+"human": 28.0
+},
+{
+"word": "compartment",
+"ratio": 5.0,
+"ai": 121.0,
+"human": 24.0
+},
+{
+"word": "compact",
+"ratio": 5.0,
+"ai": 67.0,
+"human": 13.0
+},
+{
+"word": "progressively",
+"ratio": 5.0,
+"ai": 62.0,
+"human": 12.0
+},
+{
+"word": "missing",
+"ratio": 5.0,
+"ai": 52.0,
+"human": 10.0
+},
+{
+"word": "positioning",
+"ratio": 5.0,
+"ai": 42.0,
+"human": 8.0
+},
+{
+"word": "variability",
+"ratio": 4.9,
+"ai": 292.0,
+"human": 59.0
+},
+{
+"word": "transient",
+"ratio": 4.9,
+"ai": 179.0,
+"human": 36.0
+},
+{
+"word": "categorizing",
+"ratio": 4.9,
+"ai": 86.0,
+"human": 17.0
+},
+{
+"word": "span",
+"ratio": 4.9,
+"ai": 75.0,
+"human": 15.0
+},
+{
+"word": "subtle",
+"ratio": 4.9,
+"ai": 56.0,
+"human": 11.0
+},
+{
+"word": "buffer",
+"ratio": 4.9,
+"ai": 41.0,
+"human": 8.0
+},
+{
+"word": "shift",
+"ratio": 4.8,
+"ai": 363.0,
+"human": 75.0
+},
+{
+"word": "heterogeneous",
+"ratio": 4.8,
+"ai": 203.0,
+"human": 42.0
+},
+{
+"word": "concomitant",
+"ratio": 4.8,
+"ai": 121.0,
+"human": 25.0
+},
+{
+"word": "exclusion",
+"ratio": 4.8,
+"ai": 83.0,
+"human": 17.0
+},
+{
+"word": "governing",
+"ratio": 4.8,
+"ai": 83.0,
+"human": 17.0
+},
+{
+"word": "accounting",
+"ratio": 4.8,
+"ai": 74.0,
+"human": 15.0
+},
+{
+"word": "intermittent",
+"ratio": 4.8,
+"ai": 50.0,
+"human": 10.0
+},
+{
+"word": "disproportionately",
+"ratio": 4.8,
+"ai": 40.0,
+"human": 8.0
+},
+{
+"word": "define",
+"ratio": 4.7,
+"ai": 546.0,
+"human": 116.0
+},
+{
+"word": "commonly",
+"ratio": 4.7,
+"ai": 342.0,
+"human": 73.0
+},
+{
+"word": "contemporary",
+"ratio": 4.7,
+"ai": 53.0,
+"human": 11.0
+},
+{
+"word": "careful",
+"ratio": 4.7,
+"ai": 49.0,
+"human": 10.0
+},
+{
+"word": "specify",
+"ratio": 4.7,
+"ai": 44.0,
+"human": 9.0
+},
+{
+"word": "rearrangement",
+"ratio": 4.7,
+"ai": 44.0,
+"human": 9.0
+},
+{
+"word": "often",
+"ratio": 4.6,
+"ai": 476.0,
+"human": 102.0
+},
+{
+"word": "multivariable",
+"ratio": 4.6,
+"ai": 248.0,
+"human": 53.0
+},
+{
+"word": "downstream",
+"ratio": 4.6,
+"ai": 189.0,
+"human": 41.0
+},
+{
+"word": "embed",
+"ratio": 4.6,
+"ai": 80.0,
+"human": 17.0
+},
+{
+"word": "proceed",
+"ratio": 4.6,
+"ai": 66.0,
+"human": 14.0
+},
+{
+"word": "diffuse",
+"ratio": 4.6,
+"ai": 62.0,
+"human": 13.0
+},
+{
+"word": "recording",
+"ratio": 4.6,
+"ai": 61.0,
+"human": 13.0
+},
+{
+"word": "organize",
+"ratio": 4.6,
+"ai": 52.0,
+"human": 11.0
+},
+{
+"word": "artifact",
+"ratio": 4.6,
+"ai": 43.0,
+"human": 9.0
+},
+{
+"word": "proxy",
+"ratio": 4.6,
+"ai": 43.0,
+"human": 9.0
+},
+{
+"word": "particularly",
+"ratio": 4.5,
+"ai": 527.0,
+"human": 118.0
+},
+{
+"word": "magnitude",
+"ratio": 4.5,
+"ai": 307.0,
+"human": 68.0
+},
+{
+"word": "laboratory",
+"ratio": 4.5,
+"ai": 261.0,
+"human": 57.0
+},
+{
+"word": "sustain",
+"ratio": 4.5,
+"ai": 245.0,
+"human": 54.0
+},
+{
+"word": "tend",
+"ratio": 4.5,
+"ai": 230.0,
+"human": 51.0
+},
+{
+"word": "lineage",
+"ratio": 4.5,
+"ai": 131.0,
+"human": 29.0
+},
+{
+"word": "minority",
+"ratio": 4.5,
+"ai": 83.0,
+"human": 18.0
+},
+{
+"word": "otherwise",
+"ratio": 4.5,
+"ai": 83.0,
+"human": 18.0
+},
+{
+"word": "narrow",
+"ratio": 4.5,
+"ai": 83.0,
+"human": 18.0
+},
+{
+"word": "discrete",
+"ratio": 4.5,
+"ai": 73.0,
+"human": 16.0
+},
+{
+"word": "procedural",
+"ratio": 4.5,
+"ai": 56.0,
+"human": 12.0
+},
+{
+"word": "observational",
+"ratio": 4.5,
+"ai": 47.0,
+"human": 10.0
+},
+{
+"word": "sampling",
+"ratio": 4.4,
+"ai": 181.0,
+"human": 41.0
+},
+{
+"word": "integrity",
+"ratio": 4.4,
+"ai": 165.0,
+"human": 37.0
+},
+{
+"word": "shift",
+"ratio": 4.4,
+"ai": 147.0,
+"human": 33.0
+},
+{
+"word": "restrict",
+"ratio": 4.4,
+"ai": 138.0,
+"human": 31.0
+},
+{
+"word": "alignment",
+"ratio": 4.4,
+"ai": 89.0,
+"human": 20.0
+},
+{
+"word": "position",
+"ratio": 4.4,
+"ai": 63.0,
+"human": 14.0
+},
+{
+"word": "trafficking",
+"ratio": 4.4,
+"ai": 59.0,
+"human": 13.0
+},
+{
+"word": "impose",
+"ratio": 4.4,
+"ai": 55.0,
+"human": 12.0
+},
+{
+"word": "prioritize",
+"ratio": 4.4,
+"ai": 50.0,
+"human": 11.0
+},
+{
+"word": "backbone",
+"ratio": 4.4,
+"ai": 46.0,
+"human": 10.0
+},
+{
+"word": "toward",
+"ratio": 4.3,
+"ai": 380.0,
+"human": 88.0
+},
+{
+"word": "computed",
+"ratio": 4.3,
+"ai": 194.0,
+"human": 45.0
+},
+{
+"word": "progressive",
+"ratio": 4.3,
+"ai": 178.0,
+"human": 41.0
+},
+{
+"word": "trajectory",
+"ratio": 4.3,
+"ai": 149.0,
+"human": 34.0
+},
+{
+"word": "demand",
+"ratio": 4.3,
+"ai": 149.0,
+"human": 34.0
+},
+{
+"word": "entry",
+"ratio": 4.3,
+"ai": 79.0,
+"human": 18.0
+},
+{
+"word": "recruit",
+"ratio": 4.3,
+"ai": 70.0,
+"human": 16.0
+},
+{
+"word": "store",
+"ratio": 4.3,
+"ai": 70.0,
+"human": 16.0
+},
+{
+"word": "prompt",
+"ratio": 4.3,
+"ai": 45.0,
+"human": 10.0
+},
+{
+"word": "whereas",
+"ratio": 4.2,
+"ai": 1240.0,
+"human": 296.0
+},
+{
+"word": "broad",
+"ratio": 4.2,
+"ai": 299.0,
+"human": 71.0
+},
+{
+"word": "continuous",
+"ratio": 4.2,
+"ai": 239.0,
+"human": 57.0
+},
+{
+"word": "primarily",
+"ratio": 4.2,
+"ai": 223.0,
+"human": 53.0
+},
+{
+"word": "transcript",
+"ratio": 4.2,
+"ai": 194.0,
+"human": 46.0
+},
+{
+"word": "robustness",
+"ratio": 4.2,
+"ai": 103.0,
+"human": 24.0
+},
+{
+"word": "writing",
+"ratio": 4.2,
+"ai": 81.0,
+"human": 19.0
+},
+{
+"word": "prior",
+"ratio": 4.1,
+"ai": 453.0,
+"human": 111.0
+},
+{
+"word": "first",
+"ratio": 4.1,
+"ai": 176.0,
+"human": 43.0
+},
+{
+"word": "disruption",
+"ratio": 4.1,
+"ai": 158.0,
+"human": 38.0
+},
+{
+"word": "acquisition",
+"ratio": 4.1,
+"ai": 134.0,
+"human": 32.0
+},
+{
+"word": "statistic",
+"ratio": 4.1,
+"ai": 108.0,
+"human": 26.0
+},
+{
+"word": "perturbation",
+"ratio": 4.1,
+"ai": 99.0,
+"human": 24.0
+},
+{
+"word": "workflows",
+"ratio": 4.1,
+"ai": 79.0,
+"human": 19.0
+},
+{
+"word": "balance",
+"ratio": 4.1,
+"ai": 67.0,
+"human": 16.0
+},
+{
+"word": "proximity",
+"ratio": 4.1,
+"ai": 59.0,
+"human": 14.0
+},
+{
+"word": "allocation",
+"ratio": 4.1,
+"ai": 51.0,
+"human": 12.0
+},
+{
+"word": "dosing",
+"ratio": 4.1,
+"ai": 47.0,
+"human": 11.0
+},
+{
+"word": "clinically",
+"ratio": 4.0,
+"ai": 310.0,
+"human": 77.0
+},
+{
+"word": "generally",
+"ratio": 4.0,
+"ai": 282.0,
+"human": 70.0
+},
+{
+"word": "substantially",
+"ratio": 4.0,
+"ai": 171.0,
+"human": 42.0
+},
+{
+"word": "persisted",
+"ratio": 4.0,
+"ai": 140.0,
+"human": 35.0
+},
+{
+"word": "increasingly",
+"ratio": 4.0,
+"ai": 66.0,
+"human": 16.0
+},
+{
+"word": "capture",
+"ratio": 4.0,
+"ai": 53.0,
+"human": 13.0
+},
+{
+"word": "tightly",
+"ratio": 4.0,
+"ai": 42.0,
+"human": 10.0
+},
+{
+"word": "proportion",
+"ratio": 3.9,
+"ai": 536.0,
+"human": 138.0
+},
+{
+"word": "limit",
+"ratio": 3.9,
+"ai": 377.0,
+"human": 96.0
+},
+{
+"word": "rapid",
+"ratio": 3.9,
+"ai": 341.0,
+"human": 86.0
+},
+{
+"word": "transcriptional",
+"ratio": 3.9,
+"ai": 202.0,
+"human": 51.0
+},
+{
+"word": "availability",
+"ratio": 3.9,
+"ai": 201.0,
+"human": 51.0
+},
+{
+"word": "beyond",
+"ratio": 3.9,
+"ai": 189.0,
+"human": 48.0
+},
+{
+"word": "interpret",
+"ratio": 3.9,
+"ai": 125.0,
+"human": 32.0
+},
+{
+"word": "mediators",
+"ratio": 3.9,
+"ai": 116.0,
+"human": 29.0
+},
+{
+"word": "loci",
+"ratio": 3.9,
+"ai": 100.0,
+"human": 25.0
+},
+{
+"word": "sample",
+"ratio": 3.9,
+"ai": 68.0,
+"human": 17.0
+},
+{
+"word": "gross",
+"ratio": 3.9,
+"ai": 60.0,
+"human": 15.0
+},
+{
+"word": "confined",
+"ratio": 3.9,
+"ai": 52.0,
+"human": 13.0
+},
+{
+"word": "aggregate",
+"ratio": 3.9,
+"ai": 40.0,
+"human": 10.0
+},
+{
+"word": "yield",
+"ratio": 3.8,
+"ai": 302.0,
+"human": 79.0
+},
+{
+"word": "burden",
+"ratio": 3.8,
+"ai": 294.0,
+"human": 77.0
+},
+{
+"word": "fraction",
+"ratio": 3.8,
+"ai": 290.0,
+"human": 75.0
+},
+{
+"word": "substitution",
+"ratio": 3.8,
+"ai": 97.0,
+"human": 25.0
+},
+{
+"word": "kaplan",
+"ratio": 3.8,
+"ai": 54.0,
+"human": 14.0
+},
+{
+"word": "dense",
+"ratio": 3.8,
+"ai": 54.0,
+"human": 14.0
+},
+{
+"word": "filtration",
+"ratio": 3.8,
+"ai": 43.0,
+"human": 11.0
+},
+{
+"word": "baseline",
+"ratio": 3.7,
+"ai": 571.0,
+"human": 153.0
+},
+{
+"word": "impaired",
+"ratio": 3.7,
+"ai": 162.0,
+"human": 44.0
+},
+{
+"word": "biochemical",
+"ratio": 3.7,
+"ai": 137.0,
+"human": 37.0
+},
+{
+"word": "dominated",
+"ratio": 3.7,
+"ai": 117.0,
+"human": 31.0
+},
+{
+"word": "compete",
+"ratio": 3.7,
+"ai": 75.0,
+"human": 20.0
+},
+{
+"word": "completion",
+"ratio": 3.7,
+"ai": 71.0,
+"human": 19.0
+},
+{
+"word": "complement",
+"ratio": 3.7,
+"ai": 49.0,
+"human": 13.0
+},
+{
+"word": "subcellular",
+"ratio": 3.7,
+"ai": 46.0,
+"human": 12.0
+},
+{
+"word": "accordance",
+"ratio": 3.7,
+"ai": 46.0,
+"human": 12.0
+},
+{
+"word": "contrast",
+"ratio": 3.6,
+"ai": 665.0,
+"human": 183.0
+},
+{
+"word": "altered",
+"ratio": 3.6,
+"ai": 534.0,
+"human": 147.0
+},
+{
+"word": "examine",
+"ratio": 3.6,
+"ai": 488.0,
+"human": 134.0
+},
+{
+"word": "retain",
+"ratio": 3.6,
+"ai": 172.0,
+"human": 47.0
+},
+{
+"word": "segment",
+"ratio": 3.6,
+"ai": 136.0,
+"human": 37.0
+},
+{
+"word": "relies",
+"ratio": 3.6,
+"ai": 106.0,
+"human": 29.0
+},
+{
+"word": "gradual",
+"ratio": 3.6,
+"ai": 62.0,
+"human": 17.0
+},
+{
+"word": "detectable",
+"ratio": 3.6,
+"ai": 62.0,
+"human": 17.0
+},
+{
+"word": "stratification",
+"ratio": 3.6,
+"ai": 59.0,
+"human": 16.0
+},
+{
+"word": "mucosal",
+"ratio": 3.6,
+"ai": 56.0,
+"human": 15.0
+},
+{
+"word": "fasting",
+"ratio": 3.6,
+"ai": 55.0,
+"human": 15.0
+},
+{
+"word": "stromal",
+"ratio": 3.6,
+"ai": 51.0,
+"human": 14.0
+},
+{
+"word": "rise",
+"ratio": 3.6,
+"ai": 51.0,
+"human": 14.0
+},
+{
+"word": "template",
+"ratio": 3.6,
+"ai": 48.0,
+"human": 13.0
+},
+{
+"word": "paired",
+"ratio": 3.6,
+"ai": 45.0,
+"human": 12.0
+},
+{
+"word": "irregular",
+"ratio": 3.6,
+"ai": 45.0,
+"human": 12.0
+},
+{
+"word": "constituent",
+"ratio": 3.6,
+"ai": 44.0,
+"human": 12.0
+},
+{
+"word": "anesthesia",
+"ratio": 3.6,
+"ai": 44.0,
+"human": 12.0
+},
+{
+"word": "latent",
+"ratio": 3.6,
+"ai": 41.0,
+"human": 11.0
+},
+{
+"word": "evaluate",
+"ratio": 3.5,
+"ai": 806.0,
+"human": 232.0
+},
+{
+"word": "heterogeneity",
+"ratio": 3.5,
+"ai": 248.0,
+"human": 70.0
+},
+{
+"word": "extract",
+"ratio": 3.5,
+"ai": 213.0,
+"human": 61.0
+},
+{
+"word": "shape",
+"ratio": 3.5,
+"ai": 191.0,
+"human": 55.0
+},
+{
+"word": "dominant",
+"ratio": 3.5,
+"ai": 153.0,
+"human": 43.0
+},
+{
+"word": "apparent",
+"ratio": 3.5,
+"ai": 146.0,
+"human": 41.0
+},
+{
+"word": "implicating",
+"ratio": 3.5,
+"ai": 131.0,
+"human": 37.0
+},
+{
+"word": "distribute",
+"ratio": 3.5,
+"ai": 116.0,
+"human": 33.0
+},
+{
+"word": "assigning",
+"ratio": 3.5,
+"ai": 103.0,
+"human": 29.0
+},
+{
+"word": "arise",
+"ratio": 3.5,
+"ai": 100.0,
+"human": 28.0
+},
+{
+"word": "mapping",
+"ratio": 3.5,
+"ai": 89.0,
+"human": 25.0
+},
+{
+"word": "attenuation",
+"ratio": 3.5,
+"ai": 79.0,
+"human": 22.0
+},
+{
+"word": "amplification",
+"ratio": 3.5,
+"ai": 74.0,
+"human": 21.0
+},
+{
+"word": "assumption",
+"ratio": 3.5,
+"ai": 67.0,
+"human": 19.0
+},
+{
+"word": "format",
+"ratio": 3.5,
+"ai": 61.0,
+"human": 17.0
+},
+{
+"word": "preferentially",
+"ratio": 3.5,
+"ai": 61.0,
+"human": 17.0
+},
+{
+"word": "edema",
+"ratio": 3.5,
+"ai": 57.0,
+"human": 16.0
+},
+{
+"word": "moisture",
+"ratio": 3.5,
+"ai": 53.0,
+"human": 15.0
+},
+{
+"word": "solely",
+"ratio": 3.5,
+"ai": 47.0,
+"human": 13.0
+},
+{
+"word": "encounter",
+"ratio": 3.5,
+"ai": 47.0,
+"human": 13.0
+},
+{
+"word": "polar",
+"ratio": 3.5,
+"ai": 43.0,
+"human": 12.0
+},
+{
+"word": "housing",
+"ratio": 3.5,
+"ai": 40.0,
+"human": 11.0
+},
+{
+"word": "elevate",
+"ratio": 3.4,
+"ai": 467.0,
+"human": 138.0
+},
+{
+"word": "characterize",
+"ratio": 3.4,
+"ai": 429.0,
+"human": 126.0
+},
+{
+"word": "comparable",
+"ratio": 3.4,
+"ai": 318.0,
+"human": 93.0
+},
+{
+"word": "account",
+"ratio": 3.4,
+"ai": 190.0,
+"human": 55.0
+},
+{
+"word": "separation",
+"ratio": 3.4,
+"ai": 166.0,
+"human": 49.0
+},
+{
+"word": "timing",
+"ratio": 3.4,
+"ai": 139.0,
+"human": 40.0
+},
+{
+"word": "uncertainty",
+"ratio": 3.4,
+"ai": 127.0,
+"human": 37.0
+},
+{
+"word": "loading",
+"ratio": 3.4,
+"ai": 121.0,
+"human": 35.0
+},
+{
+"word": "route",
+"ratio": 3.4,
+"ai": 90.0,
+"human": 26.0
+},
+{
+"word": "persistence",
+"ratio": 3.4,
+"ai": 76.0,
+"human": 22.0
+},
+{
+"word": "regime",
+"ratio": 3.4,
+"ai": 76.0,
+"human": 22.0
+},
+{
+"word": "interview",
+"ratio": 3.4,
+"ai": 75.0,
+"human": 22.0
+},
+{
+"word": "compatible",
+"ratio": 3.4,
+"ai": 70.0,
+"human": 20.0
+},
+{
+"word": "diffraction",
+"ratio": 3.4,
+"ai": 69.0,
+"human": 20.0
+},
+{
+"word": "excitation",
+"ratio": 3.4,
+"ai": 66.0,
+"human": 19.0
+},
+{
+"word": "proportional",
+"ratio": 3.4,
+"ai": 63.0,
+"human": 18.0
+},
+{
+"word": "instruction",
+"ratio": 3.4,
+"ai": 49.0,
+"human": 14.0
+},
+{
+"word": "suggestive",
+"ratio": 3.4,
+"ai": 49.0,
+"human": 14.0
+},
+{
+"word": "aromatic",
+"ratio": 3.4,
+"ai": 45.0,
+"human": 13.0
+},
+{
+"word": "microscopic",
+"ratio": 3.4,
+"ai": 42.0,
+"human": 12.0
+},
+{
+"word": "operator",
+"ratio": 3.4,
+"ai": 42.0,
+"human": 12.0
+},
+{
+"word": "upstream",
+"ratio": 3.4,
+"ai": 42.0,
+"human": 12.0
+},
+{
+"word": "with",
+"ratio": 3.3,
+"ai": 514.0,
+"human": 155.0
+},
+{
+"word": "local",
+"ratio": 3.3,
+"ai": 474.0,
+"human": 143.0
+},
+{
+"word": "because",
+"ratio": 3.3,
+"ai": 318.0,
+"human": 96.0
+},
+{
+"word": "examination",
+"ratio": 3.3,
+"ai": 247.0,
+"human": 75.0
+},
+{
+"word": "independently",
+"ratio": 3.3,
+"ai": 236.0,
+"human": 72.0
+},
+{
+"word": "comorbidity",
+"ratio": 3.3,
+"ai": 190.0,
+"human": 58.0
+},
+{
+"word": "balance",
+"ratio": 3.3,
+"ai": 182.0,
+"human": 54.0
+},
+{
+"word": "specimen",
+"ratio": 3.3,
+"ai": 161.0,
+"human": 49.0
+},
+{
+"word": "persistent",
+"ratio": 3.3,
+"ai": 155.0,
+"human": 47.0
+},
+{
+"word": "diminish",
+"ratio": 3.3,
+"ai": 138.0,
+"human": 41.0
+},
+{
+"word": "consisting",
+"ratio": 3.3,
+"ai": 134.0,
+"human": 40.0
+},
+{
+"word": "cumulative",
+"ratio": 3.3,
+"ai": 118.0,
+"human": 35.0
+},
+{
+"word": "localize",
+"ratio": 3.3,
+"ai": 119.0,
+"human": 36.0
+},
+{
+"word": "deposition",
+"ratio": 3.3,
+"ai": 117.0,
+"human": 35.0
+},
+{
+"word": "motif",
+"ratio": 3.3,
+"ai": 94.0,
+"human": 28.0
+},
+{
+"word": "radiographic",
+"ratio": 3.3,
+"ai": 83.0,
+"human": 25.0
+},
+{
+"word": "turnover",
+"ratio": 3.3,
+"ai": 81.0,
+"human": 24.0
+},
+{
+"word": "intermediates",
+"ratio": 3.3,
+"ai": 68.0,
+"human": 20.0
+},
+{
+"word": "disturbance",
+"ratio": 3.3,
+"ai": 61.0,
+"human": 18.0
+},
+{
+"word": "perioperative",
+"ratio": 3.3,
+"ai": 57.0,
+"human": 17.0
+},
+{
+"word": "spatially",
+"ratio": 3.3,
+"ai": 51.0,
+"human": 15.0
+},
+{
+"word": "maintain",
+"ratio": 3.2,
+"ai": 450.0,
+"human": 142.0
+},
+{
+"word": "limited",
+"ratio": 3.2,
+"ai": 367.0,
+"human": 113.0
+},
+{
+"word": "robust",
+"ratio": 3.2,
+"ai": 251.0,
+"human": 78.0
+},
+{
+"word": "characteristic",
+"ratio": 3.2,
+"ai": 196.0,
+"human": 60.0
+},
+{
+"word": "resolved",
+"ratio": 3.2,
+"ai": 160.0,
+"human": 50.0
+},
+{
+"word": "intracellular",
+"ratio": 3.2,
+"ai": 150.0,
+"human": 47.0
+},
+{
+"word": "variable",
+"ratio": 3.2,
+"ai": 146.0,
+"human": 45.0
+},
+{
+"word": "widely",
+"ratio": 3.2,
+"ai": 104.0,
+"human": 32.0
+},
+{
+"word": "discrimination",
+"ratio": 3.2,
+"ai": 100.0,
+"human": 31.0
+},
+{
+"word": "maturation",
+"ratio": 3.2,
+"ai": 91.0,
+"human": 28.0
+},
+{
+"word": "focal",
+"ratio": 3.2,
+"ai": 90.0,
+"human": 28.0
+},
+{
+"word": "immediate",
+"ratio": 3.2,
+"ai": 83.0,
+"human": 26.0
+},
+{
+"word": "surrounding",
+"ratio": 3.2,
+"ai": 80.0,
+"human": 25.0
+},
+{
+"word": "basal",
+"ratio": 3.2,
+"ai": 78.0,
+"human": 24.0
+},
+{
+"word": "cluster",
+"ratio": 3.2,
+"ai": 75.0,
+"human": 23.0
+},
+{
+"word": "dispersion",
+"ratio": 3.2,
+"ai": 62.0,
+"human": 19.0
+},
+{
+"word": "homogeneous",
+"ratio": 3.2,
+"ai": 53.0,
+"human": 16.0
+},
+{
+"word": "pocket",
+"ratio": 3.2,
+"ai": 53.0,
+"human": 16.0
+},
+{
+"word": "seasonal",
+"ratio": 3.2,
+"ai": 52.0,
+"human": 16.0
+},
+{
+"word": "residence",
+"ratio": 3.2,
+"ai": 49.0,
+"human": 15.0
+},
+{
+"word": "inspection",
+"ratio": 3.2,
+"ai": 46.0,
+"human": 14.0
+},
+{
+"word": "stressor",
+"ratio": 3.2,
+"ai": 40.0,
+"human": 12.0
+},
+{
+"word": "dissolve",
+"ratio": 3.2,
+"ai": 40.0,
+"human": 12.0
+},
+{
+"word": "trace",
+"ratio": 3.2,
+"ai": 40.0,
+"human": 12.0
+},
+{
+"word": "exposure",
+"ratio": 3.1,
+"ai": 711.0,
+"human": 231.0
+},
+{
+"word": "central",
+"ratio": 3.1,
+"ai": 341.0,
+"human": 109.0
+},
+{
+"word": "background",
+"ratio": 3.1,
+"ai": 151.0,
+"human": 48.0
+},
+{
+"word": "peripheral",
+"ratio": 3.1,
+"ai": 152.0,
+"human": 49.0
+},
+{
+"word": "staining",
+"ratio": 3.1,
+"ai": 150.0,
+"human": 48.0
+},
+{
+"word": "tomography",
+"ratio": 3.1,
+"ai": 117.0,
+"human": 37.0
+},
+{
+"word": "households",
+"ratio": 3.1,
+"ai": 114.0,
+"human": 37.0
+},
+{
+"word": "boundary",
+"ratio": 3.1,
+"ai": 97.0,
+"human": 31.0
+},
+{
+"word": "process",
+"ratio": 3.1,
+"ai": 97.0,
+"human": 31.0
+},
+{
+"word": "separate",
+"ratio": 3.1,
+"ai": 92.0,
+"human": 29.0
+},
+{
+"word": "immediately",
+"ratio": 3.1,
+"ai": 88.0,
+"human": 28.0
+},
+{
+"word": "data",
+"ratio": 3.1,
+"ai": 82.0,
+"human": 26.0
+},
+{
+"word": "bonding",
+"ratio": 3.1,
+"ai": 64.0,
+"human": 20.0
+},
+{
+"word": "mechanistically",
+"ratio": 3.1,
+"ai": 63.0,
+"human": 20.0
+},
+{
+"word": "accessible",
+"ratio": 3.1,
+"ai": 59.0,
+"human": 19.0
+},
+{
+"word": "explicit",
+"ratio": 3.1,
+"ai": 57.0,
+"human": 18.0
+},
+{
+"word": "batch",
+"ratio": 3.1,
+"ai": 50.0,
+"human": 16.0
+},
+{
+"word": "competition",
+"ratio": 3.1,
+"ai": 47.0,
+"human": 15.0
+},
+{
+"word": "schedules",
+"ratio": 3.1,
+"ai": 45.0,
+"human": 14.0
+},
+{
+"word": "affective",
+"ratio": 3.1,
+"ai": 42.0,
+"human": 13.0
+},
+{
+"word": "relative",
+"ratio": 3.0,
+"ai": 594.0,
+"human": 201.0
+},
+{
+"word": "inflammatory",
+"ratio": 3.0,
+"ai": 435.0,
+"human": 143.0
+},
+{
+"word": "setting",
+"ratio": 3.0,
+"ai": 312.0,
+"human": 102.0
+},
+{
+"word": "subsequent",
+"ratio": 3.0,
+"ai": 256.0,
+"human": 84.0
+},
+{
+"word": "transport",
+"ratio": 3.0,
+"ai": 231.0,
+"human": 76.0
+},
+{
+"word": "band",
+"ratio": 3.0,
+"ai": 179.0,
+"human": 59.0
+},
+{
+"word": "enrichment",
+"ratio": 3.0,
+"ai": 165.0,
+"human": 54.0
+},
+{
+"word": "residual",
+"ratio": 3.0,
+"ai": 162.0,
+"human": 54.0
+},
+{
+"word": "consequently",
+"ratio": 3.0,
+"ai": 142.0,
+"human": 47.0
+},
+{
+"word": "alternative",
+"ratio": 3.0,
+"ai": 137.0,
+"human": 46.0
+},
+{
+"word": "document",
+"ratio": 3.0,
+"ai": 120.0,
+"human": 40.0
+},
+{
+"word": "recruitment",
+"ratio": 3.0,
+"ai": 113.0,
+"human": 37.0
+},
+{
+"word": "conversely",
+"ratio": 3.0,
+"ai": 107.0,
+"human": 35.0
+},
+{
+"word": "configuration",
+"ratio": 3.0,
+"ai": 106.0,
+"human": 35.0
+},
+{
+"word": "endpoint",
+"ratio": 3.0,
+"ai": 100.0,
+"human": 33.0
+},
+{
+"word": "prominent",
+"ratio": 3.0,
+"ai": 99.0,
+"human": 33.0
+},
+{
+"word": "align",
+"ratio": 3.0,
+"ai": 89.0,
+"human": 29.0
+},
+{
+"word": "compromise",
+"ratio": 3.0,
+"ai": 86.0,
+"human": 28.0
+},
+{
+"word": "reporting",
+"ratio": 3.0,
+"ai": 87.0,
+"human": 29.0
+},
+{
+"word": "clustering",
+"ratio": 3.0,
+"ai": 70.0,
+"human": 23.0
+},
+{
+"word": "bulk",
+"ratio": 3.0,
+"ai": 66.0,
+"human": 22.0
+},
+{
+"word": "physicochemical",
+"ratio": 3.0,
+"ai": 52.0,
+"human": 17.0
+},
+{
+"word": "strand",
+"ratio": 3.0,
+"ai": 49.0,
+"human": 16.0
+},
+{
+"word": "annotation",
+"ratio": 3.0,
+"ai": 46.0,
+"human": 15.0
+},
+{
+"word": "pattern",
+"ratio": 2.9,
+"ai": 787.0,
+"human": 272.0
+},
+{
+"word": "distribution",
+"ratio": 2.9,
+"ai": 603.0,
+"human": 205.0
+},
+{
+"word": "status",
+"ratio": 2.9,
+"ai": 573.0,
+"human": 198.0
+},
+{
+"word": "varying",
+"ratio": 2.9,
+"ai": 479.0,
+"human": 163.0
+},
+{
+"word": "contact",
+"ratio": 2.9,
+"ai": 311.0,
+"human": 106.0
+},
+{
+"word": "criterion",
+"ratio": 2.9,
+"ai": 307.0,
+"human": 107.0
+},
+{
+"word": "estimate",
+"ratio": 2.9,
+"ai": 221.0,
+"human": 77.0
+},
+{
+"word": "initiation",
+"ratio": 2.9,
+"ai": 140.0,
+"human": 48.0
+},
+{
+"word": "susceptibility",
+"ratio": 2.9,
+"ai": 125.0,
+"human": 43.0
+},
+{
+"word": "session",
+"ratio": 2.9,
+"ai": 122.0,
+"human": 42.0
+},
+{
+"word": "determinant",
+"ratio": 2.9,
+"ai": 115.0,
+"human": 39.0
+},
+{
+"word": "intrinsic",
+"ratio": 2.9,
+"ai": 111.0,
+"human": 38.0
+},
+{
+"word": "definitions",
+"ratio": 2.9,
+"ai": 103.0,
+"human": 35.0
+},
+{
+"word": "fragment",
+"ratio": 2.9,
+"ai": 89.0,
+"human": 30.0
+},
+{
+"word": "decline",
+"ratio": 2.9,
+"ai": 89.0,
+"human": 30.0
+},
+{
+"word": "constructs",
+"ratio": 2.9,
+"ai": 83.0,
+"human": 28.0
+},
+{
+"word": "intend",
+"ratio": 2.9,
+"ai": 71.0,
+"human": 24.0
+},
+{
+"word": "equilibrium",
+"ratio": 2.9,
+"ai": 65.0,
+"human": 22.0
+},
+{
+"word": "clarify",
+"ratio": 2.9,
+"ai": 61.0,
+"human": 21.0
+},
+{
+"word": "timely",
+"ratio": 2.9,
+"ai": 51.0,
+"human": 17.0
+},
+{
+"word": "smooth",
+"ratio": 2.9,
+"ai": 50.0,
+"human": 17.0
+},
+{
+"word": "portion",
+"ratio": 2.9,
+"ai": 42.0,
+"human": 14.0
+},
+{
+"word": "epithelium",
+"ratio": 2.9,
+"ai": 41.0,
+"human": 14.0
+},
+{
+"word": "potency",
+"ratio": 2.9,
+"ai": 41.0,
+"human": 14.0
+},
+{
+"word": "standing",
+"ratio": 2.9,
+"ai": 41.0,
+"human": 14.0
+},
+{
+"word": "remain",
+"ratio": 2.8,
+"ai": 941.0,
+"human": 331.0
+},
+{
+"word": "enable",
+"ratio": 2.8,
+"ai": 458.0,
+"human": 163.0
+},
+{
+"word": "differ",
+"ratio": 2.8,
+"ai": 443.0,
+"human": 156.0
+},
+{
+"word": "distinct",
+"ratio": 2.8,
+"ai": 342.0,
+"human": 120.0
+},
+{
+"word": "intensity",
+"ratio": 2.8,
+"ai": 295.0,
+"human": 105.0
+},
+{
+"word": "observation",
+"ratio": 2.8,
+"ai": 283.0,
+"human": 99.0
+},
+{
+"word": "extracellular",
+"ratio": 2.8,
+"ai": 186.0,
+"human": 67.0
+},
+{
+"word": "indicator",
+"ratio": 2.8,
+"ai": 177.0,
+"human": 64.0
+},
+{
+"word": "monitor",
+"ratio": 2.8,
+"ai": 155.0,
+"human": 55.0
+},
+{
+"word": "correction",
+"ratio": 2.8,
+"ai": 103.0,
+"human": 37.0
+},
+{
+"word": "coordination",
+"ratio": 2.8,
+"ai": 92.0,
+"human": 32.0
+},
+{
+"word": "mobility",
+"ratio": 2.8,
+"ai": 89.0,
+"human": 32.0
+},
+{
+"word": "episode",
+"ratio": 2.8,
+"ai": 86.0,
+"human": 30.0
+},
+{
+"word": "aqueous",
+"ratio": 2.8,
+"ai": 83.0,
+"human": 29.0
+},
+{
+"word": "histopathological",
+"ratio": 2.8,
+"ai": 76.0,
+"human": 27.0
+},
+{
+"word": "emergence",
+"ratio": 2.8,
+"ai": 69.0,
+"human": 24.0
+},
+{
+"word": "venous",
+"ratio": 2.8,
+"ai": 68.0,
+"human": 24.0
+},
+{
+"word": "stabilization",
+"ratio": 2.8,
+"ai": 68.0,
+"human": 24.0
+},
+{
+"word": "intraoperative",
+"ratio": 2.8,
+"ai": 63.0,
+"human": 22.0
+},
+{
+"word": "innate",
+"ratio": 2.8,
+"ai": 55.0,
+"human": 19.0
+},
+{
+"word": "divergence",
+"ratio": 2.8,
+"ai": 52.0,
+"human": 18.0
+},
+{
+"word": "outpatient",
+"ratio": 2.8,
+"ai": 48.0,
+"human": 17.0
+},
+{
+"word": "formal",
+"ratio": 2.8,
+"ai": 45.0,
+"human": 16.0
+},
+{
+"word": "occupy",
+"ratio": 2.8,
+"ai": 40.0,
+"human": 14.0
+},
+{
+"word": "support",
+"ratio": 2.7,
+"ai": 826.0,
+"human": 303.0
+},
+{
+"word": "period",
+"ratio": 2.7,
+"ai": 591.0,
+"human": 217.0
+},
+{
+"word": "marker",
+"ratio": 2.7,
+"ai": 457.0,
+"human": 172.0
+},
+{
+"word": "variable",
+"ratio": 2.7,
+"ai": 390.0,
+"human": 146.0
+},
+{
+"word": "standard",
+"ratio": 2.7,
+"ai": 347.0,
+"human": 126.0
+},
+{
+"word": "select",
+"ratio": 2.7,
+"ai": 347.0,
+"human": 127.0
+},
+{
+"word": "particular",
+"ratio": 2.7,
+"ai": 304.0,
+"human": 111.0
+},
+{
+"word": "link",
+"ratio": 2.7,
+"ai": 288.0,
+"human": 107.0
+},
+{
+"word": "reference",
+"ratio": 2.7,
+"ai": 273.0,
+"human": 101.0
+},
+{
+"word": "calculated",
+"ratio": 2.7,
+"ai": 264.0,
+"human": 97.0
+},
+{
+"word": "contribution",
+"ratio": 2.7,
+"ai": 262.0,
+"human": 96.0
+},
+{
+"word": "collected",
+"ratio": 2.7,
+"ai": 243.0,
+"human": 90.0
+},
+{
+"word": "expected",
+"ratio": 2.7,
+"ai": 231.0,
+"human": 84.0
+},
+{
+"word": "alone",
+"ratio": 2.7,
+"ai": 232.0,
+"human": 87.0
+},
+{
+"word": "frequent",
+"ratio": 2.7,
+"ai": 225.0,
+"human": 83.0
+},
+{
+"word": "category",
+"ratio": 2.7,
+"ai": 198.0,
+"human": 72.0
+},
+{
+"word": "microscopy",
+"ratio": 2.7,
+"ai": 187.0,
+"human": 70.0
+},
+{
+"word": "signature",
+"ratio": 2.7,
+"ai": 144.0,
+"human": 53.0
+},
+{
+"word": "intermediate",
+"ratio": 2.7,
+"ai": 138.0,
+"human": 50.0
+},
+{
+"word": "minimal",
+"ratio": 2.7,
+"ai": 130.0,
+"human": 48.0
+},
+{
+"word": "developmental",
+"ratio": 2.7,
+"ai": 117.0,
+"human": 43.0
+},
+{
+"word": "assembly",
+"ratio": 2.7,
+"ai": 115.0,
+"human": 42.0
+},
+{
+"word": "nitrogen",
+"ratio": 2.7,
+"ai": 108.0,
+"human": 40.0
+},
+{
+"word": "nutrient",
+"ratio": 2.7,
+"ai": 107.0,
+"human": 40.0
+},
+{
+"word": "gradient",
+"ratio": 2.7,
+"ai": 101.0,
+"human": 37.0
+},
+{
+"word": "orientation",
+"ratio": 2.7,
+"ai": 95.0,
+"human": 35.0
+},
+{
+"word": "constant",
+"ratio": 2.7,
+"ai": 86.0,
+"human": 32.0
+},
+{
+"word": "mitigate",
+"ratio": 2.7,
+"ai": 86.0,
+"human": 32.0
+},
+{
+"word": "complementary",
+"ratio": 2.7,
+"ai": 85.0,
+"human": 31.0
+},
+{
+"word": "chromatin",
+"ratio": 2.7,
+"ai": 83.0,
+"human": 30.0
+},
+{
+"word": "junction",
+"ratio": 2.7,
+"ai": 80.0,
+"human": 29.0
+},
+{
+"word": "instead",
+"ratio": 2.7,
+"ai": 78.0,
+"human": 29.0
+},
+{
+"word": "weighted",
+"ratio": 2.7,
+"ai": 76.0,
+"human": 28.0
+},
+{
+"word": "principal",
+"ratio": 2.7,
+"ai": 74.0,
+"human": 27.0
+},
+{
+"word": "concentrating",
+"ratio": 2.7,
+"ai": 68.0,
+"human": 25.0
+},
+{
+"word": "neutral",
+"ratio": 2.7,
+"ai": 66.0,
+"human": 24.0
+},
+{
+"word": "socioeconomic",
+"ratio": 2.7,
+"ai": 65.0,
+"human": 24.0
+},
+{
+"word": "fixation",
+"ratio": 2.7,
+"ai": 60.0,
+"human": 22.0
+},
+{
+"word": "responsiveness",
+"ratio": 2.7,
+"ai": 53.0,
+"human": 19.0
+},
+{
+"word": "overlap",
+"ratio": 2.7,
+"ai": 54.0,
+"human": 20.0
+},
+{
+"word": "deformation",
+"ratio": 2.7,
+"ai": 54.0,
+"human": 20.0
+},
+{
+"word": "approach",
+"ratio": 2.7,
+"ai": 53.0,
+"human": 19.0
+},
+{
+"word": "assemble",
+"ratio": 2.7,
+"ai": 47.0,
+"human": 17.0
+},
+{
+"word": "rigid",
+"ratio": 2.7,
+"ai": 42.0,
+"human": 15.0
+},
+{
+"word": "handle",
+"ratio": 2.7,
+"ai": 41.0,
+"human": 15.0
+},
+{
+"word": "within",
+"ratio": 2.6,
+"ai": 1215.0,
+"human": 467.0
+},
+{
+"word": "mass",
+"ratio": 2.6,
+"ai": 405.0,
+"human": 154.0
+},
+{
+"word": "cohort",
+"ratio": 2.6,
+"ai": 399.0,
+"human": 151.0
+},
+{
+"word": "explore",
+"ratio": 2.6,
+"ai": 334.0,
+"human": 130.0
+},
+{
+"word": "testing",
+"ratio": 2.6,
+"ai": 327.0,
+"human": 127.0
+},
+{
+"word": "perceived",
+"ratio": 2.6,
+"ai": 309.0,
+"human": 118.0
+},
+{
+"word": "phenotypes",
+"ratio": 2.6,
+"ai": 292.0,
+"human": 112.0
+},
+{
+"word": "matrix",
+"ratio": 2.6,
+"ai": 273.0,
+"human": 106.0
+},
+{
+"word": "extent",
+"ratio": 2.6,
+"ai": 178.0,
+"human": 68.0
+},
+{
+"word": "delay",
+"ratio": 2.6,
+"ai": 175.0,
+"human": 67.0
+},
+{
+"word": "item",
+"ratio": 2.6,
+"ai": 163.0,
+"human": 63.0
+},
+{
+"word": "without",
+"ratio": 2.6,
+"ai": 149.0,
+"human": 57.0
+},
+{
+"word": "train",
+"ratio": 2.6,
+"ai": 106.0,
+"human": 41.0
+},
+{
+"word": "homeostasis",
+"ratio": 2.6,
+"ai": 100.0,
+"human": 38.0
+},
+{
+"word": "metric",
+"ratio": 2.6,
+"ai": 98.0,
+"human": 37.0
+},
+{
+"word": "circulate",
+"ratio": 2.6,
+"ai": 87.0,
+"human": 33.0
+},
+{
+"word": "module",
+"ratio": 2.6,
+"ai": 84.0,
+"human": 32.0
+},
+{
+"word": "appearance",
+"ratio": 2.6,
+"ai": 81.0,
+"human": 31.0
+},
+{
+"word": "feeding",
+"ratio": 2.6,
+"ai": 79.0,
+"human": 30.0
+},
+{
+"word": "ionic",
+"ratio": 2.6,
+"ai": 75.0,
+"human": 28.0
+},
+{
+"word": "flux",
+"ratio": 2.6,
+"ai": 72.0,
+"human": 27.0
+},
+{
+"word": "anatomical",
+"ratio": 2.6,
+"ai": 64.0,
+"human": 24.0
+},
+{
+"word": "confounder",
+"ratio": 2.6,
+"ai": 61.0,
+"human": 23.0
+},
+{
+"word": "attachment",
+"ratio": 2.6,
+"ai": 58.0,
+"human": 22.0
+},
+{
+"word": "chemokine",
+"ratio": 2.6,
+"ai": 52.0,
+"human": 20.0
+},
+{
+"word": "linkage",
+"ratio": 2.6,
+"ai": 50.0,
+"human": 19.0
+},
+{
+"word": "employment",
+"ratio": 2.6,
+"ai": 48.0,
+"human": 18.0
+},
+{
+"word": "mass",
+"ratio": 2.6,
+"ai": 45.0,
+"human": 17.0
+},
+{
+"word": "oriented",
+"ratio": 2.6,
+"ai": 45.0,
+"human": 17.0
+},
+{
+"word": "propensity",
+"ratio": 2.6,
+"ai": 43.0,
+"human": 16.0
+},
+{
+"word": "condition",
+"ratio": 2.5,
+"ai": 1161.0,
+"human": 459.0
+},
+{
+"word": "each",
+"ratio": 2.5,
+"ai": 811.0,
+"human": 326.0
+},
+{
+"word": "participant",
+"ratio": 2.5,
+"ai": 798.0,
+"human": 321.0
+},
+{
+"word": "contribute",
+"ratio": 2.5,
+"ai": 534.0,
+"human": 217.0
+},
+{
+"word": "component",
+"ratio": 2.5,
+"ai": 510.0,
+"human": 203.0
+},
+{
+"word": "where",
+"ratio": 2.5,
+"ai": 501.0,
+"human": 197.0
+},
+{
+"word": "stable",
+"ratio": 2.5,
+"ai": 343.0,
+"human": 138.0
+},
+{
+"word": "composition",
+"ratio": 2.5,
+"ai": 288.0,
+"human": 114.0
+},
+{
+"word": "secondary",
+"ratio": 2.5,
+"ai": 282.0,
+"human": 113.0
+},
+{
+"word": "attenuated",
+"ratio": 2.5,
+"ai": 275.0,
+"human": 108.0
+},
+{
+"word": "access",
+"ratio": 2.5,
+"ai": 238.0,
+"human": 96.0
+},
+{
+"word": "corresponding",
+"ratio": 2.5,
+"ai": 224.0,
+"human": 89.0
+},
+{
+"word": "reactive",
+"ratio": 2.5,
+"ai": 204.0,
+"human": 80.0
+},
+{
+"word": "notably",
+"ratio": 2.5,
+"ai": 182.0,
+"human": 73.0
+},
+{
+"word": "mild",
+"ratio": 2.5,
+"ai": 175.0,
+"human": 71.0
+},
+{
+"word": "weak",
+"ratio": 2.5,
+"ai": 169.0,
+"human": 66.0
+},
+{
+"word": "incorporate",
+"ratio": 2.5,
+"ai": 160.0,
+"human": 63.0
+},
+{
+"word": "largely",
+"ratio": 2.5,
+"ai": 146.0,
+"human": 58.0
+},
+{
+"word": "couple",
+"ratio": 2.5,
+"ai": 137.0,
+"human": 54.0
+},
+{
+"word": "gain",
+"ratio": 2.5,
+"ai": 133.0,
+"human": 53.0
+},
+{
+"word": "rapidly",
+"ratio": 2.5,
+"ai": 130.0,
+"human": 51.0
+},
+{
+"word": "respondents",
+"ratio": 2.5,
+"ai": 130.0,
+"human": 51.0
+},
+{
+"word": "series",
+"ratio": 2.5,
+"ai": 131.0,
+"human": 53.0
+},
+{
+"word": "administer",
+"ratio": 2.5,
+"ai": 129.0,
+"human": 51.0
+},
+{
+"word": "absolute",
+"ratio": 2.5,
+"ai": 121.0,
+"human": 49.0
+},
+{
+"word": "kinetics",
+"ratio": 2.5,
+"ai": 116.0,
+"human": 46.0
+},
+{
+"word": "pool",
+"ratio": 2.5,
+"ai": 94.0,
+"human": 37.0
+},
+{
+"word": "elevation",
+"ratio": 2.5,
+"ai": 94.0,
+"human": 37.0
+},
+{
+"word": "aggregation",
+"ratio": 2.5,
+"ai": 90.0,
+"human": 35.0
+},
+{
+"word": "incorporation",
+"ratio": 2.5,
+"ai": 79.0,
+"human": 31.0
+},
+{
+"word": "analytical",
+"ratio": 2.5,
+"ai": 76.0,
+"human": 30.0
+},
+{
+"word": "modeling",
+"ratio": 2.5,
+"ai": 76.0,
+"human": 30.0
+},
+{
+"word": "fluctuations",
+"ratio": 2.5,
+"ai": 73.0,
+"human": 29.0
+},
+{
+"word": "begin",
+"ratio": 2.5,
+"ai": 72.0,
+"human": 28.0
+},
+{
+"word": "prescribed",
+"ratio": 2.5,
+"ai": 68.0,
+"human": 27.0
+},
+{
+"word": "soluble",
+"ratio": 2.5,
+"ai": 67.0,
+"human": 27.0
+},
+{
+"word": "referral",
+"ratio": 2.5,
+"ai": 63.0,
+"human": 25.0
+},
+{
+"word": "supportive",
+"ratio": 2.5,
+"ai": 61.0,
+"human": 24.0
+},
+{
+"word": "readily",
+"ratio": 2.5,
+"ai": 59.0,
+"human": 23.0
+},
+{
+"word": "leukocyte",
+"ratio": 2.5,
+"ai": 58.0,
+"human": 23.0
+},
+{
+"word": "plan",
+"ratio": 2.5,
+"ai": 49.0,
+"human": 19.0
+},
+{
+"word": "labeling",
+"ratio": 2.5,
+"ai": 43.0,
+"human": 17.0
+},
+{
+"word": "reconstruct",
+"ratio": 2.5,
+"ai": 40.0,
+"human": 16.0
+},
+{
+"word": "exploratory",
+"ratio": 2.5,
+"ai": 40.0,
+"human": 16.0
+},
+{
+"word": "dried",
+"ratio": 2.5,
+"ai": 40.0,
+"human": 16.0
+},
+{
+"word": "included",
+"ratio": 2.4,
+"ai": 2229.0,
+"human": 935.0
+},
+{
+"word": "indicate",
+"ratio": 2.4,
+"ai": 1787.0,
+"human": 748.0
+},
+{
+"word": "several",
+"ratio": 2.4,
+"ai": 654.0,
+"human": 269.0
+},
+{
+"word": "dependent",
+"ratio": 2.4,
+"ai": 541.0,
+"human": 228.0
+},
+{
+"word": "events",
+"ratio": 2.4,
+"ai": 526.0,
+"human": 222.0
+},
+{
+"word": "measurement",
+"ratio": 2.4,
+"ai": 416.0,
+"human": 176.0
+},
+{
+"word": "profile",
+"ratio": 2.4,
+"ai": 392.0,
+"human": 166.0
+},
+{
+"word": "relevant",
+"ratio": 2.4,
+"ai": 332.0,
+"human": 139.0
+},
+{
+"word": "context",
+"ratio": 2.4,
+"ai": 329.0,
+"human": 139.0
+},
+{
+"word": "oxygen",
+"ratio": 2.4,
+"ai": 253.0,
+"human": 106.0
+},
+{
+"word": "systemic",
+"ratio": 2.4,
+"ai": 249.0,
+"human": 104.0
+},
+{
+"word": "appropriate",
+"ratio": 2.4,
+"ai": 216.0,
+"human": 91.0
+},
+{
+"word": "threshold",
+"ratio": 2.4,
+"ai": 212.0,
+"human": 89.0
+},
+{
+"word": "quantitative",
+"ratio": 2.4,
+"ai": 207.0,
+"human": 86.0
+},
+{
+"word": "morphology",
+"ratio": 2.4,
+"ai": 201.0,
+"human": 82.0
+},
+{
+"word": "processing",
+"ratio": 2.4,
+"ai": 202.0,
+"human": 85.0
+},
+{
+"word": "core",
+"ratio": 2.4,
+"ai": 192.0,
+"human": 79.0
+},
+{
+"word": "temporal",
+"ratio": 2.4,
+"ai": 188.0,
+"human": 79.0
+},
+{
+"word": "count",
+"ratio": 2.4,
+"ai": 171.0,
+"human": 72.0
+},
+{
+"word": "spectrum",
+"ratio": 2.4,
+"ai": 113.0,
+"human": 47.0
+},
+{
+"word": "microenvironment",
+"ratio": 2.4,
+"ai": 113.0,
+"human": 47.0
+},
+{
+"word": "stabilizes",
+"ratio": 2.4,
+"ai": 96.0,
+"human": 39.0
+},
+{
+"word": "pairs",
+"ratio": 2.4,
+"ai": 96.0,
+"human": 40.0
+},
+{
+"word": "ventricular",
+"ratio": 2.4,
+"ai": 94.0,
+"human": 39.0
+},
+{
+"word": "panel",
+"ratio": 2.4,
+"ai": 92.0,
+"human": 38.0
+},
+{
+"word": "endogenous",
+"ratio": 2.4,
+"ai": 79.0,
+"human": 33.0
+},
+{
+"word": "replication",
+"ratio": 2.4,
+"ai": 79.0,
+"human": 33.0
+},
+{
+"word": "filtering",
+"ratio": 2.4,
+"ai": 75.0,
+"human": 31.0
+},
+{
+"word": "edge",
+"ratio": 2.4,
+"ai": 76.0,
+"human": 32.0
+},
+{
+"word": "exceed",
+"ratio": 2.4,
+"ai": 74.0,
+"human": 30.0
+},
+{
+"word": "effector",
+"ratio": 2.4,
+"ai": 74.0,
+"human": 31.0
+},
+{
+"word": "surveillance",
+"ratio": 2.4,
+"ai": 74.0,
+"human": 31.0
+},
+{
+"word": "early",
+"ratio": 2.4,
+"ai": 71.0,
+"human": 29.0
+},
+{
+"word": "subject",
+"ratio": 2.4,
+"ai": 69.0,
+"human": 28.0
+},
+{
+"word": "clearance",
+"ratio": 2.4,
+"ai": 70.0,
+"human": 29.0
+},
+{
+"word": "restriction",
+"ratio": 2.4,
+"ai": 68.0,
+"human": 28.0
+},
+{
+"word": "tolerated",
+"ratio": 2.4,
+"ai": 65.0,
+"human": 27.0
+},
+{
+"word": "precursor",
+"ratio": 2.4,
+"ai": 64.0,
+"human": 26.0
+},
+{
+"word": "intact",
+"ratio": 2.4,
+"ai": 60.0,
+"human": 25.0
+},
+{
+"word": "tune",
+"ratio": 2.4,
+"ai": 59.0,
+"human": 24.0
+},
+{
+"word": "sequential",
+"ratio": 2.4,
+"ai": 54.0,
+"human": 22.0
+},
+{
+"word": "phenotypic",
+"ratio": 2.4,
+"ai": 55.0,
+"human": 23.0
+},
+{
+"word": "inference",
+"ratio": 2.4,
+"ai": 52.0,
+"human": 21.0
+},
+{
+"word": "cascade",
+"ratio": 2.4,
+"ai": 53.0,
+"human": 22.0
+},
+{
+"word": "overlapp",
+"ratio": 2.4,
+"ai": 53.0,
+"human": 22.0
+},
+{
+"word": "accessibility",
+"ratio": 2.4,
+"ai": 51.0,
+"human": 21.0
+},
+{
+"word": "frame",
+"ratio": 2.4,
+"ai": 51.0,
+"human": 21.0
+},
+{
+"word": "locus",
+"ratio": 2.4,
+"ai": 49.0,
+"human": 20.0
+},
+{
+"word": "implantation",
+"ratio": 2.4,
+"ai": 44.0,
+"human": 18.0
+},
+{
+"word": "gestational",
+"ratio": 2.4,
+"ai": 42.0,
+"human": 17.0
+},
+{
+"word": "under",
+"ratio": 2.3,
+"ai": 1078.0,
+"human": 461.0
+},
+{
+"word": "exhibit",
+"ratio": 2.3,
+"ai": 808.0,
+"human": 351.0
+},
+{
+"word": "early",
+"ratio": 2.3,
+"ai": 658.0,
+"human": 282.0
+},
+{
+"word": "index",
+"ratio": 2.3,
+"ai": 609.0,
+"human": 259.0
+},
+{
+"word": "derive",
+"ratio": 2.3,
+"ai": 433.0,
+"human": 188.0
+},
+{
+"word": "estimated",
+"ratio": 2.3,
+"ai": 316.0,
+"human": 137.0
+},
+{
+"word": "drive",
+"ratio": 2.3,
+"ai": 284.0,
+"human": 123.0
+},
+{
+"word": "history",
+"ratio": 2.3,
+"ai": 262.0,
+"human": 114.0
+},
+{
+"word": "accumulation",
+"ratio": 2.3,
+"ai": 251.0,
+"human": 110.0
+},
+{
+"word": "partial",
+"ratio": 2.3,
+"ai": 185.0,
+"human": 80.0
+},
+{
+"word": "enrich",
+"ratio": 2.3,
+"ai": 182.0,
+"human": 78.0
+},
+{
+"word": "presentation",
+"ratio": 2.3,
+"ai": 179.0,
+"human": 77.0
+},
+{
+"word": "partially",
+"ratio": 2.3,
+"ai": 142.0,
+"human": 62.0
+},
+{
+"word": "match",
+"ratio": 2.3,
+"ai": 141.0,
+"human": 62.0
+},
+{
+"word": "complete",
+"ratio": 2.3,
+"ai": 138.0,
+"human": 59.0
+},
+{
+"word": "wall",
+"ratio": 2.3,
+"ai": 133.0,
+"human": 57.0
+},
+{
+"word": "coupling",
+"ratio": 2.3,
+"ai": 127.0,
+"human": 55.0
+},
+{
+"word": "informed",
+"ratio": 2.3,
+"ai": 125.0,
+"human": 54.0
+},
+{
+"word": "initiated",
+"ratio": 2.3,
+"ai": 121.0,
+"human": 52.0
+},
+{
+"word": "conversion",
+"ratio": 2.3,
+"ai": 118.0,
+"human": 52.0
+},
+{
+"word": "histological",
+"ratio": 2.3,
+"ai": 109.0,
+"human": 48.0
+},
+{
+"word": "longitudinal",
+"ratio": 2.3,
+"ai": 101.0,
+"human": 44.0
+},
+{
+"word": "collection",
+"ratio": 2.3,
+"ai": 98.0,
+"human": 42.0
+},
+{
+"word": "regimen",
+"ratio": 2.3,
+"ai": 94.0,
+"human": 41.0
+},
+{
+"word": "operative",
+"ratio": 2.3,
+"ai": 89.0,
+"human": 38.0
+},
+{
+"word": "normalize",
+"ratio": 2.3,
+"ai": 89.0,
+"human": 39.0
+},
+{
+"word": "convert",
+"ratio": 2.3,
+"ai": 89.0,
+"human": 39.0
+},
+{
+"word": "evident",
+"ratio": 2.3,
+"ai": 78.0,
+"human": 33.0
+},
+{
+"word": "excessive",
+"ratio": 2.3,
+"ai": 72.0,
+"human": 31.0
+},
+{
+"word": "terminal",
+"ratio": 2.3,
+"ai": 70.0,
+"human": 30.0
+},
+{
+"word": "plane",
+"ratio": 2.3,
+"ai": 66.0,
+"human": 28.0
+},
+{
+"word": "landscape",
+"ratio": 2.3,
+"ai": 63.0,
+"human": 27.0
+},
+{
+"word": "cavity",
+"ratio": 2.3,
+"ai": 62.0,
+"human": 27.0
+},
+{
+"word": "supply",
+"ratio": 2.3,
+"ai": 62.0,
+"human": 27.0
+},
+{
+"word": "cleavage",
+"ratio": 2.3,
+"ai": 57.0,
+"human": 24.0
+},
+{
+"word": "enter",
+"ratio": 2.3,
+"ai": 56.0,
+"human": 24.0
+},
+{
+"word": "displacement",
+"ratio": 2.3,
+"ai": 54.0,
+"human": 23.0
+},
+{
+"word": "putative",
+"ratio": 2.3,
+"ai": 55.0,
+"human": 24.0
+},
+{
+"word": "mellitus",
+"ratio": 2.3,
+"ai": 54.0,
+"human": 23.0
+},
+{
+"word": "systematically",
+"ratio": 2.3,
+"ai": 54.0,
+"human": 23.0
+},
+{
+"word": "repeat",
+"ratio": 2.3,
+"ai": 53.0,
+"human": 23.0
+},
+{
+"word": "label",
+"ratio": 2.3,
+"ai": 51.0,
+"human": 22.0
+},
+{
+"word": "nutritional",
+"ratio": 2.3,
+"ai": 51.0,
+"human": 22.0
+},
+{
+"word": "rated",
+"ratio": 2.3,
+"ai": 48.0,
+"human": 21.0
+},
+{
+"word": "randomize",
+"ratio": 2.3,
+"ai": 48.0,
+"human": 21.0
+},
+{
+"word": "favor",
+"ratio": 2.3,
+"ai": 48.0,
+"human": 21.0
+},
+{
+"word": "steady",
+"ratio": 2.3,
+"ai": 47.0,
+"human": 20.0
+},
+{
+"word": "character",
+"ratio": 2.3,
+"ai": 47.0,
+"human": 20.0
+},
+{
+"word": "spectroscopic",
+"ratio": 2.3,
+"ai": 46.0,
+"human": 20.0
+},
+{
+"word": "conformational",
+"ratio": 2.3,
+"ai": 45.0,
+"human": 19.0
+},
+{
+"word": "operational",
+"ratio": 2.3,
+"ai": 40.0,
+"human": 17.0
+},
+{
+"word": "signaling",
+"ratio": 2.2,
+"ai": 843.0,
+"human": 386.0
+},
+{
+"word": "multiple",
+"ratio": 2.2,
+"ai": 603.0,
+"human": 269.0
+},
+{
+"word": "primary",
+"ratio": 2.2,
+"ai": 525.0,
+"human": 240.0
+},
+{
+"word": "formation",
+"ratio": 2.2,
+"ai": 478.0,
+"human": 218.0
+},
+{
+"word": "produce",
+"ratio": 2.2,
+"ai": 446.0,
+"human": 201.0
+},
+{
+"word": "display",
+"ratio": 2.2,
+"ai": 248.0,
+"human": 111.0
+},
+{
+"word": "layer",
+"ratio": 2.2,
+"ai": 229.0,
+"human": 106.0
+},
+{
+"word": "uptake",
+"ratio": 2.2,
+"ai": 205.0,
+"human": 91.0
+},
+{
+"word": "units",
+"ratio": 2.2,
+"ai": 184.0,
+"human": 83.0
+},
+{
+"word": "element",
+"ratio": 2.2,
+"ai": 183.0,
+"human": 84.0
+},
+{
+"word": "mixed",
+"ratio": 2.2,
+"ai": 164.0,
+"human": 75.0
+},
+{
+"word": "likelihood",
+"ratio": 2.2,
+"ai": 146.0,
+"human": 65.0
+},
+{
+"word": "recognition",
+"ratio": 2.2,
+"ai": 139.0,
+"human": 63.0
+},
+{
+"word": "engagement",
+"ratio": 2.2,
+"ai": 137.0,
+"human": 63.0
+},
+{
+"word": "load",
+"ratio": 2.2,
+"ai": 133.0,
+"human": 61.0
+},
+{
+"word": "output",
+"ratio": 2.2,
+"ai": 121.0,
+"human": 54.0
+},
+{
+"word": "organization",
+"ratio": 2.2,
+"ai": 118.0,
+"human": 53.0
+},
+{
+"word": "expansion",
+"ratio": 2.2,
+"ai": 115.0,
+"human": 53.0
+},
+{
+"word": "preference",
+"ratio": 2.2,
+"ai": 111.0,
+"human": 50.0
+},
+{
+"word": "place",
+"ratio": 2.2,
+"ai": 86.0,
+"human": 39.0
+},
+{
+"word": "screened",
+"ratio": 2.2,
+"ai": 79.0,
+"human": 36.0
+},
+{
+"word": "fine",
+"ratio": 2.2,
+"ai": 78.0,
+"human": 35.0
+},
+{
+"word": "chemistry",
+"ratio": 2.2,
+"ai": 74.0,
+"human": 33.0
+},
+{
+"word": "caregiver",
+"ratio": 2.2,
+"ai": 71.0,
+"human": 32.0
+},
+{
+"word": "contamination",
+"ratio": 2.2,
+"ai": 68.0,
+"human": 31.0
+},
+{
+"word": "margin",
+"ratio": 2.2,
+"ai": 68.0,
+"human": 31.0
+},
+{
+"word": "maximal",
+"ratio": 2.2,
+"ai": 66.0,
+"human": 30.0
+},
+{
+"word": "absent",
+"ratio": 2.2,
+"ai": 61.0,
+"human": 28.0
+},
+{
+"word": "stiffness",
+"ratio": 2.2,
+"ai": 60.0,
+"human": 27.0
+},
+{
+"word": "univariate",
+"ratio": 2.2,
+"ai": 59.0,
+"human": 27.0
+},
+{
+"word": "brief",
+"ratio": 2.2,
+"ai": 59.0,
+"human": 27.0
+},
+{
+"word": "recombination",
+"ratio": 2.2,
+"ai": 56.0,
+"human": 25.0
+},
+{
+"word": "spectrometry",
+"ratio": 2.2,
+"ai": 57.0,
+"human": 26.0
+},
+{
+"word": "anticipate",
+"ratio": 2.2,
+"ai": 52.0,
+"human": 23.0
+},
+{
+"word": "manipulation",
+"ratio": 2.2,
+"ai": 50.0,
+"human": 22.0
+},
+{
+"word": "mature",
+"ratio": 2.2,
+"ai": 49.0,
+"human": 22.0
+},
+{
+"word": "analyte",
+"ratio": 2.2,
+"ai": 48.0,
+"human": 22.0
+},
+{
+"word": "tension",
+"ratio": 2.2,
+"ai": 48.0,
+"human": 22.0
+},
+{
+"word": "circulation",
+"ratio": 2.2,
+"ai": 42.0,
+"human": 19.0
+},
+{
+"word": "competence",
+"ratio": 2.2,
+"ai": 42.0,
+"human": 19.0
+},
+{
+"word": "rules",
+"ratio": 2.2,
+"ai": 41.0,
+"human": 18.0
+},
+{
+"word": "cytoplasmic",
+"ratio": 2.2,
+"ai": 42.0,
+"human": 19.0
+},
+{
+"word": "change",
+"ratio": 2.1,
+"ai": 1270.0,
+"human": 603.0
+},
+{
+"word": "outcomes",
+"ratio": 2.1,
+"ai": 894.0,
+"human": 421.0
+},
+{
+"word": "region",
+"ratio": 2.1,
+"ai": 705.0,
+"human": 332.0
+},
+{
+"word": "assessment",
+"ratio": 2.1,
+"ai": 420.0,
+"human": 203.0
+},
+{
+"word": "influence",
+"ratio": 2.1,
+"ai": 346.0,
+"human": 164.0
+},
+{
+"word": "procedure",
+"ratio": 2.1,
+"ai": 333.0,
+"human": 159.0
+},
+{
+"word": "duration",
+"ratio": 2.1,
+"ai": 328.0,
+"human": 155.0
+},
+{
+"word": "program",
+"ratio": 2.1,
+"ai": 258.0,
+"human": 124.0
+},
+{
+"word": "framework",
+"ratio": 2.1,
+"ai": 224.0,
+"human": 108.0
+},
+{
+"word": "conventional",
+"ratio": 2.1,
+"ai": 218.0,
+"human": 103.0
+},
+{
+"word": "subgroup",
+"ratio": 2.1,
+"ai": 215.0,
+"human": 103.0
+},
+{
+"word": "modulate",
+"ratio": 2.1,
+"ai": 209.0,
+"human": 101.0
+},
+{
+"word": "charge",
+"ratio": 2.1,
+"ai": 170.0,
+"human": 81.0
+},
+{
+"word": "particle",
+"ratio": 2.1,
+"ai": 165.0,
+"human": 79.0
+},
+{
+"word": "typical",
+"ratio": 2.1,
+"ai": 140.0,
+"human": 66.0
+},
+{
+"word": "direction",
+"ratio": 2.1,
+"ai": 138.0,
+"human": 67.0
+},
+{
+"word": "external",
+"ratio": 2.1,
+"ai": 135.0,
+"human": 65.0
+},
+{
+"word": "hydrogen",
+"ratio": 2.1,
+"ai": 119.0,
+"human": 57.0
+},
+{
+"word": "preparation",
+"ratio": 2.1,
+"ai": 110.0,
+"human": 52.0
+},
+{
+"word": "recurrent",
+"ratio": 2.1,
+"ai": 110.0,
+"human": 52.0
+},
+{
+"word": "dietary",
+"ratio": 2.1,
+"ai": 110.0,
+"human": 53.0
+},
+{
+"word": "imply",
+"ratio": 2.1,
+"ai": 110.0,
+"human": 53.0
+},
+{
+"word": "respect",
+"ratio": 2.1,
+"ai": 101.0,
+"human": 48.0
+},
+{
+"word": "spectra",
+"ratio": 2.1,
+"ai": 98.0,
+"human": 47.0
+},
+{
+"word": "comprise",
+"ratio": 2.1,
+"ai": 90.0,
+"human": 43.0
+},
+{
+"word": "disrupt",
+"ratio": 2.1,
+"ai": 82.0,
+"human": 38.0
+},
+{
+"word": "proximal",
+"ratio": 2.1,
+"ai": 80.0,
+"human": 37.0
+},
+{
+"word": "depletion",
+"ratio": 2.1,
+"ai": 81.0,
+"human": 39.0
+},
+{
+"word": "dependence",
+"ratio": 2.1,
+"ai": 80.0,
+"human": 38.0
+},
+{
+"word": "native",
+"ratio": 2.1,
+"ai": 75.0,
+"human": 35.0
+},
+{
+"word": "cortical",
+"ratio": 2.1,
+"ai": 73.0,
+"human": 34.0
+},
+{
+"word": "guidance",
+"ratio": 2.1,
+"ai": 71.0,
+"human": 34.0
+},
+{
+"word": "adaptive",
+"ratio": 2.1,
+"ai": 70.0,
+"human": 33.0
+},
+{
+"word": "instability",
+"ratio": 2.1,
+"ai": 67.0,
+"human": 31.0
+},
+{
+"word": "approve",
+"ratio": 2.1,
+"ai": 69.0,
+"human": 33.0
+},
+{
+"word": "positivity",
+"ratio": 2.1,
+"ai": 60.0,
+"human": 29.0
+},
+{
+"word": "pool",
+"ratio": 2.1,
+"ai": 58.0,
+"human": 27.0
+},
+{
+"word": "placement",
+"ratio": 2.1,
+"ai": 59.0,
+"human": 28.0
+},
+{
+"word": "trauma",
+"ratio": 2.1,
+"ai": 56.0,
+"human": 27.0
+},
+{
+"word": "vulnerability",
+"ratio": 2.1,
+"ai": 50.0,
+"human": 23.0
+},
+{
+"word": "miss",
+"ratio": 2.1,
+"ai": 49.0,
+"human": 23.0
+},
+{
+"word": "immunohistochemistry",
+"ratio": 2.1,
+"ai": 45.0,
+"human": 21.0
+},
+{
+"word": "geographic",
+"ratio": 2.1,
+"ai": 46.0,
+"human": 22.0
+},
+{
+"word": "pipeline",
+"ratio": 2.1,
+"ai": 46.0,
+"human": 22.0
+},
+{
+"word": "establishment",
+"ratio": 2.1,
+"ai": 44.0,
+"human": 21.0
+},
+{
+"word": "nodule",
+"ratio": 2.1,
+"ai": 43.0,
+"human": 20.0
+},
+{
+"word": "reversible",
+"ratio": 2.1,
+"ai": 42.0,
+"human": 20.0
+},
+{
+"word": "conductivity",
+"ratio": 2.1,
+"ai": 42.0,
+"human": 20.0
+},
+{
+"word": "perform",
+"ratio": 2.0,
+"ai": 737.0,
+"human": 363.0
+},
+{
+"word": "small",
+"ratio": 2.0,
+"ai": 692.0,
+"human": 349.0
+},
+{
+"word": "surface",
+"ratio": 2.0,
+"ai": 601.0,
+"human": 306.0
+},
+{
+"word": "phase",
+"ratio": 2.0,
+"ai": 476.0,
+"human": 235.0
+},
+{
+"word": "assay",
+"ratio": 2.0,
+"ai": 416.0,
+"human": 205.0
+},
+{
+"word": "measure",
+"ratio": 2.0,
+"ai": 411.0,
+"human": 204.0
+},
+{
+"word": "frequency",
+"ratio": 2.0,
+"ai": 394.0,
+"human": 197.0
+},
+{
+"word": "pressure",
+"ratio": 2.0,
+"ai": 346.0,
+"human": 171.0
+},
+{
+"word": "initial",
+"ratio": 2.0,
+"ai": 274.0,
+"human": 139.0
+},
+{
+"word": "oxidative",
+"ratio": 2.0,
+"ai": 255.0,
+"human": 129.0
+},
+{
+"word": "abundance",
+"ratio": 2.0,
+"ai": 221.0,
+"human": 109.0
+},
+{
+"word": "absence",
+"ratio": 2.0,
+"ai": 211.0,
+"human": 104.0
+},
+{
+"word": "peak",
+"ratio": 2.0,
+"ai": 206.0,
+"human": 101.0
+},
+{
+"word": "introduce",
+"ratio": 2.0,
+"ai": 195.0,
+"human": 95.0
+},
+{
+"word": "vascular",
+"ratio": 2.0,
+"ai": 197.0,
+"human": 98.0
+},
+{
+"word": "attention",
+"ratio": 2.0,
+"ai": 187.0,
+"human": 92.0
+},
+{
+"word": "internal",
+"ratio": 2.0,
+"ai": 183.0,
+"human": 90.0
+},
+{
+"word": "share",
+"ratio": 2.0,
+"ai": 179.0,
+"human": 89.0
+},
+{
+"word": "transmission",
+"ratio": 2.0,
+"ai": 177.0,
+"human": 90.0
+},
+{
+"word": "involvement",
+"ratio": 2.0,
+"ai": 172.0,
+"human": 86.0
+},
+{
+"word": "clear",
+"ratio": 2.0,
+"ai": 171.0,
+"human": 86.0
+},
+{
+"word": "monitoring",
+"ratio": 2.0,
+"ai": 169.0,
+"human": 86.0
+},
+{
+"word": "physiological",
+"ratio": 2.0,
+"ai": 162.0,
+"human": 81.0
+},
+{
+"word": "impairment",
+"ratio": 2.0,
+"ai": 139.0,
+"human": 69.0
+},
+{
+"word": "ensure",
+"ratio": 2.0,
+"ai": 136.0,
+"human": 68.0
+},
+{
+"word": "viability",
+"ratio": 2.0,
+"ai": 132.0,
+"human": 66.0
+},
+{
+"word": "fluorescence",
+"ratio": 2.0,
+"ai": 130.0,
+"human": 64.0
+},
+{
+"word": "motion",
+"ratio": 2.0,
+"ai": 131.0,
+"human": 66.0
+},
+{
+"word": "requirement",
+"ratio": 2.0,
+"ai": 125.0,
+"human": 62.0
+},
+{
+"word": "optical",
+"ratio": 2.0,
+"ai": 128.0,
+"human": 65.0
+},
+{
+"word": "inputs",
+"ratio": 2.0,
+"ai": 122.0,
+"human": 61.0
+},
+{
+"word": "platform",
+"ratio": 2.0,
+"ai": 116.0,
+"human": 59.0
+},
+{
+"word": "deviations",
+"ratio": 2.0,
+"ai": 113.0,
+"human": 56.0
+},
+{
+"word": "acceptable",
+"ratio": 2.0,
+"ai": 106.0,
+"human": 54.0
+},
+{
+"word": "genomic",
+"ratio": 2.0,
+"ai": 104.0,
+"human": 53.0
+},
+{
+"word": "lipid",
+"ratio": 2.0,
+"ai": 96.0,
+"human": 47.0
+},
+{
+"word": "standard",
+"ratio": 2.0,
+"ai": 94.0,
+"human": 47.0
+},
+{
+"word": "participation",
+"ratio": 2.0,
+"ai": 95.0,
+"human": 48.0
+},
+{
+"word": "near",
+"ratio": 2.0,
+"ai": 92.0,
+"human": 45.0
+},
+{
+"word": "electronic",
+"ratio": 2.0,
+"ai": 89.0,
+"human": 44.0
+},
+{
+"word": "whose",
+"ratio": 2.0,
+"ai": 85.0,
+"human": 42.0
+},
+{
+"word": "engages",
+"ratio": 2.0,
+"ai": 79.0,
+"human": 39.0
+},
+{
+"word": "spectral",
+"ratio": 2.0,
+"ai": 78.0,
+"human": 38.0
+},
+{
+"word": "theme",
+"ratio": 2.0,
+"ai": 78.0,
+"human": 39.0
+},
+{
+"word": "accumulated",
+"ratio": 2.0,
+"ai": 75.0,
+"human": 37.0
+},
+{
+"word": "exchange",
+"ratio": 2.0,
+"ai": 76.0,
+"human": 38.0
+},
+{
+"word": "soft",
+"ratio": 2.0,
+"ai": 77.0,
+"human": 39.0
+},
+{
+"word": "expectation",
+"ratio": 2.0,
+"ai": 70.0,
+"human": 34.0
+},
+{
+"word": "rise",
+"ratio": 2.0,
+"ai": 67.0,
+"human": 33.0
+},
+{
+"word": "distal",
+"ratio": 2.0,
+"ai": 69.0,
+"human": 35.0
+},
+{
+"word": "near",
+"ratio": 2.0,
+"ai": 66.0,
+"human": 33.0
+},
+{
+"word": "ground",
+"ratio": 2.0,
+"ai": 66.0,
+"human": 33.0
+},
+{
+"word": "evidence",
+"ratio": 2.0,
+"ai": 65.0,
+"human": 32.0
+},
+{
+"word": "until",
+"ratio": 2.0,
+"ai": 63.0,
+"human": 31.0
+},
+{
+"word": "extension",
+"ratio": 2.0,
+"ai": 63.0,
+"human": 32.0
+},
+{
+"word": "direct",
+"ratio": 2.0,
+"ai": 59.0,
+"human": 29.0
+},
+{
+"word": "permeability",
+"ratio": 2.0,
+"ai": 59.0,
+"human": 29.0
+},
+{
+"word": "electrolyte",
+"ratio": 2.0,
+"ai": 56.0,
+"human": 28.0
+},
+{
+"word": "center",
+"ratio": 2.0,
+"ai": 54.0,
+"human": 27.0
+},
+{
+"word": "scattering",
+"ratio": 2.0,
+"ai": 53.0,
+"human": 26.0
+},
+{
+"word": "digital",
+"ratio": 2.0,
+"ai": 51.0,
+"human": 25.0
+},
+{
+"word": "electrostatic",
+"ratio": 2.0,
+"ai": 51.0,
+"human": 25.0
+},
+{
+"word": "purify",
+"ratio": 2.0,
+"ai": 41.0,
+"human": 20.0
+},
+{
+"word": "contraction",
+"ratio": 2.0,
+"ai": 41.0,
+"human": 20.0
+},
+{
+"word": "ambient",
+"ratio": 2.0,
+"ai": 41.0,
+"human": 20.0
+},
+{
+"word": "replicate",
+"ratio": 2.0,
+"ai": 40.0,
+"human": 20.0
+},
+{
+"word": "viable",
+"ratio": 2.0,
+"ai": 40.0,
+"human": 20.0
+},
+{
+"word": "reflection",
+"ratio": 2.0,
+"ai": 40.0,
+"human": 20.0
+}
+],
+"gpt-4.1-mini news": [
+{
+"word": "additionally",
+"ratio": 843.0,
+"ai": 350.83,
+"human": 0.0
+},
+{
+"word": "emphasize",
+"ratio": 314.0,
+"ai": 4316.67,
+"human": 13.33
+},
+{
+"word": "revolutionize",
+"ratio": 119.0,
+"ai": 49.17,
+"human": 0.0
+},
+{
+"word": "captivated",
+"ratio": 63.0,
+"ai": 78.33,
+"human": 0.83
+},
+{
+"word": "personalize",
+"ratio": 49.7,
+"ai": 61.67,
+"human": 0.83
+},
+{
+"word": "resilience",
+"ratio": 44.9,
+"ai": 654.17,
+"human": 14.17
+},
+{
+"word": "dedication",
+"ratio": 44.0,
+"ai": 384.17,
+"human": 8.33
+},
+{
+"word": "importance",
+"ratio": 39.2,
+"ai": 2236.67,
+"human": 56.67
+},
+{
+"word": "teamwork",
+"ratio": 39.0,
+"ai": 48.33,
+"human": 0.83
+},
+{
+"word": "symbolize",
+"ratio": 39.0,
+"ai": 48.33,
+"human": 0.83
+},
+{
+"word": "attribute",
+"ratio": 37.4,
+"ai": 326.67,
+"human": 8.33
+},
+{
+"word": "foster",
+"ratio": 35.5,
+"ai": 369.17,
+"human": 10.0
+},
+{
+"word": "delve",
+"ratio": 34.5,
+"ai": 157.5,
+"human": 4.17
+},
+{
+"word": "transparency",
+"ratio": 33.7,
+"ai": 575.83,
+"human": 16.67
+},
+{
+"word": "alike",
+"ratio": 32.5,
+"ai": 148.33,
+"human": 4.17
+},
+{
+"word": "unwavering",
+"ratio": 31.9,
+"ai": 119.17,
+"human": 3.33
+},
+{
+"word": "meanwhile",
+"ratio": 30.7,
+"ai": 89.17,
+"human": 2.5
+},
+{
+"word": "vigilance",
+"ratio": 30.1,
+"ai": 87.5,
+"human": 2.5
+},
+{
+"word": "intricate",
+"ratio": 29.6,
+"ai": 85.83,
+"human": 2.5
+},
+{
+"word": "sleek",
+"ratio": 28.2,
+"ai": 58.33,
+"human": 1.67
+},
+{
+"word": "vibrant",
+"ratio": 26.2,
+"ai": 360.0,
+"human": 13.33
+},
+{
+"word": "however",
+"ratio": 25.6,
+"ai": 1249.17,
+"human": 48.33
+},
+{
+"word": "showcase",
+"ratio": 24.4,
+"ai": 355.0,
+"human": 14.17
+},
+{
+"word": "stricter",
+"ratio": 24.1,
+"ai": 190.0,
+"human": 7.5
+},
+{
+"word": "storytelling",
+"ratio": 24.1,
+"ai": 150.0,
+"human": 5.83
+},
+{
+"word": "bustle",
+"ratio": 24.1,
+"ai": 70.0,
+"human": 2.5
+},
+{
+"word": "blend",
+"ratio": 24.0,
+"ai": 210.0,
+"human": 8.33
+},
+{
+"word": "highlight",
+"ratio": 23.8,
+"ai": 1200.0,
+"human": 50.0
+},
+{
+"word": "composure",
+"ratio": 23.6,
+"ai": 68.33,
+"human": 2.5
+},
+{
+"word": "prioritize",
+"ratio": 22.7,
+"ai": 330.83,
+"human": 14.17
+},
+{
+"word": "eagerly",
+"ratio": 22.6,
+"ai": 46.67,
+"human": 1.67
+},
+{
+"word": "complexity",
+"ratio": 22.5,
+"ai": 215.0,
+"human": 9.17
+},
+{
+"word": "blend",
+"ratio": 22.3,
+"ai": 195.0,
+"human": 8.33
+},
+{
+"word": "stabilize",
+"ratio": 22.3,
+"ai": 139.17,
+"human": 5.83
+},
+{
+"word": "inflationary",
+"ratio": 21.4,
+"ai": 44.17,
+"human": 1.67
+},
+{
+"word": "adaptability",
+"ratio": 21.3,
+"ai": 61.67,
+"human": 2.5
+},
+{
+"word": "enhance",
+"ratio": 20.8,
+"ai": 753.33,
+"human": 35.83
+},
+{
+"word": "prowess",
+"ratio": 20.6,
+"ai": 42.5,
+"human": 1.67
+},
+{
+"word": "demeanor",
+"ratio": 19.4,
+"ai": 40.0,
+"human": 1.67
+},
+{
+"word": "critic",
+"ratio": 19.1,
+"ai": 740.83,
+"human": 38.33
+},
+{
+"word": "agility",
+"ratio": 19.0,
+"ai": 55.0,
+"human": 2.5
+},
+{
+"word": "accountability",
+"ratio": 18.7,
+"ai": 288.33,
+"human": 15.0
+},
+{
+"word": "acclaim",
+"ratio": 18.7,
+"ai": 54.17,
+"human": 2.5
+},
+{
+"word": "innovative",
+"ratio": 18.4,
+"ai": 360.0,
+"human": 19.17
+},
+{
+"word": "policymaker",
+"ratio": 17.9,
+"ai": 81.67,
+"human": 4.17
+},
+{
+"word": "geopolitical",
+"ratio": 17.7,
+"ai": 125.0,
+"human": 6.67
+},
+{
+"word": "argue",
+"ratio": 17.5,
+"ai": 1360.0,
+"human": 77.5
+},
+{
+"word": "alike",
+"ratio": 17.5,
+"ai": 196.67,
+"human": 10.83
+},
+{
+"word": "organizer",
+"ratio": 17.5,
+"ai": 181.67,
+"human": 10.0
+},
+{
+"word": "balancing",
+"ratio": 17.3,
+"ai": 107.5,
+"human": 5.83
+},
+{
+"word": "inclusivity",
+"ratio": 17.3,
+"ai": 50.0,
+"human": 2.5
+},
+{
+"word": "misunderstanding",
+"ratio": 17.0,
+"ai": 49.17,
+"human": 2.5
+},
+{
+"word": "portrayal",
+"ratio": 16.6,
+"ai": 61.67,
+"human": 3.33
+},
+{
+"word": "streamline",
+"ratio": 16.5,
+"ai": 102.5,
+"human": 5.83
+},
+{
+"word": "reshape",
+"ratio": 16.5,
+"ai": 89.17,
+"human": 5.0
+},
+{
+"word": "captivate",
+"ratio": 16.4,
+"ai": 47.5,
+"human": 2.5
+},
+{
+"word": "enthusiast",
+"ratio": 16.3,
+"ai": 60.83,
+"human": 3.33
+},
+{
+"word": "setback",
+"ratio": 16.2,
+"ai": 141.67,
+"human": 8.33
+},
+{
+"word": "consistency",
+"ratio": 16.1,
+"ai": 113.33,
+"human": 6.67
+},
+{
+"word": "weave",
+"ratio": 16.1,
+"ai": 46.67,
+"human": 2.5
+},
+{
+"word": "groundbreaking",
+"ratio": 15.9,
+"ai": 59.17,
+"human": 3.33
+},
+{
+"word": "controversy",
+"ratio": 15.8,
+"ai": 125.0,
+"human": 7.5
+},
+{
+"word": "spark",
+"ratio": 15.6,
+"ai": 705.83,
+"human": 45.0
+},
+{
+"word": "versatility",
+"ratio": 15.5,
+"ai": 70.83,
+"human": 4.17
+},
+{
+"word": "tension",
+"ratio": 15.4,
+"ai": 607.5,
+"human": 39.17
+},
+{
+"word": "resonate",
+"ratio": 15.3,
+"ai": 159.17,
+"human": 10.0
+},
+{
+"word": "vigilant",
+"ratio": 15.2,
+"ai": 158.33,
+"human": 10.0
+},
+{
+"word": "adherence",
+"ratio": 15.2,
+"ai": 69.17,
+"human": 4.17
+},
+{
+"word": "determination",
+"ratio": 15.0,
+"ai": 343.33,
+"human": 22.5
+},
+{
+"word": "unity",
+"ratio": 15.0,
+"ai": 292.5,
+"human": 19.17
+},
+{
+"word": "challenge",
+"ratio": 14.8,
+"ai": 2027.5,
+"human": 136.67
+},
+{
+"word": "advancement",
+"ratio": 14.7,
+"ai": 152.5,
+"human": 10.0
+},
+{
+"word": "thrilling",
+"ratio": 14.7,
+"ai": 91.67,
+"human": 5.83
+},
+{
+"word": "gratitude",
+"ratio": 14.6,
+"ai": 115.0,
+"human": 7.5
+},
+{
+"word": "tirelessly",
+"ratio": 14.4,
+"ai": 125.83,
+"human": 8.33
+},
+{
+"word": "relentless",
+"ratio": 14.4,
+"ai": 113.33,
+"human": 7.5
+},
+{
+"word": "charm",
+"ratio": 13.9,
+"ai": 63.33,
+"human": 4.17
+},
+{
+"word": "imperative",
+"ratio": 13.9,
+"ai": 40.0,
+"human": 2.5
+},
+{
+"word": "urge",
+"ratio": 13.8,
+"ai": 1271.67,
+"human": 91.67
+},
+{
+"word": "ongoing",
+"ratio": 13.7,
+"ai": 1272.5,
+"human": 92.5
+},
+{
+"word": "seamless",
+"ratio": 13.7,
+"ai": 50.83,
+"human": 3.33
+},
+{
+"word": "upcoming",
+"ratio": 13.5,
+"ai": 546.67,
+"human": 40.0
+},
+{
+"word": "praise",
+"ratio": 13.5,
+"ai": 309.17,
+"human": 22.5
+},
+{
+"word": "heartfelt",
+"ratio": 13.4,
+"ai": 94.17,
+"human": 6.67
+},
+{
+"word": "promptly",
+"ratio": 13.3,
+"ai": 105.0,
+"human": 7.5
+},
+{
+"word": "escalate",
+"ratio": 13.2,
+"ai": 279.17,
+"human": 20.83
+},
+{
+"word": "creativity",
+"ratio": 13.1,
+"ai": 135.83,
+"human": 10.0
+},
+{
+"word": "crucial",
+"ratio": 13.0,
+"ai": 775.0,
+"human": 59.17
+},
+{
+"word": "collaboration",
+"ratio": 12.6,
+"ai": 330.0,
+"human": 25.83
+},
+{
+"word": "underserved",
+"ratio": 12.6,
+"ai": 46.67,
+"human": 3.33
+},
+{
+"word": "balance",
+"ratio": 12.5,
+"ai": 233.33,
+"human": 18.33
+},
+{
+"word": "laughter",
+"ratio": 12.5,
+"ai": 77.5,
+"human": 5.83
+},
+{
+"word": "cybersecurity",
+"ratio": 12.5,
+"ai": 56.67,
+"human": 4.17
+},
+{
+"word": "unexpected",
+"ratio": 12.4,
+"ai": 231.67,
+"human": 18.33
+},
+{
+"word": "healthcare",
+"ratio": 12.3,
+"ai": 740.83,
+"human": 60.0
+},
+{
+"word": "erupt",
+"ratio": 12.3,
+"ai": 158.33,
+"human": 12.5
+},
+{
+"word": "flavor",
+"ratio": 12.3,
+"ai": 138.33,
+"human": 10.83
+},
+{
+"word": "authority",
+"ratio": 12.2,
+"ai": 2348.33,
+"human": 191.67
+},
+{
+"word": "express",
+"ratio": 12.2,
+"ai": 1017.5,
+"human": 83.33
+},
+{
+"word": "leverage",
+"ratio": 12.2,
+"ai": 126.67,
+"human": 10.0
+},
+{
+"word": "innovation",
+"ratio": 12.0,
+"ai": 385.0,
+"human": 31.67
+},
+{
+"word": "thorough",
+"ratio": 12.0,
+"ai": 184.17,
+"human": 15.0
+},
+{
+"word": "advanced",
+"ratio": 11.8,
+"ai": 290.83,
+"human": 24.17
+},
+{
+"word": "capitalize",
+"ratio": 11.7,
+"ai": 82.5,
+"human": 6.67
+},
+{
+"word": "versatile",
+"ratio": 11.7,
+"ai": 43.33,
+"human": 3.33
+},
+{
+"word": "unforeseen",
+"ratio": 11.7,
+"ai": 43.33,
+"human": 3.33
+},
+{
+"word": "navigate",
+"ratio": 11.3,
+"ai": 286.67,
+"human": 25.0
+},
+{
+"word": "initiative",
+"ratio": 11.1,
+"ai": 569.17,
+"human": 50.83
+},
+{
+"word": "widespread",
+"ratio": 11.0,
+"ai": 589.17,
+"human": 53.33
+},
+{
+"word": "seamlessly",
+"ratio": 11.0,
+"ai": 50.0,
+"human": 4.17
+},
+{
+"word": "cohesion",
+"ratio": 11.0,
+"ai": 40.83,
+"human": 3.33
+},
+{
+"word": "intensify",
+"ratio": 10.9,
+"ai": 194.17,
+"human": 17.5
+},
+{
+"word": "cooperation",
+"ratio": 10.8,
+"ai": 374.17,
+"human": 34.17
+},
+{
+"word": "adhere",
+"ratio": 10.8,
+"ai": 175.0,
+"human": 15.83
+},
+{
+"word": "warmth",
+"ratio": 10.8,
+"ai": 58.33,
+"human": 5.0
+},
+{
+"word": "solidify",
+"ratio": 10.8,
+"ai": 49.17,
+"human": 4.17
+},
+{
+"word": "cozy",
+"ratio": 10.8,
+"ai": 40.0,
+"human": 3.33
+},
+{
+"word": "worldwide",
+"ratio": 10.7,
+"ai": 315.0,
+"human": 29.17
+},
+{
+"word": "dynamic",
+"ratio": 10.7,
+"ai": 129.17,
+"human": 11.67
+},
+{
+"word": "traveler",
+"ratio": 10.7,
+"ai": 120.0,
+"human": 10.83
+},
+{
+"word": "remarkable",
+"ratio": 10.6,
+"ai": 162.5,
+"human": 15.0
+},
+{
+"word": "reliability",
+"ratio": 10.6,
+"ai": 48.33,
+"human": 4.17
+},
+{
+"word": "sustainable",
+"ratio": 10.5,
+"ai": 425.83,
+"human": 40.0
+},
+{
+"word": "overwhelming",
+"ratio": 10.4,
+"ai": 116.67,
+"human": 10.83
+},
+{
+"word": "tailor",
+"ratio": 10.3,
+"ai": 72.5,
+"human": 6.67
+},
+{
+"word": "despite",
+"ratio": 10.2,
+"ai": 1556.67,
+"human": 151.67
+},
+{
+"word": "closely",
+"ratio": 10.2,
+"ai": 427.5,
+"human": 41.67
+},
+{
+"word": "cautious",
+"ratio": 10.2,
+"ai": 157.5,
+"human": 15.0
+},
+{
+"word": "deepen",
+"ratio": 10.2,
+"ai": 71.67,
+"human": 6.67
+},
+{
+"word": "significant",
+"ratio": 10.1,
+"ai": 1582.5,
+"human": 155.83
+},
+{
+"word": "dialogue",
+"ratio": 10.0,
+"ai": 229.17,
+"human": 22.5
+},
+{
+"word": "efficiency",
+"ratio": 10.0,
+"ai": 186.67,
+"human": 18.33
+},
+{
+"word": "renewable",
+"ratio": 9.9,
+"ai": 185.83,
+"human": 18.33
+},
+{
+"word": "accessibility",
+"ratio": 9.9,
+"ai": 53.33,
+"human": 5.0
+},
+{
+"word": "educator",
+"ratio": 9.9,
+"ai": 53.33,
+"human": 5.0
+},
+{
+"word": "logistical",
+"ratio": 9.9,
+"ai": 45.0,
+"human": 4.17
+},
+{
+"word": "complex",
+"ratio": 9.8,
+"ai": 345.83,
+"human": 35.0
+},
+{
+"word": "stability",
+"ratio": 9.8,
+"ai": 339.17,
+"human": 34.17
+},
+{
+"word": "challenging",
+"ratio": 9.8,
+"ai": 257.5,
+"human": 25.83
+},
+{
+"word": "comprehensive",
+"ratio": 9.8,
+"ai": 223.33,
+"human": 22.5
+},
+{
+"word": "intense",
+"ratio": 9.7,
+"ai": 269.17,
+"human": 27.5
+},
+{
+"word": "promising",
+"ratio": 9.7,
+"ai": 84.17,
+"human": 8.33
+},
+{
+"word": "revelation",
+"ratio": 9.6,
+"ai": 51.67,
+"human": 5.0
+},
+{
+"word": "shift",
+"ratio": 9.5,
+"ai": 511.67,
+"human": 53.33
+},
+{
+"word": "coordinate",
+"ratio": 9.5,
+"ai": 249.17,
+"human": 25.83
+},
+{
+"word": "unpredictable",
+"ratio": 9.5,
+"ai": 50.83,
+"human": 5.0
+},
+{
+"word": "analyst",
+"ratio": 9.4,
+"ai": 519.17,
+"human": 55.0
+},
+{
+"word": "disruption",
+"ratio": 9.4,
+"ai": 356.67,
+"human": 37.5
+},
+{
+"word": "uphold",
+"ratio": 9.4,
+"ai": 105.0,
+"human": 10.83
+},
+{
+"word": "accuracy",
+"ratio": 9.4,
+"ai": 97.5,
+"human": 10.0
+},
+{
+"word": "prolonged",
+"ratio": 9.4,
+"ai": 97.5,
+"human": 10.0
+},
+{
+"word": "expert",
+"ratio": 9.3,
+"ai": 1396.67,
+"human": 150.0
+},
+{
+"word": "maintain",
+"ratio": 9.3,
+"ai": 1066.67,
+"human": 114.17
+},
+{
+"word": "urgent",
+"ratio": 9.3,
+"ai": 322.5,
+"human": 34.17
+},
+{
+"word": "commitment",
+"ratio": 9.2,
+"ai": 735.0,
+"human": 79.17
+},
+{
+"word": "diverse",
+"ratio": 9.2,
+"ai": 301.67,
+"human": 32.5
+},
+{
+"word": "instability",
+"ratio": 9.2,
+"ai": 103.33,
+"human": 10.83
+},
+{
+"word": "immersive",
+"ratio": 9.2,
+"ai": 49.17,
+"human": 5.0
+},
+{
+"word": "startup",
+"ratio": 9.2,
+"ai": 41.67,
+"human": 4.17
+},
+{
+"word": "advocate",
+"ratio": 9.1,
+"ai": 177.5,
+"human": 19.17
+},
+{
+"word": "tactical",
+"ratio": 9.1,
+"ai": 86.67,
+"human": 9.17
+},
+{
+"word": "technological",
+"ratio": 9.1,
+"ai": 79.17,
+"human": 8.33
+},
+{
+"word": "responder",
+"ratio": 9.1,
+"ai": 64.17,
+"human": 6.67
+},
+{
+"word": "significantly",
+"ratio": 9.0,
+"ai": 475.83,
+"human": 52.5
+},
+{
+"word": "momentum",
+"ratio": 9.0,
+"ai": 168.33,
+"human": 18.33
+},
+{
+"word": "sustainability",
+"ratio": 9.0,
+"ai": 138.33,
+"human": 15.0
+},
+{
+"word": "delicate",
+"ratio": 9.0,
+"ai": 85.83,
+"human": 9.17
+},
+{
+"word": "signal",
+"ratio": 8.9,
+"ai": 159.17,
+"human": 17.5
+},
+{
+"word": "systemic",
+"ratio": 8.9,
+"ai": 158.33,
+"human": 17.5
+},
+{
+"word": "eager",
+"ratio": 8.8,
+"ai": 135.83,
+"human": 15.0
+},
+{
+"word": "humor",
+"ratio": 8.8,
+"ai": 84.17,
+"human": 9.17
+},
+{
+"word": "rising",
+"ratio": 8.8,
+"ai": 47.5,
+"human": 5.0
+},
+{
+"word": "electronics",
+"ratio": 8.8,
+"ai": 40.0,
+"human": 4.17
+},
+{
+"word": "constraint",
+"ratio": 8.8,
+"ai": 40.0,
+"human": 4.17
+},
+{
+"word": "storyline",
+"ratio": 8.7,
+"ai": 46.67,
+"human": 5.0
+},
+{
+"word": "implement",
+"ratio": 8.6,
+"ai": 555.83,
+"human": 64.17
+},
+{
+"word": "aggressive",
+"ratio": 8.6,
+"ai": 153.33,
+"human": 17.5
+},
+{
+"word": "analyze",
+"ratio": 8.6,
+"ai": 118.33,
+"human": 13.33
+},
+{
+"word": "adjustment",
+"ratio": 8.5,
+"ai": 80.83,
+"human": 9.17
+},
+{
+"word": "collaborative",
+"ratio": 8.5,
+"ai": 45.83,
+"human": 5.0
+},
+{
+"word": "fairness",
+"ratio": 8.4,
+"ai": 86.67,
+"human": 10.0
+},
+{
+"word": "exploration",
+"ratio": 8.2,
+"ai": 71.67,
+"human": 8.33
+},
+{
+"word": "gentle",
+"ratio": 8.2,
+"ai": 44.17,
+"human": 5.0
+},
+{
+"word": "mark",
+"ratio": 8.1,
+"ai": 536.67,
+"human": 65.83
+},
+{
+"word": "optimism",
+"ratio": 8.1,
+"ai": 84.17,
+"human": 10.0
+},
+{
+"word": "strategic",
+"ratio": 8.0,
+"ai": 275.83,
+"human": 34.17
+},
+{
+"word": "combination",
+"ratio": 8.0,
+"ai": 163.33,
+"human": 20.0
+},
+{
+"word": "insight",
+"ratio": 7.9,
+"ai": 153.33,
+"human": 19.17
+},
+{
+"word": "cognitive",
+"ratio": 7.9,
+"ai": 42.5,
+"human": 5.0
+},
+{
+"word": "charitable",
+"ratio": 7.9,
+"ai": 42.5,
+"human": 5.0
+},
+{
+"word": "concern",
+"ratio": 7.8,
+"ai": 1631.67,
+"human": 207.5
+},
+{
+"word": "patient",
+"ratio": 7.8,
+"ai": 61.67,
+"human": 7.5
+},
+{
+"word": "empathy",
+"ratio": 7.8,
+"ai": 55.0,
+"human": 6.67
+},
+{
+"word": "address",
+"ratio": 7.7,
+"ai": 1129.17,
+"human": 146.67
+},
+{
+"word": "unique",
+"ratio": 7.7,
+"ai": 386.67,
+"human": 50.0
+},
+{
+"word": "excitement",
+"ratio": 7.7,
+"ai": 136.67,
+"human": 17.5
+},
+{
+"word": "coordination",
+"ratio": 7.7,
+"ai": 73.33,
+"human": 9.17
+},
+{
+"word": "pivotal",
+"ratio": 7.7,
+"ai": 54.17,
+"human": 6.67
+},
+{
+"word": "explore",
+"ratio": 7.6,
+"ai": 457.5,
+"human": 60.0
+},
+{
+"word": "numerous",
+"ratio": 7.6,
+"ai": 191.67,
+"human": 25.0
+},
+{
+"word": "ensure",
+"ratio": 7.5,
+"ai": 1857.5,
+"human": 245.83
+},
+{
+"word": "environmental",
+"ratio": 7.5,
+"ai": 483.33,
+"human": 64.17
+},
+{
+"word": "shape",
+"ratio": 7.5,
+"ai": 285.0,
+"human": 37.5
+},
+{
+"word": "carefully",
+"ratio": 7.5,
+"ai": 160.0,
+"human": 20.83
+},
+{
+"word": "uncover",
+"ratio": 7.5,
+"ai": 108.33,
+"human": 14.17
+},
+{
+"word": "grapple",
+"ratio": 7.5,
+"ai": 108.33,
+"human": 14.17
+},
+{
+"word": "terrain",
+"ratio": 7.5,
+"ai": 40.0,
+"human": 5.0
+},
+{
+"word": "focus",
+"ratio": 7.4,
+"ai": 1120.0,
+"human": 151.67
+},
+{
+"word": "strict",
+"ratio": 7.4,
+"ai": 262.5,
+"human": 35.0
+},
+{
+"word": "diplomatic",
+"ratio": 7.4,
+"ai": 193.33,
+"human": 25.83
+},
+{
+"word": "sudden",
+"ratio": 7.4,
+"ai": 151.67,
+"human": 20.0
+},
+{
+"word": "scrutiny",
+"ratio": 7.4,
+"ai": 125.83,
+"human": 16.67
+},
+{
+"word": "disparity",
+"ratio": 7.4,
+"ai": 119.17,
+"human": 15.83
+},
+{
+"word": "urgency",
+"ratio": 7.4,
+"ai": 51.67,
+"human": 6.67
+},
+{
+"word": "landscape",
+"ratio": 7.3,
+"ai": 289.17,
+"human": 39.17
+},
+{
+"word": "integrate",
+"ratio": 7.3,
+"ai": 148.33,
+"human": 20.0
+},
+{
+"word": "kindness",
+"ratio": 7.3,
+"ai": 75.83,
+"human": 10.0
+},
+{
+"word": "subtle",
+"ratio": 7.3,
+"ai": 70.0,
+"human": 9.17
+},
+{
+"word": "thoroughly",
+"ratio": 7.3,
+"ai": 63.33,
+"human": 8.33
+},
+{
+"word": "immediate",
+"ratio": 7.2,
+"ai": 350.0,
+"human": 48.33
+},
+{
+"word": "uncertainty",
+"ratio": 7.2,
+"ai": 314.17,
+"human": 43.33
+},
+{
+"word": "frustration",
+"ratio": 7.2,
+"ai": 175.83,
+"human": 24.17
+},
+{
+"word": "decisive",
+"ratio": 7.2,
+"ai": 105.0,
+"human": 14.17
+},
+{
+"word": "minimize",
+"ratio": 7.2,
+"ai": 99.17,
+"human": 13.33
+},
+{
+"word": "interactive",
+"ratio": 7.2,
+"ai": 62.5,
+"human": 8.33
+},
+{
+"word": "approach",
+"ratio": 7.1,
+"ai": 725.0,
+"human": 101.67
+},
+{
+"word": "undermine",
+"ratio": 7.1,
+"ai": 356.67,
+"human": 50.0
+},
+{
+"word": "optimistic",
+"ratio": 7.1,
+"ai": 121.67,
+"human": 16.67
+},
+{
+"word": "ethical",
+"ratio": 7.1,
+"ai": 73.33,
+"human": 10.0
+},
+{
+"word": "tense",
+"ratio": 7.1,
+"ai": 67.5,
+"human": 9.17
+},
+{
+"word": "cautiously",
+"ratio": 7.1,
+"ai": 44.17,
+"human": 5.83
+},
+{
+"word": "authenticity",
+"ratio": 7.1,
+"ai": 44.17,
+"human": 5.83
+},
+{
+"word": "protocol",
+"ratio": 7.0,
+"ai": 390.83,
+"human": 55.83
+},
+{
+"word": "curb",
+"ratio": 7.0,
+"ai": 235.83,
+"human": 33.33
+},
+{
+"word": "atmosphere",
+"ratio": 7.0,
+"ai": 235.0,
+"human": 33.33
+},
+{
+"word": "technique",
+"ratio": 7.0,
+"ai": 160.83,
+"human": 22.5
+},
+{
+"word": "extensive",
+"ratio": 7.0,
+"ai": 125.0,
+"human": 17.5
+},
+{
+"word": "cutting",
+"ratio": 7.0,
+"ai": 72.5,
+"human": 10.0
+},
+{
+"word": "rigorous",
+"ratio": 7.0,
+"ai": 55.0,
+"human": 7.5
+},
+{
+"word": "culinary",
+"ratio": 7.0,
+"ai": 43.33,
+"human": 5.83
+},
+{
+"word": "skill",
+"ratio": 6.9,
+"ai": 410.0,
+"human": 59.17
+},
+{
+"word": "everyday",
+"ratio": 6.9,
+"ai": 105.83,
+"human": 15.0
+},
+{
+"word": "lineup",
+"ratio": 6.9,
+"ai": 83.33,
+"human": 11.67
+},
+{
+"word": "fierce",
+"ratio": 6.9,
+"ai": 48.33,
+"human": 6.67
+},
+{
+"word": "strengthen",
+"ratio": 6.8,
+"ai": 292.5,
+"human": 42.5
+},
+{
+"word": "understanding",
+"ratio": 6.8,
+"ai": 263.33,
+"human": 38.33
+},
+{
+"word": "awareness",
+"ratio": 6.8,
+"ai": 235.0,
+"human": 34.17
+},
+{
+"word": "misinformation",
+"ratio": 6.8,
+"ai": 145.0,
+"human": 20.83
+},
+{
+"word": "calm",
+"ratio": 6.8,
+"ai": 115.83,
+"human": 16.67
+},
+{
+"word": "perspective",
+"ratio": 6.7,
+"ai": 232.5,
+"human": 34.17
+},
+{
+"word": "beings",
+"ratio": 6.7,
+"ai": 215.83,
+"human": 31.67
+},
+{
+"word": "regulatory",
+"ratio": 6.7,
+"ai": 170.0,
+"human": 25.0
+},
+{
+"word": "swift",
+"ratio": 6.7,
+"ai": 80.83,
+"human": 11.67
+},
+{
+"word": "depth",
+"ratio": 6.6,
+"ai": 189.17,
+"human": 28.33
+},
+{
+"word": "inequality",
+"ratio": 6.6,
+"ai": 189.17,
+"human": 28.33
+},
+{
+"word": "vulnerability",
+"ratio": 6.6,
+"ai": 95.83,
+"human": 14.17
+},
+{
+"word": "collaborate",
+"ratio": 6.6,
+"ai": 73.33,
+"human": 10.83
+},
+{
+"word": "debate",
+"ratio": 6.5,
+"ai": 397.5,
+"human": 60.83
+},
+{
+"word": "guideline",
+"ratio": 6.5,
+"ai": 323.33,
+"human": 49.17
+},
+{
+"word": "pattern",
+"ratio": 6.5,
+"ai": 181.67,
+"human": 27.5
+},
+{
+"word": "reflect",
+"ratio": 6.4,
+"ai": 545.0,
+"human": 85.0
+},
+{
+"word": "reform",
+"ratio": 6.4,
+"ai": 370.0,
+"human": 57.5
+},
+{
+"word": "passion",
+"ratio": 6.4,
+"ai": 173.33,
+"human": 26.67
+},
+{
+"word": "transparent",
+"ratio": 6.4,
+"ai": 92.5,
+"human": 14.17
+},
+{
+"word": "detection",
+"ratio": 6.4,
+"ai": 55.83,
+"human": 8.33
+},
+{
+"word": "safety",
+"ratio": 6.3,
+"ai": 1242.5,
+"human": 197.5
+},
+{
+"word": "improve",
+"ratio": 6.3,
+"ai": 1042.5,
+"human": 164.17
+},
+{
+"word": "communication",
+"ratio": 6.3,
+"ai": 370.0,
+"human": 58.33
+},
+{
+"word": "monitor",
+"ratio": 6.3,
+"ai": 329.17,
+"human": 51.67
+},
+{
+"word": "adapt",
+"ratio": 6.3,
+"ai": 299.17,
+"human": 47.5
+},
+{
+"word": "behavior",
+"ratio": 6.3,
+"ai": 229.17,
+"human": 35.83
+},
+{
+"word": "educational",
+"ratio": 6.3,
+"ai": 111.67,
+"human": 17.5
+},
+{
+"word": "ecosystem",
+"ratio": 6.3,
+"ai": 101.67,
+"human": 15.83
+},
+{
+"word": "convenience",
+"ratio": 6.3,
+"ai": 55.0,
+"human": 8.33
+},
+{
+"word": "enthusiasm",
+"ratio": 6.3,
+"ai": 55.0,
+"human": 8.33
+},
+{
+"word": "melodies",
+"ratio": 6.3,
+"ai": 44.17,
+"human": 6.67
+},
+{
+"word": "strategy",
+"ratio": 6.2,
+"ai": 460.0,
+"human": 73.33
+},
+{
+"word": "broad",
+"ratio": 6.1,
+"ai": 335.0,
+"human": 55.0
+},
+{
+"word": "incorporate",
+"ratio": 6.1,
+"ai": 93.33,
+"human": 15.0
+},
+{
+"word": "timely",
+"ratio": 6.1,
+"ai": 83.33,
+"human": 13.33
+},
+{
+"word": "intensity",
+"ratio": 6.1,
+"ai": 78.33,
+"human": 12.5
+},
+{
+"word": "specialize",
+"ratio": 6.1,
+"ai": 42.5,
+"human": 6.67
+},
+{
+"word": "measure",
+"ratio": 6.0,
+"ai": 1311.67,
+"human": 219.17
+},
+{
+"word": "trust",
+"ratio": 6.0,
+"ai": 264.17,
+"human": 43.33
+},
+{
+"word": "rapid",
+"ratio": 6.0,
+"ai": 232.5,
+"human": 38.33
+},
+{
+"word": "urban",
+"ratio": 6.0,
+"ai": 151.67,
+"human": 25.0
+},
+{
+"word": "emotion",
+"ratio": 6.0,
+"ai": 127.5,
+"human": 20.83
+},
+{
+"word": "equality",
+"ratio": 6.0,
+"ai": 116.67,
+"human": 19.17
+},
+{
+"word": "cette",
+"ratio": 6.0,
+"ai": 86.67,
+"human": 14.17
+},
+{
+"word": "recent",
+"ratio": 5.9,
+"ai": 1365.0,
+"human": 230.83
+},
+{
+"word": "cultural",
+"ratio": 5.9,
+"ai": 315.0,
+"human": 53.33
+},
+{
+"word": "defense",
+"ratio": 5.9,
+"ai": 305.0,
+"human": 51.67
+},
+{
+"word": "transportation",
+"ratio": 5.9,
+"ai": 140.83,
+"human": 23.33
+},
+{
+"word": "genuine",
+"ratio": 5.9,
+"ai": 85.0,
+"human": 14.17
+},
+{
+"word": "underscor",
+"ratio": 5.9,
+"ai": 65.83,
+"human": 10.83
+},
+{
+"word": "expand",
+"ratio": 5.8,
+"ai": 420.0,
+"human": 71.67
+},
+{
+"word": "surge",
+"ratio": 5.8,
+"ai": 405.0,
+"human": 69.17
+},
+{
+"word": "invest",
+"ratio": 5.8,
+"ai": 318.33,
+"human": 54.17
+},
+{
+"word": "expertise",
+"ratio": 5.8,
+"ai": 99.17,
+"human": 16.67
+},
+{
+"word": "oversight",
+"ratio": 5.8,
+"ai": 84.17,
+"human": 14.17
+},
+{
+"word": "preference",
+"ratio": 5.8,
+"ai": 80.0,
+"human": 13.33
+},
+{
+"word": "immense",
+"ratio": 5.8,
+"ai": 65.0,
+"human": 10.83
+},
+{
+"word": "attendee",
+"ratio": 5.8,
+"ai": 60.0,
+"human": 10.0
+},
+{
+"word": "integration",
+"ratio": 5.8,
+"ai": 60.0,
+"human": 10.0
+},
+{
+"word": "mobilize",
+"ratio": 5.8,
+"ai": 50.0,
+"human": 8.33
+},
+{
+"word": "influence",
+"ratio": 5.7,
+"ai": 234.17,
+"human": 40.83
+},
+{
+"word": "deeply",
+"ratio": 5.7,
+"ai": 214.17,
+"human": 37.5
+},
+{
+"word": "consistently",
+"ratio": 5.7,
+"ai": 121.67,
+"human": 20.83
+},
+{
+"word": "dominance",
+"ratio": 5.7,
+"ai": 63.33,
+"human": 10.83
+},
+{
+"word": "grassroots",
+"ratio": 5.7,
+"ai": 49.17,
+"human": 8.33
+},
+{
+"word": "significance",
+"ratio": 5.7,
+"ai": 45.0,
+"human": 7.5
+},
+{
+"word": "warn",
+"ratio": 5.6,
+"ai": 570.0,
+"human": 101.67
+},
+{
+"word": "conflict",
+"ratio": 5.6,
+"ai": 355.0,
+"human": 62.5
+},
+{
+"word": "defensive",
+"ratio": 5.6,
+"ai": 145.83,
+"human": 25.83
+},
+{
+"word": "smooth",
+"ratio": 5.6,
+"ai": 108.33,
+"human": 19.17
+},
+{
+"word": "mutual",
+"ratio": 5.6,
+"ai": 95.0,
+"human": 16.67
+},
+{
+"word": "exceptional",
+"ratio": 5.6,
+"ai": 90.83,
+"human": 15.83
+},
+{
+"word": "mount",
+"ratio": 5.6,
+"ai": 90.83,
+"human": 15.83
+},
+{
+"word": "determined",
+"ratio": 5.6,
+"ai": 90.83,
+"human": 15.83
+},
+{
+"word": "persist",
+"ratio": 5.6,
+"ai": 48.33,
+"human": 8.33
+},
+{
+"word": "influence",
+"ratio": 5.5,
+"ai": 218.33,
+"human": 39.17
+},
+{
+"word": "effectiveness",
+"ratio": 5.5,
+"ai": 106.67,
+"human": 19.17
+},
+{
+"word": "implication",
+"ratio": 5.5,
+"ai": 106.67,
+"human": 19.17
+},
+{
+"word": "milestone",
+"ratio": 5.5,
+"ai": 98.33,
+"human": 17.5
+},
+{
+"word": "swiftly",
+"ratio": 5.5,
+"ai": 84.17,
+"human": 15.0
+},
+{
+"word": "profound",
+"ratio": 5.5,
+"ai": 65.83,
+"human": 11.67
+},
+{
+"word": "increase",
+"ratio": 5.4,
+"ai": 1625.0,
+"human": 300.0
+},
+{
+"word": "strong",
+"ratio": 5.4,
+"ai": 1050.0,
+"human": 194.17
+},
+{
+"word": "potential",
+"ratio": 5.4,
+"ai": 694.17,
+"human": 128.33
+},
+{
+"word": "improvements",
+"ratio": 5.4,
+"ai": 202.5,
+"human": 37.5
+},
+{
+"word": "themes",
+"ratio": 5.4,
+"ai": 159.17,
+"human": 29.17
+},
+{
+"word": "renew",
+"ratio": 5.4,
+"ai": 146.67,
+"human": 26.67
+},
+{
+"word": "professional",
+"ratio": 5.4,
+"ai": 131.67,
+"human": 24.17
+},
+{
+"word": "advocate",
+"ratio": 5.4,
+"ai": 126.67,
+"human": 23.33
+},
+{
+"word": "assure",
+"ratio": 5.4,
+"ai": 96.67,
+"human": 17.5
+},
+{
+"word": "regained",
+"ratio": 5.4,
+"ai": 83.33,
+"human": 15.0
+},
+{
+"word": "official",
+"ratio": 5.3,
+"ai": 1780.0,
+"human": 337.5
+},
+{
+"word": "organization",
+"ratio": 5.3,
+"ai": 541.67,
+"human": 101.67
+},
+{
+"word": "shift",
+"ratio": 5.3,
+"ai": 266.67,
+"human": 50.0
+},
+{
+"word": "rapidly",
+"ratio": 5.3,
+"ai": 210.0,
+"human": 39.17
+},
+{
+"word": "disrupt",
+"ratio": 5.3,
+"ai": 151.67,
+"human": 28.33
+},
+{
+"word": "overwhelmed",
+"ratio": 5.3,
+"ai": 117.5,
+"human": 21.67
+},
+{
+"word": "breakthrough",
+"ratio": 5.3,
+"ai": 81.67,
+"human": 15.0
+},
+{
+"word": "tenure",
+"ratio": 5.3,
+"ai": 67.5,
+"human": 12.5
+},
+{
+"word": "bolster",
+"ratio": 5.3,
+"ai": 64.17,
+"human": 11.67
+},
+{
+"word": "complications",
+"ratio": 5.3,
+"ai": 55.0,
+"human": 10.0
+},
+{
+"word": "disappointment",
+"ratio": 5.3,
+"ai": 50.0,
+"human": 9.17
+},
+{
+"word": "community",
+"ratio": 5.2,
+"ai": 2145.0,
+"human": 410.0
+},
+{
+"word": "often",
+"ratio": 5.2,
+"ai": 1083.33,
+"human": 209.17
+},
+{
+"word": "incident",
+"ratio": 5.2,
+"ai": 595.83,
+"human": 113.33
+},
+{
+"word": "infrastructure",
+"ratio": 5.2,
+"ai": 518.33,
+"human": 99.17
+},
+{
+"word": "capture",
+"ratio": 5.2,
+"ai": 275.83,
+"human": 52.5
+},
+{
+"word": "engagement",
+"ratio": 5.2,
+"ai": 190.83,
+"human": 36.67
+},
+{
+"word": "integrity",
+"ratio": 5.2,
+"ai": 175.0,
+"human": 33.33
+},
+{
+"word": "alliance",
+"ratio": 5.2,
+"ai": 84.17,
+"human": 15.83
+},
+{
+"word": "reliable",
+"ratio": 5.2,
+"ai": 70.83,
+"human": 13.33
+},
+{
+"word": "compelling",
+"ratio": 5.2,
+"ai": 53.33,
+"human": 10.0
+},
+{
+"word": "need",
+"ratio": 5.1,
+"ai": 1083.33,
+"human": 211.67
+},
+{
+"word": "sharp",
+"ratio": 5.1,
+"ai": 166.67,
+"human": 32.5
+},
+{
+"word": "overcome",
+"ratio": 5.1,
+"ai": 116.67,
+"human": 22.5
+},
+{
+"word": "transformation",
+"ratio": 5.1,
+"ai": 73.33,
+"human": 14.17
+},
+{
+"word": "downturn",
+"ratio": 5.1,
+"ai": 65.83,
+"human": 12.5
+},
+{
+"word": "economic",
+"ratio": 5.0,
+"ai": 1474.17,
+"human": 293.33
+},
+{
+"word": "consumer",
+"ratio": 5.0,
+"ai": 394.17,
+"human": 78.33
+},
+{
+"word": "inflation",
+"ratio": 5.0,
+"ai": 184.17,
+"human": 36.67
+},
+{
+"word": "evolve",
+"ratio": 5.0,
+"ai": 177.5,
+"human": 35.0
+},
+{
+"word": "narrative",
+"ratio": 5.0,
+"ai": 159.17,
+"human": 31.67
+},
+{
+"word": "routine",
+"ratio": 5.0,
+"ai": 110.0,
+"human": 21.67
+},
+{
+"word": "hardship",
+"ratio": 5.0,
+"ai": 90.0,
+"human": 17.5
+},
+{
+"word": "shed",
+"ratio": 5.0,
+"ai": 55.83,
+"human": 10.83
+},
+{
+"word": "development",
+"ratio": 4.9,
+"ai": 738.33,
+"human": 150.83
+},
+{
+"word": "growth",
+"ratio": 4.9,
+"ai": 640.0,
+"human": 130.83
+},
+{
+"word": "secure",
+"ratio": 4.9,
+"ai": 430.83,
+"human": 88.33
+},
+{
+"word": "traditional",
+"ratio": 4.9,
+"ai": 359.17,
+"human": 72.5
+},
+{
+"word": "challenge",
+"ratio": 4.9,
+"ai": 314.17,
+"human": 64.17
+},
+{
+"word": "primarily",
+"ratio": 4.9,
+"ai": 86.67,
+"human": 17.5
+},
+{
+"word": "popularity",
+"ratio": 4.9,
+"ai": 67.5,
+"human": 13.33
+},
+{
+"word": "efficiently",
+"ratio": 4.9,
+"ai": 66.67,
+"human": 13.33
+},
+{
+"word": "habitat",
+"ratio": 4.9,
+"ai": 66.67,
+"human": 13.33
+},
+{
+"word": "societal",
+"ratio": 4.9,
+"ai": 55.0,
+"human": 10.83
+},
+{
+"word": "chemistry",
+"ratio": 4.9,
+"ai": 42.5,
+"human": 8.33
+},
+{
+"word": "investigation",
+"ratio": 4.8,
+"ai": 691.67,
+"human": 142.5
+},
+{
+"word": "delay",
+"ratio": 4.8,
+"ai": 258.33,
+"human": 53.33
+},
+{
+"word": "combine",
+"ratio": 4.8,
+"ai": 237.5,
+"human": 49.17
+},
+{
+"word": "capability",
+"ratio": 4.8,
+"ai": 118.33,
+"human": 24.17
+},
+{
+"word": "finding",
+"ratio": 4.8,
+"ai": 117.5,
+"human": 24.17
+},
+{
+"word": "steady",
+"ratio": 4.8,
+"ai": 101.67,
+"human": 20.83
+},
+{
+"word": "contemporary",
+"ratio": 4.8,
+"ai": 100.83,
+"human": 20.83
+},
+{
+"word": "criticize",
+"ratio": 4.8,
+"ai": 100.83,
+"human": 20.83
+},
+{
+"word": "outrage",
+"ratio": 4.8,
+"ai": 80.83,
+"human": 16.67
+},
+{
+"word": "demonstrator",
+"ratio": 4.8,
+"ai": 65.83,
+"human": 13.33
+},
+{
+"word": "honor",
+"ratio": 4.8,
+"ai": 61.67,
+"human": 12.5
+},
+{
+"word": "rhetoric",
+"ratio": 4.8,
+"ai": 57.5,
+"human": 11.67
+},
+{
+"word": "instrumental",
+"ratio": 4.8,
+"ai": 41.67,
+"human": 8.33
+},
+{
+"word": "audience",
+"ratio": 4.7,
+"ai": 362.5,
+"human": 77.5
+},
+{
+"word": "intervention",
+"ratio": 4.7,
+"ai": 142.5,
+"human": 30.0
+},
+{
+"word": "confusion",
+"ratio": 4.7,
+"ai": 88.33,
+"human": 18.33
+},
+{
+"word": "gradually",
+"ratio": 4.7,
+"ai": 84.17,
+"human": 17.5
+},
+{
+"word": "heating",
+"ratio": 4.7,
+"ai": 80.0,
+"human": 16.67
+},
+{
+"word": "precision",
+"ratio": 4.7,
+"ai": 76.67,
+"human": 15.83
+},
+{
+"word": "sovereignty",
+"ratio": 4.7,
+"ai": 71.67,
+"human": 15.0
+},
+{
+"word": "precise",
+"ratio": 4.7,
+"ai": 64.17,
+"human": 13.33
+},
+{
+"word": "patience",
+"ratio": 4.7,
+"ai": 56.67,
+"human": 11.67
+},
+{
+"word": "inadequate",
+"ratio": 4.7,
+"ai": 52.5,
+"human": 10.83
+},
+{
+"word": "beneath",
+"ratio": 4.7,
+"ai": 52.5,
+"human": 10.83
+},
+{
+"word": "cheer",
+"ratio": 4.7,
+"ai": 40.83,
+"human": 8.33
+},
+{
+"word": "effort",
+"ratio": 4.6,
+"ai": 1258.33,
+"human": 275.0
+},
+{
+"word": "performance",
+"ratio": 4.6,
+"ai": 785.83,
+"human": 170.83
+},
+{
+"word": "individual",
+"ratio": 4.6,
+"ai": 635.83,
+"human": 138.33
+},
+{
+"word": "move",
+"ratio": 4.6,
+"ai": 535.0,
+"human": 116.67
+},
+{
+"word": "talent",
+"ratio": 4.6,
+"ai": 228.33,
+"human": 49.17
+},
+{
+"word": "accelerate",
+"ratio": 4.6,
+"ai": 160.83,
+"human": 35.0
+},
+{
+"word": "vision",
+"ratio": 4.6,
+"ai": 155.83,
+"human": 33.33
+},
+{
+"word": "iconic",
+"ratio": 4.6,
+"ai": 101.67,
+"human": 21.67
+},
+{
+"word": "conservation",
+"ratio": 4.6,
+"ai": 75.0,
+"human": 15.83
+},
+{
+"word": "unnecessary",
+"ratio": 4.6,
+"ai": 63.33,
+"human": 13.33
+},
+{
+"word": "intimate",
+"ratio": 4.6,
+"ai": 59.17,
+"human": 12.5
+},
+{
+"word": "lyric",
+"ratio": 4.6,
+"ai": 55.0,
+"human": 11.67
+},
+{
+"word": "courage",
+"ratio": 4.6,
+"ai": 51.67,
+"human": 10.83
+},
+{
+"word": "clarify",
+"ratio": 4.6,
+"ai": 43.33,
+"human": 9.17
+},
+{
+"word": "breath",
+"ratio": 4.6,
+"ai": 43.33,
+"human": 9.17
+},
+{
+"word": "trends",
+"ratio": 4.5,
+"ai": 220.83,
+"human": 48.33
+},
+{
+"word": "embrace",
+"ratio": 4.5,
+"ai": 163.33,
+"human": 35.83
+},
+{
+"word": "competitive",
+"ratio": 4.5,
+"ai": 146.67,
+"human": 32.5
+},
+{
+"word": "flexibility",
+"ratio": 4.5,
+"ai": 88.33,
+"human": 19.17
+},
+{
+"word": "reminder",
+"ratio": 4.5,
+"ai": 80.83,
+"human": 17.5
+},
+{
+"word": "misconduct",
+"ratio": 4.5,
+"ai": 72.5,
+"human": 15.83
+},
+{
+"word": "productivity",
+"ratio": 4.5,
+"ai": 65.83,
+"human": 14.17
+},
+{
+"word": "midfield",
+"ratio": 4.5,
+"ai": 60.83,
+"human": 13.33
+},
+{
+"word": "technology",
+"ratio": 4.4,
+"ai": 754.17,
+"human": 172.5
+},
+{
+"word": "promote",
+"ratio": 4.4,
+"ai": 435.83,
+"human": 98.33
+},
+{
+"word": "focus",
+"ratio": 4.4,
+"ai": 318.33,
+"human": 71.67
+},
+{
+"word": "gathering",
+"ratio": 4.4,
+"ai": 252.5,
+"human": 57.5
+},
+{
+"word": "struggle",
+"ratio": 4.4,
+"ai": 182.5,
+"human": 40.83
+},
+{
+"word": "unfold",
+"ratio": 4.4,
+"ai": 96.67,
+"human": 21.67
+},
+{
+"word": "harsh",
+"ratio": 4.4,
+"ai": 82.5,
+"human": 18.33
+},
+{
+"word": "evident",
+"ratio": 4.4,
+"ai": 49.17,
+"human": 10.83
+},
+{
+"word": "design",
+"ratio": 4.3,
+"ai": 260.0,
+"human": 60.83
+},
+{
+"word": "effectively",
+"ratio": 4.3,
+"ai": 220.0,
+"human": 50.83
+},
+{
+"word": "privacy",
+"ratio": 4.3,
+"ai": 191.67,
+"human": 44.17
+},
+{
+"word": "demonstrate",
+"ratio": 4.3,
+"ai": 172.5,
+"human": 40.0
+},
+{
+"word": "spirit",
+"ratio": 4.3,
+"ai": 166.67,
+"human": 38.33
+},
+{
+"word": "handling",
+"ratio": 4.3,
+"ai": 119.17,
+"human": 27.5
+},
+{
+"word": "offense",
+"ratio": 4.3,
+"ai": 104.17,
+"human": 24.17
+},
+{
+"word": "severity",
+"ratio": 4.3,
+"ai": 77.5,
+"human": 17.5
+},
+{
+"word": "artificial",
+"ratio": 4.3,
+"ai": 73.33,
+"human": 16.67
+},
+{
+"word": "rhythm",
+"ratio": 4.3,
+"ai": 72.5,
+"human": 16.67
+},
+{
+"word": "countless",
+"ratio": 4.3,
+"ai": 70.0,
+"human": 15.83
+},
+{
+"word": "texture",
+"ratio": 4.3,
+"ai": 62.5,
+"human": 14.17
+},
+{
+"word": "maintenance",
+"ratio": 4.3,
+"ai": 61.67,
+"human": 14.17
+},
+{
+"word": "speculation",
+"ratio": 4.3,
+"ai": 58.33,
+"human": 13.33
+},
+{
+"word": "dominant",
+"ratio": 4.3,
+"ai": 55.0,
+"human": 12.5
+},
+{
+"word": "reconsider",
+"ratio": 4.3,
+"ai": 44.17,
+"human": 10.0
+},
+{
+"word": "throughout",
+"ratio": 4.2,
+"ai": 425.83,
+"human": 101.67
+},
+{
+"word": "strength",
+"ratio": 4.2,
+"ai": 185.83,
+"human": 44.17
+},
+{
+"word": "constant",
+"ratio": 4.2,
+"ai": 100.0,
+"human": 23.33
+},
+{
+"word": "stakeholder",
+"ratio": 4.2,
+"ai": 93.33,
+"human": 21.67
+},
+{
+"word": "deep",
+"ratio": 4.2,
+"ai": 79.17,
+"human": 18.33
+},
+{
+"word": "motivate",
+"ratio": 4.2,
+"ai": 75.0,
+"human": 17.5
+},
+{
+"word": "allocate",
+"ratio": 4.2,
+"ai": 57.5,
+"human": 13.33
+},
+{
+"word": "fabric",
+"ratio": 4.2,
+"ai": 57.5,
+"human": 13.33
+},
+{
+"word": "workshop",
+"ratio": 4.2,
+"ai": 50.0,
+"human": 11.67
+},
+{
+"word": "equitable",
+"ratio": 4.2,
+"ai": 50.0,
+"human": 11.67
+},
+{
+"word": "decrease",
+"ratio": 4.2,
+"ai": 40.0,
+"human": 9.17
+},
+{
+"word": "health",
+"ratio": 4.1,
+"ai": 2731.67,
+"human": 664.17
+},
+{
+"word": "quickly",
+"ratio": 4.1,
+"ai": 697.5,
+"human": 170.83
+},
+{
+"word": "funding",
+"ratio": 4.1,
+"ai": 332.5,
+"human": 80.0
+},
+{
+"word": "researcher",
+"ratio": 4.1,
+"ai": 295.0,
+"human": 71.67
+},
+{
+"word": "inspire",
+"ratio": 4.1,
+"ai": 270.0,
+"human": 65.0
+},
+{
+"word": "presence",
+"ratio": 4.1,
+"ai": 260.0,
+"human": 62.5
+},
+{
+"word": "increasingly",
+"ratio": 4.1,
+"ai": 209.17,
+"human": 50.83
+},
+{
+"word": "unprecedented",
+"ratio": 4.1,
+"ai": 165.83,
+"human": 40.0
+},
+{
+"word": "consistent",
+"ratio": 4.1,
+"ai": 160.0,
+"human": 39.17
+},
+{
+"word": "organize",
+"ratio": 4.1,
+"ai": 143.33,
+"human": 35.0
+},
+{
+"word": "underlying",
+"ratio": 4.1,
+"ai": 121.67,
+"human": 29.17
+},
+{
+"word": "bold",
+"ratio": 4.1,
+"ai": 85.83,
+"human": 20.83
+},
+{
+"word": "frequent",
+"ratio": 4.1,
+"ai": 72.5,
+"human": 17.5
+},
+{
+"word": "flexible",
+"ratio": 4.1,
+"ai": 62.5,
+"human": 15.0
+},
+{
+"word": "clarity",
+"ratio": 4.1,
+"ai": 62.5,
+"human": 15.0
+},
+{
+"word": "rally",
+"ratio": 4.1,
+"ai": 52.5,
+"human": 12.5
+},
+{
+"word": "meteorologist",
+"ratio": 4.1,
+"ai": 42.5,
+"human": 10.0
+},
+{
+"word": "testament",
+"ratio": 4.1,
+"ai": 42.5,
+"human": 10.0
+},
+{
+"word": "remained",
+"ratio": 4.0,
+"ai": 1563.33,
+"human": 395.0
+},
+{
+"word": "suggest",
+"ratio": 4.0,
+"ai": 702.5,
+"human": 174.17
+},
+{
+"word": "resident",
+"ratio": 4.0,
+"ai": 645.0,
+"human": 160.83
+},
+{
+"word": "various",
+"ratio": 4.0,
+"ai": 409.17,
+"human": 102.5
+},
+{
+"word": "leadership",
+"ratio": 4.0,
+"ai": 378.33,
+"human": 95.0
+},
+{
+"word": "regulation",
+"ratio": 4.0,
+"ai": 322.5,
+"human": 80.0
+},
+{
+"word": "factor",
+"ratio": 4.0,
+"ai": 266.67,
+"human": 66.67
+},
+{
+"word": "limited",
+"ratio": 4.0,
+"ai": 237.5,
+"human": 58.33
+},
+{
+"word": "indicates",
+"ratio": 4.0,
+"ai": 226.67,
+"human": 55.83
+},
+{
+"word": "outcome",
+"ratio": 4.0,
+"ai": 183.33,
+"human": 45.83
+},
+{
+"word": "since",
+"ratio": 4.0,
+"ai": 180.0,
+"human": 44.17
+},
+{
+"word": "inclusive",
+"ratio": 4.0,
+"ai": 100.83,
+"human": 25.0
+},
+{
+"word": "actively",
+"ratio": 4.0,
+"ai": 95.0,
+"human": 23.33
+},
+{
+"word": "strictly",
+"ratio": 4.0,
+"ai": 68.33,
+"human": 16.67
+},
+{
+"word": "slight",
+"ratio": 4.0,
+"ai": 68.33,
+"human": 16.67
+},
+{
+"word": "phenomenon",
+"ratio": 4.0,
+"ai": 47.5,
+"human": 11.67
+},
+{
+"word": "twist",
+"ratio": 4.0,
+"ai": 45.0,
+"human": 10.83
+},
+{
+"word": "face",
+"ratio": 3.9,
+"ai": 1236.67,
+"human": 316.67
+},
+{
+"word": "change",
+"ratio": 3.9,
+"ai": 1107.5,
+"human": 284.17
+},
+{
+"word": "several",
+"ratio": 3.9,
+"ai": 859.17,
+"human": 220.0
+},
+{
+"word": "region",
+"ratio": 3.9,
+"ai": 855.0,
+"human": 217.5
+},
+{
+"word": "pressure",
+"ratio": 3.9,
+"ai": 550.0,
+"human": 140.0
+},
+{
+"word": "commit",
+"ratio": 3.9,
+"ai": 418.33,
+"human": 108.33
+},
+{
+"word": "heavily",
+"ratio": 3.9,
+"ai": 161.67,
+"human": 41.67
+},
+{
+"word": "interaction",
+"ratio": 3.9,
+"ai": 128.33,
+"human": 32.5
+},
+{
+"word": "quiet",
+"ratio": 3.9,
+"ai": 105.83,
+"human": 26.67
+},
+{
+"word": "historical",
+"ratio": 3.9,
+"ai": 92.5,
+"human": 23.33
+},
+{
+"word": "wildlife",
+"ratio": 3.9,
+"ai": 90.0,
+"human": 22.5
+},
+{
+"word": "hygiene",
+"ratio": 3.9,
+"ai": 85.83,
+"human": 21.67
+},
+{
+"word": "dynamic",
+"ratio": 3.9,
+"ai": 76.67,
+"human": 19.17
+},
+{
+"word": "advocacy",
+"ratio": 3.9,
+"ai": 75.0,
+"human": 19.17
+},
+{
+"word": "tracing",
+"ratio": 3.9,
+"ai": 73.33,
+"human": 18.33
+},
+{
+"word": "heighten",
+"ratio": 3.9,
+"ai": 65.83,
+"human": 16.67
+},
+{
+"word": "testimony",
+"ratio": 3.9,
+"ai": 63.33,
+"human": 15.83
+},
+{
+"word": "feedback",
+"ratio": 3.9,
+"ai": 53.33,
+"human": 13.33
+},
+{
+"word": "education",
+"ratio": 3.8,
+"ai": 465.83,
+"human": 123.33
+},
+{
+"word": "essential",
+"ratio": 3.8,
+"ai": 359.17,
+"human": 93.33
+},
+{
+"word": "crowd",
+"ratio": 3.8,
+"ai": 358.33,
+"human": 94.17
+},
+{
+"word": "gain",
+"ratio": 3.8,
+"ai": 250.0,
+"human": 65.0
+},
+{
+"word": "overall",
+"ratio": 3.8,
+"ai": 189.17,
+"human": 49.17
+},
+{
+"word": "shortage",
+"ratio": 3.8,
+"ai": 175.0,
+"human": 45.83
+},
+{
+"word": "comfort",
+"ratio": 3.8,
+"ai": 125.83,
+"human": 32.5
+},
+{
+"word": "achievement",
+"ratio": 3.8,
+"ai": 105.83,
+"human": 27.5
+},
+{
+"word": "heritage",
+"ratio": 3.8,
+"ai": 102.5,
+"human": 26.67
+},
+{
+"word": "sensitive",
+"ratio": 3.8,
+"ai": 77.5,
+"human": 20.0
+},
+{
+"word": "adequate",
+"ratio": 3.8,
+"ai": 70.83,
+"human": 18.33
+},
+{
+"word": "outreach",
+"ratio": 3.8,
+"ai": 49.17,
+"human": 12.5
+},
+{
+"word": "volatility",
+"ratio": 3.8,
+"ai": 42.5,
+"human": 10.83
+},
+{
+"word": "experience",
+"ratio": 3.7,
+"ai": 811.67,
+"human": 218.33
+},
+{
+"word": "amid",
+"ratio": 3.7,
+"ai": 608.33,
+"human": 165.0
+},
+{
+"word": "platform",
+"ratio": 3.7,
+"ai": 457.5,
+"human": 125.0
+},
+{
+"word": "justice",
+"ratio": 3.7,
+"ai": 404.17,
+"human": 108.33
+},
+{
+"word": "engage",
+"ratio": 3.7,
+"ai": 327.5,
+"human": 88.33
+},
+{
+"word": "cite",
+"ratio": 3.7,
+"ai": 308.33,
+"human": 82.5
+},
+{
+"word": "priority",
+"ratio": 3.7,
+"ai": 285.0,
+"human": 75.83
+},
+{
+"word": "emotional",
+"ratio": 3.7,
+"ai": 181.67,
+"human": 48.33
+},
+{
+"word": "anticipated",
+"ratio": 3.7,
+"ai": 135.0,
+"human": 36.67
+},
+{
+"word": "stance",
+"ratio": 3.7,
+"ai": 110.0,
+"human": 29.17
+},
+{
+"word": "expressions",
+"ratio": 3.7,
+"ai": 92.5,
+"human": 25.0
+},
+{
+"word": "governance",
+"ratio": 3.7,
+"ai": 81.67,
+"human": 21.67
+},
+{
+"word": "outline",
+"ratio": 3.7,
+"ai": 78.33,
+"human": 20.83
+},
+{
+"word": "careful",
+"ratio": 3.7,
+"ai": 63.33,
+"human": 16.67
+},
+{
+"word": "perception",
+"ratio": 3.7,
+"ai": 56.67,
+"human": 15.0
+},
+{
+"word": "vocal",
+"ratio": 3.7,
+"ai": 54.17,
+"human": 14.17
+},
+{
+"word": "connectivity",
+"ratio": 3.7,
+"ai": 54.17,
+"human": 14.17
+},
+{
+"word": "persistent",
+"ratio": 3.7,
+"ai": 54.17,
+"human": 14.17
+},
+{
+"word": "adventure",
+"ratio": 3.7,
+"ai": 54.17,
+"human": 14.17
+},
+{
+"word": "hinder",
+"ratio": 3.7,
+"ai": 47.5,
+"human": 12.5
+},
+{
+"word": "willingness",
+"ratio": 3.7,
+"ai": 47.5,
+"human": 12.5
+},
+{
+"word": "observers",
+"ratio": 3.7,
+"ai": 44.17,
+"human": 11.67
+},
+{
+"word": "strain",
+"ratio": 3.7,
+"ai": 41.67,
+"human": 10.83
+},
+{
+"word": "local",
+"ratio": 3.6,
+"ai": 1277.5,
+"human": 358.33
+},
+{
+"word": "energy",
+"ratio": 3.6,
+"ai": 678.33,
+"human": 188.33
+},
+{
+"word": "spread",
+"ratio": 3.6,
+"ai": 549.17,
+"human": 151.67
+},
+{
+"word": "demand",
+"ratio": 3.6,
+"ai": 552.5,
+"human": 155.0
+},
+{
+"word": "resource",
+"ratio": 3.6,
+"ai": 431.67,
+"human": 120.0
+},
+{
+"word": "boost",
+"ratio": 3.6,
+"ai": 279.17,
+"human": 78.33
+},
+{
+"word": "prompt",
+"ratio": 3.6,
+"ai": 217.5,
+"human": 60.0
+},
+{
+"word": "recognized",
+"ratio": 3.6,
+"ai": 168.33,
+"human": 45.83
+},
+{
+"word": "expectation",
+"ratio": 3.6,
+"ai": 133.33,
+"human": 36.67
+},
+{
+"word": "boundary",
+"ratio": 3.6,
+"ai": 122.5,
+"human": 34.17
+},
+{
+"word": "framework",
+"ratio": 3.6,
+"ai": 66.67,
+"human": 18.33
+},
+{
+"word": "timing",
+"ratio": 3.6,
+"ai": 49.17,
+"human": 13.33
+},
+{
+"word": "insider",
+"ratio": 3.6,
+"ai": 46.67,
+"human": 12.5
+},
+{
+"word": "glimpse",
+"ratio": 3.6,
+"ai": 43.33,
+"human": 11.67
+},
+{
+"word": "ability",
+"ratio": 3.5,
+"ai": 471.67,
+"human": 134.17
+},
+{
+"word": "struggling",
+"ratio": 3.5,
+"ai": 445.0,
+"human": 126.67
+},
+{
+"word": "investor",
+"ratio": 3.5,
+"ai": 291.67,
+"human": 84.17
+},
+{
+"word": "attract",
+"ratio": 3.5,
+"ai": 167.5,
+"human": 47.5
+},
+{
+"word": "advise",
+"ratio": 3.5,
+"ai": 168.33,
+"human": 48.33
+},
+{
+"word": "criticism",
+"ratio": 3.5,
+"ai": 168.33,
+"human": 48.33
+},
+{
+"word": "method",
+"ratio": 3.5,
+"ai": 131.67,
+"human": 37.5
+},
+{
+"word": "participant",
+"ratio": 3.5,
+"ai": 123.33,
+"human": 35.0
+},
+{
+"word": "rush",
+"ratio": 3.5,
+"ai": 108.33,
+"human": 30.83
+},
+{
+"word": "accessible",
+"ratio": 3.5,
+"ai": 90.83,
+"human": 25.83
+},
+{
+"word": "chaos",
+"ratio": 3.5,
+"ai": 85.0,
+"human": 24.17
+},
+{
+"word": "recognition",
+"ratio": 3.5,
+"ai": 75.0,
+"human": 20.83
+},
+{
+"word": "harmful",
+"ratio": 3.5,
+"ai": 74.17,
+"human": 20.83
+},
+{
+"word": "downtown",
+"ratio": 3.5,
+"ai": 68.33,
+"human": 19.17
+},
+{
+"word": "coaching",
+"ratio": 3.5,
+"ai": 65.83,
+"human": 18.33
+},
+{
+"word": "efficacy",
+"ratio": 3.5,
+"ai": 61.67,
+"human": 17.5
+},
+{
+"word": "tighten",
+"ratio": 3.5,
+"ai": 61.67,
+"human": 17.5
+},
+{
+"word": "cautioned",
+"ratio": 3.5,
+"ai": 54.17,
+"human": 15.0
+},
+{
+"word": "reduce",
+"ratio": 3.4,
+"ai": 858.33,
+"human": 250.83
+},
+{
+"word": "emergency",
+"ratio": 3.4,
+"ai": 500.83,
+"human": 148.33
+},
+{
+"word": "feature",
+"ratio": 3.4,
+"ai": 388.33,
+"human": 112.5
+},
+{
+"word": "environment",
+"ratio": 3.4,
+"ai": 372.5,
+"human": 110.0
+},
+{
+"word": "scene",
+"ratio": 3.4,
+"ai": 330.0,
+"human": 95.83
+},
+{
+"word": "multiple",
+"ratio": 3.4,
+"ai": 322.5,
+"human": 93.33
+},
+{
+"word": "severe",
+"ratio": 3.4,
+"ai": 286.67,
+"human": 85.0
+},
+{
+"word": "modern",
+"ratio": 3.4,
+"ai": 268.33,
+"human": 79.17
+},
+{
+"word": "lawmaker",
+"ratio": 3.4,
+"ai": 186.67,
+"human": 54.17
+},
+{
+"word": "distribution",
+"ratio": 3.4,
+"ai": 155.0,
+"human": 45.0
+},
+{
+"word": "peaceful",
+"ratio": 3.4,
+"ai": 117.5,
+"human": 34.17
+},
+{
+"word": "immigration",
+"ratio": 3.4,
+"ai": 110.0,
+"human": 32.5
+},
+{
+"word": "robust",
+"ratio": 3.4,
+"ai": 97.5,
+"human": 28.33
+},
+{
+"word": "practice",
+"ratio": 3.4,
+"ai": 83.33,
+"human": 24.17
+},
+{
+"word": "detailed",
+"ratio": 3.4,
+"ai": 69.17,
+"human": 20.0
+},
+{
+"word": "norms",
+"ratio": 3.4,
+"ai": 66.67,
+"human": 19.17
+},
+{
+"word": "underway",
+"ratio": 3.4,
+"ai": 60.83,
+"human": 17.5
+},
+{
+"word": "uncertain",
+"ratio": 3.4,
+"ai": 58.33,
+"human": 16.67
+},
+{
+"word": "dedicated",
+"ratio": 3.4,
+"ai": 57.5,
+"human": 16.67
+},
+{
+"word": "habit",
+"ratio": 3.4,
+"ai": 55.0,
+"human": 15.83
+},
+{
+"word": "caution",
+"ratio": 3.4,
+"ai": 55.0,
+"human": 15.83
+},
+{
+"word": "scoring",
+"ratio": 3.4,
+"ai": 49.17,
+"human": 14.17
+},
+{
+"word": "impact",
+"ratio": 3.3,
+"ai": 757.5,
+"human": 228.33
+},
+{
+"word": "reveal",
+"ratio": 3.3,
+"ai": 408.33,
+"human": 123.33
+},
+{
+"word": "deep",
+"ratio": 3.3,
+"ai": 383.33,
+"human": 115.83
+},
+{
+"word": "contribute",
+"ratio": 3.3,
+"ai": 284.17,
+"human": 85.0
+},
+{
+"word": "confidence",
+"ratio": 3.3,
+"ai": 276.67,
+"human": 84.17
+},
+{
+"word": "voice",
+"ratio": 3.3,
+"ai": 252.5,
+"human": 75.83
+},
+{
+"word": "surround",
+"ratio": 3.3,
+"ai": 237.5,
+"human": 71.67
+},
+{
+"word": "identity",
+"ratio": 3.3,
+"ai": 220.0,
+"human": 66.67
+},
+{
+"word": "circumstances",
+"ratio": 3.3,
+"ai": 204.17,
+"human": 61.67
+},
+{
+"word": "realized",
+"ratio": 3.3,
+"ai": 115.0,
+"human": 34.17
+},
+{
+"word": "combat",
+"ratio": 3.3,
+"ai": 108.33,
+"human": 32.5
+},
+{
+"word": "retailer",
+"ratio": 3.3,
+"ai": 100.83,
+"human": 30.0
+},
+{
+"word": "operational",
+"ratio": 3.3,
+"ai": 78.33,
+"human": 23.33
+},
+{
+"word": "crowded",
+"ratio": 3.3,
+"ai": 77.5,
+"human": 23.33
+},
+{
+"word": "compliance",
+"ratio": 3.3,
+"ai": 75.83,
+"human": 22.5
+},
+{
+"word": "demonstration",
+"ratio": 3.3,
+"ai": 73.33,
+"human": 21.67
+},
+{
+"word": "discipline",
+"ratio": 3.3,
+"ai": 69.17,
+"human": 20.83
+},
+{
+"word": "unrest",
+"ratio": 3.3,
+"ai": 67.5,
+"human": 20.0
+},
+{
+"word": "equipped",
+"ratio": 3.3,
+"ai": 65.0,
+"human": 19.17
+},
+{
+"word": "casual",
+"ratio": 3.3,
+"ai": 45.0,
+"human": 13.33
+},
+{
+"word": "motivation",
+"ratio": 3.3,
+"ai": 40.0,
+"human": 11.67
+},
+{
+"word": "policy",
+"ratio": 3.2,
+"ai": 950.83,
+"human": 294.17
+},
+{
+"word": "security",
+"ratio": 3.2,
+"ai": 735.0,
+"human": 230.83
+},
+{
+"word": "design",
+"ratio": 3.2,
+"ai": 307.5,
+"human": 95.83
+},
+{
+"word": "emerge",
+"ratio": 3.2,
+"ai": 287.5,
+"human": 88.33
+},
+{
+"word": "target",
+"ratio": 3.2,
+"ai": 278.33,
+"human": 87.5
+},
+{
+"word": "progress",
+"ratio": 3.2,
+"ai": 226.67,
+"human": 70.0
+},
+{
+"word": "promise",
+"ratio": 3.2,
+"ai": 220.0,
+"human": 68.33
+},
+{
+"word": "legislation",
+"ratio": 3.2,
+"ai": 183.33,
+"human": 56.67
+},
+{
+"word": "remote",
+"ratio": 3.2,
+"ai": 167.5,
+"human": 52.5
+},
+{
+"word": "decline",
+"ratio": 3.2,
+"ai": 166.67,
+"human": 52.5
+},
+{
+"word": "opponent",
+"ratio": 3.2,
+"ai": 143.33,
+"human": 45.0
+},
+{
+"word": "adjust",
+"ratio": 3.2,
+"ai": 129.17,
+"human": 40.0
+},
+{
+"word": "ingredient",
+"ratio": 3.2,
+"ai": 87.5,
+"human": 26.67
+},
+{
+"word": "stunning",
+"ratio": 3.2,
+"ai": 76.67,
+"human": 23.33
+},
+{
+"word": "accurate",
+"ratio": 3.2,
+"ai": 76.67,
+"human": 23.33
+},
+{
+"word": "clock",
+"ratio": 3.2,
+"ai": 62.5,
+"human": 19.17
+},
+{
+"word": "practical",
+"ratio": 3.2,
+"ai": 59.17,
+"human": 18.33
+},
+{
+"word": "suspicious",
+"ratio": 3.2,
+"ai": 50.83,
+"human": 15.83
+},
+{
+"word": "contrast",
+"ratio": 3.2,
+"ai": 45.83,
+"human": 14.17
+},
+{
+"word": "acquisition",
+"ratio": 3.2,
+"ai": 45.83,
+"human": 14.17
+},
+{
+"word": "seasonal",
+"ratio": 3.2,
+"ai": 44.17,
+"human": 13.33
+},
+{
+"word": "commentary",
+"ratio": 3.2,
+"ai": 43.33,
+"human": 13.33
+},
+{
+"word": "passionate",
+"ratio": 3.2,
+"ai": 43.33,
+"human": 13.33
+},
+{
+"word": "this",
+"ratio": 3.1,
+"ai": 7015.83,
+"human": 2227.5
+},
+{
+"word": "situation",
+"ratio": 3.1,
+"ai": 581.67,
+"human": 187.5
+},
+{
+"word": "access",
+"ratio": 3.1,
+"ai": 567.5,
+"human": 181.67
+},
+{
+"word": "weather",
+"ratio": 3.1,
+"ai": 210.83,
+"human": 66.67
+},
+{
+"word": "connection",
+"ratio": 3.1,
+"ai": 205.0,
+"human": 66.67
+},
+{
+"word": "balance",
+"ratio": 3.1,
+"ai": 175.83,
+"human": 55.83
+},
+{
+"word": "features",
+"ratio": 3.1,
+"ai": 175.0,
+"human": 55.83
+},
+{
+"word": "witness",
+"ratio": 3.1,
+"ai": 163.33,
+"human": 51.67
+},
+{
+"word": "update",
+"ratio": 3.1,
+"ai": 143.33,
+"human": 46.67
+},
+{
+"word": "impressive",
+"ratio": 3.1,
+"ai": 122.5,
+"human": 39.17
+},
+{
+"word": "nearby",
+"ratio": 3.1,
+"ai": 101.67,
+"human": 32.5
+},
+{
+"word": "surveillance",
+"ratio": 3.1,
+"ai": 92.5,
+"human": 29.17
+},
+{
+"word": "barrier",
+"ratio": 3.1,
+"ai": 86.67,
+"human": 27.5
+},
+{
+"word": "rebuild",
+"ratio": 3.1,
+"ai": 87.5,
+"human": 28.33
+},
+{
+"word": "rescue",
+"ratio": 3.1,
+"ai": 81.67,
+"human": 25.83
+},
+{
+"word": "symbol",
+"ratio": 3.1,
+"ai": 75.0,
+"human": 24.17
+},
+{
+"word": "overlook",
+"ratio": 3.1,
+"ai": 68.33,
+"human": 21.67
+},
+{
+"word": "bipartisan",
+"ratio": 3.1,
+"ai": 65.83,
+"human": 20.83
+},
+{
+"word": "excessive",
+"ratio": 3.1,
+"ai": 65.0,
+"human": 20.83
+},
+{
+"word": "inclusion",
+"ratio": 3.1,
+"ai": 63.33,
+"human": 20.0
+},
+{
+"word": "disproportionately",
+"ratio": 3.1,
+"ai": 58.33,
+"human": 18.33
+},
+{
+"word": "bias",
+"ratio": 3.1,
+"ai": 57.5,
+"human": 18.33
+},
+{
+"word": "midfielder",
+"ratio": 3.1,
+"ai": 55.83,
+"human": 17.5
+},
+{
+"word": "obstacle",
+"ratio": 3.1,
+"ai": 49.17,
+"human": 15.83
+},
+{
+"word": "debate",
+"ratio": 3.1,
+"ai": 44.17,
+"human": 14.17
+},
+{
+"word": "reflection",
+"ratio": 3.1,
+"ai": 44.17,
+"human": 14.17
+},
+{
+"word": "adaptation",
+"ratio": 3.1,
+"ai": 42.5,
+"human": 13.33
+},
+{
+"word": "patrol",
+"ratio": 3.1,
+"ai": 42.5,
+"human": 13.33
+},
+{
+"word": "support",
+"ratio": 3.0,
+"ai": 1006.67,
+"human": 334.17
+},
+{
+"word": "raises",
+"ratio": 3.0,
+"ai": 671.67,
+"human": 221.67
+},
+{
+"word": "both",
+"ratio": 3.0,
+"ai": 565.83,
+"human": 190.0
+},
+{
+"word": "recovery",
+"ratio": 3.0,
+"ai": 325.83,
+"human": 106.67
+},
+{
+"word": "practice",
+"ratio": 3.0,
+"ai": 315.0,
+"human": 105.0
+},
+{
+"word": "necessary",
+"ratio": 3.0,
+"ai": 305.0,
+"human": 100.83
+},
+{
+"word": "potential",
+"ratio": 3.0,
+"ai": 212.5,
+"human": 71.67
+},
+{
+"word": "occur",
+"ratio": 3.0,
+"ai": 173.33,
+"human": 56.67
+},
+{
+"word": "partnership",
+"ratio": 3.0,
+"ai": 146.67,
+"human": 49.17
+},
+{
+"word": "internal",
+"ratio": 3.0,
+"ai": 132.5,
+"human": 43.33
+},
+{
+"word": "labor",
+"ratio": 3.0,
+"ai": 125.83,
+"human": 41.67
+},
+{
+"word": "coverage",
+"ratio": 3.0,
+"ai": 109.17,
+"human": 35.83
+},
+{
+"word": "diversity",
+"ratio": 3.0,
+"ai": 105.0,
+"human": 35.0
+},
+{
+"word": "footage",
+"ratio": 3.0,
+"ai": 102.5,
+"human": 34.17
+},
+{
+"word": "legacy",
+"ratio": 3.0,
+"ai": 91.67,
+"human": 30.0
+},
+{
+"word": "root",
+"ratio": 3.0,
+"ai": 88.33,
+"human": 29.17
+},
+{
+"word": "involvement",
+"ratio": 3.0,
+"ai": 88.33,
+"human": 29.17
+},
+{
+"word": "align",
+"ratio": 3.0,
+"ai": 85.83,
+"human": 28.33
+},
+{
+"word": "alternative",
+"ratio": 3.0,
+"ai": 74.17,
+"human": 24.17
+},
+{
+"word": "discovery",
+"ratio": 3.0,
+"ai": 74.17,
+"human": 24.17
+},
+{
+"word": "ramp",
+"ratio": 3.0,
+"ai": 73.33,
+"human": 24.17
+},
+{
+"word": "flooding",
+"ratio": 3.0,
+"ai": 72.5,
+"human": 24.17
+},
+{
+"word": "tactics",
+"ratio": 3.0,
+"ai": 67.5,
+"human": 22.5
+},
+{
+"word": "monitoring",
+"ratio": 3.0,
+"ai": 66.67,
+"human": 21.67
+},
+{
+"word": "academic",
+"ratio": 3.0,
+"ai": 61.67,
+"human": 20.0
+},
+{
+"word": "dedicate",
+"ratio": 3.0,
+"ai": 60.0,
+"human": 20.0
+},
+{
+"word": "brief",
+"ratio": 3.0,
+"ai": 52.5,
+"human": 17.5
+},
+{
+"word": "displace",
+"ratio": 3.0,
+"ai": 50.0,
+"human": 16.67
+},
+{
+"word": "confrontation",
+"ratio": 3.0,
+"ai": 45.83,
+"human": 15.0
+},
+{
+"word": "precedent",
+"ratio": 3.0,
+"ai": 43.33,
+"human": 14.17
+},
+{
+"word": "public",
+"ratio": 2.9,
+"ai": 1535.83,
+"human": 531.67
+},
+{
+"word": "grow",
+"ratio": 2.9,
+"ai": 772.5,
+"human": 264.17
+},
+{
+"word": "condition",
+"ratio": 2.9,
+"ai": 740.83,
+"human": 255.0
+},
+{
+"word": "rise",
+"ratio": 2.9,
+"ai": 621.67,
+"human": 215.83
+},
+{
+"word": "project",
+"ratio": 2.9,
+"ai": 534.17,
+"human": 181.67
+},
+{
+"word": "story",
+"ratio": 2.9,
+"ai": 527.5,
+"human": 180.0
+},
+{
+"word": "clear",
+"ratio": 2.9,
+"ai": 515.83,
+"human": 179.17
+},
+{
+"word": "personal",
+"ratio": 2.9,
+"ai": 446.67,
+"human": 154.17
+},
+{
+"word": "quality",
+"ratio": 2.9,
+"ai": 368.33,
+"human": 127.5
+},
+{
+"word": "supply",
+"ratio": 2.9,
+"ai": 344.17,
+"human": 117.5
+},
+{
+"word": "increase",
+"ratio": 2.9,
+"ai": 328.33,
+"human": 113.33
+},
+{
+"word": "drawing",
+"ratio": 2.9,
+"ai": 309.17,
+"human": 105.83
+},
+{
+"word": "digital",
+"ratio": 2.9,
+"ai": 300.0,
+"human": 103.33
+},
+{
+"word": "determine",
+"ratio": 2.9,
+"ai": 202.5,
+"human": 70.0
+},
+{
+"word": "visitor",
+"ratio": 2.9,
+"ai": 186.67,
+"human": 64.17
+},
+{
+"word": "initial",
+"ratio": 2.9,
+"ai": 148.33,
+"human": 50.83
+},
+{
+"word": "viewer",
+"ratio": 2.9,
+"ai": 149.17,
+"human": 51.67
+},
+{
+"word": "affordable",
+"ratio": 2.9,
+"ai": 128.33,
+"human": 43.33
+},
+{
+"word": "preserve",
+"ratio": 2.9,
+"ai": 122.5,
+"human": 42.5
+},
+{
+"word": "dispute",
+"ratio": 2.9,
+"ai": 109.17,
+"human": 37.5
+},
+{
+"word": "transform",
+"ratio": 2.9,
+"ai": 102.5,
+"human": 35.0
+},
+{
+"word": "condemn",
+"ratio": 2.9,
+"ai": 86.67,
+"human": 29.17
+},
+{
+"word": "workplace",
+"ratio": 2.9,
+"ai": 78.33,
+"human": 26.67
+},
+{
+"word": "standing",
+"ratio": 2.9,
+"ai": 78.33,
+"human": 26.67
+},
+{
+"word": "surge",
+"ratio": 2.9,
+"ai": 75.0,
+"human": 25.83
+},
+{
+"word": "prominent",
+"ratio": 2.9,
+"ai": 71.67,
+"human": 24.17
+},
+{
+"word": "thrived",
+"ratio": 2.9,
+"ai": 69.17,
+"human": 23.33
+},
+{
+"word": "exacerbate",
+"ratio": 2.9,
+"ai": 63.33,
+"human": 21.67
+},
+{
+"word": "reporting",
+"ratio": 2.9,
+"ai": 60.83,
+"human": 20.83
+},
+{
+"word": "wildfire",
+"ratio": 2.9,
+"ai": 49.17,
+"human": 16.67
+},
+{
+"word": "genre",
+"ratio": 2.9,
+"ai": 49.17,
+"human": 16.67
+},
+{
+"word": "injustices",
+"ratio": 2.9,
+"ai": 45.0,
+"human": 15.0
+},
+{
+"word": "craft",
+"ratio": 2.9,
+"ai": 45.0,
+"human": 15.0
+},
+{
+"word": "arose",
+"ratio": 2.9,
+"ai": 45.0,
+"human": 15.0
+},
+{
+"word": "algorithm",
+"ratio": 2.9,
+"ai": 45.0,
+"human": 15.0
+},
+{
+"word": "tragic",
+"ratio": 2.9,
+"ai": 44.17,
+"human": 15.0
+},
+{
+"word": "empowered",
+"ratio": 2.9,
+"ai": 42.5,
+"human": 14.17
+},
+{
+"word": "criteria",
+"ratio": 2.9,
+"ai": 40.0,
+"human": 13.33
+},
+{
+"word": "issue",
+"ratio": 2.8,
+"ai": 928.33,
+"human": 331.67
+},
+{
+"word": "events",
+"ratio": 2.8,
+"ai": 893.33,
+"human": 314.17
+},
+{
+"word": "climate",
+"ratio": 2.8,
+"ai": 516.67,
+"human": 187.5
+},
+{
+"word": "affect",
+"ratio": 2.8,
+"ai": 466.67,
+"human": 165.0
+},
+{
+"word": "vaccination",
+"ratio": 2.8,
+"ai": 440.83,
+"human": 160.0
+},
+{
+"word": "manage",
+"ratio": 2.8,
+"ai": 404.17,
+"human": 142.5
+},
+{
+"word": "user",
+"ratio": 2.8,
+"ai": 354.17,
+"human": 125.83
+},
+{
+"word": "chain",
+"ratio": 2.8,
+"ai": 278.33,
+"human": 97.5
+},
+{
+"word": "competition",
+"ratio": 2.8,
+"ai": 225.83,
+"human": 79.17
+},
+{
+"word": "investigate",
+"ratio": 2.8,
+"ai": 220.83,
+"human": 80.0
+},
+{
+"word": "journey",
+"ratio": 2.8,
+"ai": 203.33,
+"human": 71.67
+},
+{
+"word": "powerful",
+"ratio": 2.8,
+"ai": 205.83,
+"human": 74.17
+},
+{
+"word": "discussion",
+"ratio": 2.8,
+"ai": 199.17,
+"human": 70.0
+},
+{
+"word": "rich",
+"ratio": 2.8,
+"ai": 165.83,
+"human": 59.17
+},
+{
+"word": "gatherings",
+"ratio": 2.8,
+"ai": 157.5,
+"human": 55.83
+},
+{
+"word": "restore",
+"ratio": 2.8,
+"ai": 135.0,
+"human": 48.33
+},
+{
+"word": "assessed",
+"ratio": 2.8,
+"ai": 118.33,
+"human": 41.67
+},
+{
+"word": "humanitarian",
+"ratio": 2.8,
+"ai": 108.33,
+"human": 38.33
+},
+{
+"word": "stress",
+"ratio": 2.8,
+"ai": 101.67,
+"human": 35.83
+},
+{
+"word": "press",
+"ratio": 2.8,
+"ai": 90.83,
+"human": 31.67
+},
+{
+"word": "fiscal",
+"ratio": 2.8,
+"ai": 80.83,
+"human": 28.33
+},
+{
+"word": "exclusive",
+"ratio": 2.8,
+"ai": 65.0,
+"human": 23.33
+},
+{
+"word": "tone",
+"ratio": 2.8,
+"ai": 60.83,
+"human": 21.67
+},
+{
+"word": "noise",
+"ratio": 2.8,
+"ai": 57.5,
+"human": 20.0
+},
+{
+"word": "dramatic",
+"ratio": 2.8,
+"ai": 55.83,
+"human": 20.0
+},
+{
+"word": "supportive",
+"ratio": 2.8,
+"ai": 52.5,
+"human": 18.33
+},
+{
+"word": "goalkeeper",
+"ratio": 2.8,
+"ai": 47.5,
+"human": 16.67
+},
+{
+"word": "staffing",
+"ratio": 2.8,
+"ai": 47.5,
+"human": 16.67
+},
+{
+"word": "solidarity",
+"ratio": 2.8,
+"ai": 46.67,
+"human": 16.67
+},
+{
+"word": "keys",
+"ratio": 2.8,
+"ai": 46.67,
+"human": 16.67
+},
+{
+"word": "resilient",
+"ratio": 2.8,
+"ai": 43.33,
+"human": 15.0
+},
+{
+"word": "many",
+"ratio": 2.7,
+"ai": 1838.33,
+"human": 693.33
+},
+{
+"word": "team",
+"ratio": 2.7,
+"ai": 1656.67,
+"human": 619.17
+},
+{
+"word": "among",
+"ratio": 2.7,
+"ai": 865.0,
+"human": 321.67
+},
+{
+"word": "industry",
+"ratio": 2.7,
+"ai": 620.0,
+"human": 231.67
+},
+{
+"word": "moment",
+"ratio": 2.7,
+"ai": 519.17,
+"human": 194.17
+},
+{
+"word": "mental",
+"ratio": 2.7,
+"ai": 315.0,
+"human": 115.83
+},
+{
+"word": "fresh",
+"ratio": 2.7,
+"ai": 240.0,
+"human": 87.5
+},
+{
+"word": "state",
+"ratio": 2.7,
+"ai": 184.17,
+"human": 67.5
+},
+{
+"word": "impact",
+"ratio": 2.7,
+"ai": 178.33,
+"human": 65.0
+},
+{
+"word": "division",
+"ratio": 2.7,
+"ai": 175.0,
+"human": 64.17
+},
+{
+"word": "posing",
+"ratio": 2.7,
+"ai": 171.67,
+"human": 63.33
+},
+{
+"word": "ease",
+"ratio": 2.7,
+"ai": 142.5,
+"human": 53.33
+},
+{
+"word": "respect",
+"ratio": 2.7,
+"ai": 130.0,
+"human": 48.33
+},
+{
+"word": "reviewing",
+"ratio": 2.7,
+"ai": 118.33,
+"human": 44.17
+},
+{
+"word": "schedule",
+"ratio": 2.7,
+"ai": 105.83,
+"human": 39.17
+},
+{
+"word": "tradition",
+"ratio": 2.7,
+"ai": 93.33,
+"human": 34.17
+},
+{
+"word": "classic",
+"ratio": 2.7,
+"ai": 82.5,
+"human": 30.83
+},
+{
+"word": "valuable",
+"ratio": 2.7,
+"ai": 78.33,
+"human": 28.33
+},
+{
+"word": "weigh",
+"ratio": 2.7,
+"ai": 62.5,
+"human": 22.5
+},
+{
+"word": "globally",
+"ratio": 2.7,
+"ai": 62.5,
+"human": 22.5
+},
+{
+"word": "scramble",
+"ratio": 2.7,
+"ai": 55.0,
+"human": 20.0
+},
+{
+"word": "neighbor",
+"ratio": 2.7,
+"ai": 43.33,
+"human": 15.83
+},
+{
+"word": "chronic",
+"ratio": 2.7,
+"ai": 43.33,
+"human": 15.83
+},
+{
+"word": "stark",
+"ratio": 2.7,
+"ai": 43.33,
+"human": 15.83
+},
+{
+"word": "contender",
+"ratio": 2.7,
+"ai": 41.67,
+"human": 15.0
+},
+{
+"word": "cooperate",
+"ratio": 2.7,
+"ai": 41.67,
+"human": 15.0
+},
+{
+"word": "spanning",
+"ratio": 2.7,
+"ai": 40.83,
+"human": 15.0
+},
+{
+"word": "support",
+"ratio": 2.6,
+"ai": 862.5,
+"human": 335.83
+},
+{
+"word": "decision",
+"ratio": 2.6,
+"ai": 825.0,
+"human": 314.17
+},
+{
+"word": "victory",
+"ratio": 2.6,
+"ai": 410.0,
+"human": 157.5
+},
+{
+"word": "critical",
+"ratio": 2.6,
+"ai": 300.0,
+"human": 115.83
+},
+{
+"word": "natural",
+"ratio": 2.6,
+"ai": 276.67,
+"human": 106.67
+},
+{
+"word": "lack",
+"ratio": 2.6,
+"ai": 271.67,
+"human": 103.33
+},
+{
+"word": "character",
+"ratio": 2.6,
+"ai": 261.67,
+"human": 100.83
+},
+{
+"word": "culture",
+"ratio": 2.6,
+"ai": 227.5,
+"human": 88.33
+},
+{
+"word": "demand",
+"ratio": 2.6,
+"ai": 214.17,
+"human": 83.33
+},
+{
+"word": "institution",
+"ratio": 2.6,
+"ai": 191.67,
+"human": 72.5
+},
+{
+"word": "propose",
+"ratio": 2.6,
+"ai": 159.17,
+"human": 60.83
+},
+{
+"word": "negotiations",
+"ratio": 2.6,
+"ai": 145.0,
+"human": 55.0
+},
+{
+"word": "reportedly",
+"ratio": 2.6,
+"ai": 145.0,
+"human": 55.0
+},
+{
+"word": "intelligence",
+"ratio": 2.6,
+"ai": 144.17,
+"human": 55.83
+},
+{
+"word": "color",
+"ratio": 2.6,
+"ai": 122.5,
+"human": 47.5
+},
+{
+"word": "pitch",
+"ratio": 2.6,
+"ai": 100.83,
+"human": 39.17
+},
+{
+"word": "meaningful",
+"ratio": 2.6,
+"ai": 84.17,
+"human": 31.67
+},
+{
+"word": "exposure",
+"ratio": 2.6,
+"ai": 85.83,
+"human": 33.33
+},
+{
+"word": "collective",
+"ratio": 2.6,
+"ai": 83.33,
+"human": 31.67
+},
+{
+"word": "earnings",
+"ratio": 2.6,
+"ai": 81.67,
+"human": 31.67
+},
+{
+"word": "respiratory",
+"ratio": 2.6,
+"ai": 77.5,
+"human": 29.17
+},
+{
+"word": "welfare",
+"ratio": 2.6,
+"ai": 72.5,
+"human": 27.5
+},
+{
+"word": "fitness",
+"ratio": 2.6,
+"ai": 70.83,
+"human": 26.67
+},
+{
+"word": "exploit",
+"ratio": 2.6,
+"ai": 69.17,
+"human": 26.67
+},
+{
+"word": "discrimination",
+"ratio": 2.6,
+"ai": 66.67,
+"human": 25.83
+},
+{
+"word": "varying",
+"ratio": 2.6,
+"ai": 57.5,
+"human": 21.67
+},
+{
+"word": "beloved",
+"ratio": 2.6,
+"ai": 55.0,
+"human": 20.83
+},
+{
+"word": "biodiversity",
+"ratio": 2.6,
+"ai": 49.17,
+"human": 18.33
+},
+{
+"word": "processing",
+"ratio": 2.6,
+"ai": 50.0,
+"human": 19.17
+},
+{
+"word": "silence",
+"ratio": 2.6,
+"ai": 47.5,
+"human": 18.33
+},
+{
+"word": "reliance",
+"ratio": 2.6,
+"ai": 40.0,
+"human": 15.0
+},
+{
+"word": "lead",
+"ratio": 2.5,
+"ai": 1406.67,
+"human": 555.83
+},
+{
+"word": "global",
+"ratio": 2.5,
+"ai": 730.83,
+"human": 290.0
+},
+{
+"word": "action",
+"ratio": 2.5,
+"ai": 707.5,
+"human": 286.67
+},
+{
+"word": "involve",
+"ratio": 2.5,
+"ai": 565.83,
+"human": 223.33
+},
+{
+"word": "together",
+"ratio": 2.5,
+"ai": 562.5,
+"human": 224.17
+},
+{
+"word": "prevent",
+"ratio": 2.5,
+"ai": 514.17,
+"human": 203.33
+},
+{
+"word": "opportunity",
+"ratio": 2.5,
+"ai": 516.67,
+"human": 208.33
+},
+{
+"word": "activity",
+"ratio": 2.5,
+"ai": 450.83,
+"human": 178.33
+},
+{
+"word": "public",
+"ratio": 2.5,
+"ai": 387.5,
+"human": 157.5
+},
+{
+"word": "encourage",
+"ratio": 2.5,
+"ai": 326.67,
+"human": 132.5
+},
+{
+"word": "supporters",
+"ratio": 2.5,
+"ai": 238.33,
+"human": 93.33
+},
+{
+"word": "management",
+"ratio": 2.5,
+"ai": 211.67,
+"human": 85.0
+},
+{
+"word": "opposition",
+"ratio": 2.5,
+"ai": 190.83,
+"human": 75.0
+},
+{
+"word": "regional",
+"ratio": 2.5,
+"ai": 172.5,
+"human": 70.0
+},
+{
+"word": "respect",
+"ratio": 2.5,
+"ai": 157.5,
+"human": 63.33
+},
+{
+"word": "rare",
+"ratio": 2.5,
+"ai": 130.83,
+"human": 51.67
+},
+{
+"word": "sound",
+"ratio": 2.5,
+"ai": 125.0,
+"human": 50.0
+},
+{
+"word": "acknowledge",
+"ratio": 2.5,
+"ai": 115.83,
+"human": 46.67
+},
+{
+"word": "strain",
+"ratio": 2.5,
+"ai": 108.33,
+"human": 43.33
+},
+{
+"word": "expense",
+"ratio": 2.5,
+"ai": 87.5,
+"human": 34.17
+},
+{
+"word": "fuel",
+"ratio": 2.5,
+"ai": 87.5,
+"human": 34.17
+},
+{
+"word": "resolution",
+"ratio": 2.5,
+"ai": 83.33,
+"human": 32.5
+},
+{
+"word": "context",
+"ratio": 2.5,
+"ai": 83.33,
+"human": 33.33
+},
+{
+"word": "efficient",
+"ratio": 2.5,
+"ai": 80.83,
+"human": 31.67
+},
+{
+"word": "ease",
+"ratio": 2.5,
+"ai": 80.0,
+"human": 31.67
+},
+{
+"word": "stable",
+"ratio": 2.5,
+"ai": 76.67,
+"human": 30.0
+},
+{
+"word": "booster",
+"ratio": 2.5,
+"ai": 73.33,
+"human": 29.17
+},
+{
+"word": "neighbor",
+"ratio": 2.5,
+"ai": 69.17,
+"human": 27.5
+},
+{
+"word": "offensive",
+"ratio": 2.5,
+"ai": 65.0,
+"human": 25.83
+},
+{
+"word": "availability",
+"ratio": 2.5,
+"ai": 60.0,
+"human": 23.33
+},
+{
+"word": "endure",
+"ratio": 2.5,
+"ai": 59.17,
+"human": 23.33
+},
+{
+"word": "hospitalizations",
+"ratio": 2.5,
+"ai": 57.5,
+"human": 22.5
+},
+{
+"word": "genetic",
+"ratio": 2.5,
+"ai": 55.83,
+"human": 21.67
+},
+{
+"word": "firefighter",
+"ratio": 2.5,
+"ai": 55.0,
+"human": 21.67
+},
+{
+"word": "minor",
+"ratio": 2.5,
+"ai": 52.5,
+"human": 20.83
+},
+{
+"word": "hopeful",
+"ratio": 2.5,
+"ai": 52.5,
+"human": 20.83
+},
+{
+"word": "verify",
+"ratio": 2.5,
+"ai": 50.83,
+"human": 20.0
+},
+{
+"word": "psychological",
+"ratio": 2.5,
+"ai": 50.83,
+"human": 20.0
+},
+{
+"word": "agricultural",
+"ratio": 2.5,
+"ai": 50.83,
+"human": 20.0
+},
+{
+"word": "backlash",
+"ratio": 2.5,
+"ai": 46.67,
+"human": 18.33
+},
+{
+"word": "adoption",
+"ratio": 2.5,
+"ai": 41.67,
+"human": 16.67
+},
+{
+"word": "thinking",
+"ratio": 2.5,
+"ai": 41.67,
+"human": 16.67
+},
+{
+"word": "such",
+"ratio": 2.4,
+"ai": 1357.5,
+"human": 571.67
+},
+{
+"word": "international",
+"ratio": 2.4,
+"ai": 720.0,
+"human": 295.83
+},
+{
+"word": "political",
+"ratio": 2.4,
+"ai": 722.5,
+"human": 300.0
+},
+{
+"word": "both",
+"ratio": 2.4,
+"ai": 698.33,
+"human": 293.33
+},
+{
+"word": "financial",
+"ratio": 2.4,
+"ai": 565.0,
+"human": 239.17
+},
+{
+"word": "program",
+"ratio": 2.4,
+"ai": 419.17,
+"human": 173.33
+},
+{
+"word": "source",
+"ratio": 2.4,
+"ai": 355.83,
+"human": 148.33
+},
+{
+"word": "attention",
+"ratio": 2.4,
+"ai": 267.5,
+"human": 110.0
+},
+{
+"word": "solution",
+"ratio": 2.4,
+"ai": 235.0,
+"human": 97.5
+},
+{
+"word": "devices",
+"ratio": 2.4,
+"ai": 198.33,
+"human": 80.83
+},
+{
+"word": "responsibility",
+"ratio": 2.4,
+"ai": 193.33,
+"human": 79.17
+},
+{
+"word": "cause",
+"ratio": 2.4,
+"ai": 193.33,
+"human": 80.83
+},
+{
+"word": "proper",
+"ratio": 2.4,
+"ai": 130.0,
+"human": 53.33
+},
+{
+"word": "guidance",
+"ratio": 2.4,
+"ai": 114.17,
+"human": 48.33
+},
+{
+"word": "variety",
+"ratio": 2.4,
+"ai": 108.33,
+"human": 44.17
+},
+{
+"word": "creative",
+"ratio": 2.4,
+"ai": 85.0,
+"human": 35.83
+},
+{
+"word": "promise",
+"ratio": 2.4,
+"ai": 83.33,
+"human": 35.0
+},
+{
+"word": "dish",
+"ratio": 2.4,
+"ai": 74.17,
+"human": 30.83
+},
+{
+"word": "mechanism",
+"ratio": 2.4,
+"ai": 65.0,
+"human": 26.67
+},
+{
+"word": "ancient",
+"ratio": 2.4,
+"ai": 61.67,
+"human": 25.0
+},
+{
+"word": "accountable",
+"ratio": 2.4,
+"ai": 55.0,
+"human": 22.5
+},
+{
+"word": "compromise",
+"ratio": 2.4,
+"ai": 55.0,
+"human": 22.5
+},
+{
+"word": "undergo",
+"ratio": 2.4,
+"ai": 54.17,
+"human": 22.5
+},
+{
+"word": "creation",
+"ratio": 2.4,
+"ai": 50.0,
+"human": 20.83
+},
+{
+"word": "making",
+"ratio": 2.4,
+"ai": 46.67,
+"human": 19.17
+},
+{
+"word": "sacrifice",
+"ratio": 2.4,
+"ai": 45.0,
+"human": 18.33
+},
+{
+"word": "reach",
+"ratio": 2.4,
+"ai": 45.83,
+"human": 19.17
+},
+{
+"word": "agriculture",
+"ratio": 2.4,
+"ai": 43.33,
+"human": 17.5
+},
+{
+"word": "defendant",
+"ratio": 2.4,
+"ai": 42.5,
+"human": 17.5
+},
+{
+"word": "social",
+"ratio": 2.3,
+"ai": 1140.83,
+"human": 487.5
+},
+{
+"word": "created",
+"ratio": 2.3,
+"ai": 754.17,
+"human": 325.0
+},
+{
+"word": "within",
+"ratio": 2.3,
+"ai": 685.0,
+"human": 303.33
+},
+{
+"word": "match",
+"ratio": 2.3,
+"ai": 427.5,
+"human": 189.17
+},
+{
+"word": "legal",
+"ratio": 2.3,
+"ai": 362.5,
+"human": 158.33
+},
+{
+"word": "operation",
+"ratio": 2.3,
+"ai": 340.0,
+"human": 150.0
+},
+{
+"word": "investment",
+"ratio": 2.3,
+"ai": 329.17,
+"human": 143.33
+},
+{
+"word": "citizen",
+"ratio": 2.3,
+"ai": 240.0,
+"human": 102.5
+},
+{
+"word": "standard",
+"ratio": 2.3,
+"ai": 230.83,
+"human": 101.67
+},
+{
+"word": "style",
+"ratio": 2.3,
+"ai": 217.5,
+"human": 95.83
+},
+{
+"word": "note",
+"ratio": 2.3,
+"ai": 199.17,
+"human": 85.0
+},
+{
+"word": "regular",
+"ratio": 2.3,
+"ai": 166.67,
+"human": 72.5
+},
+{
+"word": "contribution",
+"ratio": 2.3,
+"ai": 125.83,
+"human": 53.33
+},
+{
+"word": "pace",
+"ratio": 2.3,
+"ai": 121.67,
+"human": 53.33
+},
+{
+"word": "background",
+"ratio": 2.3,
+"ai": 113.33,
+"human": 50.0
+},
+{
+"word": "approach",
+"ratio": 2.3,
+"ai": 108.33,
+"human": 47.5
+},
+{
+"word": "advance",
+"ratio": 2.3,
+"ai": 101.67,
+"human": 44.17
+},
+{
+"word": "friendly",
+"ratio": 2.3,
+"ai": 91.67,
+"human": 40.0
+},
+{
+"word": "lack",
+"ratio": 2.3,
+"ai": 82.5,
+"human": 35.0
+},
+{
+"word": "accident",
+"ratio": 2.3,
+"ai": 70.83,
+"human": 30.83
+},
+{
+"word": "legislative",
+"ratio": 2.3,
+"ai": 65.83,
+"human": 28.33
+},
+{
+"word": "manufacturer",
+"ratio": 2.3,
+"ai": 53.33,
+"human": 22.5
+},
+{
+"word": "proceedings",
+"ratio": 2.3,
+"ai": 47.5,
+"human": 20.0
+},
+{
+"word": "rollout",
+"ratio": 2.3,
+"ai": 45.0,
+"human": 19.17
+},
+{
+"word": "accommodate",
+"ratio": 2.3,
+"ai": 43.33,
+"human": 18.33
+},
+{
+"word": "establishment",
+"ratio": 2.3,
+"ai": 44.17,
+"human": 19.17
+},
+{
+"word": "continued",
+"ratio": 2.2,
+"ai": 1081.67,
+"human": 495.0
+},
+{
+"word": "across",
+"ratio": 2.2,
+"ai": 1013.33,
+"human": 470.83
+},
+{
+"word": "markets",
+"ratio": 2.2,
+"ai": 719.17,
+"human": 325.83
+},
+{
+"word": "offer",
+"ratio": 2.2,
+"ai": 640.83,
+"human": 297.5
+},
+{
+"word": "share",
+"ratio": 2.2,
+"ai": 590.83,
+"human": 270.83
+},
+{
+"word": "process",
+"ratio": 2.2,
+"ai": 500.83,
+"human": 232.5
+},
+{
+"word": "covid",
+"ratio": 2.2,
+"ai": 460.0,
+"human": 206.67
+},
+{
+"word": "previous",
+"ratio": 2.2,
+"ai": 373.33,
+"human": 169.17
+},
+{
+"word": "interest",
+"ratio": 2.2,
+"ai": 370.0,
+"human": 169.17
+},
+{
+"word": "evidence",
+"ratio": 2.2,
+"ai": 353.33,
+"human": 158.33
+},
+{
+"word": "understand",
+"ratio": 2.2,
+"ai": 340.83,
+"human": 152.5
+},
+{
+"word": "further",
+"ratio": 2.2,
+"ai": 303.33,
+"human": 135.83
+},
+{
+"word": "experiencing",
+"ratio": 2.2,
+"ai": 264.17,
+"human": 120.0
+},
+{
+"word": "hope",
+"ratio": 2.2,
+"ai": 230.0,
+"human": 104.17
+},
+{
+"word": "respond",
+"ratio": 2.2,
+"ai": 232.5,
+"human": 107.5
+},
+{
+"word": "society",
+"ratio": 2.2,
+"ai": 221.67,
+"human": 100.0
+},
+{
+"word": "enforcement",
+"ratio": 2.2,
+"ai": 208.33,
+"human": 92.5
+},
+{
+"word": "success",
+"ratio": 2.2,
+"ai": 182.5,
+"human": 84.17
+},
+{
+"word": "emission",
+"ratio": 2.2,
+"ai": 158.33,
+"human": 71.67
+},
+{
+"word": "fair",
+"ratio": 2.2,
+"ai": 146.67,
+"human": 65.83
+},
+{
+"word": "recommend",
+"ratio": 2.2,
+"ai": 144.17,
+"human": 65.0
+},
+{
+"word": "quick",
+"ratio": 2.2,
+"ai": 141.67,
+"human": 65.0
+},
+{
+"word": "allegation",
+"ratio": 2.2,
+"ai": 140.0,
+"human": 64.17
+},
+{
+"word": "specific",
+"ratio": 2.2,
+"ai": 136.67,
+"human": 61.67
+},
+{
+"word": "spending",
+"ratio": 2.2,
+"ai": 132.5,
+"human": 59.17
+},
+{
+"word": "athletes",
+"ratio": 2.2,
+"ai": 121.67,
+"human": 55.0
+},
+{
+"word": "neighborhood",
+"ratio": 2.2,
+"ai": 116.67,
+"human": 53.33
+},
+{
+"word": "profile",
+"ratio": 2.2,
+"ai": 114.17,
+"human": 51.67
+},
+{
+"word": "learning",
+"ratio": 2.2,
+"ai": 114.17,
+"human": 52.5
+},
+{
+"word": "sustain",
+"ratio": 2.2,
+"ai": 97.5,
+"human": 43.33
+},
+{
+"word": "employment",
+"ratio": 2.2,
+"ai": 90.83,
+"human": 41.67
+},
+{
+"word": "clash",
+"ratio": 2.2,
+"ai": 88.33,
+"human": 40.0
+},
+{
+"word": "entertainment",
+"ratio": 2.2,
+"ai": 89.17,
+"human": 40.83
+},
+{
+"word": "closure",
+"ratio": 2.2,
+"ai": 86.67,
+"human": 39.17
+},
+{
+"word": "resolve",
+"ratio": 2.2,
+"ai": 85.0,
+"human": 38.33
+},
+{
+"word": "update",
+"ratio": 2.2,
+"ai": 82.5,
+"human": 36.67
+},
+{
+"word": "foundation",
+"ratio": 2.2,
+"ai": 81.67,
+"human": 36.67
+},
+{
+"word": "questioning",
+"ratio": 2.2,
+"ai": 80.83,
+"human": 36.67
+},
+{
+"word": "suspect",
+"ratio": 2.2,
+"ai": 70.83,
+"human": 32.5
+},
+{
+"word": "expansion",
+"ratio": 2.2,
+"ai": 67.5,
+"human": 30.83
+},
+{
+"word": "transaction",
+"ratio": 2.2,
+"ai": 65.83,
+"human": 30.0
+},
+{
+"word": "perfectly",
+"ratio": 2.2,
+"ai": 64.17,
+"human": 29.17
+},
+{
+"word": "consumption",
+"ratio": 2.2,
+"ai": 63.33,
+"human": 28.33
+},
+{
+"word": "errors",
+"ratio": 2.2,
+"ai": 60.83,
+"human": 27.5
+},
+{
+"word": "facilitate",
+"ratio": 2.2,
+"ai": 58.33,
+"human": 26.67
+},
+{
+"word": "matter",
+"ratio": 2.2,
+"ai": 56.67,
+"human": 25.0
+},
+{
+"word": "dividing",
+"ratio": 2.2,
+"ai": 55.0,
+"human": 25.0
+},
+{
+"word": "favorite",
+"ratio": 2.2,
+"ai": 41.67,
+"human": 18.33
+},
+{
+"word": "residential",
+"ratio": 2.2,
+"ai": 40.83,
+"human": 18.33
+},
+{
+"word": "politically",
+"ratio": 2.2,
+"ai": 40.83,
+"human": 18.33
+},
+{
+"word": "company",
+"ratio": 2.1,
+"ai": 1242.5,
+"human": 580.83
+},
+{
+"word": "service",
+"ratio": 2.1,
+"ai": 958.33,
+"human": 450.0
+},
+{
+"word": "information",
+"ratio": 2.1,
+"ai": 459.17,
+"human": 221.67
+},
+{
+"word": "drive",
+"ratio": 2.1,
+"ai": 445.0,
+"human": 216.67
+},
+{
+"word": "everyone",
+"ratio": 2.1,
+"ai": 336.67,
+"human": 159.17
+},
+{
+"word": "study",
+"ratio": 2.1,
+"ai": 302.5,
+"human": 144.17
+},
+{
+"word": "fields",
+"ratio": 2.1,
+"ai": 296.67,
+"human": 138.33
+},
+{
+"word": "injury",
+"ratio": 2.1,
+"ai": 286.67,
+"human": 135.0
+},
+{
+"word": "coach",
+"ratio": 2.1,
+"ai": 252.5,
+"human": 120.0
+},
+{
+"word": "vulnerable",
+"ratio": 2.1,
+"ai": 227.5,
+"human": 107.5
+},
+{
+"word": "connect",
+"ratio": 2.1,
+"ai": 184.17,
+"human": 86.67
+},
+{
+"word": "conduct",
+"ratio": 2.1,
+"ai": 186.67,
+"human": 90.83
+},
+{
+"word": "living",
+"ratio": 2.1,
+"ai": 165.0,
+"human": 80.0
+},
+{
+"word": "scientists",
+"ratio": 2.1,
+"ai": 158.33,
+"human": 76.67
+},
+{
+"word": "truly",
+"ratio": 2.1,
+"ai": 126.67,
+"human": 60.83
+},
+{
+"word": "collection",
+"ratio": 2.1,
+"ai": 117.5,
+"human": 55.83
+},
+{
+"word": "edge",
+"ratio": 2.1,
+"ai": 116.67,
+"human": 56.67
+},
+{
+"word": "incredible",
+"ratio": 2.1,
+"ai": 87.5,
+"human": 41.67
+},
+{
+"word": "principle",
+"ratio": 2.1,
+"ai": 85.83,
+"human": 40.83
+},
+{
+"word": "teammate",
+"ratio": 2.1,
+"ai": 77.5,
+"human": 35.83
+},
+{
+"word": "personnel",
+"ratio": 2.1,
+"ai": 79.17,
+"human": 38.33
+},
+{
+"word": "advance",
+"ratio": 2.1,
+"ai": 75.83,
+"human": 35.83
+},
+{
+"word": "volunteer",
+"ratio": 2.1,
+"ai": 73.33,
+"human": 34.17
+},
+{
+"word": "festival",
+"ratio": 2.1,
+"ai": 73.33,
+"human": 35.0
+},
+{
+"word": "controversial",
+"ratio": 2.1,
+"ai": 72.5,
+"human": 34.17
+},
+{
+"word": "difficulty",
+"ratio": 2.1,
+"ai": 68.33,
+"human": 31.67
+},
+{
+"word": "survey",
+"ratio": 2.1,
+"ai": 68.33,
+"human": 31.67
+},
+{
+"word": "disaster",
+"ratio": 2.1,
+"ai": 69.17,
+"human": 33.33
+},
+{
+"word": "appreciate",
+"ratio": 2.1,
+"ai": 68.33,
+"human": 32.5
+},
+{
+"word": "absence",
+"ratio": 2.1,
+"ai": 62.5,
+"human": 30.0
+},
+{
+"word": "investigator",
+"ratio": 2.1,
+"ai": 57.5,
+"human": 26.67
+},
+{
+"word": "readers",
+"ratio": 2.1,
+"ai": 57.5,
+"human": 27.5
+},
+{
+"word": "witness",
+"ratio": 2.1,
+"ai": 56.67,
+"human": 26.67
+},
+{
+"word": "burden",
+"ratio": 2.1,
+"ai": 55.0,
+"human": 25.83
+},
+{
+"word": "severely",
+"ratio": 2.1,
+"ai": 52.5,
+"human": 25.0
+},
+{
+"word": "ambitious",
+"ratio": 2.1,
+"ai": 50.0,
+"human": 24.17
+},
+{
+"word": "favorite",
+"ratio": 2.1,
+"ai": 44.17,
+"human": 20.83
+},
+{
+"word": "workforce",
+"ratio": 2.1,
+"ai": 43.33,
+"human": 20.0
+},
+{
+"word": "participation",
+"ratio": 2.1,
+"ai": 43.33,
+"human": 20.83
+},
+{
+"word": "substantial",
+"ratio": 2.1,
+"ai": 41.67,
+"human": 19.17
+},
+{
+"word": "regulator",
+"ratio": 2.1,
+"ai": 42.5,
+"human": 20.0
+},
+{
+"word": "narrow",
+"ratio": 2.1,
+"ai": 40.83,
+"human": 19.17
+},
+{
+"word": "local",
+"ratio": 2.1,
+"ai": 40.83,
+"human": 19.17
+},
+{
+"word": "incentive",
+"ratio": 2.1,
+"ai": 40.0,
+"human": 19.17
+},
+{
+"word": "that",
+"ratio": 2.0,
+"ai": 6878.33,
+"human": 3457.5
+},
+{
+"word": "expect",
+"ratio": 2.0,
+"ai": 663.33,
+"human": 335.0
+},
+{
+"word": "role",
+"ratio": 2.0,
+"ai": 550.83,
+"human": 274.17
+},
+{
+"word": "sector",
+"ratio": 2.0,
+"ai": 306.67,
+"human": 152.5
+},
+{
+"word": "voters",
+"ratio": 2.0,
+"ai": 306.67,
+"human": 152.5
+},
+{
+"word": "launch",
+"ratio": 2.0,
+"ai": 235.0,
+"human": 116.67
+},
+{
+"word": "symptom",
+"ratio": 2.0,
+"ai": 205.0,
+"human": 103.33
+},
+{
+"word": "discuss",
+"ratio": 2.0,
+"ai": 197.5,
+"human": 99.17
+},
+{
+"word": "established",
+"ratio": 2.0,
+"ai": 184.17,
+"human": 92.5
+},
+{
+"word": "reality",
+"ratio": 2.0,
+"ai": 178.33,
+"human": 88.33
+},
+{
+"word": "rely",
+"ratio": 2.0,
+"ai": 145.83,
+"human": 73.33
+},
+{
+"word": "speed",
+"ratio": 2.0,
+"ai": 145.0,
+"human": 72.5
+},
+{
+"word": "sometimes",
+"ratio": 2.0,
+"ai": 146.67,
+"human": 75.0
+},
+{
+"word": "tournament",
+"ratio": 2.0,
+"ai": 139.17,
+"human": 70.83
+},
+{
+"word": "consequence",
+"ratio": 2.0,
+"ai": 131.67,
+"human": 65.83
+},
+{
+"word": "supplies",
+"ratio": 2.0,
+"ai": 118.33,
+"human": 59.17
+},
+{
+"word": "professional",
+"ratio": 2.0,
+"ai": 114.17,
+"human": 56.67
+},
+{
+"word": "element",
+"ratio": 2.0,
+"ai": 84.17,
+"human": 41.67
+},
+{
+"word": "remind",
+"ratio": 2.0,
+"ai": 81.67,
+"human": 40.0
+},
+{
+"word": "scientific",
+"ratio": 2.0,
+"ai": 85.0,
+"human": 43.33
+},
+{
+"word": "reputation",
+"ratio": 2.0,
+"ai": 81.67,
+"human": 40.83
+},
+{
+"word": "lifestyle",
+"ratio": 2.0,
+"ai": 73.33,
+"human": 35.83
+},
+{
+"word": "pollution",
+"ratio": 2.0,
+"ai": 69.17,
+"human": 34.17
+},
+{
+"word": "beauty",
+"ratio": 2.0,
+"ai": 69.17,
+"human": 34.17
+},
+{
+"word": "guided",
+"ratio": 2.0,
+"ai": 67.5,
+"human": 33.33
+},
+{
+"word": "viral",
+"ratio": 2.0,
+"ai": 66.67,
+"human": 33.33
+},
+{
+"word": "observe",
+"ratio": 2.0,
+"ai": 59.17,
+"human": 29.17
+},
+{
+"word": "precaution",
+"ratio": 2.0,
+"ai": 58.33,
+"human": 28.33
+},
+{
+"word": "examine",
+"ratio": 2.0,
+"ai": 60.0,
+"human": 30.0
+},
+{
+"word": "mild",
+"ratio": 2.0,
+"ai": 57.5,
+"human": 29.17
+},
+{
+"word": "solid",
+"ratio": 2.0,
+"ai": 51.67,
+"human": 25.0
+},
+{
+"word": "developer",
+"ratio": 2.0,
+"ai": 52.5,
+"human": 25.83
+},
+{
+"word": "progressed",
+"ratio": 2.0,
+"ai": 51.67,
+"human": 25.83
+},
+{
+"word": "clinic",
+"ratio": 2.0,
+"ai": 48.33,
+"human": 24.17
+},
+{
+"word": "gesture",
+"ratio": 2.0,
+"ai": 40.83,
+"human": 20.0
+}
+]
+}
+}

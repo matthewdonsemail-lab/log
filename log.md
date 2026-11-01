@@ -10232,3 +10232,179 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every send's copy gets a watermark reading. `OfirYC/claude-watermark-checker` (MIT, no dependencies, its source, tests, licence and upstream commit) is vendored at `vendor/claudeArtifactDetector`, and `watermarkReadingOf` (`src/twitter/copy/watermark`) reads a text as `clean`, `stylistic` (curly quotes, em dashes) or `artifacts` (zero-width and other hidden characters, unusual spaces, pasted Claude HTML classes and data attributes), always with `statistical: unknown` and why. `planSend` refuses a dm, reply, quote or post that carries artifacts (`aiArtifacts`, in the error catalog) and carries the reading in its plan; `log voice` shows the reading and fails a draft with artifacts; a direct send and each queue send log the reading. Rule 111.
 Why: matt asked for deep research into GitHub repos "good for claude watermarking ... so we're able to pass it through context into the sends so that we can see how likely it is to be watermarked". The research (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`) found Claude's own watermark is statistical, keyed and checked only by Anthropic's private-preview detector, so no public repo can score it; the artifact checker is the one that can run on every send, and it says plainly what it can't see.
 Checked: `bun run check` passes (1290 tests, the vendored detector's 18 among them); new tests: plain copy is clean with the statistical watermark unknown, a zero-width character is refused as `aiArtifacts`, an em dash is only stylistic and the reading goes with the plan.
+
+## 2026-11-01 18:52Z · feat/aiTellsGate
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/twitter/helpers/voice.ts`: changed const VOICE_USAGE, const VOICE_INPUT, const voiceDeps, function renderVoice, const voiceCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/voice/aiTells/aiTells.test.ts`: added const VOCAB, function fakeEmbedder, test "vale-ai-tells loads as rules and catches AI phrasing, and nothing in a line matt wrote", test "every list gives phrases, vale first, with where each came from", test "a rule matt uses himself in more than 2% of his messages is muted", test "drafts are cut into lines and word windows", test "the index measures matt against the AI phrases and flags a draft past his p99"
+- `src/voice/aiTells/client.ts`: added const REGEX_CHARS, function aiTellsDir, function aiIndexDir, function valeRules, function patternOf, function ruleHits, function literal, function quoted, function aiPhrases, function overusedWords, function chunksOf, function cosine, function percentile, function bestPerChunk, function mutedRules, function buildAiIndex, function openAiIndex, function readAiTells, function aiTellsLine
+- `src/voice/aiTells/helpers/index.ts`: added export from "./jina"
+- `src/voice/aiTells/helpers/jina.ts`: added function call, function jinaEmbedder
+- `src/voice/aiTells/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/voice/aiTells/types.ts`: added interface AiTellRule, interface AiTellHit, interface AiPhrase, interface AiEmbedder, interface AiBaseline, interface AiIndexMeta, interface AiIndex, interface AiCloseMatch, interface AiReading, const JINA_EMBED_MODEL, const JINA_RERANK_MODEL, const JINA_DIMENSIONS, const MUTE_IF_MATT_USES, const BASELINE_SAMPLE
+- `src/voice/index.ts`: added export from "./aiTells/index.ts"
+- `vendor/aiTells/SOURCES.md`: new file
+- `vendor/aiTells/aiExamples/mandakan.md`: new file
+- `vendor/aiTells/aiExamples/mandakan.txt`: new file
+- `vendor/aiTells/aiExamples/sloplint.md`: new file
+- `vendor/aiTells/feedHive/patterns.json`: new file
+- `vendor/aiTells/lexaIndex/overusedWords.json`: new file
+- `vendor/aiTells/lists/aboudjemHumanizerPatterns.md`: new file
+- `vendor/aiTells/lists/deslopReadme.md`: new file
+- `vendor/aiTells/lists/maxsancheezTells.py.txt`: new file
+- `vendor/aiTells/lists/nulightCopyTells.md`: new file
+- `vendor/aiTells/lists/slopChopTells.md`: new file
+- `vendor/aiTells/lists/sloptrimPatterns.md`: new file
+- `vendor/aiTells/sanderFrentz/styleGuide.json`: new file
+- `vendor/aiTells/sicarius/slop.yml`: new file
+- `vendor/aiTells/valeAiTells/README.md`: new file
+- `vendor/aiTells/valeAiTells/styles/AIAdjectiveNounPairs.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AICompoundPhrases.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AbsoluteAssertions.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AbstractionSubject.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AffirmativeFormulas.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AnnouncementHeadings.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AnthropomorphicAdjectives.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AnthropomorphicCognition.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/AnthropomorphicJustification.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/BareHolds.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/BareNames.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/BareReaches.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/CataphoricForecasting.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ClosingPleasantries.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ColloquialAssessments.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ColonUsage.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ConclusionMarkers.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ConsequenceClause.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ConsequenceParticiple.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ContrastiveFormulas.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ContrastiveNegation.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/CoordinatedReveal.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/DefensiveHedges.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/DepletionMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/DespiteChallenges.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/DoubleHyphen.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EmDashUsage.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EmphaticCopula.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EmptyPadding.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EmptyPaddingStacked.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EnforcementMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/EvasionMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ExplainerHeadings.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ExplainerLeads.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FalseBalance.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FalseExclusivity.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeBreeds.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeCarries.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeCasts.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeClears.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeDemands.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeDisguises.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeDraws.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeEarns.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeFalls.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeFires.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeHolds.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeIdioms.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeKeeps.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeLands.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeLends.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeLives.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeLoud.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeMints.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeNouns.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeOwns.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativePays.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeQuantities.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeQuiet.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeReaches.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeRides.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeRuns.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeSees.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeSettles.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeShape.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeSits.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeStays.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeStrikes.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeSurfaces.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeSweeps.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeTravels.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeTrips.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeWins.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FigurativeWorth.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FillerIntensifier.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FillerPhrases.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FormalRegister.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FormalTransitions.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/FusionMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/GrowthMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/HedgingPhrases.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/HollowAcknowledgment.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/HouseStyle.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/IncompleteComparison.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/JourneyMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/LabelAndExplain.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ListIntroductions.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/MarketingHeadings.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/Metacommentary.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/MicDrop.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/MicDropHeadings.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/MortalityMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/MotionMetaphors.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NamedAdjective.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NarrativePivots.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NegatedObject.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NegatedPair.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NegatedSubject.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NominalizedScopeChange.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/NounString.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/OpeningCliches.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/OrganicConsequence.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/OverusedVocabulary.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/OverusedVocabularyVerbs.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ParallelStaccato.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ParticipialPadding.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/PointVerdict.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/PromotionalPuffery.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/PseudoCleft.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/RedundantPrecaution.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ResonateOveruse.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/RestatementMarkers.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/RhetoricalDevices.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/RhetoricalSelfAnswer.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ScopePartition.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/SelfReference.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/SemicolonUsage.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/SequencingMarkers.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ServesAsDodge.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ShellNounCopula.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/ShipOveruse.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/StackedAnaphora.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/StackedHedges.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/StrategyBuzzwords.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/StrawmanContrast.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/StructureAnnouncements.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/SummativeAppositive.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/SycophancyMarkers.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/UnderRegime.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/UniversalObject.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/UniversalSubject.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/UnpackExplore.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/UrgencyInflation.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/VagueAttributions.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/VerbTricolon.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/VerbTricolonDensity.yml`: new file
+- `vendor/aiTells/valeAiTells/styles/WrapUpHeadings.yml`: new file
+
+What changed: the voice gate reads a draft for AI phrasing. The lists are vendored in `vendor/aiTells` (`SOURCES.md`): tbhb/vale-ai-tells' 137 rule files first, then FeedHive/ai-slop-detector, SanderFrentz/ai-vocabulary, SicariusSicariiStuff/SLOP_Detector, real AI-written samples (sloplint, llm-slop-detector), fsu-nlp/lexa-index's words Claude and GPT write at least twice as often as people, and six repos' pattern write-ups kept as they are. `src/voice/aiTells` runs vale's 130 existence and substitution rules on the draft as Vale would (`valeRules`, `ruleHits`), gathers 1742 literal AI phrases with their source (`aiPhrases`), and talks to Jina (`jinaEmbedder`: `jina-embeddings-v3` at 256 dimensions, `jina-reranker-v2-base-multilingual`, `JINA_API_KEY` in `.env.local`). `log voice aiIndex` embeds the phrases and measures matt's own replies from the voice index against them for his p50 and p99 closeness, muting any vale rule he uses in over 2% of his messages (`buildAiIndex`, `~/.logCli/aiTells`). The gate cuts each draft into lines and six-word windows, finds every chunk's closest AI phrase by cosine, reranks the closest, and fails the draft when a vale rule hits or it sits closer to AI phrasing than matt's own p99 (`readAiTells`); `log voice` shows the hits, the closest phrase, his p50 and p99, and AI-overused words. `jinaKeyMissing` in the error catalog. Rule 112.
+Why: matt: "there is definitely a dictionary of the common phrases which we can then have a p99 p50 search across to basically see and match the likelihood ... it's about the cosine meaning of the sentence itself which then needs to be chunked and segmented then reranked ... the only actual api ... is jina.ai", then "use tbhb/vale-ai-tells". Drafts that pass the voice gate can still carry phrasing that reads as AI.
+Checked: `bun run check` passes (1295 tests). New tests with a fake embedder: vale's rules catch "I hope this helps" and "delve" and nothing in one of matt's lines, every list gives phrases with vale first, a rule matt uses in 3 of 10 messages is muted, and a draft about a rich tapestry and landscape is flagged past matt's p99 while one of his lines passes. A live Jina embedding and rerank call answered with the key in `.env.local`.

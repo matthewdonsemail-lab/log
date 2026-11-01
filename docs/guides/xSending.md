@@ -25,6 +25,7 @@ When the owner asks for one of these, follow its page step by step.
 | Tool | What it does |
 |---|---|
 | `voice` | Gate a draft against matt's own writing guide with SubQ before it is… |
+| `voiceAiIndex` | Build the AI tells index with Jina and measure matt's own messages… |
 | `voiceIndex` | Build matt's voice per chat and person from the conversations log… |
 | `twitterReply` | Reply to one post on X with approved copy, on the direct-API engine |
 | `twitterReplyLive` | Reply to one post on X with approved copy, on the…, live on X |
@@ -247,7 +248,19 @@ Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 112, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `voiceAiIndex`
+
+Build the AI tells index with Jina and measure matt's own messages against it.
+Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing
+log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; rule 112)
+Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.
+--with names the chat or person the way matt says it ("the log group", "jilly", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass).
+Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 112, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `voiceIndex`
 
@@ -259,7 +272,7 @@ Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads
 Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 30, 39, 41, 63, 64, 98, 112, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterReply`
 
@@ -649,3 +662,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 110.** 2026-11-02 · matt: "we need to be faster with the mcp commands ... why is it taking so long for something which is not even something that should take long". Reads on an X account are spaced 0.8 to 2.5 s after the last call (`READ_SPACING_SECONDS`: inbox, a person's thread, notifications and their pages, follows, followers), the way X's own app fires reads back to back when a screen opens; only sends keep rule 104's 4 to 11 s (`SPACING_SECONDS`). Still one call per account at a time through its one session (rules 104, 105). Reading a person's full context (rule 109) pulls notifications only when they weren't synced in the last 2 minutes (`notificationsFresh`). A queue run never sends two things closer than its minGap, and items added to it keep that gap.
 
 **Rule 111.** 2026-11-02 · matt: find GitHub repos "good for claude watermarking ... so we're able to pass it through context into the sends so that we can see how likely it is to be watermarked". Claude's own watermark is statistical (word choice under a secret key) and Anthropic's text detector is private preview, so no public repo can score it (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`). What can be read is what AI chat interfaces leave in text: `OfirYC/claude-watermark-checker` is vendored at `vendor/claudeArtifactDetector` (MIT, no dependencies) and every send's copy is read by it (`watermarkReadingOf`, `src/twitter/copy/watermark`): `clean`, `stylistic` (curly quotes, em dashes) or `artifacts` (zero-width or other hidden characters, odd spaces, pasted Claude HTML), with `statistical: unknown` always said. `planSend` refuses a send with artifacts (`aiArtifacts`) and carries the reading in its plan; `log voice` shows it and fails a draft with artifacts; a direct send and each queue send log it.
+
+**Rule 112.** 2026-11-02 · matt: "there is definitely a dictionary of the common phrases which we can then have a p99 p50 search across to basically see and match the likelihood of this here to the common AI phrase ... use tbhb/vale-ai-tells". The voice gate also reads a draft for AI phrasing. The lists live in `vendor/aiTells` (`SOURCES.md`): tbhb/vale-ai-tells first (its 130 rules run on the draft exactly as Vale would), then FeedHive/ai-slop-detector, SanderFrentz/ai-vocabulary, SicariusSicariiStuff/SLOP_Detector, real AI-written samples, and fsu-nlp/lexa-index's words Claude and GPT overuse. `log voice aiIndex` embeds every literal phrase with Jina (`jina-embeddings-v3`, `JINA_API_KEY` in `.env.local`) and measures matt's own replies from the voice index against them: his p50 and p99 closeness, and the vale rules he uses himself in over 2% of his messages, which are muted. Each draft is cut into lines and word windows, every chunk's closest AI phrase found by cosine, the closest reranked with `jina-reranker-v2-base-multilingual`, and the draft fails when a vale rule hits or it sits closer to AI phrasing than matt's own p99. `src/voice/aiTells`.
