@@ -138,7 +138,7 @@ export function buildQueue(input: { account: string; action: QueueAction; target
   const shuffled = shuffle(pool, seededRandom(input.seed))
   let next = 0
   const items: QueueItem[] = input.targets.map((target, i) => {
-    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const }
+    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const, draftedAt: input.now.toISOString() }
     if (input.action === 'dm') {
       if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a dm queue needs each recipient's id`)
       return { ...base, userId: String(target.userId) }
@@ -291,6 +291,30 @@ export function addToQueue(queue: Queue, addition: QueueAddition, rng: Rng, now:
   spaceOut(queue.randomRun.events.filter((e) => !e.done && !e.skipped), minGap, new Set(events))
   queue.approval = approveQueue(queue, addition.approvedBy, now).approval
   return events
+}
+
+export function editItem(queue: Queue, n: number, text: string, by: string, rng: Rng, now: Date, window = '30m'): PlanEvent | null {
+  const item = queue.items.find((i) => i.n === n)
+  if (!item) throw new Error(`#${n} isn't in this queue`)
+  if (item.status !== 'pending' && item.status !== 'held') throw new Error(`#${n} is ${item.status}: only a pending or held item can be edited`)
+  if (!text.trim()) throw new Error('the new text is empty')
+  const wasHeld = item.status === 'held'
+  item.text = text.trim()
+  item.draftedAt = now.toISOString()
+  item.status = 'pending'
+  delete item.heldFor
+  delete item.result
+  let event: PlanEvent | null = null
+  if (queue.randomRun && (wasHeld || !queue.randomRun.events.some((e) => e.n === n && !e.done && !e.skipped))) {
+    const minGap = queue.randomRun.minGap
+    const pending = queue.randomRun.events.filter((e) => !e.done && !e.skipped).map((e) => new Date(e.at).getTime() / 1000)
+    const [at] = fitTimes(pending, 1, now.getTime() / 1000 + 30, parseSpan(window), minGap, rng, true)
+    event = { n, kind: 'reply', at: new Date(Math.round(at) * 1000).toISOString() }
+    queue.randomRun.events.push(event)
+    spaceOut(queue.randomRun.events.filter((e) => !e.done && !e.skipped), minGap, new Set([event]))
+  }
+  queue.approval = approveQueue(queue, by, now).approval
+  return event
 }
 
 export function takeIncoming(path: string): QueueAddition[] {

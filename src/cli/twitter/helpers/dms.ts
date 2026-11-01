@@ -5,7 +5,8 @@ import { saveConversations, twitterConversationOf } from "../../../search/conver
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
-import { dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
+import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
+import { notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
@@ -123,12 +124,21 @@ export const dmsCommand: Command = {
         context.err(`${opened.account.accountName}: reading @${needle}'s conversations only (their DM thread, then their X Chat the way X's app opens a chat: GetInboxPageConversationDataQuery, then older pages)${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
         const person = await read({ limit, withHandle: needle });
         if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
-        if (!person.answer.messages?.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation with this account`);
-        const answer = { ...person.answer, messages: dropMirrors(person.answer.messages).slice(-limit) };
-        const merged = { ...person, answer };
-        if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer }, null, 2) };
+        const answer = { ...person.answer, messages: dropMirrors(person.answer.messages ?? []).slice(-limit) };
+        context.err(`${opened.account.accountName}: and what @${needle} did on the account's posts (its notifications, what is new read first)`);
+        const notes = await opened.engine({ action: "notifications", screenName: opened.account.accountName });
+        const store = readNotificationStore(notes.answer.storePath ?? notificationStorePath(opened.account.accountName));
+        const otherId = answer.messages.find((m) => !m.fromMe)?.senderId ?? null;
+        const activity = activityOf(Object.values(store?.rows ?? {}), { userId: otherId, handle: needle }).slice(0, 30);
+        if (!answer.messages.length && !activity.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation with this account and nothing of theirs is in its notifications`);
+        const merged = { ...notes, answer: { ...answer, governor: notes.answer.governor ?? answer.governor } };
+        if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...answer, activity, notificationsRead: notes.answer.ok === true }, null, 2) };
         const governor = governorLine(merged);
-        return { code: answer.ok ? 0 : 1, stdout: [render(opened.account.accountName, answer, false), ...(governor ? [governor] : [])].join("\n") };
+        const thread = answer.messages.length ? render(opened.account.accountName, answer, false) : `log twitter dms: @${opened.account.accountName} has no conversation with @${needle} yet`;
+        const activityLines = activity.length
+          ? [`  what @${needle} did on your posts, newest first (${activity.length}):`, ...activity.map((r) => `    ${activityLine(r)}`)]
+          : [`  @${needle} hasn't liked, retweeted, replied to, quoted, mentioned or followed you in the notifications kept${notes.answer.ok ? "" : ` (the notifications read failed: ${notes.answer.code ?? "?"}, so this is from what was kept)`}`];
+        return { code: answer.ok ? 0 : 1, stdout: [thread, ...activityLines, ...(governor ? [governor] : [])].join("\n") };
       }
       context.err(`${opened.account.accountName}: ${convoId ? `conversation ${convoId}` : "inbox"} read on the direct-API engine, X called directly${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
       const raw = await read({ limit, ...(typeof convoId === "string" ? { conversationId: convoId } : { export: true, ...(full ? { full } : {}) }) });

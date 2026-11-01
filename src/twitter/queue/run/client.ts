@@ -165,6 +165,19 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     const ready = event.kind === 'like' && item.sentAtRun === plan.planned ? 'sent' : 'pending'
     if (item.status !== ready) return halt(`#${event.n} is ${item.status}, not ready for its ${event.kind}: plan it again`)
     if (deps.cancelled?.()) return stop(`before ${event.kind} #${event.n}`)
+    if (event.kind === 'reply' && deps.contextChanged) {
+      const changed = await deps.contextChanged(item)
+      if (changed.length) {
+        item.status = 'held'
+        item.heldFor = changed
+        item.result = `contextChanged: ${changed.length} new since the draft`
+        event.skipped = 'held'
+        dropPost(todo, event.n, 'held')
+        deps.alert(`HELD #${event.n} @${item.handle ?? '?'}: something happened with them since the draft, so it wasn't sent. Redraft it from their full context (\`twitterDms\` { with }) and put it back with \`twitterQueueEdit\`. What changed: ${changed.join(' | ')}`, false)
+        deps.save()
+        continue
+      }
+    }
     send({ type: event.kind === 'like' ? 'LIKE_DUE' : 'REPLY_DUE' })
     const answer = await deps.send(item, event.kind)
     const now = new Date(deps.nowMs()).toISOString()

@@ -28,6 +28,7 @@ export interface RunDeps {
   alert: (message: string, mention: boolean) => void
   takeNudge: () => number
   takeAdded?: () => PlanEvent[]
+  contextChanged?: (item: QueueItem) => Promise<string[]>
   keepOpen?: boolean
   save: () => void
   cancelled?: () => boolean

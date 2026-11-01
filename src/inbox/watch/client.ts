@@ -259,7 +259,7 @@ function twitterContext(messages: readonly InboxMessage[]): string {
   const { platform, account } = messages[0]
   return [
     `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each person:`,
-    `  1. Read everything with them, the old DM thread and X Chat merged (one conversation, whichever id a message names): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
+    `  1. Read their full context right now, the old DM thread and X Chat merged (one conversation, whichever id a message names) and what they did on the account's posts (likes, retweets, replies, quotes), all in one call (rule 109): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
     '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } (no text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
     `  3. Gate it against the same person: \`voice\` { to, with, context, text: "<draft>" }. Rewrite until it passes.`,
     `  4. ${SEND_RULE} One reply goes straight out with \`twitterDmLive\` { account: "${account}", userId: "<id>", text: "<draft>", approvedBy: "matt", confirmLive: true }; more than one goes into the account's one running queue (\`twitterQueueAdd\`, rule 107). Every step is the log MCP tool, never a hand-run command (rule 106).`,

@@ -1355,6 +1355,28 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       Only a meeting, a promise, a price or money, or a conversation that
       can't be placed waits for him. Hook times are in matt's own clock.
 
+109. 2026-11-01 · matt: "before you do an action with someone, you need to
+    figure out the context of that person ... if they liked something, if
+    they commented on something, if they replied to them recently, if I
+    send them a message outside of the tool". Full context at the time of
+    sending, every time, through the tool:
+    - **Before drafting,** `log twitter dms --with <handle>` (MCP
+      `twitterDms` { with }) gives the whole thread, read from X so it holds
+      what matt sent from anywhere, and what that person did on the
+      account's posts (likes, retweets, replies with their words, quotes,
+      mentions, follows), from a fresh notifications read
+      (`activityOf`, `src/twitter/dm/person`). Someone who already did the
+      action is thanked for it, never asked for it.
+    - **Right before each send,** the queue run reads both again and holds
+      the item (status `held`, `heldFor` saying what changed) when anything
+      happened since it was drafted (`draftedAt`): a message either way, a
+      like, retweet, reply, quote, mention or follow
+      (`contextChangesSince`, `contextChanged` in `src/twitter/queue/run`).
+    - **A held item** is redrafted from the new context, gated, and put back
+      with `log twitter queue edit <queue> --n --text --by` (MCP
+      `twitterQueueEdit`). A queue file is never edited by hand, and nothing
+      is sent around the queue to get past a hold (rule 106).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

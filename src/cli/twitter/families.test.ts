@@ -135,7 +135,8 @@ describe("log twitter dms", () => {
     const r = await h.run(["twitter", "dms", "--account", "xTwo", "--with", "@alex"]);
     expect(r.code).toBe(0);
     expect(r.out.indexOf("@alex: very cool")).toBeLessThan(r.out.indexOf("@alex: let me talk to the team"));
-    expect(h.calls).toEqual([{ action: "inbox", limit: 20, withHandle: "alex" }]);
+    expect(h.calls).toEqual([{ action: "inbox", limit: 20, withHandle: "alex" }, { action: "notifications", screenName: "xTwo" }]);
+    expect(r.out).toContain("hasn't liked, retweeted, replied to, quoted, mentioned or followed you");
     expect((await h.run(["twitter", "dms", "--account", "xTwo", "--with", "nobody"])).err).toContain("targetMissing");
   });
 });
@@ -301,7 +302,9 @@ describe("log twitter queue", () => {
     const queue = loadQueue(f.queue);
     expect(queue.items.map((i) => i.status)).toEqual(["sent", "gone", "sent"]);
     expect(h.calls.filter((c) => c.tweetUrl === POST_C)).toHaveLength(2);
-    expect(h.calls.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
+    const sends = h.calls.filter((c) => c.action !== "notifications" && c.action !== "inbox");
+    expect(sends.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
+    expect(h.calls.filter((c) => c.action === "notifications")).toHaveLength(4);
     expect(r.err).toContain("cool-off 1 of 5");
     expect(r.err).toMatch(/trying again at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
     expect(r.err).toMatch(/state +cooling/);
@@ -329,7 +332,7 @@ describe("log twitter queue", () => {
     const r = await h.run(["twitter", "queue", "run", f.queue, "--live"]);
     expect(r.code).toBe(5);
     expect(r.out).toContain("halted");
-    expect(h.calls).toHaveLength(1);
+    expect(h.calls.filter((c) => c.action !== "notifications" && c.action !== "inbox")).toHaveLength(1);
     expect(loadQueue(f.queue).items.filter((i) => i.status === "pending")).toHaveLength(3);
   });
 
