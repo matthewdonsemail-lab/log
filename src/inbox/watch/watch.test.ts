@@ -61,7 +61,7 @@ describe("inbox watch", () => {
     expect(text).toContain(">>> NEW MESSAGE (1)");
     expect(text).toContain(">>> NEW DISCORD MESSAGE (1)");
     expect(text).toContain("VIBE BOT on discord sourcedandsoldtothehighestbidder (replied to you in a server channel)");
-    expect(text).toContain("log discord send --account sourcedandsoldtothehighestbidder --channel <channel>");
+    expect(text).toContain("`discordSendLive` { account: \"sourcedandsoldtothehighestbidder\", channel: \"<channel>\"");
   });
 });
 

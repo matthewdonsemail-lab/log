@@ -595,13 +595,13 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | UserPromptSubmit | every turn | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | where every open browser is, with each of matt's prompts |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/storage.ts`](../scripts/hooks/storage.ts) | ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start |
 | UserPromptSubmit | every turn | [`scripts/hooks/storage.ts`](../scripts/hooks/storage.ts) | the same storage check with each of matt's prompts (measured at most every 15 minutes) |
-| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/engines.ts`](../scripts/hooks/engines.ts) | which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines; and, loudly, when the log MCP server runs older code than the checkout |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/engines.ts`](../scripts/hooks/engines.ts) | which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 106) |
 | UserPromptSubmit | every turn | [`scripts/hooks/engines.ts`](../scripts/hooks/engines.ts) | the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/knowledge.ts`](../scripts/hooks/knowledge.ts) | the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93) |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply |
 | UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
-| PreToolUse | `Bash\|PowerShell\|Monitor` | [`scripts/hooks/liveLogs.ts`](../scripts/hooks/liveLogs.ts) | a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26) |
+| PreToolUse | `Bash\|PowerShell\|Monitor` | [`scripts/hooks/liveLogs.ts`](../scripts/hooks/liveLogs.ts) | a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26); any log action run by hand from a shell is refused and pointed at its MCP tool (rule 106) |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
@@ -620,7 +620,7 @@ sequenceDiagram
   Agent->>Hook: SessionStart
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
-  Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout
+  Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 106)
   Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93)
   Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
   matt->>Agent: a prompt
@@ -631,7 +631,7 @@ sequenceDiagram
   Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
   loop each tool call
     Agent->>Hook: PreToolUse
-    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
+    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)#59; any log action run by hand from a shell is refused and pointed at its MCP tool (rule 106)
     alt a log run piped through tail/head
       Hook-->>Agent: refused (exit 2), run it live
     else
