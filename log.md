@@ -10477,3 +10477,26 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every X GraphQL call now uses X's live operation id and exactly the feature switches X's own client sends, with X's values. `log twitter session webClient` loads x.com/home with twikit's own page headers (it had sent the API headers and got 401), saves X's signed-in responsive-web scripts, and writes their operation table (104 operations: queryId, type, feature switches) and the page's switch values (47) to `~/.logCli/twitter/xOperations.json` (`live_operations_of`). Every session loads it (`load_live_operations`) and twikit's `gql_get` and `gql_post` take the live id and switches (`live_call`, `set_live_operations`). A closing X session closes its server and every open connection and exits at once, instead of `async with server` waiting forever on an open X Chat watch while its port is already shut (`writers`). `docs/platforms/x/compose.md` holds the finding; rule 113 and the xPosting skill say to send what X's client sends.
 Why: matt asked what is hitting the session and for rea on X's bundle to find the exact actions. X's signed-in main.js (main.1e03d4dd38cf6a4fa.js) showed twikit calling 22 of X's operations by old ids, CreateTweet `SiM_cAu83R0wnrpmKQQSEw` where X sends `l4hk8uVGvR-a8kzQ4nOhPA`, with 21 feature switches where X sends 39 (26 missing, 8 X dropped), so every reply was a call X's current client never makes; the 226s came on replies. Twice tonight a call met `xSessionHostDown` because the closing session was stuck half-closed by the watch.
 Checked: `bun run check` passes (1298 tests); new twikit tests: a call takes the live id and only the live switches with their values, and nothing changes without live operations. Live: webClient read matthewsoldit's client (homeStatus 200, 3 scripts) and wrote 104 operations; CreateTweet resolves to `l4hk8uVGvR-a8kzQ4nOhPA` with 39 switches.
+
+## 2026-11-01 19:58Z · feat/queueInContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `AGENTS.md`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/reference.md`: edited
+- `scripts/hooks/queue.ts`: added const raw, const event, const text
+- `src/agentHooks/registry/index.ts`: added const QUEUE · changed const AGENT_HOOKS
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/queue/events/client.ts`: added function queuesRoot, const offsetsPath, function readOffsets, function eventOf, function newQueueEvents, function queueContext
+- `src/twitter/queue/events/events.test.ts`: added test "only what happened since the last look reaches the agent, held and cooling said loudly"
+- `src/twitter/queue/events/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/queue/events/types.ts`: added type QueueEventKind, interface QueueEvent, const QUEUE_EVENT_PATTERNS
+- `src/twitter/queue/index.ts`: added export from "./events/index.ts"
+
+What changed: a queue hook, `scripts/hooks/queue.ts`, on SessionStart, every prompt and every log tool or shell call (written to `.claude/settings.json` and `.codex/hooks.json` from the registry). It reads every queue's log since the last look (`newQueueEvents`, offsets kept in `~/.logCli/queues/.hookOffsets.json`, `src/twitter/queue/events`) and puts each held item, send, cool-off with X's answer, stop, cancel and start into the agent's context as `>>> QUEUE`, with what to do: a held item is redrafted from what changed, gated and put back (rule 109); a cool-off or stop means nothing more goes out until matt says so (rule 94). Rule 114.
+Why: matt: "the queue will always need to be in context ... are we using the queue as a monitor or as a background pid that then isn't being inserted into context via the hooks". A queue run is a job inside the MCP server, and nothing told the agent what it did: jamesfuller_dev's held item sat until the log was read by hand, and the 226 cool-off was only seen by looking.
+Checked: `bun run check` passes (1299 tests, `check:agentHooks` with 16 hooks on both hosts); a new test sees only what was written since the last look, says the held item and the cool-off loudly, and nothing twice.
