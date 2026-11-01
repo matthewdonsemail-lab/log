@@ -7,6 +7,7 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [recruiting.md](recruiting.md) | find people posting that they want work, reply with the job link | replies, through the queue |
 | [topicReplies.md](topicReplies.md) | reply to everyone posting about one topic, each reply about their own post | replies, through the queue |
 | [engagementReplies.md](engagementReplies.md) | answer the people who commented on your own posts | replies, through the queue |
+| [notifications.md](notifications.md) | see who liked, reposted, replied to, quoted or followed, new and historical | nothing |
 | [engagerDms.md](engagerDms.md) | DM the people who liked or reposted your post | dms, through the queue |
 | [dmInbox.md](dmInbox.md) | read the DM inbox and list who is waiting on you | nothing |
 | [affiliateMarketing.md](affiliateMarketing.md) | follow up the conversations about a tool you use, with your affiliate credit where it helps, and book the partner call | dms, one by one or through the queue |

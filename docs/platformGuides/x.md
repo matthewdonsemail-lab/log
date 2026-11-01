@@ -55,6 +55,7 @@ The full steps: [Adding an account](../accounts.md).
 - [Checking who really follows you](../useCases/twitter/followers.md)
 - [Following up in your own voice](../useCases/twitter/followUps.md)
 - [Answering the people who engaged with your posts](../useCases/twitter/engagementReplies.md)
+- [Seeing who engaged with your posts](../useCases/twitter/notifications.md)
 - [DMing the people who liked or reposted your post](../useCases/twitter/engagerDms.md)
 - [Replying to everyone posting about one topic](../useCases/twitter/topicReplies.md)
 - [Recruiting with a reply queue](../useCases/twitter/recruiting.md)

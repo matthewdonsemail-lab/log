@@ -9937,3 +9937,44 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: below 1024px the Socials section is a light stacked version (photo and headline, then the full Octolens vs ListeningKit comparison in normal flow, started when in view) instead of the pinned scroll effect, and the comparison wordmark shrinks on small screens. Below 768px the 3D platform and how-we-think mocks lie flat (no perspective or tilt), the orbit pop-up card centres on its profile and wraps, and the card text and commands wrap inside their cards. The header pill uses CSS rounded corners instead of rebuilding a squircle clip path every frame. Built with shows the real SubQ, Treg, Twenty and AdsPower logos in brand blue on white tiles, and the setup line and the star-the-repo line use the handwritten, cv-bluekey style.
 Why: matt: the Socials scroll lagged on mobile and cut the comparison off, the 3D sections and pop-ups went out of bounds on phones, card text did not wrap, the header animation was slow, and Built with and two lines did not match the design system.
 Checked: every pre-commit gate but this entry passes and the site typechecks; at 375px nothing in Socials, the platform or how-we-think cards runs off the screen, the comparison plays to the end, and 26 orbit pop-ups stayed inside the card; the logos and restyled lines were checked in the browser.
+
+## 2026-11-01 13:56Z · feat/twitterNotifications
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/platforms.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/logMcpInstructions.md`: edited
+- `docs/guides/xAccount.md`: edited
+- `docs/platformGuides/x.md`: edited
+- `docs/reference.md`: edited
+- `docs/useCases/README.md`: edited
+- `docs/useCases/twitter/README.md`: edited
+- `docs/useCases/twitter/engagerDms.md`: edited
+- `docs/useCases/twitter/notifications.md`: new file
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added def notifications_path, def notifications · changed const READS, def act, def run
+- `python/twitterApi/notifications.py`: added const VERSION, const PAGE_SIZE, const NEWEST_PAGES, def iso_of_ms, def now_iso, def empty_store, def read_store, def write_store, def post_url, def person, def rows_of, def add_rows, const Fetch, const Pace, def sync_notifications
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/runner/helpers/commandIndex.ts`: changed const COMMAND_INDEX
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/twitter/helpers/index.ts`: added export from "./notifications.ts"
+- `src/cli/twitter/helpers/notifications.ts`: added const NOTIFICATIONS_USAGE, const NOTIFICATIONS_INPUT, const KIND_ORDER, const flat, const when, function line, const countsLine, function syncLine, const notificationsCommand
+- `src/cli/twitter/index.ts`: changed export from "./helpers/index.ts"
+- `src/cli/twitter/notifications.test.ts`: added const ROWS, function harness, const SYNCED, test "reads what is new once on the direct-API engine, sends nothing, and shows everyone newest first", test "--full and --pages go to the engine; --type, --since and --post narrow what is shown", test "--stored answers from what is kept and calls nothing", test "a 429 is said and what was kept is still shown", test "a flag it doesn't read is refused before X is called"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/guides.ts`: changed const GUIDE_TOPICS
+- `src/twitter/account/session/types.ts`: changed type TwitterAction, interface TwitterEngineSpec, interface TwitterSessionAnswer
+- `src/twitter/notification/feed/client.ts`: added function notificationStorePath, function readNotificationStore, function isNotificationType, function postIdOf, const newestFirst, function queryNotifications, function countByKind, function engagersOf
+- `src/twitter/notification/feed/feed.test.ts`: added const python, const SCRIPT, const ROWS, const STORE, test "a page keeps every person behind an aggregated notification and both cursors", test "the first read takes the newest pages up to --pages, one governor check between pages, and keeps one row per person per thing", test "a read with nothing new stops at the first page it already holds", test "--full goes on from where the first read stopped to the end of what X gives, and never keeps the account's own action", test "a 429 stops the read there and keeps what came before it", test "filters by kind, date and post, newest first", test "counts by kind and ranks the people who engaged most", test "a post is its id or its url"
+- `src/twitter/notification/feed/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/notification/feed/types.ts`: added type NotificationKind, const NOTIFICATION_TYPES, type NotificationType, interface TwitterNotification, interface NotificationStore, interface NotificationSync, interface NotificationQuery, interface NotificationEngager
+- `src/twitter/notification/index.ts`: added export from "./feed/index.ts"
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/notification.py`: added const NOTIFICATION_KINDS, def _user_brief, def _tweet_brief, def parse_notifications_page
+
+What changed: `log twitter notifications --account <a> [--type likes|reposts|replies|quotes|follows|all] [--since] [--post] [--full] [--pages] [--stored] [--limit] [--json]` (MCP `twitterNotifications`) reads the account's X notifications on the direct-API engine and keeps them in `~/.logCli/twitter/<account>/notifications.json`, one row per person per thing they did (like, repost, reply, quote, follow, mention), with which of the account's posts, when, and the reply or quote text. twikit gets `Client.get_notifications_page` and `parse_notifications_page`, which keep every person behind an aggregated notification and the reply, quote and mention tweet entries that twikit's `get_notifications` dropped. The engine action `notifications` reads what is new (the newest page, then older until it meets kept rows), and `--full` pages back through the history from where the last one stopped; pages are 40, at least 2 s apart, each through the governor, and a 429 or governor stop ends the read and keeps what came. `--stored` answers from the kept rows without calling X; `--json` adds counts by kind and the people ranked by how much they engaged. New use case `docs/useCases/twitter/notifications.md`, `engagerDms.md` step 1 now uses it, error `notificationQueryInvalid`, X's `cursor-top-<n>` / `cursor-bottom-<n>` entry ids allowed by the naming check.
+Why: matt posted his YC video and people are liking and replying; he wants to see all of it, past and new, from the notifications, and use it from the MCP so an agent can act on who engaged.
+Checked: `bun run check` passes after `errors:export` (1230 tests; the new ones parse a raw notifications page, page first/newest/full with a fake client, stop on a 429, and drive the command with no network). Live, read-only on matthewsoldit: 3 pages, 131 rows kept (71 like, 4 repost, 20 reply, 28 follow, 8 mention, back to 2026-10-27), no 429; the YC post had 5 likes, 2 replies and 1 repost in that window. The history (`--full`) wasn't read, to keep the read small while another session sends on the account.

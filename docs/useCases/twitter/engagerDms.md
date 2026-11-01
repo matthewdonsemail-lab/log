@@ -13,7 +13,7 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
-| 1 | Who liked and reposted the post. X only shows likers of your own post to your own session | treg's likers read (paid per person, so short lists only), or a read on the account's own session | the list, with each person's user id |
+| 1 | Who liked and reposted the post. X only shows likers of your own post to your own session | `twitterNotifications` { account, type: "likes", post } and again with type "reposts" (the account's own session, free; [notifications.md](notifications.md)); treg's likers read for anything older than the notifications reach | the list, with each person's user id |
 | 2 | Score them: their bio matches who you want, they reposted (a bonus) or engaged with more than one post, and a sensible follower count. Few followers and no bio is a bot | treg's X profile read | a ranked list |
 | 3 | The owner checks the top of the list: drop the team, people they don't want to contact, and friends (friends get a personal note, not a template) | a table | the owner's corrections applied |
 | 4 | Check for an existing thread with each person, and DMs already waiting | `twitterDms` { account, limit: 200 } | no one gets a cold template where a chat already exists |
@@ -44,6 +44,3 @@ Never: "saw you're `<bio thing>`", their name, made-up camaraderie, or "thanks f
 - A DM only lands if the person accepts DMs from accounts they don't follow. X answers otherwise, and the queue logs it and moves on.
 - Some chats live in X's encrypted Chat. `twitterDms` reads them once the account's X Chat PIN is saved, and step 4 must include them: a person you already talk to in X Chat never gets a cold template. A send still goes out as an old-style DM, which shows in their X Chat too.
 
-## Not built yet
-
-- A `log twitter` read for a post's likers and reposts on the account's own session. Today it's treg (paid per person) or a script on the session.

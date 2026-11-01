@@ -17,7 +17,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "xchatContacts", "xchatUnlock", "xchatWatch")
+READS = ("ping", "follows", "inbox", "followers", "notifications", "xchatContacts", "xchatUnlock", "xchatWatch")
 WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
 ACTIONS = READS + WRITES
 
@@ -740,6 +740,44 @@ async def xchat_contacts(client: Any, cookies: dict[str, str]) -> dict[str, Any]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversations": len(convs), "contacts": sorted(contacts)}
 
 
+def notifications_path(account: str) -> Path:
+    return state_dir(account) / "notifications.json"
+
+
+async def notifications(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any) -> dict[str, Any]:
+    from governor import GovernorBlockedError
+    from twikit.errors import TooManyRequests
+
+    from twitterApi.notifications import PAGE_SIZE, read_store, sync_notifications
+
+    me = own_user_id(cookies) or ""
+    path = notifications_path(str(spec["account"]))
+    full = spec.get("full") is True
+    max_pages = max(1, min(int(spec.get("pages") or (25 if full else 5)), 200))
+    seconds = max(2.0, float(spec.get("seconds") or 3))
+
+    async def fetch(cursor: str | None) -> dict[str, Any]:
+        return await client.get_notifications_page("All", PAGE_SIZE, cursor)
+
+    def pace() -> None:
+        if governor is not None:
+            governor.before_request(is_mutation=False, quiet=True)
+
+    def log(line: str) -> None:
+        print(f"notifications: {line}", file=sys.stderr, flush=True)
+
+    base = {"loginState": "loggedIn", "userId": me, "storePath": str(path)}
+    try:
+        sync = await sync_notifications(fetch, pace, path, me, spec.get("screenName"), full, max_pages, seconds, log)
+    except TooManyRequests as e:
+        held = read_store(path) or {"rows": {}}
+        return {**base, "ok": False, "code": "rateLimited", "event": "throttled", "detail": f"X answered 429 to a notifications page: the read stopped there, {len(held['rows'])} rows are kept ({redact(e, cookies)[:160]})", "rateLimitReset": getattr(e, "rate_limit_reset", None)}
+    except GovernorBlockedError as e:
+        held = read_store(path) or {"rows": {}}
+        return {**base, "ok": False, "code": "governorBlocked", "detail": f"the governor stopped the notifications read between pages: {e}; {len(held['rows'])} rows are kept"}
+    return {**base, "ok": True, "notificationSync": sync}
+
+
 def live_line(event: dict[str, Any]) -> None:
     print(json.dumps({"liveEvent": event}, default=str), flush=True)
 
@@ -853,7 +891,7 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
-async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dict[str, Any]:
+async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any = None) -> dict[str, Any]:
     action = spec["action"]
     if action == "ping":
         return await ping(client, cookies)
@@ -866,6 +904,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any]) -> dic
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
     if action == "followers":
         return await followers(client, cookies, max(1, min(int(spec.get("limit") or 200), 4000)))
+    if action == "notifications":
+        return await notifications(client, cookies, spec, governor)
     if action == "xchatContacts":
         return await xchat_contacts(client, cookies)
     if action == "xchatUnlock":
@@ -930,7 +970,7 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
     if own_user_id(cookies):
         client._user_id = own_user_id(cookies)
     try:
-        out = await act(client, cookies, spec)
+        out = await act(client, cookies, spec, governor)
     except TooManyRequests as e:
         out = {"ok": False, "code": "rateLimited", "event": "throttled", "detail": redact(e, cookies), "rateLimitReset": getattr(e, "rate_limit_reset", None)}
     except Exception as e:

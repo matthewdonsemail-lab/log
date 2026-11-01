@@ -1,3 +1,5 @@
+import type { NotificationSync } from '../../notification/feed/types'
+
 export type TwitterLoginState = 'loggedIn' | 'loggedOut' | 'restricted' | 'unknown'
 
 export interface TwitterGovernor {
@@ -9,7 +11,7 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'repost' | 'dm' | 'follow' | 'post'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'notifications' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'repost' | 'dm' | 'follow' | 'post'
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post']
 
@@ -32,6 +34,8 @@ export interface TwitterEngineSpec {
   full?: boolean
   seconds?: number
   media?: string[]
+  pages?: number
+  screenName?: string
 }
 
 export interface TwitterInboxSync {
@@ -161,6 +165,8 @@ export interface TwitterSessionAnswer {
   followers?: TwitterFollower[]
   complete?: boolean
   contacts?: string[]
+  storePath?: string
+  notificationSync?: NotificationSync
 }
 
 export interface TwitterEngineRun {

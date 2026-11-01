@@ -188,8 +188,15 @@ export const ERROR_CATALOG = {
     layer: 'twitter',
     meaning: 'The --limit given to log twitter dms is not a whole number from 1 to 200.',
     retryable: false,
-    raisedIn: ['cli/twitter/dms', 'cli/twitter/followers'],
+    raisedIn: ['cli/twitter/dms', 'cli/twitter/followers', 'cli/twitter/notifications'],
     action: 'Give --limit as a whole number from 1 to 200, or leave it out for 20.'
+  },
+  notificationQueryInvalid: {
+    layer: 'twitter',
+    meaning: "A flag given to log twitter notifications isn't one it reads: --type is likes, reposts, replies, quotes, follows or all; --since a date; --post a post id or url; --pages a whole number from 1 to 200.",
+    retryable: false,
+    raisedIn: ['cli/twitter/notifications'],
+    action: 'Give the flag in one of those forms, or leave it out.'
   },
   voiceGuideMissing: {
     layer: 'twitter',
