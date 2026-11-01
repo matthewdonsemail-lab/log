@@ -1019,7 +1019,7 @@ def append_live(account: str, event: dict[str, Any]) -> None:
 
 
 def notification_rose(before: dict[str, Any] | None, after: dict[str, Any]) -> bool:
-    return before is not None and int(after.get("ntab_unread_count") or 0) > int(before.get("ntab_unread_count") or 0)
+    return int(after.get("ntab_unread_count") or 0) > int((before or {}).get("ntab_unread_count") or 0)
 
 
 async def new_notifications(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any) -> list[dict[str, Any]]:
@@ -1031,7 +1031,23 @@ async def new_notifications(client: Any, cookies: dict[str, str], spec: dict[str
     if not answer.get("ok"):
         return [{"type": "notificationsRefused", "code": answer.get("code"), "detail": answer.get("detail")}]
     rows = (read_store(path) or {"rows": {}})["rows"]
-    return [{"type": "notification", **row} for key, row in rows.items() if key not in before]
+    return [{"type": "notification", **row} for key, row in rows.items() if key not in before and live_worthy(row, before)]
+
+
+LIVE_KINDS = ("like", "repost", "reply", "quote", "mention", "follow")
+LIVE_WINDOW_SECONDS = 24 * 3600
+
+
+def live_worthy(row: dict[str, Any], before: set[str], now: float | None = None) -> bool:
+    from datetime import datetime
+
+    if not before or row.get("kind") not in LIVE_KINDS:
+        return False
+    try:
+        at = datetime.fromisoformat(str(row.get("at")).replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return False
+    return (now if now is not None else time.time()) - at <= LIVE_WINDOW_SECONDS
 
 
 async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any, every: float = BADGE_POLL_SECONDS) -> None:
