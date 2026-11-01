@@ -61,6 +61,7 @@ flowchart TB
     c_twitterChat["chat"]
     c_twitterCookies["cookies"]
     c_twitterFollowers["followers"]
+    c_twitterNotifications["notifications"]
     c_twitterReply["reply"]
     c_twitterQuote["quote"]
     c_twitterPost["post"]
@@ -197,6 +198,8 @@ flowchart TB
   mcp --> c_kb
   cli --> c_twitterFollowers
   mcp --> c_twitterFollowers
+  cli --> c_twitterNotifications
+  mcp --> c_twitterNotifications
   cli --> c_twitterReply
   mcp --> c_twitterReply
   cli --> c_twitterQuote

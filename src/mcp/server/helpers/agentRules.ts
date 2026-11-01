@@ -97,6 +97,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
+  twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterPost: [8, 13, 63, 64, 73, 80, 81, 86, 94, 104, 105],

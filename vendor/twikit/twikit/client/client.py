@@ -44,7 +44,7 @@ from ..geo import Place, _places_from_response
 from ..group import Group, GroupMessage
 from ..list import List
 from ..message import Message
-from ..notification import Notification
+from ..notification import Notification, parse_notifications_page
 from ..streaming import Payload, StreamingSession, _payload_from_data
 from ..trend import Location, PlaceTrend, PlaceTrends, Trend
 from ..tweet import CommunityNote, Poll, ScheduledTweet, Tweet, tweet_from_data
@@ -4462,6 +4462,26 @@ class Client:
             partial(self.get_notifications, type, count, next_cursor),
             next_cursor
         )
+
+    async def get_notifications_page(
+        self,
+        type: Literal['All', 'Verified', 'Mentions'] = 'All',
+        count: int = 40,
+        cursor: str | None = None
+    ) -> dict:
+        """
+        One page of notifications as plain data, read whole
+        (:func:`twikit.notification.parse_notifications_page`): every person
+        behind each notification, the reply, quote and mention tweets, the
+        top cursor (newer) and the bottom cursor (older).
+        """
+        f = {
+            'All': self.v11.notifications_all,
+            'Verified': self.v11.notifications_verified,
+            'Mentions': self.v11.notifications_mentions
+        }[type.capitalize()]
+        response, _ = await f(count, cursor)
+        return parse_notifications_page(response)
 
     async def search_community(
         self, query: str, cursor: str | None = None

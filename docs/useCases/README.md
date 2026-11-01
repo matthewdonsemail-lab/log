@@ -8,6 +8,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Recruiting on X with a reply queue](twitter/recruiting.md) | finds people posting that they want work, replies to each in their language, sent slowly after you approve |
 | X | [Replying to everyone posting about one topic](twitter/topicReplies.md) | one reply per person about their own post, backed by facts you can stand behind |
 | X | [Answering the people who engaged with your posts](twitter/engagementReplies.md) | answers commenters under your post, or on a fresh post of theirs |
+| X | [Seeing who engaged with your posts](twitter/notifications.md) | every like, repost, reply, quote and follow from the account's notifications, new and historical, kept locally, sends nothing |
 | X | [DMing the people who liked or reposted your post](twitter/engagerDms.md) | ranks the likers, you pick, one opening line each, sent as a dm queue |
 | X | [Reading the DM inbox](twitter/dmInbox.md) | who is waiting on you and what they asked, sends nothing |
 | X | [Affiliate marketing through your DMs](twitter/affiliateMarketing.md) | follows up every conversation about a tool you use, with your affiliate credit where it helps, and books the partner call |
