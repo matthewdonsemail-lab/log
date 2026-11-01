@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 105;
+export const RULES_REVIEWED_THROUGH = 106;
 
 export const AGENTS_URI = "log://agents";
 
@@ -38,6 +38,7 @@ export const CORE_PRINCIPLES = [
   "31. LinkedIn is reached only through vendor/openLinkedinApi's one curl_cffi Session pinned to Chrome (`IMPERSONATE`), never plain `requests`, and every call goes through the account's governor; a LinkedIn account writes at most 10 times a day (rule 102).",
   "32. More than one send on an account goes through the queue (`twitterQueueBuild`, plan, run), whose random times space them like a person; never a hand-rolled loop of sends and never helpers reading or sending on the same account in parallel. The X engine takes one call per account at a time (`engine.lock`, `accountBusy` after 15 min), spaces each 4 to 11 s after the last, and keeps the transaction key for 3 hours instead of loading x.com before every call (rule 104).",
   "33. One X session per account, always: every X call (CLI, MCP, hooks, queue, X Chat watch) goes through that account's one engine host (`python/twitterApi/host.py`), which holds one twikit client, one connection and one transaction key, as X's own web app holds one page. A second session can't start (`host.lock`); if the host can't be reached the call is refused loudly (`xSessionHostDown`) and nothing is sent. Never open another session or hand-roll a script to get around it. The hook's account line shows the open session (rule 105).",
+  "34. Every log action goes through these MCP tools, never a hand-run `log …` or `bun bin/log.ts …` from a shell (the shell hook refuses one); only the terminal-only prompts are run in a terminal, by matt. Before changing log-cli code, read what is already changed and uncommitted (the hook says it loudly: `>>> UNCOMMITTED LOCAL CHANGES`) and never overwrite, revert, stage, publish or ship someone else's uncommitted work without matt (rule 106).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 

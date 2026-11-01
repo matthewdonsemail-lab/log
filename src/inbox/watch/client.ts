@@ -163,10 +163,10 @@ function discordContext(messages: readonly InboxMessage[]): string {
   const { account } = messages[0]
   return [
     `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said. Then, for each one:`,
-    `  1. Read the chat around it: \`log discord read --account ${account} --channel <channel> --limit 20\`.`,
-    '  2. Before writing a word, pull how matt really writes in that chat: `log voice --to <who> --with <channel> --context "<what they said>"` (no --text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
-    '  3. Gate it against the same chat: `log voice --to <who> --with <channel> --context "<what they said>" --text "<draft>"`. Rewrite until it passes.',
-    `  4. Show matt the draft and send only when he says (\`log discord send --account ${account} --channel <channel> --text "<draft>" --approvedBy matt --live\`).`,
+    `  1. Read the chat around it: \`discordRead\` { account: "${account}", channel: "<channel>", limit: "20" }.`,
+    '  2. Before writing a word, pull how matt really writes in that chat: `voice` { to: "<who>", with: "<channel>", context: "<what they said>" } (no text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
+    `  4. Show matt the draft and send only when he says (\`discordSendLive\` { account: "${account}", channel: "<channel>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
     ...lines,
   ].join('\n')
 }
@@ -184,10 +184,10 @@ function twitterContext(messages: readonly InboxMessage[]): string {
   const { platform, account } = messages[0]
   return [
     `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said. Then, for each person:`,
-    `  1. Read everything with them, the old DM thread and X Chat merged (one conversation, whichever id a message names): \`log ${platform} dms --account ${account} --with <handle>\`.`,
-    '  2. Before writing a word, pull how matt really writes to them: `log voice --to <handle> --with <handle> --context "<what they said>"` (no --text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
-    `  3. Gate it against the same person: \`log voice --to <handle> --with <handle> --context "<what they said>" --text "<draft>"\`. Rewrite until it passes.`,
-    `  4. Show matt the draft and send only when he says (\`log ${platform} dm --account ${account} --userId <id> --text "<draft>" --approvedBy matt --live\`).`,
+    `  1. Read everything with them, the old DM thread and X Chat merged (one conversation, whichever id a message names): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
+    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } (no text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    `  3. Gate it against the same person: \`voice\` { to, with, context, text: "<draft>" }. Rewrite until it passes.`,
+    `  4. Show matt the draft and send only when he says (\`twitterDmLive\` { account: "${account}", userId: "<id>", text: "<draft>", approvedBy: "matt", confirmLive: true }). Every step is the log MCP tool, never a hand-run command (rule 106).`,
     ...lines,
   ].join('\n')
 }
@@ -234,7 +234,7 @@ export function storedInboxContext(accounts: readonly string[], root: string = t
     parts.push([
       `X inbox for ${account}, from the local store (synced ${syncedAt.slice(0, 16).replace('T', ' ')} UTC, live pushes added since; nothing was fetched for this): ${total} conversation${total === 1 ? '' : 's'} where they wrote last${total > waiting.length ? `, the newest ${waiting.length}` : ''}:`,
       ...waiting.map((w) => `  ${w.with} at ${w.at.slice(0, 16).replace('T', ' ')} UTC: "${w.text.replace(/\s+/g, ' ').slice(0, 160)}" (conversation ${w.conversationId})`),
-      `  \`log twitter dms --account ${account}\` fetches only what is new since then (about 5 s); \`--with <handle>\` reads one person in full.`,
+      `  \`twitterDms\` { account: "${account}" } fetches only what is new since then (about 5 s); with: "<handle>" reads one person in full.`,
     ].join('\n'))
   }
   return parts.length ? parts.join('\n\n') : null

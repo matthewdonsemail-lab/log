@@ -1296,6 +1296,25 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     its own. The hook's account line shows the open session (pid, since,
     calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.
 
+106. 2026-11-01 · matt: "when doing stuff like changing the code or
+    anything, ensure that there hasn't been any changes to it locally, like
+    to the engine ... you're not allowed hand-rolled commands, it always has
+    to be through the MCP basically". Two things, enforced by the hooks:
+    - **Through the MCP only.** Every log action an agent takes goes through
+      the log MCP tools (`mcp__log__…`), never a hand-run `log …` or `bun
+      bin/log.ts …` from a shell. The PreToolUse hook (`liveLogs`,
+      `handRunDenial` in `src/agentHooks/liveLog`) refuses one and names the
+      MCP instead. Only the terminal-only prompts (`TERMINAL_ONLY`: launch,
+      login, mcp, chat pin, cookies save, messenger pin) are run in a
+      terminal, by matt. A stale MCP server is said to matt (restart the
+      app), never worked around.
+    - **Local changes first.** Before changing code, check what is already
+      changed and uncommitted in the checkout. The engines hook says it
+      loudly at session start and whenever it changes (`>>> UNCOMMITTED
+      LOCAL CHANGES`, `localChangesLine` in `src/mcp/freshness`): read each
+      one's diff, and never overwrite, revert, stage, publish or ship
+      someone else's uncommitted work without matt.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
