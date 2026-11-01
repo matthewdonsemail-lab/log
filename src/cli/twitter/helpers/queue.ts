@@ -13,6 +13,8 @@ import {
   linesOf,
   loadQueue,
   lockPathOf,
+  clearDeadLock,
+  liveLock,
   logPathOf,
   nudgePathOf,
   planQueue,
@@ -194,6 +196,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   const opened = await openTwitterAccount(context, "twitter queue run", queue.account);
   if (!opened.ok) return opened.result;
   const lock = lockPathOf(path);
+  clearDeadLock(lock);
   let fd: number;
   try {
     fd = openSync(lock, "wx");
@@ -368,7 +371,7 @@ export const queueCommand: Command = {
           return refuse("twitter queue add", "queueInvalid", error instanceof Error ? error.message : String(error));
         }
         const addition = { action: (flags["action"] as QueueAction | undefined) ?? "reply", targets, approvedBy: flags["by"] as string, window: typeof flags["window"] === "string" ? (flags["window"] as string) : "2h", minGap: flags["minGap"] === undefined ? undefined : wholeFlag(flags, "minGap", 120), at: now.toISOString() };
-        if (existsSync(lockPathOf(file))) {
+        if (liveLock(file)) {
           sendIncoming(file, addition);
           context.err(queueLog(file, `add: ${targets.length} ${addition.action} handed to the running run, approved by ${addition.approvedBy}`, now));
           return { code: 0, stdout: `log twitter queue add: ${targets.length} ${addition.action} handed to the run going on ${file}; it fits them between what is planned and sends them through the account's one X session (log: ${logPathOf(file)}).` };
@@ -392,7 +395,7 @@ export const queueCommand: Command = {
         return fail(error instanceof Error ? error.message : String(error));
       }
       if (replies < 1) return fail("--replies must be at least 1");
-      if (!existsSync(lockPathOf(file))) return refuse("twitter queue nudge", "queueBusy", "no run is going on this queue: start one with queue run --live first");
+      if (!liveLock(file)) return refuse("twitter queue nudge", "queueBusy", "no run is going on this queue: start one with queue run --live first");
       const have = existsSync(nudgePathOf(file)) ? Number(readFileSync(nudgePathOf(file), "utf8").trim() || 0) || 0 : 0;
       writeFileSync(nudgePathOf(file), String(have + replies));
       context.err(queueLog(file, `nudge: send the next ${have + replies} replies now`, now));

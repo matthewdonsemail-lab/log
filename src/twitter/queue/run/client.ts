@@ -2,7 +2,7 @@ import { createActor } from 'xstate'
 import type { InspectionEvent } from 'xstate'
 import type { TwitterSessionAnswer } from '../../account/session/index'
 import type { PlanEvent, Queue, QueueItem, Rng } from '../plan/index'
-import { approvalProblem } from '../plan/index'
+import { approvalProblem, spaceOut } from '../plan/index'
 import { queueRunMachine } from './machine'
 import type { FailureKind, RunDeps, RunEvent, RunResult } from './types'
 import { COOL_BASE_SECONDS, COOL_CAP_SECONDS, DAILY_AFTER, DAY_SECONDS, LATE_SECONDS, MAX_COOLS, POLL_SECONDS } from './types'
@@ -64,21 +64,22 @@ const CANCELLED = -1
 
 const ADDED = -2
 
-export function mergeAdded(todo: PlanEvent[], added: readonly PlanEvent[]): void {
+export function mergeAdded(todo: PlanEvent[], added: readonly PlanEvent[], minGap = 0): void {
   todo.push(...added)
+  if (minGap > 0 && added.length) spaceOut(todo, minGap, new Set(added))
   todo.sort((a, b) => atSeconds(a) - atSeconds(b))
 }
 
-async function waitUntil(deps: RunDeps, dueSeconds: number, todo?: PlanEvent[]): Promise<number> {
+async function waitUntil(deps: RunDeps, dueSeconds: number, todo?: PlanEvent[], minGap = 0): Promise<number> {
   let left = dueSeconds - deps.nowMs() / 1000
   while (left > 0) {
     await deps.sleep(Math.min(POLL_SECONDS, left) * 1000)
     if (deps.cancelled?.()) return CANCELLED
     const added = todo && deps.takeAdded ? deps.takeAdded() : []
     if (added.length) {
-      mergeAdded(todo!, added)
-      deps.log(`added ${added.length} to the queue while it runs, each fitted between what was already planned: ${added.map((e) => `#${e.n} at ${e.at}`).join(', ')}`)
-      if (added.some((e) => atSeconds(e) < dueSeconds)) return ADDED
+      mergeAdded(todo!, added, minGap)
+      deps.log(`added ${added.length} to the queue while it runs, each fitted in its window and what was planned after it moved back to keep the gap: ${added.map((e) => `#${e.n} at ${e.at}`).join(', ')}`)
+      if (added.some((e) => atSeconds(e) < dueSeconds + minGap)) return ADDED
     }
     const nudged = deps.takeNudge()
     if (nudged) return nudged
@@ -149,11 +150,13 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       if (wait < -LATE_SECONDS) return halt(`fell behind: ${event.kind} #${event.n} was due at ${event.at}, plan it again before running`)
       if (wait > 0) {
         deps.log(`[${state()}] next ${event.kind} #${event.n} @${item.handle ?? '?'} at ${event.at}`)
-        nudged = await waitUntil(deps, due, todo)
+        nudged = await waitUntil(deps, due, todo, plan.minGap)
         if (nudged === CANCELLED) return stop(`while waiting for ${event.kind} #${event.n}`)
         if (nudged === ADDED) {
           nudged = 0
-          mergeAdded(todo, [event])
+          const added = todo.filter((e) => atSeconds(e) < due + plan.minGap)
+          todo.push(event)
+          spaceOut(todo, plan.minGap, new Set(added))
           continue
         }
         if (nudged) deps.log(`[${state()}] nudged: ${event.kind} #${event.n} @${item.handle ?? '?'} now (was ${event.at}, ${nudged} replies in the nudge)`)

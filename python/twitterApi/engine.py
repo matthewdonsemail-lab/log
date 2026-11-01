@@ -939,7 +939,7 @@ async def xchat_watch(client: Any, cookies: dict[str, str], spec: dict[str, Any]
         if event.get("type") == "socket":
             live_line({**event, "error": redact(event["error"], cookies)[:200]} if event.get("error") else event)
             continue
-        if event.get("type") not in ("Message", None):
+        if event.get("type") not in ("Message", None) or (event.get("kind") == "MarkRead" and event.get("text") is None):
             continue
         sender = str(event.get("sender_id") or "")
         messages += 1
