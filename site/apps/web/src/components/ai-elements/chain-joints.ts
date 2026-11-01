@@ -34,7 +34,7 @@ const BASE_SUB = 'text-xl sm:text-2xl';
 
 const ICON_40 = '[&>div:first-child>span:first-child]:size-10';
 const UNCLIP = '[&>div:last-child]:overflow-visible';
-const TRUNK_RAIL = '[&>div:first-child>div:last-child]:bottom-auto [&>div:first-child>div:last-child]:h-[64px]';
+const TRUNK_RAIL = '[&>div:first-child>div:last-child]:bottom-auto [&>div:first-child>div:last-child]:h-[var(--trunk-rail,64px)]';
 const ENTRY_RAIL =
   '[&>div:first-child>div:last-child]:mt-0 [&>div:first-child>div:last-child]:bottom-auto [&>div:first-child>div:last-child]:h-[96px]';
 const TERMINAL_RAIL = '[&>div:first-child>div:last-child]:bottom-0';

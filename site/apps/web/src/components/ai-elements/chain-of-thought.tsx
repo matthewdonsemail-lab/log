@@ -158,7 +158,7 @@ export const ChainOfThoughtStep = memo(
             <>
               <motion.svg
                 aria-hidden="true"
-                className="absolute top-5 left-[-29px] z-10"
+                className="absolute top-[13px] left-[-29px] z-10"
                 width="30"
                 height="26"
                 viewBox="0 0 30 26"
@@ -175,7 +175,7 @@ export const ChainOfThoughtStep = memo(
                 />
               </motion.svg>
               <motion.div
-                className={cn("absolute top-[46px] -bottom-6 left-[-29px] w-[2.25px] origin-top", railColor)}
+                className={cn("absolute top-[38px] -bottom-8 left-[-29px] w-[2.25px] origin-top", railColor)}
                 style={accentColor ? { backgroundColor: accentColor } : undefined}
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: status === "complete" ? 1 : 0 }}

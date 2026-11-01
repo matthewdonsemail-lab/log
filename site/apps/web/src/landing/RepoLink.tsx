@@ -131,7 +131,7 @@ export const RepoLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLA
 })
 
 /** `**words**` become Schoolbell sticker keywords and `__words__` a dashed underline, as on the member sites. */
-function Sticker({ text, size = 'lk-bluekey text-3xl' }: { text: string; size?: string }) {
+export function Sticker({ text, size = 'lk-bluekey text-3xl' }: { text: string; size?: string }) {
   return (
     <>
       {text.split(/(\*\*[^*]+\*\*|__[^_]+__)/g).map((part, i) =>
@@ -151,7 +151,7 @@ function Sticker({ text, size = 'lk-bluekey text-3xl' }: { text: string; size?: 
   )
 }
 
-function HandArrow() {
+export function HandArrow() {
   return (
     <svg
       aria-hidden
@@ -481,7 +481,7 @@ export function RepoModal({
  * Rows of white review cards that bleed to the modal's edges, fade out at both and slide across forever
  * (ui-kit memberSites/engine/funnel-sections.tsx `ReviewMarquee`). The middle row runs the other way.
  */
-function ReviewMarquee({ reviews }: { reviews: Review[] }) {
+export function ReviewMarquee({ reviews }: { reviews: Review[] }) {
   return (
     <div
       className="-mx-6 sm:-mx-10"

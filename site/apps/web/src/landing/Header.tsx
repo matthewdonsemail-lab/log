@@ -453,7 +453,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       label: "Tech Stack",
       action: "Explore",
       swatchClassName: "bg-blue-500",
-      description: "Built with Firecrawl, Treg and TypeSafe",
+      description: "Built with SubQ, Treg, Twenty and AdsPower",
       ear: "/images/ears/ear1.webp",
       earFilter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
     },

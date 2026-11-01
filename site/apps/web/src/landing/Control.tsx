@@ -1,7 +1,12 @@
-import { useEffect } from 'react'
 import { motion } from 'motion/react'
 import Dither from '@/components/Dither'
+import type { ReactNode } from 'react'
+import { AgentSession } from './AgentSession'
 import { BigGithubButton } from './BigGithubButton'
+
+function Dashed({ children }: { children: ReactNode }) {
+  return <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">{children}</span>
+}
 
 const TEAM_PHOTOS = [
   '/images/mattlistening.webp',
@@ -57,26 +62,8 @@ const EAR_JITTER = [true, false, false, false, true, false, false, false]
  * The message is intentionally direct: ownership and control are the point.
  */
 export function Control() {
-  useEffect(() => {
-    const SCRIPT_SRC = 'https://platform.x.com/widgets.js'
-    const win = window as unknown as { twttr?: { widgets?: { load?: () => void } } }
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`)
-    if (!existing) {
-      const script = document.createElement('script')
-      script.src = SCRIPT_SRC
-      script.async = true
-      script.charset = 'utf-8'
-      script.onload = () => {
-        win.twttr?.widgets?.load?.()
-      }
-      document.body.appendChild(script)
-    } else {
-      win.twttr?.widgets?.load?.()
-    }
-  }, [])
-
   return (
-    <section id="why-free" className="relative overflow-hidden bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36">
+    <section id="why-free" className="relative overflow-clip bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36">
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block" style={{ maskImage: 'linear-gradient(to right, black 45%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 45%, transparent 100%)' }}>
         <Dither
           waveColor={[0.16, 0.55, 1]}
@@ -148,51 +135,17 @@ export function Control() {
           ))}
         </div>
         <div className="relative z-20">
-          <div className="mb-10 flex flex-col items-center">
-          <div className="flex items-center gap-3">
-            <img src="/logo.svg" alt="ListeningKit logo" className="size-14 rounded-[22%] sm:size-20" />
-            <span className="text-4xl font-black leading-none text-[#2A8CFF] sm:text-6xl">ListeningKit</span>
-          </div>
-          </div>
-        <h2 className="text-3xl font-black leading-[0.98] text-[#2A8CFF] sm:text-5xl lg:text-6xl">
-          The most Intelligent Social Listening Tools are the ones you control!
+        <h2 className="text-title mx-auto max-w-4xl text-[#0D2A4C]">
+          The best tool for
+          <br className="hidden sm:block" />{' '}
+          <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">social media marketing.</span>
         </h2>
-        <p className="mx-auto mt-8 max-w-2xl text-xl leading-snug text-[#0D2A4C]/70 sm:text-2xl">
-          You don&apos;t own anything when you use tools like{' '}
-          <a
-            href="https://octolens.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#2A8CFF] underline decoration-dashed underline-offset-4"
-          >
-            Octolens
-          </a>{' '}
-          and{' '}
-          <a
-            href="https://stalkr.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#2A8CFF] underline decoration-dashed underline-offset-4"
-          >
-            Stalkr
-          </a>
-          .
+        <p className="text-lede mx-auto mt-5 max-w-2xl font-semibold text-[#0D2A4C]/85">
+          Not another <Dashed>social listening tool</Dashed>. A <Dashed>full suite</Dashed> for any marketer working{' '}
+          <Dashed>at scale</Dashed>: every account, every platform, from your terminal or{' '}
+          <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">your AI agent.</span>
         </p>
-        <div className="mx-auto mt-12 flex w-full justify-center overflow-visible">
-          <div className="flex w-full justify-center [zoom:1] sm:[zoom:1.25] md:[zoom:1.4] lg:[zoom:1.5] [&_.twitter-tweet]:!mx-auto [&_.twitter-tweet]:!rounded-3xl [&_.twitter-tweet]:!overflow-hidden [&_iframe]:!mx-auto [&_iframe]:!rounded-3xl [&_iframe]:!overflow-hidden">
-            <div className="overflow-hidden rounded-3xl">
-              <blockquote className="twitter-tweet" data-media-max-width="1000" data-width="700">
-                <p lang="en" dir="ltr">
-                  made a free tool to KILL <a href="https://x.com/Octolens?ref_src=twsrc%5Etfw">@Octolens</a> $1M (company btw) for the <a href="https://x.com/convex?ref_src=twsrc%5Etfw">@convex</a> hackathon. I&#39;ll show you a GTM strat no one is talking about... setup today for free.{' '}
-                  <br />
-                  <br />
-                  We use <a href="https://x.com/treg_ai?ref_src=twsrc%5Etfw">@treg_ai</a> to find out our competitors <a href="https://x.com/firecrawl?ref_src=twsrc%5Etfw">@firecrawl</a> to find good comms and <a href="https://x.com/typesafeai?ref_src=twsrc%5Etfw">@typesafeai</a> for if content is relevant🤯🤯 <a href="https://t.co/GK2WPMh6qv">https://t.co/GK2WPMh6qv</a> <a href="https://t.co/z3JYP1fT3Q">pic.twitter.com/z3JYP1fT3Q</a>
-                </p>
-                &mdash; matt. (@matthewsoldit) <a href="https://x.com/matthewsoldit/status/2102520314483941446?ref_src=twsrc%5Etfw">September 22, 2026</a>
-              </blockquote>
-            </div>
-          </div>
-        </div>
+        <AgentSession />
         <p
           className="mx-auto mt-12 max-w-4xl text-center text-lg text-slate-500 sm:text-xl md:text-2xl lg:whitespace-nowrap"
           style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}
@@ -215,9 +168,9 @@ export function Control() {
           <p className="max-w-md text-center text-sm font-bold leading-tight text-slate-500 sm:text-left sm:text-base">
             shipped by{' '}
             <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">
-              four hackers with zero chill
+              four hackers
             </span>{' '}
-            who think paying $400/mo for social listening is pure robbery.
+            who run their own marketing on it every day.
           </p>
         </div>
         </div>

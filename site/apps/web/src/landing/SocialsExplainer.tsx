@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Check, PenLine, SearchIcon, Target } from 'lucide-react'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import {
@@ -120,6 +120,27 @@ function StreamedText({ words, shown, complete, accentColor }: { words: string[]
   )
 }
 
+function useTrunkRail(deps: unknown[]) {
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root) return
+    const measure = () => {
+      const trunkIcon = root.querySelector<HTMLElement>('span.shadow-hard')
+      const rail = trunkIcon?.parentElement?.lastElementChild as HTMLElement | null
+      const elbow = root.querySelector<SVGElement>('svg[viewBox="0 0 30 26"]')
+      if (!rail || !elbow) return
+      const height = elbow.getBoundingClientRect().top - rail.getBoundingClientRect().top + 1
+      if (height > 0) root.style.setProperty('--trunk-rail', `${Math.round(height)}px`)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(root)
+    return () => observer.disconnect()
+  }, deps)
+  return ref
+}
+
 export function SocialsExplainer({
   started,
   brandName = WORDMARK,
@@ -141,6 +162,7 @@ export function SocialsExplainer({
   const scoreDone = scoreShown >= SCORE_WORDS.length
   const draftWords = finalMessage.split(' ')
   const [draftShown, setDraftShown] = useState(0)
+  const trunkRef = useTrunkRail([foundCount, listenShown])
   const draftDone = draftShown >= draftWords.length
 
   useEffect(() => {
@@ -171,7 +193,7 @@ export function SocialsExplainer({
     // Mirrors BrandRevealStep's root wrapper exactly: anchors this block
     // near the top of its (otherwise centering) flex slot with a fixed
     // 8-unit gap, and lets it grow straight down from there.
-    <div className="mb-auto mt-8 w-full">
+    <div ref={trunkRef} className="mb-auto mt-8 w-full">
       <ChainOfThought className="space-y-0 text-[#0B3E91] [&_svg.lucide]:size-6">
         <ChainOfThoughtHeader className="pb-8 [&>span]:text-center [&>svg]:hidden">
           <span className="flex items-center justify-start gap-3">

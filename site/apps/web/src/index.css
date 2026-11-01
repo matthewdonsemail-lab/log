@@ -185,3 +185,58 @@ media-outlet video {
   background-image: none;
   box-shadow: none;
 }
+
+@layer utilities {
+  .sticker-word {
+    font-family: "Schoolbell", "Cabin Sketch", cursive;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: #2A8CFF;
+    text-shadow: 0.045em 0.000em 0 #fff,0.043em 0.014em 0 #fff,0.036em 0.026em 0 #fff,0.026em 0.036em 0 #fff,0.014em 0.043em 0 #fff,0.000em 0.045em 0 #fff,-0.014em 0.043em 0 #fff,-0.026em 0.036em 0 #fff,-0.036em 0.026em 0 #fff,-0.043em 0.014em 0 #fff,-0.045em 0.000em 0 #fff,-0.043em -0.014em 0 #fff,-0.036em -0.026em 0 #fff,-0.026em -0.036em 0 #fff,-0.014em -0.043em 0 #fff,-0.000em -0.045em 0 #fff,0.014em -0.043em 0 #fff,0.026em -0.036em 0 #fff,0.036em -0.026em 0 #fff,0.043em -0.014em 0 #fff,0.090em 0.000em 0 #000,0.088em 0.018em 0 #000,0.083em 0.034em 0 #000,0.075em 0.050em 0 #000,0.064em 0.064em 0 #000,0.050em 0.075em 0 #000,0.034em 0.083em 0 #000,0.018em 0.088em 0 #000,0.000em 0.090em 0 #000,-0.018em 0.088em 0 #000,-0.034em 0.083em 0 #000,-0.050em 0.075em 0 #000,-0.064em 0.064em 0 #000,-0.075em 0.050em 0 #000,-0.083em 0.034em 0 #000,-0.088em 0.018em 0 #000,-0.090em 0.000em 0 #000,-0.088em -0.018em 0 #000,-0.083em -0.034em 0 #000,-0.075em -0.050em 0 #000,-0.064em -0.064em 0 #000,-0.050em -0.075em 0 #000,-0.034em -0.083em 0 #000,-0.018em -0.088em 0 #000,-0.000em -0.090em 0 #000,0.018em -0.088em 0 #000,0.034em -0.083em 0 #000,0.050em -0.075em 0 #000,0.064em -0.064em 0 #000,0.075em -0.050em 0 #000,0.083em -0.034em 0 #000,0.088em -0.018em 0 #000;
+  }
+  .demo-3d,
+  .demo-3d div {
+    transform-style: preserve-3d;
+  }
+  .demo-3d:not(.no-frame) > div {
+    box-shadow: 0 0 0 6px rgba(42, 140, 255, 0.22);
+  }
+  .button-glow {
+    background-image: radial-gradient(ellipse at 50% 0%, #5CB2FF 0%, #1F6FE6 100%);
+  }
+  .text-title {
+    font-family: 'Satoshi', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.25rem, 1.5rem + 2.6vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .text-lede {
+    font-size: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+  }
+}
+
+@keyframes lk-card-wall {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.lk-card-wall {
+  animation: lk-card-wall 14.6s linear infinite;
+  will-change: transform;
+  contain: layout paint;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-card-wall {
+    animation: none;
+  }
+}
