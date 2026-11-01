@@ -10188,3 +10188,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the X engine spaces a read 0.8 to 2.5 s after the account's last call (`READ_SPACING_SECONDS`; inbox, a person's thread, notifications and their pages, follows, followers) and keeps 4 to 11 s only before a send (`SPACING_SECONDS`, `spacing_wait` now takes the action). The queue's check before a send counts what happened since the item was drafted or, for items from before `draftedAt`, since the queue was made, never since its last approval, which moves with every add and edit. Rule 110 in AGENTS.md and the MCP instructions.
 Why: matt: "we need to be faster with the mcp commands ... why is it taking so long for something which is not even something that should take long". One person's full-context read was two engine calls at 4 to 11 s each, 15 to 20 s per person; X's own app fires reads back to back when a screen opens, and the 226 block that set the 4 to 11 s was about sends.
 Checked: `bun run check` passes (1269 tests); the engine tests check a read waits at most 2.5 s and a send at least 4 s after a call.
+
+## 2026-11-01 17:25Z · fix/queueGapAndFastContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/twikit/tests/test_xchat_receipts.py`: added def test_a_message_signed_with_a_key_not_cached_refetches_the_senders_key_and_opens
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: when the live X Chat watch can't open a message because its signature doesn't verify against the sender's cached signing key, `_xchat_open` drops that sender's cached key, fetches it again (`_xchat_signers`, `get_xchat_public_keys`) and opens the message, instead of pushing "(could not open: Crypto error: Signature verification failed ... no matching signing key)". The host session cached each sender's key once for its whole life, so a sender who signed in on a new device stayed unreadable.
+Why: archieldroberts sent seven messages between 00:19 and 00:22 matt's time that all reached the inbox hook as "could not open ... Signature verification failed", while later ones from him opened. matt: "all that shit can be resolved ... just go and fix it" (rule 108).
+Checked: a new twikit test drives `_xchat_open` with a chat that only verifies after the sender's key is fetched again, and checks it was fetched twice and the text came back; the xchat tests pass (16).
