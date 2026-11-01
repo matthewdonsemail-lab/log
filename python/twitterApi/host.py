@@ -81,6 +81,7 @@ class Host:
         self.stamp = code_stamp()
         self.active = 0
         self.watching = 0
+        self.writers: set[asyncio.StreamWriter] = set()
         self.port = 0
         self.serial = asyncio.Lock()
 
@@ -122,6 +123,7 @@ class Host:
             e.LIVE_WRITER.reset(token)
 
     async def handle(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        self.writers.add(writer)
         try:
             request = json.loads(await asyncio.wait_for(reader.readline(), 30))
             if request.get("token") != self.token:
@@ -138,6 +140,7 @@ class Host:
             writer.write((json.dumps({"answer": out}, default=str) + "\n").encode("utf-8"))
             await writer.drain()
         finally:
+            self.writers.discard(writer)
             writer.close()
 
     async def serve(self) -> int:
@@ -148,25 +151,29 @@ class Host:
         except e.AccountBusy:
             print(f"another X session already holds {self.account}; this one exits", flush=True)
             return 1
+        server = None
         try:
             server = await asyncio.start_server(self.handle, "127.0.0.1", 0)
             self.port = server.sockets[0].getsockname()[1]
             self.record()
             print(f"X session for {self.account} up: pid {os.getpid()}, port {self.port}", flush=True)
-            async with server:
-                while True:
-                    await asyncio.sleep(5)
-                    idle = time.time() - self.last
-                    if self.active == 0 and idle > IDLE_SECONDS:
-                        print(f"idle {int(idle)} s: closing the X session", flush=True)
-                        break
-                    if self.active == self.watching and code_stamp() != self.stamp:
-                        print("log's X engine code changed: closing so the next call starts the new code", flush=True)
-                        break
+            while True:
+                await asyncio.sleep(5)
+                idle = time.time() - self.last
+                if self.active == 0 and idle > IDLE_SECONDS:
+                    print(f"idle {int(idle)} s: closing the X session", flush=True)
+                    break
+                if self.active == self.watching and code_stamp() != self.stamp:
+                    print("log's X engine code changed: closing so the next call starts the new code", flush=True)
+                    break
         finally:
             info = read_host(self.account)
             if info and info.get("pid") == os.getpid():
                 host_path(self.account).unlink(missing_ok=True)
+            if server is not None:
+                server.close()
+            for writer in list(self.writers):
+                writer.close()
             await lock.__aexit__()
         return 0
 

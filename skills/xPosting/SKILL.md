@@ -47,6 +47,12 @@ the replies to its comments, the quote an hour later, and the DMs to the people 
 
 ## 3. Reaching people: `log twitter`
 
+**Send what X's own client sends (rule 113).** Every GraphQL call uses
+X's live operation ids and feature switches, read from X's signed-in
+client with `log twitter session webClient --account <a>` into
+`~/.logCli/twitter/xOperations.json`. Run it again when X ships a new
+main.js. What X's composer sends is in `docs/platforms/x/compose.md`.
+
 **Full context before every message (rule 109).** Before you write to
 anyone, and again right before it goes out, know everything between them
 and the account at that moment, never only the dm thread:

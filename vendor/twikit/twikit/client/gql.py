@@ -26,6 +26,30 @@ if TYPE_CHECKING:
     ClientType = Client | GuestClient
 
 
+LIVE_OPERATIONS: dict = {}
+
+
+def set_live_operations(data: dict | None) -> None:
+    LIVE_OPERATIONS.clear()
+    if data:
+        LIVE_OPERATIONS.update(data)
+
+
+def live_call(url: str, features: dict | None) -> tuple[str, dict | None]:
+    operations = LIVE_OPERATIONS.get('operations') or {}
+    prefix = f'https://{DOMAIN}/i/api/graphql/'
+    if not url.startswith(prefix):
+        return url, features
+    name = url.rsplit('/', 1)[-1]
+    live = operations.get(name)
+    if not live:
+        return url, features
+    values = LIVE_OPERATIONS.get('featureValues') or {}
+    if features is not None and live.get('features'):
+        features = {f: values.get(f, features.get(f, False)) for f in live['features']}
+    return f"{prefix}{live['queryId']}/{name}", features
+
+
 class Endpoint:
     @staticmethod
     def url(path):
@@ -123,6 +147,7 @@ class GQLClient:
         extra_params: dict | None = None,
         **kwargs
     ):
+        url, features = live_call(url, features)
         params = {'variables': variables}
         if features is not None:
             params['features'] = features
@@ -167,6 +192,7 @@ class GQLClient:
         extra_data: dict | None = None,
         **kwargs
     ):
+        url, features = live_call(url, features)
         data = {'variables': variables, 'queryId': get_query_id(url)}
         if features is not None:
             data['features'] = features
