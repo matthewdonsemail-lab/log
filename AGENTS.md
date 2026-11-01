@@ -1455,6 +1455,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     values (`live_call`). A closing session drops its open connections and
     exits at once, so an open X Chat watch can't hold it half-closed.
 
+114. 2026-11-02 · matt: "the queue will always need to be in context ... are
+    we using the queue as a monitor or as a background pid that then isn't
+    being inserted into context via the hooks into the agent context?" A
+    queue run is a job inside the MCP server, and until now nothing put what
+    it did in front of the agent: a held item sat unredrafted until someone
+    read the log. The queue hook (`scripts/hooks/queue.ts`, on SessionStart,
+    every prompt and every log tool or shell call) reads every queue's log
+    since the last look (`newQueueEvents`, `src/twitter/queue/events`) and
+    puts each held item, send, cool-off with X's answer, stop and start into
+    the agent's context (`>>> QUEUE`), saying what to do: a held item is
+    redrafted from what changed, gated and put back (rule 109); a cool-off or
+    stop means nothing more goes out until matt says so (rule 94).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

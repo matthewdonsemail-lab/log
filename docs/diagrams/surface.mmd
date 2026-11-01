@@ -30,7 +30,8 @@ flowchart LR
   live -.->|tail -f, under Monitor| agent
   pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
   post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
-  post1{{"PostToolUse: pageState.ts"}} -.->|after| agent
+  post1{{"PostToolUse: queue.ts"}} -.->|after| agent
+  post2{{"PostToolUse: pageState.ts"}} -.->|after| agent
   turn0{{"SessionStart: pageState.ts"}} -.-> agent
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
   turn2{{"SessionStart: storage.ts"}} -.-> agent
@@ -40,5 +41,7 @@ flowchart LR
   turn6{{"SessionStart: knowledge.ts"}} -.-> agent
   turn7{{"SessionStart: inbox.ts"}} -.-> agent
   turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
-  turn9{{"Stop: pageState.ts"}} -.-> agent
+  turn9{{"SessionStart: queue.ts"}} -.-> agent
+  turn10{{"UserPromptSubmit: queue.ts"}} -.-> agent
+  turn11{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
