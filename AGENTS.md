@@ -1315,6 +1315,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       one's diff, and never overwrite, revert, stage, publish or ship
       someone else's uncommitted work without matt.
 
+107. 2026-11-01 · matt: "the queue connects to the one process, and it
+    can do these at the same time, yet it's only on one". An account has one
+    queue, and everything it sends goes into it: the dms, the reply-guy
+    replies and the answers to people who message, together (each item
+    keeps its own action). `log twitter queue add <queue> --targets <file>
+    --action dm|reply|quote --by <who>` puts more in, even while it runs:
+    the run takes them in as it waits and fits each one between what is
+    planned, at least the queue's minGap apart, and one due sooner than the
+    send it waits on goes first. `queue run --keepOpen` keeps the run going
+    once it has sent everything, taking in what is added, until it is
+    cancelled. So one run sends all of an account's work through its one X
+    session (rule 105), never a second queue or run beside it.
+    `src/twitter/queue` (`addToQueue`, `fitTimes`, `takeIncoming`,
+    `mergeAdded`).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
