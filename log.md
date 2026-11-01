@@ -9878,3 +9878,41 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the docs site is laid out in five tabs the way Fern lays its docs out, set in one file, docs/site.json: Get started (install, add your accounts, connect your agent, using log well), Use cases, Platforms (a plain page each for X, Reddit, Facebook, Discord and LinkedIn), Reference (every command, error codes, agent guides) and How it works (the ideas, browsers and proxies, Facebook in depth, each platform's API, the diagrams, working on log). `syncSiteDocs` places every page from site.json into its tab, and its check refuses a page in no tab, a page in two, a missing file or a broken link. The pages were rewritten in plain words: short titles and summaries, no rule numbers, examples instead of internals; new pages for accounts, using log well and each platform. The README's docs map and the landing page's Works with links point at the new tabs.
 Why: matt: the docs were all over the place, confusing and too technical; manage them the way Fern does, by domain, and fix them.
 Checked: every pre-commit gate passes on the whole tree, siteDocs places 449 pages in 5 tabs; the site builds (1346 files) and the docs front page and the X platform page were checked in the browser with the five tabs in the sidebar.
+
+## 2026-11-01 06:19Z · feat/landingFullSuite
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `site/apps/web/index.html`: edited
+- `site/apps/web/package.json`: edited
+- `site/apps/web/public/images/listingClearOut.webp`: new file
+- `site/apps/web/public/images/tools/apify.svg`: new file
+- `site/apps/web/public/images/tools/clay.png`: new file
+- `site/apps/web/public/images/tools/treg.svg`: new file
+- `site/apps/web/src/components/ai-elements/chain-joints.ts`: changed const TRUNK_RAIL
+- `site/apps/web/src/components/ai-elements/chain-of-thought.tsx`: changed const ChainOfThoughtStep
+- `site/apps/web/src/index.css`: edited
+- `site/apps/web/src/landing/AgentSession.tsx`: added const STEP_MS, const END_PAUSE_MS, function useSessionClock, function Typed, function Appear, function Feed, function ClaudeWindow, function CodexWindow, const APPS, function AgentSession
+- `site/apps/web/src/landing/BrandMark.tsx`: added type BrandMarkId, const marks, function BrandMark
+- `site/apps/web/src/landing/Control.tsx`: added function Dashed · changed function Control
+- `site/apps/web/src/landing/GoGettersCta.tsx`: added const GRADIENT, const WHO, const ON_LIST, function Bold, function OnTheList, function GoGettersCta
+- `site/apps/web/src/landing/Header.tsx`: changed const defaultNavMenuItems
+- `site/apps/web/src/landing/HowWeThink.tsx`: added const STICKER, function Marked, function useTicker, function Panel, const ORBIT, const ORBIT_RX, const ORBIT_RY, const ORBIT_SECONDS, const STEP_MS, function orbitPoint, function OrbitNode, function OrbitLine, function OrbitDot, function OrbitCard, function WhileOnACall, const SHIFT, function AgentShift, const TOOLS, function JustMcp, const DECODED, function Decoded, const BELIEFS, function BeliefCard, function HowWeThink
+- `site/apps/web/src/landing/LandingPage.tsx`: added const BUILT_WITH · changed function LandingPage
+- `site/apps/web/src/landing/ListeningIntro.tsx`: changed function ListeningIntro
+- `site/apps/web/src/landing/OtherCases.tsx`: added const LEDE, const STICKER, function Marked · changed type OtherCase, const CASES, function CaseCard, function OtherCases · removed const HEADLINE, const LEDE_STRONG, const LEDE_REST
+- `site/apps/web/src/landing/PlatformDemos.tsx`: added const SLOT_SECONDS, const SLOTS, const CYCLE_SECONDS, const REST_SHADOW, const RAISED_SHADOW, function Step, function Icon, function Avatar, function LogTag, const X_FONT, function XDemo, const FB_FONT, function FacebookDemo, const DC_FONT, function DiscordDemo, const RD_FONT, function RedditDemo, const LI_FONT, function LinkedinDemo, const PLATFORM_DEMOS
+- `site/apps/web/src/landing/PlatformSuite.tsx`: added type Platform, const PLATFORMS, const STICKER, const LIP, function Stickered, const SITE, function askAiPrompt, function askAiLinks, type RepoStats, function useLogRepoStats, function sinceLabel, function Mark, const SLIDE_GAP_REM, function PlatformCard, function PlatformSuite
+- `site/apps/web/src/landing/RepoLink.tsx`: changed function Sticker, function HandArrow, function ReviewMarquee
+- `site/apps/web/src/landing/SocialsExplainer.tsx`: added function useTrunkRail · changed function SocialsExplainer
+- `site/apps/web/src/landing/Unemployed.tsx`: changed function Unemployed
+- `site/apps/web/src/landing/VideoCarousel.tsx`: added const VslPlayer, type Video, const VIDEOS, function DownArrow, function VideoSlide, const ARROW, function VideoCarousel
+- `site/apps/web/src/landing/VslPlayer.tsx`: changed function VslPlayer
+- `site/apps/web/src/landing/WhopJoin.tsx`: added const PLAN_ID, const SCRIPT, type WhopCheckout, const INK, const LINE, const APPEARANCE, function loadScript, function WhopJoin
+- `site/apps/web/src/landing/agentSessionScript.ts`: added type SessionEvent, const SESSION
+- `site/apps/web/src/landing/rasputin.tsx`: changed function Rasputin
+- `site/apps/web/src/landing/useDragCarousel.ts`: added const SLIDE_GAP_REM, function useDragCarousel
+- `site/pnpm-lock.yaml`: edited
+
+What changed: the landing page says what log is now, a full social media suite for marketers at scale, not a listening tool. The hero and Built with band come from the docs (SubQ, Treg, Twenty, AdsPower); OpenMagpie, Firecrawl, TypeSafe and Convex are gone. New sections: a platform carousel (X, Facebook, Discord, Reddit, LinkedIn) with a 3D animated mock of each app and Ask AI links that brief the assistant on log; a Claude Code and Codex window playing a 43-step session built from real log sessions, anonymised; a how-we-think carousel with motion examples; and the go getters call to action ported from the gg page (video carousel on the vidstack player, the Whop apply form, who is on the waitlist, reviews). Font Awesome 6 icons, cv-bluekey styling throughout, the comparison table and old brand band removed. The page no longer scrolls sideways, the card walls are CSS animations paused off screen, the chain-of-thought rails meet, and the page base is white.
+Why: matt: the landing page still described the old version; make it match the docs and the website's look, show how log is actually used, and put the go getters page in as the call to action.
+Checked: every pre-commit gate but this entry passes; the site typechecks; each section was checked in the browser pane, the videos play through vidstack, the Whop form loads its questions (nothing submitted), the page is as wide as the window at desktop and phone width.

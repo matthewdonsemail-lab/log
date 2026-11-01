@@ -1,4 +1,5 @@
-import { motion } from 'motion/react'
+import { useRef } from 'react'
+import { useInView } from 'motion/react'
 import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { Button } from '@listeningkit/ui'
 import { FacebookPostText } from '@/components/cards/FacebookCard'
@@ -52,15 +53,16 @@ function SocialCard({ card }: { card: (typeof SOCIAL_CARDS)[number] }) {
  * cards scroll behind it.
  */
 export function Unemployed() {
+  const wallRef = useRef<HTMLElement>(null)
+  const wallOn = useInView(wallRef, { margin: '200px' })
   return (
-    <section id="unemployed" className="relative isolate overflow-hidden bg-white px-6 py-24 text-center sm:px-10 sm:py-36">
-      <motion.div
+    <section ref={wallRef} id="unemployed" className="relative isolate overflow-hidden bg-white px-6 py-24 text-center sm:px-10 sm:py-36">
+      <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 hidden flex-col gap-[-4rem] md:flex"
-        animate={{ y: ['0%', '-50%'] }}
-        transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
+        className="lk-card-wall pointer-events-none absolute inset-0 hidden flex-col gap-[-4rem] md:flex"
+        style={{ animationPlayState: wallOn ? 'running' : 'paused' }}
       >
-        {Array.from({ length: 14 }, (_, row) => (
+        {Array.from({ length: 6 }, (_, row) => (
           <div key={row} className="flex h-72 w-full items-center justify-between">
             {[0, 1, 2].map((column) => {
               const card = SOCIAL_CARDS[(row * 3 + column) % SOCIAL_CARDS.length]
@@ -68,7 +70,7 @@ export function Unemployed() {
             })}
           </div>
         ))}
-      </motion.div>
+      </div>
       <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(ellipse_at_center,transparent_34%,rgba(255,255,255,0.86)_70%,#fff_94%)]" />
       <div className="relative z-20 mx-auto flex max-w-5xl flex-col items-center px-6 py-12 sm:px-12 sm:py-16">
         <div

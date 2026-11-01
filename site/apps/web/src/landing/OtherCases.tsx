@@ -1,5 +1,8 @@
+import type { ReactNode } from 'react'
 import { motion } from 'motion/react'
-import { Users, Zap, Timer, BarChart3 } from 'lucide-react'
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBolt, faChartColumn, faFilter, faUsers } from '@fortawesome/free-solid-svg-icons'
 import Dither from '@/components/Dither'
 import { LazyVideo } from './LazyVideo'
 
@@ -12,7 +15,7 @@ type DitherVariant = {
 }
 
 type OtherCase = {
-  icon: typeof Zap
+  icon: IconDefinition
   title: string
   description: string
   videoSrc: string
@@ -20,49 +23,65 @@ type OtherCase = {
 }
 
 const EYEBROW = 'Made for every trade'
-const HEADLINE = 'Other cases, one listening kit'
-const LEDE_STRONG = 'Plumbing is where ListeningKit got its start — but the same pipeline'
-const LEDE_REST =
-  'works for any trade that lives on posts from people in need: your keywords, your platforms, your replies, your payments, everywhere your customers are asking.'
+const LEDE =
+  'Plumbing is where ListeningKit got its start, but the same pipeline works for __any trade__ that lives on posts from people in need: your __keywords__, your __platforms__, your __replies__, your __payments__, everywhere your customers are **asking.**'
+
+const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
+
+function Marked({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\*\*[^*]+\*\*|__[^_]+__)/g).map((part, index): ReactNode => {
+        if (part.startsWith('**')) return <span key={index} className={STICKER}>{part.slice(2, -2)}</span>
+        if (part.startsWith('__'))
+          return (
+            <span key={index} className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">
+              {part.slice(2, -2)}
+            </span>
+          )
+        return <span key={index}>{part}</span>
+      })}
+    </>
+  )
+}
 
 /** The four cards spin off the Usecase walkthrough: same pipeline, new angle per video. */
 const CASES: OtherCase[] = [
   {
-    icon: Users,
-    title: 'Catch every cry for help',
+    icon: faUsers,
+    title: 'Catch every **cry for help**',
     description:
-      'Someone posts about a burst pipe at midnight. Your keywords match it, the auto-reply lands before a competitor even wakes up.',
+      'Someone posts about a __burst pipe at midnight__. Your keywords match it, and the reply lands __before a competitor__ even wakes up.',
     videoSrc: '/video/Facebook1.webm',
     dither: { waveSpeed: 0.035, waveFrequency: 3, waveAmplitude: 0.2, pixelSize: 3, colorNum: 4 },
   },
   {
-    icon: Timer,
-    title: 'Skip the noise, keep the jobs',
+    icon: faFilter,
+    title: 'Skip the noise, **keep the jobs**',
     description:
-      'Jokes and rants get filtered out. Only posts with real intent reach your inbox, so every reply counts.',
+      'Jokes and rants get __filtered out__. Only posts with __real intent__ reach your inbox, so every reply counts.',
     videoSrc: '/video/Facebook2.webm',
     dither: { waveSpeed: 0.05, waveFrequency: 4, waveAmplitude: 0.3, pixelSize: 2, colorNum: 5 },
   },
   {
-    icon: Zap,
-    title: 'Quote to cash in one chat',
+    icon: faBolt,
+    title: 'Quote to cash **in one chat**',
     description:
-      'Availability, Stripe link, address confirmed. The whole job books itself while you are on the tools.',
+      'Availability, __Stripe link__, address confirmed. The whole job __books itself__ while you are on the tools.',
     videoSrc: '/video/Facebook3.webm',
     dither: { waveSpeed: 0.025, waveFrequency: 2, waveAmplitude: 0.25, pixelSize: 4, colorNum: 4 },
   },
   {
-    icon: BarChart3,
-    title: 'Hundreds of chats, zero chaos',
+    icon: faChartColumn,
+    title: 'Hundreds of chats, **zero chaos**',
     description:
-      'Follow-ups go out on their own and hot deals surface to the top. You just show up and close.',
+      'Follow-ups __go out on their own__ and __hot deals__ surface to the top. You just show up and close.',
     videoSrc: '/video/Facebook4.webm',
     dither: { waveSpeed: 0.06, waveFrequency: 5, waveAmplitude: 0.15, pixelSize: 2, colorNum: 6 },
   },
 ]
 
 function CaseCard({ item, index }: { item: OtherCase; index: number }) {
-  const Icon = item.icon
   return (
     <motion.li
       className="p-5 sm:p-6"
@@ -96,11 +115,17 @@ function CaseCard({ item, index }: { item: OtherCase; index: number }) {
             />
           </div>
         </div>
-        <div className="flex items-center gap-2.5">
-          <Icon className="size-6 text-ink" aria-hidden />
-          <h3 className="text-xl font-black text-ink">{item.title}</h3>
+        <div className="mt-1 flex items-start gap-3">
+          <span className="button-glow grid size-9 shrink-0 place-items-center rounded-lg text-white shadow-[0_3px_0_#1A5FC8]">
+            <FontAwesomeIcon icon={item.icon} className="text-[15px]" />
+          </span>
+          <h3 className="text-2xl font-bold leading-tight tracking-[-0.02em] text-[#0D2A4C]">
+            <Marked text={item.title} />
+          </h3>
         </div>
-        <p className="text-lg leading-snug text-ink/70">{item.description}</p>
+        <p className="text-lg font-semibold leading-snug text-[#0D2A4C]/80">
+          <Marked text={item.description} />
+        </p>
       </div>
     </motion.li>
   )
@@ -118,12 +143,16 @@ export function OtherCases() {
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-20 sm:px-10 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-16">
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <div>
-            <div className="inline-flex rounded-full bg-[#f2f1f3] px-4 py-1.5">
-              <p className="text-xs font-black uppercase text-ink">{EYEBROW}</p>
-            </div>
-            <h2 className="mt-5 text-4xl font-black leading-tight sm:text-5xl">{HEADLINE}</h2>
-            <p className="mt-5 text-lg leading-snug text-ink/70">
-              <strong className="font-black text-ink">{LEDE_STRONG}</strong> {LEDE_REST}
+            <span className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-[14px] font-bold text-[#2A8CFF] shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]">
+              <FontAwesomeIcon icon={faBolt} className="text-[13px]" />
+              {EYEBROW}
+            </span>
+            <h2 className="text-title mt-5 text-[#0D2A4C]">
+              Other cases,{' '}
+              <span className={STICKER}>one listening kit.</span>
+            </h2>
+            <p className="text-lede mt-5 font-semibold text-[#0D2A4C]/85">
+              <Marked text={LEDE} />
             </p>
           </div>
         </aside>

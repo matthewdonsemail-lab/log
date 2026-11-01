@@ -2,9 +2,12 @@ import type { CSSProperties } from 'react'
 import { BigGithubButton } from './BigGithubButton'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
+import { GoGettersCta } from './GoGettersCta'
 import { Header } from './Header'
+import { HowWeThink } from './HowWeThink'
 import { ListeningIntro } from './ListeningIntro'
 import { OtherCases } from './OtherCases'
+import { PlatformSuite } from './PlatformSuite'
 import { PlugTooltip } from './PlugTooltip'
 import { LOG_REPO_URL, parseRepoUrl } from './RepoLink'
 import { Socials } from './Socials'
@@ -39,17 +42,20 @@ const PLUGS = [
   },
 ]
 
-/**
- * Landing page — header plus the drifting cloud band for now.
- * Sections get built out in <main> as the landing page takes shape.
- */
+const BUILT_WITH: { label: string; role: string; src?: string }[] = [
+  { label: 'SubQ', role: 'reads what each step did' },
+  { label: 'Treg', role: 'finds people, groups and facts', src: '/logos/stack/treg.svg' },
+  { label: 'Twenty', role: 'holds your accounts' },
+  { label: 'AdsPower', role: 'one browser per account' },
+]
+
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 
 export function LandingPage() {
   return (
     <div
       className="flex min-h-screen flex-col text-white"
-      style={{ backgroundColor: '#2a8cff', fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}
+      style={{ backgroundColor: '#ffffff', fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}
     >
       <div
         aria-hidden
@@ -67,6 +73,7 @@ export function LandingPage() {
         className="z-[70]"
         accountItems={[{ href: LOG_REPO_URL, label: 'Get started', variant: 'cta' }]}
       />
+      <div style={{ backgroundColor: '#2a8cff' }}>
       <div aria-hidden className="h-24 shrink-0" />
       <Clouds>
         <div
@@ -75,10 +82,10 @@ export function LandingPage() {
         >
           <img src="/logo.svg" alt="ListeningKit logo" className="size-20 shrink-0 rounded-[20px] object-contain sm:size-24" />
           <h1 className="mt-6 max-w-3xl text-4xl font-black leading-tight sm:text-6xl">
-            Listen to what your customers are really saying.
+            The best tool for social media marketing.
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-snug text-white/80 sm:text-xl">
-            The only free social listening tool on your terms.
+            Listen, reply, DM, post and run listings across every account you have. Free, open source, and built for marketers working at scale.
           </p>
           {/* The big GitHub button replaces the old website form; the "Find new customers" note points at it. */}
           <div className="relative mt-7 w-full sm:mt-8">
@@ -105,6 +112,7 @@ export function LandingPage() {
           </div>
         </div>
       </Clouds>
+      </div>
       <section
         id="features"
         className="w-full pb-16"
@@ -112,31 +120,32 @@ export function LandingPage() {
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start px-6 pt-16 sm:px-10">
           <p className="text-sm font-medium uppercase text-white/80">Built with</p>
-          <ul className="mt-5 flex list-none flex-wrap items-center gap-x-8 gap-y-4 p-0">
-            {[
-              { label: 'OpenMagPie', src: '/logos/stack/openmagpie.webp', whiten: true, showLabel: true },
-              { label: 'Firecrawl', src: '/logos/stack/firecrawl.svg', whiten: true, showLabel: true },
-              { label: 'Treg', src: '/logos/stack/treg.svg', whiten: false, showLabel: true },
-              { label: 'TypeSafe', src: '/logos/tools/typesafe.svg', whiten: true, showLabel: true },
-            ].map((item) => (
+          <ul className="mt-5 flex list-none flex-wrap items-start gap-x-10 gap-y-5 p-0">
+            {BUILT_WITH.map((item) => (
               <li key={item.label} className="flex items-center gap-3">
-                <img
-                  src={item.src}
-                  alt={item.showLabel ? '' : item.label}
-                  className={`h-8 w-auto sm:h-9 ${item.whiten ? 'brightness-0 invert' : ''}`}
-                />
-                {item.showLabel ? (
+                {item.src ? (
+                  <img src={item.src} alt="" className="h-8 w-auto sm:h-9" />
+                ) : (
+                  <span aria-hidden className="flex size-8 items-center justify-center rounded-lg bg-white text-base font-black text-[#2a8cff] sm:size-9">
+                    {item.label[0]}
+                  </span>
+                )}
+                <span className="flex flex-col text-left leading-tight">
                   <span className="text-base font-bold text-white">{item.label}</span>
-                ) : null}
+                  <span className="text-sm text-white/75">{item.role}</span>
+                </span>
               </li>
             ))}
           </ul>
         </div>
       </section>
+      <PlatformSuite />
       <ListeningIntro />
       <Usecase />
       <Socials />
       <Control />
+      <HowWeThink />
+      <GoGettersCta />
       <OtherCases />
       <Unemployed />
       <Rasputin />

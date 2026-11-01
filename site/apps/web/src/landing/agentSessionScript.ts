@@ -1,0 +1,185 @@
+export type SessionEvent =
+  | { kind: 'user'; text: string }
+  | { kind: 'assistant'; text: string }
+  | { kind: 'tool'; name: string; args: string; result: string[] }
+
+export const SESSION: SessionEvent[] = [
+  { kind: 'user', text: 'check my twitter whos waiting on me' },
+  { kind: 'tool', name: 'getGuide', args: '{ topic: "logMcpInstructions" }', result: ['log MCP guide loaded: 14 use cases', 'x inbox → docs/useCases/twitter/dmInbox.md'] },
+  { kind: 'tool', name: 'getGuide', args: '{ topic: "xInbox" }', result: ['dmInbox: waiting → read in full → sort → send what you approve'] },
+  {
+    kind: 'tool',
+    name: 'twitterDms',
+    args: '{ account: "you", waiting: true, limit: "50" }',
+    result: ['@you, 6 conversations waiting on a reply, newest first', '1. @dana_builds · 2h ago · unread, waiting on you', '2. @leo_ops · 5h ago · unread, waiting on you', '+ 2 opened with no reply (followUpDue)'],
+  },
+  { kind: 'assistant', text: '6 people are waiting on you, and 2 more opened your last message but didn’t reply. Reading each thread in full before drafting anything.' },
+  {
+    kind: 'tool',
+    name: 'twitterDms',
+    args: '{ account: "you", with: "dana_builds", limit: "30" }',
+    result: ['you: saw your launch thread, the onboarding bit was clean', '@dana_builds: thanks man! 3 weeks of rewrites lol', '@dana_builds: what are you building at the moment?'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterDms',
+    args: '{ account: "you", with: "leo_ops", limit: "30" }',
+    result: ['@leo_ops: just hit our first 10 paying clients', '@leo_ops: hiring is the next headache', 'X Chat opened with the saved PIN, 4 messages merged'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterDms',
+    args: '{ account: "you", with: "priya_ships", limit: "30" }',
+    result: ['@priya_ships: moved to lisbon last week, still unpacking', 'governor: 9/500 requests and 0 writes today'],
+  },
+  { kind: 'assistant', text: 'Reply now: Dana (asked what you’re building), Leo (10 clients, hiring next), Priya (just moved). Follow-ups: Sam, Ory. Skip: one crypto pitch and one bot.' },
+  { kind: 'user', text: 'yeah reply to them just be casual, skip the crypto guy' },
+  {
+    kind: 'tool',
+    name: 'voice',
+    args: '{ to: "dana_builds", with: "dana_builds", context: "asked what you’re building" }',
+    result: ['how you write here: median 14 words, 100% lowercase', 'commas 0%, full stops 0%, opens with yo', '3 of your real replies to things like this'],
+  },
+  {
+    kind: 'tool',
+    name: 'voice',
+    args: '{ to: "dana_builds", context: "…", text: "haha 3 weeks shows…" }',
+    result: ['@dana_builds PASS: voice 0.97 · answers them 0.95', 'reads like a mate 0.98 · like your replies there 0.96'],
+  },
+  {
+    kind: 'tool',
+    name: 'voice',
+    args: '{ to: "leo_ops", context: "10 clients, hiring next", text: "Congrats on…" }',
+    result: ['@leo_ops FAIL: voice 0.62 · answers them 0.91', 'reads like a mate 0.80 · like your replies there 0.70', 'rewrite it in your words and gate it again'],
+  },
+  { kind: 'assistant', text: 'Leo’s draft read too polished (capital letter, sounded like a template). Rewriting it shorter, in your words.' },
+  {
+    kind: 'tool',
+    name: 'voice',
+    args: '{ to: "leo_ops", context: "…", text: "10 clients is mad lad…" }',
+    result: ['@leo_ops PASS: voice 0.96 · answers them 0.97', 'reads like a mate 0.99 · like your replies there 0.95'],
+  },
+  { kind: 'tool', name: 'twitterDm', args: '{ account: "you", userId: "1840…221", text: "haha 3 weeks…" }', result: ['dry run: 2 messages, one per line, nothing sent'] },
+  {
+    kind: 'tool',
+    name: 'twitterDmLive',
+    args: '{ account: "you", userId: "1840…221", approvedBy: "you", confirmLive: true }',
+    result: ['sent the dm: delivered, shows in their X Chat too', 'governor: 14/500 requests and 2 writes today'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterDmLive',
+    args: '{ account: "you", userId: "1612…908", approvedBy: "you", confirmLive: true }',
+    result: ['sent the dm: delivered', 'governor: 17/500 requests and 4 writes today'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterDmLive',
+    args: '{ account: "you", userId: "1733…015", approvedBy: "you", confirmLive: true }',
+    result: ['sent the dm: delivered', 'governor: 20/500 requests and 5 writes today'],
+  },
+  {
+    kind: 'assistant',
+    text: 'Dana, Leo and Priya are answered, a few minutes apart. Now Sam and Ory, who opened your last message and didn’t reply: a follow-up about what they’re doing, not the opener again.',
+  },
+  { kind: 'tool', name: 'voice', args: '{ to: "sam_designs", context: "opened, reacted, no reply", text: "how did…" }', result: ['@sam_designs PASS: voice 0.95 · answers them 0.93'] },
+  {
+    kind: 'tool',
+    name: 'twitterDmLive',
+    args: '{ account: "you", userId: "1508…377", approvedBy: "you", confirmLive: true }',
+    result: ['sent the dm: delivered', 'governor: 24/500 requests and 6 writes today'],
+  },
+  { kind: 'user', text: 'sick. now network max, throw some new people in the mixer like 20' },
+  {
+    kind: 'tool',
+    name: 'getGuide',
+    args: '{ useCase: "twitter/networkMaxing" }',
+    result: ['new people: niche map first, real roles, closest first', 'opener only: about them and their post, never the ask'],
+  },
+  {
+    kind: 'tool',
+    name: 'kbSearch',
+    args: '{ query: "niche map people not talked to yet" }',
+    result: ['memory/nicheMap: 312 people, 41 follow you, 0 chats', 'roles: founders, agency owners, creators'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterFollowers',
+    args: '{ account: "you", limit: "200", json: true }',
+    result: ['200 followers read, 63 never messaged', 'governor: 31/500 requests and 6 writes today'],
+  },
+  { kind: 'tool', name: 'twitterFollows', args: '{ account: "you", handles: "mira_ugc,tomfounds,…" }', result: ['20 checked: mutual 14, only they follow 6, errors 0'] },
+  {
+    kind: 'assistant',
+    text: 'Picked 20 from the niche map who follow you and you’ve never talked to. Each opener forwards one of their own recent posts plus one line about it. No pitch, no ask.',
+  },
+  {
+    kind: 'tool',
+    name: 'twitterQueueBuild',
+    args: '{ targets: "newPeople.json", out: "queue.json", account: "you", action: "dm" }',
+    result: ['queue.json: 20 dm items, nothing sent', 'Next: show, check, approve.'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterQueueCheck',
+    args: '{ queue: "queue.json" }',
+    result: ['20 pending, 0 failed', '2 dropped for a prior X Chat conversation', 'nothing sent'],
+  },
+  {
+    kind: 'assistant',
+    text: '18 left (2 already chat with you in X Chat, so they were dropped). Example: “saw this, we follow each other and never chatted, the pricing teardown was mad”. Approve?',
+  },
+  { kind: 'user', text: 'approved send it' },
+  { kind: 'tool', name: 'twitterQueueApprove', args: '{ queue: "queue.json", by: "you" }', result: ['approved by you, 18 pending items. Any edit voids it.'] },
+  {
+    kind: 'tool',
+    name: 'twitterQueuePlan',
+    args: '{ queue: "queue.json", window: "90m", minGap: 180 }',
+    result: ['18 events across 90m, at least 180s apart', 'first: dm #3 @mira_ugc at 14:06', 'nothing sent'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterQueueRunLive',
+    args: '{ queue: "queue.json", confirmLive: true }',
+    result: ['job job20261101T1405a2 started: random run, 18 events', 'watch it live in ~/.logCli/mcp/2026-11-01.log'],
+  },
+  {
+    kind: 'tool',
+    name: 'jobStatus',
+    args: '{ jobId: "job20261101T1405a2", afterLine: 6, waitMs: 50000 }',
+    result: ['dm #3 @mira_ugc sent', 'dm #11 @tomfounds sent', '[cooling] dm #7: x answered 344 at 14:19, a short wait', 'trying again at 14:31 (cool-off 1 of 5)'],
+  },
+  {
+    kind: 'assistant',
+    text: 'At 14:19 X answered 344 on one send. A single 344 isn’t a day-long block. The queue waits 12 minutes, asks X again, and reports exactly what X answers.',
+  },
+  {
+    kind: 'tool',
+    name: 'jobStatus',
+    args: '{ jobId: "job20261101T1405a2", afterLine: 14, waitMs: 50000 }',
+    result: ['dm #7 @kai_agency sent after cool-off 1', 'queue run: finished. 18 dms sent, 0 skipped', 'governor: 88/500 requests and 24 writes today'],
+  },
+  { kind: 'user', text: 'anyone replied yet' },
+  {
+    kind: 'tool',
+    name: 'twitterDms',
+    args: '{ account: "you", waiting: true, limit: "20" }',
+    result: ['@you, 1 conversation waiting on a reply', '1. @mira_ugc · 4m ago: haha yeah that one took forever', '   what you working on?'],
+  },
+  {
+    kind: 'tool',
+    name: 'voice',
+    args: '{ to: "mira_ugc", context: "replied to opener, asked what you work on", text: "…" }',
+    result: ['@mira_ugc PASS: voice 0.98 · answers them 0.96', 'reads like a mate 0.99 · like your replies there 0.97'],
+  },
+  {
+    kind: 'tool',
+    name: 'twitterDmLive',
+    args: '{ account: "you", userId: "1659…442", approvedBy: "you", confirmLive: true }',
+    result: ['sent the dm: delivered, shows in their X Chat too', 'governor: 92/500 requests and 26 writes today'],
+  },
+  {
+    kind: 'assistant',
+    text: 'Done: 5 inbox replies, 18 new openers and Mira answered. That’s 26 of today’s 240 writes. One 344 cleared after a short wait. Next time you ask, I’ll check who’s replied.',
+  },
+]

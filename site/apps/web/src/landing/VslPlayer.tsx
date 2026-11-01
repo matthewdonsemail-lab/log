@@ -17,20 +17,30 @@ export const VSL_POSTER = 'https://listeningkit.com/member-sites/gg/vsl-poster.j
 export default function VslPlayer({
   onWatched,
   videoTitle = 'gg vsl (log)',
+  src = VSL_VIDEO,
+  poster = VSL_POSTER,
+  alt = 'matt on the go getters call',
+  autoPlay = true,
+  title = 'go getters',
 }: {
   onWatched?: (seconds: number) => void
   /** Sent with every video event, so GA4 can tell this player from the gg page's own. */
   videoTitle?: string
+  src?: string
+  poster?: string
+  alt?: string
+  autoPlay?: boolean
+  title?: string
 }) {
   const wrap = useVideoEvents(videoTitle)
   return (
     <div ref={wrap}>
     <MediaPlayer
-      src={{ src: VSL_VIDEO, type: 'video/mp4' }}
-      title="go getters"
+      src={{ src, type: 'video/mp4' }}
+      title={title}
       playsInline
-      autoPlay
-      muted
+      autoPlay={autoPlay}
+      muted={autoPlay}
       aspectRatio="16/9"
       load="visible"
       onTimeUpdate={(detail) => onWatched?.(playedSeconds(detail.played))}
@@ -38,7 +48,7 @@ export default function VslPlayer({
       style={{ '--video-brand': 'rgb(42,140,255)', '--video-border-radius': '0', '--video-border': 'none' }}
     >
       <MediaProvider>
-        <Poster className="vds-poster" src={VSL_POSTER} alt="matt on the go getters call" />
+        <Poster className="vds-poster" src={poster} alt={alt} />
       </MediaProvider>
       <DefaultVideoLayout icons={defaultLayoutIcons} />
     </MediaPlayer>

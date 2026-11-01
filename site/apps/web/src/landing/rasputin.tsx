@@ -99,7 +99,7 @@ export function Rasputin({
   className?: string
 }) {
   return (
-    <section id="rasputin" className={`relative bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36 ${className}`}>
+    <section id="rasputin" className={`relative overflow-x-clip bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36 ${className}`}>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block"
