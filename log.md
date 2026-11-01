@@ -9954,3 +9954,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the X engine now takes one call per account at a time, across processes (`AccountLock` on `engine.lock`, `accountBusy` after 15 min; the X Chat watch is left out), waits 4 to 11 s after the account's last call (`spacing_wait`, `mark_call`), and keeps twikit's transaction key in `clientTransaction.json` for 3 hours (`ClientTransaction.state` and `restore` in vendor/twikit; `restore_transaction`, `keep_transaction`), so x.com's home page and signer are no longer loaded before every call. Rule 104 in AGENTS.md and the MCP instructions: more than one send goes through the queue, never a hand-rolled loop or parallel helpers on one account. `accountBusy` in the error catalog covers the engine too. Findings: RESEARCH/X_226_AUTOMATED_2026-11-01.md.
 Why: matt: "the timing stuff there i saw you hand rolled the outbound stuff when it should be queued and it has to have random intervals, but the bundle itself actually reveals more information". matthewsoldit got a soft block then X's 226 "looks automated" on 2026-11-01; the live log showed 8 reads in 0.2 s from parallel helpers beside a hand-written send loop, every call a cold client loading x.com first, while X's own x-web client (sign.o, decoded 2026-11-01: same obfiowerehiring keyword) loads once and signs every call from it.
 Checked: `bun run check` (1210 pass), with 9 engine tests (lock order, accountBusy, spacing, kept key restored and expired) and 5 twikit tests (state round trip, a restored client never loads the home page); not yet run live, the account is paused.
+
+## 2026-11-01 14:29Z · fix/xEngineOneCallAtATime
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `site/apps/web/public/claybound/PROVENANCE.md`: new file
+- `site/apps/web/public/claybound/cloud.glb`: new file
+- `site/apps/web/src/landing/ClayClouds.tsx`: added type Layer, const LAYERS, const DEFAULT_SRC, const BOTTOM_FRACTION, const CAMERA_Z, const FOV, function loadDeps, function ClaySky, function ClayClouds
+- `site/apps/web/src/landing/LandingPage.tsx`: changed function LandingPage
+- `site/apps/web/src/lib/clayDither.ts`: added const BAYER_GLSL, const CLAY_DITHER_GLSL, type ClayDitherOptions, function applyClayDither
+
+What changed: the landing hero's flat twemoji cloud band is replaced by the website's 3D clay clouds (`ClayClouds`, ported from website `packages/ui/src/components/clay-clouds.tsx`): three.js renders `public/claybound/cloud.glb` in four depth layers drifting at different speeds, lit by a warm key, sky fill and rim light, with the website's two-colour clay dither (`src/lib/clayDither.ts`). three.js and the model load lazily and in parallel; the sky stays plain until the scene is ready, motion stops under reduced motion, and the old `Clouds` band shows only if WebGL or the model fails. Claybound's PROVENANCE.md comes with the model.
+Why: matt: go through REPOS/website, find how the clouds are done on its landing page and bring that into our landing page.
+Checked: `pnpm typecheck` in site/apps/web; in the browser at 1440x900 and in the narrow pane the canvas renders the dithered clouds with the 2D band absent (the model loaded, 380 KB), no new console errors.

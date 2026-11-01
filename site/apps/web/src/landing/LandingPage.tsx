@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { BigGithubButton } from './BigGithubButton'
-import { Clouds } from './Clouds'
+import { ClayClouds } from './ClayClouds'
 import { Control } from './Control'
 import { GoGettersCta } from './GoGettersCta'
 import { Header } from './Header'
@@ -75,7 +75,7 @@ export function LandingPage() {
       />
       <div style={{ backgroundColor: '#2a8cff' }}>
       <div aria-hidden className="h-24 shrink-0" />
-      <Clouds>
+      <ClayClouds>
         <div
           className="flex flex-col items-center px-12 py-10 text-center sm:px-20 sm:py-12"
           style={{ background: 'radial-gradient(ellipse at center, #2a8cff 45%, transparent 72%)' }}
@@ -111,7 +111,7 @@ export function LandingPage() {
             </ul>
           </div>
         </div>
-      </Clouds>
+      </ClayClouds>
       </div>
       <section
         id="features"
