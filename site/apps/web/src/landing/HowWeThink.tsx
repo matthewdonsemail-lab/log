@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBriefcase, faCheck, faCircleNotch, faGift, faPlug, faRobot } from '@fortawesome/free-solid-svg-icons'
 import { faFacebook, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { useDragCarousel } from './useDragCarousel'
+import { TILT_QUERY, useMediaQuery } from './useMediaQuery'
 
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 
@@ -100,20 +101,22 @@ function OrbitDot({ index, time, progress }: { index: number; time: MotionValue<
 
 function OrbitCard({ index, time }: { index: number; time: MotionValue<number> }) {
   const node = ORBIT[index]
-  const left = useTransform(time, (t) => `${Math.min(74, Math.max(26, orbitPoint(t, index).x))}%`)
+  const left = useTransform(time, (t) => `${Math.min(70, Math.max(30, orbitPoint(t, index).x))}%`)
   const top = useTransform(time, (t) => `${orbitPoint(t, index).y}%`)
   return (
     <motion.div className="pointer-events-none absolute z-20" style={{ left, top, translateZ: 90 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 6, scale: 0.9 }}
-        animate={{ opacity: 1, y: -54, scale: 1 }}
-        exit={{ opacity: 0, y: -70, scale: 0.95 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="-translate-x-1/2 whitespace-nowrap rounded-xl bg-white px-3 py-2 text-[13px] font-bold text-[#0D2A4C] shadow-[0_0_0_6px_rgba(42,140,255,0.22),0_18px_30px_-16px_rgba(13,42,76,0.35)]"
-      >
-        <FontAwesomeIcon icon={faCheck} className="mr-1.5 text-[#2A8CFF]" />
-        {node.event}
-      </motion.div>
+      <div className="absolute bottom-0 left-0 w-max max-w-[160px] -translate-x-1/2 sm:max-w-none">
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.9 }}
+          animate={{ opacity: 1, y: -24, scale: 1 }}
+          exit={{ opacity: 0, y: -40, scale: 0.95 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="rounded-xl bg-white px-3 py-2 text-[13px] font-bold leading-snug text-[#0D2A4C] shadow-[0_0_0_6px_rgba(42,140,255,0.22),0_18px_30px_-16px_rgba(13,42,76,0.35)] sm:whitespace-nowrap"
+        >
+          <FontAwesomeIcon icon={faCheck} className="mr-1.5 text-[#2A8CFF]" />
+          {node.event}
+        </motion.div>
+      </div>
     </motion.div>
   )
 }
@@ -273,6 +276,7 @@ const BELIEFS: { icon: IconDefinition; title: string; body: string; Example: (pr
 ]
 
 function BeliefCard({ belief, running, active, go }: { belief: (typeof BELIEFS)[number]; running: boolean; active: number; go: (index: number) => void }) {
+  const tilt = useMediaQuery(TILT_QUERY)
   const Example = belief.Example
   return (
     <div
@@ -293,8 +297,8 @@ function BeliefCard({ belief, running, active, go }: { belief: (typeof BELIEFS)[
           } as CSSProperties
         }
       >
-        <div className="relative grid gap-8 md:grid-cols-2 md:items-center md:gap-12">
-          <div className="flex flex-col items-start gap-4 text-white">
+        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center md:gap-12">
+          <div className="flex min-w-0 flex-col items-start gap-4 text-white">
             <span className="grid size-11 place-items-center rounded-xl bg-white text-[#2A8CFF] shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]">
               <FontAwesomeIcon icon={belief.icon} className="text-lg" />
             </span>
@@ -317,12 +321,12 @@ function BeliefCard({ belief, running, active, go }: { belief: (typeof BELIEFS)[
               ))}
             </div>
           </div>
-          <div className="mx-auto w-full max-w-md [perspective:1400px]">
+          <div className="mx-auto w-full max-w-md md:[perspective:1400px]">
             <motion.div
               key={running ? 'on' : 'off'}
               className="demo-3d no-frame"
-              animate={{ rotateY: [-16, -8, -16], rotateX: [8, 3, 8] }}
-              transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+              animate={tilt ? { rotateY: [-16, -8, -16], rotateX: [8, 3, 8] } : { rotateY: 0, rotateX: 0 }}
+              transition={tilt ? { duration: 9, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }}
             >
               <Example running={running} />
             </motion.div>
