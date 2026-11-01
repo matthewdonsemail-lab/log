@@ -3753,7 +3753,15 @@ class Client:
                 await self._xchat_prime_keys(pages=1)
                 event = chat.decrypt_event(encoded)
             except Exception as again:
-                return unopened_of(encoded, again)
+                missing = self._xchat_missing_keys([encoded], {'errors': {'0': str(again)}})
+                found = await self._xchat_fetch_key_changes(missing) if missing else []
+                if not found:
+                    return unopened_of(encoded, again)
+                try:
+                    chat.decrypt_events(found)
+                    event = chat.decrypt_event(encoded)
+                except Exception as last:
+                    return unopened_of(encoded, last)
         return message_of({'event': event, 'original_b64': encoded})
 
     async def watch_xchat(self, seconds: float | None = None, keepalive: float = 30):
