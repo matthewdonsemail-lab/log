@@ -14,6 +14,7 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [followers.md](followers.md) | check who really follows you before saying so | nothing |
 | [whoNeedsYou.md](whoNeedsYou.md) | find who needs something from you, or who matters, and how close each is to money | nothing |
 | [followUps.md](followUps.md) | follow up the people you picked, each in your own voice | dms, one message per line, after you say yes |
+| [getTheAction.md](getTheAction.md) | get everyone talking to you to do one thing (retweet, like, try it): each conversation explained to you in a line, then a reply that answers them and asks | dms, through the account's one queue |
 | [networkMaxing.md](networkMaxing.md) | grow the network, the niche map: get to know everyone who messaged and new people from the niche map, each conversation about them | replies, follows, likes and openers, sent once the voice gate passes |
 
 DMs are their own pages. Recruiting is public replies only.
