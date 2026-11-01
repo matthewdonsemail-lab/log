@@ -16,4 +16,5 @@ export interface AccountLive {
   account: string
   events: LiveEvent[]
   latest: (LiveEvent & { type: 'badge' }) | null
+  firstLook: boolean
 }
