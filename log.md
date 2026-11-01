@@ -10500,3 +10500,36 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a queue hook, `scripts/hooks/queue.ts`, on SessionStart, every prompt and every log tool or shell call (written to `.claude/settings.json` and `.codex/hooks.json` from the registry). It reads every queue's log since the last look (`newQueueEvents`, offsets kept in `~/.logCli/queues/.hookOffsets.json`, `src/twitter/queue/events`) and puts each held item, send, cool-off with X's answer, stop, cancel and start into the agent's context as `>>> QUEUE`, with what to do: a held item is redrafted from what changed, gated and put back (rule 109); a cool-off or stop means nothing more goes out until matt says so (rule 94). Rule 114.
 Why: matt: "the queue will always need to be in context ... are we using the queue as a monitor or as a background pid that then isn't being inserted into context via the hooks". A queue run is a job inside the MCP server, and nothing told the agent what it did: jamesfuller_dev's held item sat until the log was read by hand, and the 226 cool-off was only seen by looking.
 Checked: `bun run check` passes (1299 tests, `check:agentHooks` with 16 hooks on both hosts); a new test sees only what was written since the last look, says the held item and the cool-off loudly, and nothing twice.
+
+## 2026-11-01 20:19Z · feat/xLiveContext
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `AGENTS.md`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/guides/xSending.md`: edited
+- `docs/platforms/x/live.md`: new file
+- `docs/reference.md`: edited
+- `python/twitterApi/engine.py`: added const LIVE_CHUNKS, def chunk_urls_of, const VIEWER_BADGE_COUNTS, const POLLING_HEADERS, const BADGE_POLL_SECONDS, def badge_counts_of, def live_path, def append_live, def notification_rose, def new_notifications, def badge_poll, def xchat_stream · changed def web_client, def xchat_watch, def act
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/hooks/queue.ts`: changed const text
+- `scripts/hooks/xLive.ts`: added const raw, const event, const text
+- `skills/xPosting/SKILL.md`: edited
+- `src/agentHooks/registry/index.ts`: added const X_LIVE · changed const AGENT_HOOKS
+- `src/agentHooks/sessionOffsets/client.ts`: added const SHARED_SESSION, const KEEP_MS, function sessionIdOf, const sessionsDir, const sessionPath, function readSessionOffsets, function writeSessionOffsets
+- `src/agentHooks/sessionOffsets/index.ts`: added export from "./client", export from "./types"
+- `src/agentHooks/sessionOffsets/types.ts`: added type Offsets, interface SessionOffsets
+- `src/cli/twitter/helpers/chat.ts`: added function isChatMessage · changed function liveLine, function watchChat
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/twitter/live/feed/client.ts`: added const LIVE_FILE, function eventsOf, function latestBadge, function newLiveEvents, function badgeLine, function liveEventLine, function xLiveContext
+- `src/twitter/live/feed/feed.test.ts`: added const badge, const reply, test "a new session sees the current count, then only what is new for it", test "two Claude sessions each get the queue's events once"
+- `src/twitter/live/feed/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/live/feed/types.ts`: added interface BadgeCounts, type LiveEvent, interface AccountLive
+- `src/twitter/live/index.ts`: added export from "./feed/index.ts"
+- `src/twitter/queue/events/client.ts`: changed function newQueueEvents · removed const offsetsPath, function readOffsets
+
+What changed: X's client keeps itself live with a notification refresher (`bundle.Notifications` module 726194). It polls every 30 s while the tab is in front and every 120 s while push is subscribed, and each poll reads `ViewerBadgeCounts` with `x-twitter-polling: true`. `webClient` now also saves the DM, X Chat and notification chunks the page loads on demand, read through the one session from the page's chunk map (`chunk_urls_of`). The account's X Chat watch now runs the same poll every 120 s (`badge_poll`). When `ntab_unread_count` rises it reads one page of new notifications. Each count and each new like, retweet, reply, quote, mention or follow goes to `~/.logCli/twitter/<account>/live.jsonl`. A new hook, `scripts/hooks/xLive.ts`, puts it in front of the agent as `>>> X LIVE`. Each Claude session keeps its own offsets (`src/agentHooks/sessionOffsets`, keyed by `session_id`), and the queue hook now reads per session the same way. The watcher no longer treats a non-message live event as a new chat message (`isChatMessage`), which had shown up as "@? (encrypted)". Rule 115, `docs/platforms/x/live.md`.
+Why: matt asked to go through X's actual client bundle, find how it stays live, and pass that live context into the agent through hooks, the way the queue and Monitor already do. He wanted it persistent, real time and scoped per session.
+Checked: read X's refresher code from the saved chunks (rea over bundle.Notifications, loader.directMessagesData and bundle.DirectMessages, plus the module source). Ran it live on matthewsoldit. `ViewerBadgeCounts` answered through the one session every ~2 min with `ntab_unread_count`, `dm_unread_count`, `xchat_unread_count` and `total_unread_count` (one went 0 → 1 → 0). The `>>> X LIVE` block reached this session through the hook. Added a feed test covering a new session's first look, the deltas after it, and two sessions each getting the queue's events once. `bun run check`: 1301 pass, 0 fail.

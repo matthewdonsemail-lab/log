@@ -1,21 +1,12 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { basename, join } from 'node:path'
+import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../../agentHooks/sessionOffsets/index'
 import { QUEUE_EVENT_PATTERNS } from './types'
 import type { QueueEvent } from './types'
 
 export function queuesRoot(): string {
   return process.env.LOG_QUEUES_DIR || join(homedir(), '.logCli', 'queues')
-}
-
-const offsetsPath = (root: string) => join(root, '.hookOffsets.json')
-
-function readOffsets(root: string): Record<string, number> {
-  try {
-    return JSON.parse(readFileSync(offsetsPath(root), 'utf8')) as Record<string, number>
-  } catch {
-    return {}
-  }
 }
 
 export function eventOf(queue: string, line: string): QueueEvent | null {
@@ -24,15 +15,14 @@ export function eventOf(queue: string, line: string): QueueEvent | null {
   return null
 }
 
-export function newQueueEvents(root = queuesRoot()): QueueEvent[] {
+export function newQueueEvents(root = queuesRoot(), session: string = SHARED_SESSION): QueueEvent[] {
   if (!existsSync(root)) return []
-  const offsets = readOffsets(root)
-  const first = !existsSync(offsetsPath(root))
+  const { offsets, firstLook } = readSessionOffsets(root, session)
   const events: QueueEvent[] = []
   for (const file of readdirSync(root).filter((f) => f.endsWith('.log'))) {
     const path = join(root, file)
     const size = statSync(path).size
-    const from = offsets[file] ?? (first ? size : 0)
+    const from = offsets[file] ?? (firstLook ? size : 0)
     if (size > from) {
       const text = readFileSync(path, 'utf8').slice(from)
       for (const line of text.split('\n')) {
@@ -42,8 +32,7 @@ export function newQueueEvents(root = queuesRoot()): QueueEvent[] {
     }
     offsets[file] = size
   }
-  mkdirSync(root, { recursive: true })
-  writeFileSync(offsetsPath(root), JSON.stringify(offsets))
+  writeSessionOffsets(root, session, offsets)
   return events
 }
 

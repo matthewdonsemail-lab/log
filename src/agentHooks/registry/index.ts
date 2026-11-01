@@ -15,6 +15,7 @@ const ENGINES = "scripts/hooks/engines.ts";
 const INBOX = "scripts/hooks/inbox.ts";
 const KNOWLEDGE = "scripts/hooks/knowledge.ts";
 const QUEUE = "scripts/hooks/queue.ts";
+const X_LIVE = "scripts/hooks/xLive.ts";
 
 export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: PAGE_STATE, timeout: 20, why: "where every open browser is, the moment a session starts or comes back from compaction" },
@@ -30,6 +31,9 @@ export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: QUEUE, timeout: 10, why: "what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)" },
   { event: "UserPromptSubmit", script: QUEUE, timeout: 10, why: "the same queue events with each of matt's prompts" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: QUEUE, timeout: 10, why: "the same queue events after a log tool or shell call, so a held item or a cool-off is acted on at once" },
+  { event: "SessionStart", matcher: "startup|resume|clear|compact", script: X_LIVE, timeout: 10, why: "what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)" },
+  { event: "UserPromptSubmit", script: X_LIVE, timeout: 10, why: "the same X live state with each of matt's prompts, only what is new for this session" },
+  { event: "PostToolUse", matcher: TOOL_MATCHER, script: X_LIVE, timeout: 10, why: "the same X live state after a log tool or shell call, so a reply on a post is answered mid-task" },
   { event: "PreToolUse", matcher: SHELL_MATCHER, script: LIVE_LOGS, timeout: 10, why: "a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26); any log action run by hand from a shell is refused and pointed at its MCP tool (rule 106)" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: PAGE_STATE, timeout: 20, why: "a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once" },
   { event: "Stop", script: PAGE_STATE, timeout: 20, why: "the turn does not end while a browser sits on a state log-cli can resolve (rule 54)" },
