@@ -51,8 +51,12 @@ export function badgeLine(badge: NonNullable<AccountLive['latest']>): string {
 
 const NETWORK_ERROR = /curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve/i
 
+export function networkError(text: string): boolean {
+  return NETWORK_ERROR.test(text) && !/\b429\b/.test(text)
+}
+
 export function networkOnly(event: LiveEvent): boolean {
-  return event.type === 'pollRefused' && NETWORK_ERROR.test(event.error ?? '') && !/\b429\b/.test(event.error ?? '')
+  return event.type === 'pollRefused' && networkError(event.error ?? '')
 }
 
 export function liveEventLine(event: LiveEvent): string | null {

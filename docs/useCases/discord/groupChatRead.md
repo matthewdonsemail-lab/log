@@ -10,6 +10,23 @@ Say: **"go on docs/useCases/discord/groupChatRead.md for <group>, last <N> hours
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. The account is known: a local row if it isn't in Twenty<br/><i>localAccount</i>"]
+  s1["1. Session check<br/><i>discordSessionCheck</i>"]
+  s2["2. If logged out: open the account's own browser, the owner signs…<br/><i>inspectStart, inspectDoLive</i>"]
+  s3["3. Find the group or channel id<br/><i>discordChats</i>"]
+  s4["4. Read back far enough for the window<br/><i>discordRead</i>"]
+  s5["5. Summarise by who said what and what was decided, quoting times<br/><i>the reply to the owner</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | The account is known: a local row if it isn't in Twenty | `localAccount` { action: "add", platform: "discord", account: "<account>", adsPower: "<profileId>" } | `log localAccount list` shows it |
@@ -24,6 +41,6 @@ A busy group runs about 100 messages an hour, so a 5 hour window needs a limit n
 ## What the runs taught
 
 - **Twenty doesn't have to hold the account.** `LOG_ACCOUNTS=local` leaves Twenty out entirely, and a session captured by `inspectStart` saves back to the local file.
-- **A 429 stops the read.** The answer keeps what was read and says `stopped`. Nothing retries (rule 94), and no script calls Discord with the account's token.
+- **A 429 stops the read.** The answer keeps what was read and says `stopped`, with Discord's status, and a 429 pauses the account. Nothing retries (rule 94), and no script calls Discord with the account's token. Any refusal stops `log search index` across every chat the same way, keeping what it had read.
 - **A browser profile that won't start for low disk** needs space freed and the browser app restarted, never its cache deleted: that can wipe the session.
 - **Secrets posted in the chat** (keys, tokens) are never repeated in the summary; tell the owner to rotate them.

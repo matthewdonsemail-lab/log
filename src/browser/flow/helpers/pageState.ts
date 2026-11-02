@@ -61,8 +61,8 @@ export const PAGE_STATES: readonly StateRule[] = [
     url: /\/checkpoint/i,
     text: /confirm that you.?re human to use your account/i,
     what: 'a checkpoint\'s first page ("confirm that you\'re human to use your account")',
-    resolve: 'click Continue: it is plain text, not a button: `log inspect do click <ref of "Continue"> --live` (the ref from the step\'s snapshot), then a snapshot for the next state',
-    person: false
+    resolve: 'none: a checkpointed account is deactivated (rule 82, matt 2026-11-02): the browser\'s checkpoint watch sets it DEACTIVATED, reason checkpointed, its listings lost; the browser closes and nothing is pressed. Tell matt',
+    person: true
   },
   { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated|نشتبه في وجود سلوك تلقائي/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
   {
@@ -156,7 +156,7 @@ export const PAGE_STATES: readonly StateRule[] = [
   },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
-  { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint not mapped yet', resolve: 'take a snapshot, read the page, press its Continue/next control to see the next state (matt: never stop at a checkpoint), and add the state here', person: false }
+  { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint', resolve: 'none: a checkpointed account is deactivated (rule 82, matt 2026-11-02): the browser checkpoint watch sets it DEACTIVATED, reason checkpointed, its listings lost; the browser closes and nothing is pressed. Tell matt', person: true }
 ]
 
 export function pageStateOf(url: string, text: string, context: StateContext = {}): PageState | null {
@@ -217,7 +217,7 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   videoSelfie: () => null,
   identityVerificationHold: () => null,
   textCaptcha: (at) => liveStep(at.account, 'solve'),
-  checkpointStart: clickLabel(/(:\s*|")Continue"?\s*$/),
+  checkpointStart: () => null,
   automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue|تجاهل)"?\s*$/),
   browserNotificationsNotice: (at) => liveStep(at.account, 'press', ['Escape']),
   pastNoticeDialog: (at) => liveStep(at.account, 'press', ['Escape']),
@@ -235,7 +235,7 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   twoStepPasskey: (at) => liveStep(at.account, 'clickRole', ['button', 'Try another way']),
   twoStepCode: (at) => liveStep(at.account, 'code'),
   loginForm: (at) => liveStep(at.account, 'signIn'),
-  checkpoint: (at) => snapshotCall(at.account)
+  checkpoint: () => null
 }
 
 export function resolveCallOf(state: PageState, at: StateAt): ResolveCall | null {

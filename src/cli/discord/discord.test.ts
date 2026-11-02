@@ -147,3 +147,122 @@ describe("log discord session check", () => {
     expect(toInboxOf({ kind: "message", channelId: "1", fromMe: true, text: "mine" })).toBe(false);
   });
 });
+
+describe("log discord send reads the copy for AI artifacts (rule 111)", () => {
+  test("copy with a zero-width character is refused with aiArtifacts and nothing is called, even with --live", async () => {
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo​ what's up", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1547936265436012645", timestamp: "t" }, refreshed: null });
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("aiArtifacts");
+    expect(r.calls).toEqual([]);
+  });
+
+  test("a dry run is refused the same way", async () => {
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo​"]);
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("aiArtifacts");
+  });
+
+  test("clean copy carries its reading in the dry run, its --json and the log line", async () => {
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo", "--json"]);
+    expect(r.code).toBe(0);
+    expect(JSON.parse(r.out)).toMatchObject({ dryRun: true, watermark: { level: "clean", statistical: "unknown" } });
+    expect(r.err).toContain("discordOne: watermark clean");
+    const plain = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo"]);
+    expect(plain.out).toContain("watermark clean");
+  });
+
+  test("a live send logs the reading and carries it in --json", async () => {
+    const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "yo", "--approvedBy", "matt", "--live", "--json"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1547936265436012645", timestamp: "t" }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(JSON.parse(r.out)).toMatchObject({ watermark: { level: "clean" } });
+    expect(r.err).toContain("discordOne: watermark clean");
+  });
+});
+
+const REFUSAL_SCRIPT = `
+import json, sys, types
+sys.path.insert(0, "python")
+fake = types.ModuleType("endcord.message")
+fake.prepare_messages = lambda raw: raw
+sys.modules["endcord"] = types.ModuleType("endcord")
+sys.modules["endcord.message"] = fake
+from discordApi import engine
+engine.time.sleep = lambda s: None
+
+def msg(i):
+    return {"id": str(i), "timestamp": "t", "username": "u", "global_name": "U", "user_id": "2", "content": "m" + str(i)}
+
+class Fake:
+    my_id = "1"
+    header = {}
+    def __init__(self, answers):
+        self.answers = answers
+        self.calls = []
+    def request(self, method, path, body, header):
+        self.calls.append(path)
+        return self.answers.pop(0)
+
+DMS = json.dumps([{"id": c, "type": 1, "name": None, "recipients": [{"id": "9", "username": "p" + c, "global_name": None}]} for c in ("10", "20", "30")]).encode()
+
+def run(answers, call):
+    client = Fake(answers)
+    engine.open_client = lambda token: (client, None)
+    return {"answer": call(), "calls": client.calls}
+
+out = {
+    "export429": run([(DMS, 200), (json.dumps([msg(1)]).encode(), 200), (b'{"message": "You are being rate limited.", "retry_after": 3}', 429)], lambda: engine.export_of("t", 200, 0)),
+    "exportDrop": run([(DMS, 200), (None, None), (json.dumps([msg(2)]).encode(), 200), (json.dumps([msg(3)]).encode(), 200)], lambda: engine.export_of("t", 200, 0)),
+    "export403": run([(DMS, 200), (b'{"message": "Missing Access"}', 403)], lambda: engine.export_of("t", 200, 0)),
+    "chats429": run([(b"{}", 429)], lambda: engine.chats_of("t")),
+    "send429": run([(b"{}", 429)], lambda: engine.send_of("t", "jilly", "yo")),
+    "read429": run([(json.dumps([msg(i) for i in range(100)]).encode(), 200), (b"{}", 429)], lambda: engine.read_of("t", "10", 300, None)),
+}
+print(json.dumps(out))
+`;
+
+describe("the Discord engine stops the whole read on a refusal (rule 94)", () => {
+  const python = spawnSync(process.env.LOG_PYTHON || "python", ["-c", REFUSAL_SCRIPT], { encoding: "utf8" });
+  const got = python.error || python.status !== 0 ? null : JSON.parse(python.stdout.trim().split("\n").pop()!);
+  test("the script ran", () => {
+    if (python.error) return;
+    expect(python.stderr.includes("Traceback")).toBe(false);
+    expect(got).not.toBeNull();
+  });
+
+  test("a 429 on one conversation stops the export there, keeps what was read and reads nothing more", () => {
+    if (!got) return;
+    const { answer, calls } = got.export429;
+    expect(calls).toHaveLength(3);
+    expect(answer).toMatchObject({ ok: false, code: "rateLimited", httpStatus: 429, event: "throttled", stopped: { conversationId: "20", httpStatus: 429, read: 0, conversationsLeft: 1 } });
+    expect(answer.detail).toContain("channel 20");
+    expect(answer.stopped.answer).toContain("rate limited");
+    expect(answer.conversations.map((c: { id: string }) => c.id)).toEqual(["10", "20"]);
+    expect(answer.conversations[0].messages).toHaveLength(1);
+  });
+
+  test("any other refusal stops it the same way", () => {
+    if (!got) return;
+    expect(got.export403.calls).toHaveLength(2);
+    expect(got.export403.answer).toMatchObject({ ok: false, code: "platformError", httpStatus: 403, stopped: { conversationId: "10" } });
+  });
+
+  test("a network drop is not a refusal: that conversation is noted and the next is read", () => {
+    if (!got) return;
+    expect(got.exportDrop.calls).toHaveLength(4);
+    expect(got.exportDrop.answer).toMatchObject({ ok: true, problems: [{ id: "10" }] });
+    expect(got.exportDrop.answer.conversations).toHaveLength(3);
+  });
+
+  test("a 429 on the chat list stops chats and send before anything else", () => {
+    if (!got) return;
+    expect(got.chats429).toMatchObject({ calls: [expect.any(String)], answer: { ok: false, code: "rateLimited", event: "throttled" } });
+    expect(got.send429).toMatchObject({ calls: [expect.any(String)], answer: { ok: false, code: "rateLimited", event: "throttled" } });
+  });
+
+  test("a 429 while paging a read keeps the page read, pauses the account and asks for nothing more", () => {
+    if (!got) return;
+    expect(got.read429.calls).toHaveLength(2);
+    expect(got.read429.answer).toMatchObject({ ok: true, httpStatus: 429, event: "throttled" });
+    expect(got.read429.answer.messages).toHaveLength(100);
+  });
+});

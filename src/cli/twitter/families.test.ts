@@ -298,11 +298,11 @@ describe("log twitter queue", () => {
     expect(h.calls).toEqual([]);
   });
 
-  test("run --live walks the machine: sent, gone, a throttle cools off and is retried once at the end", async () => {
-    let bobTries = 0;
+  test("run --live walks the machine: sent, gone, and a dropped connection is tried again", async () => {
+    let carolTries = 0;
     const h = harness((spec) => {
       if (spec.tweetUrl === POST_B && spec.action === "reply") return { ok: false, event: "gone", code: "TweetNotAvailable", detail: "(385)" };
-      if (spec.tweetUrl === POST_C && bobTries++ === 0) return { ok: false, event: "dropped", code: "xSentNothing", detail: "x created no tweet" };
+      if (spec.tweetUrl === POST_C && carolTries++ === 0) return { ok: false, event: "failed", code: "RequestsError", detail: "curl: (56) Recv failure: Connection was reset" };
       return { ok: true, event: "sent", tweetId: String(500 + h.calls.length) };
     });
     const f = await builtAndPlanned(h);
@@ -314,30 +314,27 @@ describe("log twitter queue", () => {
     expect(h.calls.filter((c) => c.tweetUrl === POST_C)).toHaveLength(2);
     const sends = h.calls.filter((c) => c.action !== "notifications" && c.action !== "inbox");
     expect(sends.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
-    expect(h.calls.filter((c) => c.action === "notifications")).toHaveLength(4);
-    expect(r.err).toContain("cool-off 1 of 5");
-    expect(r.err).toMatch(/trying again at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/);
-    expect(r.err).toMatch(/state +cooling/);
+    expect(r.err).toContain("a network error, not x refusing");
+    expect(r.err).toMatch(/state +retrying/);
     expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("random run done: 2 replies sent, 1 skipped");
     expect(existsSync(f.queue.replace(/\.json$/, ".lock"))).toBe(false);
   });
 
-  test("one 344 is a short wait and X is asked again; only three in a row is a day, and each line says what X answered and when", async () => {
-    const h = harness(() => ({ ok: false, event: "dailyLimit", code: "CouldNotTweet", detail: "(344) You have reached your daily limit" }));
+  test("a 344 stops the run at once with X's answer and the time, and the item stays pending (rule 94)", async () => {
+    const h = harness((s) => (s.action === "inbox" || s.action === "notifications" ? { ok: true, messages: [] } : { ok: false, event: "dailyLimit", code: "CouldNotTweet", detail: "(344) You have reached your daily limit" }));
     const f = await builtAndPlanned(h);
-    const start = h.clockAt();
-    await h.run(["twitter", "queue", "run", f.queue, "--live"]);
-    const lines = readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8").split("\n").filter((l) => l.includes("[cooling]"));
-    expect(lines[0]).toMatch(/x answered at \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: CouldNotTweet: \(344\)/);
-    expect(lines[0]).toContain("a short wait, then x is asked again");
-    expect(lines[1]).toContain("a short wait");
-    expect(lines[2]).toContain("x said its daily limit 3 times in a row, so a day");
-    const firstBack = /trying again at (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC/.exec(lines[0])![1];
-    expect(Date.parse(`${firstBack.replace(" ", "T")}:00Z`) - start).toBeLessThan(3600_000);
+    const r = await h.run(["twitter", "queue", "run", f.queue, "--live"]);
+    expect(r.code).toBe(5);
+    expect(h.calls.filter((c) => c.action !== "notifications" && c.action !== "inbox")).toHaveLength(1);
+    expect(loadQueue(f.queue).items.filter((i) => i.status === "pending")).toHaveLength(3);
+    const log = readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8");
+    expect(log).toMatch(/STOPPED: REFUSED reply #\d+ @\S+: x answered at \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC: CouldNotTweet: \(344\)/);
+    expect(log).toContain("Nothing goes out on @xTwo until matt starts a run again");
+    expect(log).not.toContain("[cooling]");
   });
 
   test("a dead session halts the run with exit 5 and the rest stays pending", async () => {
-    const h = harness(() => ({ ok: false, event: "sessionDead", code: "sessionDead", loginState: "loggedOut", detail: "X answered HTTP 401" }));
+    const h = harness((s) => (s.action === "inbox" || s.action === "notifications" ? { ok: true, messages: [] } : { ok: false, event: "sessionDead", code: "sessionDead", loginState: "loggedOut", detail: "X answered HTTP 401" }));
     const f = await builtAndPlanned(h);
     const r = await h.run(["twitter", "queue", "run", f.queue, "--live"]);
     expect(r.code).toBe(5);
@@ -428,5 +425,14 @@ describe("log twitter queue", () => {
     const python = spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { input: JSON.stringify(controllerShape), encoding: "utf8", env: { ...process.env, PYTHONUTF8: "1" } });
     if (python.status !== 0) return;
     expect(fingerprint(queue)).toBe(python.stdout.trim());
+  });
+});
+
+describe("the context read right before a send (rule 109)", () => {
+  test("a thread that can't be read holds the item: it is never sent on half its context", async () => {
+    const h = harness((s) => (s.action === "inbox" ? { ok: false, code: "platformError", detail: "X answered 500" } : s.action === "notifications" ? { ok: true, messages: [] } : { ok: true, event: "sent" }));
+    const f = await builtAndPlanned(h);
+    await h.run(["twitter", "queue", "run", f.queue, "--live"]);
+    expect(h.calls.some((c) => c.action === "dm" || c.action === "reply")).toBe(false);
   });
 });

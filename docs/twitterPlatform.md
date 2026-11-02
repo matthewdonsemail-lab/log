@@ -30,7 +30,7 @@ The controller is an earlier skill that **sends** what a person has already appr
 | `--action reply / quote / dm / like` | Sends one approved reply, quote, DM or like, recording who approved it. |
 | `--action follows` | Read-only: does each handle follow the account (`friendships/show`)? |
 | `sequence.py build/show/check/approve/run/status` | A queue of approved messages, sent one at a time 90-150 s apart. `approve` stores a fingerprint of every recipient and every line of copy, and any edit voids it. |
-| `random_run.py plan/run/nudge` | Spreads a queue over a time window at random times, as a state machine (`planned → waiting → liking/replying → cooling → finished`, `halted`), with cool-offs when X blocks and a nudge that sends the next N now. |
+| `random_run.py plan/run/nudge` | Spreads a queue over a time window at random times, as a state machine (`planned → waiting → liking/replying → retrying → finished`, `halted`), stopping on X's first refusal and a nudge that sends the next N now. |
 
 Its habits match log's:
 
@@ -58,7 +58,7 @@ The same three layers Facebook has, platform first:
 ```mermaid
 flowchart LR
   cli["log twitter reply / dm / queue …<br/>CLI and MCP tool"] --> src["src/twitter/&lt;area&gt;/&lt;domain&gt;<br/>gates, Twenty, XState machines"]
-  src --> engine["python/twitterApi/engine.py<br/>session, proxy, governor"]
+  src --> engine["python/twitterApi/engine.py<br/>one session host, governor, no proxy"]
   engine --> twikit["vendor/twikit<br/>X's internal API"]
   src --> twenty["Twenty socialAccounts<br/>platform TWITTER"]
 ```
@@ -66,8 +66,8 @@ flowchart LR
 | Layer | Facebook | X |
 | --- | --- | --- |
 | The library | `vendor/fbk` (one surface per family) | `vendor/twikit` (one `Client`, 114 calls) |
-| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`: `ping` first, then one twikit call |
-| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor; refreshed cookies merged back into Twenty |
+| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`, run inside the account's one session host (`python/twitterApi/host.py`, rule 105): one call at a time, sends 4 to 11 s apart and reads 0.8 to 2.5 s apart (rules 104, 110), the session checked first, then one twikit call |
+| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor, `engine.lock`, the session host (`host.json`, `host.lock`), the transaction key (`clientTransaction.json`, 3 hours); refreshed cookies merged back into Twenty |
 | The gate | `directGate` (session, proxy in the home country, active hours) | `twitterGate`: platform TWITTER, not deactivated, `auth_token` and `ct0` saved. No proxy. |
 | The result | `socialAccounts.sessionState` | The same field (`loggedIn`, `loggedOut` for 401/32, `restricted` for 226) |
 | Declared in | `DIRECT_ROUTES`, `commandEngine` | The same, with the engine kind `directApiOnly`: X has no browser path |
@@ -78,7 +78,7 @@ Example: `log twitter reply --account <a> --tweet <url> --text "<copy>" --approv
 2. The engine pings the session.
 3. The style check passes.
 4. twikit sends the reply.
-5. X's answer decides the result. A sent id is success. An empty result is a drop, and the account cools off. A 401 marks the session `loggedOut` in Twenty.
+5. X's answer decides the result. A sent id is success. An empty result, a 429, 226, 344, a soft block or the governor is a refusal, and the run stops there until the owner starts it again (rule 94). A 401 marks the session `loggedOut` in Twenty.
 
 ## The commands
 
@@ -95,6 +95,7 @@ These cover what the controller does today, by area.
 | `log twitter like` | `twitter/post/send` | `--action like` | `twitterLikeLive` |
 | `log twitter queue build / show / check / approve / status / plan` | `twitter/queue/plan` | `sequence.py`, `random_run.py plan` | none |
 | `log twitter queue run / nudge` | `twitter/queue/run` (XState) | `random_run.py run / nudge` | `twitterQueueRunLive` |
+| `log twitter queue add / edit` | `twitter/queue/plan` (`addToQueue`, `editItem`) | new | none |
 | the house style check | `twitter/copy/style` | `check_style` | none |
 
 - **Without `--live`, a send is a dry run:** the target, the text and its style are checked, and X isn't contacted.
@@ -107,10 +108,12 @@ What every platform's commands share stays shared: the copy rules (beside `faceb
 
 `random_run.py` was already a state machine (python-statemachine). It becomes an XState machine in `src/twitter/queue/run/machine.ts`, run through `observability/trace` like every long-running process, so `log watch` and the live log show each step.
 
-- **States** stay the same: `planned`, `waiting`, `liking`, `replying`, `cooling`, `finished`, `halted`.
+- **States**: `planned`, `waiting`, `liking`, `replying`, `retrying`, `finished`, `halted`. `retrying` is only for a dropped connection with no answer from X.
 - **Each send** is one engine call, and its answer is the event: `sent`, `dropped` (an empty result), `throttled` (429, with its reset time), `dailyLimit` (344), `gone` (385, 433), `automated` (226), `sessionDead` (401/32).
-- **Random times** use the system random source and the drawn gaps. A cool-off pushes everything left later by the length of the pause.
-- **Cool-offs** go into the account's governor. fbk's `RequestGovernor` already paces with heavy-tailed gaps, caps and lasting cooldowns, and takes its settings as an object. X's settings (its daily send limit and its 2h/6h/12h and 24h waits) are a second configuration of the same class, kept per account like Facebook's.
+- **Random times** use the system random source and the drawn gaps.
+- **A refusal stops the run** (rule 94). Any answer where X refused the send (`throttled` 429, `automated` 226, `dailyLimit` 344, `dropped`, a soft block, `governorBlocked`, `sessionDead`) halts the run at once: the item stays pending, the stop line names X's code, its message and the time, and the run never waits and asks X again by itself. Nothing goes out on that account until the owner starts a run again.
+- **A network drop is not a refusal.** A connection reset, a timeout or no answer from X (the same test as the live poll's `networkOnly`, never a 429) is tried again after 1 to 3 minutes, at most 3 drops in a row, then the run stops with the item pending.
+- **The governor** paces every call. fbk's `RequestGovernor` already paces with heavy-tailed gaps, caps and lasting cooldowns, and takes its settings as an object. X's settings are a second configuration of the same class, kept per account like Facebook's.
 - **Approval** keeps the fingerprint: a queue edited after `approve` is refused until it's approved again.
 - **A halt** sends an alert to the team chat, as the controller's alert does now.
 

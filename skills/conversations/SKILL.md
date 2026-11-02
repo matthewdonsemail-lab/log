@@ -39,7 +39,7 @@ log facebook conversation link <id> --listing <agencyListingId>
 
 ## Reading the inbox (next)
 
-The scan that writes `threads.json` from Facebook isn't built. Record the
+The scan that writes `threads.json` from Facebook isn't built ([#41](https://github.com/matthewdonsemail-lab/log/issues/41)). Record the
 Marketplace inbox with `log inspect` first (rule 29: goto the inbox,
 snapshot, open a thread, snapshot), read its HAR with rea for the requests
 that carry thread and message ids (rule 25), then build the scan from that

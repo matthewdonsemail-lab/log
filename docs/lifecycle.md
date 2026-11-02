@@ -31,15 +31,15 @@ step it left.
 `opening → watching ⇄ checking`, and `ACT → acting`
 
 - Acting is meant to run a publish or a reply in a tab of the open browser,
-  never in a browser of its own. It is not built yet (see below).
+  never in a browser of its own. It is next: [#42](https://github.com/matthewdonsemail-lab/log/issues/42).
 - At the end of the day the host goes `overnight`: it closes the browser for
   `endOfActiveHours`, waits for the account's morning, and reopens.
 
 ## The warm-up: one day, in the browser that stays open
 
 After the profile (photo and cover), the name and the Marketplace location,
-the account runs five warm-up activities in order, spaced through one day
-(`activityGapMs`, default 2.5 hours):
+the account runs five warm-up activities in order, a short gap apart
+(`activityGapMs`, default 10 seconds), then waits out the rest of the day:
 
 | Activity | What it does |
 | --- | --- |
@@ -78,7 +78,7 @@ Compared with the warm-up this was based on:
 | Outcome of any step | Goes to | Then |
 | --- | --- | --- |
 | `needsLogin` issue (login wall, session expired) | `onboarding.signingIn`, in the same browser | `next`, back to where it was |
-| `checkpoint` issue (checkpoint, video selfie) | `needsPerson`, with the window kept open for a person | `PERSON_DONE` → `checkingAccount` → `next` |
+| `checkpoint` issue (checkpoint, video selfie) | `needsPerson`, with the window kept open for a person; a `/checkpoint` page also sets the account DEACTIVATED in Twenty (rule 82) | `PERSON_DONE` → `checkingAccount` → `next` |
 | `limited` issue (rate limited) | `cooling`: closed for `rateLimited`, rested for `limitedRestMs` | `opening` |
 | `restricted` issue (for example "everything you manage is restricted") | closed for `restricted` → `restricted` (final) | kept in Twenty |
 | `banned` issue (account disabled) | closed → `banned` (final) | kept in Twenty |
@@ -134,10 +134,15 @@ in `skills/host/SKILL.md`).
   saved to Twenty as soon as it is.
 - Every step's landing page is checked (`pageProblem`: checkpointed,
   loginWall, pageNotReached).
+- Every page the browser lands on is watched (`navigations.jsonl`, between
+  steps too): a `/checkpoint` page sets the account to DEACTIVATED in Twenty
+  with the reason `checkpointed` and marks its listings lost (`watchCheckpoint`,
+  rule 82). The same watch runs for `log inspect`, flow runs and the warm-up
+  stages.
 
-**Not built yet:** `acting` (publish and replies as a tab) answers
-`actNotBuilt`. Until it is, the standalone commands still open their own
-browser for those, so use them as few times as possible.
+**Next ([#42](https://github.com/matthewdonsemail-lab/log/issues/42)):** `acting` (publish and replies as a tab) answers
+`actNotBuilt` today, so the standalone commands still open their own browser
+for those: use them as few times as possible.
 
 The rules behind this are in AGENTS.md.
 

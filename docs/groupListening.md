@@ -65,15 +65,15 @@ The service runs the script at `FACEBOOK_WORKER_PATH` with one JSON request on s
   1. **Pick the account.** It needs an `agencyGroup` row for the group (members first) whose account may run, is inside its active hours (never bypassed here), and has its browser open. Nothing is launched: with no open browser, that group answers an error.
   2. **Read in that browser** with the group read machine (`src/facebook/group/read/machine.ts`): open the group and scroll. It stops when the feed has shown 3 posts the cursor has already seen (about one scroll's worth), when the feed ends, or at the scroll limit (worked out from `limit`, about three posts a scroll, at most 6 scrolls). Nothing is clicked.
   3. **Answer** with every post this read saw, newest first, at most `limit`, keeping only those matching `terms` when terms are given. Repeats are fine: the service drops duplicates by `external_id`.
-  4. **Move `agencyGroup.readCursor`.** Nothing else is written to Twenty.
+  4. **Move `agencyGroup.readCursor`** (only once the feed read finished) and write `lastReadAt` and `lastReadReason`. No post is written to Twenty.
 - **What "already seen" means:** the cursor keeps the ids of the posts the latest reads saw (`seenIds`, newest first, at most 500). A post is new when its id isn't there, whatever Facebook's time on it says. So a post that goes live late with an earlier time is still caught. An old cursor saved before ids were kept is read by time once, then switches to ids.
 - **Output:** `{"ok": true, "result": {"results": [record…], "errors": [{group_id, code, error}…]}, "new_cookies": []}`.
   - A record has the `NewFacebookPostPayload.from_record` shape: `external_id`, `group_id`, `content`, `url`, `author {name, id, url}`, `occurred_at`, `metrics {likes, comments, shares}`, `matched_terms`.
-  - A checkpoint, login wall or video selfie is `auth_required`, which the service doesn't retry. Any other failure keeps log's own error code and is retried with backoff.
+  - A checkpoint, login wall, video selfie, expired session or an account never connected is `auth_required`, which the service doesn't retry. Any other failure keeps log's own error code and is retried with backoff.
   - When no group could be answered: `{"ok": false, "code", "error"}`.
 - **Checked:** the service's own `from_record` parsed the answer into `new_fb_post` / `facebook_group` items.
 
-### Step 5: act (not built yet)
+### Step 5: act ([#40](https://github.com/matthewdonsemail-lab/log/issues/40))
 
 Reading NEW `socialListening` rows with `sourceKind` `facebook_group`, and acting from the account that saw the post, is its own piece of work. It needs the account for each row (the group's `agencyGroup` gives it) and an action built from a `log inspect` recording.
 

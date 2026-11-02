@@ -74,10 +74,17 @@ describe('the host runner (rule 35)', () => {
     expect(resumeFrom(null, '2026-10-19')).toBeUndefined()
   })
 
-  test('a checkpoint waits for a person; PERSON_DONE through the control file carries on in the same browser', async () => {
+  test('a checkpoint deactivates: the host closes the browser and ends, waiting on nobody (rule 118)', async () => {
+    process.env.LOG_HOST_DIR = mkdtempSync(join(tmpdir(), 'logHost'))
+    const s = steps({ signIn: () => ({ kind: 'issue', issue: 'checkpointed' }) })
+    expect((await host('harrisburg', s).done).state).toBe('deactivated')
+    expect(s.count.openBrowser).toBe(1)
+  })
+
+  test('a video selfie waits for a person; PERSON_DONE through the control file carries on in the same browser', async () => {
     process.env.LOG_HOST_DIR = mkdtempSync(join(tmpdir(), 'logHost'))
     const s = steps({
-      signIn: (_i, n) => (n === 1 ? { kind: 'issue', issue: 'checkpointed' } : { kind: 'ok' }),
+      signIn: (_i, n) => (n === 1 ? { kind: 'issue', issue: 'videoSelfieRequired' } : { kind: 'ok' }),
       watchCheck: () => ({ kind: 'issue', issue: 'restrictedPolicy' })
     })
     const run = host('harrisburg', s)

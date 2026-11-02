@@ -8,6 +8,17 @@ Say: **"go on docs/useCases/twitter/followers.md for <handles>"**, or "for every
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. For each handle: do they follow the account, does the account f…<br/><i>twitterFollows</i>"]
+  s2["2. Take anyone who doesn't follow off the followers line, or rewor…<br/><i>the page or copy</i>"]
+  s0 --> s1
+  s1 --> s2
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
@@ -21,6 +32,6 @@ Handles come from research or from the owner, never guessed (rule 53). The read 
 - **People who engage aren't always followers.** A slide naming the account's "circle" listed people who had only engaged; two of them didn't follow. Every named follower now gets this check first.
 - **The full follower list comes from the account's own session,** not from who engaged.
 
-## Not built yet
+## Reading the list
 
-- A `log twitter followers` read that pulls the full list on the account's session. Today it's treg, or a script on the session.
+`log twitter followers --account <a>` (MCP `twitterFollowers`) reads the account's full follower list on its own session, on the direct-API engine.

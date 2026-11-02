@@ -17,7 +17,7 @@ flowchart LR
   textCaptcha -->|"log inspect do solve --live --account #lt;a#gt;"| nexttextCaptcha(["next state"])
   checkpointStart["checkpointStart: a checkpoint's first page (#quot;confirm that you're human to use your account#quot;)"]
   page --> checkpointStart
-  checkpointStart -->|"click Continue"| nextcheckpointStart(["next state"])
+  checkpointStart --> person
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
@@ -63,6 +63,6 @@ flowchart LR
   loginForm["loginForm: the login form"]
   page --> loginForm
   loginForm -->|"log inspect do signIn --live --account #lt;a#gt;"| nextloginForm(["next state"])
-  checkpoint["checkpoint: a Facebook checkpoint not mapped yet"]
+  checkpoint["checkpoint: a Facebook checkpoint"]
   page --> checkpoint
-  checkpoint -->|"take a snapshot, read the page, press its Continue/next control to see the next state"| nextcheckpoint(["next state"])
+  checkpoint --> person

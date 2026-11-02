@@ -12,6 +12,23 @@ Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <articl
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. Find the posts: the topic's words, latest first, original posts…<br/><i>treg's X post search</i>"]
+  s2["2. One post per person<br/><i>treg's posts read on the account, for i…</i>"]
+  s3["3. For each post, a one-line summary of what they said, and a repl…<br/><i>house style</i>"]
+  s4["4. Write the list somewhere the owner can read it on a phone: numb…<br/><i>a shared page</i>"]
+  s5["5. Queue it: each target carries its own text, build, check, appro…<br/><i>twitterQueuePlan</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
@@ -32,6 +49,6 @@ Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <articl
 - **Check past replies before approving.** One run replied to someone the account had already answered several times; that's where the one-reply-per-person rule came from.
 - **Big lists take days.** At 240 writes a day, a list of a hundred and more is planned day by day with `limit`.
 
-## Not built yet
+## Next
 
-- The queue only plans up to a limit. Spreading a long list over several days means planning it again each day.
+- [#37](https://github.com/matthewdonsemail-lab/log/issues/37) spreads a long list over several days. Until then, the queue plans up to its limit and is planned again each day.

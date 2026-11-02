@@ -193,7 +193,7 @@ Each file has a "How to re-test" section. The scripts the reports used are in
 `C:\Users\0\.buzz\.scratch\camoufox_probe\` (R2) and
 `C:\Users\0\.buzz\.scratch\leakTests\` (R3). `.scratch` is disposable. The
 durable route is the proposed `python/leakProbe.py` plus `log proxy probe`
-(`gateBypasses.md`), which are not built yet.
+(`gateBypasses.md`), tracked in [#47](https://github.com/matthewdonsemail-lab/log/issues/47).
 
 Re-run every probe after:
 

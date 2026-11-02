@@ -16,6 +16,7 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [followUps.md](followUps.md) | follow up the people you picked, each in your own voice | dms, one message per line, after you say yes |
 | [getTheAction.md](getTheAction.md) | get everyone talking to you to do one thing (retweet, like, try it): each conversation explained to you in a line, then a reply that answers them and asks | dms, through the account's one queue |
 | [networkMaxing.md](networkMaxing.md) | grow the network, the niche map: get to know everyone who messaged and new people from the niche map, each conversation about them | replies, follows, likes and openers, sent once the voice gate passes |
+| [nicheMapRegion.md](nicheMapRegion.md) | add a new world to the niche map (the YC 2026 batches, say), run it through the pipeline, then open on the warmest of it | follows, likes and openers, a few a day, once the voice gate passes |
 
 DMs are their own pages. Recruiting is public replies only.
 
@@ -29,8 +30,8 @@ DMs are their own pages. Recruiting is public replies only.
 | Finding people and posts | an outside search, never X itself (rule 53). Say the price before a big sweep | treg's X search, profile, posts and comments reads |
 | House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
-| The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Nudge`, `Status` |
-| Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 240 writes a day per account, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
+| The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Add`, `Edit`, `Nudge`, `Status` |
+| Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 240 writes a day per account. Any refusal from X (a 429, 226, 344, a soft block, the governor) stops the run, and nothing goes out until the owner starts it again (rule 94) | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
 
 ## The queue, step by step
 
@@ -44,6 +45,8 @@ The same calls on every sending page.
 6. `twitterQueuePlan` { window, minGap: 120, like: true }, with the window about 2 minutes per person (20 people: "40m"), then `twitterQueueRun` (dry run) then `twitterQueueRunLive` { confirmLive: true } when the owner asked for the live send. Follow it with `jobStatus`, and start a Monitor on `~/.logCli/mcp/<UTC day>.log` first (rule 26). `jobCancel` stops it at its next wait.
 
 What the run does when X pushes back: no tweet created or throttled waits 15 min doubling to 4 h, then retries once at the end. Daily limit (344) waits 24 h. Deleted post or replies off (385/433) is skipped. Dead session, or 5 waits in a row, stops and alerts the owner. Running it again resumes.
+
+One account has one queue and one run for everything it sends, dms, replies and quotes together (rule 107). `twitterQueueAdd` { queue, targets, action, by } puts more in, even while it runs: the run takes them in as it waits and fits each one at least minGap from what is planned, and one due sooner than the send it waits on goes first. `twitterQueueRunLive` { keepOpen: true } keeps the run going once everything is sent, until `jobCancel`. Right before each send the run reads that person's thread and what they did on the account's posts, and holds the item (`held`, with what changed) when anything happened since it was drafted (rule 109). When X refuses a send, the run stops at once with X's answer (code and message) and the time, and the item stays pending; a dropped connection with no answer from X is tried again, at most 3 drops in a row. The queue hook puts every held item, send, refusal and stop in front of the agent (`>>> QUEUE`, rule 114): redraft a held item, gate it with `voice`, stop the run, put it back with `twitterQueueEdit` and run it again. After a refusal, tell the owner X's answer and the time; nothing goes out on that account until the owner says so (rule 94).
 
 ## Rules that hold on every page
 

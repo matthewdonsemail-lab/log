@@ -83,7 +83,7 @@ The client lives in `src/facebook/group/read/client.ts` (`readStateOf` before a 
 
 ## The earlier worker
 
-Before reads moved into the open browser, the group-listening worker (`python/openMagpie/facebookWorker.py`, run as `log facebook poll --request`) answered straight from Twenty with no browser. Its error codes are still worth knowing:
+Before reads moved into the open browser, the group-listening worker (`python/openMagpie/facebookWorker.py`, then run as `log read group --worker`, now `log facebook poll --request`) answered straight from Twenty with no browser. Its error codes are still worth knowing:
 
 - `groupNoAccount`: no account is in the group.
 - `groupNotReadYet`: no host has read the group yet.

@@ -11,7 +11,7 @@ flowchart LR
 
 ## How it runs
 
-An account asks to join a neighbourhood group in its town. Once in, each read brings back the group's newest posts with their comments. Where the account has a saved session, the direct-API engine (fbk) reads the feed without opening a browser at all; otherwise the read is a tab in the account's open browser.
+An account asks to join a neighbourhood group in its town. Once in, each poll brings back the group's newest posts, nothing clicked and no comments opened; a read by hand (`read group`) can add their comments. Where the account has a saved session, the direct-API engine (fbk) reads the feed without opening a browser at all; otherwise the read is a tab in the account's open browser.
 
 ## The commands
 
@@ -24,8 +24,8 @@ An account asks to join a neighbourhood group in its town. Once in, each read br
 
 `read members --owners` keeps people whose bio says owner, founder, CEO or self-employed, or who run a page, saved under `~/.logCli/members/`.
 
-## Not built yet
+## Next
 
-Acting on a match (a comment or a message from the same account).
+- [#40](https://github.com/matthewdonsemail-lab/log/issues/40) acts on a match: a comment or a message from the same account.
 
 Sources: `docs/groupListening.md`, `docs/groupMembers.md`, `docs/commandNaming.md`.

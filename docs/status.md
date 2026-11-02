@@ -39,7 +39,7 @@ listed near the end.
 | `log proxy check` / `assign` / `balance` | ✅ 2026-10-22 | Byteful, for two accounts |
 | `log proxy static` | 🟡 | Never run live |
 | `log facebook messenger pin` and the `messengerPinCreate` flow | ✅ 2026-10-22 | The PIN is saved in Twenty (`--show` says it is set). Recorded with `log inspect`: Create PIN, `pin`, `pin` again; Facebook registered it (`VestaServerGraphQLRegisterProvider…`, 200) and the inbox opened. Made into the flow `messengerPinCreate`, which hasn't run as a flow yet. The "Enter your PIN" screen a new device would show is mapped (`messengerPinEnter`: typed from Twenty) but not recorded yet. The hook runs the flow itself when the PIN is in Twenty, and flags a person only when it isn't. |
-| `log adsPower sync` / `status` | ✅ 2026-10-19 | Made 10 profiles. Two capabilities are marked not built: `syncSessions` (publish, connect and profile still launch Camoufox) and `oneMachineAtATime` (the per-account browser lock). |
+| `log adsPower sync` / `status` | ✅ 2026-10-19 | Made 10 profiles. Two capabilities are next ([#43](https://github.com/matthewdonsemail-lab/log/issues/43), [#44](https://github.com/matthewdonsemail-lab/log/issues/44)): `syncSessions` (publish, connect and profile still launch Camoufox) and `oneMachineAtATime` (the per-account browser lock). |
 
 ## 3. The host and the account's lifecycle
 
@@ -79,7 +79,7 @@ listed near the end.
 | `log facebook warmup reel` (record, run) | 🔴 2026-10-20 | Swipe and `openProfile` failed in some runs |
 | `log facebook warmup reel run --persona` | 🔴 2026-10-20 | The latest run failed at Unmute, 0 reels. The fixes (Unmute, the profile opening in a new tab) are in the code but haven't run live. The comments-panel scroll was never recorded. |
 | `log facebook warmup stages` (the five stages) | ✅ 2026-10-22 | With `--bypass`: `stages record` recorded all five in one browser (27 steps) and saved each as a flow (`warmupFeedBrowse`, `warmupMarketplaceBrowse`, `warmupCreateAccessCheck`, `warmupSellingVisit`, `warmupMessagesVisit`); `stages run` then ran the five flows in one browser, 27 of 27 steps, and closed with its reason logged. |
-| save, follow, share | ⬜ | Not built |
+| save, follow, share | ⬜ | Next: [#46](https://github.com/matthewdonsemail-lab/log/issues/46) |
 
 ## 6. Facebook groups
 
@@ -89,7 +89,7 @@ listed near the end.
 | `join --answer` / `--fill --live --submit` | ✅ 2026-10-19 | Submitted; Facebook answered QUESTIONNAIRE_COMPLETED |
 | `log facebook read group` | ✅ 2026-10-22 for the first version | 16 posts, 8 comments. 🟡 The current version (id cursor, cursor-only saves) hasn't run live. |
 | `log facebook poll` / `--request` | 🟡 | Never run live. The group-listening service's parser accepted its records' shape. |
-| Acting on `socialListening` matches | ⬜ | Not built |
+| Acting on `socialListening` matches | ⬜ | Next: [#40](https://github.com/matthewdonsemail-lab/log/issues/40) |
 | The group-listening service's side (the watch, the webhook) | ⬜ | Not started |
 
 ## 7. Recording and documenting
@@ -174,7 +174,7 @@ The same five steps every time. Nothing is coded before step 2.
 |---|---|---|
 | `docs/platforms/facebook/workflows.md` | Reading a group is "extractor only", the command is "missing"; poll isn't listed | Both are built (see above) |
 | `docs/groupRead.md` (top) | "not yet run live end to end" | The first version ran live on 2026-10-22 |
-| `skills/lifecycle/SKILL.md` | Describes acting as working | Not built |
+| `skills/lifecycle/SKILL.md` | Describes acting as working | Next: [#42](https://github.com/matthewdonsemail-lab/log/issues/42) |
 | `skills/host/SKILL.md`, AGENTS.md | The host "signs in by the session cookie" | It types the email and password; the cookies decide whether it is signed in |
 | `skills/flow/SKILL.md` | Lists only profileSetup as a saved flow | There are 9 |
 | `skills/logCli/SKILL.md` | "Read-only on Facebook, except publish --live" | Join, fill, submit, the `--live` flows and `read --live` also act |

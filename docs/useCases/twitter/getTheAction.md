@@ -12,6 +12,31 @@ Say: **"go on docs/useCases/twitter/getTheAction.md"**, with the action and its 
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Everyone waiting on the owner, plus the people who opened or re…<br/><i>twitterDms</i>"]
+  s1["1b. Everyone who engaged with the post: who liked it, reposted it,…<br/><i>twitterNotifications</i>"]
+  s2["2. Drop the noise: spam, someone pitching their own tool, notifica…<br/><i>the agent</i>"]
+  s3["3. Read each real person's full context right now, never from memo…<br/><i>twitterDms</i>"]
+  s4["4. Tell the owner what each conversation is about: one table row p…<br/><i>the agent, in chat</i>"]
+  s5["5. Someone who engaged with the post gets it said back to them and…<br/><i>voice</i>"]
+  s6["6. Gate each draft against the same person, and rewrite until it p…<br/><i>voice</i>"]
+  s7["7. Everyone who passed goes into the account's one queue as dms, t…<br/><i>twitterQueueAdd, twitterQueueBuild, twitterQueueApprove, twitterQueuePlan, twitterQueueRunLive</i>"]
+  s8["7b. Right before each send the queue reads that person's full conte…<br/><i>twitterDms, voice, twitterQueueEdit</i>"]
+  s9["8. When someone answers, tell the owner what they said; when they'…<br/><i>twitterDms</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+  s8 --> s9
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Everyone waiting on the owner, plus the people who opened or reacted to his last message | `twitterDms` { account, waiting: true, limit: "200", json: true } | the list, with followUps |

@@ -43,7 +43,7 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | Photo, cover, name | `log facebook profile setup --account <a> --live` | `profileLive` | the photo and name saves answer without an error |
 | Location | `log inspect do setLocation "<City>, <State>" --live` (the host does it) | `inspectDoLive` | the location save's answer names the town |
 | Warm-up | `log facebook warmup stages run`, `log facebook warmup reel` | `warmup`, `warmupLive` | the five browsing activities each see their own answer; then 24 h before it's ready |
-| Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | at least 3 versions per ad, each title at least half different |
+| Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | an ad on more than one listing in a city: at least 3 versions and one per listing live there, every two titles at least half different (the city not counted); `campaign fill` refuses too few (`notEnoughCopyVersions`) |
 | Publish | `log flow run marketplaceListingPublish --account <a> --live` | `flowMarketplaceListingPublishLive` | the create answer returns the listing id |
 | Many towns | `log facebook campaign fill`, `run`, `heal` | `campaign`, `campaignLive` | one copy per account, a lost account's copy handed to another in the same area |
 | Watch | the host, every 12 minutes, or `log facebook check` | `check` | each listing's state and clicks from the Selling page, into `agencyListings` |
@@ -77,10 +77,10 @@ flowchart LR
 
 Not every account makes it. Some are lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings go to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). A checkpointed account is deactivated and gives its browser profile back (rules 78 and 82).
 
-## Not built yet
+## Next
 
-- Reading buyers' messages into Twenty and replying to them (`log facebook conversations` keeps what's recorded, but the host doesn't act yet).
-- Publishing as a tab of the host's browser for every path (the recorded flow does; the older `log facebook publish` still opens its own browser).
+- [#41](https://github.com/matthewdonsemail-lab/log/issues/41) reads buyers' messages into Twenty and replies to them (`log facebook conversations` keeps what is recorded today).
+- [#42](https://github.com/matthewdonsemail-lab/log/issues/42) publishes as a tab of the host's browser on every path (the recorded flow does already; the older `log facebook publish` opens its own browser).
 
 ## Ways to reuse it
 

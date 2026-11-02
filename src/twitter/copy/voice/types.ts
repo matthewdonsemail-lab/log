@@ -12,6 +12,7 @@ export interface VoiceDraft {
   text: string
   context?: string
   evidence?: VoiceEvidence
+  everywhere?: VoiceEvidence
 }
 
 export interface VoiceReading {

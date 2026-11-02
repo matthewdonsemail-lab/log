@@ -38,5 +38,7 @@ jobs:
       - name: Install
         run: bun install --frozen-lockfile
 
-      - name: Check (every lefthook gate, then typecheck and tests)
+      - name: Check (every lefthook gate, the spec gate on SubQ, then typecheck and tests)
+        env:
+          SUBQ_API_KEY: ${{ secrets.SUBQ_API_KEY }}
         run: bun run check

@@ -10,6 +10,29 @@ Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<a
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. Read every conversation, X Chat included, and index it<br/><i>searchIndex, log</i>"]
+  s2["2. Find the conversations worth a follow-up: anyone who asked abou…<br/><i>search</i>"]
+  s3["3. Read each person's whole history before writing a word: the old…<br/><i>twitterDms</i>"]
+  s4["4. Sort them: owes you an answer, you owe them something (a doc, a…<br/><i>a table for the owner</i>"]
+  s5["5. Write one message per person: pick up exactly where the thread…<br/><i>house style</i>"]
+  s6["6. Tool companies: ask for the partner, referral or creator progra…<br/><i>twitterDm, twitterDmLive</i>"]
+  s7["7. Send, dry run first<br/><i>twitterDm, twitterDmLive</i>"]
+  s8["8. Watch for replies<br/><i>the inbox watcher (agent hooks)</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
@@ -42,6 +65,6 @@ Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<a
 - Every DM counts as a write against the account's 240 a day. `--force` goes past it only when the owner says so.
 - A DM only lands if the person accepts DMs from accounts they don't follow.
 
-## Not built yet
+## Next
 
-- Tracking which affiliate links went to whom and which turned into signups, per person, in Twenty.
+- [#35](https://github.com/matthewdonsemail-lab/log/issues/35) tracks which affiliate link went to whom and which turned into a signup, per person, in Twenty.

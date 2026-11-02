@@ -10,11 +10,11 @@ const CHECKPOINT = "https://www.facebook.com/checkpoint/1501092823525282/";
 const at = (url: string, text: string, extra: Partial<BrowserAt> = {}): BrowserAt => ({ account: "bethlehem", step: "04_snapshot", url, text, failed: null, ...extra });
 
 describe("where every open browser is, in every tool result (rules 54-55)", () => {
-  test("a checkpoint's first page resolves with a live click on its Continue, by the ref in the snapshot", () => {
+  test("a checkpoint's first page is never pressed through: no next, matt is told the account is deactivated (rule 118)", () => {
     const view = browserView(at(CHECKPOINT, "- generic [ref=e62]: Fitri, confirm that you're human to use your account\n- generic [ref=e69]: Continue"));
-    expect(view.state?.id).toBe("checkpointStart");
-    expect(view.next).toEqual({ tool: "inspectDoLive", input: { account: "bethlehem", action: "click", values: ["e69"], confirmLive: true } });
-    expect(view.needsMatt).toBeNull();
+    expect(view.state).toMatchObject({ id: "checkpointStart", person: true });
+    expect(view.next).toBeNull();
+    expect(view.needsMatt).toContain("deactivated");
   });
 
   test("a video selfie is matt's: no next, needsMatt says so", () => {
@@ -59,13 +59,13 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
   });
 
   test("the result's first lines say it, and its structured part carries it", async () => {
-    const views = [browserView(at(CHECKPOINT, "- generic [ref=e62]: confirm that you're human to use your account\n- generic [ref=e69]: Continue"))];
-    expect(browserLines(views)[0]).toContain("page state checkpointStart");
+    const views = [browserView(at("https://www.facebook.com/", "- heading \"Remember password\" [level=3]"))];
+    expect(browserLines(views)[0]).toContain("page state rememberPassword");
     expect(browserLines(views)[1]).toContain("Next: call `inspectDoLive`");
     const result = await runToolCall("errors", { code: "locationNotSet" }, { twenty: marketplaceFixture() }, () => {}, () => views);
     const text = (result.content as { text: string }[])[0].text;
-    expect(text.split("\n")[0]).toContain("bethlehem on " + CHECKPOINT);
-    expect(result.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" }, needsMatt: null, browsers: [{ account: "bethlehem", state: { id: "checkpointStart" } }] });
+    expect(text.split("\n")[0]).toContain("bethlehem on https://www.facebook.com/");
+    expect(result.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" }, needsMatt: null, browsers: [{ account: "bethlehem", state: { id: "rememberPassword" } }] });
     const refused = await runToolCall("check", {}, {}, () => {}, () => views);
     expect(refused.isError).toBe(true);
     expect(refused.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" } });

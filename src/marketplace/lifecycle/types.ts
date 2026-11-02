@@ -14,7 +14,7 @@ export const WARMUP_ACTIVITIES = [
 ] as const
 export type WarmupActivity = (typeof WARMUP_ACTIVITIES)[number]
 
-export type CloseReason = 'endOfActiveHours' | 'shutdown' | 'rateLimited' | 'restricted' | 'accountLost' | 'crash'
+export type CloseReason = 'endOfActiveHours' | 'shutdown' | 'rateLimited' | 'restricted' | 'checkpoint' | 'accountLost' | 'crash'
 
 export interface BrowserLog {
   open: boolean

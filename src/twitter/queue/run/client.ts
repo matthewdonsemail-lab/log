@@ -4,8 +4,9 @@ import type { TwitterSessionAnswer } from '../../account/session/index'
 import type { PlanEvent, Queue, QueueItem, Rng } from '../plan/index'
 import { approvalProblem, spaceOut } from '../plan/index'
 import { queueRunMachine } from './machine'
-import type { FailureKind, RunDeps, RunEvent, RunResult } from './types'
-import { COOL_BASE_SECONDS, COOL_CAP_SECONDS, DAILY_AFTER, DAY_SECONDS, LATE_SECONDS, MAX_COOLS, POLL_SECONDS } from './types'
+import { networkError } from '../../live/feed/index'
+import type { FailureKind, RunDeps, RunEvent, RunResult, XRefusal } from './types'
+import { DROP_WAIT_MAX_SECONDS, DROP_WAIT_MIN_SECONDS, LATE_SECONDS, MAX_DROPS, POLL_SECONDS } from './types'
 
 const uniform = (rng: Rng, low: number, high: number) => low + rng() * (high - low)
 
@@ -13,44 +14,23 @@ const iso = (seconds: number) => new Date(Math.round(seconds) * 1000).toISOStrin
 
 const atSeconds = (event: PlanEvent) => new Date(event.at).getTime() / 1000
 
-export function coolSeconds(k: number, nowSeconds: number, rng: Rng, reset?: number | null, daily = false): number {
-  if (reset) return Math.max(reset - nowSeconds, 60) + uniform(rng, 30, 180)
-  if (daily) return DAY_SECONDS + uniform(rng, 0, 1800)
-  const step = Math.min(COOL_CAP_SECONDS, COOL_BASE_SECONDS * 2 ** k)
-  return step / 2 + uniform(rng, 0, step / 2)
-}
-
 export function failureOf(answer: TwitterSessionAnswer): FailureKind {
   if (answer.event === 'sessionDead' || answer.event === 'restricted' || answer.code === 'noSession') return 'auth'
   if (answer.event === 'gone') return 'gone'
-  if (answer.event || answer.code === 'governorBlocked' || answer.code === 'rateLimited') return 'throttle'
+  if (answer.event && answer.event !== 'failed') return 'refused'
+  const said = `${answer.code ?? ''} ${answer.detail ?? ''}`
+  if (answer.code === 'governorBlocked' || answer.code === 'rateLimited' || answer.httpStatus === 429 || /(?<!\d)429(?!\d)/.test(said)) return 'refused'
+  if (networkError(said)) return 'network'
   return 'broken'
+}
+
+export function refusalOf(answer: TwitterSessionAnswer, nowMs: number): XRefusal {
+  return { code: answer.code ?? answer.event ?? 'failed', detail: (answer.detail ?? '').slice(0, 300), at: new Date(nowMs).toISOString() }
 }
 
 export function succeeded(answer: TwitterSessionAnswer, kind: PlanEvent['kind']): boolean {
   if (!answer.ok || answer.event !== 'sent') return false
   return kind === 'like' ? answer.liked === true : Boolean(answer.tweetId || answer.conversationId)
-}
-
-export function shiftRest(todo: PlanEvent[], nowSeconds: number, rng: Rng): void {
-  if (!todo.length) return
-  const by = nowSeconds + uniform(rng, 60, 300) - atSeconds(todo[0])
-  if (by <= 0) return
-  for (const e of todo) e.at = iso(atSeconds(e) + by)
-}
-
-export function requeue(todo: PlanEvent[], events: PlanEvent[], n: number, minGap: number, nowSeconds: number, rng: Rng): void {
-  const mine = todo.filter((e) => e.n === n)
-  for (const e of mine) todo.splice(todo.indexOf(e), 1)
-  const gap = Math.max(minGap, 60)
-  let last = Math.max(...todo.map(atSeconds), nowSeconds)
-  for (const e of mine) {
-    last += uniform(rng, gap, 2 * gap)
-    e.at = iso(last)
-    events.splice(events.indexOf(e), 1)
-    events.push(e)
-  }
-  todo.push(...mine)
 }
 
 export function dropPost(todo: PlanEvent[], n: number, why: string): void {
@@ -117,13 +97,21 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     deps.log(`[${state()}] cancelled ${where}: nothing more is sent, ${sentTotal()} sent in total. Running it again resumes.`)
     return { state: 'halted', reason: 'cancelled', sent: sentTotal(), skipped: plan.events.filter((e) => e.kind === 'reply' && e.skipped).length }
   }
+  const refusedStop = (what: string, n: number, answer: TwitterSessionAnswer, failure: FailureKind): RunResult => {
+    const refusal = refusalOf(answer, deps.nowMs())
+    send({ type: 'FAIL' })
+    deps.save()
+    const who = failure === 'broken' ? 'the engine' : 'x'
+    const why = failure === 'auth' ? ' The session failed: log in to x again by hand.' : ''
+    deps.alert(`REFUSED ${what}: ${who} answered at ${refusal.at.slice(0, 19).replace('T', ' ')} UTC: ${refusal.code}: ${refusal.detail.slice(0, 200)}.${why} The run stopped here: #${n} stays pending and nothing more was sent. Nothing goes out on @${queue.account} until matt starts a run again (rule 94). (${sentTotal()} sent in total)`, true)
+    return { state: 'halted', reason: `${who} refused ${what}: ${refusal.code}: ${refusal.detail.slice(0, 200)}`, sent: sentTotal(), skipped: plan.events.filter((e) => e.kind === 'reply' && e.skipped).length, refusal }
+  }
   const todo = plan.events.filter((e) => !e.done && !e.skipped)
   if (deps.takeAdded) mergeAdded(todo, deps.takeAdded())
-  deps.log(`random run: ${todo.length} events from @${queue.account}, approved by ${queue.approval!.by}, window ${plan.window}, cool-off on blocks`)
+  deps.log(`random run: ${todo.length} events from @${queue.account}, approved by ${queue.approval!.by}, window ${plan.window}, stops on any refusal from x`)
   send({ type: 'BEGIN' })
   let nudged = deps.takeNudge()
-  let cools = 0
-  let dailies = 0
+  let drops = 0
   let lastActed = Math.max(0, ...plan.events.filter((e) => e.done).map((e) => Date.parse(e.done!) / 1000))
   const more = async (): Promise<boolean> => {
     if (todo.length || !deps.takeAdded) return todo.length > 0
@@ -174,7 +162,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     const ready = event.kind === 'like' && item.sentAtRun === plan.planned ? 'sent' : 'pending'
     if (item.status !== ready) return halt(`#${event.n} is ${item.status}, not ready for its ${event.kind}: plan it again`)
     if (deps.cancelled?.()) return stop(`before ${event.kind} #${event.n}`)
-    if (event.kind === 'reply' && deps.contextChanged) {
+    if (event.kind === 'reply') {
       const changed = await deps.contextChanged(item)
       if (changed.length) {
         item.status = 'held'
@@ -204,8 +192,7 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
         deps.log(`SENT #${event.n} @${item.handle ?? '?'} ${item.sentUrl ?? `dm ${item.sentId}`}`)
         nudged = Math.max(nudged - 1, 0)
       }
-      cools = 0
-      dailies = 0
+      drops = 0
       lastActed = deps.nowMs() / 1000
       event.done = now
       send({ type: 'ACTED' })
@@ -216,8 +203,6 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
     item.result = said
     const what = `${event.kind} #${event.n} @${item.handle ?? '?'}`
     const failure = failureOf(answer)
-    if (failure === 'auth') return halt(`${what}: the session failed, log in to x again by hand. ${said}`)
-    if (failure === 'broken') return halt(`${what}: the engine refused it, nothing was sent. ${said}`)
     if (failure === 'gone') {
       if (item.status === 'pending') item.status = 'gone'
       event.skipped = 'gone'
@@ -227,38 +212,17 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       deps.save()
       continue
     }
-    event.fails = (event.fails ?? 0) + 1
-    let retry: string
-    if (event.fails >= 2) {
-      event.skipped = 'blocked'
-      if (event.kind === 'reply') {
-        item.status = 'blocked'
-        dropPost(todo, event.n, 'blocked')
-      }
-      retry = 'failed twice, skipping it'
-    } else {
-      todo.unshift(event)
-      requeue(todo, plan.events, event.n, plan.minGap, deps.nowMs() / 1000, deps.rng)
-      retry = 'retrying it once at the end'
-    }
-    if (cools >= MAX_COOLS) return halt(`${what} still blocked after ${MAX_COOLS} cool-offs in a row with nothing out. ${said}`)
-    const reset = answer.rateLimitReset ?? null
-    dailies = answer.event === 'dailyLimit' ? dailies + 1 : 0
-    const seconds = coolSeconds(cools, deps.nowMs() / 1000, deps.rng, reset, dailies >= DAILY_AFTER)
-    cools += 1
-    send({ type: 'COOL' })
-    deps.save()
-    const stamp = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace('T', ' ')
-    const back = stamp(deps.nowMs() + seconds * 1000)
-    const why = dailies >= DAILY_AFTER ? `x said its daily limit ${dailies} times in a row, so a day` : reset ? "x's own reset time" : 'a short wait, then x is asked again'
-    deps.alert(`[cooling] ${what}: x answered at ${stamp(deps.nowMs())} UTC: ${said.slice(0, 160)}. ${retry}. trying again at ${back} UTC (${why}, cool-off ${cools} of ${MAX_COOLS}). nothing is known about x after that answer until the next try`, false)
-    nudged = await waitUntil(deps, deps.nowMs() / 1000 + seconds)
-    if (nudged === CANCELLED) return stop(`during cool-off ${cools}`)
-    if (nudged) deps.log(`nudge ended the cool-off early (${nudged} replies)`)
-    shiftRest(todo, deps.nowMs() / 1000, deps.rng)
+    if (failure !== 'network') return refusedStop(what, event.n, answer, failure)
+    drops += 1
+    if (drops > MAX_DROPS) return halt(`${what}: the connection to x dropped ${drops} times in a row with no answer from x, the last at ${new Date(deps.nowMs()).toISOString().slice(0, 19).replace('T', ' ')} UTC: ${said}. #${event.n} stays pending`)
+    const seconds = uniform(deps.rng, DROP_WAIT_MIN_SECONDS, DROP_WAIT_MAX_SECONDS)
+    send({ type: 'DROPPED' })
+    event.at = iso(deps.nowMs() / 1000 + seconds)
+    todo.push(event)
+    todo.sort((a, b) => atSeconds(a) - atSeconds(b))
+    deps.log(`[retrying] ${what}: the connection dropped with no answer from x (${said.slice(0, 160)}), a network error, not x refusing. planned again at ${event.at} (drop ${drops} of ${MAX_DROPS})`)
     send({ type: 'RESUME' })
     deps.save()
-    deps.log(`[${state()}] back from cool-off ${cools}, ${todo.length} events left, next at ${todo[0]?.at ?? '-'}`)
   }
   send({ type: 'COMPLETE' })
   const sent = plan.events.filter((e) => e.kind === 'reply' && e.done).length

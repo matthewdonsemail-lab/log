@@ -35,7 +35,7 @@ src/subq/                       SubQ's readings of steps log doesn't recognise
 src/captcha/router/             captcha routing: CaptchaKraken → 2Captcha → a person
 src/errors/catalog/             every error code, defined once
 src/agentHooks/                 the agent hooks (Claude Code, Codex) and what each decides
-src/surface/                    the catalog of commands, MCP tools and hooks; the generated README section and diagrams
+src/surface/                    the catalog of commands, MCP tools and hooks; the generated reference (`docs/reference.md`) and diagrams
 vendor/fbk/                     Facebook's direct-API client
 vendor/twikit/                  X's direct-API client, on curl_cffi
 vendor/rdvwr/                   Reddit's direct-API client, one pinned curl_cffi session (check:rdvwrTransport)

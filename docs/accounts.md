@@ -11,7 +11,7 @@ log localAccount add --platform twitter --account yourhandle
 log localAccount list
 ```
 
-`--platform` is `twitter`, `reddit`, `facebook` or `discord`. For accounts that run in a browser, also pass the account's browser profile with `--adsPower <profileId>`. Facebook accounts also need `--proxy`, `--home <country code>` and `--city`.
+`--platform` is `twitter`, `reddit`, `facebook`, `discord` or `linkedin`. For accounts that run in a browser, also pass the account's browser profile with `--adsPower <profileId>`. Facebook accounts also need `--proxy`, `--home <country code>` and `--city`.
 
 X and LinkedIn accounts can skip this step: saving their cookies (below) adds them.
 

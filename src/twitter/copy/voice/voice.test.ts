@@ -44,4 +44,19 @@ describe('the voice gate', () => {
   test('the never-says list is matched without case', () => {
     expect(neverSaysIn('That is SPOT ON and a Big Swing')).toEqual(['big swing', 'spot on'])
   })
+
+  test('every gate reads matt across all his conversations, beside the chat and the guide', async () => {
+    const { asked, decide } = answering(0.97)
+    const everywhere = { chat: 'all', profile: { replies: 9 }, replies: [{ said: 'nice', reply: 'cheers lad', chat: 'x', tier: 'anywhere' }], wording: [] }
+    const chat = { chat: 'them', profile: { replies: 2 }, replies: [{ said: 'yo', reply: 'yo lad', chat: 'them', tier: 'sameChat' }], recent: [] }
+    await readVoice({ to: 'a', text: 'cheers lad', everywhere }, 'GUIDE', decide)
+    await readVoice({ to: 'b', text: 'yo lad', evidence: chat, everywhere }, 'GUIDE', decide)
+    for (const request of asked) {
+      const state = request.state as Record<string, unknown>
+      expect(state.howMattWrites).toBe('GUIDE')
+      expect(state.mattsRealRepliesEverywhere).toEqual(everywhere.replies)
+    }
+    expect((asked[1].state as Record<string, unknown>).mattsRealRepliesHere).toEqual(chat.replies)
+  })
 })
+

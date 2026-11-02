@@ -9,6 +9,8 @@ import type { CurrentInspect, InspectAction, InspectStepResult } from "../../../
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 import { browserFor } from "../../../browser/driver/index.ts";
+import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
+import { watchCheckpoint } from "../../inspect/helpers/watchCheckpoint.ts";
 
 export function commandFor(step: FlowStep): { action: InspectAction; args: string[] } {
   switch (step.action) {
@@ -41,11 +43,12 @@ export interface OpenSession {
 
 export async function openInspectSession(
   context: CommandContext,
-  account: { id: string; accountName: string; browserDriver?: string | null; adsPowerProfileId?: string | null },
+  account: FacebookAccount,
   run: { statePath: string; proxyPath: string; devicePath: string | null; captureDir: string | null; loginPath: string | null },
 ): Promise<OpenSession | { error: string }> {
   const runDir = dirname(run.captureDir!);
   const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString() };
+  const checkpointWatch = watchCheckpoint(context, account, runDir);
   const session = context.inspectSession({
     accountId: account.id,
     storageStatePath: run.statePath,
@@ -57,7 +60,7 @@ export async function openInspectSession(
     loginPath: run.loginPath,
     startUrl: null,
     browser: browserFor(account),
-  });
+  }).finally(() => checkpointWatch.stop());
   writeCurrentInspect(current);
   let ended = false;
   void session.then(() => {

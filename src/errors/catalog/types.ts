@@ -265,7 +265,7 @@ export const ERROR_CATALOG = {
     layer: 'twitter',
     meaning: 'The copy carries what AI chat interfaces leave in text and nobody types: zero-width or other hidden characters, unusual Unicode spaces, or pasted Claude HTML classes and data attributes (vendor/claudeArtifactDetector). The statistical watermark itself cannot be checked (no public detector).',
     retryable: false,
-    raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
+    raisedIn: ['twitter/post/send', 'twitter/queue/plan', 'cli/discord'],
     action: 'Retype the copy as plain text so only what matt would type is in it, then send again.'
   },
   mediaInvalid: {

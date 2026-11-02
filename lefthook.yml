@@ -36,6 +36,9 @@ pre-commit:
     useCases:
       run: bun run check:useCases
 
+    specs:
+      run: bun run check:specs --staged
+
 pre-push:
   parallel: false
   commands:
@@ -71,6 +74,9 @@ pre-push:
 
     siteDocs:
       run: bun run check:siteDocs
+
+    specs:
+      run: bun run check:specs
 
     typecheck:
       run: bun run typecheck

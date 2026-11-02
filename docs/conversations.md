@@ -84,9 +84,8 @@ The `--file` for `record` holds one thread, a list, or `{ "threads": [...] }`:
 
 Each command is also an MCP tool (`conversations`, `conversation`). None of them opens a browser or writes to Facebook.
 
-## Not built yet
+## Next
 
-- **Reading the inbox from Facebook.** The scan that produces these threads is a browser launch like any other, with every launch gate. Its clicks and reads will be written from a `log inspect` recording of the Marketplace inbox first.
-- **Replying.** Sending a message writes to Facebook, so it waits until the owner asks for it. The fields for it are already in place: `sentBy`, `aiStatus`, `aiOriginalText`, `autoReplied`, `aiTookOver`.
+- [#41](https://github.com/matthewdonsemail-lab/log/issues/41) reads the inbox from Facebook and replies to buyers. The scan is a browser launch like any other, with every launch gate, written from a `log inspect` recording of the Marketplace inbox first. A reply writes to Facebook, so it waits until the owner asks for it; its fields are in place already: `sentBy`, `aiStatus`, `aiOriginalText`, `autoReplied`, `aiTookOver`.
 
 The rules behind this are in AGENTS.md.

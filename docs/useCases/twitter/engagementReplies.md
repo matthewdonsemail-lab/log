@@ -11,6 +11,25 @@ Say: **"go on docs/useCases/twitter/engagementReplies.md for <post url>"** and, 
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. Who commented on the post (not the account itself)<br/><i>treg's X comments read</i>"]
+  s2["2. Drop bots and hype accounts (few followers and no bio, or a one…<br/><i>treg's X profile read, the account's pa…</i>"]
+  s3["3a. Answer the comment: one line that answers what they said, then…<br/><i>house style</i>"]
+  s4["3b. Or their own post: read their recent posts and pick one from th…<br/><i>treg's X posts read</i>"]
+  s5["4. Show the owner the table: who, what they said, the post being r…<br/><i>wherever the owner reads</i>"]
+  s6["5. Queue it with likes and send<br/><i>README queue steps</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
@@ -34,7 +53,8 @@ Where the comment was a question (for example "what does the first message actua
 - **Write in house style from the start.** Copy written with full stops and commas is refused by `check`.
 - **Vary the lines.** Spintax (`{a|b}`) is a quick way to draft variations, but expand it into plain lines before `twitterQueueBuild`.
 
-## Not built yet
+## Next
 
-- Spintax isn't expanded by the queue.
-- Likers and reposters aren't in the comments read. For them, see [engagerDms.md](engagerDms.md).
+- [#36](https://github.com/matthewdonsemail-lab/log/issues/36) expands spintax in the queue.
+
+Likers and reposters aren't in a comments read: they have their own page, [engagerDms.md](engagerDms.md).

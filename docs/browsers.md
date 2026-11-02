@@ -82,6 +82,8 @@ table.
 
 <!-- browsers:end -->
 
+The two capabilities still to build are tracked: `syncSessions` in [#43](https://github.com/matthewdonsemail-lab/log/issues/43), `oneMachineAtATime` in [#44](https://github.com/matthewdonsemail-lab/log/issues/44).
+
 ## Adding a browser
 
 1. Add its name to `BROWSER_DRIVERS` (`src/browser/driver/types.ts`).

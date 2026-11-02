@@ -10,6 +10,25 @@ Say: **"go on docs/useCases/twitter/followUps.md"**, and who, with what the owne
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Read each person in full, old DM thread and X Chat merged<br/><i>twitterDms</i>"]
+  s1["2. Take what the owner wants from each, in the owner's words only…<br/><i>the owner</i>"]
+  s2["3. How the owner really writes to this person: their messages to t…<br/><i>voice</i>"]
+  s3["4. Draft each one from those lines, in the owner's words and length<br/><i>the agent</i>"]
+  s4["5. Gate each draft against the same person, and rewrite until it p…<br/><i>voice</i>"]
+  s5["6. Show the owner every draft as it will go out, one message per l…<br/><i>the owner</i>"]
+  s6["7. One person: dry run, then live<br/><i>twitterDm, twitterDmLive, twitterQueueAdd, twitterQueueRunLive</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Read each person in full, old DM thread and X Chat merged | `twitterDms` { account, with: "<handle>" } | everything they've said, oldest first |

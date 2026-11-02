@@ -62,3 +62,19 @@ describe("log search index on Discord", () => {
     expect(out.join("\n")).toContain("conversation 1547936265436012645");
   });
 });
+
+describe("log search index when Discord refuses the read", () => {
+  test("a 429 keeps the conversations read before it and says where the read stopped", async () => {
+    const out: string[] = [];
+    const context = {
+      twenty: fixture(),
+      out: (l: string) => out.push(l),
+      err: () => {},
+      directDiscord: () => ({ answer: { ok: false, code: "rateLimited", detail: "Discord answered 429 to channel 1555254123148873869 messages: the read stopped there", event: "throttled", httpStatus: 429, stopped: { conversationId: "1555254123148873869" }, conversations: EXPORTED, problems: [] }, refreshed: null }),
+    };
+    await runCli(["search", "index", "--platform", "discord"], context as never);
+    expect(out.join("\n")).toContain("discord discordOne: rateLimited: Discord answered 429 to channel 1555254123148873869");
+    expect(out.join("\n")).toContain("kept the 1 conversation(s) read before it, 2 messages, and read nothing more");
+    expect(loadConversations()).toMatchObject([{ platform: "discord", conversationId: "1547936265436012645" }]);
+  });
+});
