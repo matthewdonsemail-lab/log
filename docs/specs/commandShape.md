@@ -40,7 +40,7 @@ Checked by: SubQ
 
 ### REQ-COMMAND-06: The old warm-up forms are refused with the form they became
 
-`log facebook warmup plan|record|run|feed` (the warm-up forms from before the stages had their own name) are refused, and each refusal prints the form it became (`log facebook warmup stages plan`, `… stages record`, `… stages run`, `… stages log`). Rule 60.
+`warmup` is a `byArgument` command, so `resolvePlatformForm` hands it the platform as its first positional (`log facebook warmup feed run` arrives as `facebook feed run`, the feed activity). A call with no platform whose first positional is `plan`, `record`, `run` or `feed` (the forms from before the stages had their own name, such as `log warmup plan`) is refused with exit code 1, and the refusal prints the form it became (`log facebook warmup stages plan`, `… stages record`, `… stages run`, `… stages log`). Rule 60.
 
 Checked by: code and SubQ
 

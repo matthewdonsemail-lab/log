@@ -30,6 +30,9 @@ export const commandShape = {
       { kind: 'value', file: warmup, name: 'MOVED', path: ['record'], equals: 'log facebook warmup stages record' },
       { kind: 'string', file: warmup, includes: 'log facebook warmup stages run' },
       { kind: 'string', file: warmup, includes: 'log facebook warmup stages log' },
+      { kind: 'value', file: warmup, name: 'MOVED', path: ['record'], equals: 'log facebook warmup stages record' },
+      { kind: 'string', file: warmup, includes: 'log facebook warmup stages run' },
+      { kind: 'string', file: warmup, includes: 'log facebook warmup stages log' },
     ],
     'REQ-COMMAND-07': [{ kind: 'symbol', file: 'src/cli/runner/types.ts', name: 'Command' }],
     'REQ-COMMAND-08': [
@@ -54,7 +57,7 @@ export const commandShape = {
     'REQ-COMMAND-03': noul('When the command found after a platform word has a different platform, does resolvePlatformForm return ok false with an error that prints the form that starts with the platform the command belongs to?'),
     'REQ-COMMAND-04': noul('When the command found after a platform word has platform any, does resolvePlatformForm return ok false with an error that prints the form without the platform?'),
     'REQ-COMMAND-05': noul('When the first word is a platform and find returns no command for the second word, does resolvePlatformForm return ok false with an error saying to name a command after the platform?'),
-    'REQ-COMMAND-06': noul('Does warmupCommand return code 1 with the MOVED form when its first positional is one of the MOVED keys, before checking WARMUP_PLATFORMS?'),
+    'REQ-COMMAND-06': noul('Does warmupCommand return code 1 when its first positional is a key of MOVED, as it is for log warmup plan, while log facebook warmup feed run arrives with facebook first and is not refused?'),
     'REQ-COMMAND-07': noul('Is platform a required (not optional) field of the Command interface, typed as Platform, "any" or "byArgument"?'),
     'REQ-COMMAND-08': noul('Does buildDocs add a problem for each flag a src/cli directory parses that no usage of its commands names, and for each flag a usage names that nothing parses, skipping GLOBAL_FLAGS?'),
     'REQ-COMMAND-09': noul('For a command with input, does buildDocs add a problem when an input form has no usage line starting with log and the form words, and when an input flag that is not global is missing from the entry flags?'),
