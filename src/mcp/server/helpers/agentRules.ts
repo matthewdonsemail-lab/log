@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 118;
+export const RULES_REVIEWED_THROUGH = 119;
 
 export const AGENTS_URI = "log://agents";
 
@@ -100,6 +100,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   voice: [30, 39, 41, 63, 64, 98, 112],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
+  memelord: [41, 94, 119],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],

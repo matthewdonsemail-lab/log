@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 30 domains, 367 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 31 domains, 375 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -484,6 +484,19 @@ Accounts can live in a local file instead of Twenty, on every platform, so log c
 - **REQ-LOCAL-07** A session a run saves goes back to the file
 - **REQ-LOCAL-08** Everything else stays in Twenty
 - **REQ-LOCAL-09** The tool names the rule it falls under
+
+## [Memelord extension](./memelord.md)
+
+log's first extension: Memelord's meme templates, clips and stickers, searched for the moment in a chat and sent in context. Only its four free discovery tools are reachable, so nothing costs money. Rules 41, 94 and 119.
+
+- **REQ-MEME-01** Only the four free discovery tools are reachable
+- **REQ-MEME-02** Every call is a GET with the key as a bearer token
+- **REQ-MEME-03** No key means no call
+- **REQ-MEME-04** Memelord's own refusal is passed on
+- **REQ-MEME-05** Each template comes back with its media url
+- **REQ-MEME-06** Values are camelCase in log and converted at the boundary
+- **REQ-MEME-07** A bad limit is refused before any call
+- **REQ-MEME-08** The image tools are listed, never run
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
 

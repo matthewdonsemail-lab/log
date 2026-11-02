@@ -11,6 +11,7 @@ This is how the owner works. Each use case is something the owner asks for again
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "discord/groupChatRead" })` | Reading a Discord group chat without Twenty | "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>" |
+| `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
 | `getGuide({ useCase: "facebook/groups" })` | Listening to local Facebook groups | see the page |
 | `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
@@ -148,6 +149,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `accountsAndProxies` | Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base and the conversation search, keyword and meaning at once |
+| `extensions` | Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context |
 | `newPlatform` | Making a new platform whole with one command, and where every new file goes |
 
 ## How a run reports back

@@ -21,6 +21,7 @@ import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
+import { memelordCommand } from "../memelord/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
@@ -90,6 +91,7 @@ export const COMMANDS: Command[] = [
   voiceCommand,
   searchCommand,
   kbCommand,
+  memelordCommand,
   followersCommand,
   notificationsCommand,
   replyCommand,

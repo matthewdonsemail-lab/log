@@ -21,6 +21,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |
 | Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
+| Discord | [Replying with a meme in a Discord chat](discord/memeReply.md) | reads the chat, finds a Memelord meme that fits the moment, gates it and sends it inline |
 
 ## The parts every use case is built from
 
