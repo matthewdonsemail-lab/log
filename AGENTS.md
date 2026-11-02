@@ -231,7 +231,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 3. 2026-10-18 · Facebook Marketplace only, until matt widens the scope.
 4. 2026-10-18 · Commit and push as matt (`GIT_CONFIG_COUNT=0`). PRs go to
    GitHub `origin`.
-5. 2026-10-18 · Every commit adds a `log.md` entry. On commit, the hook
+5. 2026-10-18 · Every commit adds a log entry (since rule 116, in the day's
+   `log/<date>.md`, indexed from `log.md`). On commit, the hook
    parses the staged code into an abstract syntax tree (AST) and writes what was
    added, changed or removed into the entry. The agent then writes What changed,
    Why and Checked from that AST. The hook blocks the commit until that's
@@ -1491,6 +1492,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     per session the same way. A refused read stops the poll and is said to
     matt (rule 94).
 
+116. 2026-11-02 · matt: "we have the lefthook stuff there but we don't have
+    the log.md? ... see what the CI is". Two things were half done. The log
+    was one 1.6 MB `log.md`, which GitHub won't show, so on GitHub it looked
+    missing: it is now one file per day, `log/<date>.md` (the day in UTC),
+    and `log.md` is the index of every day with its commit count, newest
+    first; the commit hook writes each entry into the day's file and keeps
+    the index current (`scripts/commitLog/commitLog.mjs`, rule 5). And there
+    was no CI: every gate ran only in lefthook on matt's machine. Now
+    `.github/workflows/check.yml` runs `bun run check` (every lefthook gate,
+    the typecheck and the tests) on every push to main and every pull
+    request, on Windows like matt's machine, with the engines' Python set up
+    from the vendored packages.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
@@ -1561,6 +1575,6 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 - Commit and push as matt (`GIT_CONFIG_COUNT=0 git ...`), and open PRs on GitHub `origin`.
 - Hooks are lefthook (`lefthook.yml`), installed by `bun install`.
-  pre-commit runs the `log.md` gate (rule 5, `skills/commitLog/SKILL.md`);
+  pre-commit runs the log gate (rule 5, `skills/commitLog/SKILL.md`);
   pre-push runs naming, typecheck, tests and the Facebook client docs gate
   (rule 27). Never `--no-verify`.
