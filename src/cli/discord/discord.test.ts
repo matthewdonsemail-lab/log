@@ -7,7 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
-import { toInboxOf } from "./index.ts";
+import { toInboxOf, watchLine } from "./index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -138,6 +138,20 @@ describe("log discord session check", () => {
     expect(r.calls).toEqual(["discordOne:read"]);
     expect(r.out).toContain("VIBE BOT [bot] replying to 1");
   });
+  test("read shows the message replied to, with its image, above the reply", async () => {
+    const reply = { id: "1565263868375207978", at: "2026-10-29T07:19:47Z", from: "Kennedy", text: "", attachments: [{ type: "image/png", name: "image.png", url: "https://cdn.discordapp.com/attachments/1/2/image.png" }], embeds: [], stickers: [] };
+    const r = await run(["discord", "read", "--account", "discordOne", "--channel", "1547936265436012645"], { answer: { ok: true, channelId: "1547936265436012645", messages: [{ id: "1566728551179358239", at: "2026-11-02T08:19:55Z", from: "Kennedy", bot: false, fromMe: false, replyTo: reply.id, reply, text: "here", attachments: [], embeds: [] }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("Kennedy replying to 1565263868375207978 · 1566728551179358239\n    > Kennedy 2026-10-29T07:19:47Z\n    >   [image/png] image.png https://cdn.discordapp.com/attachments/1/2/image.png\n    here");
+  });
+  test("read shows a message's own attachments and a deleted reply", async () => {
+    const r = await run(["discord", "read", "--account", "discordOne", "--channel", "1547936265436012645"], { answer: { ok: true, channelId: "1547936265436012645", messages: [{ id: "5", at: "t", from: "x", bot: false, fromMe: false, replyTo: null, reply: { id: null, deleted: true, text: "Deleted message" }, text: "", attachments: [{ type: "video/mp4", name: "clip.mp4", url: "https://cdn/clip.mp4" }], embeds: [], stickers: ["wave"] }] }, refreshed: null });
+    expect(r.out).toContain("    > (the message replied to was deleted)\n    [video/mp4] clip.mp4 https://cdn/clip.mp4\n    [sticker] wave");
+  });
+  test("watch shows what a reply points at and the image attached to it", () => {
+    const line = watchLine({ kind: "message", channelId: "1547936265436012645", id: "6", at: "t", from: "Kennedy", replyTo: "4", reply: { id: "4", from: "Kennedy", text: "", attachments: [{ type: "image/png", name: "image.png", url: "https://cdn/i.png" }] }, text: "here", attachments: [] });
+    expect(line).toBe("t chat 1547936265436012645 · Kennedy replying to 4 (Kennedy: [image/png] image.png https://cdn/i.png) · 6: here");
+  });
   test("only DMs, groups, mentions and replies to the account go to the inbox, never a bot's Thinking...", () => {
     expect(toInboxOf({ kind: "message", channelId: "1", text: "hey" })).toBe(true);
     expect(toInboxOf({ kind: "message", channelId: "1", guildId: "9", text: "weidian link" })).toBe(false);
@@ -264,5 +278,46 @@ describe("the Discord engine stops the whole read on a refusal (rule 94)", () =>
     expect(got.read429.calls).toHaveLength(2);
     expect(got.read429.answer).toMatchObject({ ok: true, httpStatus: 429, event: "throttled" });
     expect(got.read429.answer.messages).toHaveLength(100);
+  });
+});
+
+const REPLY_SCRIPT = `
+import json, sys
+sys.path.insert(0, "python")
+sys.path.insert(0, "vendor/endcord")
+from endcord.message import prepare_message
+from discordApi import engine
+
+def author(i, name):
+    return {"id": i, "username": name.lower(), "global_name": name, "avatar": None}
+
+image = {"id": "a1", "filename": "image.png", "content_type": "image/png", "url": "https://cdn.discordapp.com/attachments/1/2/image.png", "proxy_url": "https://media.discordapp.net/attachments/1/2/image.png", "height": 600, "width": 800}
+base = {"channel_id": "1547936265436012645", "mentions": [], "mention_roles": [], "mention_everyone": False, "embeds": [], "attachments": [], "edited_timestamp": None, "flags": 0, "type": 0}
+pictured = {**base, "id": "4", "timestamp": "2026-10-29T07:19:47Z", "content": "", "author": author("7", "Kennedy"), "attachments": [image]}
+reply = {**base, "id": "6", "timestamp": "2026-11-02T08:19:55Z", "content": "here", "author": author("7", "Kennedy"), "type": 19, "message_reference": {"message_id": "4"}, "referenced_message": pictured}
+gone = {**base, "id": "8", "timestamp": "t", "content": "what was that", "author": author("9", "Matt"), "type": 19, "referenced_message": None}
+print(json.dumps({"reply": engine.message_of(prepare_message(reply), "9"), "pictured": engine.message_of(prepare_message(pictured), "9"), "gone": engine.message_of(prepare_message(gone), "9")}))
+`;
+
+describe("the Discord engine carries what a reply points at, through endcord's own prepare_message", () => {
+  const python = spawnSync(process.env.LOG_PYTHON || "python", ["-c", REPLY_SCRIPT], { encoding: "utf8" });
+  const got = python.error || python.status !== 0 ? null : JSON.parse(python.stdout.trim().split("\n").pop()!);
+  test("the script ran", () => {
+    if (python.error) return;
+    expect(python.stderr.includes("Traceback") ? python.stderr : "").toBe("");
+    expect(got).not.toBeNull();
+  });
+  test("a reply to an image carries the image, its author and time", () => {
+    if (!got) return;
+    expect(got.reply).toMatchObject({ id: "6", from: "Kennedy", text: "here", replyTo: "4", reply: { id: "4", from: "Kennedy", at: "2026-10-29T07:19:47Z", text: "", attachments: [{ type: "image/png", name: "image.png", url: "https://cdn.discordapp.com/attachments/1/2/image.png" }] } });
+  });
+  test("an image sent on its own is an attachment, not an embed", () => {
+    if (!got) return;
+    expect(got.pictured).toMatchObject({ attachments: [{ type: "image/png", name: "image.png", proxyUrl: "https://media.discordapp.net/attachments/1/2/image.png" }], embeds: [] });
+    expect(got.pictured.reply).toBeUndefined();
+  });
+  test("a reply to a deleted message says so", () => {
+    if (!got) return;
+    expect(got.gone).toMatchObject({ replyTo: null, reply: { id: null, deleted: true } });
   });
 });

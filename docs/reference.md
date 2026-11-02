@@ -1416,7 +1416,7 @@ Read a Discord chat or channel's latest messages, on the direct-API engine, send
 
 ```text
 log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--json]
-Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
+Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, its text, attachments (images, files: type, name, url), embeds and stickers, and the message it replies to with that message's author, text and attachments, so a reply to an image shows the image. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
 ```
 
 #### log discord watch
@@ -1425,7 +1425,7 @@ Watch the account's Discord messages as Discord pushes them over its gateway, no
 
 ```text
 log discord watch --account <accountName> [--channel <channelId|chat name>] [--seconds <s>] [--inbox] [--json]
-Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.
+Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled, with its attachments and the message it replies to (author, text, attachments). --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.
 ```
 
 #### log discord send

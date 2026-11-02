@@ -181,6 +181,37 @@ async def export(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     return await asyncio.to_thread(export_of, token, int(spec.get("limit") or 200), float(spec.get("pause") or 0.4))
 
 
+def media_of(embeds: Any) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    attachments, links = [], []
+    for e in embeds or []:
+        if not isinstance(e, dict):
+            continue
+        if "main_url" in e:
+            links.append({k: e.get(k) for k in ("title", "description", "url") if e.get(k)} | ({"media": e["main_url"]} if e.get("main_url") else {}))
+        else:
+            attachments.append({k: v for k, v in {"type": e.get("type"), "name": e.get("name"), "url": e.get("url"), "proxyUrl": e.get("proxy_url")}.items() if v})
+    return attachments, links
+
+
+def stickers_of(stickers: Any) -> list[str]:
+    return [str(s.get("name")) for s in stickers or [] if isinstance(s, dict) and s.get("name")]
+
+
+def reply_of(ref: Any) -> dict[str, Any] | None:
+    if not isinstance(ref, dict):
+        return None
+    if not ref.get("id"):
+        return {"id": None, "deleted": True, "text": ref.get("content") or ""}
+    attachments, embeds = media_of(ref.get("embeds"))
+    return {"id": ref["id"], "at": ref.get("timestamp"), "from": ref.get("global_name") or ref.get("username"), "fromId": str(ref.get("user_id")), "text": ref.get("content") or "", "attachments": attachments, "embeds": embeds, "stickers": stickers_of(ref.get("stickers"))}
+
+
+def message_of(m: dict[str, Any], me: str) -> dict[str, Any]:
+    attachments, embeds = media_of(m.get("embeds"))
+    reply = reply_of(m.get("referenced_message"))
+    return {"id": m.get("id"), "at": m.get("timestamp"), "from": m.get("global_name") or m.get("username"), "fromId": str(m.get("user_id")), "bot": bool(m.get("bot")), "fromMe": str(m.get("user_id")) == me, "replyTo": (reply or {}).get("id"), **({"reply": reply} if reply else {}), "text": m.get("content") or "", "attachments": attachments, "embeds": embeds, "stickers": stickers_of(m.get("stickers"))}
+
+
 def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
@@ -194,7 +225,7 @@ def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str
     me = str(client.my_id)
     picked = [m for m in reversed(messages) if not after or int(m["id"]) > int(after)]
     said = {"httpStatus": refused["httpStatus"], **({"event": refused["event"]} if refused.get("event") else {})} if refused else {}
-    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": stop["detail"], **said} if stop else {}), "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": stop["detail"], **said} if stop else {}), "messages": [message_of(m, me) for m in picked]}
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
@@ -243,7 +274,7 @@ def watch_of(token: str, seconds: float) -> dict[str, Any]:
             continue
         d = event.get("d") or {}
         count += 1
-        live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), "id": d.get("id"), "at": d.get("timestamp"), "from": d.get("global_name") or d.get("username"), "fromId": str(d.get("user_id")), "fromMe": str(d.get("user_id")) == me, "bot": bool(d.get("bot")), "replyTo": (d.get("referenced_message") or {}).get("id"), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me, "text": d.get("content") or ""})
+        live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), **message_of(d, me), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me})
     return {"ok": True, "loginState": "loggedIn", "messages": count, "seconds": round(time.time() - started)}
 
 

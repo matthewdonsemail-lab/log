@@ -110,7 +110,7 @@ export const discordChatsCommand: Command = {
 
 export const DISCORD_READ_USAGE = [
   "Usage: log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--json]",
-  "Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.",
+  "Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, its text, attachments (images, files: type, name, url), embeds and stickers, and the message it replies to with that message's author, text and attachments, so a reply to an image shows the image. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.",
 ].join("\n");
 
 export const DISCORD_READ_INPUT: CommandInput = {
@@ -137,8 +137,63 @@ interface DiscordRead {
   bot: boolean;
   fromMe: boolean;
   replyTo: string | null;
+  reply?: DiscordReply;
   text: string;
-  embeds: { title?: string; description?: string; url?: string }[];
+  attachments?: DiscordAttachment[];
+  embeds: DiscordEmbed[];
+  stickers?: string[];
+}
+
+interface DiscordAttachment {
+  type?: string;
+  name?: string;
+  url?: string;
+  proxyUrl?: string;
+}
+
+interface DiscordEmbed {
+  title?: string;
+  description?: string;
+  url?: string;
+  media?: string;
+}
+
+interface DiscordReply {
+  id: string | null;
+  deleted?: boolean;
+  at?: string;
+  from?: string;
+  text: string;
+  attachments?: DiscordAttachment[];
+  embeds?: DiscordEmbed[];
+  stickers?: string[];
+}
+
+export function attachmentLine(a: DiscordAttachment): string {
+  return `[${a.type ?? "file"}] ${[a.name, a.url].filter(Boolean).join(" ")}`;
+}
+
+function mediaLines(m: { attachments?: DiscordAttachment[]; embeds?: DiscordEmbed[]; stickers?: string[] }): string[] {
+  return [
+    ...(m.attachments ?? []).map(attachmentLine),
+    ...(m.embeds ?? []).map((e) => `[embed] ${[e.title, e.description, e.url, e.media].filter(Boolean).join(" · ")}`),
+    ...(m.stickers ?? []).map((s) => `[sticker] ${s}`),
+  ];
+}
+
+export function replyLines(reply: DiscordReply): string[] {
+  if (reply.deleted || !reply.id) return [`> (the message replied to was deleted)`];
+  const text = reply.text ? reply.text.split("\n") : [];
+  return [`> ${reply.from ?? "?"} ${reply.at ?? ""}${text.length ? `: ${text[0]}` : ""}`.trimEnd(), ...text.slice(1).map((l) => `> ${l}`), ...mediaLines(reply).map((l) => `>   ${l}`)];
+}
+
+export function readLines(m: DiscordRead): string[] {
+  return [
+    `  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`,
+    ...(m.reply ? replyLines(m.reply) : []).map((l) => `    ${l}`),
+    ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []),
+    ...mediaLines(m).map((l) => `    ${l}`),
+  ];
 }
 
 export const discordReadCommand: Command = {
@@ -180,7 +235,7 @@ export const discordReadCommand: Command = {
         code,
         stdout: [
           `log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}`,
-          ...messages.map((m) => [`  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.embeds.map((e) => `    [embed] ${[e.title, e.description, e.url].filter(Boolean).join(" · ")}`)].join("\n")),
+          ...messages.map((m) => readLines(m).join("\n")),
         ].join("\n"),
       };
     } catch (error) {
@@ -191,7 +246,7 @@ export const discordReadCommand: Command = {
 
 export const DISCORD_WATCH_USAGE = [
   "Usage: log discord watch --account <accountName> [--channel <channelId|chat name>] [--seconds <s>] [--inbox] [--json]",
-  "Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.",
+  "Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled, with its attachments and the message it replies to (author, text, attachments). --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.",
 ].join("\n");
 
 export const DISCORD_WATCH_INPUT: CommandInput = {
@@ -214,7 +269,10 @@ export const DISCORD_WATCH_INPUT: CommandInput = {
 export function watchLine(event: Record<string, unknown>): string {
   if (event.kind !== "message") return `${event.at ?? ""} ${String(event.kind)}: ${event.detail ?? ""}`;
   const text = String(event.text ?? "").replace(/\s+/g, " ").slice(0, 400);
-  return `${event.at ?? ""} ${event.guildId ? `channel ${event.channelId}` : `chat ${event.channelId}`} · ${event.from}${event.bot ? " [bot]" : ""}${event.fromMe ? " (me)" : ""}${event.replyTo ? ` replying to ${event.replyTo}` : ""} · ${event.id}: ${text}`;
+  const reply = event.reply as DiscordReply | undefined;
+  const replied = reply ? ` (${reply.deleted || !reply.id ? "a deleted message" : `${reply.from ?? "?"}: ${[reply.text.replace(/\s+/g, " ").slice(0, 120), ...mediaLines(reply)].filter(Boolean).join(" ")}`})` : "";
+  const media = mediaLines({ attachments: event.attachments as DiscordAttachment[] | undefined, embeds: event.embeds as DiscordEmbed[] | undefined, stickers: event.stickers as string[] | undefined });
+  return `${event.at ?? ""} ${event.guildId ? `channel ${event.channelId}` : `chat ${event.channelId}`} · ${event.from}${event.bot ? " [bot]" : ""}${event.fromMe ? " (me)" : ""}${event.replyTo ? ` replying to ${event.replyTo}${replied}` : ""} · ${event.id}: ${[text, ...media].filter(Boolean).join(" ")}`;
 }
 
 export function toInboxOf(event: Record<string, unknown>): boolean {
