@@ -96,6 +96,14 @@ Checked by: code and SubQ
 
 ### REQ-QUEUE-14: A refusal from X stops the run, and only a network drop is tried again
 
-When X refuses a send (a 429, 226 looks automated, 344 daily limit, an empty result, a soft block, the governor, a dead session, or any other answer where X did not send it), the run stops at once: the item stays pending (not sent, not skipped), the run ends halted with the refusal (X's code, its message and the time) and a stop line saying so, and it never waits and asks X again by itself. Nothing goes out on that account until matt starts a run again (rule 94). A dropped connection with no answer from X (a connection reset, a timeout, the live poll's network test, never a 429) is not a refusal: it is tried again after a short wait, at most `MAX_DROPS` drops in a row, then the run stops with the item pending. A post that is gone (385, 433) is skipped, not a refusal of the account.
+When X refuses a send (a 429, 226 looks automated, 344 daily limit, an empty result, a soft block, the governor, a dead session, or any other answer where X did not send it), the run stops at once: the item stays pending (not sent, not skipped), the run ends halted with the refusal (X's code, its message and the time) and a stop line saying so, and it never waits and asks X again by itself. Nothing goes out on that account until matt starts a run again (rule 94). A dropped connection with no answer from X (a connection reset, a timeout, the live poll's network test, never a 429) is not a refusal: it is tried again after a short wait, at most `MAX_DROPS` drops in a row, then the run stops with the item pending. A post that is gone (385, 433) is skipped, not a refusal of the account, and so is a reply whose author is over the follower cap (REQ-QUEUE-15).
+
+Checked by: code and SubQ
+
+## Who gets a reply
+
+### REQ-QUEUE-15: A reply goes only to an author with 1500 followers or fewer
+
+matt (2026-11-03): an account that is too large isn't worth it yet, and under 1500 followers is ideal. Before a reply likes, follows or sends anything, the engine reads the author's follower count (`author_too_big`, `MAX_AUTHOR_FOLLOWERS` 1500 in `python/twitterApi/engine.py`). An author over the cap gets nothing: the answer is `event: tooBig`, `code: authorTooBig`, with their count. The queue run treats it like a gone post. The item is marked skipped, the event is dropped with `tooBig`, a `TOO BIG` line says who and how many followers, and the run goes on to the next item. It is never a refusal that stops the run. A spec can lift the cap only with `maxAuthorFollowers`, when matt asks. Rule 121.
 
 Checked by: code and SubQ

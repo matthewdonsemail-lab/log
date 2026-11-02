@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 120;
+export const RULES_REVIEWED_THROUGH = 121;
 
 export const AGENTS_URI = "log://agents";
 
@@ -42,6 +42,7 @@ export const CORE_PRINCIPLES = [
   "35. An account has one queue and one run for everything it sends: dms, reply-guy replies and answers together. Put more in with `twitterQueueAdd` (even while it runs: each is fitted between what is planned, minGap apart) and keep it going with `keepOpen` on `twitterQueueRunLive`; never a second queue or run for the same account (rule 107).",
   "36. If something isn't working, fix it: never report a broken thing to matt as a fact and stop. Find the cause and fix it in the same turn; only when the fix needs something from matt, say exactly what (a restart, a login, a key, a yes). Nothing runs stale: the hooks clear dead queue locks and restart inbox watchers and X session hosts that run older code than the checkout. When someone answers matt, a reply that answers them and fits that conversation is sent straight away (matt gave full authority); only a meeting, a promise, money or a conversation you can't place waits for him. Times are said in matt's own clock (rule 108).",
   "37. Full context at the time of sending, every time: before drafting to anyone read `twitterDms` { with }, which gives their whole thread (including what matt sent from outside log) and what they did on the account's posts (likes, retweets, replies, quotes, mentions, follows); someone who already did the action is thanked, never asked. The queue reads it again right before each send and holds the item when anything changed since the draft; redraft it and put it back with `twitterQueueEdit`, never by editing the queue file (rule 109).",
+  "38. Reply only to people with 1500 followers or fewer: an account that is too large isn't worth it yet. Pick reply-guy targets from the niche map under 1500 followers; the engine skips a larger author (`authorTooBig`) before liking, following or sending, and the queue goes on (rule 121).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -103,14 +104,14 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   memelord: [41, 94, 119, 120],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
-  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
+  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121],
   twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterPost: [8, 13, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],

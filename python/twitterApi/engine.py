@@ -1252,6 +1252,10 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         media_ids = await upload_post_media(client, list(spec.get("media") or []))
         tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None)
     elif action == "reply":
+        too_big = await author_too_big(client, spec)
+        if too_big:
+            print(f"reply to {spec.get('tweetUrl')}: skipped, {too_big['detail']}", file=sys.stderr, flush=True)
+            return too_big
         liked = await like_post_first(client, spec)
         followed = await follow_author_first(client, spec)
         print(f"reply to {spec.get('tweetUrl')}: like first {json.dumps(liked)}, follow first {json.dumps(followed)}", file=sys.stderr, flush=True)
@@ -1279,6 +1283,26 @@ def created_id_of(body: Any) -> str | None:
 def handle_from_post_url(url: str) -> str | None:
     match = re.match(r"https?://(?:www\.)?(?:x|twitter)\.com/([A-Za-z0-9_]{1,15})/status/\d+", str(url or ""))
     return match.group(1) if match and match.group(1).lower() not in ("i", "home") else None
+
+
+MAX_AUTHOR_FOLLOWERS = 1500
+
+
+async def author_too_big(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
+    cap = spec.get("maxAuthorFollowers", MAX_AUTHOR_FOLLOWERS)
+    if cap is None or cap is False:
+        return None
+    screen_name = handle_from_post_url(spec["tweetUrl"])
+    if not screen_name:
+        return None
+    try:
+        author = await client.get_user_by_screen_name(screen_name)
+    except (KeyError, IndexError, TypeError):
+        return None
+    count = getattr(author, "followers_count", None)
+    if not isinstance(count, int) or count <= int(cap):
+        return None
+    return {"ok": False, "event": "tooBig", "code": "authorTooBig", "detail": f"@{screen_name} has {count} followers, over {int(cap)}: too big to reply to yet, so nothing was liked, followed or sent", "followers": count}
 
 
 async def like_post_first(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:

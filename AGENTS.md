@@ -1597,6 +1597,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `log memelord taste` (MCP `memelordTaste`) shows it. Spec:
     `docs/specs/memelord.md` (REQ-MEME-09, REQ-MEME-10).
 
+121. 2026-11-03 · matt: "those accounts are too big, a person who is too
+    large isn't worth it yet, sub 1500 is ideal". A reply goes only to an
+    author with 1500 followers or fewer. Reply-guy targets come from the
+    niche map under 1500 followers. Before a reply likes, follows or sends
+    anything, the engine reads the author's follower count
+    (`author_too_big`, `MAX_AUTHOR_FOLLOWERS` in `python/twitterApi/engine.py`),
+    and a larger author gets nothing (`authorTooBig`). The queue marks that
+    item skipped (`TOO BIG`) and goes on: it is not a refusal (rule 118).
+    Every reply that does go out likes the post and follows the author
+    first. Spec: `docs/specs/xQueue.md` (REQ-QUEUE-15).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

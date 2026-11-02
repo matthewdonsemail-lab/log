@@ -15,7 +15,7 @@ export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'notifi
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post']
 
-export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
+export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'tooBig' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
 
 export interface TwitterEngineSpec {
   action: TwitterAction
