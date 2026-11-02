@@ -424,17 +424,23 @@ def keep_create_answers(client: Any) -> dict[str, Any]:
 
 
 async def follows(client: Any, cookies: dict[str, str], handles: list[str]) -> dict[str, Any]:
-    me = getattr(await client.get_user_by_id(own_user_id(cookies)), "screen_name", None)
+    my_id = own_user_id(cookies)
+    me = None
     checked = []
     for handle in handles:
         try:
             data, _ = await client.get(
                 "https://x.com/i/api/1.1/friendships/show.json",
-                params={"source_screen_name": me, "target_screen_name": handle},
+                params={"source_id": my_id, "target_screen_name": handle},
                 headers=client._base_headers,
             )
-            relationship = (data or {}).get("relationship") or {}
-            checked.append({"handle": handle, "followsYou": bool((relationship.get("target") or {}).get("following")), "youFollow": bool((relationship.get("source") or {}).get("following"))})
+            relationship = (data or {}).get("relationship") if isinstance(data, dict) else None
+            if not relationship:
+                checked.append({"handle": handle, "error": f"x gave no relationship: {json.dumps(data)[:200]}", "event": "failed"})
+                continue
+            source = relationship.get("source") or {}
+            me = me or source.get("screen_name")
+            checked.append({"handle": handle, "followsYou": bool(source.get("followed_by")), "youFollow": bool(source.get("following"))})
         except Exception as e:
             checked.append({"handle": handle, "error": redact(e, cookies)[:200], "event": event_of(e)})
         await asyncio.sleep(1.5)
@@ -1241,11 +1247,14 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"]), **({"mediaIds": [dm_media_id]} if dm_media_id else {})}
     media_ids: list[str] = []
     followed: dict[str, Any] | None = None
+    liked: dict[str, Any] | None = None
     if action == "post":
         media_ids = await upload_post_media(client, list(spec.get("media") or []))
         tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None)
     elif action == "reply":
+        liked = await like_post_first(client, spec)
         followed = await follow_author_first(client, spec)
+        print(f"reply to {spec.get('tweetUrl')}: like first {json.dumps(liked)}, follow first {json.dumps(followed)}", file=sys.stderr, flush=True)
         media_ids = await upload_post_media(client, list(spec.get("media") or []))
         tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None, reply_to=tweet_id_from_url(spec["tweetUrl"]))
     else:
@@ -1254,7 +1263,7 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     if not tweet_id:
         limits = raw.get("limits") or {}
         return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": f"x created no tweet (empty result): nothing was posted. x said: {json.dumps(raw.get('body'))[:300]}", "limits": limits, "rateLimitReset": reset_of(limits)}
-    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), **({"followedAuthor": followed} if followed else {}), "limits": raw.get("limits") or {}}
+    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), **({"likedPost": liked} if liked else {}), **({"followedAuthor": followed} if followed else {}), "limits": raw.get("limits") or {}}
 
 
 def created_id_of(body: Any) -> str | None:
@@ -1270,6 +1279,19 @@ def created_id_of(body: Any) -> str | None:
 def handle_from_post_url(url: str) -> str | None:
     match = re.match(r"https?://(?:www\.)?(?:x|twitter)\.com/([A-Za-z0-9_]{1,15})/status/\d+", str(url or ""))
     return match.group(1) if match and match.group(1).lower() not in ("i", "home") else None
+
+
+async def like_post_first(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
+    if spec.get("likeFirst") is False:
+        return None
+    tweet_id = tweet_id_from_url(spec["tweetUrl"])
+    data, _ = await client.gql.favorite_tweet(tweet_id)
+    errors = data.get("errors") if isinstance(data, dict) else None
+    if errors and any(e.get("code") == 139 for e in errors):
+        return {"tweetId": tweet_id, "already": True}
+    if errors or ((data or {}).get("data") or {}).get("favorite_tweet") != "Done":
+        return {"tweetId": tweet_id, "skipped": f"x did not like the post: {json.dumps(data)[:200]}"}
+    return {"tweetId": tweet_id, "already": False}
 
 
 async def follow_author_first(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
