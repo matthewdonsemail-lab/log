@@ -154,21 +154,25 @@ The parts every page uses:
   pushed message into the same store, and the SessionStart hook says who is
   waiting from it with nothing fetched.
 - **More than one:** the queue: `log twitter queue build → show → check →
-  approve → plan → run → run --live`. It spaces sends at random and backs off
-  when X throttles. Before any DM it drops people the account has already
-  talked to on X Chat (rule 87).
+  approve → plan → run → run --live`. It spaces sends at random, at least
+  minGap apart, and any refusal from X stops the run with the item pending
+  (rule 94, [docs/specs/xQueue.md](../../docs/specs/xQueue.md)). Before any DM
+  it drops people the account has already talked to on X Chat (rule 87).
 - **One session per account (rule 105):** every X call goes through the
   account's one engine host (`python/twitterApi/host.py`). The first call starts
   it; every call after, from the CLI, MCP, hooks, the queue or the X Chat watch,
   is answered by that same session (one client, one connection, one transaction
-  key), one call at a time, 4 to 11 s apart (rule 104). The answer's
+  key), one call at a time: a send 4 to 11 s after the last call, a read 0.8
+  to 2.5 s (rules 104, 110). The answer's
   `xSession` names it (pid, since, calls), and the hook's account line shows it.
   A second session can't start. If the host can't be reached the call is
   refused (`xSessionHostDown`) and nothing is sent: read
   `~/.logCli/twitter/<account>/host.log`, never work around it. More than one
-  send goes through the queue, never a hand-rolled loop (rule 104).
+  send goes through the queue, never a hand-rolled loop (rule 104). The whole
+  contract: [docs/specs/xSession.md](../../docs/specs/xSession.md).
 - **Pacing:** 240 writes a day per account, kept by the account's governor.
-  `--force` goes past it only when the owner says so (rule 86).
+  `--force` goes past it only when the owner says so (rule 86). See
+  [docs/specs/writeBudgets.md](../../docs/specs/writeBudgets.md).
 
 ### 3b. The growth loop (how matt grows @matthewsoldit)
 
@@ -184,7 +188,7 @@ order:
 | 2 | The first 2 hours | Answer every comment. Unanswered questions are the best openers. Replies between mutuals score highest | `docs/useCases/twitter/engagementReplies.md`: treg comments read, then a queue of replies |
 | 3 | About 1 hour after | Quote a matching trend, never before your own post | playbook "Riding a trend", `log twitter quote` |
 | 4 | The next days | DM the people who liked or reposted it, opening with one of their own tweets, then one informal line | `docs/useCases/twitter/engagerDms.md` (the cold DM way), queue `action: dm` |
-| 5 | Every day | Reply to people posting about your topic, one line about their post backed by your own fact, inside 40 writes a day | `docs/useCases/twitter/topicReplies.md`, the queue's `limit` |
+| 5 | Every day | Reply to people posting about your topic, one line about their post backed by your own fact, inside the account's 240 writes a day | `docs/useCases/twitter/topicReplies.md`, the queue's `limit` |
 | 6 | Always | Answer whoever writes back. Never send a cold template to someone you already talk to | `log twitter dms --account <a> [--with <handle>]`, `chat watch` (needs the X Chat PIN), rule 87 |
 | 7 | Weekly | Score the followers (treg profiles and their posts), and talk to the best ones by hand | `docs/useCases/twitter/followers.md`, treg `anyapi.x.user.profile` |
 | 8 | Always | Leads from posts and DMs go into Twenty | `agencyProspects` |

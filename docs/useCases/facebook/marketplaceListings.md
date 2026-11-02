@@ -21,7 +21,7 @@ flowchart LR
 
 - **Imported** into Twenty with its home town, cookies and two-step secret.
 - **Proxy:** a residential proxy near the home town, checked for country and distance before it's saved.
-- **Location:** typing "City, ST" can be offered as a different place entirely (a town of the same name abroad), and a bare zip can be offered as another country first. So locations are always typed with the state written out, "City, State" (rules 68 and 72).
+- **Location:** typing "City, ST" can be offered as a different place entirely (a town of the same name abroad), and a bare zip can be offered as another country first. So locations are always typed with the state written out, "City, State" (rules 68 and 72, [spec](../../specs/marketplaceLocation.md)).
 - **Listing:** the service, a price and photos. Facebook's create answer returns the listing id, under review at first, and Twenty marks it UNDER_REVIEW, then live.
 - **Taken down** when needed: the delete answer names the listing id, and the row becomes REMOVED (rows are never deleted, rule 13).
 
@@ -86,4 +86,4 @@ Not every account makes it. Some are lost before or after their first listing: a
 
 The pipeline doesn't care what the listing sells. Anything that wants a local profile in many towns uses the same parts: the proxy per town, the profile, the warm-up, the recorded publish flow, and the 12-minute check. A new kind of listing is a new copy set and photos (`skills/listingCopy`, `skills/listingCreative`), not new code.
 
-Sources here: `docs/lifecycle.md`, `docs/accountsAndListings.md`, `docs/proxies.md`, `docs/adsPower.md`, `skills/host/SKILL.md`.
+Sources here: `docs/lifecycle.md`, `docs/accountsAndListings.md`, `docs/proxies.md`, `docs/adsPower.md`, `skills/host/SKILL.md`. What each step must do: the specs for [proxies](../../specs/proxies.md), [the location](../../specs/marketplaceLocation.md), [copy versions](../../specs/marketplaceCopy.md), [the warm-up](../../specs/warmup.md) and [publish and check](../../specs/marketplacePublish.md).

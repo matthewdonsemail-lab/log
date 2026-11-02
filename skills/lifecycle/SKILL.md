@@ -14,8 +14,11 @@ description: The account lifecycle (rule 35): one XState machine per Facebook ac
 2. **The machine is the spec.** Change the lifecycle in
    `src/marketplace/lifecycle/machine.ts` and its tests, then regenerate the
    doc: `log facebook lifecycle states --write`. Never hand-edit the generated tree.
-3. **Final is final.** Restricted, banned, lost: the record stays in Twenty
-   (rule 13); nothing resumes them.
+3. **Final is final.** Restricted, banned, lost and deactivated: the record stays in Twenty
+   (rule 13); nothing resumes them. A `/checkpoint` page is never pressed through: the
+   checkpoint watch sets the account DEACTIVATED and the machine closes the browser for
+   `checkpoint` and ends in `deactivated` (rules 82, 118). Only a video selfie or ID waits in
+   `needsPerson`.
 4. **Live only with matt's go.** Warm-up likes, publish and replies need
    `liveActions` (rule 8).
 
@@ -31,4 +34,4 @@ A field the lifecycle reads is added through `scripts/twenty/twentySetup.mjs` an
 client regenerated (rules 13-14). A fact it reads from a past run (a rename, a
 location) is backfilled only from that run's recording (rule 25), never guessed.
 
-Full description: `docs/lifecycle.md`.
+Full description: `docs/lifecycle.md`. Requirements: `docs/specs/accountLifecycle.md`.

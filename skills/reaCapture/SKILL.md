@@ -1,6 +1,6 @@
 ---
 name: reaCapture
-description: Analyze the Facebook create page from live Camoufox runs. `log facebook publish` records a raw HAR of the session, the installed rea-agents CLI reads it and its scripts offline, and the findings go through SubQ matrices to make design decisions for log-cli's Facebook client. Use to resume the REA work, run a capture, read rea's Evidence, or turn findings into a matrix.
+description: Analyze what a platform's client does from live runs in the account's own browser (AdsPower first). Every browser action records a raw HAR of the session, the installed rea-agents CLI reads it and its scripts offline, and the findings go through SubQ matrices to make design decisions for log-cli's Facebook client. Use to resume the REA work, run a capture, read rea's Evidence, or turn findings into a matrix.
 ---
 
 # reaCapture
@@ -21,14 +21,15 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
    token and body. Nothing is stripped, because the analysis needs it. It
    stays on matt's development machine in the run folder
    (`~/.logCli/publish/<run>/<browser>`) and is never committed.
-2. **Captures come from every live run (rule 22)**: `connect`, `scan`,
-   `status`, each `watch` check and `log facebook publish` (dry run unless `--live`,
-   rule 10). There is no flag to skip it. Those runs follow the launch rules as they are:
+2. **Captures come from every browser action (rule 22)**: inspect, flow,
+   host, warm-up, `connect`, `scan`, `status`, each `watch` check and
+   `log facebook publish` (dry run unless `--live`, rule 10). There is no flag
+   to skip it. Those runs follow the launch rules as they are:
    headed (11), proxy in country (12), self-check (17), waking hours (18).
 3. **REA reads files, never the window.** No CDP, no attach. The rea
    commands that need a live target (`inspect-web-page`,
    `analyze-web-bundle`, `observe-web-*`, `export-web-scripts`) aren't
-   used on Camoufox.
+   used on the account's browser.
 4. **Listen, don't replay.** A capture never sends a request of its own.
 
 ## Environment
@@ -72,7 +73,7 @@ fired.
 The run folder gets `<browser>/session.har` (raw), `<browser>/scripts/scriptN.js`,
 `<browser>/scriptsManifest.json` and `<browser>/reaNetwork.json`, and the exit
 notes print
-`Firefox capture: N requests, M scripts, raw HAR kept. REA ...`.
+`Capture: N requests, M scripts, raw HAR kept. REA ...`.
 
 ### 2. Read with rea (offline)
 
@@ -114,6 +115,12 @@ log facebook capture --docs          # run it live (Monitor), every stage prints
    reasoning sections are written by hand from the facts and rea (open the
    Evidence with `inspect_analysis_view`). lefthook's pre-push refuses a
    push while any is unwritten, unread by rea, or older than a run.
+5. Every other platform with a browser path (Reddit) is documented the same
+   way under `docs/platforms/<platform>/`, its calls named by GraphQL
+   operation or path and its code found in its own bundles (rule 85).
+
+What the recording, the docs build and the docs gate must do is in
+[docs/specs/runsAndRea.md](../../docs/specs/runsAndRea.md).
 
 ### 3. Findings
 
@@ -151,14 +158,6 @@ give it the findings as state, design options as `options.json`, criteria
 The winning option becomes a change to the client, plus a failing
 fixture test first (`python/fixtures/createItem.html` or a new fixture).
 Record the decision and its evidence ids in the `log.md` entry.
-
-## Status (2026-10-18)
-
-- Done: the raw HAR capture in `log facebook publish`, `log facebook capture`, and
-  rea 6.7.0 read on a sample HAR (both calls exit 0, with the POST body
-  visible to rea).
-- Next: the first live capture run, then `docs/rea/findings/`, then the
-  first SubQ matrix over it.
 
 ## Every action's run feeds the request docs
 

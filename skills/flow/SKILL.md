@@ -63,13 +63,10 @@ recording (rule 25), re-record the changed part with inspect, rebuild the flow.
 
 ## Deterministic steps (rule 79)
 
-A step never guesses which control to press. The session gathers every visible
-control and `python/browser/controlMatch.py` scores them: the step's role, then
-its name as the accessible name, aria-label, label, text or placeholder (case
-and spacing ignored), inside the step's dialog (`within`) or an open dialog
-over the page behind it. One match is pressed; two are refused
-(`controlAmbiguous`), none is `controlMissing`, a disabled one is waited for
-until the step's time runs out (`controlDisabled`). So "Upload Photo" in a
+A step never guesses which control to press: `python/browser/controlMatch.py`
+scores every visible control by role, then name, inside the step's dialog
+(`within`). The exact requirements (and their error codes) are in
+[docs/specs/flows.md](../../docs/specs/flows.md). So "Upload Photo" in a
 recording finds Facebook's "Upload photo", and a Dismiss button with no
 accessible name is found by its text.
 
@@ -83,7 +80,7 @@ accessible name is found by its text.
   exchanges before the flow ships; `answers.test.ts` refuses a step with
   `expect` and no `answers`.
 
-Before a flow's first click, fill or upload, `clearOverlays` reads the page
+Before a flow's first click, fill, upload or location, `clearOverlays` reads the page
 and presses Escape for each known overlay over it (`OVERLAY_CLEARS`,
 `src/browser/flow/helpers/overlays.ts`), then reads the page again:
 
@@ -101,7 +98,8 @@ When Facebook changes a page, add its snapshot excerpt to
 `python/fixtures/controls/` (no names, no page copy) and a case to
 `src/browser/flow/controlMatch.test.ts`, so the next change fails a test, not
 a live run.
-Rebuild the request docs after a run (rule 27): `capture --docs`.
+
+Rebuild the request docs after a run (rules 27, 85): `log facebook capture --docs`.
 
 ## Saved flows
 

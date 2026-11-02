@@ -43,7 +43,7 @@ claude mcp add --transport http log http://127.0.0.1:7337/mcp
 
 ## First call
 
-Your agent's first call is `getGuide({ topic: "logMcpInstructions" })`. It lists every use case and how to ask for it.
+Your agent's first call is `getGuide({ topic: "logMcpInstructions" })`. It lists every use case and how to ask for it. `getGuide({ useCase: "<platform>/<page>" })` reads one [use case](useCases/README.md). Every tool's description names its guide, the use cases that call it and the AGENTS.md rules it falls under; AGENTS.md itself is the resource `log://agents` ([MCP server](specs/mcpServer.md)).
 
 ## Watch a long call
 

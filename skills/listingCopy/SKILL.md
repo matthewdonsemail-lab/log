@@ -147,7 +147,8 @@ from a photo). Write them in `listing.json` as `copyVersions`:
 - **Which copy gets which:** each copy of the ad (`campaign fill`, `heal`)
   takes the version least like what's live in its city, by shared words (title
   counted twice as much as the description). A replacement skips the version
-  the lost copy used. Code: `src/facebook/marketplace/copy`.
+  the lost copy used. Code: `src/facebook/marketplace/copy`. The checkable rules,
+  one by one: [docs/specs/marketplaceCopy.md](../../docs/specs/marketplaceCopy.md).
 
 ## Checklist before `log facebook listing create`
 

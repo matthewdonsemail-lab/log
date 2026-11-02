@@ -16,6 +16,8 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Finding who needs something from you, or who matters](twitter/whoNeedsYou.md) | reads every conversation for what it's about and sorts people by need, importance and how close to money, sends nothing |
 | X | [Following up in your own voice](twitter/followUps.md) | drafts each follow-up from how you write to that person, gates it, and sends one message per line after you say yes |
 | X | [Network maxing: grow the network, the niche map](twitter/networkMaxing.md) | gets to know everyone who messaged and new people from the niche map, each conversation about them and what they're doing, never a pitch |
+| X | [A new region of the niche map, then outbound to it](twitter/nicheMapRegion.md) | adds a new world to the niche map, runs it through the pipeline, then opens on the warmest of it |
+| X | [Getting people to do the thing](twitter/getTheAction.md) | explains each conversation in a line, then a reply that answers them and asks for the one action (retweet, like, try it) |
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |
 | Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
@@ -28,4 +30,4 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 - **A dry run first:** anything that acts on a platform does nothing without `--live`, and over MCP it is a separate `…Live` tool that needs `confirmLive`.
 - **Pacing:** each account has its own governor, local hours and limits.
 
-A new use case gets its own page here, under its platform: `docs/useCases/<platform>/<useCase>.md`. Pages describe the method, never the owner's own accounts, people, prices, links or files: examples use placeholders like `<account>`, `<role link>` and `@someone`.
+A new use case gets its own page here, under its platform: `docs/useCases/<platform>/<useCase>.md`. The log MCP serves each page as `getGuide({ useCase: "<platform>/<useCase>" })`, names it on every tool the page names, and the pre-commit review asks SubQ whether a session left a page stale or work uncovered ([MCP server](../specs/mcpServer.md)). Pages describe the method, never the owner's own accounts, people, prices, links or files: examples use placeholders like `<account>`, `<role link>` and `@someone`.

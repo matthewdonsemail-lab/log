@@ -3,7 +3,8 @@
 An account's proxy can come from any provider, and log treats them all the
 same way. The account stores one proxy URL; log works out the provider from
 the URL and handles assigning, checking and traffic metering for it. Read this
-to see which providers are supported, or to add a new one.
+to see which providers are supported, or to add a new one. What log must do
+with them, requirement by requirement: [the proxies spec](../specs/proxies.md).
 
 ## How log handles every provider
 

@@ -6,7 +6,7 @@
 log facebook read members --account <a> --group <url|id> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]
 ```
 
-Code: `src/facebook/group/members`. MCP tool: `readMembers` (read-only, so there is no live version).
+Code: `src/facebook/group/members`. MCP tool: `readMembers` (read-only, so there is no live version). Spec: [Facebook groups](specs/facebookGroups.md), REQ-GROUP-07 to 14.
 
 ## Where the members come from
 

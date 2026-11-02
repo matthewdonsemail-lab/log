@@ -80,16 +80,19 @@ searches it.
 
 ### Commands
 
-```bash
-log kb search "why did the tunnel go down"            # best articles, keyword + meaning
-log kb search "messenger pin" --kind pageState --limit 3
-log kb show rule:73                                    # one article in full
-log kb remember "node02's Twenty API keys need ENCRYPTION_KEY from Oct 21" --tags infra,node02
-log kb sync                                            # refresh from every source (Monitor it, rule 26)
-log kb sync --noAccounts                               # without reading log-cli's Twenty
+Agents call the MCP tools, never a hand-run `log kb …` (rule 106):
+
+```
+kbSearch { query: "why did the tunnel go down" }               best articles, keyword + meaning
+kbSearch { query: "messenger pin", kind: "pageState", limit: "3" }
+kbShow { key: "rule:73" }                                      one article in full
+kbRemember { text: "…", tags: "infra,node02" }                 a note, in Twenty and Redis at once
+kbSync {}                                                      refresh from every source (Monitor it, rule 26)
+kbSync { noAccounts: true }                                    without reading log-cli's Twenty
 ```
 
-MCP: `kbSearch`, `kbShow`, `kbRemember`, `kbSync`.
+In a terminal the same commands are `log kb search|show|remember|sync`. What
+each one must do is in the spec, [Knowledge base](../../docs/specs/knowledgeBase.md).
 
 ### How a sync works
 
@@ -109,8 +112,8 @@ MCP: `kbSearch`, `kbShow`, `kbRemember`, `kbSync`.
 Save it before the session ends, in one or two plain sentences with where it
 came from:
 
-```bash
-log kb remember "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets." --title "Twenty API keys need the original ENCRYPTION_KEY" --tags twenty,node02
+```
+kbRemember { text: "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets.", title: "Twenty API keys need the original ENCRYPTION_KEY", tags: "twenty,node02" }
 ```
 
 ## Every tool, in full

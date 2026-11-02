@@ -53,10 +53,8 @@ From `skills/inspect/SKILL.md`.
 ## inspect
 
 The order is: open the page, look at it, then write the code (rules 25, 29).
-This is camofox-mcp's model (https://github.com/redf0x1/camofox-mcp:
-accessibility snapshots with element refs) on log-cli's own launch. camofox-mcp
-itself can't be used here: its browser server is headless-only on Windows
-(rule 11) and launches outside the proxy gate (rule 12).
+This is camofox-mcp's model (accessibility snapshots with element refs) on
+log-cli's own launch, in the account's own browser (rules 44, 84).
 
 ### Hard boundaries
 
@@ -64,11 +62,12 @@ itself can't be used here: its browser server is headless-only on Windows
    country, the account's device and locale, the self-check, the raw HAR, the
    launch budget. `--bypass` only for matt's runs outside waking hours.
 2. **Read-only unless matt asked** (rule 8): `goto`, `snapshot`, `back`,
-   `wait` read; `click`, `type`, `press` act on Facebook and need `--live`
+   `wait` read; `click`, `type`, `press` act on the platform and need `--live`
    (over MCP, `inspectDoLive` with confirmLive).
 3. **Live** (rule 26): run `start` through Monitor; every step prints as it
    happens.
-4. One session at a time (`~/.logCli/runs/inspect/current.json`).
+4. One session per account: two accounts can be open at once, and `--account`
+   picks the session (`log inspect sessions` lists them).
 
 ### The routine
 
@@ -83,13 +82,15 @@ log inspect do click e12 --live        # only when matt asked
 log inspect do stop
 ```
 
-Each `do` prints where the page is, the requests the step made to Facebook
+Each `do` prints where the page is, the requests the step made to the platform
 (GraphQL by name, redirects with their target), rea's Evidence ID, and the
 page's elements with their refs. Everything is kept in order in
 `~/.logCli/runs/inspect/<time>_<a>/steps/NN_<action>/`: `snapshot.yml`,
 `screenshot.png`, `network.har`, `rea.json`.
 
 ### Reading every step (rules 73-74)
+
+What each part must do is in the spec, [docs/specs/inspectRuleOne.md](../../docs/specs/inspectRuleOne.md).
 
 Give the session its goal when you open it, in plain words:
 
@@ -157,7 +158,7 @@ to matt.
 
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
-Rebuild the Facebook client docs after (rule 27): `capture --docs`.
+Rebuild the request docs after (rules 27, 85): `log facebook capture --docs`.
 
 ## The work, step by step: host
 
@@ -296,8 +297,11 @@ From `skills/lifecycle/SKILL.md`.
 2. **The machine is the spec.** Change the lifecycle in
    `src/marketplace/lifecycle/machine.ts` and its tests, then regenerate the
    doc: `log facebook lifecycle states --write`. Never hand-edit the generated tree.
-3. **Final is final.** Restricted, banned, lost: the record stays in Twenty
-   (rule 13); nothing resumes them.
+3. **Final is final.** Restricted, banned, lost and deactivated: the record stays in Twenty
+   (rule 13); nothing resumes them. A `/checkpoint` page is never pressed through: the
+   checkpoint watch sets the account DEACTIVATED and the machine closes the browser for
+   `checkpoint` and ends in `deactivated` (rules 82, 118). Only a video selfie or ID waits in
+   `needsPerson`.
 4. **Live only with matt's go.** Warm-up likes, publish and replies need
    `liveActions` (rule 8).
 
@@ -313,7 +317,7 @@ A field the lifecycle reads is added through `scripts/twenty/twentySetup.mjs` an
 client regenerated (rules 13-14). A fact it reads from a past run (a rename, a
 location) is backfilled only from that run's recording (rule 25), never guessed.
 
-Full description: `docs/lifecycle.md`.
+Full description: `docs/lifecycle.md`. Requirements: `docs/specs/accountLifecycle.md`.
 
 ## The work, step by step: adsPower
 
@@ -324,13 +328,16 @@ From `skills/adsPower/SKILL.md`.
 ### Hard boundaries
 
 1. **Twenty stays the source** (rule 13). An AdsPower profile is the browser for one
-   `socialAccounts` row, linked by `adsPowerProfileId`. Nothing is deleted on either side.
+   `socialAccounts` row, linked by `adsPowerProfileId`. The Twenty row is never deleted; a DEACTIVATED
+   account, or one whose home is not in `LOG_ADSPOWER_HOMES`, gives its profile back (deleted from
+   AdsPower, `adsPowerProfileId` cleared, rule 78).
 2. **No secret in AdsPower at rest.** Profiles are made with no proxy, password or 2FA key.
    `python/browser/browserDriver.py` puts the proxy on only to open, after the gate, and clears it at close.
 3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate (rule 12),
    self-check (rule 17), session HAR (rule 22), human mouse and scroll. `docs/browsers.md`
    lists what's built; `bun run check:browsers` keeps every browser in step.
-4. **Camoufox stays.** An account with no `browserDriver` keeps Camoufox. Never remove it.
+4. **Camoufox stays.** With `browserDriver` empty, an account with a linked profile opens on AdsPower
+   and one without opens on Camoufox. Never remove it.
 5. **Never print `ADSPOWER_API_KEY`.** It lives in `.env.local` and the local-scope MCP config.
 
 ### Environment
@@ -353,7 +360,8 @@ log adsPower sync --apply --account <accountName>
 ```
 
 Run `sync --apply` through Monitor (rule 26): it prints one line per account as it goes.
-A `skip` is a banned or dead account, or one with no home country in `HOME_COUNTRIES`.
+A `skip` is a banned or dead account, one with no home country in `HOME_COUNTRIES`, or one outside the
+homes that holds no profile. What the sync must do: `docs/specs/adsPower.md`.
 A failed create usually means the plan's profile limit: the AdsPower plan must hold at least as many profiles as accounts.
 
 ### Adding another browser

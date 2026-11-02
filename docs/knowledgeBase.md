@@ -32,7 +32,7 @@ In short:
 | `log kb remember "<text>" [--title] [--tags]` | Saves a note to Twenty and Redis at once. |
 | `log kb sync [--noAccounts]` | Collects every source, writes what changed to Twenty, and re-indexes what changed into Redis. |
 
-Kinds: `rule`, `section`, `skill`, `doc`, `infra`, `memory`, `pageState`, `account`, `note`. The skill `skills/knowledgeBase/SKILL.md` says where each kind comes from.
+Kinds: `rule`, `section`, `skill`, `doc`, `infra`, `memory`, `pageState`, `account`, `note`. The skill `skills/knowledgeBase/SKILL.md` says where each kind comes from. Over MCP they are `kbSearch`, `kbShow`, `kbRemember` and `kbSync`; what each must do is in the spec, [Knowledge base](specs/knowledgeBase.md).
 
 ## One way to run it
 

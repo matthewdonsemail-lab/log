@@ -1084,7 +1084,7 @@ Read a run's raw HAR (any browser driver) and its scripts with offline rea; --do
 log facebook capture --har <path> [--out <dir>] [--noRea] [--json]
 log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
 log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: Facebook's by its modules, every other platform with a browser path by the call sites its bundles hold for each request)
-The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.
+The HAR is the one Playwright writes from the account browser that ran. It is copied raw, and rea reads it. No browser opens.
 ```
 
 #### log runs

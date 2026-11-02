@@ -54,7 +54,7 @@ All 58 endpoints from the OpenAPI spec. The Use column means:
 
 - **Used:** log calls it today.
 - **Next:** for the static IPs, when they are used.
-- **Later:** useful, not built.
+- **Later:** useful, not called.
 - **Not ours:** buys, cancels or deletes, or a product log doesn't use.
 
 | Use | Method | Path | Endpoint | What it is for us |
@@ -106,7 +106,7 @@ All 58 endpoints from the OpenAPI spec. The Use column means:
 | Later | GET | /subdivision/search | Search Subdivision | US states and their ids (`us-pa`). |
 | Later | GET | /zip_code/retrieve/{zip_code_id} | Retrieve Zip Code | One ZIP code. |
 | Later | GET | /zip_code/search | Search Zip Code | ZIP codes, for ZIP-level targeting. |
-| Not ours yet | POST | /checkout/create | Create Checkout | Buys a service from credit. log never buys: purchases are made by a person in the dashboard. |
+| Not ours | POST | /checkout/create | Create Checkout | Buys a service from credit. log never buys: purchases are made by a person in the dashboard. |
 | Not ours | GET | /mobile/list | Generated Mobile List | Mobile proxies: not a product we use. |
 | Not ours | GET | /mobile/summary | Retrieve Mobile Service Summary | Mobile plan. |
 | Not ours | GET | /mobile_availability/count | Get Mobile Availability Count | Mobile stock. |
