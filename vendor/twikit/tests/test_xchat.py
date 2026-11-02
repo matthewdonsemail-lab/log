@@ -283,3 +283,38 @@ def test_get_xchat_conversation_reopens_held_messages_x_left_out(monkeypatch):
     out = run(client.get_xchat_conversation("7:100", older_pages=0, reopen=["80"]))
     assert calls == [("81", "5")]
     assert wanted in [m["event_id"] for m in out["messages"]]
+
+
+def test_message_of_keeps_each_media_attachments_download_reference():
+    from twikit.xchat import message_of
+
+    decrypted = {"event": {"type": "Message", "conversation_id": "1:2", "sender_id": "1", "key_version": "177", "content": {"content_type": "Text", "text": "", "attachments": [{"media": {"media_hash_key": "HK", "type": "Image", "filename": "image.jpg", "filesize_bytes": 10}}, {"url": {"url": "https://x.com"}}]}}}
+    message = message_of(decrypted)
+    assert message["text"] == "(image: image.jpg) https://x.com"
+    assert message["media"] == [{"media_hash_key": "HK", "filename": "image.jpg", "type": "image", "filesize_bytes": 10}]
+    assert message["key_version"] == "177"
+
+
+def test_get_xchat_media_downloads_from_ton_and_opens_with_the_messages_key(monkeypatch):
+    client = offline_client()
+    client._keep_xchat_keys({"conversation_keys": {"keys": {"177": b"k" * 32}}})
+    seen = {}
+
+    class Reply:
+        status_code = 200
+        content = b"sealed"
+
+    async def request(method, url, **kwargs):
+        seen["call"] = (method, url, sorted(kwargs.get("headers") or {}))
+        return Reply()
+
+    class Chat:
+        def decrypt_stream(self, data, key):
+            seen["opened"] = (data, key)
+            return b"plain"
+
+    monkeypatch.setattr(client.http, "request", request)
+    client._xchat = Chat()
+    assert run(client.get_xchat_media("1:2", "a/b", "177")) == b"plain"
+    assert seen["call"] == ("GET", "https://ton.x.com/i/ton/data/xchat_media/1:2/a%2Fb", ["Referer", "User-Agent"])
+    assert seen["opened"] == (b"sealed", b"k" * 32)

@@ -106,3 +106,9 @@ The saved PIN was never the problem. On matthewsoldit 242 of 1,964 stored X Chat
 - **Group ids went to the old DM path.** `--conversation g…` has no `:`, so it was read as a legacy DM and came back empty. `is_xchat_id` routes `g<digits>` to X Chat.
 
 Messages held from before the fix are opened again when their chat is read (`--with`, `--conversation`: up to 5, one `GetConversationPageQuery` each from just past the message), and by the inbox read itself, up to 3 conversations a sync, each message retried once a day (`reopen_unopened`). The older-page read also takes the key version from chat-xdk (`_xchat_versions`) when the event's Thrift doesn't give it.
+
+## Media: photos, gifs, videos and files
+
+Read from X's own chat app (2026-11-02): its media code lives outside x.com's main bundle, in the X Chat embed (`chat.x.com/embed-v1.json`, then `abs.twimg.com/x-web/xchat/embed/`, `dm-core`). Its `resolveMediaImmediately` takes the attachment (`DmMessageEntryAttachment.Media.FromServer`: `mediaHashKey`, `filename`, `fileSize`, `convKeyVersion`, `mediaHashBase64`), downloads `https://ton.x.com/i/ton/data/xchat_media/<conversationId>/<mediaHashKey>` with the session's cookies only (its fetch layer adds no headers for ton.x.com), and opens it with the conversation key of that version (chat-xdk `decrypt_stream`).
+
+The engine does the same: `message_of` keeps each attachment's `media_hash_key` and the message's `key_version`, `_xchat_decrypt` keeps every conversation key it opens, `Client.get_xchat_media` downloads and decrypts through the account's one session, and the conversation read saves it under `~/.logCli/twitter/<account>/media/<conversation>/` and puts `(image saved: <path>)` on the message.

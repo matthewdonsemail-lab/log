@@ -66,7 +66,7 @@ def add_messages(conv: dict[str, Any], messages: list[dict[str, Any]]) -> int:
             continue
         if key in held:
             old = conv["messages"][held[key]]
-            if old.get("text") is None and (m.get("text") is not None or (m.get("kind") and not old.get("kind"))):
+            if (old.get("text") is None and (m.get("text") is not None or (m.get("kind") and not old.get("kind")))) or (m.get("media") and not old.get("media")):
                 conv["messages"][held[key]] = m
             continue
         held[key] = len(conv["messages"])
