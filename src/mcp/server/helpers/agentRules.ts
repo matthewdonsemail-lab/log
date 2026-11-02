@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 115;
+export const RULES_REVIEWED_THROUGH = 116;
 
 export const AGENTS_URI = "log://agents";
 

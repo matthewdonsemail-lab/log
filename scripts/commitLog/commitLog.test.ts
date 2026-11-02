@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { collectDeclarations, diffDeclarations, renderSummary } from "./astSummary.mjs";
-import { AST_HEADING, addedLines, astBlock, checkAdded, renderEntry, replaceLastAstBlock } from "./commitLog.mjs";
+import { AST_HEADING, addedLines, astBlock, checkAdded, countEntries, dayFile, dayOf, renderDay, renderEntry, renderIndex, replaceLastAstBlock, splitEntries } from "./commitLog.mjs";
 
 describe("astSummary", () => {
   test("reports added, changed and removed declarations from the syntax tree", () => {
@@ -63,5 +63,26 @@ describe("commitLog", () => {
 
   test("addedLines reads only the + lines of a diff", () => {
     expect(addedLines("--- a/log.md\n+++ b/log.md\n@@ -1 +1,2 @@\n old\n+## new\n+Why: x")).toEqual(["## new", "Why: x"]);
+  });
+
+  test("the log is one file per day, indexed newest first, so GitHub can show every part of it", () => {
+    const entry = (when: string) => renderEntry({ when, branch: "main", ast: ["- `a.ts`: added const x"] }).replace(/<fill in>/g, "done");
+    const text = `# log
+
+header
+
+${entry("2026-10-18 04:01Z")}
+${entry("2026-10-18 05:09Z")}
+${entry("2026-10-19 01:00Z")}`;
+    const days = splitEntries(text);
+    expect([...days.keys()]).toEqual(["2026-10-18", "2026-10-19"]);
+    expect(days.get("2026-10-18")).toHaveLength(2);
+    const day = renderDay("2026-10-18", days.get("2026-10-18")!);
+    expect(countEntries(day)).toBe(2);
+    expect(day).toContain("[log.md](../log.md)");
+    const index = renderIndex(new Map([["2026-10-18", 2], ["2026-10-19", 1]]));
+    expect(index.indexOf("2026-10-19")).toBeLessThan(index.indexOf("2026-10-18"));
+    expect(index).toContain("| [2026-10-18](log/2026-10-18.md) | 2 |");
+    expect(dayFile(dayOf("2026-11-02 03:12Z"))).toBe("log/2026-11-02.md");
   });
 });

@@ -1,23 +1,32 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { summarize } from './astSummary.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const LOG = join(root, 'log.md');
+const INDEX = join(root, 'log.md');
+const DAYS = join(root, 'log');
 export const PLACEHOLDER = '<fill in>';
 export const AST_HEADING = "AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):";
 const AGENT_FIELDS = ['What changed:', 'Why:', 'Checked:'];
-const HEADER = `# log
+export const INDEX_HEADER = `# log
 
-One entry per commit, newest at the bottom. On every commit the pre-commit
-hook parses the staged code into a syntax tree and writes the AST block of the
-entry (what was added, changed or removed). The agent then writes What
-changed, Why and Checked from it. Never edit old entries. Add a new one.
+One entry per commit, kept in one file per day (\`log/<date>.md\`, the day in
+UTC), newest at the bottom of each day. On every commit the pre-commit hook
+parses the staged code into a syntax tree and writes the AST block of the entry
+(what was added, changed or removed) into the day's file. The agent then writes
+What changed, Why and Checked from it. Never edit old entries. Add a new one.
+
+Entries before the AST hook existed were rebuilt from each commit with
+\`node scripts/astSummary.mjs <commit>\`.
 `;
 
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+
+export const dayOf = (when) => when.slice(0, 10);
+export const dayFile = (day) => `log/${day}.md`;
+const dayHeader = (day) => `# log · ${day}\n\nEvery commit on ${day} (UTC), oldest first. The index of every day is [log.md](../log.md).\n`;
 
 export function renderEntry({ when, branch, ast }) {
   return [
@@ -29,6 +38,33 @@ export function renderEntry({ when, branch, ast }) {
     ...AGENT_FIELDS.map((field) => `${field} ${PLACEHOLDER}`),
     '',
   ].join('\n');
+}
+
+export function splitEntries(text) {
+  const days = new Map();
+  for (const chunk of text.split(/\n(?=## \d{4}-\d{2}-\d{2} )/).slice(1)) {
+    const day = chunk.slice(3, 13);
+    days.set(day, [...(days.get(day) ?? []), chunk.trimEnd()]);
+  }
+  return days;
+}
+
+export function renderDay(day, entries) {
+  return `${dayHeader(day)}\n${entries.join('\n\n')}\n`;
+}
+
+export function renderIndex(days) {
+  const rows = [...days].sort(([a], [b]) => b.localeCompare(a)).map(([day, count]) => `| [${day}](${dayFile(day)}) | ${count} |`);
+  return `${INDEX_HEADER}\n| Day | Commits |\n| --- | --- |\n${rows.join('\n')}\n`;
+}
+
+export function countEntries(text) {
+  return text.split('\n').filter((line) => /^## \d{4}-\d{2}-\d{2} /.test(line)).length;
+}
+
+function readDays() {
+  if (!existsSync(DAYS)) return new Map();
+  return new Map(readdirSync(DAYS).filter((f) => /^\d{4}-\d{2}-\d{2}\.md$/.test(f)).map((f) => [f.slice(0, 10), countEntries(readFileSync(join(DAYS, f), 'utf8'))]));
 }
 
 export function addedLines(diff) {
@@ -51,14 +87,14 @@ export function astBlock(lines) {
 
 export function checkAdded(allLines, ast) {
   const start = allLines.findLastIndex((line) => line.startsWith('## '));
-  if (start === -1) return 'log.md is staged but has no new "## " entry.';
+  if (start === -1) return "the day's log is staged but has no new \"## \" entry.";
   const lines = allLines.slice(start);
   const block = astBlock(lines);
-  if (block === null) return 'the new log.md entry has no AST block.';
+  if (block === null) return 'the new log entry has no AST block.';
   if (block.join('\n') !== ast.join('\n')) return 'stale';
   for (const field of AGENT_FIELDS) {
     const line = lines.find((l) => l.startsWith(field));
-    if (!line) return `the new log.md entry is missing its "${field}" line.`;
+    if (!line) return `the new log entry is missing its "${field}" line.`;
     if (line.includes(PLACEHOLDER) || line.slice(field.length).trim() === '') return `"${field}" still needs writing.`;
   }
   return null;
@@ -72,44 +108,63 @@ export function replaceLastAstBlock(text, ast) {
   return `${text.slice(0, blockStart)}${ast.join('\n')}${blockEnd === -1 ? '\n' : text.slice(blockEnd)}`;
 }
 
+function hasNewEntry(day) {
+  const added = addedLines(git('diff', '--cached', '--', dayFile(day)));
+  return added.some((line) => line.startsWith('## '));
+}
+
+function writeIndex() {
+  const index = renderIndex(readDays());
+  const changed = !existsSync(INDEX) || readFileSync(INDEX, 'utf8') !== index;
+  if (changed) writeFileSync(INDEX, index);
+  return changed;
+}
+
 function main() {
   if (existsSync(resolve(root, git('rev-parse', '--git-path', 'MERGE_HEAD')))) return 0;
   const staged = git('diff', '--cached', '--name-only').split('\n').filter(Boolean);
   if (staged.length === 0) return 0;
   const ast = summarize();
+  const when = new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z';
+  const day = dayOf(when);
+  const stagedDay = staged.includes(dayFile(day)) && hasNewEntry(day) ? dayFile(day) : null;
 
-  if (!staged.includes('log.md')) {
-    const current = existsSync(LOG) ? readFileSync(LOG, 'utf8') : HEADER;
-    const entry = renderEntry({
-      when: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z',
-      branch: git('rev-parse', '--abbrev-ref', 'HEAD'),
-      ast,
-    });
-    writeFileSync(LOG, `${current.trimEnd()}\n\n${entry}`);
+  if (!stagedDay) {
+    const path = join(root, dayFile(day));
+    mkdirSync(DAYS, { recursive: true });
+    const current = existsSync(path) ? readFileSync(path, 'utf8') : dayHeader(day);
+    const entry = renderEntry({ when, branch: git('rev-parse', '--abbrev-ref', 'HEAD'), ast });
+    writeFileSync(path, `${current.trimEnd()}\n\n${entry}`);
+    writeIndex();
     console.error(
       [
-        'log.md: commit stopped. This is the AST of what you are committing:',
+        `${dayFile(day)}: commit stopped. This is the AST of what you are committing:`,
         '',
         ...ast,
         '',
-        'It is now the newest entry at the bottom of log.md. Under it, write',
-        'What changed, Why and Checked from that list, then `git add log.md`',
+        `It is now the newest entry at the bottom of ${dayFile(day)}. Under it, write`,
+        'What changed, Why and Checked from that list, then `git add log.md log`',
         'and commit again.',
       ].join('\n'),
     );
     return 1;
   }
 
-  const problem = checkAdded(addedLines(git('diff', '--cached', '--', 'log.md')), ast);
+  const problem = checkAdded(addedLines(git('diff', '--cached', '--', stagedDay)), ast);
   if (problem === 'stale') {
-    writeFileSync(LOG, replaceLastAstBlock(readFileSync(LOG, 'utf8'), ast));
+    const path = join(root, stagedDay);
+    writeFileSync(path, replaceLastAstBlock(readFileSync(path, 'utf8'), ast));
     console.error(
-      ['log.md: the staged code changed since the entry was written. New AST:', '', ...ast, '', 'The block is updated in log.md. Check What changed still matches, `git add log.md`, commit again.'].join('\n'),
+      [`${stagedDay}: the staged code changed since the entry was written. New AST:`, '', ...ast, '', `The block is updated in ${stagedDay}. Check What changed still matches, \`git add log.md log\`, commit again.`].join('\n'),
     );
     return 1;
   }
   if (problem) {
-    console.error(`log.md: ${problem} See skills/commitLog/SKILL.md.`);
+    console.error(`${stagedDay}: ${problem} See skills/commitLog/SKILL.md.`);
+    return 1;
+  }
+  if (writeIndex() || !staged.includes('log.md')) {
+    console.error('log.md: the index of days is updated. `git add log.md` and commit again.');
     return 1;
   }
   return 0;

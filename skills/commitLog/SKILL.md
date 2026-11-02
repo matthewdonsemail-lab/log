@@ -1,12 +1,14 @@
 ---
 name: commitLog
-description: Write the log.md entry every log-cli commit needs. On commit, the pre-commit hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent then writes What changed, Why and Checked from the AST before the commit can go through.
+description: Write the log entry every log-cli commit needs, in the day's file log/<date>.md (indexed from log.md). On commit, the pre-commit hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent then writes What changed, Why and Checked from the AST before the commit can go through.
 ---
 
 # commitLog
 
-`log.md` is the running record of the repo, one entry per commit, newest at
-the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
+The log is the running record of the repo, one entry per commit. It is kept
+in one file per day, `log/<date>.md` (the day in UTC, newest entry at the
+bottom), and `log.md` is the index of every day, newest first. One file was
+too big for GitHub to show (1.6 MB), a day's file isn't. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
 `scripts/commitLog/astSummary.mjs`:
 
 - `.ts` / `.mjs` files are parsed with the TypeScript compiler API.
@@ -32,9 +34,9 @@ the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog/commi
 GIT_CONFIG_COUNT=0 git add <files>
 GIT_CONFIG_COUNT=0 git commit -m "..."
 # 1st try: the hook prints the AST of the staged change, appends the entry
-#          to log.md, and stops the commit
+#          to today's log/<date>.md, updates the index log.md, and stops the commit
 # write What changed / Why / Checked under the AST block
-GIT_CONFIG_COUNT=0 git add log.md
+GIT_CONFIG_COUNT=0 git add log.md log
 GIT_CONFIG_COUNT=0 git commit -m "..."
 # 2nd try: the hook re-parses the staged code; if it matches the block and the
 #          fields are written, the commit goes through
@@ -42,7 +44,8 @@ GIT_CONFIG_COUNT=0 git commit -m "..."
 
 If you change code after the entry was written, the hook updates the AST
 block in place and stops once more. Re-read your What changed line, re-stage
-log.md, commit again.
+`log.md log`, commit again. If only the index is stale, the hook rewrites
+log.md and asks for `git add log.md`.
 
 To see the AST for any commit: `node scripts/commitLog/astSummary.mjs <commit>`. With
 no argument it shows the staged change.
