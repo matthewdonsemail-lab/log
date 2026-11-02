@@ -128,7 +128,7 @@ export function summarize(commit) {
       const status = code === 'A' ? 'added' : code === 'D' ? 'deleted' : 'modified';
       return { path, status };
     })
-    .filter(({ path }) => path !== 'log.md')
+    .filter(({ path }) => path !== 'log.md' && !/^log\/\d{4}-\d{2}-\d{2}\.md$/.test(path))
     .map(({ path, status }) => {
       const oldSource = () => (status === 'added' ? null : readAt(before, path));
       const newSource = () => (status === 'deleted' ? null : afterRead(path));
