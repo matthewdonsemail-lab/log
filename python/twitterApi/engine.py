@@ -1127,7 +1127,9 @@ def live_worthy(row: dict[str, Any], before: set[str], now: float | None = None)
     return (now if now is not None else time.time()) - at <= LIVE_WINDOW_SECONDS
 
 
-NETWORK_ERROR = re.compile(r"curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve", re.IGNORECASE)
+BADGE_POLL_TIMEOUT_SECONDS = 45
+
+NETWORK_ERROR = re.compile(r"curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve|TimeoutError", re.IGNORECASE)
 
 
 def network_only(error: str) -> bool:
@@ -1143,14 +1145,14 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
         try:
             if governor is not None:
                 governor.before_request(is_mutation=False, quiet=True)
-            answer, _ = await client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS})
+            answer, _ = await asyncio.wait_for(client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS}), timeout=BADGE_POLL_TIMEOUT_SECONDS)
             counts = badge_counts_of(answer)
             if counts is not None and counts != last:
                 append_live(account, {"type": "badge", **counts})
                 live_line({"type": "badge", **counts})
                 if notification_rose(last, counts):
                     refused = False
-                    for event in await new_notifications(client, cookies, spec, governor):
+                    for event in await asyncio.wait_for(new_notifications(client, cookies, spec, governor), timeout=BADGE_POLL_TIMEOUT_SECONDS * 2):
                         append_live(account, event)
                         live_line(event)
                         refused = refused or event.get("type") == "notificationsRefused"
@@ -1160,7 +1162,9 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            error = redact(e, cookies)[:200]
+            error = (redact(e, cookies) or type(e).__name__)[:200]
+            if isinstance(e, asyncio.TimeoutError):
+                error = f"TimeoutError: no answer from x in {BADGE_POLL_TIMEOUT_SECONDS}s"
             append_live(account, {"type": "pollRefused", "error": error})
             live_line({"type": "pollRefused", "error": error})
             if not network_only(error):
