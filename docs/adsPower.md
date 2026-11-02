@@ -117,4 +117,4 @@ AdsPower's plans are priced by the number of profiles (in October 2026 the
 Professional plan was $12 a month for 20 profiles, $21 for 50). You need one
 profile per account that uses a browser, plus a couple for testing.
 
-The rules behind this are in AGENTS.md.
+What the AdsPower code must do, requirement by requirement: [docs/specs/adsPower.md](specs/adsPower.md).

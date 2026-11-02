@@ -2,7 +2,7 @@
 
 This folder is the research behind `log facebook publish`: how three earlier projects posted a Facebook Marketplace listing, what worked, and what to avoid. It covers the publish steps as a state machine, how photos are loaded, changed and attached, how the create form is filled, and how captchas are solved. Read it if you're changing how publishing works or want to know why it works the way it does.
 
-It was written from the source code of the earlier projects, and every claim cites the `file:line` it came from. It describes those projects, not log. For how log handles photos today, see [Listing photos](../listingMedia.md); for the publish machine as built and its error codes, see the generated [error catalog](../errorCatalog.md).
+It was written from the source code of the earlier projects, and every claim cites the `file:line` it came from. It describes those projects, not log. For how log handles photos today, see [Listing photos](../listingMedia.md); for what publishing must do today, see the spec, [Marketplace publish and check](../specs/marketplacePublish.md); for its error codes, see the generated [error catalog](../errorCatalog.md).
 
 ## The pages
 

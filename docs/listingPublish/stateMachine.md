@@ -100,7 +100,7 @@ Inside `postToFacebookMarketplace` the steps run in this fixed order (`facebook-
 
 This is the design `log facebook publish` was built from. It takes the spike's proven steps, the production poster's checks and photo variation, and the dashboard's starting status, and closes the gaps. File: `src/marketplace/publish/machine.ts` (XState v5, in the same style as `marketplace/monitor/machine.ts`). Every browser step is an actor the caller supplies with `machine.provide`, so tests never open a browser.
 
-> The machine as built, with every error code and where it ends, is generated in the [error catalog](../errorCatalog.md) (`log graph publish`, `log errors`). The diagram below is the design.
+> The machine as built, with every error code and where it ends, is generated in the [error catalog](../errorCatalog.md) (`log graph publish`, `log errors`). What it must do is in the spec, [Marketplace publish and check](../specs/marketplacePublish.md). The diagram below is the design.
 
 ```mermaid
 stateDiagram-v2
@@ -110,8 +110,8 @@ stateDiagram-v2
   openingForm --> solvingCaptcha: captcha on page
   openingForm --> failed: sessionExpired / checkpoint / limitReached
   openingForm --> choosingCategory: form ready
-  solvingCaptcha --> openingForm: solved (CaptchaKraken)
-  solvingCaptcha --> failed: unsupportedCaptcha (Arkose) / captchaFailed
+  solvingCaptcha --> openingForm: solved (CaptchaKraken, then 2Captcha; Arkose 2Captcha only)
+  solvingCaptcha --> needsPerson: Facebook challenge / every solver tried
   choosingCategory --> uploadingPhotos: value read back matches
   choosingCategory --> failed: categoryNotSet (after 3 tries)
   uploadingPhotos --> fillingFields: "N/10 photos" counter == N
@@ -130,6 +130,7 @@ stateDiagram-v2
   capturingId --> unconfirmedId: published, id not found (never retried)
   done --> [*]
   unconfirmedId --> [*]
+  needsPerson --> [*]
   failed --> [*]
 ```
 

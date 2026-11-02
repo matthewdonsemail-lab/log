@@ -45,3 +45,5 @@ The notification refresher lives in `bundle.Notifications` (module 726194). It i
   - The queue hook (rule 114) reads per session the same way.
 - **It is said loudly.** New activity comes first in the block (`>>> X LIVE, NEW ACTIVITY`), and the agent tells matt at once, before anything else. A count that changed with no new activity adds nothing to the block.
 - **It wakes the agent while idle.** A hook only runs on a prompt or a tool call, so on SessionStart the block tells the agent to start a Monitor on every account's `live.jsonl` (`LIVE_MONITOR`) for the whole session. Each like, retweet, reply, quote, mention or follow then wakes the agent the moment it lands.
+
+The requirements this page describes, each checked against the code: [docs/specs/xLive.md](../../specs/xLive.md).

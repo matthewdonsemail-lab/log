@@ -12,13 +12,19 @@ An ad that goes out on more than one listing in a city says the same thing sever
 
 When an ad will have more than one listing live in its city, it needs at least as many copy versions as listings it will have live there, and never fewer than 3. An ad with one listing in its city needs none.
 
+Checked by: code and SubQ
+
 ### REQ-LISTING-11: Every two titles differ by at least half their words
 
 Every two versions' titles must differ by at least half their words, the city's and the place's words not counted. Two versions with the same title, or the same version id twice, are refused.
 
+Checked by: code and SubQ
+
 ### REQ-LISTING-12: Each version keeps the checkable copy rules
 
 Each version is refused when its id is not camelCase, its title is empty, longer than 70 characters, does not name the city, has an emoji or decorative symbol, a word in capitals, a "!" or a banned phrase ("cheap", "best price", "limited time" and the like), or its description is empty, has a "!", an emoji or a banned phrase, has no price with a number, no list of lines starting with a bullet or dash, or never asks for a photo.
+
+Checked by: code and SubQ
 
 ## Picking
 
@@ -26,12 +32,18 @@ Each version is refused when its id is not camelCase, its title is empty, longer
 
 When a listing is made from an ad (`campaign fill`, `heal`), it takes the version whose nearest distance to the copies live in the same city is largest (the title weighing two thirds, the description one third), fewer uses breaking a tie, and records that version in `copyVersionId`.
 
+Checked by: code and SubQ
+
 ### REQ-LISTING-14: A replacement skips the lost copy's version
 
 A replacement for a lost listing never takes the version the lost listing had, when there is another.
+
+Checked by: code and SubQ
 
 ## Refusals
 
 ### REQ-LISTING-15: Lint, create and fill refuse a version that breaks a rule
 
 `log facebook listing lint` and `listing create` refuse a listing whose copy versions break a checkable rule, and `campaign fill` refuses the same, and refuses too few versions with `notEnoughCopyVersions`.
+
+Checked by: code and SubQ

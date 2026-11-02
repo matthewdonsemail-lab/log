@@ -110,12 +110,9 @@ What every platform's commands share stays shared: the copy rules (beside `faceb
 
 - **States**: `planned`, `waiting`, `liking`, `replying`, `retrying`, `finished`, `halted`. `retrying` is only for a dropped connection with no answer from X.
 - **Each send** is one engine call, and its answer is the event: `sent`, `dropped` (an empty result), `throttled` (429, with its reset time), `dailyLimit` (344), `gone` (385, 433), `automated` (226), `sessionDead` (401/32).
-- **Random times** use the system random source and the drawn gaps.
-- **A refusal stops the run** (rule 94). Any answer where X refused the send (`throttled` 429, `automated` 226, `dailyLimit` 344, `dropped`, a soft block, `governorBlocked`, `sessionDead`) halts the run at once: the item stays pending, the stop line names X's code, its message and the time, and the run never waits and asks X again by itself. Nothing goes out on that account until the owner starts a run again.
-- **A network drop is not a refusal.** A connection reset, a timeout or no answer from X (the same test as the live poll's `networkOnly`, never a 429) is tried again after 1 to 3 minutes, at most 3 drops in a row, then the run stops with the item pending.
+- **What the run must do** (random times at least minGap apart, approval, one run per queue, additions while it runs, `--keepOpen`, a refusal stops it and only a network drop is tried again) is the spec, [docs/specs/xQueue.md](specs/xQueue.md). The context read right before each send and the hold are [docs/specs/fullContext.md](specs/fullContext.md).
 - **The governor** paces every call. fbk's `RequestGovernor` already paces with heavy-tailed gaps, caps and lasting cooldowns, and takes its settings as an object. X's settings are a second configuration of the same class, kept per account like Facebook's.
-- **Approval** keeps the fingerprint: a queue edited after `approve` is refused until it's approved again.
-- **A halt** sends an alert to the team chat, as the controller's alert does now.
+- **A halt** sends an alert to the team chat with `--alertChannel`.
 
 ## Twenty
 

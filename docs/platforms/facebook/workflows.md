@@ -13,7 +13,7 @@ Status: **verified live**, **built, not verified** (run, never ended clean), **b
 | Day host (lifecycle) | `log facebook host start --account <a> [--live] [--likes]` / MCP `host` | Open, sign-in, check, profile, location, warm-up | read; profile/location/likes need `--live` | `src/marketplace/lifecycle/machine.ts`, `src/cli/host/helpers/hostActors.ts` | `runs/host/harrisburg*.log`: stopped (loginWall, pageNotReached, opensSpent) | built, not verified |
 | Profile photo, cover, name (flow) | `log flow run profileSetup --account <a> --set …  --live` / MCP `flowProfileSetup` | Picture, cover, rename | write, `--live` | `src/browser/flow/definitions/profileSetup.json`, `docs/platforms/facebook/flows/profileSetup.md` | `mcp/2026-10-19.log` 11:46-11:49: "Flow profileSetup: done" | verified live |
 | Profile setup (session) | `log facebook profile setup --account <a> [--live]` / MCP `profile` | Same, own launch | write, `--live` | `src/marketplace/profile/machine.ts`, `python/session/profileSession.py` | `runs/profile/lastDryRun.log`: dry run stopped at sessionExpired | built, never run live |
-| Marketplace location | host step `setLocation`; `log inspect do setLocation <zip> --live` | Location by zip | write, `--live` | `inspectSession.py` `setLocation`, `hostActors.ts` `setLocation` | inspect `20261019T131409` (cited in code, not on disk) | recorded, built; host path not verified |
+| Marketplace location | host step `setLocation`; `log inspect do setLocation "<City>, <State>" --live` | Location typed as "City, State" or "City, Country", never abbreviated or a zip (rule 72, [spec](../../specs/marketplaceLocation.md)) | write, `--live` | `inspectSession.py` `setLocation`, `hostActors.ts` `setLocation` | inspect `20261022T105341`, `20261022T110738` (Bethlehem) | recorded, built; host path not verified |
 | Publish a listing | `log facebook publish --listing <id> [--live] [--now]` / MCP `publish` | Create form, photos, Publish | write, `--live` | `src/marketplace/publish/machine.ts`, `python/session/publishSession.py` | `publish/readingLive3.log` (2026-10-19): Publish clicked, ended `unconfirmedId` / `noListingId` | built, not verified |
 | Campaign | `log facebook campaign run --campaign <id> [--live]` / MCP `campaign` | Publish per account | write, `--live` | `src/cli/campaign/index.ts` (over publish) | none found | built, never run live |
 | Scan selling | `log facebook scan --account <a>` / MCP `scan` | Read Marketplace > Selling | read | `src/camofox/worker/`, `src/cli/live/index.ts` | none in `~/.logCli` | built, never run live (here) |
@@ -21,7 +21,7 @@ Status: **verified live**, **built, not verified** (run, never ended clean), **b
 | Listing monitor | `log facebook watch --account <a> [--checks n]` / MCP `watch` | Repeated status checks | read | `src/marketplace/monitor/machine.ts` | none | built, never run live |
 | Reels warm-up | `log facebook warmup reel run --account <a> [--persona] [--live] [--likes]` / MCP `warmup` | Watch, Next card, comments, like | read; like needs `--live --likes` | `src/facebook/warmup/activities/machine.ts`, `helpers/reel.ts`, `reelOrderer.ts` | inspect `20261020T050610` (record), `052708` (persona, 5 likes), `080734`, `082836` (orderer) | verified live |
 | Feed warm-up | `log facebook warmup feed run --account <a> --persona [--live] [--likes]` | Posts, See more, like | read; like `--live --likes` | `src/facebook/warmup/activities/helpers/feed.ts`, `feedOrderer.ts`, `src/cli/warmup/helpers/feedRun.ts` | inspect `20261020T103516`-`105346`; `runs/join/feedPersonaRun4.log`: 11 posts, 1 liked, 0 failed steps | verified live |
-| Listaro stages | `log facebook warmup stages record\|run --account <a> [--likes]` | Listaro's 5 activities | read; likes `--live` | `src/facebook/warmup/stages/machine.ts`, `helpers/scripts.ts` | `runs/warmup/erieRecord.log`: feedBrowse done, stopped in marketplaceBrowse; no saved flow | built, partly recorded |
+| Listaro stages | `log facebook warmup stages record\|run --account <a> [--likes]` | Listaro's 5 activities | read; likes `--live` | `src/facebook/warmup/stages/machine.ts`, `helpers/scripts.ts`, flows `src/browser/flow/definitions/warmup*.json` | Bethlehem 2026-10-22: recorded, then run 27/27 steps (`skills/warmup/SKILL.md`) | verified live |
 | Join a group | `log facebook join group --account <a> --group <g> [--live]` / MCP `join` | Read the gate, press Join | write, `--live` | `src/facebook/group/join/machine.ts`, `helpers/readGroupPage.ts` | inspect `20261019T224900` (`runs/join/joinLive_20261020.log`) | verified live |
 | Answer group questions | `log facebook join group … --answer [--set n=v] [--agree]`, then `--fill [--live [--submit]]` | Fill, submit questions | write, `--live --submit` | `src/facebook/group/answer/machine.ts`, `helpers/fillPlan.ts` | inspect `20261019T234232` (`fillLiveSubmit4_20261020.log`: submitted) | verified live |
 | Read a group's posts | none (extractor only); recorded with `log inspect` | `GroupsCometFeedRegularStoriesPaginationQuery` + HTML | read | `src/facebook/group/read/helpers/extractPosts.ts`, `docs/groupRead.md` | inspect `20261020T134155`, `143506` (13 posts, 0 rejected) | recorded only (+ extractor) |
@@ -58,7 +58,7 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 | clickAny | role pattern [count] | Click N random matches | yes | stages likes, reels |
 | likePost | none | Like the current post | yes | feed (`--likes`) |
 | postButton | name | A button in the current post (See more, Leave a comment) | yes | feed |
-| setLocation | zip | Marketplace location | yes | host |
+| setLocation | "City, State" | Marketplace location (`locationAbbreviated` for an acronym, a state code, a number or no state) | yes | host |
 | click | ref | Click a snapshot ref | yes | answer, join, flows |
 | type | ref text | Type into a ref | yes | answer |
 | press | key | Key press | yes | manual |
@@ -69,18 +69,17 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 ## 3. Gaps
 
 ### Groups (`src/facebook/group/`, rule 45)
-- **Read posts:** missing flow (`src/browser/flow/definitions/groupRead.json`), machine (`src/facebook/group/read/machine.ts`, `client.ts`), Twenty cursor fields (`scripts/twenty/twentySetup.mjs`), command (`src/cli/read/index.ts`, `log facebook read group` is a proposal in `docs/groupRead.md`), MCP tool. Steps 4-7 of `docs/groupRead.md`.
-- **Read comments:** extractor done; missing the same machine and command. Its queries are documented under `background/` (`CommentListComponentsRootQuery.md`), not `groups/`.
+- **Read posts and comments:** built: `log facebook read group` (`src/facebook/group/read`, `groupReadMachine`), and OpenMagpie's poll worker `log facebook poll --request` ([groupRead.md](../../groupRead.md), [groupListening.md](../../groupListening.md), [spec](../../specs/facebookGroups.md)).
 - **Reply threads:** `comment_direct_parent` is parsed (`extractComments.ts`); "View replies" expansion is not recorded.
-- **Write a comment / reply:** not recorded, no flow, machine, command or MCP tool (`src/facebook/group/comment/`). Needs `--live` (rule 8).
+- **Write a comment / reply:** not recorded, no flow, machine, command or MCP tool (`src/facebook/group/comment/`), [#40](https://github.com/matthewdonsemail-lab/log/issues/40). Needs `--live` (rule 8).
 - **React:** only feed-post Like exists (`likePost`, `CometUFIFeedbackReactMutation.md`); no group-post react, no reaction picker (`src/facebook/group/react/`).
 - **Post to a group:** not recorded (`src/facebook/group/post/`).
 - **Search groups:** recorded only; no extractor, machine or command (`src/facebook/group/search/`).
 
 ### Marketplace
-- **Publish:** the live run ended `noListingId`; the id capture needs fixing from that run's recording (`src/marketplace/publish/machine.ts`). Not on the driver (`OPENER_ACTIONS`, `src/browser/run`), and still a launch per action (rule 35).
+- **Publish:** the live run ended `noListingId`; the id capture needs fixing from that run's recording (`src/marketplace/publish/machine.ts`). Not on the driver (`OPENER_ACTIONS`, `src/browser/run`), and still a launch per action (rule 35, [#42](https://github.com/matthewdonsemail-lab/log/issues/42)); the recorded flow `marketplaceListingPublish` publishes from the open browser instead (rule 68).
 - **Scan, status, watch, campaign:** Camoufox-only, no runs in `~/.logCli`; no tab-in-host versions.
-- **Edit, mark sold, delete, renew:** not built (rule 8 until matt asks).
+- **Delete:** `log facebook listing remove <id> --live` (flow `marketplaceListingDelete`). **Edit, mark sold, renew:** none, by design until matt asks (rule 8).
 - **Browse listings:** only `openAny` in stages; no reader.
 
 ### Messages
@@ -95,7 +94,6 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 
 ### Lifecycle
 - Host never ran to the end (`runs/host/harrisburg*.log`); acting (publish, replies as a tab) is next, [#42](https://github.com/matthewdonsemail-lab/log/issues/42) (AGENTS.md, rule 35 status).
-- Stages flows (`warmupFeedBrowse` …) were never saved to `src/browser/flow/definitions/`.
 
 ## Writes on the account's own profile (recorded 2026-10-20, run 20261020T162343)
 

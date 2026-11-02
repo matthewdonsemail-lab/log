@@ -34,6 +34,17 @@ describe("nothing runs stale (rule 108)", () => {
     expect(coolingDown(root, "nobody")).toBe(false);
   });
 
+  test("an account whose governor spent its daily cap gets no watcher restarts until its next local day", () => {
+    const root = mkdtempSync(join(tmpdir(), "state"));
+    mkdirSync(join(root, "acct"), { recursive: true });
+    const now = new Date(2026, 10, 2, 13, 50);
+    writeFileSync(join(root, "acct", "governor_state.json"), JSON.stringify({ day: "2026-11-02", day_count: 500 }));
+    expect(coolingDown(root, "acct", now, 500)).toBe(true);
+    expect(coolingDown(root, "acct", new Date(2026, 10, 3, 8, 0), 500)).toBe(false);
+    writeFileSync(join(root, "acct", "governor_state.json"), JSON.stringify({ day: "2026-11-02", day_count: 499 }));
+    expect(coolingDown(root, "acct", now, 500)).toBe(false);
+  });
+
   test("a queue lock whose run died is cleared, a live one is kept", () => {
     const dir = mkdtempSync(join(tmpdir(), "queues"));
     writeFileSync(join(dir, "dead.lock"), "24444");

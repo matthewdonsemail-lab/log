@@ -1,6 +1,6 @@
 # Reading a Facebook group's posts
 
-`log facebook read group` reads the posts (and, if you ask, the comments) of a Facebook group an account has joined. It runs in the account's already-open browser, scrolls the group, and reads the posts from Facebook's own responses rather than from the screen. This page explains how a read works, step by step. For how reads fit into automatic group listening, see [Listening to Facebook groups](groupListening.md), which wins where the two differ.
+`log facebook read group` reads the posts (and, if you ask, the comments) of a Facebook group an account has joined. It runs in the account's already-open browser, scrolls the group, and reads the posts from Facebook's own responses rather than from the screen. This page explains how a read works, step by step. For how reads fit into automatic group listening, see [Listening to Facebook groups](groupListening.md), which wins where the two differ. What it must do is in the spec, [Facebook groups](specs/facebookGroups.md).
 
 log already joins groups and answers their entry questions (`src/facebook/group/join`, `src/facebook/group/answer`) and keeps each group in Twenty as an `agencyGroup`. This adds reading the posts.
 
@@ -70,7 +70,7 @@ The recorded flows `groupPostComments` and `groupPostDialog` stay as they are. T
 log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
 ```
 
-- `--show` prints what Twenty holds instead of reading (`src/cli/read`).
+- `--show` prints the group's read cursor from Twenty instead of reading (`src/cli/read`).
 - It refuses without the account's open browser (`groupBrowserNotOpen`) and outside its active hours.
 - MCP tools: `readGroup` and `readGroupLive`. It's a long run, so watch its live log.
 
@@ -80,16 +80,6 @@ log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commen
 - **`agencyGroupPost`** and **`agencyGroupComment`** were added for posts and comments (author, text, permalink, feedback id, times, counts, reply depth). They still exist, but nothing writes to them any more: posts now go to the group-listening service instead (see [Listening to Facebook groups](groupListening.md)).
 
 The client lives in `src/facebook/group/read/client.ts` (`readStateOf` before a read). After any field change, regenerate the Twenty client with `bun run twenty:client`.
-
-## The earlier worker
-
-Before reads moved into the open browser, the group-listening worker (`python/openMagpie/facebookWorker.py`, then run as `log read group --worker`, now `log facebook poll --request`) answered straight from Twenty with no browser. Its error codes are still worth knowing:
-
-- `groupNoAccount`: no account is in the group.
-- `groupNotReadYet`: no host has read the group yet.
-- `groupReadStale`: the group hasn't been read for 3 hours (is its host running?).
-
-The current worker reads in the open browser; its input and output are described in [Listening to Facebook groups](groupListening.md).
 
 ## Tests
 

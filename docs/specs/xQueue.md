@@ -12,9 +12,13 @@ An X account sends more than one thing only through its queue (`log twitter queu
 
 `queue plan` draws each like and reply a time inside the window from the system random source, at least minGap seconds apart, and refuses a minGap under 30 seconds.
 
+Checked by: code and SubQ
+
 ### REQ-QUEUE-02: A run refuses a queue that is not approved as it stands
 
 A run refuses a queue with no approval, or one whose items changed after it was approved (the fingerprint of the account and every item's action, target and copy no longer matches).
+
+Checked by: code and SubQ
 
 ## Running
 
@@ -22,13 +26,19 @@ A run refuses a queue with no approval, or one whose items changed after it was 
 
 The run takes the next event in time order, waits for its time, sends it and waits for X's answer before it takes the next one. It never sends two items at once.
 
+Checked by: code and SubQ
+
 ### REQ-QUEUE-04: Two sends are never closer than minGap
 
 When the next event is due less than minGap seconds after the last send, the run moves it to at least minGap after that send instead of sending it.
 
+Checked by: SubQ
+
 ### REQ-QUEUE-05: One run per queue
 
 A run takes the queue's lock file and is refused with `queueBusy` while another live run holds it. A lock whose process is gone is cleared first.
+
+Checked by: code and SubQ
 
 ## Adding while it runs
 
@@ -36,21 +46,31 @@ A run takes the queue's lock file and is refused with `queueBusy` while another 
 
 When a run holds the queue's lock, `queue add` writes the addition to the queue's incoming file for the run to take, instead of changing the queue file itself.
 
+Checked by: code and SubQ
+
 ### REQ-QUEUE-07: The run takes additions in as it waits and fits them minGap apart
 
 While it waits for the next send, the run takes in what was added, gives each new item a time inside the addition's window at least minGap from what is planned (`fitTimes`), and moves what was planned after it back to keep the gap (`spaceOut`).
+
+Checked by: code and SubQ
 
 ### REQ-QUEUE-08: An addition due sooner goes first
 
 When an added item is due before the send the run is waiting on (within minGap of it), the run stops waiting and sends the added item first.
 
+Checked by: SubQ
+
 ### REQ-QUEUE-09: One queue holds every kind of send
 
 An addition keeps its own action (dm, reply or quote), so an account's dms, replies and quotes go out through the same queue and the same run.
 
+Checked by: SubQ
+
 ### REQ-QUEUE-10: --keepOpen keeps the run going for more
 
 With `--keepOpen`, a run that has sent everything stays running and takes in what is added, until it is cancelled. Without it, the run finishes when nothing is left.
+
+Checked by: code and SubQ
 
 ## Queue hook
 
@@ -58,16 +78,24 @@ With `--keepOpen`, a run that has sent everything stays running and takes in wha
 
 The queue hook reads every queue's log from where this Claude session last read it, keeping offsets per session, so each session sees each event once.
 
+Checked by: code and SubQ
+
 ### REQ-QUEUE-12: Held items, sends, refusals, stops and starts go into the agent's context
 
 The hook picks held items, sends, refusals, network drops, stops, cancels, falling behind and starts out of the log and puts them into the agent's context under `>>> QUEUE`, on SessionStart, every prompt and every log tool or shell call.
 
+Checked by: code and SubQ
+
 ### REQ-QUEUE-13: The hook says what to do
 
 For a held item the hook says to read the person again, redraft, gate it, stop the run, put it back with `twitterQueueEdit` and run again. For a refusal it says loudly that the run stopped at X's answer, that the item stays pending and that nothing goes out on that account until matt says so; for any other stop it says the same.
+
+Checked by: code and SubQ
 
 ## Refusals
 
 ### REQ-QUEUE-14: A refusal from X stops the run, and only a network drop is tried again
 
 When X refuses a send (a 429, 226 looks automated, 344 daily limit, an empty result, a soft block, the governor, a dead session, or any other answer where X did not send it), the run stops at once: the item stays pending (not sent, not skipped), the run ends halted with the refusal (X's code, its message and the time) and a stop line saying so, and it never waits and asks X again by itself. Nothing goes out on that account until matt starts a run again (rule 94). A dropped connection with no answer from X (a connection reset, a timeout, the live poll's network test, never a 429) is not a refusal: it is tried again after a short wait, at most `MAX_DROPS` drops in a row, then the run stops with the item pending. A post that is gone (385, 433) is skipped, not a refusal of the account.
+
+Checked by: code and SubQ

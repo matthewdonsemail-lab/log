@@ -58,6 +58,6 @@ Each platform has the same check: `log reddit session check`, `log discord sessi
 
 ## Many accounts
 
-To keep many accounts in one shared place instead of a local file, use [Twenty](twenty.md). `log localAccount pull` copies the accounts Twenty has into your local file.
+To keep many accounts in one shared place instead of a local file, use [Twenty](twenty.md). `log localAccount pull` copies the accounts Twenty has into your local file, cookies and login included, each keeping its Twenty id (`--platform` for one platform; an account already in the file is kept unless `--refresh`). A local account wins over a Twenty account of the same name, and `LOG_ACCOUNTS=local` in `~/.logCli/.env` leaves Twenty out of accounts entirely. `LOG_LOCAL_ACCOUNTS` moves the file. Listings, groups and conversations stay in Twenty. The details: [Local accounts](specs/localAccounts.md).
 
 Next: [connect your agent](mcp.md).

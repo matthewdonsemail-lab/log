@@ -2,17 +2,7 @@
 
 Every log command that acts on one platform starts with that platform: `log <platform> <command> …`, for example `log facebook warmup reel` or `log facebook join group`. Commands that work on any platform (`inspect`, `flow`, `proxy`, `errors`, `login`…) take no platform. This page lists every Facebook command's old and new form, and how the rule is kept. Read it if an old command is refused, or you're adding a new command.
 
-## The commands when the change was made
-
-At the time of the change, log had 30 commands (`COMMANDS`, `src/cli/runner/index.ts`):
-
-| Kind | How many | Commands |
-|---|---|---|
-| Already named its platform (`byArgument`) | 1 | `warmup` |
-| Acted on Facebook only, without saying so (`facebook`) | 19 | `listings`, `listing`, `accounts`, `account`, `lifecycle`, `doctor`, `connect`, `profile`, `host`, `join`, `read`, `scan`, `status`, `watch`, `publish`, `campaign`, `conversations`, `conversation`, `capture` |
-| Any platform (`any`) | 10 | `launch`, `adsPower`, `inspect`, `flow`, `proxy`, `errors`, `graph`, `login`, `logout`, `whoami` |
-
-After the change, 21 commands start with the platform (the 19, `warmup`, and the new `poll`), and the 10 any-platform commands are unchanged.
+When the change was made, 19 commands acted on Facebook without saying so; they, `warmup` and the new `poll` now start with the platform. The any-platform commands (`launch`, `adsPower`, `inspect`, `flow`, `proxy`, `errors`, `graph`, `login`, `logout`, `whoami`…) were unchanged.
 
 ## Every Facebook command, old and new
 
@@ -41,6 +31,7 @@ The platform is always the first word after `log`. Everything after the command 
 | `log conversation show\|read\|lead\|link\|record …` | `log facebook conversation show\|read\|lead\|link\|record …` |
 | `log capture --har\|--settle\|--docs` | `log facebook capture --har\|--settle\|--docs` (its docs are in `docs/platforms/facebook/`) |
 | `log warmup facebook <activity> …` | `log facebook warmup <activity> …` (e.g. `log facebook warmup reel`, `log facebook warmup stages run`) |
+| `log facebook warmup plan\|record\|run\|feed` | `log facebook warmup stages plan\|record\|run\|log` |
 
 ## The poll
 
@@ -52,22 +43,10 @@ The platform is always the first word after `log`. Everything after the command 
 
 ## How the rule is kept
 
-- **One check.** `bun run check:docs` (run before every commit and push) refuses a single-platform command whose usage lines don't all read `log <platform> <command> …`. The runner reads the platform first, then the command; `Command.platform` says which platforms a command belongs to.
-- **Old forms answer with the new one.** For example, `log connect --account x` answers "the platform comes first: log facebook connect --account x" and doesn't run.
-- **Everything that names a command follows it:**
-  - the command reference, `docs/reference.md`, and the diagrams in `docs/diagrams/` (generated from the code by `bun run docs:build`);
-  - each MCP tool's description (tool names stay the command names: `connect`, `poll`…);
-  - the agent hooks' resolvers;
-  - the skills;
-  - the commands quoted in AGENTS.md, the docs and the error catalog's actions.
-- **The tests** use the new forms, and one test per command checks the old form is refused with the new one.
+What the runner refuses and what `bun run check:docs` checks are in the spec, [Command shape](specs/commandShape.md). An old form answers with the new one and doesn't run, for example `log connect --account x` answers `log connect: the platform comes first (rule 63): log facebook connect --account x`. The reference (`docs/reference.md`), the diagrams, each MCP tool's description, the hooks' resolvers, the skills and the error catalog all use the new forms, and the tests check each old form is refused.
 
 ## Code folders follow the same order
 
 Code is laid out by platform first too, `src/<platform>/<area>/<domain>`, because each platform does things differently: for example `src/facebook/group/read` and `src/facebook/warmup/stages`. See [Where the code lives](layout.md).
-
-## Still open
-
-Saved flows (`groupTabs`, `profileSetup`…) are Facebook-only too. Should their names carry the platform (`log facebook flow run groupTabs`, which would make `flow` take a platform)?
 
 The rules behind this are in AGENTS.md.

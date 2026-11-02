@@ -330,7 +330,7 @@ export const ERROR_CATALOG = {
   },
   governorBlocked: {
     layer: 'account',
-    meaning: "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the 40-a-day write budget (fbk's RequestGovernor, one per account under ~/.logCli/fbk/<account>).",
+    meaning: "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the platform's daily write budget (X 240, Discord 60, LinkedIn 10, every other platform 40; docs/specs/writeBudgets.md), one RequestGovernor per account under its state folder (~/.logCli/fbk/<account>, ~/.logCli/twitter/<account>).",
     retryable: false,
     raisedIn: ['directApi/engine'],
     publish: 'blocked',

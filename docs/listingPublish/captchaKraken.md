@@ -58,4 +58,4 @@ The code detects these vendors (`js/src/kinds.ts`): reCAPTCHA, Turnstile, GeeTes
 
 An earlier production poster used 2Captcha instead, only while signing in, never while posting. It tried, in order: Arkose (`FunCaptchaTaskProxyless`), then Facebook's `iframe#captcha-recaptcha` (reCAPTCHA Enterprise, with the site key read from the browser's targets), then reCAPTCHA v2, then hCaptcha, then image-to-text.
 
-**What log does:** CaptchaKraken first (reCAPTCHA). Facebook's own text captchas go to 2Captcha's image solver. If the page shows Arkose, the run stops with `unsupportedCaptcha` and the account is marked as needing a person. It never guesses.
+**What log does** (`planNextSolver`, `src/captcha/router`; [REQ-LISTING-18](../specs/marketplacePublish.md)): a reCAPTCHA or a text captcha goes to CaptchaKraken first (2 tries), then to 2Captcha (1 try). Arkose goes to 2Captcha only, at most `arkoseDailyCap` (3) a day per account. Facebook's own challenge, or a captcha nobody recognises, gets no solver and the run ends in `needsPerson`. It never guesses.

@@ -1,6 +1,6 @@
 # Replying to everyone posting about one topic
 
-Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the 40 a day limit.
+Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](../../specs/writeBudgets.md)).
 
 ## Run it from a fresh context
 

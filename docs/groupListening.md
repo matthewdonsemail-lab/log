@@ -2,7 +2,7 @@
 
 Group listening lets an account watch the Facebook groups it has joined and pick out the posts worth acting on. log joins the groups and reads them from the account's own browser; a separate group-listening service keeps every post and decides which ones match. Only the matches reach your Twenty server, so you can act on them from the same account. Read this if you want to understand how a group post goes from Facebook to a row you can act on.
 
-This page is the current design. Where it differs from [Reading a Facebook group's posts](groupRead.md), this page wins.
+This page is the current design. Where it differs from [Reading a Facebook group's posts](groupRead.md), this page wins. What log must do here is in the spec, [Facebook groups](specs/facebookGroups.md).
 
 ## The one idea
 
@@ -94,7 +94,7 @@ Reading NEW `socialListening` rows with `sourceKind` `facebook_group`, and actin
 
 ## Known limits
 
-- **One browser, two callers.** The worker sends steps to the browser the account's host holds. If the host is doing its own step (a warm-up, a check) at the same moment, both act on one page. A per-account browser lock isn't built yet, so the worker should only read when the host is idle.
+- **One browser, two callers.** The worker sends steps to the browser the account's host holds. If the host is doing its own step (a warm-up, a check) at the same moment, both act on one page. There is no per-account browser lock, so the worker should only read when the host is idle.
 - **A missed poll can lose posts.** If the service fails to record an answer and more than `limit` new posts arrive before the next poll, the cursor has already moved past them.
 - **Post times.** "Already seen" goes by post id, not time. Facebook's time still orders the feed, and it looks like the time a post went live: ids can run backwards against times, a couple of seconds apart, as when an admin approves a queue.
 - **One extra scroll per read.** Stopping at 3 seen posts costs about one scroll beyond the first seen post.

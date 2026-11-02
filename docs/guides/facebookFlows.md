@@ -123,13 +123,10 @@ recording (rule 25), re-record the changed part with inspect, rebuild the flow.
 
 ### Deterministic steps (rule 79)
 
-A step never guesses which control to press. The session gathers every visible
-control and `python/browser/controlMatch.py` scores them: the step's role, then
-its name as the accessible name, aria-label, label, text or placeholder (case
-and spacing ignored), inside the step's dialog (`within`) or an open dialog
-over the page behind it. One match is pressed; two are refused
-(`controlAmbiguous`), none is `controlMissing`, a disabled one is waited for
-until the step's time runs out (`controlDisabled`). So "Upload Photo" in a
+A step never guesses which control to press: `python/browser/controlMatch.py`
+scores every visible control by role, then name, inside the step's dialog
+(`within`). The exact requirements (and their error codes) are in
+[docs/specs/flows.md](../../docs/specs/flows.md). So "Upload Photo" in a
 recording finds Facebook's "Upload photo", and a Dismiss button with no
 accessible name is found by its text.
 
@@ -143,7 +140,7 @@ accessible name is found by its text.
   exchanges before the flow ships; `answers.test.ts` refuses a step with
   `expect` and no `answers`.
 
-Before a flow's first click, fill or upload, `clearOverlays` reads the page
+Before a flow's first click, fill, upload or location, `clearOverlays` reads the page
 and presses Escape for each known overlay over it (`OVERLAY_CLEARS`,
 `src/browser/flow/helpers/overlays.ts`), then reads the page again:
 
@@ -161,7 +158,8 @@ When Facebook changes a page, add its snapshot excerpt to
 `python/fixtures/controls/` (no names, no page copy) and a case to
 `src/browser/flow/controlMatch.test.ts`, so the next change fails a test, not
 a live run.
-Rebuild the request docs after a run (rule 27): `capture --docs`.
+
+Rebuild the request docs after a run (rules 27, 85): `log facebook capture --docs`.
 
 ### Saved flows
 
@@ -175,6 +173,8 @@ Rebuild the request docs after a run (rule 27): `capture --docs`.
 From `skills/warmup/SKILL.md`.
 
 ## warmup
+
+What the warm-up must do, requirement by requirement: [docs/specs/warmup.md](../../docs/specs/warmup.md).
 
 ### Hard boundaries
 
@@ -192,7 +192,7 @@ From `skills/warmup/SKILL.md`.
    step's answers are read from its own recording and kept as
    `exchanges.json`. Other steps get `expect.answers` the same way, written
    from that request's doc ("What it sent and what came back").
-7. **Every step that makes a call is decided by its answer** (rule 73). The
+4. **Every step that makes a call is decided by its answer** (rule 73). The
    five stage flows carry `answers` on each step whose recording shows a call
    that answers it, and the run fails the step with its code when the answer
    isn't right (`runFlowInSession`, `answersIssue`):
@@ -213,16 +213,16 @@ From `skills/warmup/SKILL.md`.
    skipped when Twenty has no home for the account. Each flow's doc shows what
    every step must answer, and recording a flow again keeps the checks
    (`keepAnswers`).
-4. **Live and watched** (rule 26): run through Monitor; every step goes to the
+5. **Live and watched** (rule 26): run through Monitor; every step goes to the
    stage log as it happens.
-5. **Stops on the wrong page.** Every step's landing page is checked
+6. **Stops on the wrong page.** Every step's landing page is checked
    (`pageProblem`): a checkpoint, a login wall or another section ends the
    activity (`blocked`), and the account's issue is written to Twenty. Erie,
    2026-10-19, scrolled a checkpoint page for a minute before this.
-6. **Scrolls like a hand** (`python/human/scrollMotion.py`, ported from the Robotic
+7. **Scrolls like a hand** (`python/human/scrollMotion.py`, ported from the Robotic
    VSL repo): bell-curve wheel steps, overshoot and recoil, mid-pauses. No
    `scrollBy` or `scroll_into_view_if_needed` anywhere.
-7. **Reels play with the sound on, every time a reel loads.** Reels start
+8. **Reels play with the sound on, every time a reel loads.** Reels start
    muted, and coming back from the creator's profile loads the reel again,
    muted (matt, 2026-10-23: the run after the profile watched with the audio
    off). So `unmute` follows every `backToReel`, in the drawn session and the
@@ -259,7 +259,7 @@ Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 bun scripts/datasets/buildReelViewers.ts                        # once: 980 real viewers from KuaiRand-1K (~/.logCli/datasets)
 bun scripts/datasets/buildInterestEffect.ts                     # once: the interest effect, from KuaiRand-Pure's random log
 log facebook warmup persona --account <a>              # the persona, its real viewer and its pack (every dataset a trait)
-log proxy balance                                      # 2Captcha traffic left, before a run
+log proxy balance                                      # each provider's traffic left, before a run
 log facebook warmup reel run --account <a> --persona --live [--likes] [--trafficMb 1024]
 ```
 

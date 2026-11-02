@@ -12,13 +12,20 @@ hook shape (TinyFish, 2026-10-20: code.claude.com/docs/en/hooks,
 learn.chatgpt.com/docs/hooks): `hookSpecificOutput.additionalContext`,
 `{"decision":"block","reason":…}` on Stop, exit 2 with stderr to refuse.
 
-| Event | Matcher | Script | What it does |
-|---|---|---|---|
-| SessionStart | startup, resume, clear, compact | `scripts/hooks/pageState.ts` | Where every open browser is |
-| UserPromptSubmit | none | `scripts/hooks/pageState.ts` | The same, with each of matt's prompts |
-| PreToolUse | Bash, PowerShell, Monitor | `scripts/hooks/liveLogs.ts` | Refuses a log run piped through tail/head; reminds a long one off a Monitor (rule 26) |
-| PostToolUse | Bash, PowerShell, Monitor, `mcp__log__.*` | `scripts/hooks/pageState.ts` | A new known state with its resolver, or a failed step (unconfirmed page: snapshot, then resolve) |
-| Stop | none | `scripts/hooks/pageState.ts` | Keeps the turn going while a browser sits on a state log-cli resolves (rule 54); never on a person's state; lets go when sent back once and nothing changed |
+| Script | Events | What it does |
+|---|---|---|
+| `scripts/hooks/pageState.ts` | SessionStart, UserPromptSubmit, PostToolUse, Stop | Where every open browser is; after a log or shell call, a new known state with its resolver, or a failed step (unconfirmed page: snapshot, then resolve); on Stop, keeps the turn going while a browser sits on a state log-cli resolves (rule 54), never on a person's state, and lets go when sent back once and nothing changed |
+| `scripts/hooks/liveLogs.ts` | PreToolUse (Bash, PowerShell, Monitor) | Refuses a log run piped through tail/head and any hand-run `log …` (rules 26, 106); reminds a long one off a Monitor |
+| `scripts/hooks/storage.ts` | SessionStart, UserPromptSubmit | `~/.logCli/runs` over 2 GB or the disk nearly full (rule 66) |
+| `scripts/hooks/engines.ts` | SessionStart, UserPromptSubmit | The direct-API engines and each account's session and governor; a stale MCP server and uncommitted local changes, loudly (rule 106) |
+| `scripts/hooks/knowledge.ts` | SessionStart | The knowledge base is there and how to search it (rule 93) |
+| `scripts/hooks/inbox.ts` | SessionStart, UserPromptSubmit, PostToolUse | Anyone who wrote to a signed-in account's inbox since the last look (rule 108) |
+| `scripts/hooks/queue.ts` | SessionStart, UserPromptSubmit, PostToolUse | What every account's queue did since the last look (rule 114) |
+| `scripts/hooks/xLive.ts` | SessionStart, UserPromptSubmit, PostToolUse | What X's own client shows on each X account, new for this session (rule 115) |
+
+SessionStart fires on startup, resume, clear and compact; PostToolUse on Bash,
+PowerShell, Monitor and every `mcp__log__` tool (`TOOL_MATCHER`). The list itself,
+with why each hook is there, is `AGENT_HOOKS`.
 
 What each hook decides is pure and tested: `src/agentHooks/pageState` (`hookReply`),
 `src/agentHooks/liveLog` (`liveLogVerdict`), `src/agentHooks/agentHooks.test.ts`.
@@ -70,12 +77,9 @@ never through `tail`/`head` (the PreToolUse hook refuses it).
 
 ## The check
 
-`bun run check:agentHooks` (lefthook pre-commit and pre-push) refuses a commit when:
-either host's hooks differ from the registry; a hook script is missing, fails,
-prints non-JSON, or the live-logs hook lets a buffered run through; a command is
-neither an MCP tool nor terminal-only; an MCP tool (commands and saved flows)
-isn't matched by PostToolUse; a long-running tool doesn't point at the live log;
-`.mcp.json` or the server's name differ from `MCP_SERVER_NAME`; a resolver names
-a command that doesn't exist; a page state has no resolver call, or a call names
-a tool that doesn't exist. Hook scripts run against a scratch memory
-(`LOG_HOOK_MEMORY`), so the check never changes what the real hook remembers.
+`bun run check:agentHooks` (lefthook pre-commit and pre-push) refuses a commit
+when the hooks, the CLI and the MCP tools drift apart: what it checks is in the
+spec, [Agent hooks](../../docs/specs/agentHooks.md). It also refuses a
+`.mcp.json` or a server name that differ from `MCP_SERVER_NAME`. Hook scripts
+run against a scratch memory (`LOG_HOOK_MEMORY`), so the check never changes
+what the real hook remembers.

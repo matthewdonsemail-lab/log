@@ -59,4 +59,4 @@ has under 5 GB free (`storageVerdict`), measured at most every 15 minutes.
 `LOG_RUNS_DIR` at a scratch folder: tests never write into the real runs
 again (the profile tests had left about 76 `galwayOne` folders there).
 
-Code: `src/browser/runStore`, `src/cli/runs`.
+Code: `src/browser/runStore`, `src/cli/runs`. The requirements: [docs/specs/runsAndRea.md](../../docs/specs/runsAndRea.md).

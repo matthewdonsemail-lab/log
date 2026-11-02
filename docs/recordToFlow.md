@@ -54,12 +54,7 @@ Camoufox's own humanize setting stays on, but is capped at 20 ms per hop in thes
 
 ## How a flow step runs
 
-A flow never depends on a page's exact wording or on a person stepping in (rule 79):
-
-- **One scored match per control.** The control is matched by its role, then by its name as the accessible name, aria-label, label, text or placeholder, with case and spacing ignored (`python/browser/controlMatch.py`). Only controls inside the dialog the step names (`within`, taken from the recording's snapshot) count; with no dialog named, a match in an open dialog wins over the page behind it.
-- **No guessing.** Two equal matches are refused with `controlAmbiguous`, none is `controlMissing`, and a disabled one is waited for until the step's time runs out (`controlDisabled`).
-- **The platform's answer decides.** Every step waits for the call it must cause (`expect`, or the first call its `answers` check) and fails when it was not sent. Its answer is checked before the next step fires (rule 73).
-- **Overlays first.** Before a flow's first click, fill, upload or location, the known overlays (the browser-notifications notice and an ended "What happened" notice) are pressed away with Escape, each checked. One that stays stops the flow with `overlayNotCleared`.
+A flow never depends on a page's exact wording or on a person stepping in (rule 79). Each control is one scored match by role and name inside the dialog the step names, never a guess (`controlAmbiguous`, `controlMissing`, `controlDisabled`); every step waits for the call it must cause and checks its answer before the next one fires (rule 73); and before the first click, fill, upload or location the known overlays are pressed away with Escape, each checked, or the flow stops with `overlayNotCleared`. Each of these is a requirement in [the flows spec](specs/flows.md).
 
 ## Saved flows
 
@@ -92,7 +87,7 @@ Every flow below is in `src/browser/flow/definitions/`, has its doc in `docs/pla
 ## What early recordings showed
 
 - **A first sign-in on a new account can land on "We suspect automated behaviour"** (`/checkpoint/601051028565049/`). Pressing Dismiss sends `FBScrapingWarningMutation` and lands signed in.
-- **A locked account goes through these screens in order:** "Confirm that you're human to use your account" [Continue] → `useUFACSubmitActionMutation` (5 s) → a text captcha → solver (1.5 s) → [Continue] → `useUFACSubmitActionMutation` (3 s) → "Confirm your identity with a video selfie". Only a person can clear the last screen. A second visit picks up at the step it was left on.
+- **A locked account went through these screens in order** (recorded before a checkpointed account was deactivated instead of pressed through, rule 82; see [the page states spec](specs/pageStates.md)): "Confirm that you're human to use your account" [Continue] → `useUFACSubmitActionMutation` (5 s) → a text captcha → solver (1.5 s) → [Continue] → `useUFACSubmitActionMutation` (3 s) → "Confirm your identity with a video selfie". Only a person can clear the last screen. A second visit picks up at the step it was left on.
 - **Changing exit IPs stood out.** One account signed in from three exit IPs in 90 minutes over 15 launches; accounts whose exit IP stayed fixed fared differently.
 - **Connect read the page too soon.** It read 1 s after pressing Enter, saw the login form still there, and tried again, although the first Enter had worked. It must wait for the page to change.
 - **The listing's location isn't set by any request in a run.** It arrives in the create page itself (`sell_location`), so a wrong Marketplace location is an account setting.

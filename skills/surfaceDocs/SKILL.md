@@ -1,12 +1,14 @@
 ---
 name: surfaceDocs
-description: Keep the README's command table and the Mermaid diagrams (docs/diagrams/*.mmd) generated from the code (rule 56). Use when adding or changing a command, a flag, an MCP tool, a hook or a page state, or when `bun run check:docs` refuses a commit.
+description: Keep the command reference (docs/reference.md) and the Mermaid diagrams (docs/diagrams/*.mmd) generated from the code (rules 56, 103). Use when adding or changing a command, a flag, an MCP tool, a hook or a page state, or when `bun run check:docs` refuses a commit.
 ---
 
 # surfaceDocs
 
-The README's "Commands, MCP tools and hooks" section and `docs/diagrams/*.mmd`
-are generated, never edited by hand. Everything comes from the code:
+The command reference, `docs/reference.md`, and `docs/diagrams/*.mmd` are
+generated, never edited by hand (the README is only for setting up, rule 103).
+What is generated and checked is in the spec, [Command shape](../../docs/specs/commandShape.md).
+Everything comes from the code:
 
 | What | From |
 |---|---|
@@ -19,12 +21,13 @@ are generated, never edited by hand. Everything comes from the code:
 | Which browser each command runs on | `commandBrowser`, `OPENER_ACTIONS`, `IN_OPEN_BROWSER`, `CAMOUFOX_ONLY` (`src/browser/run`) |
 | The browsers | `BROWSER_DRIVERS` (`src/browser/driver`) |
 
-`src/surface/catalog` gathers it, `src/surface/diagrams` draws the four
-diagrams (browsers, surface, commands, hooks, pageStates), `src/surface/readme` writes the
-section between `<!-- surface:start` and `<!-- surface:end -->`.
+`src/surface/catalog` gathers it, `src/surface/diagrams` draws the diagrams
+(browsers, platforms, surface, commands, hooks, pageStates), and
+`src/surface/readme` writes the section of `docs/reference.md` between
+`<!-- surface:start` and `<!-- surface:end -->`.
 
-log-cli is browser-agnostic (rule 59): the README never presents one browser as
-log-cli's. A command moved onto the driver goes from `CAMOUFOX_ONLY` to
+log-cli is browser-agnostic (rule 59): no command summary or page heading
+presents one browser as log-cli's. A command moved onto the driver goes from `CAMOUFOX_ONLY` to
 `OPENER_ACTIONS`, and the Browsers section and its diagram follow. The check
 parses every diagram with Mermaid (as GitHub does): text in a label, note or
 message goes through `label()`, which escapes quotes, angle brackets and `;`.
@@ -32,7 +35,7 @@ message goes through `label()`, which escapes quotes, angle brackets and `;`.
 ## After a change
 
 ```bash
-bun run docs:build     # rewrites README.md's section and docs/diagrams/*.mmd
+bun run docs:build     # rewrites docs/reference.md's section and docs/diagrams/*.mmd
 bun run check:docs     # what lefthook runs: refuses any drift
 ```
 

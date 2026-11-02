@@ -45,6 +45,9 @@ In short:
    worker before the caller gets the browser, so before Facebook loads.
 6. **After the run** the session and any newly made device are saved back.
 
+What each step must do, requirement by requirement: [the browser gate](specs/browserGate.md)
+and [the launch budget](specs/launchBudget.md).
+
 The full sequence:
 
 ```text
@@ -180,6 +183,9 @@ Facebook file through the proxy is over the limit (default 2500 ms).
 - Over MCP, use `proxyMs` on a flow tool, or `--proxyMs` in a tool's `args`.
 - It sets `LOG_PROXY_MAX_MS` for that run only.
 
+The speed limit, the providers, assigning and the traffic budget, requirement
+by requirement: [the proxies spec](specs/proxies.md).
+
 ## Traffic budget per account
 
 Proxy traffic is money, so each account has a budget of its own proxy traffic
@@ -235,11 +241,14 @@ country:
    city in `CITY_COORDINATES`, measured from Camoufox's GeoIP. 2Captcha doesn't
    always honour the state (a Pennsylvania proxy once exited in Dallas). It
    must also be fast enough for Facebook (the speed limit above). A miss is
-   retried on a new session (`sessionFor(..., attempt)`) three times, then it
-   fails with `proxyTooFar` and nothing is saved.
+   tried again on a new session (`sessionFor(..., attempt)`), up to
+   `PROXY_ATTEMPTS` (3) sessions in all, then it fails with `proxyTooFar` and
+   nothing is saved.
 
-`log proxy balance` shows the traffic left (2Captcha bills traffic, in and
-out, from $3.99/GB down to $1.25/GB) and whether the proxy password is set.
+`log proxy balance` shows the traffic left on every provider that is set up
+(2Captcha bills traffic, in and out, from $3.99/GB down to $1.25/GB) and
+whether the proxy password is set. Byteful, the other provider, is in
+[Proxy providers](proxyVendors/README.md).
 
 ## Why the gate exists
 
