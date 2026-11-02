@@ -81,13 +81,13 @@ async function indexDiscord(context: CommandContext, only: string | undefined, l
     }
     context.err(`discord ${name}: reading every DM and group through vendor/endcord`);
     const run = context.directDiscord(account, { action: "export", limit: 20000, streamProgress: true });
+    const found = ((run.answer.conversations as DiscordExported[] | undefined) ?? []).filter((c) => c.messages.length).map((c) => discordConversationOf(account.accountName, c));
+    if (found.length) saveConversations(found);
+    conversations.push(...found);
     if (!run.answer.ok) {
-      lines.push(`discord ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}`);
+      lines.push(`discord ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}${found.length ? `; kept the ${found.length} conversation(s) read before it, ${found.reduce((n, c) => n + c.messages.length, 0)} messages, and read nothing more` : ""}`);
       continue;
     }
-    const found = ((run.answer.conversations as DiscordExported[] | undefined) ?? []).filter((c) => c.messages.length).map((c) => discordConversationOf(account.accountName, c));
-    saveConversations(found);
-    conversations.push(...found);
     const problems = (run.answer.problems as unknown[] | undefined)?.length ?? 0;
     lines.push(`discord ${name}: ${found.length} conversations, ${found.reduce((n, c) => n + c.messages.length, 0)} messages${problems ? `, ${problems} chat(s) not fully read` : ""}`);
   }

@@ -18,6 +18,7 @@ export const writeBudgets = {
     'REQ-BUDGET-10': noul('When Discord answers 429 in history_of, does it return the messages read so far with a reason and stop paging without asking again?'),
     'REQ-BUDGET-11': noul('When Discord or LinkedIn answers 429 to the session check, does the engine answer code rateLimited with event throttled?'),
     'REQ-BUDGET-12': noul('Does new_session return a curl_cffi Session with impersonate set to IMPERSONATE, which is chrome150, and do the Client\'s REQUEST_HEADERS carry no User-Agent of their own?'),
+    'REQ-BUDGET-13': noul('In python/discordApi/engine.py, when history_of returns a refused stop (an HTTP status other than 200) for one conversation, does export_of return at once with the conversations read so far, stopped naming that conversationId and the httpStatus and answer Discord gave, without reading any later conversation, while a network drop (no status) only adds to problems and goes on to the next one?'),
     unspecifiedBehavior: noul('Is there a path where a platform write is sent without the account\'s governor being asked first, or goes past the governor without force set, that the specification does not describe?'),
   },
   assertions: {
@@ -33,6 +34,7 @@ export const writeBudgets = {
     'REQ-BUDGET-10': MET,
     'REQ-BUDGET-11': MET,
     'REQ-BUDGET-12': MET,
+    'REQ-BUDGET-13': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

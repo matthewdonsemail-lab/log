@@ -2,7 +2,7 @@ import { noul } from 'jev-spec'
 import { MET, NOT_VIOLATED } from '../types'
 
 export const aiTells = {
-  description: 'The watermark reading of every X send and the AI tells reading of every gated draft',
+  description: 'The watermark reading of every X and Discord send and the AI tells reading of every gated draft',
   specPath: 'docs/specs/aiTells.md',
   codePaths: [
     'src/twitter/copy/watermark/client.ts',
@@ -14,6 +14,7 @@ export const aiTells = {
     'src/cli/twitter/helpers/voice.ts',
     'src/cli/twitter/helpers/send.ts',
     'src/cli/twitter/helpers/queue.ts',
+    'src/cli/discord/index.ts',
   ],
   rubrics: {
     'REQ-AITELLS-01': noul('Does watermarkReadingOf set level to artifacts when any finding is deterministic, stylistic when there are only non-deterministic findings, clean when there are none, and always set statistical to unknown?'),
@@ -28,6 +29,7 @@ export const aiTells = {
     'REQ-AITELLS-10': noul('Does readAiTells cut the text with chunksOf into lines and word windows, find each chunk\'s best phrase by cosine, and rerank the closest with embedder.rerank, whose model is jina-reranker-v2-base-multilingual?'),
     'REQ-AITELLS-11': noul("Does readAiTells set flagged when the closest cosine score is above the baseline p99, and pass only when there are no hits and it is not flagged?"),
     'REQ-AITELLS-12': noul('Does the voice command call ensureAiIndex, which builds the index when aiIndexStale finds it missing or older than pairs.json, and does reading.pass require aiTells.pass?'),
+    'REQ-AITELLS-13': noul('Does discordSendCommand call watermarkReadingOf on the text before the dry run or any send, return refuse with aiArtifacts without calling directDiscord when the level is artifacts, and otherwise log watermarkLine(watermark) and put watermark in its dry run and --json output?'),
     unspecifiedBehavior: noul('Does a draft or send pass the watermark or AI tells reading by a route the specification does not describe, such as planSend allowing artifacts or readAiTells passing despite a vale hit?'),
   },
   assertions: {
@@ -43,6 +45,7 @@ export const aiTells = {
     'REQ-AITELLS-10': MET,
     'REQ-AITELLS-11': MET,
     'REQ-AITELLS-12': MET,
+    'REQ-AITELLS-13': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

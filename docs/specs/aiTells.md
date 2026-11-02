@@ -4,7 +4,7 @@ title: "AI tells and watermark"
 
 # AI tells and watermark
 
-Every X send's copy is read for what AI chat interfaces leave in text (the watermark reading), and every draft the voice gate reads is also read for AI phrasing against curated lists and matt's own writing. Rules 111 and 112.
+Every X and Discord send's copy is read for what AI chat interfaces leave in text (the watermark reading), and every draft the voice gate reads is also read for AI phrasing against curated lists and matt's own writing. Rules 111 and 112.
 
 ## Watermark reading
 
@@ -19,6 +19,10 @@ The copy is read by the vendored claude-watermark-checker. Any deterministic fin
 ### REQ-AITELLS-03: The plan carries the reading and every send logs it
 
 A send `planSend` allows carries its watermark reading, and both a direct send and each queue send log it in one line.
+
+### REQ-AITELLS-13: A Discord send is read the same way before anything goes out
+
+`log discord send` (MCP `discordSend`, `discordSendLive`) reads the whole message with the same watermark reading before the dry run or any send. Copy that reads as `artifacts` is refused with `aiArtifacts`, naming what was found, and nothing is sent. Otherwise the reading is logged in one line, printed in the dry run and carried in its `--json`, live or not. Rule 111.
 
 ## AI phrasing
 

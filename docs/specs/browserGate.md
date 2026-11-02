@@ -80,9 +80,9 @@ In the page and the worker, `navigator.language`, the Intl locale and the number
 
 `navigator.languages` must start with the pinned languages, in order, in the page and the worker. Languages the browser adds after them are allowed. Anything else is refused with `browserLocaleMismatch`. Rule 92.
 
-### REQ-GATE-17: The browser's exit IP must be the one the gate checked
+### REQ-GATE-17: The browser's exit IP is the one the gate checked, or in its country and timezone
 
-The self-check reads the browser's own exit IP. When no IP echo answers, it refuses with `selfCheckFailed`. When the IP differs from the one the gate checked, it is refused with `browserExitIpMismatch`, except on an attached browser, where a new exit is located and accepted only when it is in the account's country and on the same timezone. Rule 17.
+The self-check reads the browser's own exit IP. When no IP echo answers, it refuses with `selfCheckFailed`. When the IP differs from the one the gate checked, it is refused with `browserExitIpMismatch`, except on an attached browser, where a residential proxy can change its IP between the gate's check and the browser opening: there a new exit is located and accepted only when it is in the account's country and on the same timezone. Rules 17 and 118.
 
 ### REQ-GATE-18: A failed self-check stops the browser before Facebook loads
 

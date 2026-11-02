@@ -4,7 +4,7 @@ title: "X queue"
 
 # X queue
 
-An X account sends more than one thing only through its queue (`log twitter queue build|plan|run|add|edit`, MCP `twitterQueue…`), at random times, one queue and one run per account, and the queue hook puts what the run did in front of the agent. Rules 104, 107 and 114.
+An X account sends more than one thing only through its queue (`log twitter queue build|plan|run|add|edit`, MCP `twitterQueue…`), at random times, one queue and one run per account, a refusal from X stops the run, and the queue hook puts what the run did in front of the agent. Rules 94, 104, 107 and 114.
 
 ## Planning
 
@@ -58,10 +58,16 @@ With `--keepOpen`, a run that has sent everything stays running and takes in wha
 
 The queue hook reads every queue's log from where this Claude session last read it, keeping offsets per session, so each session sees each event once.
 
-### REQ-QUEUE-12: Held items, sends, cool-offs, stops and starts go into the agent's context
+### REQ-QUEUE-12: Held items, sends, refusals, stops and starts go into the agent's context
 
-The hook picks held items, sends, cool-offs, stops, cancels, falling behind and starts out of the log and puts them into the agent's context under `>>> QUEUE`, on SessionStart, every prompt and every log tool or shell call.
+The hook picks held items, sends, refusals, network drops, stops, cancels, falling behind and starts out of the log and puts them into the agent's context under `>>> QUEUE`, on SessionStart, every prompt and every log tool or shell call.
 
 ### REQ-QUEUE-13: The hook says what to do
 
-For a held item the hook says to read the person again, redraft, gate it, stop the run, put it back with `twitterQueueEdit` and run again. For a cool-off or stop it says nothing more goes out on that account until matt says so.
+For a held item the hook says to read the person again, redraft, gate it, stop the run, put it back with `twitterQueueEdit` and run again. For a refusal it says loudly that the run stopped at X's answer, that the item stays pending and that nothing goes out on that account until matt says so; for any other stop it says the same.
+
+## Refusals
+
+### REQ-QUEUE-14: A refusal from X stops the run, and only a network drop is tried again
+
+When X refuses a send (a 429, 226 looks automated, 344 daily limit, an empty result, a soft block, the governor, a dead session, or any other answer where X did not send it), the run stops at once: the item stays pending (not sent, not skipped), the run ends halted with the refusal (X's code, its message and the time) and a stop line saying so, and it never waits and asks X again by itself. Nothing goes out on that account until matt starts a run again (rule 94). A dropped connection with no answer from X (a connection reset, a timeout, the live poll's network test, never a 429) is not a refusal: it is tried again after a short wait, at most `MAX_DROPS` drops in a row, then the run stops with the item pending. A post that is gone (385, 433) is skipped, not a refusal of the account.

@@ -63,6 +63,7 @@ describe('one queue per account: what is added is fitted into the same plan', ()
       log: () => {},
       alert: () => {},
       takeNudge: () => 0,
+      contextChanged: async () => [],
       save: () => {},
     })
     expect(sentAt).toHaveLength(3)
@@ -102,6 +103,7 @@ function fakeDeps(queue: Queue, additions: QueueAddition[][], keepOpen = false):
     log: () => {},
     alert: () => {},
     takeNudge: () => 0,
+      contextChanged: async () => [],
     takeAdded: () => {
       const next = additions.shift()
       return next ? next.flatMap((a) => addToQueue(queue, a, seededRandom(5), new Date(clock.now))) : []

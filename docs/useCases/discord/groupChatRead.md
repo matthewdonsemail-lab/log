@@ -41,6 +41,6 @@ A busy group runs about 100 messages an hour, so a 5 hour window needs a limit n
 ## What the runs taught
 
 - **Twenty doesn't have to hold the account.** `LOG_ACCOUNTS=local` leaves Twenty out entirely, and a session captured by `inspectStart` saves back to the local file.
-- **A 429 stops the read.** The answer keeps what was read and says `stopped`. Nothing retries (rule 94), and no script calls Discord with the account's token.
+- **A 429 stops the read.** The answer keeps what was read and says `stopped`, with Discord's status, and a 429 pauses the account. Nothing retries (rule 94), and no script calls Discord with the account's token. Any refusal stops `log search index` across every chat the same way, keeping what it had read.
 - **A browser profile that won't start for low disk** needs space freed and the browser app restarted, never its cache deleted: that can wipe the session.
 - **Secrets posted in the chat** (keys, tokens) are never repeated in the summary; tell the owner to rotate them.

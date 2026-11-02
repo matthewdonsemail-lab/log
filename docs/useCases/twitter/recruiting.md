@@ -84,7 +84,7 @@ Opening on their own post, then the offer and the link:
 - **Check location before every send.** Early runs reached people outside the hiring regions; now no location means hold.
 - **Most hits aren't candidates.** In a large Spanish call-center sweep, most posts were complaints about call centers, support accounts and news. Expect a handful of qualified people per few hundred authors.
 - **Generic copy gets dropped.** The same template line with a link came back as "no tweet created"; a line about the person's own post went through. Write each line for its post.
-- **Use the queue, never a hand loop.** A hand loop lost a reply; the queue retries, cools off and resumes.
+- **Use the queue, never a hand loop.** A hand loop lost a reply; the queue keeps every item, stops on X's first refusal with the item still pending, and picks up where it stopped when the owner runs it again.
 
 ## Running it unattended
 

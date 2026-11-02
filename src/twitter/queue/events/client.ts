@@ -39,10 +39,12 @@ export function newQueueEvents(root = queuesRoot(), session: string = SHARED_SES
 export function queueContext(events: readonly QueueEvent[]): string | null {
   if (!events.length) return null
   const held = events.filter((e) => e.kind === 'held')
-  const trouble = events.filter((e) => e.kind === 'cooling' || e.kind === 'stopped' || e.kind === 'fellBehind')
+  const refused = events.filter((e) => e.kind === 'refused')
+  const trouble = events.filter((e) => e.kind === 'stopped' || e.kind === 'fellBehind')
   const lines = [`>>> QUEUE (${events.length} new): what the account's queue did since the last look. Tell matt in plain words.`]
+  if (refused.length) lines.push(`  >>> QUEUE STOPPED: A SEND WAS REFUSED (${refused.length}). The run stopped at the answer and the item stays pending, nothing was sent. Nothing goes out on that account until matt says so (rule 94): tell him X's answer (the code and its message, in the line) and the time, and never start the run again yourself.`)
   if (held.length) lines.push(`  ${held.length} HELD: something happened with that person since the draft, so it wasn't sent. For each: read them again (\`twitterDms\` { with }), redraft from what changed, gate it (\`voice\`), stop the run (\`jobCancel\`), put it back (\`twitterQueueEdit\`) and run it again (rule 109).`)
-  if (trouble.length) lines.push(`  ${trouble.length} STOP OR COOL-OFF: X's own answer is in the line. Nothing more goes out on that account until matt says so (rule 94); tell him the answer and the time.`)
+  if (trouble.length) lines.push(`  ${trouble.length} STOPPED: the run ended, the line says why. Nothing more goes out on that account until matt says so (rule 94); tell him what stopped it and the time.`)
   for (const e of events) lines.push(`  ${e.at} UTC ${e.queue} ${e.kind}: ${e.line.slice(0, 260)}`)
   return lines.join('\n')
 }

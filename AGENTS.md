@@ -605,7 +605,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     lookup, and pull the actual candidates from it. A suggestion names where
     it came from (the page, the search), and a pick is one of what the search
     returned.
-54. 2026-10-20 · matt: a known state is resolved, never a reason to stop.
+54. 2026-10-20 · (checkpoints: replaced by rule 118, matt 2026-11-02) matt: a known state is resolved, never a reason to stop.
     When a page lands on a state log-cli already knows (a checkpoint's first
     page, a text captcha, the Remember password prompt, the login form, two-step,
     "automated behaviour"), its resolver runs: press the checkpoint's Continue
@@ -1525,6 +1525,40 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     without one. A new rule goes into its domain's spec and questions in the
     commit that adds it; a spec without its questions, or questions without
     their spec, stop the commit. `docs/specs/README.md` lists every domain.
+
+118. 2026-11-02 · matt: "yes do all 5", settling the five places where the
+    spec gate (rule 117) found the rules disagreeing with each other or
+    with the code. The newer, stricter rule wins wherever it protects an
+    account:
+    - **A refused send stops the queue (rule 94 over the queue's own
+      cool-offs).** When X refuses a send (a 429, its 226 or 344, a soft
+      block, the governor), the queue run stops with X's answer, the item
+      stays pending and nothing goes out until matt starts a run again. A
+      dropped connection is not a refusal and may still be retried. This
+      replaces the cool-offs that ended on their own (rule 114 now reports
+      a stop, never a cool-off that resumes). A send whose context can't
+      be read right before it (rule 109) is held, never sent on half of it.
+    - **A checkpoint deactivates the account (rule 82 over rule 54).** No
+      checkpoint page is pressed through: `checkpointStart` and any other
+      `/checkpoint` page are a stop with no resolver, the browser's
+      checkpoint watch sets the account DEACTIVATED (reason `checkpointed`),
+      and the lifecycle closes the browser with the reason `checkpoint` and
+      ends in `deactivated`. A video selfie or ID check still waits for matt.
+    - **A group read also saves the group's identity (narrows rule 65).**
+      Beside `readCursor`, `lastReadAt` and `lastReadReason`, a read writes
+      the group's `facebookGroupId` and `groupUrl` when it finds the real
+      id, since `poll --request` finds groups by it. Posts and comments
+      still never go to Twenty.
+    - **Discord follows rules 94 and 111.** `log discord send` reads every
+      message's copy for AI artifacts and refuses `aiArtifacts`, as X does,
+      and a 429 or any refusal while reading Discord stops the whole read,
+      keeping what was read.
+    - **The exit IP may move within the country (narrows rule 17).** On an
+      attached browser a residential proxy can change IP between the gate's
+      check and the browser opening, so a new exit is accepted when it is in
+      the account's country and on the same timezone; otherwise it is
+      refused with `browserExitIpMismatch`.
+    Each is in its domain's spec and checked by SubQ (`docs/specs/`).
 
 ## Checks
 

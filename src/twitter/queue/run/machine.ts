@@ -11,9 +11,9 @@ export const queueRunMachine = setup({
   states: {
     planned: { on: { BEGIN: 'waiting', FAIL: 'halted' } },
     waiting: { on: { LIKE_DUE: 'liking', REPLY_DUE: 'replying', COMPLETE: 'finished', FAIL: 'halted' } },
-    liking: { on: { ACTED: 'waiting', COOL: 'cooling', FAIL: 'halted' } },
-    replying: { on: { ACTED: 'waiting', COOL: 'cooling', FAIL: 'halted' } },
-    cooling: { on: { RESUME: 'waiting', FAIL: 'halted' } },
+    liking: { on: { ACTED: 'waiting', DROPPED: 'retrying', FAIL: 'halted' } },
+    replying: { on: { ACTED: 'waiting', DROPPED: 'retrying', FAIL: 'halted' } },
+    retrying: { on: { RESUME: 'waiting', FAIL: 'halted' } },
     finished: { type: 'final' },
     halted: { type: 'final' }
   }

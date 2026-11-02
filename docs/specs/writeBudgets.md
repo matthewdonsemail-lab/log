@@ -56,6 +56,10 @@ When Discord answers 429 while reading a chat or channel, the read stops there a
 
 When a platform answers 429 to the session check, the engine answers `rateLimited` with the event `throttled`, never logged in or logged out. Rule 94.
 
+### REQ-BUDGET-13: A refusal stops the whole Discord read
+
+When Discord refuses a read (a 429 or any other HTTP answer that isn't 200) while the export for `log search index` reads one conversation, or while the chat list is read, the whole read stops there: no other conversation is read, the answer says which conversation and what Discord answered, and the conversations already read are kept. A 429 pauses the account. A network drop, where Discord gave no answer, isn't a refusal: that conversation is noted and the next is read. Rule 94.
+
 ## LinkedIn
 
 ### REQ-BUDGET-12: LinkedIn goes out as curl_cffi impersonating Chrome

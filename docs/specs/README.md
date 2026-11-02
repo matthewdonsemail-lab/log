@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 30 domains, 362 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 30 domains, 367 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -91,12 +91,12 @@ A known state is resolved, never a reason to stop. When an open browser lands on
 
 - **REQ-STATE-01** One map names the known page states
 - **REQ-STATE-02** The internal API answer decides a state that has one
-- **REQ-STATE-03** A checkpoint's first page is pressed through
+- **REQ-STATE-03** A checkpoint's first page is never pressed through
 - **REQ-STATE-04** A text captcha is solved
 - **REQ-STATE-05** The Remember password prompt is passed with Not now
 - **REQ-STATE-06** The login form signs in and two-step types the code
 - **REQ-STATE-07** "Automated behaviour" is dismissed
-- **REQ-STATE-08** A checkpoint not mapped yet is looked at, then pressed through
+- **REQ-STATE-08** Any other checkpoint page stops the account
 - **REQ-STATE-09** Only what a person must clear stops an account
 - **REQ-STATE-10** A state that needs nothing is not resolved
 - **REQ-STATE-11** The hook runs on four events
@@ -167,7 +167,7 @@ Before an account's browser loads anything, it goes through one gate: a headed l
 - **REQ-GATE-14** The timezone must be the exit IP's, in page and worker
 - **REQ-GATE-15** The language and Intl locale must be exactly the pinned locale
 - **REQ-GATE-16** The language list must start with the pinned languages
-- **REQ-GATE-17** The browser's exit IP must be the one the gate checked
+- **REQ-GATE-17** The browser's exit IP is the one the gate checked, or in its country and timezone
 - **REQ-GATE-18** A failed self-check stops the browser before Facebook loads
 
 ## [Launch budget](./launchBudget.md)
@@ -226,6 +226,7 @@ Every account runs one lifecycle machine (`lifecycleMachine`, XState) that holds
 - **REQ-LIFE-13** A checkpoint page deactivates the account
 - **REQ-LIFE-14** Every open account browser is watched for a checkpoint
 - **REQ-LIFE-15** An account already deactivated is left as it is
+- **REQ-LIFE-16** A checkpoint closes the browser and ends the lifecycle
 
 ## [Proxies](./proxies.md)
 
@@ -320,11 +321,12 @@ How many times an account may write on its platform in a day, how matt can push 
 - **REQ-BUDGET-09** A throttle or block answer pauses the account
 - **REQ-BUDGET-10** A Discord 429 stops the read and is never retried
 - **REQ-BUDGET-11** A 429 on a session check is a throttle, not a session
+- **REQ-BUDGET-13** A refusal stops the whole Discord read
 - **REQ-BUDGET-12** LinkedIn goes out as curl_cffi impersonating Chrome
 
 ## [X queue](./xQueue.md)
 
-An X account sends more than one thing only through its queue (`log twitter queue build|plan|run|add|edit`, MCP `twitterQueue…`), at random times, one queue and one run per account, and the queue hook puts what the run did in front of the agent. Rules 104, 107 and 114.
+An X account sends more than one thing only through its queue (`log twitter queue build|plan|run|add|edit`, MCP `twitterQueue…`), at random times, one queue and one run per account, a refusal from X stops the run, and the queue hook puts what the run did in front of the agent. Rules 94, 104, 107 and 114.
 
 - **REQ-QUEUE-01** Every planned send gets a random time at least minGap apart
 - **REQ-QUEUE-02** A run refuses a queue that is not approved as it stands
@@ -337,8 +339,9 @@ An X account sends more than one thing only through its queue (`log twitter queu
 - **REQ-QUEUE-09** One queue holds every kind of send
 - **REQ-QUEUE-10** --keepOpen keeps the run going for more
 - **REQ-QUEUE-11** The hook reads each queue's log since this session's last look
-- **REQ-QUEUE-12** Held items, sends, cool-offs, stops and starts go into the agent's context
+- **REQ-QUEUE-12** Held items, sends, refusals, stops and starts go into the agent's context
 - **REQ-QUEUE-13** The hook says what to do
+- **REQ-QUEUE-14** A refusal from X stops the run, and only a network drop is tried again
 
 ## [Full context before a send](./fullContext.md)
 
@@ -352,6 +355,7 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-06** An item whose context changed is held, not sent
 - **REQ-CONTEXT-07** A held item is put back only with queue edit
 - **REQ-CONTEXT-08** An item cannot be edited while its run is going
+- **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
 
 ## [Voice gate](./voiceGate.md)
 
@@ -366,11 +370,12 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 
 ## [AI tells and watermark](./aiTells.md)
 
-Every X send's copy is read for what AI chat interfaces leave in text (the watermark reading), and every draft the voice gate reads is also read for AI phrasing against curated lists and matt's own writing. Rules 111 and 112.
+Every X and Discord send's copy is read for what AI chat interfaces leave in text (the watermark reading), and every draft the voice gate reads is also read for AI phrasing against curated lists and matt's own writing. Rules 111 and 112.
 
 - **REQ-AITELLS-01** The reading is clean, stylistic or artifacts
 - **REQ-AITELLS-02** planSend refuses copy with artifacts
 - **REQ-AITELLS-03** The plan carries the reading and every send logs it
+- **REQ-AITELLS-13** A Discord send is read the same way before anything goes out
 - **REQ-AITELLS-04** vale-ai-tells rules run on the draft
 - **REQ-AITELLS-05** The index embeds every literal phrase with Jina
 - **REQ-AITELLS-06** Phrases quoted on X are kept only when close to a curated one

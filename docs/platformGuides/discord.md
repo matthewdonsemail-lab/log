@@ -20,11 +20,12 @@ Commands that read send nothing. `log discord send` is a dry run until you add `
 
 **Send a message** (acts, dry run until `--live`)
 
-- `log discord send --account <a> --channel <id or name> --text "…"`: one message to a DM, a group or a channel. A draft on several lines goes out one message per line; `--asOne` sends it as one.
+- `log discord send --account <a> --channel <id or name> --text "…"`: one message to a DM, a group or a channel. A draft on several lines goes out one message per line; `--asOne` sends it as one. The message is checked first for hidden characters, odd spaces or pasted Claude HTML, and refused with `aiArtifacts` if any are there: retype it as plain text.
 
 **Find old conversations** (reads only)
 
 - `log search "<query>" --platform discord`: searches saved conversations by words and by meaning.
+- `log search index --platform discord` reads every DM and group to save them. If Discord refuses part way (a rate limit or any other refusal), the read stops there, says which chat and what Discord answered, and keeps what it already read. Nothing more is read until you run it again.
 
 ## Signing in
 

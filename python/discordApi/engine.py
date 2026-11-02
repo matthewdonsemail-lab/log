@@ -64,14 +64,37 @@ def open_client(token: str) -> tuple[Any, dict[str, Any] | None]:
         return None, {"ok": False, "code": "platformError", "detail": str(e).splitlines()[0], "loginState": "unknown"}
 
 
+def refusal_of(status: int, answer: Any, where: str) -> dict[str, Any]:
+    said = (answer.decode("utf-8", "replace") if isinstance(answer, bytes) else str(answer or "")).strip()[:300]
+    detail = f"Discord answered {status} to {where}{f': {said}' if said else ''}: the read stopped there, nothing more was read and nothing retried (rule 94)"
+    if status == 429:
+        return {"ok": False, "code": "rateLimited", "detail": detail, "loginState": "loggedIn", "httpStatus": status, "event": "throttled", "answer": said}
+    if status == 401:
+        return {"ok": False, "code": "sessionDead", "detail": detail, "loginState": "loggedOut", "httpStatus": status, "answer": said}
+    return {"ok": False, "code": "platformError", "detail": detail, "loginState": "loggedIn", "httpStatus": status, "answer": said}
+
+
+def dms_of(client: Any) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    data, status = client.request("GET", f"/api/v9/users/{client.my_id}/channels", None, client.header)
+    if not status:
+        return [], {"ok": False, "code": "platformError", "detail": "Discord didn't answer /users/@me/channels (the network dropped)", "loginState": "unknown"}
+    if status != 200:
+        return [], refusal_of(status, data, "/users/@me/channels")
+    dms = []
+    for dm in json.loads(data):
+        recipients = [{"id": r["id"], "username": r["username"], "global_name": r.get("global_name")} for r in dm.get("recipients") or []]
+        name = dm["name"] if "name" in dm else (recipients[0].get("global_name") if recipients else None)
+        dms.append({"id": dm["id"], "type": dm["type"], "recipients": recipients, "name": name})
+    return dms, None
+
+
 def chats_of(token: str) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
         return failed
-    got = client.get_dms()
-    if got is None:
-        return {"ok": False, "code": "platformError", "detail": "Discord didn't answer /users/@me/channels", "loginState": "unknown"}
-    dms, _ = got
+    dms, refused = dms_of(client)
+    if refused:
+        return refused
     kinds = {1: "dm", 3: "group"}
     chats = [{"id": d["id"], "kind": kinds.get(d["type"], str(d["type"])), "name": d["name"], "members": [r.get("global_name") or r["username"] for r in d["recipients"]]} for d in dms]
     return {"ok": True, "loginState": "loggedIn", "chats": chats}
@@ -83,8 +106,9 @@ def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
         return failed
     target = channel
     if not channel.isdigit():
-        got = client.get_dms()
-        dms = got[0] if got else []
+        dms, refused = dms_of(client)
+        if refused:
+            return refused
         named = [d for d in dms if (d["name"] or "").strip().lower() == channel.strip().lower()]
         if len(named) != 1:
             return {"ok": False, "code": "chatNotFound" if not named else "chatAmbiguous", "detail": f"{len(named)} of the account's DMs and groups are called {channel!r}", "loginState": "loggedIn"}
@@ -95,7 +119,7 @@ def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
     return {"ok": True, "loginState": "loggedIn", "event": "sent", "channelId": sent["channel_id"], "messageId": sent["id"], "timestamp": sent["timestamp"], "content": sent["content"]}
 
 
-def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[list[dict[str, Any]], str | None]:
+def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
     from endcord.message import prepare_messages
 
     out: list[dict[str, Any]] = []
@@ -103,10 +127,10 @@ def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[
     while len(out) < limit:
         url = f"/api/v9/channels/{channel_id}/messages?limit={min(100, limit - len(out))}" + (f"&before={before}" if before else "")
         data, status = client.request("GET", url, None, client.header)
-        if status == 429:
-            return out, "messages answered 429: the read stops here, nothing retried (rule 94)"
+        if not status:
+            return out, {"refused": False, "detail": f"channel {channel_id} messages: the network dropped, Discord didn't answer"}
         if status != 200:
-            return out, f"messages answered {status}"
+            return out, {"refused": True, **refusal_of(status, data, f"channel {channel_id} messages")}
         page = prepare_messages(json.loads(data))
         out.extend(page)
         if len(page) < 100 or not page:
@@ -116,28 +140,35 @@ def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[
     return out, None
 
 
+def exported_of(d: dict[str, Any], messages: list[dict[str, Any]], me: str) -> dict[str, Any]:
+    kinds = {1: "dm", 3: "group"}
+    return {
+        "id": d["id"],
+        "kind": kinds.get(d["type"], str(d["type"])),
+        "name": d["name"],
+        "members": [r.get("global_name") or r["username"] for r in d["recipients"]],
+        "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": m["content"] or ""} for m in reversed(messages)],
+    }
+
+
 def export_of(token: str, per_chat: int, pause: float) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
         return failed
-    got = client.get_dms()
-    if got is None:
-        return {"ok": False, "code": "platformError", "detail": "Discord didn't answer /users/@me/channels", "loginState": "unknown"}
-    dms, _ = got
+    dms, refused = dms_of(client)
+    if refused:
+        return refused
     me = str(client.my_id)
-    kinds = {1: "dm", 3: "group"}
     conversations, problems = [], []
     for index, d in enumerate(dms, 1):
-        messages, problem = history_of(client, d["id"], per_chat, pause)
-        if problem:
-            problems.append({"id": d["id"], "problem": problem})
-        conversations.append({
-            "id": d["id"],
-            "kind": kinds.get(d["type"], str(d["type"])),
-            "name": d["name"],
-            "members": [r.get("global_name") or r["username"] for r in d["recipients"]],
-            "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": m["content"] or ""} for m in reversed(messages)],
-        })
+        messages, stop = history_of(client, d["id"], per_chat, pause)
+        conversations.append(exported_of(d, messages, me))
+        if stop and stop["refused"]:
+            answer = {k: v for k, v in stop.items() if k != "refused"}
+            print(json.dumps({"liveEvent": "progress", "line": f"discord export {index}/{len(dms)}: stopped, {answer['detail']}"}), file=sys.stderr, flush=True)
+            return {**answer, "stopped": {"conversationId": d["id"], "name": d["name"], "httpStatus": answer["httpStatus"], "answer": answer["answer"], "read": len(messages), "conversationsLeft": len(dms) - index}, "conversations": conversations, "problems": problems}
+        if stop:
+            problems.append({"id": d["id"], "problem": stop["detail"]})
         print(json.dumps({"liveEvent": "progress", "line": f"discord export {index}/{len(dms)}: {len(messages)} message(s)"}), file=sys.stderr, flush=True)
         time.sleep(pause)
     return {"ok": True, "loginState": "loggedIn", "conversations": conversations, "problems": problems}
@@ -154,12 +185,16 @@ def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str
     client, failed = open_client(token)
     if failed:
         return failed
-    messages, problem = history_of(client, channel, limit, 0.4)
-    if problem and not messages:
-        return {"ok": False, "code": "platformError", "detail": f"channel {channel}: {problem}", "loginState": "loggedIn"}
+    messages, stop = history_of(client, channel, limit, 0.4)
+    refused = {k: v for k, v in stop.items() if k != "refused"} if stop and stop["refused"] else None
+    if refused and not messages:
+        return refused
+    if stop and not messages:
+        return {"ok": False, "code": "platformError", "detail": stop["detail"], "loginState": "unknown"}
     me = str(client.my_id)
     picked = [m for m in reversed(messages) if not after or int(m["id"]) > int(after)]
-    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": problem} if problem else {}), "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
+    said = {"httpStatus": refused["httpStatus"], **({"event": refused["event"]} if refused.get("event") else {})} if refused else {}
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": stop["detail"], **said} if stop else {}), "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:

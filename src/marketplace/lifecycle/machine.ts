@@ -414,6 +414,7 @@ export const lifecycleMachine = setup({
           actions: assign({ lastError: { code: 'signInSpent', detail: 'two sign-ins in a row ended signed out' } })
         },
         { guard: { type: 'issueStatus', params: 'needsLogin' }, target: 'onboarding.signingIn' },
+        { guard: ({ context }) => context.issue?.code === 'checkpointed', target: 'deactivating' },
         { guard: { type: 'issueStatus', params: 'checkpoint' }, target: 'needsPerson' },
         { guard: { type: 'issueStatus', params: 'limited' }, target: 'cooling' },
         { guard: { type: 'issueStatus', params: 'restricted' }, target: 'restricting' },
@@ -433,6 +434,7 @@ export const lifecycleMachine = setup({
     },
     restricting: closing('restricted', 'restricted'),
     banning: closing('restricted', 'banned'),
+    deactivating: closing('checkpoint', 'deactivated'),
     losing: closing('accountLost', 'lost'),
     stopping: closing('shutdown', 'stopped'),
     paused: { on: { RESUME: { target: 'onboarding.opening' } } },

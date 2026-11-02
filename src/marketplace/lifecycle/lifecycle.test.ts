@@ -73,10 +73,21 @@ describe('the account lifecycle (rule 35)', () => {
     r.actor.stop()
   })
 
-  test('a checkpoint in the warm-up waits for a person, then resumes at the same activity, in the same browser', async () => {
+  test('a checkpoint deactivates the account: the browser closes for that reason and the lifecycle ends (rule 82)', async () => {
     const r = run(fresh, {
       warmupActivity: (input: LifecycleActorInputs['warmupActivity'], n) =>
         input.activity === 'createAccessCheck' && n === 3 ? { kind: 'issue', issue: 'checkpointed' } : { kind: 'ok' }
+    })
+    await inState(r.actor, 'deactivated')
+    const snap = r.actor.getSnapshot()
+    expect(snap.status).toBe('done')
+    expect(snap.context.browser.closes.map((c) => c.reason)).toEqual(['checkpoint'])
+  })
+
+  test('a video selfie in the warm-up waits for a person, then resumes at the same activity, in the same browser', async () => {
+    const r = run(fresh, {
+      warmupActivity: (input: LifecycleActorInputs['warmupActivity'], n) =>
+        input.activity === 'createAccessCheck' && n === 3 ? { kind: 'issue', issue: 'videoSelfieRequired' } : { kind: 'ok' }
     })
     await inState(r.actor, 'needsPerson')
     expect(r.actor.getSnapshot().context.warmup.done).toEqual(['feedBrowse', 'marketplaceBrowse'])

@@ -43,3 +43,7 @@ When anything changed, the item is not sent: its status becomes `held`, `heldFor
 ### REQ-CONTEXT-08: An item cannot be edited while its run is going
 
 `queue edit` is refused with `queueBusy` while a run holds the queue's lock, so the run's saves can't undo the edit.
+
+### REQ-CONTEXT-09: A like and the parts of a split dm ride on their send's context read
+
+A queued like only goes out after its own item was sent in the same run (`sentAtRun` is this plan), so it follows the context read made right before that send and needs no read of its own. The parts of one dm split into lines are one send: the context is read once before the first part, and the rest follow it. A read that fails before a send, or an item with no handle, holds the item instead of sending it on half its context.

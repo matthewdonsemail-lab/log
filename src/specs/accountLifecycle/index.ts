@@ -28,6 +28,7 @@ export const accountLifecycle = {
     'REQ-LIFE-12': noul('Does a needsLogin issue go to onboarding.signingIn, and does the issue state go to stuck with signInSpent when signInTries has reached 2?'),
     'REQ-LIFE-13': noul('When navigationsOf finds a navigation whose URL pageProblem marks checkpointed, does watchCheckpoint call setStatusAndReplace with deactivated, the reason checkpointed and a detail holding the page and the time?'),
     'REQ-LIFE-14': noul('Is watchCheckpoint started both in log inspect start and in openInspectSession, which the host, flow runs and warm-up stages use, and stopped when each session ends?'),
+    'REQ-LIFE-16': noul('In the issue state of lifecycleMachine, does an issue whose code is checkpointed go to deactivating, which closes the browser with the reason checkpoint and ends in the final state deactivated, before the checkpoint status guard that goes to needsPerson?'),
     'REQ-LIFE-15': noul('Does watchCheckpoint do nothing when the account status is already deactivated, and set recorded back to false so it tries again when setStatusAndReplace fails?'),
     unspecifiedBehavior: noul('Does the lifecycle machine open a browser beyond OPENS_PER_DAY, or close it without logging a CloseReason in browser.closes, by a route the specification does not describe?'),
   },
@@ -47,6 +48,7 @@ export const accountLifecycle = {
     'REQ-LIFE-13': MET,
     'REQ-LIFE-14': MET,
     'REQ-LIFE-15': MET,
+    'REQ-LIFE-16': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

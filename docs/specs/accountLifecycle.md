@@ -75,3 +75,7 @@ The checkpoint watch runs for every session that holds an account's browser open
 ### REQ-LIFE-15: An account already deactivated is left as it is
 
 When the account is already DEACTIVATED, the watch changes nothing. When saving the status to Twenty fails, the watch says so and tries again. Rule 82.
+
+### REQ-LIFE-16: A checkpoint closes the browser and ends the lifecycle
+
+When the lifecycle meets a `checkpointed` issue, it closes the browser with the logged reason `checkpoint` and ends in `deactivated`. It never waits on a person for it. A video selfie or another check only a person clears still waits in `needsPerson`. Rules 82 and 118.

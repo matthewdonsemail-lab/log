@@ -698,7 +698,7 @@ flowchart LR
   textCaptcha -->|"log inspect do solve --live --account #lt;a#gt;"| nexttextCaptcha(["next state"])
   checkpointStart["checkpointStart: a checkpoint's first page (#quot;confirm that you're human to use your account#quot;)"]
   page --> checkpointStart
-  checkpointStart -->|"click Continue"| nextcheckpointStart(["next state"])
+  checkpointStart --> person
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
@@ -744,9 +744,9 @@ flowchart LR
   loginForm["loginForm: the login form"]
   page --> loginForm
   loginForm -->|"log inspect do signIn --live --account #lt;a#gt;"| nextloginForm(["next state"])
-  checkpoint["checkpoint: a Facebook checkpoint not mapped yet"]
+  checkpoint["checkpoint: a Facebook checkpoint"]
   page --> checkpoint
-  checkpoint -->|"take a snapshot, read the page, press its Continue/next control to see the next state"| nextcheckpoint(["next state"])
+  checkpoint --> person
 ```
 
 Source: [`docs/diagrams/pageStates.mmd`](diagrams/pageStates.mmd).
@@ -1352,7 +1352,7 @@ log twitter queue nudge <queue.json> [--replies <n>]
 log twitter queue edit <queue.json> --n <n> --text "<new copy>" --by <who> [--window <30m>]
 A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).
 build pairs each target with one unique line from the variations, shuffled; a target that carries its own text (written for that person's post) keeps it. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now. One account has one queue: add puts more in (dms, replies, quotes together), even while it runs, each fitted between what is planned at least minGap apart, and the run takes them in as it waits; run --keepOpen stays running for more, so all of an account's sending is one run through its one X session (rule 105). Right before each send the run reads that person's full context again (their dm thread and X Chat, and what they did on the account's posts from its notifications) and holds the item when anything happened since it was drafted: a message either way, a like, retweet, reply, quote, mention or follow (rule 109). edit puts new copy on a pending or held item (no queue file is ever edited by hand), plans a held one again inside --window, and approves the queue as it then stands.
-run walks the plan as an XState machine (planned, waiting, liking, replying, cooling, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: a block or throttle cools off (15 min doubling to 4 h, or X's reset time, 24 h on the daily limit 344) and retries the post once at the end; a deleted post or replies off (385/433) is skipped; a dead session or 5 cool-offs in a row halts it and, with --alertChannel, tags matt in buzz. It saves after every step, so running it again resumes. --force sends every event past the account's governor (its pause and caps), only when matt asked (rule 86); X's answers and the run's own cool-offs still apply.
+run walks the plan as an XState machine (planned, waiting, liking, replying, retrying, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: any refusal (a 429, 226 looks automated, 344 daily limit, a soft block, the governor, a dead session) stops the run at once with X's answer and the time, the item stays pending, and nothing goes out on that account until matt starts a run again (rule 94); with --alertChannel it tags matt in buzz. A deleted post or replies off (385/433) is skipped. A dropped connection with no answer from X is tried again after 1 to 3 min, at most 3 drops in a row. It saves after every step, so running it again resumes. --force sends every event past the account's governor (its pause and caps), only when matt asked (rule 86); X's answers still stop the run.
 ```
 
 #### log new
@@ -1419,7 +1419,7 @@ Send one message to a Discord DM, group or channel, on the direct-API engine; a 
 ```text
 log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]
 Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).
-A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write.
+A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json.
 ```
 
 #### log linkedin session

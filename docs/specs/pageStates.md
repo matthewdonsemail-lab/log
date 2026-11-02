@@ -18,9 +18,9 @@ A state with an answer test is matched by the step's internal API answers whenev
 
 ## Resolvers
 
-### REQ-STATE-03: A checkpoint's first page is pressed through
+### REQ-STATE-03: A checkpoint's first page is never pressed through
 
-On a checkpoint's first page ("confirm that you're human to use your account") the resolver clicks its Continue, which is plain text, by its ref from the step's snapshot.
+A checkpoint's first page ("confirm that you're human to use your account") has no resolver: a checkpointed account is deactivated (rule 82, matt 2026-11-02, rule 118), so nothing on the page is clicked, the state is one only matt is told about, and the browser's checkpoint watch sets the account DEACTIVATED.
 
 ### REQ-STATE-04: A text captcha is solved
 
@@ -38,9 +38,9 @@ On the login form the resolver runs `signIn`, and on the two-step code page it r
 
 On "We suspect automated behaviour" the resolver clicks its Dismiss or Continue control by ref.
 
-### REQ-STATE-08: A checkpoint not mapped yet is looked at, then pressed through
+### REQ-STATE-08: Any other checkpoint page stops the account
 
-A checkpoint page no other state names is still a known state that a person is not needed for: its resolver takes a snapshot, so its Continue can be pressed and the state added to the map.
+A checkpoint page no other state names stops the account the same way: no resolver, nothing clicked, the account deactivated and matt told (rule 118). A two-step code page under a /checkpoint URL is still the sign-in's code step, which comes first in the map.
 
 ## What stops an account
 

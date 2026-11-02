@@ -21,6 +21,8 @@ export const fullContext = {
     'REQ-CONTEXT-06': noul('When contextChanged returns any change, does runQueue set item.status to held, set item.heldFor to the changes, call dropPost for its other events, alert with a HELD line naming twitterQueueEdit, and continue without calling deps.send?'),
     'REQ-CONTEXT-07': noul('Does editItem accept only a pending or held item, set its text, set draftedAt to now, set status to pending, delete heldFor, plan a held item again with fitTimes and call approveQueue?'),
     'REQ-CONTEXT-08': noul('Does queue edit refuse with queueBusy when liveLock(file) is true?'),
+    'REQ-CONTEXT-09 like': noul('In runQueue, is a like event ready only when item.sentAtRun equals plan.planned, so it goes out only after its own reply was sent in this run?'),
+    'REQ-CONTEXT-09 readFails': noul('In the queue command, does contextChanged return a non-empty list, so runQueue holds the item, when the notifications read answer is not ok, when the thread read answer is not ok, or when item.handle is missing?'),
     unspecifiedBehavior: noul('Can a queued dm, reply or quote be sent without its context being read right before the send, or be sent while held, by a route the specification does not describe?'),
   },
   assertions: {
@@ -32,6 +34,8 @@ export const fullContext = {
     'REQ-CONTEXT-06': MET,
     'REQ-CONTEXT-07': MET,
     'REQ-CONTEXT-08': MET,
+    'REQ-CONTEXT-09 like': MET,
+    'REQ-CONTEXT-09 readFails': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

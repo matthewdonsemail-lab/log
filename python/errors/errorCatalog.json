@@ -293,7 +293,8 @@
     "retryable": false,
     "raisedIn": [
       "twitter/post/send",
-      "twitter/queue/plan"
+      "twitter/queue/plan",
+      "cli/discord"
     ],
     "action": "Retype the copy as plain text so only what matt would type is in it, then send again."
   },
