@@ -10,7 +10,7 @@ import time
 import warnings
 from functools import partial
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Literal
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 import filetype
 import pyotp
@@ -3592,6 +3592,7 @@ class Client:
                 known = set(found)
                 events = found + [e for e in events if e not in known]
                 result = chat.decrypt_events(events)
+        self._keep_xchat_keys(result)
         out: dict[str, list[dict]] = {}
         for decrypted in result.get('messages') or []:
             message = message_of(decrypted)
@@ -3607,6 +3608,44 @@ class Client:
         for messages in out.values():
             messages.sort(key=lambda m: m.get('time_ms') or 0)
         return out
+
+    def _keep_xchat_keys(self, result: dict) -> None:
+        keys = (result.get('conversation_keys') or {}).get('keys') or {}
+        if not hasattr(self, '_xchat_conversation_keys'):
+            self._xchat_conversation_keys = {}
+        self._xchat_conversation_keys.update({str(v): bytes(k) for v, k in keys.items()})
+
+    async def get_xchat_media(self, conversation_id: str, media_hash_key: str, key_version: str) -> bytes:
+        """
+        Downloads one X Chat media attachment and opens it, the way X's chat
+        app does (``resolveMediaImmediately``): the encrypted blob from
+        ton.x.com with the session's cookies, then chat-xdk's
+        ``decrypt_stream`` with the conversation key it was sent under.
+
+        Parameters
+        ----------
+        conversation_id : :class:`str`
+            The X Chat conversation id (``<a>:<b>`` or ``g<id>``).
+        media_hash_key : :class:`str`
+            The attachment's ``media_hash_key``.
+        key_version : :class:`str`
+            The conversation key version of the message that carried it.
+
+        Returns
+        -------
+        :class:`bytes`
+            The decrypted file.
+        """
+        from ..xchat import XCHAT_MEDIA_URL
+
+        key = (getattr(self, '_xchat_conversation_keys', None) or {}).get(str(key_version))
+        if key is None:
+            raise TwitterException(f'no X Chat conversation key {key_version} opened yet for {conversation_id}')
+        url = XCHAT_MEDIA_URL.format(conversation_id=conversation_id, media_hash_key=quote(media_hash_key, safe=''))
+        response = await self.http.request('GET', url, headers={'Referer': f'https://{DOMAIN}/', 'User-Agent': self._user_agent})
+        if response.status_code >= 400:
+            raise TwitterException(f'status: {response.status_code}, X Chat media {media_hash_key} not served')
+        return bytes(self._xchat.decrypt_stream(response.content, key))
 
     def _xchat_versions(self, events: list) -> list[int]:
         """The conversation key versions a batch of events is under, as
