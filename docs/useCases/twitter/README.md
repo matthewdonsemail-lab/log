@@ -30,7 +30,7 @@ DMs are their own pages. Recruiting is public replies only.
 | Finding people and posts | an outside search, never X itself (rule 53). Say the price before a big sweep | treg's X search, profile, posts and comments reads |
 | House style (`house`) | all lowercase, no commas, no full stops, no dashes. Urls are fine. `check` refuses anything else | `src/twitter/copy/style` |
 | One send | dry run, then the `…Live` tool with `approvedBy` | `twitterReply`, `twitterQuote`, `twitterLike`, `twitterDm` (+ `…Live`) |
-| The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Nudge`, `Status` |
+| The queue | any send to 2 or more people. Never a hand loop | `twitterQueueBuild` → `Show` → `Check` → `Approve` → `Plan` → `Run` → `RunLive`, `Add`, `Edit`, `Nudge`, `Status` |
 | Pacing | 2 minutes between sends by default (`minGap` 120), the window about 2 minutes per person; only longer when the owner asks. 240 writes a day per account, cool-offs on throttles | the account's governor, `~/.logCli/twitter/<account>`; `--force` goes past it only when the owner says so (rule 86) |
 
 ## The queue, step by step
@@ -45,6 +45,8 @@ The same calls on every sending page.
 6. `twitterQueuePlan` { window, minGap: 120, like: true }, with the window about 2 minutes per person (20 people: "40m"), then `twitterQueueRun` (dry run) then `twitterQueueRunLive` { confirmLive: true } when the owner asked for the live send. Follow it with `jobStatus`, and start a Monitor on `~/.logCli/mcp/<UTC day>.log` first (rule 26). `jobCancel` stops it at its next wait.
 
 What the run does when X pushes back: no tweet created or throttled waits 15 min doubling to 4 h, then retries once at the end. Daily limit (344) waits 24 h. Deleted post or replies off (385/433) is skipped. Dead session, or 5 waits in a row, stops and alerts the owner. Running it again resumes.
+
+One account has one queue and one run for everything it sends, dms, replies and quotes together (rule 107). `twitterQueueAdd` { queue, targets, action, by } puts more in, even while it runs: the run takes them in as it waits and fits each one at least minGap from what is planned, and one due sooner than the send it waits on goes first. `twitterQueueRunLive` { keepOpen: true } keeps the run going once everything is sent, until `jobCancel`. Right before each send the run reads that person's thread and what they did on the account's posts, and holds the item (`held`, with what changed) when anything happened since it was drafted (rule 109). The queue hook puts every held item, send, cool-off and stop in front of the agent (`>>> QUEUE`, rule 114): redraft a held item, gate it with `voice`, stop the run, put it back with `twitterQueueEdit` and run it again.
 
 ## Rules that hold on every page
 

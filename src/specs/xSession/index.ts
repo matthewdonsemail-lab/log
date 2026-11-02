@@ -1,0 +1,42 @@
+import { noul } from 'jev-spec'
+import { MET, NOT_VIOLATED } from '../types'
+
+export const xSession = {
+  description: 'How an X account talks to X: directly, through its one engine host, one call at a time',
+  specPath: 'docs/specs/xSession.md',
+  codePaths: ['python/twitterApi/engine.py', 'python/twitterApi/host.py', 'src/twitter/account/session/client.ts', 'vendor/twikit/twikit/client/gql.py', 'vendor/twikit/twikit/client/client.py', 'vendor/twikit/twikit/constants.py'],
+  rubrics: {
+    'REQ-XSESSION-01': noul('Does client_for make the twikit Client without passing any proxy, and does runTwitterEngine write a spec with no proxy field?'),
+    'REQ-XSESSION-02': noul('Does the twikit Client set self.http to a curl_cffi AsyncSession with impersonate defaulting to IMPERSONATE, which is safari17_0, and allow_redirects defaulting to False?'),
+    'REQ-XSESSION-03': noul('Does run wrap every action not in UNLOCKED in async with AccountLock(account), whose lock file is engine.lock, and return code accountBusy when AccountBusy is raised after LOCK_WAIT_SECONDS of 900?'),
+    'REQ-XSESSION-04': noul('Does spacing_wait draw the gap from READ_SPACING_SECONDS (0.8, 2.5) when the action is in READS and from SPACING_SECONDS (4.0, 11.0) otherwise, does run sleep that long before the call, and does it call mark_call after the call?'),
+    'REQ-XSESSION-05': noul('Does run_locked call keep_transaction after the call, and does restore_transaction return False without restoring when the saved state is older than TRANSACTION_SECONDS of 3 hours?'),
+    'REQ-XSESSION-06': noul('Does main send every spec that is not a governorStatus request through host.call, and run it inline with run only when LOG_TWITTER_HOST is inline?'),
+    'REQ-XSESSION-07': noul('When HOSTING is True, does client_for store the client in SESSIONS and return the held client for a later call whose auth_token cookie is the same?'),
+    'REQ-XSESSION-08': noul('Does Host.serve take an AccountLock named host.lock and return without serving when AccountBusy is raised?'),
+    'REQ-XSESSION-09': noul('When connect_host returns no socket, does call return code xSessionHostDown without calling the engine\'s run or opening a client of its own?'),
+    'REQ-XSESSION-10': noul('Does Host.serve stop when idle for more than IDLE_SECONDS of 1800 with no active call, and stop when code_stamp changes while every active call is a watch (active equals watching), with CODE_ROOTS covering twitterApi, platformKit and vendor twikit?'),
+    'REQ-XSESSION-11': noul('When socket.create_connection to the host\'s port raises OSError on the first attempt, does connect_host wait while pid_alive is true for that host\'s pid, up to START_WAIT_SECONDS, and then make a second attempt that calls ensure_host, which starts a new host once the old one is gone?'),
+    'REQ-XSESSION-12': noul('In the finally block of Host.serve, does it remove host.json when it is its own, close the server, close every writer in self.writers and release the host.lock?'),
+    'REQ-XSESSION-13': noul('Does web_client load https://x.com/home with the session\'s client, save the page and scripts, and write live_operations_of\'s result to operations_path (xOperations.json) when it found operations?'),
+    'REQ-XSESSION-14': noul('Do gql_get and gql_post call live_call, which replaces the query id with the live queryId for the operation and sets features to exactly the live operation\'s feature list with the values from featureValues, and does client_for call load_live_operations before making a client?'),
+    unspecifiedBehavior: noul('Is there a path where an X call is sent with a proxy, without the account lock, without spacing, or through a second session the specification does not describe?'),
+  },
+  assertions: {
+    'REQ-XSESSION-01': MET,
+    'REQ-XSESSION-02': MET,
+    'REQ-XSESSION-03': MET,
+    'REQ-XSESSION-04': MET,
+    'REQ-XSESSION-05': MET,
+    'REQ-XSESSION-06': MET,
+    'REQ-XSESSION-07': MET,
+    'REQ-XSESSION-08': MET,
+    'REQ-XSESSION-09': MET,
+    'REQ-XSESSION-10': MET,
+    'REQ-XSESSION-11': MET,
+    'REQ-XSESSION-12': MET,
+    'REQ-XSESSION-13': MET,
+    'REQ-XSESSION-14': MET,
+    unspecifiedBehavior: NOT_VIOLATED,
+  },
+}

@@ -34,7 +34,8 @@ capabilities: [Browsers](browsers.md). How it runs across servers:
 Twenty gets two fields, both additions:
 
 - `adsPowerProfileId`: the profile linked to the account.
-- `browserDriver`: `adsPower` or `camoufox`; empty means Camoufox.
+- `browserDriver`: `adsPower` or `camoufox`. When it is empty, an account
+  with a linked profile opens on AdsPower, and one without opens on Camoufox.
 
 ## What a profile holds
 
@@ -69,15 +70,18 @@ held by an account that will use it:
 - **Home countries:** `LOG_ADSPOWER_HOMES` in `.env.local` (for example `US`),
   or `--homes` on the sync, names the home countries that hold profiles. An
   account whose home is elsewhere gives its profile back the same way and gets
-  none.
+  none. An account on a platform that runs without a proxy (Reddit) needs no
+  home.
 
 The sync releases profiles first, then makes and links new ones. The account's
 Twenty row, cookies and status stay as they are.
 
 ## Opening an account on AdsPower
 
-1. Set `socialAccounts.browserDriver` to `adsPower` for the account. Its
-   profile must be linked (`log adsPower sync --apply`).
+1. Link the account's profile (`log adsPower sync --apply`). With
+   `socialAccounts.browserDriver` empty or `adsPower`, the account then opens
+   on AdsPower. An account set to `adsPower` with no profile is refused
+   (`adsPowerProfileMissing`).
 2. `log inspect start --account <a>`, `log flow run`,
    `log facebook warmup stages run` and `log facebook host start` then open its
    AdsPower profile through `python/browser/browserDriver.py`. The gate,

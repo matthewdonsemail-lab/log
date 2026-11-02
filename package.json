@@ -74,11 +74,12 @@
     "check:docs": "bun scripts/docs/buildDocs.ts --check",
     "browsers:docs": "bun scripts/checks/checkBrowserParity.ts --write",
     "errors:export": "bun bin/log.ts errors --json > python/errors/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
-    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:rdvwrTransport && bun run check:linkedinTransport && bun run check:platforms && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run check:siteDocs && bun run typecheck && bun run test",
+    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:rdvwrTransport && bun run check:linkedinTransport && bun run check:platforms && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run check:siteDocs && bun run check:specs && bun run typecheck && bun run test",
     "prepare": "bun scripts/git/installHooks.ts",
     "twenty:client": "node scripts/twenty/emitTwentyClient.mjs",
     "twenty:client:check": "node scripts/twenty/emitTwentyClient.mjs --check",
-    "check:siteDocs": "node scripts/docs/syncSiteDocs.mjs --check"
+    "check:siteDocs": "node scripts/docs/syncSiteDocs.mjs --check",
+    "check:specs": "bun scripts/checks/checkSpecs.ts"
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
@@ -92,9 +93,11 @@
   "devDependencies": {
     "@types/bun": "^1.4.0",
     "graphql": "^16",
+    "jev-spec": "0.4.1",
     "jsdom": "25.0.1",
     "lefthook": "^2.2.2",
     "mermaid": "11.4.1",
+    "ts-morph": "^28.0.0",
     "twenty-client-sdk": "^2.43.0",
     "typescript": "^5.9.3"
   },
@@ -102,5 +105,8 @@
   "license": "MIT",
   "trustedDependencies": [
     "onnxruntime-node"
-  ]
+  ],
+  "patchedDependencies": {
+    "jev-spec@0.4.1": "patches/jev-spec@0.4.1.patch"
+  }
 }

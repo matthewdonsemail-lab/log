@@ -11,7 +11,7 @@ flowchart LR
 
 ## How it runs
 
-An account asks to join a neighbourhood group in its town. Once in, each read brings back the group's newest posts with their comments. Where the account has a saved session, the direct-API engine (fbk) reads the feed without opening a browser at all; otherwise the read is a tab in the account's open browser.
+An account asks to join a neighbourhood group in its town. Once in, each poll brings back the group's newest posts, nothing clicked and no comments opened; a read by hand (`read group`) can add their comments. Where the account has a saved session, the direct-API engine (fbk) reads the feed without opening a browser at all; otherwise the read is a tab in the account's open browser.
 
 ## The commands
 

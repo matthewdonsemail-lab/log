@@ -58,7 +58,7 @@ The same three layers Facebook has, platform first:
 ```mermaid
 flowchart LR
   cli["log twitter reply / dm / queue …<br/>CLI and MCP tool"] --> src["src/twitter/&lt;area&gt;/&lt;domain&gt;<br/>gates, Twenty, XState machines"]
-  src --> engine["python/twitterApi/engine.py<br/>session, proxy, governor"]
+  src --> engine["python/twitterApi/engine.py<br/>one session host, governor, no proxy"]
   engine --> twikit["vendor/twikit<br/>X's internal API"]
   src --> twenty["Twenty socialAccounts<br/>platform TWITTER"]
 ```
@@ -66,8 +66,8 @@ flowchart LR
 | Layer | Facebook | X |
 | --- | --- | --- |
 | The library | `vendor/fbk` (one surface per family) | `vendor/twikit` (one `Client`, 114 calls) |
-| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`: `ping` first, then one twikit call |
-| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor; refreshed cookies merged back into Twenty |
+| The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`, run inside the account's one session host (`python/twitterApi/host.py`, rule 105): one call at a time, sends 4 to 11 s apart and reads 0.8 to 2.5 s apart (rules 104, 110), the session checked first, then one twikit call |
+| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor, `engine.lock`, the session host (`host.json`, `host.lock`), the transaction key (`clientTransaction.json`, 3 hours); refreshed cookies merged back into Twenty |
 | The gate | `directGate` (session, proxy in the home country, active hours) | `twitterGate`: platform TWITTER, not deactivated, `auth_token` and `ct0` saved. No proxy. |
 | The result | `socialAccounts.sessionState` | The same field (`loggedIn`, `loggedOut` for 401/32, `restricted` for 226) |
 | Declared in | `DIRECT_ROUTES`, `commandEngine` | The same, with the engine kind `directApiOnly`: X has no browser path |
@@ -95,6 +95,7 @@ These cover what the controller does today, by area.
 | `log twitter like` | `twitter/post/send` | `--action like` | `twitterLikeLive` |
 | `log twitter queue build / show / check / approve / status / plan` | `twitter/queue/plan` | `sequence.py`, `random_run.py plan` | none |
 | `log twitter queue run / nudge` | `twitter/queue/run` (XState) | `random_run.py run / nudge` | `twitterQueueRunLive` |
+| `log twitter queue add / edit` | `twitter/queue/plan` (`addToQueue`, `editItem`) | new | none |
 | the house style check | `twitter/copy/style` | `check_style` | none |
 
 - **Without `--live`, a send is a dry run:** the target, the text and its style are checked, and X isn't contacted.

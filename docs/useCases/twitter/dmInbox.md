@@ -16,7 +16,7 @@ flowchart TD
   s2["3. Read the ones that matter in full<br/><i>twitterDms</i>"]
   s3["4. Who they are: bio and followers, and whether they're already in…<br/><i>treg's X profile read, Twenty</i>"]
   s4["5. Sort it into a table: reply now (a real opportunity waiting on…<br/><i>wherever the owner reads</i>"]
-  s5["6. Send what the owner approves, one at a time, dry run first<br/><i>twitterDm, twitterDmLive</i>"]
+  s5["6. Send what the owner approves, dry run first<br/><i>twitterDm, twitterDmLive, twitterQueueAdd, twitterQueueRunLive</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
@@ -32,7 +32,7 @@ flowchart TD
 | 3 | Read the ones that matter in full | `twitterDms` { account, conversation: "<id>" } | what they asked, and when |
 | 4 | Who they are: bio and followers, and whether they're already in your CRM | treg's X profile read, Twenty | one line per person |
 | 5 | Sort it into a table: **reply now** (a real opportunity waiting on you), **waiting on them** (worth one nudge), **no action** (pitches, spam). Each with a suggested move | wherever the owner reads | the owner picks what to answer |
-| 6 | Send what the owner approves, one at a time, dry run first | `twitterDm` then `twitterDmLive` { userId, text, approvedBy, confirmLive: true } | X's answer is `sent` |
+| 6 | Send what the owner approves, dry run first. One person: dry run, then live. Two or more go into the account's one queue, never a loop of sends (rule 104): `twitterQueueAdd` { queue, targets, action: "dm", by } adds them, even while it runs, at least minGap apart; if no run is going, `twitterQueueRunLive` { queue, keepOpen: true, confirmLive: true } starts it. Right before each send the queue reads that person again and holds the item when anything changed (rule 109) | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true }, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
 
 Who wrote last is already in context at the start of a session: the SessionStart hook reads it from the account's local inbox store, with nothing fetched. `twitterDms` keeps that store up to date the way X's own app does: the first read takes the whole inbox once (about 20 s), and every read after asks X only for what is newer (about 5 s), decrypting only what is new and adding it to the conversation search. `full: true` reads everything again.
 

@@ -52,13 +52,42 @@ python python/human/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples
 
 Camoufox's own humanize setting stays on, but is capped at 20 ms per hop in these sessions (`launch_kwargs(…, own_trajectory=True)`). Its default cost about 100 ms per 5 px hop, which made earlier movement crawl.
 
+## How a flow step runs
+
+A flow never depends on a page's exact wording or on a person stepping in (rule 79):
+
+- **One scored match per control.** The control is matched by its role, then by its name as the accessible name, aria-label, label, text or placeholder, with case and spacing ignored (`python/browser/controlMatch.py`). Only controls inside the dialog the step names (`within`, taken from the recording's snapshot) count; with no dialog named, a match in an open dialog wins over the page behind it.
+- **No guessing.** Two equal matches are refused with `controlAmbiguous`, none is `controlMissing`, and a disabled one is waited for until the step's time runs out (`controlDisabled`).
+- **The platform's answer decides.** Every step waits for the call it must cause (`expect`, or the first call its `answers` check) and fails when it was not sent. Its answer is checked before the next step fires (rule 73).
+- **Overlays first.** Before a flow's first click, fill, upload or location, the known overlays (the browser-notifications notice and an ended "What happened" notice) are pressed away with Escape, each checked. One that stays stops the flow with `overlayNotCleared`.
+
 ## Saved flows
 
-| Flow | Steps | Confirmed by |
-| --- | --- | --- |
-| `profileSetup` | profile picture, cover photo, name | `ProfileCometProfilePictureSetMutation`, `ProfileCometCoverPhotoUpdateMutation`, `useFXIMUpdateNameMutation` |
+Every flow below is in `src/browser/flow/definitions/`, has its doc in `docs/platforms/facebook/flows/`, and is an MCP tool (`flow<Name>`, a dry run) with its live twin (`flow<Name>Live`, needs `confirmLive`). `log flow list` prints them.
 
-It was recorded on one account and then ran 13 out of 13 steps on another.
+| Flow | Steps | What it does |
+| --- | --- | --- |
+| `deletePost` | 4 | Deletes the newest post on the account's own profile |
+| `facebookLanguageEnglish` | 4 | Switches the account's Facebook language to English (US) |
+| `groupHeaderMenus` | 11 | Opens and closes the group header's menus, picking nothing |
+| `groupMembers` | 20 | Opens a group's People tab and scrolls it, read-only |
+| `groupPostComments` | 5 | Opens a post's comments on Open questions, sorts them and scrolls, read-only |
+| `groupPostDialog` | 3 | Opens a post in its dialog with Leave a comment and closes it, typing nothing |
+| `groupTabs` | 9 | Opens each tab of a group and comes back to Discussion, read-only |
+| `marketplaceListingDelete` | 6 | Deletes one Marketplace listing from Selling and answers the survey |
+| `marketplaceListingPublish` | 15 | Publishes one Marketplace listing in the account's open browser |
+| `messengerPinCreate` | 4 | Creates the Messenger PIN from Twenty (rule 67) |
+| `postComment` | 3 | Comments on the newest post on the account's own profile |
+| `profilePhotoPost` | 3 | Posts a photo on the account's own profile |
+| `profilePost` | 4 | Posts text on the account's own profile |
+| `profileSetup` | 13 | Sets the profile picture, cover photo and name (rule 28) |
+| `warmupCreateAccessCheck` | 6 | Warm-up stage 3 |
+| `warmupFeedBrowse` | 6 | Warm-up stage 1 |
+| `warmupMarketplaceBrowse` | 4 | Warm-up stage 2 |
+| `warmupMessagesVisit` | 7 | Warm-up stage 5 |
+| `warmupSellingVisit` | 4 | Warm-up stage 4 |
+
+`profileSetup` was recorded on one account and then ran 13 out of 13 steps on another.
 
 ## What early recordings showed
 

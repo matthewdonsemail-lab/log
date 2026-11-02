@@ -30,7 +30,7 @@ Commands that read send nothing. Anything that acts is a dry run until you add `
 **The account's day**
 
 - `log facebook host start --account <a>`: opens the account's one browser for its day and runs it: sign-in, profile, location, warm-up, then watching.
-- `log facebook warmup reel|feed|stages --account <a>`: browses Reels, the feed or Marketplace like a person would. Likes need `--likes`.
+- `log facebook warmup reel run`, `feed run` or `stages run` with `--account <a>`: browses Reels, the feed or Marketplace like a person would. Clicks need `--live`, and likes need `--likes` as well.
 - `log facebook profile setup --account <a>`: sets the profile picture and cover photo (dry run until `--live`).
 
 ## Signing in

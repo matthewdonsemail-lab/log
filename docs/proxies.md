@@ -67,10 +67,12 @@ every Camoufox launch → visibleBrowser.launch_kwargs() → proxyGate.apply()
   1. read the proxy file    none ──▶ noProxy, bad ──▶ proxyMalformed
   2. exit IP through proxy  Camoufox public_ip(proxy)   down ──▶ proxyUnreachable, 407 ──▶ proxyAuthFailed
   3. exit country, timezone Camoufox GeoIP database      ≠ homeCountry / none ──▶ proxyCountryMismatch
+     Facebook through it    best of 3 rounds over LOG_PROXY_MAX_MS (2500 ms) ──▶ proxyTooSlow
   4. the device             device.json; first launch: make it (saved to Twenty after the run)
   5. launch                 Camoufox(from_options=<stored device + this launch>):
                             exit timezone, webrtc:ipv4 = exit IP, pinned locale, pinned geolocation,
-                            headless=False, humanize=1.5, showcursor, env = system vars only
+                            headless=False, humanize (0.6 s cap, 0.02 s per hop with HumanMouse), showcursor,
+                            env = system vars only
 guards on Playwright (installed by arm(), cover sync + async and every Camoufox route)
   BrowserType.launch / launch_persistent_context   not what apply() built ──▶ unguardedLaunch
   every context (new_context, new_page, persistent) timezoneId, geolocation + permission;
@@ -78,8 +80,11 @@ guards on Playwright (installed by arm(), cover sync + async and every Camoufox 
   6. self-check, before the caller gets the context (so before Facebook):
      an IP echo through the browser + page and dedicated worker:
      timezone ≠ exit IP's ──▶ browserTimezoneMismatch
-     navigator.language(s) / Intl locale ≠ pinned ──▶ browserLocaleMismatch
+     navigator.language / Intl / number locale ≠ pinned ──▶ browserLocaleMismatch
+     navigator.languages not starting with the pinned ones ──▶ browserLocaleMismatch
+       (languages the browser adds after them are allowed, rule 92)
      browser exit IP ≠ gate's ──▶ browserExitIpMismatch    can't run ──▶ selfCheckFailed
+       (an attached AdsPower browser may exit elsewhere in the same country and timezone)
      any refusal closes the browser first
 during publish: review and right before the Publish click, the exit IP is read
 through the browser again: another country ──▶ proxyCountryChanged (nothing clicked);
@@ -175,6 +180,22 @@ Facebook file through the proxy is over the limit (default 2500 ms).
 - Over MCP, use `proxyMs` on a flow tool, or `--proxyMs` in a tool's `args`.
 - It sets `LOG_PROXY_MAX_MS` for that run only.
 
+## Traffic budget per account
+
+Proxy traffic is money, so each account has a budget of its own proxy traffic
+over the last 24 hours: 1024 MB by default, or `--trafficMb <mb>` for one run
+(`trafficBudget`, `src/proxyVendor/traffic`).
+
+- A Reels or feed warm-up reads its provider's counter before it starts and
+  is refused with `trafficBudgetSpent` when the account has nothing left.
+- The Reels warm-up reads the counter again every 5 reels and stops with
+  `trafficBudgetSpent` once the account reaches its budget.
+- At the end, each run's megabytes are appended to
+  `~/.logCli/proxyTraffic.jsonl` (time, account, run, MB), which is what the
+  next run counts.
+- A traffic-billed proxy is metered by its own provider (`meterForProxy`); a
+  static IP is not metered.
+
 ## Getting a proxy from 2Captcha
 
 `log proxy assign --account <name>` (or `--missing` for every FACEBOOK account
@@ -212,9 +233,10 @@ country:
    check result is saved with it.
 6. **Distance.** It must also exit within `MAX_PROXY_KM` (100 km) of the home
    city in `CITY_COORDINATES`, measured from Camoufox's GeoIP. 2Captcha doesn't
-   always honour the state (a Pennsylvania proxy once exited in Dallas). A miss
-   is retried on a new session (`sessionFor(..., attempt)`) three times, then
-   it fails with `proxyTooFar` and nothing is saved.
+   always honour the state (a Pennsylvania proxy once exited in Dallas). It
+   must also be fast enough for Facebook (the speed limit above). A miss is
+   retried on a new session (`sessionFor(..., attempt)`) three times, then it
+   fails with `proxyTooFar` and nothing is saved.
 
 `log proxy balance` shows the traffic left (2Captcha bills traffic, in and
 out, from $3.99/GB down to $1.25/GB) and whether the proxy password is set.

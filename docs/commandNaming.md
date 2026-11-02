@@ -55,7 +55,7 @@ The platform is always the first word after `log`. Everything after the command 
 - **One check.** `bun run check:docs` (run before every commit and push) refuses a single-platform command whose usage lines don't all read `log <platform> <command> …`. The runner reads the platform first, then the command; `Command.platform` says which platforms a command belongs to.
 - **Old forms answer with the new one.** For example, `log connect --account x` answers "the platform comes first: log facebook connect --account x" and doesn't run.
 - **Everything that names a command follows it:**
-  - the README and its diagrams (generated from the code);
+  - the command reference, `docs/reference.md`, and the diagrams in `docs/diagrams/` (generated from the code by `bun run docs:build`);
   - each MCP tool's description (tool names stay the command names: `connect`, `poll`…);
   - the agent hooks' resolvers;
   - the skills;

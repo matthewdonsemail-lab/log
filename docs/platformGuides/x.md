@@ -27,7 +27,7 @@ Commands that read send nothing. Commands that act are a dry run until you add `
 
 **Send to many people, slowly** (acts, dry run until `--live`)
 
-- `log twitter queue build`, then `show`, `check`, `approve`, `plan` and `run`: a list of replies, quotes or DMs, approved first, then sent one at a time at random moments inside a time window.
+- `log twitter queue build`, then `show`, `check`, `approve`, `plan` and `run`: a list of replies, quotes or DMs, approved first, then sent one at a time at random moments inside a time window. An account has one queue: `add` puts more in, even while it runs, and `edit` puts back an item the run held because something happened with that person since it was drafted.
 - `log twitter queue check` on a DM queue drops anyone you have already talked to.
 
 **Followers** (reads only)

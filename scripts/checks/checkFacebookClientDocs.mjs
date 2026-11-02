@@ -50,7 +50,7 @@ for (const platform of readdirSync(platformsDir)) {
   }
 }
 
-const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
+const flowsDir = join(root, 'src', 'browser', 'flow', 'definitions');
 if (existsSync(flowsDir)) {
   for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {
     const name = file.slice(0, -5);

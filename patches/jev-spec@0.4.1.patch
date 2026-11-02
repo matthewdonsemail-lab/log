@@ -1,0 +1,13 @@
+diff --git a/dist/context/code-extractor.js b/dist/context/code-extractor.js
+index f9cf4aeb4ccee1b47c0f2a90b637e7e5ddf7b558..e5800e9ace499d4b55fb26a17226c8bb76fa2fa2 100644
+--- a/dist/context/code-extractor.js
++++ b/dist/context/code-extractor.js
+@@ -3,7 +3,7 @@ import * as path from 'node:path';
+ import { listChangedPaths, listStagedFiles, readStagedFile } from './git-diff.js';
+ import { matchesGlobPatterns, resolveGlobPatterns } from './glob-matcher.js';
+ import { assertInsideRoot, MAX_FILE_COUNT, MAX_FILE_SIZE_BYTES, validateGlobPattern, } from './path-security.js';
+-export const DEFAULT_MAX_CHARS = 120_000;
++export const DEFAULT_MAX_CHARS = 800_000;
+ function tooManyFiles(matchedFileCount) {
+     return { files: [], oversizedFiles: [], unreadableFiles: [], matchedFileCount };
+ }

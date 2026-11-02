@@ -1,0 +1,48 @@
+import { noul } from 'jev-spec'
+import { MET, NOT_VIOLATED } from '../types'
+
+export const launchBudget = {
+  description: 'When an account browser may open: waking hours, the launch budget and resetOpens',
+  specPath: 'docs/specs/launchBudget.md',
+  codePaths: [
+    'src/browser/run/client.ts',
+    'src/browser/run/helpers/launchBudget.ts',
+    'src/marketplace/home/helpers/activeHours.ts',
+    'src/marketplace/home/types.ts',
+    'src/cli/live/index.ts',
+    'src/cli/publish/index.ts',
+    'src/cli/account/index.ts',
+    'src/cli/account/helpers/resetOpens.ts',
+    'src/marketplace/host/helpers/progress.ts',
+  ],
+  rubrics: {
+    'REQ-LAUNCH-01': noul('Does prepareRun return outsideActiveHours when outsideActiveHours finds the account\'s local hour outside its window, with DEFAULT_ACTIVE_HOURS set to start 8 and end 22?'),
+    'REQ-LAUNCH-02': noul('Does activeWindow use activeHoursStart and activeHoursEnd when both are valid hours and not equal, and does insideWindow handle a window whose start is after its end?'),
+    'REQ-LAUNCH-03': noul('Does bypassHours in prepareRun skip only the outsideActiveHours check, leaving the overLaunchBudget check to run?'),
+    'REQ-LAUNCH-04': noul('Does overLaunchBudget return launchBudgetSpent when today\'s launches reach LAUNCH_LIMITS.perDay, which is 8?'),
+    'REQ-LAUNCH-05': noul('Does overLaunchBudget return launchTooSoon when the last launch is less than LAUNCH_LIMITS.minGapMinutes, which is 10, before now?'),
+    'REQ-LAUNCH-06': noul('Does listLaunches count a launch only from a steps.jsonl line that contains "Self-check passed", reading both the runs folders and the publish folders?'),
+    'REQ-LAUNCH-07': noul('Does overLaunchBudget count today\'s launches by comparing each launch\'s calendar day with now\'s calendar day in the account\'s home timezone?'),
+    'REQ-LAUNCH-08': noul('Does skipLaunchGap set minGapMinutes to 0 while keeping perDay from LAUNCH_LIMITS?'),
+    'REQ-LAUNCH-09': noul('Is skipLaunchBudget set only when publish\'s formUrl starts with file:, and is it never set from the bypass flag?'),
+    'REQ-LAUNCH-10': noul('Does resetAccountOpens append one JSON line with the account, the time and the reason through recordLaunchReset and set the host progress opensToday to 0, without deleting any file?'),
+    'REQ-LAUNCH-11': noul('Does listLaunches drop every launch that is not after lastLaunchReset for the account?'),
+    'REQ-LAUNCH-12': noul('Does the resetOpens action refuse to reset an account whose browser session is still open, as found by openInspects or readCurrentInspect?'),
+    unspecifiedBehavior: noul('Does prepareRun let a browser open by a route the specification does not describe, such as skipping the launch budget for a flag other than a file: formUrl, or skipping the active hours without bypassHours?'),
+  },
+  assertions: {
+    'REQ-LAUNCH-01': MET,
+    'REQ-LAUNCH-02': MET,
+    'REQ-LAUNCH-03': MET,
+    'REQ-LAUNCH-04': MET,
+    'REQ-LAUNCH-05': MET,
+    'REQ-LAUNCH-06': MET,
+    'REQ-LAUNCH-07': MET,
+    'REQ-LAUNCH-08': MET,
+    'REQ-LAUNCH-09': MET,
+    'REQ-LAUNCH-10': MET,
+    'REQ-LAUNCH-11': MET,
+    'REQ-LAUNCH-12': MET,
+    unspecifiedBehavior: NOT_VIOLATED,
+  },
+}

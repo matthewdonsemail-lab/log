@@ -1505,9 +1505,30 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     request, on Windows like matt's machine, with the engines' Python set up
     from the vendored packages.
 
+117. 2026-11-02 · matt: "our code and the use cases and everything are
+    stale ... there's no proper order to the madness ... it needs to be part
+    of the CI gate", with jev-spec run on SubQ ("we use SubQ in jev ... ask
+    way more questions with the new model"). The rules above are written by
+    date; the specs put them in order by domain. Each domain has
+    `docs/specs/<domain>.md` (what the rules require as they stand today,
+    one `REQ-<PREFIX>-NN` per behaviour, the latest rule winning) and
+    `src/specs/<domain>/index.ts` (the files that implement it and one
+    literal SubQ question per requirement, plus one for behaviour the spec
+    doesn't describe). jev-spec (`jevSpec.config.ts`, `patches/` lifting its
+    120,000-character cap to SubQ's 384K-token window) sends each domain's
+    spec and code to SubQ's Decisions API (`subq-snap-1.1`) in one request
+    and fails when an answer misses its threshold. Every question is probed:
+    it passes on the code as it is and fails on a copy broken on purpose.
+    lefthook's `specs` (`bun run check:specs`) checks the domains a commit
+    touches before it lands and every domain before a push, and CI runs it
+    in `bun run check` with the `SUBQ_API_KEY` secret and refuses to pass
+    without one. A new rule goes into its domain's spec and questions in the
+    commit that adds it; a spec without its questions, or questions without
+    their spec, stop the commit. `docs/specs/README.md` lists every domain.
+
 ## Checks
 
-- Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
+- Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
 - Naming: `docs/namingConventions.md`. camelCase everywhere, never kebab-case,
   `{library}/{domain}/` with `index.ts`, `types.ts`, `client.ts`, `machine.ts`,
   `helpers/`.

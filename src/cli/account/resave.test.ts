@@ -61,4 +61,22 @@ describe("log facebook account resetOpens", () => {
       delete process.env.LOG_HOST_DIR;
     }
   });
+
+  test("is refused while the account's browser is still open, and writes nothing", async () => {
+    const root = mkdtempSync(join(tmpdir(), "logReset"));
+    const before = process.env.LOG_INSPECT_CURRENT;
+    process.env.LOG_LAUNCH_RESETS = join(root, "launchResets.jsonl");
+    process.env.LOG_INSPECT_CURRENT = join(root, "inspect", "current.json");
+    try {
+      mkdirSync(join(root, "inspect", "sessions"), { recursive: true });
+      writeFileSync(join(root, "inspect", "sessions", "needsLogin.json"), JSON.stringify({ account: "needsLogin", runDir: join(root, "run"), commandsPath: "", repliesPath: "", startedAt: "2026-10-19T16:35:00Z", pid: process.pid }));
+      const result = await run(["facebook", "account", "resetOpens", "needsLogin"]);
+      expect(result.code).toBe(1);
+      expect(result.err).toContain("close every browser first");
+      expect(existsSync(join(root, "launchResets.jsonl"))).toBe(false);
+    } finally {
+      delete process.env.LOG_LAUNCH_RESETS;
+      process.env.LOG_INSPECT_CURRENT = before;
+    }
+  });
 });

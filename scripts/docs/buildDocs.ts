@@ -9,6 +9,7 @@ import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { renderSurface, withSurface } from "../../src/surface/readme/index.ts";
 import { withStepsDiagrams } from "../../src/surface/stepsDiagram/index.ts";
+import { SPEC_ORDER, specDomains, specsIndex, specSummary } from "../../src/specs/index.ts";
 
 const root = join(import.meta.dir, "..", "..");
 const check = process.argv.includes("--check");
@@ -46,6 +47,8 @@ for (const file of readdirSync(diagramDir)) {
   const pages = (dir: string): string[] => readdirSync(join(root, dir)).flatMap((name) => (statSync(join(root, dir, name)).isDirectory() ? pages(`${dir}/${name}`) : name.endsWith(".md") ? [`${dir}/${name}`] : []));
   for (const rel of pages("docs/useCases")) put(rel, withStepsDiagrams(readFileSync(join(root, rel), "utf8")));
 }
+
+put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSync(join(root, "docs/specs", `${d}.md`))).map((d) => specSummary(d, readFileSync(join(root, "docs/specs", `${d}.md`), "utf8"))), SPEC_ORDER));
 
 {
   const cli = join(root, "src/cli");

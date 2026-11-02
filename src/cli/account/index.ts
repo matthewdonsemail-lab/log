@@ -3,6 +3,7 @@ import type { AccountStatus } from "../../marketplace/socialAccount/index.ts";
 import { setStatusAndReplace } from "../../marketplace/replacement/index.ts";
 import { isErrorCode } from "../../errors/catalog/index.ts";
 import { createAdsPowerClient, syncProfiles } from "../../browser/adsPower/index.ts";
+import { openInspects } from "../../browser/inspect/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
@@ -91,6 +92,8 @@ export const accountCommand: Command = {
       if (action === "resetOpens") {
         const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "reset by matt";
         const accounts = ref === "all" ? await listFacebookAccounts(context.twenty) : [await findAccount(context.twenty, ref)];
+        const open = openInspects().filter((s) => accounts.some((a) => a.accountName === s.account));
+        if (open.length) return { code: 1, stderr: `log facebook account resetOpens: close every browser first (rule 37): ${open.map((s) => `${s.account} (${s.runDir})`).join(", ")} still open` };
         return { code: 0, stdout: accounts.map((a) => resetAccountOpens(a, reason)).join("\n") };
       }
       const account = await findAccount(context.twenty, ref);

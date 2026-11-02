@@ -97,6 +97,18 @@ def governor_for(account: str, writes_per_day: int | None = None) -> Any:
     return RequestGovernor(config=config, state_path=state_dir(account) / "governor_state.json")
 
 
+def count_forced(governor: Any, is_mutation: bool) -> None:
+    with governor._lock:
+        now = governor._clock()
+        governor.state._roll(now)
+        governor.state.last_request_ts = now
+        governor.state.hour_count += 1
+        governor.state.day_count += 1
+        if is_mutation:
+            governor.state.mutation_count += 1
+        governor._persist()
+
+
 def governor_status(account: str, writes_per_day: int | None = None) -> dict[str, Any]:
     return {"ok": True, "account": account, "governor": governor_for(account, writes_per_day).status()}
 
@@ -1050,6 +1062,13 @@ def live_worthy(row: dict[str, Any], before: set[str], now: float | None = None)
     return (now if now is not None else time.time()) - at <= LIVE_WINDOW_SECONDS
 
 
+NETWORK_ERROR = re.compile(r"curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve", re.IGNORECASE)
+
+
+def network_only(error: str) -> bool:
+    return bool(NETWORK_ERROR.search(error)) and not re.search(r"\b429\b", error)
+
+
 async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any], governor: Any, every: float = BADGE_POLL_SECONDS) -> None:
     import random
 
@@ -1065,16 +1084,21 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
                 append_live(account, {"type": "badge", **counts})
                 live_line({"type": "badge", **counts})
                 if notification_rose(last, counts):
+                    refused = False
                     for event in await new_notifications(client, cookies, spec, governor):
                         append_live(account, event)
                         live_line(event)
+                        refused = refused or event.get("type") == "notificationsRefused"
+                    if refused:
+                        return
                 last = counts
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            append_live(account, {"type": "pollRefused", "error": redact(e, cookies)[:200]})
-            live_line({"type": "pollRefused", "error": redact(e, cookies)[:200]})
-            if "429" in str(e) or "GovernorBlocked" in type(e).__name__:
+            error = redact(e, cookies)[:200]
+            append_live(account, {"type": "pollRefused", "error": error})
+            live_line({"type": "pollRefused", "error": error})
+            if not network_only(error):
                 return
         await asyncio.sleep(every * random.uniform(0.95, 1.05))
 
@@ -1280,6 +1304,7 @@ async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str,
         if spec.get("force") is not True:
             return {"ok": False, "code": "governorBlocked", "detail": str(e)}
         forced_past = str(e)
+        count_forced(governor, action in WRITES)
     client = client_for(account, cookies, Client)
     try:
         out = await act(client, cookies, spec, governor)

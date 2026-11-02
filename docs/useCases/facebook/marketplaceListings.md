@@ -43,7 +43,7 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | Photo, cover, name | `log facebook profile setup --account <a> --live` | `profileLive` | the photo and name saves answer without an error |
 | Location | `log inspect do setLocation "<City>, <State>" --live` (the host does it) | `inspectDoLive` | the location save's answer names the town |
 | Warm-up | `log facebook warmup stages run`, `log facebook warmup reel` | `warmup`, `warmupLive` | the five browsing activities each see their own answer; then 24 h before it's ready |
-| Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | at least 3 versions per ad, each title at least half different |
+| Copy | `log facebook listing create`, `listing lint` | `listingCreate`, `listingLint` | an ad on more than one listing in a city: at least 3 versions and one per listing live there, every two titles at least half different (the city not counted); `campaign fill` refuses too few (`notEnoughCopyVersions`) |
 | Publish | `log flow run marketplaceListingPublish --account <a> --live` | `flowMarketplaceListingPublishLive` | the create answer returns the listing id |
 | Many towns | `log facebook campaign fill`, `run`, `heal` | `campaign`, `campaignLive` | one copy per account, a lost account's copy handed to another in the same area |
 | Watch | the host, every 12 minutes, or `log facebook check` | `check` | each listing's state and clicks from the Selling page, into `agencyListings` |
