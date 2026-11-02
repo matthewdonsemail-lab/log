@@ -10555,3 +10555,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the X LIVE block now leads with new activity and tells the agent to say it to matt first, before anything else (`>>> X LIVE, NEW ACTIVITY`). A count change with no new activity adds nothing to the block. On SessionStart it tells the agent to start a Monitor on every account's `live.jsonl` for the whole session (`LIVE_MONITOR`), so each like, retweet, reply, quote, mention or follow wakes the agent the moment it lands, even while idle.
 Why: matt asked why a new like wasn't put in front of him, and why it wasn't announced loudly. A hook only runs on a prompt or a tool call, so NullTensor's like sat in the feed until his next message, and the block never told the agent to say it.
 Checked: the feed test covers the loud line, no block for a count-only change, and the Monitor line on SessionStart. A Monitor is running in this session on both accounts' feeds. `bun run check`: 1301 pass, 0 fail.
+
+## 2026-11-02 03:15Z · fix/xLiveNetworkError
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/twitter/live/feed/client.ts`: added const NETWORK_ERROR, function networkOnly · changed function liveEventLine, function xLiveContext
+- `src/twitter/live/feed/feed.test.ts`: added test "a dropped connection reads as a network error, a 429 as X refusing"
+
+What changed: a live poll read that failed on the network (a curl error, connection reset, timeout or DNS failure, with no 429) now shows in the X LIVE block as "the connection dropped on one live read … the poll goes on" (`networkOnly`). It no longer says X refused, and no longer adds the rule-94 line that nothing resumes until matt says. A 429 or any other refusal still reads as X refusing, with that line.
+Why: at 10:00 matt's time abelqxr's poll got "curl: (35) Recv failure: Connection was reset". The block told the agent that X had refused and the poll had stopped, but X refused nothing and the poll carried on (it only stops on a 429 or the governor).
+Checked: a feed test checks that a connection reset reads as a network error without the rule-94 line, and that a 429 reads as X refusing with it. `bun run check`: 1302 pass, 0 fail.

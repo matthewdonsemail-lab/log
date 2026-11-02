@@ -49,8 +49,15 @@ export function badgeLine(badge: NonNullable<AccountLive['latest']>): string {
   return `${badge.ntab_unread_count ?? 0} notifications, ${badge.dm_unread_count ?? 0} DMs and ${badge.xchat_unread_count ?? 0} X Chat unread (X's own count, ${localTime(badge.seenAt)})`
 }
 
+const NETWORK_ERROR = /curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve/i
+
+export function networkOnly(event: LiveEvent): boolean {
+  return event.type === 'pollRefused' && NETWORK_ERROR.test(event.error ?? '') && !/\b429\b/.test(event.error ?? '')
+}
+
 export function liveEventLine(event: LiveEvent): string | null {
   if (event.type === 'notification') return `@${event.handle ?? event.userId}: ${activityLine(event)}`
+  if (networkOnly(event)) return `the connection dropped on one live read at ${localTime(event.seenAt)} (a network error, not X refusing; the poll goes on): ${(event as { error?: string }).error?.slice(0, 80) ?? ''}`
   if (event.type === 'notificationsRefused' || event.type === 'pollRefused') return `X refused the live read at ${localTime(event.seenAt)}: ${event.code ?? ''} ${event.detail ?? event.error ?? ''}`.trim()
   return null
 }
@@ -73,7 +80,7 @@ export function xLiveContext(accounts: readonly AccountLive[], options: { sessio
       if (said.length > 15) lines.push(`    (${said.length - 15} more earlier)`)
     }
     if (loud.some((a) => a.events.some((e) => e.type === 'notification' && (e.kind === 'reply' || e.kind === 'quote' || e.kind === 'mention')))) lines.push('  A reply, quote or mention is someone talking to matt: read them (`twitterDms` { with }) and answer when it fits (rules 108, 109).')
-    if (loud.some((a) => a.events.some((e) => e.type === 'pollRefused' || e.type === 'notificationsRefused'))) lines.push("  A refused read stops the live poll on that account: tell matt X's answer and the time, nothing resumes until he says (rule 94).")
+    if (loud.some((a) => a.events.some((e) => (e.type === 'pollRefused' && !networkOnly(e)) || e.type === 'notificationsRefused'))) lines.push("  A refused read stops the live poll on that account: tell matt X's answer and the time, nothing resumes until he says (rule 94).")
   }
   if (first.length) {
     lines.push(">>> X LIVE: each X account's unread counts right now, from X's own ViewerBadgeCounts (rule 115):")
