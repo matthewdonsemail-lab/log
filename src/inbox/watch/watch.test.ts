@@ -3,7 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { addPending, claimPoll, ensureLiveWatchers, inboxContext, localTime, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, utimesSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
 const thread = (id: string, who: string, at: string, fromMe: boolean, box = "inbox", text: string | null = "hey"): InboxThread => ({ conversationId: id, with: who, lastAt: at, lastFromMe: fromMe, lastText: text, box });
@@ -95,9 +95,31 @@ describe("an inbox watcher for an account gone from Twenty", () => {
     const root = process.env.LOG_INBOX_STATE as string;
     mkdirSync(join(root, "discord", "gone"), { recursive: true });
     writeFileSync(join(root, "discord", "gone", "watch.log"), "log discord watch: accountNotFound: No socialAccount with that accountName or id in Twenty.\nlog facebook accounts lists the Facebook accounts.\n");
+    process.env.LOG_LOCAL_ACCOUNTS = join(root, "noLocalAccounts.json");
     const started: string[] = [];
     const out = ensureLiveWatchers("discord", ["gone", "live"], (account) => (started.push(account), 4242), () => false);
+    delete process.env.LOG_LOCAL_ACCOUNTS;
     expect(started).toEqual(["live"]);
     expect(out).toEqual(["live"]);
+  });
+  test("is started again once the local accounts file changed after it gave up", () => {
+    const root = process.env.LOG_INBOX_STATE as string;
+    const log = join(root, "discord", "added", "watch.log");
+    mkdirSync(join(root, "discord", "added"), { recursive: true });
+    writeFileSync(log, "log discord watch: accountNotFound: No socialAccount with that accountName or id in Twenty.\n");
+    const accounts = join(root, "localAccounts.json");
+    writeFileSync(accounts, "{}");
+    utimesSync(log, new Date("2026-10-30T13:26:00Z"), new Date("2026-10-30T13:26:00Z"));
+    utimesSync(accounts, new Date("2026-10-31T09:00:00Z"), new Date("2026-10-31T09:00:00Z"));
+    const before = process.env.LOG_LOCAL_ACCOUNTS;
+    process.env.LOG_LOCAL_ACCOUNTS = accounts;
+    try {
+      const started: string[] = [];
+      ensureLiveWatchers("discord", ["added"], (account) => (started.push(account), 4243), () => false);
+      expect(started).toEqual(["added"]);
+    } finally {
+      if (before === undefined) delete process.env.LOG_LOCAL_ACCOUNTS;
+      else process.env.LOG_LOCAL_ACCOUNTS = before;
+    }
   });
 });

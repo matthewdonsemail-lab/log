@@ -270,9 +270,21 @@ export function watchLine(event: Record<string, unknown>): string {
   if (event.kind !== "message") return `${event.at ?? ""} ${String(event.kind)}: ${event.detail ?? ""}`;
   const text = String(event.text ?? "").replace(/\s+/g, " ").slice(0, 400);
   const reply = event.reply as DiscordReply | undefined;
-  const replied = reply ? ` (${reply.deleted || !reply.id ? "a deleted message" : `${reply.from ?? "?"}: ${[reply.text.replace(/\s+/g, " ").slice(0, 120), ...mediaLines(reply)].filter(Boolean).join(" ")}`})` : "";
-  const media = mediaLines({ attachments: event.attachments as DiscordAttachment[] | undefined, embeds: event.embeds as DiscordEmbed[] | undefined, stickers: event.stickers as string[] | undefined });
-  return `${event.at ?? ""} ${event.guildId ? `channel ${event.channelId}` : `chat ${event.channelId}`} · ${event.from}${event.bot ? " [bot]" : ""}${event.fromMe ? " (me)" : ""}${event.replyTo ? ` replying to ${event.replyTo}${replied}` : ""} · ${event.id}: ${[text, ...media].filter(Boolean).join(" ")}`;
+  const replied = reply ? ` (${repliedTo(reply)})` : "";
+  return `${event.at ?? ""} ${event.guildId ? `channel ${event.channelId}` : `chat ${event.channelId}`} · ${event.from}${event.bot ? " [bot]" : ""}${event.fromMe ? " (me)" : ""}${event.replyTo ? ` replying to ${event.replyTo}${replied}` : ""} · ${event.id}: ${[text, ...eventMedia(event)].filter(Boolean).join(" ")}`;
+}
+
+function repliedTo(reply: DiscordReply): string {
+  return reply.deleted || !reply.id ? "a deleted message" : `${reply.from ?? "?"}: ${[reply.text.replace(/\s+/g, " ").slice(0, 120), ...mediaLines(reply)].filter(Boolean).join(" ")}`;
+}
+
+function eventMedia(event: Record<string, unknown>): string[] {
+  return mediaLines({ attachments: event.attachments as DiscordAttachment[] | undefined, embeds: event.embeds as DiscordEmbed[] | undefined, stickers: event.stickers as string[] | undefined });
+}
+
+export function inboxTextOf(event: Record<string, unknown>): string {
+  const reply = event.reply as DiscordReply | undefined;
+  return [reply ? `[replying to ${repliedTo(reply)}]` : "", String(event.text ?? ""), ...eventMedia(event)].filter(Boolean).join(" ");
 }
 
 export function toInboxOf(event: Record<string, unknown>): boolean {
@@ -282,7 +294,7 @@ export function toInboxOf(event: Record<string, unknown>): boolean {
 }
 
 export function discordInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
-  return { platform: "discord", account, conversationId: String(event.channelId ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: event.guildId ? (event.mentionsMe ? "mention" : "reply") : "dm", seenAt: now.toISOString() };
+  return { platform: "discord", account, conversationId: String(event.channelId ?? ""), with: String(event.from ?? "?"), text: inboxTextOf(event), at: String(event.at ?? now.toISOString()), box: event.guildId ? (event.mentionsMe ? "mention" : "reply") : "dm", seenAt: now.toISOString() };
 }
 
 export const discordWatchCommand: Command = {

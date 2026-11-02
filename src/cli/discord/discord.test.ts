@@ -7,7 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
-import { toInboxOf, watchLine } from "./index.ts";
+import { discordInboxMessageOf, toInboxOf, watchLine } from "./index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -151,6 +151,11 @@ describe("log discord session check", () => {
   test("watch shows what a reply points at and the image attached to it", () => {
     const line = watchLine({ kind: "message", channelId: "1547936265436012645", id: "6", at: "t", from: "Kennedy", replyTo: "4", reply: { id: "4", from: "Kennedy", text: "", attachments: [{ type: "image/png", name: "image.png", url: "https://cdn/i.png" }] }, text: "here", attachments: [] });
     expect(line).toBe("t chat 1547936265436012645 · Kennedy replying to 4 (Kennedy: [image/png] image.png https://cdn/i.png) · 6: here");
+  });
+  test("the inbox gets what a reply points at and its images, not a bare word", () => {
+    const m = discordInboxMessageOf("me", { kind: "message", channelId: "1547936265436012645", from: "Kennedy", at: "t", replyTo: "4", reply: { id: "4", from: "Kennedy", text: "he founded BlueCube", attachments: [{ type: "image/png", name: "image.png", url: "https://cdn/i.png" }] }, text: "here" }, new Date("2026-11-02T09:00:00Z"));
+    expect(m.text).toBe("[replying to Kennedy: he founded BlueCube [image/png] image.png https://cdn/i.png] here");
+    expect(m.box).toBe("dm");
   });
   test("only DMs, groups, mentions and replies to the account go to the inbox, never a bot's Thinking...", () => {
     expect(toInboxOf({ kind: "message", channelId: "1", text: "hey" })).toBe(true);

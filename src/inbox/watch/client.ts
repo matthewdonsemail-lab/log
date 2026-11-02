@@ -4,6 +4,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
+import { localAccountsPath } from '../../twenty/graphql/helpers/localAccounts'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -104,7 +105,9 @@ export function watcherGone(platform: string, account: string): boolean {
   const path = join(inboxRoot(), platform, account, 'watch.log')
   if (!existsSync(path)) return false
   const lines = readFileSync(path, 'utf8').trim().split('\n').filter((l) => l.includes(': '))
-  return lines.length > 0 && /: accountNotFound: /.test(lines[lines.length - 1])
+  if (!(lines.length > 0 && /: accountNotFound: /.test(lines[lines.length - 1]))) return false
+  const accounts = localAccountsPath()
+  return !existsSync(accounts) || statSync(accounts).mtimeMs <= statSync(path).mtimeMs
 }
 
 export function processAlive(pid: number): boolean {
