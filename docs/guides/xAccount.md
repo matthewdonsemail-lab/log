@@ -75,6 +75,7 @@ log twitter followers --account <accountName> [--limit <n>] [--json]
 Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing.
 X's own answer decides: the session check first, then X's followers list, 100 a page, 1.5 s apart. --limit is how many to read, default 200, at most 4000.
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/followers" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, who follows whom, and its notifications (who liked, reposted, replied to, quoted or followed it)).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

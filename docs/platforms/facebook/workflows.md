@@ -84,8 +84,8 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 - **Browse listings:** only `openAny` in stages; no reader.
 
 ### Messages
-- **Read inbox / threads:** not recorded; `log facebook conversation record --file` needs a scanner that doesn't exist (`docs/conversations.md`, "Not built yet"). Would be `src/marketplace/conversation/machine.ts` plus a flow.
-- **Reply to a buyer:** not built (recording, flow, machine, command, MCP tool).
+- **Read inbox / threads:** not recorded; `log facebook conversation record --file` needs a scanner that doesn't exist (`docs/conversations.md`, [#41](https://github.com/matthewdonsemail-lab/log/issues/41)). Would be `src/marketplace/conversation/machine.ts` plus a flow.
+- **Reply to a buyer:** next, [#41](https://github.com/matthewdonsemail-lab/log/issues/41) (recording, flow, machine, command, MCP tool).
 
 ### Profile
 - `log facebook profile setup` never run live; the flow path is the verified one (`hostActors.ts` `setProfile`). Bio and other fields are read-only (rule 28).
@@ -94,7 +94,7 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 - `SearchCometResults*` is documented from background traffic only (`background/`); no flow, machine or command (`src/search/`, by platform).
 
 ### Lifecycle
-- Host never ran to the end (`runs/host/harrisburg*.log`); acting (publish, replies as a tab) is not built (AGENTS.md, rule 35 status).
+- Host never ran to the end (`runs/host/harrisburg*.log`); acting (publish, replies as a tab) is next, [#42](https://github.com/matthewdonsemail-lab/log/issues/42) (AGENTS.md, rule 35 status).
 - Stages flows (`warmupFeedBrowse` …) were never saved to `src/browser/flow/definitions/`.
 
 ## Writes on the account's own profile (recorded 2026-10-20, run 20261020T162343)

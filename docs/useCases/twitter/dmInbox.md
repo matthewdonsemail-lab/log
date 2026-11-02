@@ -8,6 +8,23 @@ Say: **"go on docs/useCases/twitter/dmInbox.md"**. The agent then reads this pag
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Who is waiting on you: conversations where the last message isn…<br/><i>twitterDms</i>"]
+  s1["2. The latest conversations, whoever spoke last<br/><i>twitterDms</i>"]
+  s2["3. Read the ones that matter in full<br/><i>twitterDms</i>"]
+  s3["4. Who they are: bio and followers, and whether they're already in…<br/><i>treg's X profile read, Twenty</i>"]
+  s4["5. Sort it into a table: reply now (a real opportunity waiting on…<br/><i>wherever the owner reads</i>"]
+  s5["6. Send what the owner approves, one at a time, dry run first<br/><i>twitterDm, twitterDmLive</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who is waiting on you: conversations where the last message isn't yours, message requests included | `twitterDms` { account, waiting: true, limit: "50" } | a list, newest first, with each conversation id |
@@ -30,6 +47,6 @@ Who wrote last is already in context at the start of a session: the SessionStart
 - To find something said in any conversation, search instead of reading every thread: `search` { query, with, after } after `searchIndex`.
 - A DM send counts as a write against the account's 240 a day.
 
-## Not built yet
+## Next
 
-- Writing the conversations into Twenty, so each person's thread sits on their record.
+- [#34](https://github.com/matthewdonsemail-lab/log/issues/34) writes every conversation into Twenty, so each person's thread sits on their record.

@@ -28,6 +28,29 @@ All five, checked on every person before they go in the table:
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Is the account signed in<br/><i>twitterSessionCheck</i>"]
+  s1["1. Search: the role's language plus one work word per query, last…<br/><i>treg's X post search, many queries in p…</i>"]
+  s2["2. Read every profile<br/><i>treg's X profile read, in parallel</i>"]
+  s3["3. Qualify them with the five checks<br/><i>by hand, or a model scoring fit, region…</i>"]
+  s4["4. Write one line per person, in their language, opening on their…<br/><i>house style</i>"]
+  s5["5. Show the owner the table: handle, location, why, post url, the…<br/><i>wherever the owner reads</i>"]
+  s6["6. Queue it: each target carries its own text, build, check, appro…<br/><i>the README's queue steps</i>"]
+  s7["7. Log and report every reply url, or X's event<br/><i>the queue file, a send log</i>"]
+  s8["8. Check applicants<br/><i>wherever the job page sends applications</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Is the account signed in | `twitterSessionCheck` { account } | `loggedIn` |
@@ -67,6 +90,6 @@ Opening on their own post, then the offer and the link:
 
 The same steps can run on a schedule with nobody watching: search, skip anyone seen or contacted, read profiles, let a model score fit, region and real person against thresholds, have a model write one line per person about their post, then build, approve under the owner's standing yes, plan and run the queue. Keep each run's candidates, decisions, targets and queue together, and read its result with `twitterQueueStatus`. Make sure only one sender runs on an account at a time.
 
-## Not built yet
+## Next
 
-- Knowing who answered a recruiting reply. For now applicants show up wherever the job page stores them.
+- [#39](https://github.com/matthewdonsemail-lab/log/issues/39) tracks who answered a recruiting reply. Until then, applicants show up wherever the job page stores them.

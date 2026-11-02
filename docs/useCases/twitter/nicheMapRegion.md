@@ -10,6 +10,35 @@ Say: **"go on docs/useCases/twitter/nicheMapRegion.md for <the world>, <the area
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. The region's people from a free public source<br/><i>the niche map repo's 78_yc_batch.py (RE…</i>"]
+  s1["2. Keep only the owner's area: the companies whose one-liner, desc…<br/><i>a filter over the batch files (data/yc/…</i>"]
+  s2["3. Mark who already engages with the owner (his notifications stor…<br/><i>the account's notifications.json and in…</i>"]
+  s3["4. Say the price before the paid run, and run only to the budget t…<br/><i>GG_BUDGET</i>"]
+  s4["5. The region through the niche map pipeline, with the region's ci…<br/><i>run_new_followers.sh with GG_CIRCLES_FI…</i>"]
+  s5["6. The outbound list: the region's go getters (gates passed; band…<br/><i>data/yc/goGetters.json</i>"]
+  s6["7. One recent post of each person's own to open on: the index hold…<br/><i>the index (search_index.json, search_po…</i>"]
+  s7["8. Whether they follow the owner and he follows them<br/><i>twitterFollows</i>"]
+  s8["9. Each opener the cold DM way (engagerDms.md): their tweet first,…<br/><i>the agent</i>"]
+  s9["10. Queue them as dms and check them: house style, and nobody he al…<br/><i>twitterQueueBuild, twitterQueueCheck</i>"]
+  s10["11. Gate every opener with the voice gate (his writing across all h…<br/><i>voice</i>"]
+  s11["12. Follow, like the post, then the opener, a few people a day, min…<br/><i>twitterFollowLive, twitterLikeLive</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+  s8 --> s9
+  s9 --> s10
+  s10 --> s11
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | The region's people from a free public source. For YC: every company page of the batches the owner named (founders, their X handles, the company account, the group partner), pulled slowly. YC's team page gives the partners | the niche map repo's `78_yc_batch.py` (`REPOS/whop/research/nicheMap`), YC's public pages | `data/yc/companies.json`, `people.json`, `partners.json` |

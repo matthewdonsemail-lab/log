@@ -8,6 +8,21 @@ Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who l
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. Read what is new<br/><i>twitterNotifications</i>"]
+  s2["2. The first time only, page back through the history<br/><i>twitterNotifications</i>"]
+  s3["3. Ask what you need from what is kept, calling nothing<br/><i>twitterNotifications</i>"]
+  s4["4. Act on who engaged through the page for that job<br/><i>engagerDms.md, engagementReplies.md, ne…</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
@@ -25,6 +40,6 @@ Each row is one person doing one thing: `kind` (like, repost, reply, quote, foll
 - **Aggregated notifications are opened up.** "@a and 12 others liked your post" is kept as one row per person, and the account's own actions are never kept.
 - **Kept, not synced anywhere.** The rows live in `~/.logCli/twitter/<account>/notifications.json`, never in Twenty.
 
-## Not built yet
+## What X shows
 
-- Likers of someone else's post. X only shows the likes on the account's own posts.
+X shows the likes on the account's own posts only, never on someone else's.

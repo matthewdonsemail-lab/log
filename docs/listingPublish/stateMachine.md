@@ -13,21 +13,21 @@ None of the three earlier projects had a real state machine for **posting**:
 ```mermaid
 stateDiagram-v2
   [*] --> resolveCategory
-  resolveCategory --> failed: unknown_category (:40-48)
+  resolveCategory --> failed: unknown_category (lines 40-48)
   resolveCategory --> acquireSession
-  acquireSession --> openForm: goto create/item, wait 3s (:49-56)
-  openForm --> failed: URL has "login" → auth_required (:57-63)
-  openForm --> category: select_combobox("Category") ×3 (:65-82)
+  acquireSession --> openForm: goto create/item, wait 3s (lines 49-56)
+  openForm --> failed: URL has "login" → auth_required (lines 57-63)
+  openForm --> category: select_combobox("Category") ×3 (lines 65-82)
   category --> failed: category_not_opened
-  category --> photos: set_input_files, wait 3s (:84-97)
+  category --> photos: set_input_files, wait 3s (lines 84-97)
   photos --> failed: images_not_found (all paths missing)
-  photos --> textFields: title nth(0), price nth(1), condition, description, location (:99-121)
-  textFields --> receipt: screenshot + "N/10 photos" log (:123-135)
-  receipt --> done: dry_run (:136-145)
-  receipt --> next: click ^Next$ (:147-148)
-  next --> publish: click ^(Publish|Share|Post)$ (:149-151)
-  publish --> captureId: /item/(\d+) in URL, else first card href (:152-164, :203-219)
-  captureId --> done: webhook listing.created UNDER_REVIEW (:165-191)
+  photos --> textFields: title nth(0), price nth(1), condition, description, location (lines 99-121)
+  textFields --> receipt: screenshot + "N/10 photos" log (lines 123-135)
+  receipt --> done: dry_run (lines 136-145)
+  receipt --> next: click ^Next$ (lines 147-148)
+  next --> publish: click ^(Publish|Share|Post)$ (lines 149-151)
+  publish --> captureId: /item/(\d+) in URL, else first card href (lines 152-164 and 203-219)
+  captureId --> done: webhook listing.created UNDER_REVIEW (lines 165-191)
   done --> [*]
   failed --> [*]
 ```
@@ -52,15 +52,15 @@ The production poster's posting machine is a status column on its scheduled post
 ```mermaid
 stateDiagram-v2
   [*] --> pending: dashboard / session / repost insert
-  pending --> posting: process-posts picks it up (route.ts:360-363)
-  pending --> failed: account in skip list (:322-328)
-  pending --> queued: sent to the Python engine (functions.ts:310-313)
-  pending --> pendingAgent: routed to agent (dead: useAgent=false)
-  pendingAgent --> posting: claim_agent_post RPC (034:20-33)
+  pending --> posting: process-posts picks it up (route.ts lines 360-363)
+  pending --> failed: account in skip list (lines 322-328)
+  pending --> queued: sent to the Python engine (functions.ts lines 310-313)
+  pending --> pendingAgent: routed to agent (dead, useAgent=false)
+  pendingAgent --> posting: claim_agent_post RPC (034 lines 20-33)
   pendingAgent --> failed: agent_timeout 2h
-  posting --> posted: success (:771-782)
+  posting --> posted: success (lines 771-782)
   posting --> failed: image download / post failed / exception
-  posting --> canceled: session stopped (:738-749)
+  posting --> canceled: session stopped (lines 738-749)
   queued --> posted: webhook
   queued --> failed: webhook
   posted --> [*]

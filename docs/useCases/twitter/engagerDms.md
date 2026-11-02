@@ -10,6 +10,25 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. Session check<br/><i>twitterSessionCheck</i>"]
+  s1["1. Who liked and reposted the post<br/><i>twitterNotifications</i>"]
+  s2["2. Score them: their bio matches who you want, they reposted (a bo…<br/><i>treg's X profile read</i>"]
+  s3["3. The owner checks the top of the list: drop the team, people the…<br/><i>a table</i>"]
+  s4["4. Check for an existing thread with each person, and DMs already…<br/><i>twitterDms</i>"]
+  s5["5. Write each DM the cold DM way below: their own tweet forwarded…<br/><i>house style</i>"]
+  s6["6. Queue as dms: targets are handle, user_id, text, action: dm<br/><i>twitterQueueBuild</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |

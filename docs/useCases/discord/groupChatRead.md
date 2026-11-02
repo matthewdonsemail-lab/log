@@ -10,6 +10,23 @@ Say: **"go on docs/useCases/discord/groupChatRead.md for <group>, last <N> hours
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["0. The account is known: a local row if it isn't in Twenty<br/><i>localAccount</i>"]
+  s1["1. Session check<br/><i>discordSessionCheck</i>"]
+  s2["2. If logged out: open the account's own browser, the owner signs…<br/><i>inspectStart, inspectDoLive</i>"]
+  s3["3. Find the group or channel id<br/><i>discordChats</i>"]
+  s4["4. Read back far enough for the window<br/><i>discordRead</i>"]
+  s5["5. Summarise by who said what and what was decided, quoting times<br/><i>the reply to the owner</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | The account is known: a local row if it isn't in Twenty | `localAccount` { action: "add", platform: "discord", account: "<account>", adsPower: "<profileId>" } | `log localAccount list` shows it |

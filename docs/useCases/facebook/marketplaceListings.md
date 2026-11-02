@@ -77,10 +77,10 @@ flowchart LR
 
 Not every account makes it. Some are lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings go to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). A checkpointed account is deactivated and gives its browser profile back (rules 78 and 82).
 
-## Not built yet
+## Next
 
-- Reading buyers' messages into Twenty and replying to them (`log facebook conversations` keeps what's recorded, but the host doesn't act yet).
-- Publishing as a tab of the host's browser for every path (the recorded flow does; the older `log facebook publish` still opens its own browser).
+- [#41](https://github.com/matthewdonsemail-lab/log/issues/41) reads buyers' messages into Twenty and replies to them (`log facebook conversations` keeps what is recorded today).
+- [#42](https://github.com/matthewdonsemail-lab/log/issues/42) publishes as a tab of the host's browser on every path (the recorded flow does already; the older `log facebook publish` opens its own browser).
 
 ## Ways to reuse it
 

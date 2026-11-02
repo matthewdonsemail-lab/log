@@ -84,12 +84,10 @@ Twenty row, cookies and status stay as they are.
    self-check, session HAR, human mouse and scrolling are the same as on
    Camoufox.
 
-## Not built yet
+## Next
 
-1. **The older sessions on AdsPower.** `publishSession`, `connectSession` and
-   `profileSession` still launch Camoufox.
-2. **One machine at a time.** A `cloud-active` check before opening, so two
-   machines never open the same profile ([Deployment](deployment.md)).
+1. [#43](https://github.com/matthewdonsemail-lab/log/issues/43) moves the older sessions onto AdsPower: `publishSession`, `connectSession` and `profileSession` still launch Camoufox.
+2. [#44](https://github.com/matthewdonsemail-lab/log/issues/44) opens one machine at a time: a `cloud-active` check before opening, so two machines never open the same profile ([Deployment](deployment.md)).
 
 ## Setup
 

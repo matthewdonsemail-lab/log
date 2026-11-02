@@ -14,6 +14,23 @@ Say: **"go on docs/useCases/twitter/networkMaxing.md"**. The agent reads this pa
 
 ### Everyone who messaged
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Who wrote last, message requests included; anyone who opened th…<br/><i>twitterDms</i>"]
+  s1["2. Read each in full, old DM thread and X Chat merged<br/><i>twitterDms</i>"]
+  s2["3. How the owner writes to this person<br/><i>voice</i>"]
+  s3["4. Draft something nice that keeps it going and asks for nothing:…<br/><i>the agent</i>"]
+  s4["5. Gate each draft, rewrite until it passes<br/><i>voice</i>"]
+  s5["6. Send each one, one message per line, a few minutes between peop…<br/><i>twitterDm, twitterDmLive</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who wrote last, message requests included; anyone who opened the owner's message without replying is listed apart, for "Everyone who opened it" | `twitterDms` { account, waiting: true, limit: "50" } | the list, newest first |
@@ -27,6 +44,17 @@ Say: **"go on docs/useCases/twitter/networkMaxing.md"**. The agent reads this pa
 
 Someone who opened the owner's message without typing back is an open door, so they get a follow-up. They opened it when they reacted to it, or when their read receipt is past it (X Chat sends one each time a person reads, and some old DM threads show how far the other person has read). Only people who keep read receipts on show the second kind.
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["6a. Who opened it: twitterDms waiting: true, limit: 200 lists them…<br/><i>twitterDms</i>"]
+  s1["6b. Read the thread and what they've posted lately, then follow up…<br/><i>twitterDms, voice</i>"]
+  s2["6c. Send it, a few minutes between people<br/><i>twitterDmLive</i>"]
+  s0 --> s1
+  s1 --> s2
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 6a | Who opened it: `twitterDms` { waiting: true, limit: "200" } lists them apart, after the people waiting on a reply (the default 20 only looks at the newest threads) | `twitterDms` { account, waiting: true, limit: "200" } | the opened list |
@@ -34,6 +62,19 @@ Someone who opened the owner's message without typing back is an open door, so t
 | 6c | Send it, a few minutes between people | `twitterDmLive` | X's answer is `sent` |
 
 ### New people in the mixer
+
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["7. Who: from the niche map first, the people in the owner's niche…<br/><i>the niche map, then engagerDms.md steps…</i>"]
+  s1["8. Follow them first<br/><i>twitterFollow, twitterFollowLive</i>"]
+  s2["9. Like the tweet the message is about, before the message<br/><i>twitterLike, twitterLikeLive</i>"]
+  s3["10. Then the message: their tweet forwarded first, then one informa…<br/><i>voice, twitterDmLive</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+```
+<!-- /stepsDiagram -->
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
@@ -52,6 +93,6 @@ Someone who opened the owner's message without typing back is an open door, so t
 - Answer what they actually said. Read far enough back first, and never ask something they already told the owner.
 - A message the owner already sent, with them not answering yet, isn't waiting on him: leave it.
 
-## Not built yet
+## Next
 
-- Writing back to the niche map who the owner is now talking to, so it shows how much of the network is reached.
+- [#38](https://github.com/matthewdonsemail-lab/log/issues/38) writes back to the niche map who the owner is now talking to, so it shows how much of the network is reached.

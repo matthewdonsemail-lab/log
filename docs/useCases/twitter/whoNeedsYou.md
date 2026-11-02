@@ -10,6 +10,27 @@ Say: **"go on docs/useCases/twitter/whoNeedsYou.md"**, and which account. The ag
 
 ## The steps
 
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Who wrote last and is waiting: already in context at session st…<br/><i>the SessionStart hook</i>"]
+  s1["2. Bring the inbox up to date: the first read takes everything onc…<br/><i>twitterDms</i>"]
+  s2["3. Shortlist: everyone waiting on the owner, plus anyone recent th…<br/><i>twitterDms</i>"]
+  s3["4. Read each shortlisted person in full, old DM thread and X Chat…<br/><i>twitterDms</i>"]
+  s4["5. What the conversation is about beyond the thread: earlier talk…<br/><i>search</i>"]
+  s5["6. Who they are: their bio, role and reach, and whether they're in…<br/><i>treg's X profile read, Twenty</i>"]
+  s6["7. Sort them, each with the line that shows it and its time: needs…<br/><i>a table for the owner</i>"]
+  s7["8. The owner says what to do with each one, in their own words<br/><i>the owner</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+```
+<!-- /stepsDiagram -->
+
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who wrote last and is waiting: already in context at session start, read from the local inbox store, nothing fetched | the SessionStart hook | the list is in context |

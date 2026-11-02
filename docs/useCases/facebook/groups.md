@@ -24,8 +24,8 @@ An account asks to join a neighbourhood group in its town. Once in, each read br
 
 `read members --owners` keeps people whose bio says owner, founder, CEO or self-employed, or who run a page, saved under `~/.logCli/members/`.
 
-## Not built yet
+## Next
 
-Acting on a match (a comment or a message from the same account).
+- [#40](https://github.com/matthewdonsemail-lab/log/issues/40) acts on a match: a comment or a message from the same account.
 
 Sources: `docs/groupListening.md`, `docs/groupMembers.md`, `docs/commandNaming.md`.

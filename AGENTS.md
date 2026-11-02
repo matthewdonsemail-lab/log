@@ -148,7 +148,7 @@ Status 2026-10-19: the lifecycle machine is built and tested (`log
 lifecycle`), and so is the host that runs it in one open browser (`log host
 start|send|status`, `skills/host/SKILL.md`): open, sign-in by cookie, account
 check, profile, location, warm-up, watching, logged closes, resume after a
-restart. Acting (publish and replies as a tab) is not built yet, so `publish`
+restart. Acting (publish and replies as a tab) is not built yet ([#42](https://github.com/matthewdonsemail-lab/log/issues/42)), so `publish`
 and `connect` still launch per action: use them as few times as possible, and
 never add a new command that launches its own browser. Rule 35. Plan:
 `PLANS/LOG_CLI_ACCOUNT_LIFECYCLE_PLAN.md`.
@@ -214,7 +214,7 @@ How: `skills/reaCapture/SKILL.md` (rea tools: `analyze_javascript_application`,
 Status 2026-10-19: built: step 5 per request (`log capture --docs`,
 `docs/platforms/facebook/`, rule 27: syntax-tree slices, rea about 4 s each),
 and the per-step request timings that steps 2-3 need (in each doc). Settle no
-longer reads the whole bundle. Not built yet: the per-run timeline file, the
+longer reads the whole bundle. Not built yet ([#45](https://github.com/matthewdonsemail-lab/log/issues/45)): the per-run timeline file, the
 automatic cause line, and comparing two runs (step 4).
 
 ## Hard rules (from matt)
@@ -577,7 +577,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     is the glance. rea still reads each step at once without holding up the
     next (`reaLater`, rule 29); a dwell doesn't wait for the network, a swipe
     only for the next reel's URL, and the cursor rests on Next card between
-    quick swipes. Save, follow and share aren't built.
+    quick swipes. Save, follow and share aren't built ([#46](https://github.com/matthewdonsemail-lab/log/issues/46)).
 51. 2026-10-20 · matt: proxy traffic is money. Reels ran 2Captcha's traffic
     out (about 4.5 MB a reel through the residential proxy), so each account
     has a budget of its own traffic for 24 hours, 1 GB by default
@@ -740,7 +740,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     facebook poll --request`, a read in the account's open browser. OpenMagpie
     keeps every post, its watch triages them (`semantic_filter`), and its
     `webhook` sends the matches to Twenty's `socialListening`. log-cli then
-    acts on the NEW rows from the same account (not built yet). log-cli writes
+    acts on the NEW rows from the same account (not built yet, [#40](https://github.com/matthewdonsemail-lab/log/issues/40)). log-cli writes
     only the group's `readCursor`, `lastReadAt` and `lastReadReason` to
     Twenty. `agencyGroupPosts` and `agencyGroupComments` stay, unused. The host
     reads no group on its own. Comment reading is kept for acting on a match,

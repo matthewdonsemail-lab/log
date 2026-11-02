@@ -73,7 +73,7 @@ The service runs the script at `FACEBOOK_WORKER_PATH` with one JSON request on s
   - When no group could be answered: `{"ok": false, "code", "error"}`.
 - **Checked:** the service's own `from_record` parsed the answer into `new_fb_post` / `facebook_group` items.
 
-### Step 5: act (not built yet)
+### Step 5: act ([#40](https://github.com/matthewdonsemail-lab/log/issues/40))
 
 Reading NEW `socialListening` rows with `sourceKind` `facebook_group`, and acting from the account that saw the post, is its own piece of work. It needs the account for each row (the group's `agencyGroup` gives it) and an action built from a `log inspect` recording.
 

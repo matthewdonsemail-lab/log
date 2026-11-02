@@ -8,6 +8,7 @@ import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/c
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { renderSurface, withSurface } from "../../src/surface/readme/index.ts";
+import { withStepsDiagrams } from "../../src/surface/stepsDiagram/index.ts";
 
 const root = join(import.meta.dir, "..", "..");
 const check = process.argv.includes("--check");
@@ -39,6 +40,11 @@ for (const file of readdirSync(diagramDir)) {
     rmSync(join(diagramDir, file));
     wrote.push(`removed docs/diagrams/${file}`);
   }
+}
+
+{
+  const pages = (dir: string): string[] => readdirSync(join(root, dir)).flatMap((name) => (statSync(join(root, dir, name)).isDirectory() ? pages(`${dir}/${name}`) : name.endsWith(".md") ? [`${dir}/${name}`] : []));
+  for (const rel of pages("docs/useCases")) put(rel, withStepsDiagrams(readFileSync(join(root, rel), "utf8")));
 }
 
 {
@@ -189,6 +195,16 @@ for (const dir of readdirSync(cliDir)) {
       await mermaid.parse(d.mermaid);
     } catch (error) {
       problems.push(`docs/diagrams/${d.name}.mmd doesn't parse as Mermaid: ${String((error as Error).message).split("\n").slice(0, 3).join(" ")}`);
+    }
+  }
+  const markdown = (dir: string): string[] => readdirSync(join(root, dir)).flatMap((name) => (statSync(join(root, dir, name)).isDirectory() ? markdown(`${dir}/${name}`) : name.endsWith(".md") ? [`${dir}/${name}`] : []));
+  for (const rel of markdown("docs")) {
+    for (const block of readFileSync(join(root, rel), "utf8").replace(/\r\n/g, "\n").matchAll(/```mermaid\n([\s\S]*?)```/g)) {
+      try {
+        await mermaid.parse(block[1]!);
+      } catch (error) {
+        problems.push(`${rel}: a Mermaid diagram doesn't parse: ${String((error as Error).message).split("\n").slice(0, 3).join(" ")}`);
+      }
     }
   }
 }
