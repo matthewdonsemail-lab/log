@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { collectDeclarations, diffDeclarations, renderSummary } from "./astSummary.mjs";
-import { AST_HEADING, addedLines, astBlock, checkAdded, countEntries, dayFile, dayOf, renderDay, renderEntry, renderIndex, replaceLastAstBlock, splitEntries } from "./commitLog.mjs";
+import { AST_HEADING, addedLines, astBlock, checkAdded, countEntries, dayFile, dayOf, renderDay, renderEntry, renderIndex, replaceLastAstBlock, splitEntries, newestEntryLines } from "./commitLog.mjs";
 
 describe("astSummary", () => {
   test("reports added, changed and removed declarations from the syntax tree", () => {
@@ -84,5 +84,23 @@ ${entry("2026-10-19 01:00Z")}`;
     expect(index.indexOf("2026-10-19")).toBeLessThan(index.indexOf("2026-10-18"));
     expect(index).toContain("| [2026-10-18](log/2026-10-18.md) | 2 |");
     expect(dayFile(dayOf("2026-11-02 03:12Z"))).toBe("log/2026-11-02.md");
+  });
+
+  test("the newest entry is read from the staged file, so a diff that lines it up with an older entry can't hide its AST", () => {
+    const old = renderEntry({ when: "2026-11-02 03:15Z", branch: "a", ast: ["- `a.ts`: edited"] });
+    const added = renderEntry({ when: "2026-11-02 04:47Z", branch: "b", ast: ["- `b.ts`: edited"] });
+    const head = `# log
+
+${old}`;
+    const lines = newestEntryLines(`${head}
+${added}`, head);
+    expect(lines[0]).toBe("## 2026-11-02 04:47Z · b");
+    expect(astBlock(lines)).toEqual(["- `b.ts`: edited"]);
+    expect(newestEntryLines(head, head)).toEqual([]);
+  });
+
+  test("a stale AST block is replaced on its own line, whatever the file's line endings", () => {
+    const text = ["x", AST_HEADING, "- old", "", "What changed: y"].join("\r\n");
+    expect(replaceLastAstBlock(text, ["- new"])).toBe(["x", AST_HEADING, "- new", "", "What changed: y"].join("\n"));
   });
 });

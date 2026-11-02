@@ -101,16 +101,35 @@ export function checkAdded(allLines, ast) {
 }
 
 export function replaceLastAstBlock(text, ast) {
-  const at = text.lastIndexOf(AST_HEADING);
-  if (at === -1) return text;
-  const blockStart = at + AST_HEADING.length + 1;
-  const blockEnd = text.indexOf('\n\n', blockStart);
-  return `${text.slice(0, blockStart)}${ast.join('\n')}${blockEnd === -1 ? '\n' : text.slice(blockEnd)}`;
+  const lf = text.replace(/\r\n/g, '\n');
+  const at = lf.lastIndexOf(AST_HEADING);
+  if (at === -1) return lf;
+  const blockStart = lf.indexOf('\n', at) + 1;
+  if (blockStart === 0) return `${lf}\n${ast.join('\n')}\n`;
+  const blockEnd = lf.indexOf('\n\n', blockStart);
+  return `${lf.slice(0, blockStart)}${ast.join('\n')}${blockEnd === -1 ? '\n' : lf.slice(blockEnd)}`;
 }
 
+const gitShow = (spec) => {
+  try {
+    return execFileSync('git', ['show', spec], { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).replace(/\r/g, '');
+  } catch {
+    return '';
+  }
+};
+
+export function newestEntryLines(staged, head) {
+  const entries = staged.split(/\n(?=## \d{4}-\d{2}-\d{2} )/).slice(1);
+  const last = entries.at(-1);
+  if (!last) return [];
+  const heading = last.split('\n')[0];
+  return head.split('\n').includes(heading) ? [] : last.split('\n');
+}
+
+const stagedEntryLines = (file) => newestEntryLines(gitShow(`:${file}`), gitShow(`HEAD:${file}`));
+
 function hasNewEntry(day) {
-  const added = addedLines(git('diff', '--cached', '--', dayFile(day)));
-  return added.some((line) => line.startsWith('## '));
+  return stagedEntryLines(dayFile(day)).length > 0;
 }
 
 function writeIndex() {
@@ -150,7 +169,7 @@ function main() {
     return 1;
   }
 
-  const problem = checkAdded(addedLines(git('diff', '--cached', '--', stagedDay)), ast);
+  const problem = checkAdded(stagedEntryLines(stagedDay), ast);
   if (problem === 'stale') {
     const path = join(root, stagedDay);
     writeFileSync(path, replaceLastAstBlock(readFileSync(path, 'utf8'), ast));

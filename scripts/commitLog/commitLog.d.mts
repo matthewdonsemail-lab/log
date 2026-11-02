@@ -12,3 +12,4 @@ export function splitEntries(text: string): Map<string, string[]>;
 export function renderDay(day: string, entries: string[]): string;
 export function renderIndex(days: Map<string, number>): string;
 export function countEntries(text: string): number;
+export function newestEntryLines(staged: string, head: string): string[];
