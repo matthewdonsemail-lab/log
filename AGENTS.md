@@ -1605,6 +1605,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`author_too_big`, `MAX_AUTHOR_FOLLOWERS` in `python/twitterApi/engine.py`),
     and a larger author gets nothing (`authorTooBig`). The queue marks that
     item skipped (`TOO BIG`) and goes on: it is not a refusal (rule 118).
+    A reply matt asks for by name goes out whatever the author's size, with
+    `force` (rule 86), as his reply to @sporadica (222k) did on 2026-11-03.
     Every reply that does go out likes the post and follows the author
     first. Spec: `docs/specs/xQueue.md` (REQ-QUEUE-15).
 

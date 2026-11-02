@@ -1290,7 +1290,7 @@ MAX_AUTHOR_FOLLOWERS = 1500
 
 async def author_too_big(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
     cap = spec.get("maxAuthorFollowers", MAX_AUTHOR_FOLLOWERS)
-    if cap is None or cap is False:
+    if cap is None or cap is False or spec.get("force") is True:
         return None
     screen_name = handle_from_post_url(spec["tweetUrl"])
     if not screen_name:
