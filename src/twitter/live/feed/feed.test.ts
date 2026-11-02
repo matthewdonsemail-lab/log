@@ -29,6 +29,16 @@ describe("X's live client state in the agent context, per Claude session (rule 1
     expect(other[0]!.latest?.ntab_unread_count).toBe(0)
   })
 
+  test('a dropped connection reads as a network error, a 429 as X refusing', () => {
+    const at = '2026-11-02T03:00:47Z'
+    const dropped = xLiveContext([{ account: 'acct', latest: null, firstLook: false, events: [{ type: 'pollRefused', seenAt: at, error: 'Failed to perform, curl: (35) Recv failure: Connection was reset.' }] }])!
+    expect(dropped).toContain('a network error, not X refusing; the poll goes on')
+    expect(dropped).not.toContain('nothing resumes until he says')
+    const refused = xLiveContext([{ account: 'acct', latest: null, firstLook: false, events: [{ type: 'pollRefused', seenAt: at, error: 'status: 429, message: "Rate limit exceeded"' }] }])!
+    expect(refused).toContain('X refused the live read')
+    expect(refused).toContain('nothing resumes until he says')
+  })
+
   test("two Claude sessions each get the queue's events once", () => {
     const root = mkdtempSync(join(tmpdir(), 'queues'))
     const log = join(root, 'q.log')
