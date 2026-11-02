@@ -531,7 +531,12 @@ def thread_of(conversation: dict[str, Any], messages: list[dict[str, Any]], user
 
 def xchat_message(m: dict[str, Any], me: str, handles: dict[str, str]) -> dict[str, Any]:
     sender = str(m.get("sender_id") or "")
-    return {"id": str(m.get("event_id") or ""), "conversationId": str(m.get("conversation_id") or ""), "time": iso_of(m.get("time_ms")), "senderId": sender, "recipientId": None, "text": m.get("text") if m.get("text") is not None else f"(could not open: {m.get('error') or 'no key'})", "fromMe": sender == me, "from": handles.get(sender)}
+    text = m.get("text") if m.get("text") is not None else f"(could not open: {m.get('error') or 'no key'})"
+    extra = media_line(m)
+    out = {"id": str(m.get("event_id") or ""), "conversationId": str(m.get("conversation_id") or ""), "time": iso_of(m.get("time_ms")), "senderId": sender, "recipientId": None, "text": f"{text} {extra}".strip() if extra else text, "fromMe": sender == me, "from": handles.get(sender)}
+    if m.get("media"):
+        out["media"] = [{k: a.get(k) for k in ("type", "filename", "path", "error") if a.get(k)} for a in m["media"]]
+    return out
 
 
 async def xchat_read(client: Any, spec: dict[str, Any]) -> dict[str, list[dict[str, Any]]] | None:
@@ -752,12 +757,15 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
         await xchat_read_keys(client, spec)
     except Exception as e:
         return {"ok": False, "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {redact(e, cookies)[:200]}", "loginState": "loggedIn"}
-    unopened = [str(m.get("event_id")) for m in stored_xchat(spec, conversation_id) if m.get("text") is None and m.get("event_id") and inboxSync_shown(m)][-5:]
-    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=unopened)
+    stored = stored_xchat(spec, conversation_id)
+    unopened = [str(m.get("event_id")) for m in stored if m.get("text") is None and m.get("event_id") and inboxSync_shown(m)][-5:]
+    unfetched = [str(m.get("event_id")) for m in stored if m.get("event_id") and not m.get("media") and MEDIA_TEXT.search(m.get("text") or "")][-3:]
+    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=unopened + [i for i in unfetched if i not in unopened])
     handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
     for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
         await handle_of(client, user_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
+    await save_xchat_media(client, spec, conversation_id, page["messages"])
     keep_opened(spec, conversation_id, page["messages"])
     held = stored_xchat(spec, conversation_id)
     for m in held:
@@ -769,6 +777,43 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
 
     messages = [xchat_message(m, me, handles) for m in merged if inboxSync.shown(m)][-limit:]
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages}
+
+
+MEDIA_PER_READ = 8
+MEDIA_TEXT = re.compile(r"\((image|gif|video|audio|media|file)[:)]")
+
+
+def media_path(spec: dict[str, Any], conversation_id: str, attachment: dict[str, Any]) -> Path:
+    name = str(attachment.get("filename") or "")
+    suffix = Path(name).suffix.lower() if re.fullmatch(r"\.[A-Za-z0-9]{1,5}", Path(name).suffix) else ".bin"
+    stem = re.sub(r"[^0-9A-Za-z_-]", "_", str(attachment["media_hash_key"]))[-48:]
+    return state_dir(str(spec["account"])) / "media" / re.sub(r"[^0-9A-Za-z_-]", "_", conversation_id) / f"{stem}{suffix}"
+
+
+async def save_xchat_media(client: Any, spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]]) -> None:
+    if not spec.get("account"):
+        return
+    wanted = [(m, a) for m in messages for a in (m.get("media") or [])][-MEDIA_PER_READ:]
+    for m, attachment in wanted:
+        path = media_path(spec, conversation_id, attachment)
+        if not path.is_file():
+            if not m.get("key_version"):
+                attachment["error"] = "no key version on its message"
+                continue
+            try:
+                data = await client.get_xchat_media(conversation_id, attachment["media_hash_key"], m["key_version"])
+            except Exception as e:
+                attachment["error"] = str(e)[:160]
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        attachment["path"] = str(path)
+
+
+def media_line(m: dict[str, Any]) -> str:
+    saved = [f"({a.get('type') or 'media'} saved: {a['path']})" for a in m.get("media") or [] if a.get("path")]
+    failed = [f"({a.get('type') or 'media'} not downloaded: {a['error']})" for a in m.get("media") or [] if a.get("error") and not a.get("path")]
+    return " ".join(saved + failed)
 
 
 def inboxSync_shown(m: dict[str, Any]) -> bool:
@@ -787,7 +832,7 @@ def keep_opened(spec: dict[str, Any], conversation_id: str, messages: list[dict[
     conv = (state or {}).get("xchat", {}).get(conversation_id)
     if conv is None:
         return
-    inboxSync.add_messages(conv, [{k: m.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id", "kind", "error") if m.get(k) is not None} | {"conversation_id": conversation_id} for m in messages])
+    inboxSync.add_messages(conv, [{k: m.get(k) for k in ("event_id", "sender_id", "time_ms", "text", "conversation_id", "kind", "error", "media", "key_version") if m.get(k) is not None} | {"conversation_id": conversation_id} for m in messages])
     inboxSync.write_state(path, state)
 
 

@@ -296,6 +296,10 @@ def message_of(decrypted: dict) -> dict:
         said = content.get('text') or ''
         shared = [a for a in (attachment_text(x) for x in content.get('attachments') or []) if a and a not in said]
         out['text'] = ' '.join([said, *shared]).strip()
+        media = [m for m in (media_of(x) for x in content.get('attachments') or []) if m]
+        if media:
+            out['media'] = media
+            out['key_version'] = str(event.get('key_version') or head.get('key_version') or '') or None
     elif kind == 'Edit':
         out['text'] = f"(edited) {content.get('new_text') or ''}".strip()
         out['target_message_id'] = str(content.get('target_message_id') or '')
@@ -324,6 +328,27 @@ def is_marker(message: dict) -> bool:
     """A decrypted event that says nothing: a read or unread marker, a
     reaction taken back, or a content type chat-xdk doesn't know."""
     return message.get('text') is None and not message.get('error') and message.get('kind') not in (None, 'Text')
+
+
+XCHAT_MEDIA_URL = 'https://ton.x.com/i/ton/data/xchat_media/{conversation_id}/{media_hash_key}'
+
+
+def media_of(attachment: dict) -> dict | None:
+    """An encrypted media attachment's download reference, as X's chat app
+    keeps it (``DmMessageEntryAttachment.Media``): the blob's hash key on
+    ton.x.com, its filename and its kind."""
+    if not isinstance(attachment, dict):
+        return None
+    media = attachment.get('media') or {}
+    key = media.get('media_hash_key')
+    if not key:
+        return None
+    return {
+        'media_hash_key': key,
+        'filename': media.get('filename'),
+        'type': str(media.get('type') or 'media').lower(),
+        'filesize_bytes': media.get('filesize_bytes'),
+    }
 
 
 def attachment_text(attachment: dict) -> str | None:
