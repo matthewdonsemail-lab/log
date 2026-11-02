@@ -59,3 +59,17 @@ Checked by: SubQ
 `log memelord tools` lists the catalog and says log never runs them; there is no command or tool that runs one.
 
 Checked by: code and SubQ
+
+## Taste
+
+### REQ-MEME-09: The taste index is read from the pictures he sent
+
+`log memelord taste --build` takes every picture in a file of his X media posts, sends each one as an image to SubQ, and keeps only those SubQ calls a meme (at least 0.5), each with the style it picks from the styles matt named (deep fried, larping, streamer reacts, shitpost) or other. Rule 120.
+
+Checked by: code and SubQ
+
+### REQ-MEME-10: Search ranks by his taste and says it first
+
+Unless `--noTaste`, search scores each template from its picture against his taste (his styles and the memes he has sent) and lists them from the highest score down, and the answer's first line is his taste. A template with no picture to read keeps its place at the end.
+
+Checked by: code and SubQ

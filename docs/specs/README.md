@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 31 domains, 375 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 31 domains, 377 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -497,6 +497,8 @@ log's first extension: Memelord's meme templates, clips and stickers, searched f
 - **REQ-MEME-06** Values are camelCase in log and converted at the boundary
 - **REQ-MEME-07** A bad limit is refused before any call
 - **REQ-MEME-08** The image tools are listed, never run
+- **REQ-MEME-09** The taste index is read from the pictures he sent
+- **REQ-MEME-10** Search ranks by his taste and says it first
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
 

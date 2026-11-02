@@ -573,12 +573,13 @@ def tweet_from_data(client: Client, data: dict) -> Tweet:
         tweet_data = tweet_data['tweet']
     if 'core' not in tweet_data:
         return None
-    if 'result' not in tweet_data['core']['user_results']:
+    user_results = tweet_data['core'].get('user_results') or tweet_data['core'].get('user_result') or {}
+    if 'result' not in user_results:
         return None
     if 'legacy' not in tweet_data:
         return None
 
-    user_data = tweet_data['core']['user_results']['result']
+    user_data = user_results['result']
     return Tweet(client, tweet_data, User(client, user_data))
 
 

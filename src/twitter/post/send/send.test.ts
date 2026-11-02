@@ -35,7 +35,8 @@ describe('planSend', () => {
     expect(planSend({ action: 'post', live: false })).toMatchObject({ ok: false, problem: { code: 'textMissing' } })
     expect(planSend({ action: 'post', text: 'Hello, world.', live: false })).toMatchObject({ ok: false, problem: { code: 'styleFailed' } })
     expect(planSend({ action: 'post', text: 'one in 173', media: ['clip.mp4'], live: true }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'notApproved' } })
-    expect(planSend({ action: 'reply', tweetUrl: POST, text: 'yes', media: ['clip.mp4'], live: false }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'mediaInvalid' } })
+    expect(planSend({ action: 'reply', tweetUrl: POST, text: 'yes', media: ['clip.mp4'], live: false }, sizeOf)).toMatchObject({ ok: true, spec: { action: 'reply', tweetUrl: POST, media: [resolve('clip.mp4')] } })
+    expect(planSend({ action: 'quote', tweetUrl: POST, text: 'yes', media: ['clip.mp4'], live: false }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'mediaInvalid' } })
   })
 
   test('a dm carries one file, never more', () => {

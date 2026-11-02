@@ -31,7 +31,10 @@ tools, so nothing here costs money (rule 41).
    chat's id from the first line (`… in <channelId>`).
 2. Find the moment: the last thing said that a person would answer with a
    reaction (a question to the group, a joke, a win, a fail).
-3. Search: `memelordSearch` { query: [the moment in a few words] }. Short
+3. Search: `memelordSearch` { query: [the moment in a few words] }. The
+   answer leads with matt's taste and ranks by it (deep fried, larping,
+   streamer reacts like FlightReacts, Zias and Bloo, shitposts, and the memes
+   he has sent): pick from the top, a clean corporate meme is never his. Short
    queries match best: a long sentence often returns one result or none. Use
    `method: "combined"` to add keyword matching, `type: "meme"` for a still
    image, `"video"` for a clip. `memelordTrending` gives what is current, each
@@ -48,6 +51,13 @@ tools, so nothing here costs money (rule 41).
    `discordSendLive` { account, channel: <channelId>, text, approvedBy: "matt",
    confirmLive: true }. A url on a line of its own is a message of its own
    (rule 90), and Discord shows it inline.
+
+## His taste
+
+`memelordTaste` shows it; `memelordTaste` { build: true, from: <posts.json> }
+rebuilds it from his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`,
+the timeline items of every page, joined in one file). Rebuild when he has
+posted a run of new memes.
 
 ## Where things are
 

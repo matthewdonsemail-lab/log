@@ -1580,6 +1580,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     group: Floyd Mayweather's Cash Stacks, on "how much shall i charge".
     Spec: `docs/specs/memelord.md`.
 
+120. 2026-11-02 · matt: "start creating meme taste ... injecting into the
+    context the kind of memes that we need": deep fried memes, memes about
+    larping, streamer reaction clips like FlightReacts, Zias and Bloo, and
+    shitposts, "those are the type of memes that I think are bangers", and "a
+    meme index for taste ... over the type of memes we've done before". His
+    taste lives in `~/.logCli/memes/taste.json` (`src/extensions/memeTaste`):
+    `log memelord taste --build --from <posts.json>` reads every picture in
+    his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`, which matt
+    said to spend on) and asks SubQ, from the picture, whether it is a meme
+    and which of his styles it is (`TASTE_STYLES`, or other), keeping the
+    memes. `log memelord search` scores each template's picture against his
+    taste with SubQ (`tasteFit`) and ranks by it, `--noTaste` keeping
+    Memelord's order, and every answer leads with his taste
+    (`tasteSummary`), so the agent picking a meme has it in context.
+    `log memelord taste` (MCP `memelordTaste`) shows it. Spec:
+    `docs/specs/memelord.md` (REQ-MEME-09, REQ-MEME-10).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

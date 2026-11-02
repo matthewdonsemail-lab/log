@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
-import { dmSplit, sendDmParts, splitLine } from "./send.ts";
+import { dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
 import {
   addToQueue,
   approvalProblem,
@@ -195,9 +195,9 @@ function dryRunLines(queue: Queue): string[] {
   });
 }
 
-function specFor(item: QueueItem, kind: EventKind, approvedBy: string, style: string | null | undefined) {
+function specFor(item: QueueItem, kind: EventKind, approvedBy: string, style: string | null | undefined, media?: string[]) {
   if (kind === "like") return planSend({ action: "like", tweetUrl: item.tweetUrl, approvedBy, live: true });
-  return planSend({ action: item.action as QueueAction, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, approvedBy, style, live: true });
+  return planSend({ action: item.action as QueueAction, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, media, approvedBy, style, live: true });
 }
 
 async function runCommand(context: CommandContext, path: string, flags: Record<string, unknown>): Promise<CommandResult> {
@@ -250,7 +250,13 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
       queue,
       {
         send: async (item, kind): Promise<TwitterSessionAnswer> => {
-          const plan = specFor(item, kind, approvedBy, opened.account.copyStyle);
+          let media: string[] | undefined;
+          try {
+            media = kind === "like" ? undefined : await localMedia(item.media);
+          } catch (error) {
+            return { ok: false, code: "mediaInvalid", detail: error instanceof Error ? error.message : String(error) };
+          }
+          const plan = specFor(item, kind, approvedBy, opened.account.copyStyle, media);
           if (!plan.ok) return { ok: false, code: plan.problem.code, detail: plan.problem.detail };
           if (plan.watermark) log(`#${item.n} @${item.handle ?? "?"}: ${watermarkLine(plan.watermark)}`);
           const spec = flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;

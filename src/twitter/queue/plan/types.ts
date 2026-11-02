@@ -14,6 +14,7 @@ export interface QueueItem {
   tweetUrl?: string
   userId?: string
   postText?: string
+  media?: string[]
   status: ItemStatus
   sentId?: string | null
   sentUrl?: string | null
@@ -65,6 +66,7 @@ export interface BuildTarget {
   userId?: string
   postText?: string
   text?: string
+  media?: string | string[]
 }
 
 export interface PlanOptions {

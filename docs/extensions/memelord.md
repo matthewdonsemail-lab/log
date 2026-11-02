@@ -19,6 +19,14 @@ Only Memelord's four free discovery tools are reachable from log, so nothing cos
 
 Memelord's REST API (`https://www.memelord.com/api/v1`) is called with plain GETs, the key sent as a bearer token. Its own camelCase-breaking values (`image-to-image`, `semantic_context`) are converted at that boundary only.
 
+## matt's meme taste
+
+A meme that fits the moment still has to be his kind of meme. matt named his kind (2026-11-02): deep fried memes, memes about larping, streamer reaction clips like FlightReacts, Zias and Bloo, and shitposts. log keeps that as his taste (rule 120):
+
+- **The index.** `log memelord taste --build --from <posts.json>` reads every picture in his X media posts (fetched with treg's `tikhub.x.twitter-web-fetch-user-media`, about $0.001 a page) and asks SubQ, from the picture itself, whether it is a meme and which of his styles it is. The memes are kept in `~/.logCli/memes/taste.json` (`LOG_MEME_TASTE` moves it). The first build, 2026-11-02, read his 125 media pictures.
+- **Ranked search.** `log memelord search` asks SubQ, for each template it finds, whether the template's picture is his kind of meme, given his styles and the memes he has sent, and ranks by that score (`taste 0.82 his kind, streamerReacts`). `--noTaste` keeps Memelord's own order. Memelord's search knows nothing about these styles ("deep fried" finds Burnt Patrick), which is why the taste reads the picture.
+- **In context.** Every search answer leads with the taste line, and `log memelord taste` shows it with the memes he has sent, so whoever picks a meme has his taste in front of them.
+
 ## Setting it up
 
 1. Create a key at [memelord.com/settings/developer](https://www.memelord.com/settings/developer). It starts with `mlord_live_`.
