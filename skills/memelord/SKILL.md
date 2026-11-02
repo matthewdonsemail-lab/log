@@ -11,6 +11,9 @@ tools, so nothing here costs money (rule 41).
 
 ## Hard boundaries
 
+- **Only where it carries the chat on.** A chat waiting on them (they owe a
+  reply, or they promised something) can take a meme that nudges it; a chat
+  where matt's last messages are still unanswered never gets one stacked on top.
 - **Free tools only.** `memelordSearch`, `memelordTemplate`, `memelordTrending`
   and `memelordTools`. Nothing that generates, edits or runs a model is
   reachable from log, and `memelordTools` lists the image tools without ever
@@ -37,7 +40,11 @@ tools, so nothing here costs money (rule 41).
    url (`.webp`/`.png` for an image, `.mp4` for a clip).
 5. Gate it: `voice` { to: <chat>, with: <chat>, context: <the moment and the
    meme picked>, text: <the url, and a line if one fits> }.
-6. Send it by the chat's id, so the engine doesn't list every chat first:
+6. On X, send it as a dm with the meme attached: `twitterDmLive` { account,
+   userId, text: <a line or two>, media: <the meme url>, approvedBy: "matt",
+   confirmLive: true }. The url is downloaded, uploaded as X dm media and put on
+   the first message; the dm's other lines follow it.
+7. On Discord, send it by the chat's id, so the engine doesn't list every chat first:
    `discordSendLive` { account, channel: <channelId>, text, approvedBy: "matt",
    confirmLive: true }. A url on a line of its own is a message of its own
    (rule 90), and Discord shows it inline.

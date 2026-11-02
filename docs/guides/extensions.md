@@ -11,6 +11,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "twitter/getTheAction" })` | Getting people to do the thing: retweet, like, try it | "get me all them people who liked it ... yo cool to see that you liked that, would you give that a wee retweet", "notifications: people who like, comment, reply", "go through all the people there who need a message", "get them to retweet the thing", "would you do me a favour and give it a wee retweet", "I need them to retweet it so I can get some inbound leads", "I don't know what they're even talking about, explain the context", "make them do the action I need", "get the full context of everything on the account at the time of sending the message". |
 
 ## The tools in this guide
 
@@ -33,6 +34,9 @@ tools, so nothing here costs money (rule 41).
 
 ### Hard boundaries
 
+- **Only where it carries the chat on.** A chat waiting on them (they owe a
+  reply, or they promised something) can take a meme that nudges it; a chat
+  where matt's last messages are still unanswered never gets one stacked on top.
 - **Free tools only.** `memelordSearch`, `memelordTemplate`, `memelordTrending`
   and `memelordTools`. Nothing that generates, edits or runs a model is
   reachable from log, and `memelordTools` lists the image tools without ever
@@ -59,7 +63,11 @@ tools, so nothing here costs money (rule 41).
    url (`.webp`/`.png` for an image, `.mp4` for a clip).
 5. Gate it: `voice` { to: <chat>, with: <chat>, context: <the moment and the
    meme picked>, text: <the url, and a line if one fits> }.
-6. Send it by the chat's id, so the engine doesn't list every chat first:
+6. On X, send it as a dm with the meme attached: `twitterDmLive` { account,
+   userId, text: <a line or two>, media: <the meme url>, approvedBy: "matt",
+   confirmLive: true }. The url is downloaded, uploaded as X dm media and put on
+   the first message; the dm's other lines follow it.
+7. On Discord, send it by the chat's id, so the engine doesn't list every chat first:
    `discordSendLive` { account, channel: <channelId>, text, approvedBy: "matt",
    confirmLive: true }. A url on a line of its own is a message of its own
    (rule 90), and Discord shows it inline.
@@ -81,7 +89,7 @@ The Memelord extension: search memes for a moment, read one template, see what i
 log memelord search "<what the moment is>" [--type meme|video|sticker] [--method context|combined|media|fulltext|fuzzy] [--limit <n>] [--json]
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
 AGENTS.md (log://agents): rules 41, 94, 119, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

@@ -395,6 +395,20 @@ async def upload_post_media(client: Any, paths: list[str]) -> list[str]:
     return ids
 
 
+DM_MEDIA_CATEGORIES = {".mp4": "dm_video", ".mov": "dm_video", ".gif": "dm_gif"}
+
+
+async def upload_dm_media(client: Any, path: str) -> str:
+    category = DM_MEDIA_CATEGORIES.get(Path(path).suffix.lower(), "dm_image")
+    media_id = await asyncio.wait_for(
+        client.upload_media(path, wait_for_completion=category != "dm_image", media_category=category),
+        timeout=MEDIA_PROCESSING_SECONDS,
+    )
+    if not str(media_id or ""):
+        raise RuntimeError(f"x gave no media id for {Path(path).name}: nothing was sent")
+    return str(media_id)
+
+
 def keep_create_answers(client: Any) -> dict[str, Any]:
     raw: dict[str, Any] = {}
     create = client.gql.create_tweet
@@ -1172,12 +1186,14 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the follow with no user: nobody was followed"}
         return {"ok": True, "event": "sent", "followed": True, "userId": user_id, "handle": getattr(user, "screen_name", None) or getattr(before, "screen_name", None)}
     if action == "dm":
-        message = await client.send_dm(str(spec["userId"]), spec["text"])
+        media = list(spec.get("media") or [])
+        dm_media_id = await upload_dm_media(client, str(media[0])) if media else None
+        message = await client.send_dm(str(spec["userId"]), spec["text"], media_id=dm_media_id)
         message_id = str(getattr(message, "id", "") or "") or None
         if not message_id:
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the dm with no message id: nothing was sent"}
         pair = sorted([str(getattr(message, "sender_id", "") or ""), str(getattr(message, "recipient_id", "") or "")], key=lambda i: int(i) if i.isdigit() else 0)
-        return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"])}
+        return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"]), **({"mediaIds": [dm_media_id]} if dm_media_id else {})}
     media_ids: list[str] = []
     if action == "post":
         media_ids = await upload_post_media(client, list(spec.get("media") or []))

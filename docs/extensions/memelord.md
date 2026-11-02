@@ -29,7 +29,8 @@ Without a key every tool answers `memelordKeyMissing` and calls nothing. Memelor
 
 ## Sending a meme
 
-A meme goes out as its media url on a line of its own; Discord shows an image (`.webp`, `.png`) or a clip (`.mp4`) inline. The whole loop, read, pick, search, gate, send, is the use case [docs/useCases/discord/memeReply.md](../useCases/discord/memeReply.md) and the `memelord` skill.
+- **Discord:** the meme goes out as its media url on a line of its own; Discord shows an image (`.webp`, `.png`) or a clip (`.mp4`) inline.
+- **X DMs:** `twitterDmLive` takes `media`, a file or the meme's url. A url is downloaded first, uploaded to X as DM media (`dm_image`, `dm_gif`, `dm_video`) and attached to the first message of the dm, so it shows as a picture, never a link. First sent 2026-11-02 to @gabesweats: Waiting Skeleton, with "me waiting on your bug report / you break it yet lad". The whole loop, read, pick, search, gate, send, is the use case [docs/useCases/discord/memeReply.md](../useCases/discord/memeReply.md) and the `memelord` skill.
 
 ## How it is checked
 

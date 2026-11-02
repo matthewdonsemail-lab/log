@@ -38,6 +38,9 @@ Who wrote last is already in context at the start of a session: the SessionStart
 
 ## What to know
 
+- **Past the daily cap only when the owner says.** At its request cap the governor refuses every read; `twitterDms` { force: true } reads past it for that call, and the governor still counts it (rule 86). On 2026-11-02 matthewsoldit read its inbox at 501-506 of 500 this way, with matt's go-ahead.
+- **A nudge can be a meme.** Where someone owes a reply or promised something, `twitterDmLive` { media: "<meme url>" } sends the meme as an image on the first message, with the nudge after it (docs/extensions/memelord.md). A chat where the owner's last messages are still unanswered gets nothing stacked on top.
+
 - `twitterDms` reads the inbox, the message requests and X's encrypted Chat. X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`); without it X Chat threads show who and when, not what.
 - A person can have both an old DM thread and an X Chat thread. Read them together with `twitterDms` { account, with: "<handle>" } before answering, so nothing they said in X Chat is missed.
 - Every X Chat message opens with the saved PIN: a reaction shows as `(reacted 🔥)`, an edit as `(edited) …`, a photo as `(image: name.jpg)`, a shared post or link as its URL, and a read marker is hidden, so "they read it and haven't answered" never looks like a message waiting on you. A message still showing "could not open" is reopened the next time its chat is read, and each sync reopens a few on its own. Group chats are read with `twitterDms` { account, conversation: "g…" }.

@@ -38,6 +38,13 @@ describe('planSend', () => {
     expect(planSend({ action: 'reply', tweetUrl: POST, text: 'yes', media: ['clip.mp4'], live: false }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'mediaInvalid' } })
   })
 
+  test('a dm carries one file, never more', () => {
+    const sizes: Record<string, number> = { [resolve('meme.webp')]: 80_000, [resolve('two.png')]: 80_000 }
+    const sizeOf = (p: string) => sizes[p] ?? null
+    expect(planSend({ action: 'dm', userId: '42', text: 'saw this', media: ['meme.webp'], live: false }, sizeOf)).toMatchObject({ ok: true, spec: { action: 'dm', media: [resolve('meme.webp')] } })
+    expect(planSend({ action: 'dm', userId: '42', text: 'saw this', media: ['meme.webp', 'two.png'], live: false }, sizeOf)).toMatchObject({ ok: false, problem: { code: 'mediaInvalid' } })
+  })
+
   test('media is checked before X is called: type, size, a video alone, at most 4 images', () => {
     const sizeOf = (p: string) => (p.includes('missing') ? null : p.includes('empty') ? 0 : p.includes('huge') ? 600 * 1024 * 1024 : p.includes('big') ? 6 * 1024 * 1024 : 1000)
     expect(mediaProblem([], sizeOf)).toBeNull()

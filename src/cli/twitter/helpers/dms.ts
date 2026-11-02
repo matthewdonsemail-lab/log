@@ -10,7 +10,7 @@ import { notificationsFresh, notificationStorePath, readNotificationStore } from
 import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const DMS_USAGE = [
-  "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--json]",
+  "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--force] [--json]",
   "Reads the account's X direct messages on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.",
   "Without --conversation it syncs the inbox the way X's own chat app does (dm-core): the first read takes the whole X Chat inbox (GetInitialXChatPageQuery, then GetInboxPageRequestQuery pages) and the old DM inbox (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and keeps them in ~/.logCli/twitter/<account>/inboxSync.json with the newest event's sequence id; every read after that asks X only for what is newer (GetMessageEventsPageQuery from that sequence id, beside one dm/inbox_initial_state), unlocks the PIN and decrypts only when something is new, opening just those conversations' keys (GetInboxPageConversationDataQuery), and keeps each event once by its id. --full reads everything again. Each read saves its conversations for log search and updates the search index in the background with only the chunks that changed. It then lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply, and lists apart the ones that opened your last message, by reacting to it or reading it without replying (read receipts, where the person keeps them on): so each is a follow-up to send, not a reply they're waiting on (--json: followUps). --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.",
   "--with <handle> reads everything with one person by their handle and nobody else: their user id, their legacy thread (dm/conversation) and their X Chat thread (read the way X's own chat app opens a chat, from its dm-core: GetInboxPageConversationDataQuery for that one conversation, then GetConversationPageQuery from the oldest message held, its fetchOlderMessages, up to 5 pages 1.5 s apart while X says there is more), merged into one timeline, oldest first, a message mirrored into both shown once. It never reads the whole inbox. A 429 stops the read with nothing retried, as X's app does (it retries only 5xx), and pauses the account's governor (rule 94). X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. " + ONE_INBOX_NOTE + " X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.",
@@ -29,6 +29,7 @@ export const DMS_INPUT: CommandInput = {
         { name: "with", kind: "string", description: "A handle, to read that person's thread without looking up its id" },
         { name: "conversation", kind: "string", description: "One conversation's id, to read its messages" },
         { name: "full", kind: "boolean", description: "Read the whole inbox again instead of only what is new since the last read" },
+        { name: "force", kind: "boolean", description: "Read past the account's governor (its pause, hourly and daily caps) for this call, only when matt asked (rule 86)" },
         JSON_FLAG,
       ],
     },
@@ -95,7 +96,7 @@ export const dmsCommand: Command = {
   effect: "read",
   input: DMS_INPUT,
   summary: "Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing",
-  args: "--account <a> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--json]",
+  args: "--account <a> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--force] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DMS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log twitter dms: ${parsed.error}\n${DMS_USAGE}` };
@@ -114,6 +115,11 @@ export const dmsCommand: Command = {
       const early = knownId ? context.twenty.loginSecrets(knownId).catch(() => null) : null;
       const opened = await openTwitterAccount(context, "twitter dms", ref);
       if (!opened.ok) return opened.result;
+      if (parsed.flags["force"] === true) {
+        const engine = opened.engine;
+        opened.engine = (spec) => engine({ ...spec, force: true });
+        context.err(`${opened.account.accountName}: reading past the governor for this call, as matt asked (rule 86)`);
+      }
       const secrets = early && knownId === opened.account.id ? await early : await context.twenty.loginSecrets(opened.account.id).catch(() => null);
       const chatPin = secrets?.messengerPin ?? undefined;
       const full = parsed.flags["full"] === true;
