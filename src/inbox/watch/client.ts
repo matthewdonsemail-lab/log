@@ -116,9 +116,14 @@ export function processAlive(pid: number): boolean {
   }
 }
 
-export function coolingDown(stateRoot: string, account: string, now: Date = new Date()): boolean {
-  const state = readJson<{ cooldown_until?: number }>(join(stateRoot, account, 'governor_state.json'), {})
-  return typeof state.cooldown_until === 'number' && state.cooldown_until * 1000 > now.getTime()
+export const GOVERNOR_DAILY_CAP = 500
+
+const localDay = (now: Date) => `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+
+export function coolingDown(stateRoot: string, account: string, now: Date = new Date(), dailyCap: number = Number(process.env.FBK_GOVERNOR_DAILY) || GOVERNOR_DAILY_CAP): boolean {
+  const state = readJson<{ cooldown_until?: number; day?: string; day_count?: number }>(join(stateRoot, account, 'governor_state.json'), {})
+  if (typeof state.cooldown_until === 'number' && state.cooldown_until * 1000 > now.getTime()) return true
+  return state.day === localDay(now) && typeof state.day_count === 'number' && state.day_count >= dailyCap
 }
 
 export function ensureLiveWatchers(platform: string, accounts: readonly string[], start: (account: string) => number | null, alive: (pid: number) => boolean = processAlive): string[] {
