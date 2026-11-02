@@ -55,7 +55,7 @@ flowchart LR
   anyB --> b_reddit
   anyB --> b_discord
   anyB --> b_linkedin
-  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, kb, new"]
+  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -91,7 +91,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `linkedin session`, `linkedin cookies`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `linkedin session`, `linkedin cookies`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -148,9 +148,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 120 command tools + saved flows"]
+  mcp["MCP server log: 124 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 66 commands (COMMANDS)"]
+  runCli["runCli: 67 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi (vendor/), the account's saved session, a governor per account"]
@@ -249,6 +249,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log voice`](#log-voice) | Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing | any (none) | `--to <handle>` `--text` `--context` `--with <person or chat>` `--json` | none | none | `voice`, `voiceAiIndex`, `voiceIndex` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 63, 64, 98, 112, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rebuild` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 30, 93, 30, 38, 39, 40, 41 |
+| [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 119, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--json` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter notifications`](#log-twitter-notifications) | Read who liked, reposted, replied to, quoted or followed an X account, new and historical, kept locally, sending nothing | `twitter` first | `--account <accountName>` `--type` `--since <date>` `--post <id|url>` `--full` `--pages <n>` `--stored` `--limit <n>` `--json` | direct API only | none | `twitterNotifications` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 73, 80, 81, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter reply`](#log-twitter-reply) | Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterReply`, `twitterReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
@@ -322,6 +323,7 @@ flowchart TB
     c_voice["voice"]
     c_search["search"]
     c_kb["kb"]
+    c_memelord["memelord"]
     c_new["new"]
   end
   subgraph g_byArgument["Platform named first"]
@@ -494,6 +496,8 @@ flowchart TB
   mcp --> c_search
   cli --> c_kb
   mcp --> c_kb
+  cli --> c_memelord
+  mcp --> c_memelord
   cli --> c_twitterFollowers
   mcp --> c_twitterFollowers
   cli --> c_twitterNotifications
@@ -1235,6 +1239,18 @@ log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, sk
 log kb remember "<text>" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)
 log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+```
+
+#### log memelord
+
+The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) MCP tools: `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, one per form, with named fields.
+
+```text
+log memelord search "<what the moment is>" [--type meme|video|sticker] [--method context|combined|media|fulltext|fuzzy] [--limit <n>] [--json]
+log memelord template <id> [--json]   (one template: its name, media url, text slots and what it means)
+log memelord trending [--limit <n>] [--media image|video] [--json]   (what is trending now, with its cultural context)
+log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--json]   (the catalog of one-shot image tools; log never runs them)
+Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 ```
 
 #### log twitter followers

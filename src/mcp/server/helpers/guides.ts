@@ -32,6 +32,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   accountsAndProxies: { about: "Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher", commands: ["facebook:accounts", "facebook:account", "any:proxy", "any:launch"], skills: [] },
   runsAndEvidence: { about: "What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself", commands: ["any:runs", "facebook:capture", "any:errors", "any:graph", "any:job", "any:mcp"], skills: ["runs", "reaCapture"] },
   knowledgeAndSearch: { about: "Finding context: the knowledge base and the conversation search, keyword and meaning at once", commands: ["any:kb", "any:search"], skills: ["knowledgeBase"] },
+  extensions: { about: "Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context", commands: ["any:memelord"], skills: ["memelord"] },
   newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
 };
 

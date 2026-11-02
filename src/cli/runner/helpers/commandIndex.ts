@@ -53,6 +53,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "voice", platform: "any", module: "src/cli/twitter/index.ts", exportName: "voiceCommand" },
   { name: "search", platform: "any", module: "src/cli/search/index.ts", exportName: "searchCommand" },
   { name: "kb", platform: "any", module: "src/cli/kb/index.ts", exportName: "kbCommand" },
+  { name: "memelord", platform: "any", module: "src/cli/memelord/index.ts", exportName: "memelordCommand" },
   { name: "followers", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "followersCommand" },
   { name: "notifications", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "notificationsCommand" },
   { name: "reply", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "replyCommand" },

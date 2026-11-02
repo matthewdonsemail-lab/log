@@ -31,6 +31,7 @@ skill in the same commit.
 | [`layout`](skills/layout/SKILL.md) | Where a new file goes: every file in a domain folder, never loose in `python/` or `scripts/` (rule 58) |
 | [`xPosting`](skills/xPosting/SKILL.md) | Set up an X account in Twenty (`log twitter cookies save`), its copy style, original posts by the social posting playbook, and replies, dms and queues with `log twitter` |
 | [`knowledgeBase`](skills/knowledgeBase/SKILL.md) | Search the knowledge base before guessing, save what a session learned, and refresh it from every source (rule 93) |
+| [`memelord`](skills/memelord/SKILL.md) | Reply in a chat with a Memelord meme that fits the moment: read, search, gate, send its media url (rule 119) |
 
 These three files stay in step:
 

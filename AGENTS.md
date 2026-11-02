@@ -1560,6 +1560,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       refused with `browserExitIpMismatch`.
     Each is in its domain's spec and checked by SubQ (`docs/specs/`).
 
+119. 2026-11-02 · matt: extensions, "things that we think are going to make
+    the experience of using social media more human", first Memelord ("we
+    will only use these": `search_memes`, `get_meme_template`,
+    `get_trending_memes`, `list_image_tools`, all free). An extension is an
+    outside service log reaches through its own command and MCP tools, never
+    by hand (rule 106), documented in its own docs area, `docs/extensions/`
+    (a tab of its own on the docs site). Memelord's client
+    (`src/extensions/memelord`) knows only those four GET endpoints of
+    `https://www.memelord.com/api/v1`, with `MEMELORD_API_KEY` as a bearer
+    token; nothing that generates, edits or runs a model has a path in log
+    (rule 41). `log memelord search|template|trending|tools` (MCP
+    `memelordSearch`, `memelordTemplate`, `memelordTrending`,
+    `memelordTools`, the `extensions` guide, the `memelord` skill) answers
+    each template with its media url. A meme goes out on Discord as that url
+    on a line of its own, which Discord shows inline: read the chat, pick the
+    moment, search, gate it with `voice`, send it by the chat's id
+    (`docs/useCases/discord/memeReply.md`). First sent 2026-11-02 to the log
+    group: Floyd Mayweather's Cash Stacks, on "how much shall i charge".
+    Spec: `docs/specs/memelord.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

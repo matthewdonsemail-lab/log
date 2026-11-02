@@ -28,6 +28,12 @@
       ]
     },
     {
+      "id": "extensions",
+      "title": "Extensions",
+      "description": "Services that make an account more human: memes, sent in context",
+      "sections": [{ "title": "Extensions", "folder": "extensions" }]
+    },
+    {
       "id": "reference",
       "title": "Reference",
       "description": "Every command, MCP tool, hook and error code",
