@@ -263,7 +263,7 @@ export interface RankedMoment {
 
 export async function rankedContext(platform: string, account: string, who: { conversationId?: string | null; handle?: string | null; userId?: string | null }, moment: string, top = RANKED_CONTEXT): Promise<RankedMoment[]> {
   const held = chatContextOf(platform, account, who);
-  const lines = held.messages.filter((m) => m.text.trim()).map((m) => ({ from: m.fromMe ? "matt" : m.senderId, text: m.text, at: m.time }));
+  const lines = held.messages.filter((m) => m.text.trim() || m.mediaLines.length).map((m) => ({ from: m.fromMe ? "matt" : m.senderId, text: [m.text, ...m.mediaLines].filter(Boolean).join(" "), at: m.time }));
   if (!lines.length || !moment.trim()) return lines.slice(-top);
   const embedder = voiceDeps.aiEmbedder();
   const [query, ...vectors] = await embedder.embed([moment, ...lines.map((l) => l.text)]);

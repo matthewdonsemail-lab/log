@@ -1905,6 +1905,29 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     names only what failed and why. Spec: `docs/specs/voiceGate.md`
     (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
 
+138. 2026-11-04 · matt: "a smaller local model" turns every piece of media
+    into "a text representation", labelled with what it is, after a message
+    went out answering only the text around a video someone sent; then "Yes,
+    both" to downloading it. One media describer per machine (`log media
+    describer`, `src/media/describer`), started by the inbox hook and locked
+    like an owner (rule 131, a second is refused), loads
+    `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the
+    transformers.js runtime log already uses) and keeps it warm. Every image,
+    meme, gif and video a watch receives goes into the .db's `media` queue
+    (`enqueueAttachments`). The describer takes one at a time, describes a
+    video from three frames (ffmpeg), labels each description with its kind,
+    stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5
+    s, and stops loudly past its memory ceiling (`describerMemory`). The
+    queue holds 20 at most: past that, an item is marked not described yet
+    and alerted (`mediaQueueFull`). Media with no description is shown as
+    `[video clip.mp4 not described yet: …]` in the inbox hook and in the
+    voice gate's ranked context, so nobody replies to it blind; a description
+    reaches both in its place. Audio stays with AssemblyAI (rule 126). A
+    file the platform engine hasn't saved locally yet is listed as not
+    described, with why. `log media describe <path>` queues one local file,
+    and `log media status` shows the queue. Spec:
+    `docs/specs/mediaDescriber.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

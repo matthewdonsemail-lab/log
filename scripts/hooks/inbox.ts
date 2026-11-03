@@ -4,7 +4,7 @@ import { platformStateRoot, twitterStateRoot } from '../../src/directApi/engine/
 import { inboxTextWithVoiceNotes } from '../../src/media/voiceNotes/index'
 import { replaceHungOwners } from '../../src/inbox/relay/index'
 import { claimContext } from '../../src/inbox/claims/index'
-import { clearDeadQueueLocks, codeStamp, coolingDown, ensureLiveWatchers, hookReaderOf, stopStaleWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startInstagramWatch, startSlackWatch, startTwitterWatch, storedInboxContext, takeAlerts, takePending, twitterAccounts } from '../../src/inbox/watch/index'
+import { clearDeadQueueLocks, codeStamp, coolingDown, ensureLiveWatchers, hookReaderOf, stopStaleWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDescriber, startDiscordWatch, startInstagramWatch, startSlackWatch, startTwitterWatch, storedInboxContext, takeAlerts, takePending, twitterAccounts } from '../../src/inbox/watch/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -35,6 +35,7 @@ ensureLiveWatchers('twitter', twitterAccounts().filter((a) => !coolingDown(twitt
 ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')).filter((a) => !coolingDown(platformStateRoot('discord'), a)), (account) => startDiscordWatch(account, repo))
 ensureLiveWatchers('slack', twitterAccounts(platformStateRoot('slack')).filter((a) => !coolingDown(platformStateRoot('slack'), a)), (account) => startSlackWatch(account, repo))
 ensureLiveWatchers('instagram', twitterAccounts(platformStateRoot('instagram')).filter((a) => !coolingDown(platformStateRoot('instagram'), a)), (account) => startInstagramWatch(account, repo))
+ensureLiveWatchers('model', ['describer'], () => startDescriber(repo))
 
 const alerts = takeAlerts(hookReaderOf(raw))
 const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 131): a second watcher tried to start and was refused. Every Claude session shares the one watcher per account through the inbox; never start another. Tell matt now.', ...alerts].join('\n') : ''

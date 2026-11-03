@@ -4,6 +4,7 @@ import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { slackCatchUp, waitCaughtUp } from "../../inbox/catchUp/index.ts";
@@ -353,7 +354,11 @@ export const slackWatchCommand: Command = {
             emit(event);
             if (event.type === "message" && event.channel && event.ts && slackToInboxOf({ ...event, fromMe: false })) recordPosition("slack", opened.account.accountName, String(event.ts), String(event.channel));
             const mine = slackToInboxOf(event);
-            if (mine) addPending([slackInboxMessageOf(opened.account.accountName, event, context.now?.() ?? new Date())]);
+            if (mine) {
+              const inbox = slackInboxMessageOf(opened.account.accountName, event, context.now?.() ?? new Date());
+              enqueueAttachments(inbox, (event.attachments as { name?: string; type?: string; path?: string }[] | undefined) ?? []);
+              addPending([inbox]);
+            }
             if (!shown(event) || (toInbox && event.type === "message" && !mine)) return;
             if (event.type === "message") seen.push(event);
             context.err(parsed.flags["json"] ? JSON.stringify(event) : slackWatchLine(event));

@@ -24,6 +24,8 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS gapsOpen ON gaps (platform, account, status)`,
   `CREATE TABLE IF NOT EXISTS embeddings (hash TEXT NOT NULL, model TEXT NOT NULL, dimensions INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'text', text TEXT NOT NULL, vector BLOB NOT NULL, createdAt TEXT NOT NULL, PRIMARY KEY (hash, model, dimensions))`,
   `CREATE TABLE IF NOT EXISTS aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt TEXT NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT NULL, describedAt TEXT, UNIQUE (eventId, name))`,
+  `CREATE INDEX IF NOT EXISTS mediaByStatus ON media (status, id)`,
 ]
 
 const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]

@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
+import { mediaLine, mediaOf } from '../../media/describer/index'
 import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, openGap, readCursor, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
@@ -50,6 +51,7 @@ export function newMessages(platform: string, account: string, threads: InboxThr
 }
 
 function messageOf(row: StoredEvent): InboxMessage {
+  const media = (mediaOf([row.eventId]).get(row.eventId) ?? []).map(mediaLine)
   const payload = (() => {
     try {
       return JSON.parse(row.payload) as Record<string, unknown>
@@ -57,7 +59,7 @@ function messageOf(row: StoredEvent): InboxMessage {
       return {}
     }
   })()
-  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: row.withWho, text: row.text, at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
+  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: row.withWho, text: [row.text, ...media].filter(Boolean).join(" "), at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
 }
 
 function migrated(): void {
@@ -324,6 +326,26 @@ export function startDiscordWatch(account: string, repo: string): number | null 
   const log = openSync(join(dir, 'watch.log'), 'a')
   try {
     const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'discord', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
+export function describerEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  const key = Object.keys(env).find((k) => k.toLowerCase() === 'path') ?? 'PATH'
+  const separator = process.platform === 'win32' ? ';' : ':'
+  const kept = String(env[key] ?? '').split(separator).filter((dir) => dir && !/msys64|mingw/i.test(dir))
+  return { ...env, [key]: kept.join(separator) }
+}
+
+export function startDescriber(repo: string): number | null {
+  const dir = join(inboxRoot(), 'model', 'describer')
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'scripts', 'media', 'describer.ts')], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: describerEnv() })
     child.unref()
     return child.pid ?? null
   } finally {

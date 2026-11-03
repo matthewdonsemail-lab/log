@@ -3,6 +3,7 @@ import { findDiscordAccount, recordDiscordSession, discordGate } from "../../dis
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
@@ -296,6 +297,7 @@ export const discordWatchCommand: Command = {
             const mine = toInboxOf(event);
             if (mine) {
               const inbox = discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+              enqueueAttachments(inbox, ((event.attachments as { filename?: string; name?: string; content_type?: string; type?: string; path?: string }[] | undefined) ?? []).map((a) => ({ name: a.filename ?? a.name, type: a.content_type ?? a.type ?? "", path: a.path ?? null })));
               const audio = (event.audio as AudioOf[] | undefined) ?? [];
               if (!audio.length) addPending([inbox]);
               else void withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: inbox.conversationId }, [{ id: String(event.id ?? ""), text: inbox.text }], () => audio, context.err).then(([m]) => addPending([{ ...inbox, text: m.text }]), () => addPending([inbox]));

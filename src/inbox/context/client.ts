@@ -1,4 +1,5 @@
 import { partiesOf } from '../claims/index'
+import { mediaLine, mediaOf } from '../../media/describer/index'
 import { chatEvents } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import type { ChatContext, ContextMessage, Who } from './types'
@@ -22,11 +23,13 @@ function isTheirs(platform: string, row: StoredEvent, payload: Record<string, un
 export function chatContextOf(platform: string, account: string, who: Who, since = ''): ChatContext {
   const messages: ContextMessage[] = []
   const activity: Record<string, unknown>[] = []
-  for (const row of chatEvents(platform, account, () => true, since)) {
+  const rows = chatEvents(platform, account, () => true, since)
+  const media = mediaOf(rows.map((r) => r.eventId))
+  for (const row of rows) {
     const payload = payloadOf(row)
     if (!isTheirs(platform, row, payload, who)) continue
     if (row.type === 'notification') activity.push(payload)
-    else messages.push({ id: row.eventId, conversationId: row.conversationId, senderId: row.type === 'ownMessage' ? 'me' : row.withWho, text: row.text, time: row.sourceAt || row.receivedAt, fromMe: row.type === 'ownMessage', source: row.source })
+    else messages.push({ id: row.eventId, conversationId: row.conversationId, senderId: row.type === 'ownMessage' ? 'me' : row.withWho, text: row.text, time: row.sourceAt || row.receivedAt, fromMe: row.type === 'ownMessage', source: row.source, mediaLines: (media.get(row.eventId) ?? []).map(mediaLine) })
   }
   return { messages, activity }
 }

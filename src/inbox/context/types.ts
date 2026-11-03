@@ -12,6 +12,7 @@ export interface ContextMessage {
   time: string
   fromMe: boolean
   source: string
+  mediaLines: string[]
 }
 
 export interface ChatContext {

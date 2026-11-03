@@ -28,6 +28,7 @@ import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
 import { inboxCommand } from "../inbox/index.ts";
+import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
 import { jobCommand } from "../job/index.ts";
 import { mcpCommand } from "../mcp/index.ts";
@@ -82,6 +83,7 @@ export const COMMANDS: Command[] = [
   captureCommand,
   runsCommand,
   inboxCommand,
+  mediaCommand,
   browsersCommand,
   jobCommand,
   mcpCommand,

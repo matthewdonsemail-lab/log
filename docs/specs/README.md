@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 34 domains, 419 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 35 domains, 424 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -532,6 +532,16 @@ Every voice note on X and Discord, sent to matt or by him, is transcribed with A
 - **REQ-TRANSCRIBE-11** Reads and the inbox transcribe as they go
 - **REQ-TRANSCRIBE-12** Audio is detected once, for every platform
 - **REQ-TRANSCRIBE-13** A new platform keeps its attachments from the start
+
+## [Media described](./mediaDescriber.md)
+
+Every image, meme, gif and video sent or received is described by one local vision model into the .db before anyone replies, and anything not described yet is shown as such. Rules 126, 131, 137 and 138.
+
+- **REQ-MEDIA-01** One describer per machine, the model loaded once
+- **REQ-MEDIA-02** It beats, and stops loudly past its memory ceiling
+- **REQ-MEDIA-03** Each description is labelled and embedded
+- **REQ-MEDIA-04** Every attachment a watch receives is queued, bounded
+- **REQ-MEDIA-05** The context shows the description, or that there is none yet
 
 ## [Instagram](./instagram.md)
 

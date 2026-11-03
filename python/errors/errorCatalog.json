@@ -867,6 +867,17 @@
     "monitor": "blocked",
     "action": "Leave the chat to the session holding it. See who holds what with `log inbox claims`, and what was done with `log inbox actions --chat <id>`. A claim held by a session that ended frees itself; one left by a live session frees itself after 10 minutes."
   },
+  "describerStopped": {
+    "layer": "account",
+    "meaning": "The media describer stopped (rule 138): it went past its memory ceiling or its vision model could not load. What is queued waits, and every context shows it as not described yet.",
+    "retryable": true,
+    "raisedIn": [
+      "media/describer"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "The next session start brings the describer back. Read its alert for why it stopped; a model that will not load usually means its files are still downloading or were cut off, and a new start fetches them again."
+  },
   "voiceGateFailed": {
     "layer": "account",
     "meaning": "The voice gate read the draft right before it went out (rule 137) and it failed one of its checks: SubQ's read of matt's voice, the AI tells index, matt's own phrasing, the watermark checker or the scrambler. Nothing was sent.",

@@ -5,6 +5,7 @@ import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { instagramCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
@@ -340,7 +341,11 @@ export const instagramWatchCommand: Command = {
           return directInstagramLive(account, { action: "watch", seconds }, (event) => {
             emit(event);
             if (event.type === "message") seen.push(event);
-            if (event.type === "message" && !event.fromMe) addPending([instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+            if (event.type === "message" && !event.fromMe) {
+              const inbox = instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+              enqueueAttachments(inbox, (event.attachments as { name?: string; type?: string; path?: string }[] | undefined) ?? []);
+              addPending([inbox]);
+            }
             if (event.type === "message" && event.fromMe && event.thread) storeRead("instagram", account.accountName, String(event.thread), "dm", { id: String(event.id ?? ""), at: String(event.at ?? ""), from: "me", fromMe: true, text: String(event.text ?? "") }, context.now?.() ?? new Date(), "live");
             if (event.type === "message" && event.at) recordPosition("instagram", account.accountName, String(event.at));
             context.err(parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event));
