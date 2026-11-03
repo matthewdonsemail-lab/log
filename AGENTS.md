@@ -1818,6 +1818,31 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `log inbox claims` lists who holds what. Spec: `docs/specs/agentHooks.md`
     (REQ-HOOKS-15).
 
+134. 2026-11-04 · matt: "Yes, go", moving the inbox's state out of loose
+    files into one SQLite database, `~/.logCli/log.db` (`LOG_DB` moves it;
+    `src/inbox/store`, WAL, every write in a `BEGIN IMMEDIATE` transaction).
+    The owner appends every event its push channel brings in to `events`
+    with a sequence number, once (`appendEvent`, by its event id), and each
+    session reads from its own cursor (`cursors`), so nothing is shown twice
+    or lost between sessions; `pending.jsonl` is imported once and no longer
+    written. An event type nobody has catalogued is stored with its raw
+    payload and raised loudly (`unknownEventType`, `eventTypes`), to be named
+    from rea, the docs and SubQ (rule one). The one owner per account
+    (rules 131, 132) is a row in `owners` (pid, hostname, heartbeat, status,
+    relay port and token, subscribers, a generation that rises with each new
+    owner), never `session.json`, and a relay subscriber that falls more
+    than 1 MB behind is dropped rather than slowing the owner. Claims (rule
+    133) are rows in `claims`, each with its chat's next generation, and a
+    send checks before every part after the first that its claim is still
+    the one held (`stillHeld`); a session whose claim was taken over stops,
+    and the rest is held. Every claim, send and release goes to `actions` in
+    the same transaction as the change it records, with what was done in
+    the chat before it (`stateBefore`), and what was done is searchable with
+    the events (`searchIndex`, FTS5). Each event's moments are timed
+    (`timings`: received, appended, relayed, claimed, actionStart,
+    confirmed, indexed). Alerts are rows in `alerts`. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-16).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

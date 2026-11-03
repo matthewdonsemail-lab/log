@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { claimChat, claimContext, claimsOn, eventIdOf, guardSend, liveClaims, readActions, releaseChat } from "./index.ts";
+import { claimChat, claimContext, claimsOn, eventIdOf, guardSend, liveClaims, readActions, releaseChat, stillHeld } from "./index.ts";
+import { appendEvent, searchStore, stagesOf } from "../store/index.ts";
 
 beforeEach(() => {
   process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "claims"));
@@ -57,5 +58,31 @@ describe("only the session that claims a chat acts on it (rule 133)", () => {
     expect(claimContext([message], new Date(), alive)).toContain("unclaimed: `inboxClaim`");
     claimChat(ref, 111, new Date(), alive);
     expect(claimContext([message], new Date(), alive)).toContain("CLAIMED by pid 111");
+  });
+
+  test("each new claim on a chat gets the next generation, and a holder whose claim was taken over is fenced out", () => {
+    const first = claimChat(ref, 111, new Date(), alive);
+    expect(first.ok && first.claim.generation).toBe(1);
+    expect(first.ok && stillHeld(first.claim)).toBe(true);
+    releaseChat(ref, 111);
+    const second = claimChat(ref, 222, new Date(), alive);
+    expect(second.ok && second.claim.generation).toBe(2);
+    expect(first.ok && stillHeld(first.claim)).toBe(false);
+    expect(readActions({ chat: ref.conversationId }).find((a) => a.kind === "claimed" && a.by === 222)?.stateBefore).toContain("released by pid 111");
+  });
+
+  test("an event is stored once with its stages, and what was done is searchable", () => {
+    const stored = appendEvent({ platform: "discord", account: "acct", conversationId: ref.conversationId, type: "message", with: "x", text: "is this ai", sourceAt: "2026-11-03T19:24:13.300Z" });
+    expect(stored).not.toBeNull();
+    expect(appendEvent({ platform: "discord", account: "acct", conversationId: ref.conversationId, type: "message", with: "x", text: "is this ai", sourceAt: "2026-11-03T19:24:13.300Z" })).toBeNull();
+    const guard = guardSend({ ...ref, eventId: stored!.eventId }, process.pid);
+    if (guard.ok) guard.done("sent", "answered the camera question");
+    expect(stagesOf(stored!.eventId).map((s) => s.stage)).toEqual(expect.arrayContaining(["received", "appended", "indexed", "claimed", "actionStart", "confirmed"]));
+    expect(searchStore("camera").map((r) => r.source)).toContain("action");
+  });
+
+  test("an event type nobody catalogued is stored and raised loudly", () => {
+    const stored = appendEvent({ platform: "slack", account: "acct", type: "reaction_added", payload: { reaction: "fire" } });
+    expect(stored?.known).toBe(false);
   });
 });

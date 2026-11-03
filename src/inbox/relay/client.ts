@@ -1,23 +1,17 @@
 import { createConnection, createServer } from 'node:net'
 import type { AddressInfo, Socket } from 'node:net'
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { hostname } from 'node:os'
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { addAlert, claimWatcher, inboxRoot, killTree, processAlive, releaseWatcher, watchHolder } from '../watch/index'
-import { HEARTBEAT_MS, STALE_MS } from './types'
+import { addAlert, claimWatcher, killTree, processAlive, releaseWatcher, watchHolder } from '../watch/index'
+import { appendEvent, db, markStage } from '../store/index'
+import { HEARTBEAT_MS, MAX_BUFFERED_BYTES, STALE_MS } from './types'
 import type { AttachResult, Relay, RelaySession, RelayStatus } from './types'
 
-export const sessionPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'session.json')
-
 export function readSession(platform: string, account: string): RelaySession | null {
-  const path = sessionPath(platform, account)
-  if (!existsSync(path)) return null
-  try {
-    return JSON.parse(readFileSync(path, 'utf8')) as RelaySession
-  } catch {
-    return null
-  }
+  const row = db().prepare('SELECT * FROM owners WHERE platform = ? AND account = ?').get(platform, account) as (Omit<RelaySession, 'lastHeartbeat'> & { heartbeat: string }) | null
+  if (!row || !row.port) return null
+  const { heartbeat, ...rest } = row
+  return { ...rest, lastHeartbeat: heartbeat, status: rest.status as RelayStatus }
 }
 
 export function sessionLive(session: RelaySession | null, now: number = Date.now(), alive: (pid: number) => boolean = processAlive): boolean {
@@ -30,11 +24,9 @@ export async function openRelay(platform: string, account: string, now: () => Da
   const startedAt = now().toISOString()
   let status: RelayStatus = 'connecting'
   let port = 0
-  const path = sessionPath(platform, account)
-  mkdirSync(join(path, '..'), { recursive: true })
+  db().prepare('INSERT OR IGNORE INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status) VALUES (?, ?, ?, ?, ?, ?, ?)').run(platform, account, process.pid, hostname(), startedAt, startedAt, status)
   const record = () => {
-    const session: RelaySession = { platform, account, pid: process.pid, hostname: hostname(), startedAt, lastHeartbeat: now().toISOString(), status, port, token, subscribers: clients.size }
-    writeFileSync(path, JSON.stringify(session, null, 2))
+    db().prepare('UPDATE owners SET heartbeat = ?, status = ?, port = ?, token = ?, subscribers = ? WHERE platform = ? AND account = ? AND pid = ?').run(now().toISOString(), status, port, token, clients.size, platform, account, process.pid)
   }
   const server = createServer((socket) => {
     let heard = ''
@@ -71,7 +63,15 @@ export async function openRelay(platform: string, account: string, now: () => Da
     port,
     broadcast: (event) => {
       const line = JSON.stringify(event) + '\n'
-      for (const client of clients) client.write(line)
+      for (const client of clients) {
+        if (client.writableLength > MAX_BUFFERED_BYTES) {
+          clients.delete(client)
+          client.destroy()
+          record()
+          continue
+        }
+        client.write(line)
+      }
     },
     setStatus: (next) => {
       if (next === status) return
@@ -83,7 +83,7 @@ export async function openRelay(platform: string, account: string, now: () => Da
       clearInterval(beat)
       for (const client of clients) client.end()
       await new Promise<void>((done) => server.close(() => done()))
-      if (readSession(platform, account)?.pid === process.pid) rmSync(path, { force: true })
+      db().prepare("UPDATE owners SET port = 0, token = '', subscribers = 0, status = 'error' WHERE platform = ? AND account = ? AND pid = ?").run(platform, account, process.pid)
     },
   }
 }
@@ -137,7 +137,10 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
   try {
     const result = await options.run((event) => {
       relay.setStatus('streaming')
-      relay.broadcast(event)
+      const type = String(event.type ?? event.kind ?? 'unknown')
+      const stored = type === 'message' ? null : appendEvent({ platform, account, conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
+      relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
+      if (stored) markStage(stored.eventId, 'relayed')
     })
     return { owner: true, result }
   } finally {
@@ -155,7 +158,7 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
     const quiet = now - Date.parse(session.lastHeartbeat)
     if (quiet < STALE_MS) continue
     kill(holder)
-    rmSync(sessionPath(platform, account), { force: true })
+    db().prepare('DELETE FROM owners WHERE platform = ? AND account = ? AND pid = ?').run(platform, account, holder)
     addAlert({ platform, account, kind: 'hungOwner', detail: `the ${platform} owner (pid ${holder}) sent no heartbeat for ${Math.round(quiet / 1000)} s, so it was stopped and the next start becomes the one owner` })
     replaced.push(account)
   }

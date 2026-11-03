@@ -1,10 +1,12 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { homedir, hostname } from 'node:os'
 import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
-import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../agentHooks/sessionOffsets/index'
+import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
+import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, latestSeq, markStage, readCursor, writeCursor } from '../store/index'
+import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -14,7 +16,7 @@ export function inboxRoot(): string {
 
 const pendingPath = () => join(inboxRoot(), 'pending.jsonl')
 const deliveredPath = () => join(inboxRoot(), 'delivered')
-const PENDING_OFFSET = 'pending'
+const SHARED_READER = 'shared'
 const planPath = () => join(inboxRoot(), 'next.json')
 const lockPath = () => join(inboxRoot(), 'poll.lock')
 const seenPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'seen.json')
@@ -47,33 +49,31 @@ export function newMessages(platform: string, account: string, threads: InboxThr
   return { messages, seen: next }
 }
 
+function messageOf(row: StoredEvent): InboxMessage {
+  const payload = (() => {
+    try {
+      return JSON.parse(row.payload) as Record<string, unknown>
+    } catch {
+      return {}
+    }
+  })()
+  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: row.withWho, text: row.text, at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
+}
+
+function migrated(): void {
+  importPendingFile(pendingPath())
+}
+
 export function addPending(messages: readonly InboxMessage[]): void {
   if (!messages.length) return
-  mkdirSync(inboxRoot(), { recursive: true })
-  appendFileSync(pendingPath(), messages.map((m) => JSON.stringify(m)).join('\n') + '\n')
+  migrated()
+  for (const m of messages) appendEvent({ platform: m.platform, account: m.account, conversationId: m.conversationId, type: 'message', with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.seenAt || m.at, eventId: eventIdOf(m) })
 }
 
 export function incomingSince(platform: string, account: string, inChat: string | ((conversationId: string) => boolean), since: string): InboxMessage[] {
   const matches = typeof inChat === 'string' ? (id: string) => id === inChat : inChat
-  if (!existsSync(pendingPath())) return []
-  const kept = new Set<string>()
-  return readFileSync(pendingPath(), 'utf8')
-    .split('\n')
-    .filter(Boolean)
-    .flatMap((l) => {
-      try {
-        return [JSON.parse(l) as InboxMessage]
-      } catch {
-        return []
-      }
-    })
-    .filter((m) => m.platform === platform && m.account === account && matches(m.conversationId) && (m.seenAt || m.at) > since)
-    .filter((m) => {
-      const key = `${m.at}|${m.text}`
-      if (kept.has(key)) return false
-      kept.add(key)
-      return true
-    })
+  const rows = db().prepare(`SELECT * FROM events WHERE platform = ? AND account = ? AND type = 'message' AND receivedAt > ? ORDER BY seq`).all(platform, account, since) as StoredEvent[]
+  return rows.filter((row) => matches(row.conversationId)).map(messageOf)
 }
 
 export function interruptedLines(account: string, heard: readonly InboxMessage[], held: readonly string[], sentCount: number, total: number): string[] {
@@ -116,26 +116,19 @@ export function hookReaderOf(raw: string): string {
 }
 
 export function takePending(reader?: string): InboxMessage[] {
-  if (reader === undefined && !existsSync(pendingPath())) return []
-  const lines = existsSync(pendingPath()) ? readFileSync(pendingPath(), 'utf8').split('\n').filter(Boolean) : []
-  let delivered: number
-  if (reader === undefined) {
-    delivered = Number(existsSync(deliveredPath()) ? readFileSync(deliveredPath(), 'utf8') : '0') || 0
-    if (lines.length <= delivered) return []
-    writeFileSync(deliveredPath(), String(lines.length))
-  } else {
-    const { offsets, firstLook } = readSessionOffsets(inboxRoot(), reader)
-    delivered = firstLook ? lines.length : offsets[PENDING_OFFSET] ?? lines.length
-    if (firstLook || lines.length !== delivered) writeSessionOffsets(inboxRoot(), reader, { ...offsets, [PENDING_OFFSET]: lines.length })
-    if (lines.length <= delivered) return []
+  migrated()
+  const key = reader ?? SHARED_READER
+  const cursor = readCursor(key)
+  const latest = latestSeq()
+  if (cursor === null && reader !== undefined) {
+    writeCursor(key, latest)
+    return []
   }
-  return lines.slice(delivered).flatMap((l) => {
-    try {
-      return [JSON.parse(l) as InboxMessage]
-    } catch {
-      return []
-    }
-  })
+  const rows = eventsAfter(cursor ?? 0, { type: 'message' })
+  if (latest !== cursor) writeCursor(key, latest)
+  const now = new Date()
+  for (const row of rows) markStage(row.eventId, 'shown', now)
+  return rows.map(messageOf)
 }
 
 export function claimPoll(now: Date = new Date(), random: () => number = Math.random): boolean {
@@ -179,62 +172,48 @@ export function coolingDown(stateRoot: string, account: string, now: Date = new 
   return state.day === localDay(now) && typeof state.day_count === 'number' && state.day_count >= dailyCap
 }
 
-const watchLockPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'watch.lock')
-const alertsPath = () => join(inboxRoot(), 'alerts.jsonl')
-const ALERTS_OFFSET = 'alerts'
+const ALERTS_READER = (reader: string) => `alerts:${reader}`
 
 export function watchHolder(platform: string, account: string, alive: (pid: number) => boolean = processAlive): number {
-  const path = watchLockPath(platform, account)
-  if (!existsSync(path)) return 0
-  const holder = Number(readFileSync(path, 'utf8').trim()) || 0
-  return holder && alive(holder) ? holder : 0
+  const row = db().prepare('SELECT pid FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number } | null
+  return row && alive(row.pid) ? row.pid : 0
 }
 
 export function addAlert(alert: { platform: string; account: string; kind: string; detail: string }, now: Date = new Date()): void {
-  mkdirSync(inboxRoot(), { recursive: true })
-  appendFileSync(alertsPath(), JSON.stringify({ ...alert, at: now.toISOString() }) + '\n')
+  addAlertRow(alert, now)
 }
 
-export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive): { ok: true } | { ok: false; holder: number } {
-  const path = watchLockPath(platform, account)
-  mkdirSync(join(path, '..'), { recursive: true })
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      writeFileSync(path, String(pid), { flag: 'wx' })
-      writeFileSync(watchPidPath(platform, account), String(pid))
-      return { ok: true }
-    } catch {
-      const holder = Number(existsSync(path) ? readFileSync(path, 'utf8').trim() : '') || 0
-      if (holder === pid) return { ok: true }
-      if (holder && alive(holder)) {
-        addAlert({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${holder} holds it; it was refused and exited, so there is still one process` })
-        return { ok: false, holder }
-      }
-      rmSync(path, { force: true })
+export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive, now: Date = new Date()): { ok: true } | { ok: false; holder: number } {
+  const claimed = immediate((handle) => {
+    const row = handle.prepare('SELECT pid, generation FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number; generation: number } | null
+    if (row && row.pid === pid) return { ok: true as const }
+    if (row && alive(row.pid)) {
+      addAlertRow({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${row.pid} owns it; it was refused and exited, so there is still one process` }, now, handle)
+      return { ok: false as const, holder: row.pid }
     }
+    const stamp = now.toISOString()
+    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation`).run(platform, account, pid, hostname(), stamp, stamp, (row?.generation ?? 0) + 1)
+    return { ok: true as const }
+  })
+  if (claimed.ok) {
+    mkdirSync(join(inboxRoot(), platform, account), { recursive: true })
+    writeFileSync(watchPidPath(platform, account), String(pid))
   }
-  return { ok: false, holder: 0 }
+  return claimed
 }
 
 export function releaseWatcher(platform: string, account: string, pid: number = process.pid): void {
-  const path = watchLockPath(platform, account)
-  if (existsSync(path) && Number(readFileSync(path, 'utf8').trim()) === pid) rmSync(path, { force: true })
+  db().prepare('DELETE FROM owners WHERE platform = ? AND account = ? AND pid = ?').run(platform, account, pid)
 }
 
 export function takeAlerts(reader: string): string[] {
-  if (!existsSync(alertsPath())) return []
-  const lines = readFileSync(alertsPath(), 'utf8').split('\n').filter(Boolean)
-  const { offsets, firstLook } = readSessionOffsets(inboxRoot(), reader)
-  const delivered = firstLook ? Math.max(0, lines.length - 5) : offsets[ALERTS_OFFSET] ?? 0
-  if (lines.length !== delivered) writeSessionOffsets(inboxRoot(), reader, { ...offsets, [ALERTS_OFFSET]: lines.length })
-  return lines.slice(delivered).flatMap((l) => {
-    try {
-      const a = JSON.parse(l) as { platform: string; account: string; kind: string; detail: string; at: string }
-      return [`!!! ${a.kind.toUpperCase()} ${a.platform} ${a.account} at ${a.at}: ${a.detail}`]
-    } catch {
-      return []
-    }
-  })
+  const key = ALERTS_READER(reader)
+  const cursor = readCursor(key)
+  const latest = (db().prepare('SELECT COALESCE(MAX(id), 0) AS id FROM alerts').get() as { id: number }).id
+  const from = cursor === null ? Math.max(0, latest - 5) : cursor
+  if (latest !== cursor) writeCursor(key, latest)
+  const rows = db().prepare('SELECT * FROM alerts WHERE id > ? ORDER BY id').all(from) as { platform: string; account: string; kind: string; detail: string; at: string }[]
+  return rows.map((a) => `!!! ${a.kind.toUpperCase()} ${a.platform} ${a.account} at ${a.at}: ${a.detail}`)
 }
 
 export function ensureLiveWatchers(platform: string, accounts: readonly string[], start: (account: string) => number | null, alive: (pid: number) => boolean = processAlive): string[] {

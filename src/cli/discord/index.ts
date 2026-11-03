@@ -475,12 +475,17 @@ export const discordSendCommand: Command = {
       const sent: PlatformAnswer[] = [];
       const startedAt = discordDeps.now();
       let interrupted: InboxMessage[] = [];
+      let fenced = false;
       try {
         for (const [i, part] of plan.parts.entries()) {
           if (i) {
             await discordDeps.wait(plan.gapSeconds * 1000);
             interrupted = discordDeps.incoming(account.accountName, target, startedAt);
             if (interrupted.length) break;
+            if (!guard.held()) {
+              fenced = true;
+              break;
+            }
           }
           const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
           sent.push(run.answer);
@@ -489,7 +494,7 @@ export const discordSendCommand: Command = {
         }
       } finally {
         const ok = sent.filter((a) => a.ok && a.event === "sent").length;
-        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
+        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
       const last = sent[sent.length - 1];
       const done = sent.filter((a) => a.ok && a.event === "sent");

@@ -434,12 +434,17 @@ export const slackSendCommand: Command = {
       const sent: PlatformAnswer[] = [];
       const startedAt = slackDeps.now();
       let interrupted: InboxMessage[] = [];
+      let fenced = false;
       try {
       for (const [i, part] of plan.parts.entries()) {
         if (i) {
           await slackDeps.wait(plan.gapSeconds * 1000);
           interrupted = slackDeps.incoming(opened.account.accountName, chat.id, startedAt);
           if (interrupted.length) break;
+          if (!guard.held()) {
+            fenced = true;
+            break;
+          }
         }
         const run = context.directSlack!(opened.account, { action: "send", chat: chat.id, lines: [part], live: true, approvedBy, ...inWorkspace(opened.workspace) });
         sent.push(run.answer);
@@ -448,7 +453,7 @@ export const slackSendCommand: Command = {
       }
       } finally {
         const ok = sent.filter((a) => a.ok).length;
-        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
+        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
       const done = sent.filter((a) => a.ok);
       const last = sent[sent.length - 1];

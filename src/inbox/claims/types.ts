@@ -7,6 +7,7 @@ export interface ChatClaim {
   with?: string
   eventId?: string
   by: number
+  generation: number
   claimedAt: string
   expiresAt: string
 }
@@ -28,6 +29,8 @@ export interface ActionRecord {
   with?: string
   eventId?: string
   by: number
+  generation?: number
+  stateBefore?: string
   detail?: string
 }
 

@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { attachRelay, openRelay, ownOrAttach, readSession, replaceHungOwners, sessionLive, sessionPath } from "./index.ts";
+import { attachRelay, openRelay, ownOrAttach, readSession, replaceHungOwners, sessionLive } from "./index.ts";
+import { db } from "../store/index.ts";
 import { takeAlerts } from "../watch/index.ts";
 
 beforeEach(() => {
@@ -27,7 +28,7 @@ describe("one owner, every subscriber attached (rule 132)", () => {
     expect(heard[0]).toMatchObject({ type: "relayJoined", subscribers: 1 });
     expect(heard[1]).toEqual({ kind: "message", text: "yo" });
     expect(result).toMatchObject({ ok: true, events: 1 });
-    expect(existsSync(sessionPath("discord", "acct"))).toBe(false);
+    expect(readSession("discord", "acct")).toBeNull();
   });
 
   test("a subscriber without the owner's token gets nothing", async () => {
@@ -41,11 +42,8 @@ describe("one owner, every subscriber attached (rule 132)", () => {
   });
 
   test("an owner whose heartbeat went quiet is stopped loudly so the next start becomes the one owner", () => {
-    const dir = join(process.env.LOG_INBOX_STATE!, "twitter", "matthewsoldit");
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "watch.lock"), "4242");
     const old = new Date(Date.now() - 120_000).toISOString();
-    writeFileSync(join(dir, "session.json"), JSON.stringify({ platform: "twitter", account: "matthewsoldit", pid: 4242, hostname: "h", startedAt: old, lastHeartbeat: old, status: "streaming", port: 1, token: "t", subscribers: 0 }));
+    db().prepare("INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, port, token, subscribers) VALUES ('twitter', 'matthewsoldit', 4242, 'h', ?, ?, 'streaming', 1, 't', 0)").run(old, old);
     expect(sessionLive(readSession("twitter", "matthewsoldit"), Date.now(), () => true)).toBe(false);
     const killed: number[] = [];
     expect(replaceHungOwners("twitter", ["matthewsoldit"], Date.now(), () => true, (pid) => killed.push(pid))).toEqual(["matthewsoldit"]);
@@ -57,9 +55,10 @@ describe("one owner, every subscriber attached (rule 132)", () => {
     const emitted: string[] = [];
     const owned = await ownOrAttach("instagram", "acct", { inbox: true, onAttached: () => {}, run: async (emit) => (emit({ type: "message" }), emitted.push("ran"), 7) });
     expect(owned).toEqual({ owner: true, result: 7 });
+    expect(db().prepare("SELECT COUNT(*) AS n FROM owners WHERE platform = 'instagram'").get()).toEqual({ n: 0 });
     expect(emitted).toEqual(["ran"]);
-    const dir = join(process.env.LOG_INBOX_STATE!, "instagram", "acct");
-    writeFileSync(join(dir, "watch.lock"), String(process.ppid));
+    const fresh = new Date().toISOString();
+    db().prepare("INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status) VALUES ('instagram', 'acct', ?, 'h', ?, ?, 'streaming')").run(process.ppid, fresh, fresh);
     const lost = await ownOrAttach("instagram", "acct", { inbox: true, onAttached: () => {}, run: async () => 0 });
     expect("refused" in lost && lost.refused).toContain(`pid ${process.ppid} already owns`);
   });

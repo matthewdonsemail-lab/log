@@ -29,3 +29,4 @@ export interface AttachResult {
 
 export const HEARTBEAT_MS = 5_000
 export const STALE_MS = 60_000
+export const MAX_BUFFERED_BYTES = 1_000_000
