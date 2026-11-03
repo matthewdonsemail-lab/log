@@ -12,7 +12,7 @@ export function commandWordOfKey(key: string, platform: string): string {
   return rest[0].toLowerCase() + rest.slice(1);
 }
 
-export const PLATFORMS = ["facebook", "twitter", "reddit", "discord", "linkedin", "slack"] as const;
+export const PLATFORMS = ["facebook", "twitter", "reddit", "discord", "linkedin", "slack", "instagram"] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
 export const PLATFORM_LABELS: Readonly<Record<Platform, string>> = {
@@ -22,6 +22,7 @@ export const PLATFORM_LABELS: Readonly<Record<Platform, string>> = {
   discord: "Discord",
   linkedin: "LinkedIn",
   slack: "Slack",
+  instagram: "Instagram",
 };
 
 export interface PlatformSite {
@@ -40,6 +41,7 @@ export const PLATFORM_SITES: Readonly<Record<Platform, PlatformSite>> = {
   discord: { twenty: "DISCORD", domain: ".discord.com", hosts: ["discord.com", "discord.gg"], home: "https://discord.com/login", proxy: "none", browser: true },
   linkedin: { twenty: "LINKEDIN", domain: ".linkedin.com", hosts: ["linkedin.com", "www.linkedin.com"], home: "https://www.linkedin.com/feed/", proxy: "none", browser: true },
   slack: { twenty: "SLACK", domain: ".slack.com", hosts: ["slack.com", "app.slack.com"], home: "https://app.slack.com/", proxy: "none", browser: true },
+  instagram: { twenty: "INSTAGRAM", domain: ".instagram.com", hosts: ["instagram.com", "www.instagram.com"], home: "https://www.instagram.com/", proxy: "none", browser: true },
 };
 
 export function platformOfAccount(account: { platform?: string | null }): Platform {

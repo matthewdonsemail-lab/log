@@ -32,7 +32,7 @@ describe("the syntax-tree edits", () => {
 
 function copyOfRepo(): string {
   const root = mkdtempSync(join(tmpdir(), "newPlatform"));
-  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/client.ts", "src/cli/runner/helpers/commandIndex.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/twenty/graphql/generated/schema.ts"]) {
+  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/client.ts", "src/cli/runner/helpers/commandIndex.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/mcp/server/helpers/guides.ts", "src/twenty/graphql/generated/schema.ts"]) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     cpSync(join(REPO, path), join(root, path));
   }

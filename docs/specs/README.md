@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 33 domains, 400 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 34 domains, 405 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -522,6 +522,16 @@ Every voice note on X and Discord, sent to matt or by him, is transcribed with A
 - **REQ-TRANSCRIBE-11** Reads and the inbox transcribe as they go
 - **REQ-TRANSCRIBE-12** Audio is detected once, for every platform
 - **REQ-TRANSCRIBE-13** A new platform keeps its attachments from the start
+
+## [Instagram](./instagram.md)
+
+What `log new platform instagram` made, and what the platform's code must keep doing as it grows. Rules 83, 117 and 123.
+
+- **REQ-INSTAGRAM-01** The account is found on its own platform's row and gated
+- **REQ-INSTAGRAM-02** The engine runs the account through the shared platform kit
+- **REQ-INSTAGRAM-03** Instagram's own answer is what gets recorded
+- **REQ-INSTAGRAM-05** The session is checked through the vendored instagrapi over curl_cffi
+- **REQ-INSTAGRAM-04** The platform is wired into the CLI and the direct-API routes
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
 

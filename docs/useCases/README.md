@@ -24,6 +24,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
 | Discord | [Replying with a meme in a Discord chat](discord/memeReply.md) | reads the chat, finds a Memelord meme that fits the moment, gates it and sends it inline |
 | Slack | [Reading and answering a Slack DM](slack/dmReply.md) | finds the chat by who it is with, reads it, drafts in matt's voice, gates it and sends it one line at a time |
+| Instagram | [Bringing a new platform up, then vendoring its client](instagram/newPlatform.md) | makes the platform, opens it in the account's browser to sign in, reads its client's calls with rea, then vendors the GitHub client that speaks them |
 
 ## The parts every use case is built from
 

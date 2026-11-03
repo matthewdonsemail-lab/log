@@ -40,6 +40,7 @@ import { redditSessionCommand } from "../reddit/index.ts";
 import { discordChatsCommand, discordDeleteCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
 import { linkedinCookiesCommand, linkedinSessionCommand } from "../linkedin/index.ts";
 import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
+import { instagramSessionCommand } from "../instagram/index.ts";
 
 export * from "./helpers/index.ts";
 export { ALIASES, createContext, defaultSendInspect, runFast, takeProxyMs } from "./client.ts";
@@ -122,6 +123,7 @@ export const COMMANDS: Command[] = [
   slackWatchCommand,
   slackSendCommand,
   slackCookiesCommand,
+  instagramSessionCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

@@ -53,7 +53,8 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   slackRead: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.history', when: 'read (a chat, paged by cursor)', seam: 'directSlack' },
   slackWatch: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'websocket', method: 'connect', when: 'watch (Slack pushes each event over wss-primary.slack.com, nothing polled)', seam: 'directSlackLive' },
   slackSend: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'chat.postMessage', when: 'send --live', seam: 'directSlack' },
-  slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' }
+  slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' },
+  instagramSession: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directInstagram' }
 }
 
 export function commandEngine(command: string): CommandEngine {

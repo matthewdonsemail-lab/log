@@ -15,6 +15,7 @@ const FILES = {
   context: "src/cli/runner/types.ts",
   routes: "src/directApi/engine/client.ts",
   rules: "src/mcp/server/helpers/agentRules.ts",
+  guides: "src/mcp/server/helpers/guides.ts",
   twentySchema: "src/twenty/graphql/generated/schema.ts",
 } as const;
 
@@ -88,6 +89,7 @@ export function planNewPlatform(root: string, options: NewPlatformOptions): Plat
     { path: FILES.context, what: `CommandContext gains ${n.seam}`, apply: (s) => addToInterface(s, "CommandContext", n.seam, `${n.seam}?: (account: ${contextType}.PlatformAccount, spec: ${contextType}.PlatformEngineSpec) => ${contextType}.PlatformEngineRun;`), landed: (s) => interfaceHasMember(s, "CommandContext", n.seam) },
     { path: FILES.routes, what: `DIRECT_ROUTES gains ${n.sessionKey}`, apply: (s) => addToObject(s, "DIRECT_ROUTES", n.sessionKey, `{ platform: '${n.name}', library: '${n.libraryText}', only: true, surface: 'account', method: 'ping', when: 'session check', seam: '${n.seam}' }`), landed: (s) => objectHasKey(s, "DIRECT_ROUTES", n.sessionKey) },
     { path: FILES.rules, what: `COMMAND_RULES gains ${n.sessionKey}`, apply: (s) => addToObject(s, "COMMAND_RULES", n.sessionKey, `[13, 63, 64, 73, ${NEW_PLATFORM_RULE}]`), landed: (s) => objectHasKey(s, "COMMAND_RULES", n.sessionKey) },
+    { path: FILES.guides, what: `GUIDE_TOPICS gains ${n.name}`, apply: (s) => addToObject(s, "GUIDE_TOPICS", n.name, `{ about: ${JSON.stringify(`A ${n.label} account's session`)}, commands: ["${n.name}:session"], skills: [] }`), landed: (s) => objectHasKey(s, "GUIDE_TOPICS", n.name) },
   ];
   const notes: string[] = [];
   const known = twentyPlatforms(root);
