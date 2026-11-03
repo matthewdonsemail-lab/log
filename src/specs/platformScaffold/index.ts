@@ -82,7 +82,7 @@ export const platformScaffold = {
     ],
   },
   rubrics: {
-    'REQ-PLATFORM-01': noul('Does planNewPlatform plan the account session client and index under src/<name>/account, the session command under src/cli/<name> with its test, python/<name>Api with its __init__.py and engine.py on the shared engine kit, and docs/platforms/<name>/README.md?'),
+    'REQ-PLATFORM-01': noul('Does planNewPlatform plan the account session client and index under src/<name>/account, the session command under src/cli/<name> with its test, python/<name>Api with its __init__.py and engine.py on the shared engine kit (its message_of keeping attachments through platformKit media), and docs/platforms/<name>/README.md?'),
     'REQ-PLATFORM-02': noul('Does planNewPlatform plan every edit to the repo through the astEdits helpers, which parse the source into a syntax tree rather than searching its text, and key the new DIRECT_ROUTES and COMMAND_RULES entries by the platform-qualified sessionKey?'),
     'REQ-PLATFORM-03': noul('Does applyPlan apply every edit in memory, throw before writing any file when any edit.landed returns false, and only then write the planned files and the edited sources?'),
     'REQ-PLATFORM-04': noul('When the apply flag is not given, does newCommand return the list of planned files, edits and notes without calling applyPlan or writing anything?'),

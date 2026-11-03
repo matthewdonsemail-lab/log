@@ -10,7 +10,7 @@ A new platform is made whole with one command, `log new platform <name>` (MCP `n
 
 ### REQ-PLATFORM-01: One command writes the platform's files
 
-`log new platform <name>` writes the platform's account session on the shared `platformKit` session, its `log <name> session check` command and its test, a direct-API engine in `python/<name>Api` on the shared Python engine kit, and `docs/platforms/<name>/README.md`.
+`log new platform <name>` writes the platform's account session on the shared `platformKit` session, its `log <name> session check` command and its test, a direct-API engine in `python/<name>Api` on the shared Python engine kit, whose message shape (`message_of`) keeps every attachment and marks audio through the shared media layer (rule 126), and `docs/platforms/<name>/README.md`.
 
 Checked by: code and SubQ
 

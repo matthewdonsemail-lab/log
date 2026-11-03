@@ -232,12 +232,12 @@ Answered:
 
 ## What it does
 
-<!-- toWrite --> What this request is for on the platform's side, from rea's reading of the code that sends it and the step it fires in.
+A GET to `pixel-config.reddit.com/pixels/config`, Reddit's ad pixel fetching its settings. It was not sent by Reddit itself: Slack's `/get-started` page carries Reddit's pixel (`script15.js`, the `nu` function rea read), and it fired in the Slack inspect run on the page load and again on a click. The answer is the pixel's event list (`pixelEventConfigs`) and its advanced matching switches (`aam.email`, `aam.phone_number`), which say whether the pixel may hash and send an email or phone typed on the page, plus `esc.page_metadata`.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which flow, inspect step or engine action waits for it, reads it, or ignores it, and why.
+Nothing waits on it. It is a third-party tracker on another platform's page, so no flow, inspect step or engine action reads it; inspect records it in the step's `exchanges.json`, names it, and SubQ sees it with the rest of the step (rule 74). It is filed under Reddit because its host is Reddit's (`PLATFORM_SITES`). What it tells us is that a sign-up form on that page can be matched to a Reddit ad audience when advanced matching is on.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and what our machine does then.
+All three calls answered 200 in 2 to 14 ms. A failed or blocked call would only stop Reddit's ad tracking on that page; the Slack page carries on, so nothing in a run depends on it.
