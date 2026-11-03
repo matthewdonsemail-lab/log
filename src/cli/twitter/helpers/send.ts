@@ -12,6 +12,7 @@ import { ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
 import type { TwitterEngineSpec } from "../../../twitter/account/session/index.ts";
 import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
 import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
+import { guardSend } from "../../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../../inbox/watch/index.ts";
 import type { SplitPlan, VoiceProfile } from "../../../voice/pairs/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
@@ -194,7 +195,18 @@ function sendCommand(shape: SendShape): Command {
         context.err(`${account.accountName}: ${shape.action === "post" ? "new post" : `${shape.action} ${plan.target}`}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
-          const { answers, last, interrupted } = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target });
+          const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
+          if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
+          let parts: Awaited<ReturnType<typeof sendDmParts>>;
+          try {
+            parts = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target });
+          } catch (error) {
+            guard.done("failed", error instanceof Error ? error.message : String(error));
+            throw error;
+          }
+          const { answers, last, interrupted } = parts;
+          const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}: ${split.parts.slice(0, okParts).join(" / ").slice(0, 300)}`);
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           const code = done === split.parts.length ? 0 : 1;
           if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, action: shape.action, target: plan.target, approvedBy: plan.spec.approvedBy, split: { parts: split.parts, gapSeconds: split.gapSeconds, why: split.why }, sent: answers, interrupted, ...last.answer }, null, 2) };

@@ -4,6 +4,8 @@ import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runn
 import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
+import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { saveConversations } from "../../search/conversations/index.ts";
 import type { Conversation } from "../../search/conversations/index.ts";
@@ -244,8 +246,17 @@ export const instagramSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ok: true, dryRun: true, with: said, plan, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log instagram send: dry run: ${account.accountName} would send to ${said}, ${plan.length} message(s):`, ...plan.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends the text as one message."].join("\n") };
       context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
-      const run = context.directInstagram(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy });
+      const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said });
+      if (!guard.ok) return refuse("instagram send", "chatClaimedElsewhere", guard.refused);
+      let run: ReturnType<NonNullable<typeof context.directInstagram>>;
+      try {
+        run = context.directInstagram(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy });
+      } catch (error) {
+        guard.done("failed", error instanceof Error ? error.message : String(error));
+        throw error;
+      }
       const sent = (run.answer.sent as { id: string; kind: string; text?: string }[] | undefined) ?? [];
+      guard.done(((run.answer.interrupted as unknown[] | undefined) ?? []).length ? "interrupted" : run.answer.ok ? "sent" : "failed", `${sent.length} of ${plan.length}: ${sent.map((s) => s.text ?? s.kind).join(" / ").slice(0, 300)}`);
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
       if (!run.answer.ok) return { code, stdout: [`log instagram send: ${account.accountName}: ${sent.length} of ${plan.length} sent, then ${run.answer.code}: ${run.answer.detail ?? ""}. What was sent stays sent; nothing is retried (rule 94).`, ...(dmsFailed(account, run.answer).stdout ?? "").split("\n").slice(1)].join("\n") };
@@ -308,13 +319,25 @@ export const instagramWatchCommand: Command = {
       if (!gate.ok) return refuse("instagram watch", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directInstagramLive) return { code: 1, stderr: "log instagram watch: the direct-API engine isn't wired in this context" };
       const toInbox = parsed.flags["inbox"] === true;
-      context.err(`${account.accountName}: opening Instagram's realtime connection through vendor/instagrapi${seconds ? `, for ${seconds} s` : ", until stopped"}${toInbox ? "; new messages from others go to the inbox hook" : ""}`);
       const seen: Record<string, unknown>[] = [];
-      const run = await context.directInstagramLive(account, { action: "watch", seconds }, (event) => {
-        if (event.type === "message") seen.push(event);
-        if (toInbox && event.type === "message" && !event.fromMe) addPending([instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
-        context.err(parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event));
+      const directInstagramLive = context.directInstagramLive;
+      const owned = await ownOrAttach("instagram", account.accountName, {
+        inbox: toInbox,
+        seconds,
+        onAttached: (event) => context.err(event.type === "relayJoined" ? `${account.accountName}: attached to the one Instagram realtime connection already open (${String(event.subscribers)} subscriber(s)), nothing new opened` : parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event)),
+        run: (emit) => {
+          context.err(`${account.accountName}: the one owner of Instagram's realtime connection through vendor/instagrapi${seconds ? `, for ${seconds} s` : ", until stopped"}; new messages from others go to the inbox and every event to every attached subscriber`);
+          return directInstagramLive(account, { action: "watch", seconds }, (event) => {
+            emit(event);
+            if (event.type === "message") seen.push(event);
+            if (event.type === "message" && !event.fromMe) addPending([instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+            context.err(parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event));
+          });
+        },
       });
+      if ("refused" in owned) return refuse("instagram watch", "watcherAlreadyRunning", owned.refused);
+      if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log instagram watch: ${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
+      const run = owned.result;
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ...run.answer, messages: seen }, null, 2) };
       if (!run.answer.ok) return dmsFailed(account, run.answer);

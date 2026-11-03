@@ -179,6 +179,64 @@ export function coolingDown(stateRoot: string, account: string, now: Date = new 
   return state.day === localDay(now) && typeof state.day_count === 'number' && state.day_count >= dailyCap
 }
 
+const watchLockPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'watch.lock')
+const alertsPath = () => join(inboxRoot(), 'alerts.jsonl')
+const ALERTS_OFFSET = 'alerts'
+
+export function watchHolder(platform: string, account: string, alive: (pid: number) => boolean = processAlive): number {
+  const path = watchLockPath(platform, account)
+  if (!existsSync(path)) return 0
+  const holder = Number(readFileSync(path, 'utf8').trim()) || 0
+  return holder && alive(holder) ? holder : 0
+}
+
+export function addAlert(alert: { platform: string; account: string; kind: string; detail: string }, now: Date = new Date()): void {
+  mkdirSync(inboxRoot(), { recursive: true })
+  appendFileSync(alertsPath(), JSON.stringify({ ...alert, at: now.toISOString() }) + '\n')
+}
+
+export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive): { ok: true } | { ok: false; holder: number } {
+  const path = watchLockPath(platform, account)
+  mkdirSync(join(path, '..'), { recursive: true })
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      writeFileSync(path, String(pid), { flag: 'wx' })
+      writeFileSync(watchPidPath(platform, account), String(pid))
+      return { ok: true }
+    } catch {
+      const holder = Number(existsSync(path) ? readFileSync(path, 'utf8').trim() : '') || 0
+      if (holder === pid) return { ok: true }
+      if (holder && alive(holder)) {
+        addAlert({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${holder} holds it; it was refused and exited, so there is still one process` })
+        return { ok: false, holder }
+      }
+      rmSync(path, { force: true })
+    }
+  }
+  return { ok: false, holder: 0 }
+}
+
+export function releaseWatcher(platform: string, account: string, pid: number = process.pid): void {
+  const path = watchLockPath(platform, account)
+  if (existsSync(path) && Number(readFileSync(path, 'utf8').trim()) === pid) rmSync(path, { force: true })
+}
+
+export function takeAlerts(reader: string): string[] {
+  if (!existsSync(alertsPath())) return []
+  const lines = readFileSync(alertsPath(), 'utf8').split('\n').filter(Boolean)
+  const { offsets, firstLook } = readSessionOffsets(inboxRoot(), reader)
+  const delivered = firstLook ? Math.max(0, lines.length - 5) : offsets[ALERTS_OFFSET] ?? 0
+  if (lines.length !== delivered) writeSessionOffsets(inboxRoot(), reader, { ...offsets, [ALERTS_OFFSET]: lines.length })
+  return lines.slice(delivered).flatMap((l) => {
+    try {
+      const a = JSON.parse(l) as { platform: string; account: string; kind: string; detail: string; at: string }
+      return [`!!! ${a.kind.toUpperCase()} ${a.platform} ${a.account} at ${a.at}: ${a.detail}`]
+    } catch {
+      return []
+    }
+  })
+}
+
 export function ensureLiveWatchers(platform: string, accounts: readonly string[], start: (account: string) => number | null, alive: (pid: number) => boolean = processAlive): string[] {
   if (process.env.LOG_INBOX_POLL === 'off') return []
   const started: string[] = []
@@ -186,6 +244,11 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
     const path = watchPidPath(platform, account)
     const pid = Number(existsSync(path) ? readFileSync(path, 'utf8').trim() : '') || 0
     if (pid && alive(pid)) continue
+    const holder = watchHolder(platform, account, alive)
+    if (holder) {
+      writeJson(path, holder)
+      continue
+    }
     if (watcherGone(platform, account)) continue
     const child = start(account)
     if (!child) continue
@@ -240,6 +303,8 @@ export function stopStaleWatchers(platform: string, accounts: readonly string[],
     const pid = Number(readFileSync(path, 'utf8').trim()) || 0
     if (!pid || !alive(pid) || statSync(path).mtimeMs >= stamp) continue
     kill(pid)
+    const holder = watchHolder(platform, account, alive)
+    if (holder && holder !== pid) kill(holder)
     rmSync(path, { force: true })
     stopped.push(account)
   }

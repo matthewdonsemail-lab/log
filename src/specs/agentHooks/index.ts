@@ -9,6 +9,8 @@ const CHECK = 'scripts/checks/checkAgentHooks.ts'
 const STATES = 'src/browser/flow/helpers/pageState.ts'
 const INBOX_HOOK = 'scripts/hooks/inbox.ts'
 const INBOX_WATCH = 'src/inbox/watch/client.ts'
+const INBOX_RELAY = 'src/inbox/relay/client.ts'
+const INBOX_CLAIMS = 'src/inbox/claims/client.ts'
 
 export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
@@ -23,6 +25,15 @@ export const agentHooks = {
     'scripts/checks/checkAgentHooks.ts',
     'scripts/hooks/inbox.ts',
     'src/inbox/watch/client.ts',
+    'src/inbox/relay/client.ts',
+    'src/inbox/claims/client.ts',
+    'src/cli/inbox/index.ts',
+    'src/cli/twitter/helpers/send.ts',
+    'src/cli/twitter/helpers/queue.ts',
+    'src/cli/discord/index.ts',
+    'src/cli/slack/index.ts',
+    'src/cli/instagram/index.ts',
+    'src/cli/twitter/helpers/chat.ts',
   ],
   anchors: {
     'REQ-HOOKS-12': [
@@ -33,6 +44,31 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_WATCH, name: 'startSlackWatch' },
       { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
       { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
+    ],
+    'REQ-HOOKS-15': [
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'claimChat' },
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'releaseChat' },
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'guardSend' },
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'eventIdOf' },
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'claimContext' },
+      { kind: 'symbol', file: INBOX_CLAIMS, name: 'recordAction' },
+      { kind: 'string', file: INBOX_CLAIMS, includes: 'actions.jsonl' },
+    ],
+    'REQ-HOOKS-14': [
+      { kind: 'symbol', file: INBOX_RELAY, name: 'ownOrAttach' },
+      { kind: 'symbol', file: INBOX_RELAY, name: 'openRelay' },
+      { kind: 'symbol', file: INBOX_RELAY, name: 'attachRelay' },
+      { kind: 'symbol', file: INBOX_RELAY, name: 'sessionLive' },
+      { kind: 'symbol', file: INBOX_RELAY, name: 'replaceHungOwners' },
+      { kind: 'string', file: INBOX_RELAY, includes: 'session.json' },
+    ],
+    'REQ-HOOKS-13': [
+      { kind: 'symbol', file: INBOX_WATCH, name: 'claimWatcher' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'releaseWatcher' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'watchHolder' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'takeAlerts' },
+      { kind: 'string', file: INBOX_WATCH, includes: 'watch.lock' },
+      { kind: 'string', file: INBOX_HOOK, includes: 'ONE PROCESS PER ACCOUNT' },
     ],
     'REQ-HOOKS-01': [
       { kind: 'symbol', file: REGISTRY, name: 'AGENT_HOOKS' },
@@ -82,6 +118,9 @@ export const agentHooks = {
     'REQ-HOOKS-10': noul('Does checkAgentHooks add a problem for every MCP tool of a LONG_RUNNING command whose description does not point at the live log?'),
     'REQ-HOOKS-11': noul('Does checkAgentHooks add a problem for a PAGE_STATES state with no RESOLVE_CALLS entry, a RESOLVE_CALLS key that is not a page state, a resolver whose sample call names a tool that is not an MCP tool, and a state whose resolve text names a log command that is not in COMMANDS?'),
     'REQ-HOOKS-12': noul('Does the inbox hook script, on every event, call stopStaleWatchers and then ensureLiveWatchers for twitter, discord and slack accounts, leaving out accounts for which coolingDown is true, so that startTwitterWatch, startDiscordWatch and startSlackWatch run the account watch with --inbox, and does it put the messages from takePending into the agent context through inboxContext?'),
+    'REQ-HOOKS-15': noul('Does claimChat create one exclusive claim file per chat for the calling process, refuse another live process holding the same chat (an X chat matched by the person id or the pair), renew its own and take over a claim whose process ended or whose expiresAt passed; does guardSend claim the chat before each discord, slack, twitter dm, queue dm and instagram send and release it as sent, interrupted or failed; does every claim, renewal, refusal, send and release go to actions.jsonl through recordAction; and does the inbox hook put claimContext, each pushed message with its eventIdOf id and its claim state, in front of the agent?'),
+    'REQ-HOOKS-14': noul('Does ownOrAttach make the watch that wins claimWatcher the one owner, opening a relay with openRelay that records session.json (pid, hostname, startedAt, a lastHeartbeat refreshed every HEARTBEAT_MS, status, port, token, subscribers) and broadcasting every event to every subscriber that sent the token, while a watch that loses attaches through attachRelay to a live owner session or, when it is an inbox watch, is refused; and does replaceHungOwners stop an owner whose heartbeat is older than STALE_MS and write a hungOwner alert? Do the twitter chat, discord, slack and instagram watch commands all go through ownOrAttach?'),
+    'REQ-HOOKS-13': noul('Does claimWatcher create watch.lock exclusively with the watcher pid, refuse a second watcher while the lock holder is alive by writing a duplicateWatcher alert, and take over a dead holder lock; does ensureLiveWatchers skip starting a watcher while watchHolder finds a live holder; does stopStaleWatchers also stop a live lock holder; and does the inbox hook put takeAlerts lines first in the agent context under ONE PROCESS PER ACCOUNT?'),
     unspecifiedBehavior: noul('Does the hook code hold the turn on a state only a person can clear, let a log run piped through tail or head through, or let the check pass drift between the hooks, the CLI and the MCP tools by a route the specification does not describe?'),
   },
   assertions: {
@@ -97,6 +136,9 @@ export const agentHooks = {
     'REQ-HOOKS-10': MET,
     'REQ-HOOKS-11': MET,
     'REQ-HOOKS-12': MET,
+    'REQ-HOOKS-13': MET,
+    'REQ-HOOKS-14': MET,
+    'REQ-HOOKS-15': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

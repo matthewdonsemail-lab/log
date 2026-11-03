@@ -2,6 +2,7 @@ import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
 import { addPending } from "../../../inbox/watch/index.ts";
+import { ownOrAttach } from "../../../inbox/relay/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
@@ -142,12 +143,23 @@ async function watchChat(context: CommandContext, argv: string[]): Promise<Comma
   const toInbox = parsed.flags["inbox"] === true;
   const json = parsed.flags["json"] === true;
   const events: XChatLiveEvent[] = [];
-  context.err(`${account.accountName}: watching X Chat over X's own socket (wss://chat-ws.x.com)${chatPin ? ", opened with the saved PIN" : ", no PIN saved so messages stay encrypted"}${toInbox ? ", new messages go to the inbox hook" : ""}`);
-  const run = await live(account, { action: "xchatWatch", ...(seconds ? { seconds } : {}), ...(chatPin ? { chatPin } : {}) }, (event) => {
-    events.push(event);
-    context.err(liveLine(event));
-    if (toInbox && isChatMessage(event) && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+  const owned = await ownOrAttach("twitter", account.accountName, {
+    inbox: toInbox,
+    seconds,
+    onAttached: (event) => context.err(event.type === "relayJoined" ? `@${account.accountName}: attached to the one X Chat connection already open (${String(event.subscribers)} subscriber(s)), nothing new opened` : liveLine(event as unknown as XChatLiveEvent)),
+    run: (emit) => {
+      context.err(`${account.accountName}: the one owner of X Chat's socket (wss://chat-ws.x.com)${chatPin ? ", opened with the saved PIN" : ", no PIN saved so messages stay encrypted"}; new messages go to the inbox and to every attached subscriber`);
+      return live(account, { action: "xchatWatch", ...(seconds ? { seconds } : {}), ...(chatPin ? { chatPin } : {}) }, (event) => {
+        events.push(event);
+        context.err(liveLine(event));
+        emit(event as unknown as Record<string, unknown>);
+        if (isChatMessage(event) && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+      });
+    },
   });
+  if ("refused" in owned) return refuse("twitter chat watch", "watcherAlreadyRunning", owned.refused);
+  if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log twitter chat watch: @${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
+  const run = owned.result;
   for (const line of await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
   const messages = events.filter(isChatMessage);
   if (json) return { code: run.answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, ...run.answer, events: messages }, null, 2) };

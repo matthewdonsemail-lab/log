@@ -856,6 +856,28 @@
     "monitor": "blocked",
     "action": "Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again. On X, find the other log twitter call still running on the account (a watch or a stuck run), let it end, then call again."
   },
+  "chatClaimedElsewhere": {
+    "layer": "account",
+    "meaning": "Another Claude session has claimed this chat (rule 133): only the session that claims an event acts on it, and the claim is released once its send is done. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "inbox/claims"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Leave the chat to the session holding it. See who holds what with `log inbox claims`, and what was done with `log inbox actions --chat <id>`. A claim held by a session that ended frees itself; one left by a live session frees itself after 10 minutes."
+  },
+  "watcherAlreadyRunning": {
+    "layer": "account",
+    "meaning": "Another watcher process already holds this account's push channel on this platform (rule 131): one process per account, shared by every Claude session through the inbox. This one stopped before opening anything.",
+    "retryable": false,
+    "raisedIn": [
+      "inbox/watch"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Don't start another. Read what the running watcher pushes from ~/.logCli/inbox/pending.jsonl (the inbox hook puts it in front of you), or keep a Monitor on that file."
+  },
   "launchTooSoon": {
     "layer": "account",
     "meaning": "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",

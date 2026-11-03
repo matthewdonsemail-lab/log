@@ -27,6 +27,7 @@ import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
+import { inboxCommand } from "../inbox/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
 import { jobCommand } from "../job/index.ts";
 import { mcpCommand } from "../mcp/index.ts";
@@ -80,6 +81,7 @@ export const COMMANDS: Command[] = [
   graphCommand,
   captureCommand,
   runsCommand,
+  inboxCommand,
   browsersCommand,
   jobCommand,
   mcpCommand,

@@ -85,3 +85,21 @@ Checked by: code and SubQ
 On every event the inbox hook starts the live watcher for each account of every watched platform, if it isn't already running: X's X Chat watch, Discord's gateway watch and Slack's websocket watch (every workspace the account's d cookie is signed in to), each through the account's one session. It stops a watcher that runs older code than the checkout and skips an account whose governor is cooling off. Each message a watcher pushes is put into the agent's context with what to do. A platform without a watcher isn't done yet (rule 123: Reddit and LinkedIn next).
 
 Checked by: code and SubQ
+
+### REQ-HOOKS-13: One watcher process per account, never two
+
+Every platform has one watcher process per account, shared by every Claude session through the inbox. A watcher takes the account's `watch.lock` (created exclusively with its pid) before it opens anything; a second one is refused (`watcherAlreadyRunning`) and exits, and its refusal is written as an alert that the inbox hook puts first in the agent's context (`>>> ONE PROCESS PER ACCOUNT, NEVER TWO`). A dead holder's lock is taken over and only the holder releases it. The hook never starts a watcher while a live one holds the lock, and the stale-code cleanup stops the lock holder too. Rule 131.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-14: One owner per account, every other watch attaches to its relay
+
+On every platform the watch that takes the account's lock is its one owner: it holds the platform's push connection, writes the inbox, and records `session.json` (pid, hostname, started, a heartbeat every 5 s, status, its local relay's port and token, and how many are attached). Every event goes to every subscriber attached to the relay with the token. A later watch attaches to a live owner and streams the same events without opening anything; an inbox watch that loses is refused. An owner whose heartbeat is quiet for 60 s is stopped with a `hungOwner` alert, and the next start becomes the owner. The X Chat, Discord, Slack and Instagram watches all work this way. Rule 132.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-15: Only the session that claims a chat acts on it
+
+Every pushed message has an event id, and the inbox hook shows each one beside who holds its chat. A session claims a chat before drafting (`log inbox claim`, 10 minutes, renewed by claiming again), and another live session is refused (`chatClaimedElsewhere`). Every send on Discord, Slack, X (direct and the queue's dms) and Instagram claims the chat first and releases it once it is sent, interrupted or failed. An X chat is one chat by the person's id or the X Chat pair. A claim whose session ended or whose time passed frees itself. Every claim, renewal, refusal, send, interruption, failure and release is written to the action log, read with `log inbox actions`. Rule 133.
+
+Checked by: code and SubQ

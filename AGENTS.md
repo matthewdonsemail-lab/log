@@ -1754,6 +1754,70 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `~/.logCli/inbox/pending.jsonl` so each push wakes it. Spec:
     `docs/specs/messageSplit.md` (REQ-SPLIT-08).
 
+131. 2026-11-04 · matt: "WE NEED TO LOUDLY ALERT THAT THIS CANNOT HAPPEN
+    ... WE CAN ONLY HAVE ONE PROCESS PER ACTUAL THING". On 2026-11-04 every
+    watcher was running two or three times (X Chat for both X accounts,
+    Discord and Slack): each new Claude session's hook started them again,
+    the cleanup only killed the pid in `watch.pid`, which the new one had
+    overwritten, and the doubled X watchers polled X's badge counts in
+    bunches until X answered 429 on both accounts. One watcher process per
+    account per platform, always, and every Claude session subscribes to it
+    through the inbox (`pending.jsonl`), never by starting its own. Each
+    watcher takes `watch.lock` (exclusive create, its pid) before it opens
+    anything (`claimWatcher`, `src/inbox/watch`); a second one is refused
+    with `watcherAlreadyRunning` and exits, and the refusal goes to
+    `~/.logCli/inbox/alerts.jsonl`, which the inbox hook puts first in the
+    agent's context (`>>> ONE PROCESS PER ACCOUNT, NEVER TWO`) to be told to
+    matt. A dead holder's lock is taken over, only the holder releases it,
+    the hook never starts a watcher while a live one holds the lock, and the
+    stale-code cleanup stops the holder as well as the pid file's process.
+    Tests run the Instagram engine inline (`LOG_INSTAGRAM_HOST=inline` in the
+    preload) so they never leave a real session host behind. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-13).
+
+132. 2026-11-04 · matt: "this is what I expect to happen with all
+    platforms": a singleton primary with an exclusive lock and a
+    multi-subscriber relay. On every platform (X Chat, Discord, Slack,
+    Instagram) the first watch to take an account's `watch.lock` is its one
+    owner (`ownOrAttach`, `src/inbox/relay`): it opens the platform's push
+    connection, writes `session.json` (pid, hostname, started, a heartbeat
+    every 5 s, status connecting, streaming, reconnecting or error, its relay
+    port and token, and how many are attached), writes the inbox
+    (`pending.jsonl`) as its only writer, and sends every event to every
+    attached subscriber over its local relay (127.0.0.1, the token first).
+    `log <platform> watch` is the attach command: when an owner is live, a
+    watch attaches to its relay and streams the same events without opening
+    anything, so the hooks, a Monitor, Codex or another agent all see one
+    stream; an inbox watch (`--inbox`) that loses is refused loudly (rule
+    131). An owner whose heartbeat is quiet for 60 s is stopped and alerted
+    (`>>> ONE PROCESS PER ACCOUNT`, `hungOwner`), and the next start becomes
+    the owner; when the owner closes, its session file goes with it.
+    Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-14).
+
+133. 2026-11-04 · matt, to deepman: "whenever the agent wants to perform
+    an action based on the streamed event information, it must first claim
+    the relevant event ... only the session that successfully claims an
+    event should be allowed to perform the corresponding action. Once the
+    action has been executed through the state machine, the lock is
+    released ... every time an action is executed, the system should also
+    index and persist the associated information". Every message a push
+    channel brings in has an event id (`eventIdOf`, shown in the hook's
+    `>>> CLAIM BEFORE YOU ACT` beside who holds its chat). A session claims
+    a chat before it drafts (`log inbox claim`, MCP `inboxClaim`, 10 minutes,
+    renewed by claiming again; `claimChat`, `src/inbox/claims`, an exclusive
+    claim file per chat, the session being its MCP server's process), and a
+    second session is refused (`chatClaimedElsewhere`). Every send (`log
+    discord send`, `log slack send`, `log twitter dm`, the queue's dms, `log
+    instagram send`) claims the chat itself first (`guardSend`) and releases
+    it once it is sent, interrupted or failed, so two sessions never answer
+    the same chat. An X chat is one chat whether it is named by the person's
+    id or the X Chat pair. A claim held by a session that ended, or past its
+    time, frees itself. Every claim, renewal, refusal, send, interruption,
+    failure and release is written to `~/.logCli/inbox/actions.jsonl`, read
+    with `log inbox actions --chat <id>` (MCP `inboxActions`) before acting;
+    `log inbox claims` lists who holds what. Spec: `docs/specs/agentHooks.md`
+    (REQ-HOOKS-15).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

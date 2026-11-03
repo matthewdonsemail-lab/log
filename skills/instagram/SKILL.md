@@ -18,14 +18,16 @@ vendor/instagrapi), never in the account's AdsPower browser (rule 128).
    session host (`python/instagramApi/host.py`): one client signed in once, one
    realtime connection. Never start a second process for it. A call that can't
    reach the host is refused with `instagramSessionHostDown` (rule 129).
-3. **Read them first.** Read the person's whole thread before drafting
+3. **Claim the chat before drafting** with `inboxClaim` (rule 133); a chat
+   another session holds is left to it, and the send releases the claim.
+4. **Read them first.** Read the person's whole thread before drafting
    (`instagramDms` { with }), rule 109.
-4. **Gate every draft** with `voice` { to, with, context, text } until it passes.
-5. **Send once, and stop if they write.** A multi-line draft goes out one
+5. **Gate every draft** with `voice` { to, with, context, text } until it passes.
+6. **Send once, and stop if they write.** A multi-line draft goes out one
    message per line, and the send stops the moment they write back
    (`>>> INTERRUPTED`): answer them, never resend (rules 90, 130). Any refusal
    stops the run (rule 94).
-6. **Live needs matt.** `instagramSendLive` needs `approvedBy` and
+7. **Live needs matt.** `instagramSendLive` needs `approvedBy` and
    `confirmLive: true` (rule 8).
 
 ## The routine

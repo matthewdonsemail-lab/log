@@ -23,6 +23,10 @@ When the owner asks for one of these, follow its page step by step.
 
 | Tool | What it does |
 |---|---|
+| `inboxClaim` | Claim a chat for this session before drafting or sending in it, so no… |
+| `inboxRelease` | Release this session's claim on a chat when it is done with it |
+| `inboxClaims` | Every live claim |
+| `inboxActions` | The log of every claim, refusal, send and release, oldest first, to… |
 | `twitterDms` | Read an X account's direct messages, newest conversations first… |
 
 ## The work, step by step: xchatReplies
@@ -40,7 +44,12 @@ replies show up the second they land and no inbox read ever hits X's 429.
 1. **Never poll the inbox to find replies.** The inbox hook keeps
    `log twitter chat watch --inbox` running per signed-in X account. Read a
    thread only to answer it.
-2. **Read everything with the person first:** `log twitter dms --account
+2. **Claim the chat before drafting** (rule 133): `log inbox claim --platform
+   twitter --account <a> --chat <conversation id> --event <event id>` (MCP
+   `inboxClaim`), and read `log inbox actions --chat <id>` to see what was
+   already done there. Another session holding it means leave it; the send
+   releases the claim.
+3. **Read everything with the person first:** `log twitter dms --account
    <a> --with <handle>` (the old DM thread and X Chat are one conversation,
    rule 88).
 3. **Draft from matt's guide, with his facts only.** Read
@@ -79,6 +88,46 @@ log twitter dm --account matthewsoldit --userId <id> --text "<draft>" --approved
   `docs/platforms/x/xchat/live.md`.
 
 ## Every tool, in full
+
+### `inboxClaim`
+
+Claim a chat for this session before drafting or sending in it, so no other session acts on it.
+Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat
+log inbox claim --platform <twitter|discord|slack|instagram> --account <a> --chat <conversationId|handle> [--event <eventId>] [--json]
+Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xInbox" }) (Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live).
+AGENTS.md (log://agents): rules 94, 105, 108, 109, 130, 131, 132, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `inboxRelease`
+
+Release this session's claim on a chat when it is done with it.
+Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat
+log inbox release --platform <p> --account <a> --chat <conversationId|handle> [--json]
+Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xInbox" }) (Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live).
+AGENTS.md (log://agents): rules 94, 105, 108, 109, 130, 131, 132, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `inboxClaims`
+
+Every live claim: which session holds which chat, and until when.
+Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat
+log inbox claims [--json]
+Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xInbox" }) (Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live).
+AGENTS.md (log://agents): rules 94, 105, 108, 109, 130, 131, 132, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `inboxActions`
+
+The log of every claim, refusal, send and release, oldest first, to see what was already done in a chat.
+Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat
+log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId|handle>] [--limit <n>] [--json]
+Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xInbox" }) (Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live).
+AGENTS.md (log://agents): rules 94, 105, 108, 109, 130, 131, 132, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterDms`
 
@@ -138,3 +187,11 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 113.** 2026-11-02 · matt: "what is hitting the session ... call the rea bundle checker for the exact actions and outline it and then force it to then be part of the MCP guides so we can then stop doing this handrolling". On 2026-11-02 matthewsoldit had 30 X session starts and 67 X Chat socket reconnects in an evening, then X's 226 on a reply: the stale-watcher cleanup (rule 108) restarted the X Chat watcher on every code edit, and each restart reopened X's chat socket, fetched the keys again and paged the inbox, and during a governor cool-off the watcher was started again on every hook. Now the watcher is restarted only when the engine's own code changes (`python/`, `vendor/twikit`), never while the account's governor is cooling off (`coolingDown`, `src/inbox/watch`), and a call to a session that is restarting waits for the new one (`connect_host`). What X's own signed-in client does is read with rea from its own scripts, never guessed: `log twitter session webClient --account <a>` (MCP `twitterSessionWebClient`) loads x.com/home through the account's one session, as twikit already does to sign its calls, and saves the page and its scripts for rea. What it shows about a reply is written in `docs/platforms/x/compose.md` and the xPosting skill, and the engine sends what X's client sends. Read on 2026-11-02: twikit called 22 of X's operations by old ids (CreateTweet `SiM_cAu…` where X's client sends `l4hk8uVG…`) with the wrong feature switches (21 where X sends 39). Now `webClient` writes X's live operation table and switch values to `~/.logCli/twitter/xOperations.json`, every session loads it, and each GraphQL call takes X's live id and exactly X's switches with X's values (`live_call`). A closing session drops its open connections and exits at once, so an open X Chat watch can't hold it half-closed.
 
 **Rule 126.** 2026-11-03 · matt: every voice note he was sent or sent, transcribed with AssemblyAI, and "inside of the discord layer we have that and then the social media platforms at large, how can we detect when we have audio". Audio is detected once, in the shared message layer (`python/platformKit/media.py`, `src/platformKit/media`), never per platform: a content type of `audio/*` or `video/ogg`, an extension (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag (Discord's voice-message flag 8192 with its duration and waveform, X Chat's audio media, Slack's `slack_audio` file). Every platform's messages keep their attachments, and an audio one adds `(audio: <name>)` to the text. Whatever is audio goes through one AssemblyAI path (`log transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its file's hash in `~/.logCli/transcripts`, written into the conversation store as `(voice note: "<what was said>")` so search, voice and SubQ see it, and done as they come in `discordRead`, `twitterDms`, `slackRead` and the inbox. Files come only through the platform's own engine and session (X's one session, Discord's sound search, Slack's own transport), and any refusal stops the run (rule 94). The key is `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`, `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed. `log new platform` writes the attachments into a new platform's message shape, and `check:platforms` refuses an engine whose messages drop them. Spec: `docs/specs/voiceNotes.md`.
+
+**Rule 130.** 2026-11-04 · matt: "we need to make it so we have a monitor on there that will then listen for the new info coming over via the websocket, because look, he responded halfway through ... he just asked something, it breaks the flow". On 2026-11-03 Abel wrote "is this ai" on Discord while an 8-line send was going out, and lines 6 to 8 went on top of his question. A message sent one line at a time stops the moment they write: before each line after the first, the send reads what the platform's push channel put in the inbox for that chat since the send began (`incomingSince`, `src/inbox/watch`, from `pending.jsonl`), and if they wrote, the rest is held and the answer leads with `>>> INTERRUPTED`: what they said and the lines not sent (`interruptedLines`). It holds for `log discord send`, `log slack send`, `log twitter dm` (old DMs and X Chat), the queue's dms and `log instagram send` (in its engine). What was sent stays sent, nothing is resent, and they are answered first (rule 109). An agent following a conversation keeps a Monitor on `~/.logCli/inbox/pending.jsonl` so each push wakes it. Spec: `docs/specs/messageSplit.md` (REQ-SPLIT-08).
+
+**Rule 131.** 2026-11-04 · matt: "WE NEED TO LOUDLY ALERT THAT THIS CANNOT HAPPEN ... WE CAN ONLY HAVE ONE PROCESS PER ACTUAL THING". On 2026-11-04 every watcher was running two or three times (X Chat for both X accounts, Discord and Slack): each new Claude session's hook started them again, the cleanup only killed the pid in `watch.pid`, which the new one had overwritten, and the doubled X watchers polled X's badge counts in bunches until X answered 429 on both accounts. One watcher process per account per platform, always, and every Claude session subscribes to it through the inbox (`pending.jsonl`), never by starting its own. Each watcher takes `watch.lock` (exclusive create, its pid) before it opens anything (`claimWatcher`, `src/inbox/watch`); a second one is refused with `watcherAlreadyRunning` and exits, and the refusal goes to `~/.logCli/inbox/alerts.jsonl`, which the inbox hook puts first in the agent's context (`>>> ONE PROCESS PER ACCOUNT, NEVER TWO`) to be told to matt. A dead holder's lock is taken over, only the holder releases it, the hook never starts a watcher while a live one holds the lock, and the stale-code cleanup stops the holder as well as the pid file's process. Tests run the Instagram engine inline (`LOG_INSTAGRAM_HOST=inline` in the preload) so they never leave a real session host behind. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-13).
+
+**Rule 132.** 2026-11-04 · matt: "this is what I expect to happen with all platforms": a singleton primary with an exclusive lock and a multi-subscriber relay. On every platform (X Chat, Discord, Slack, Instagram) the first watch to take an account's `watch.lock` is its one owner (`ownOrAttach`, `src/inbox/relay`): it opens the platform's push connection, writes `session.json` (pid, hostname, started, a heartbeat every 5 s, status connecting, streaming, reconnecting or error, its relay port and token, and how many are attached), writes the inbox (`pending.jsonl`) as its only writer, and sends every event to every attached subscriber over its local relay (127.0.0.1, the token first). `log <platform> watch` is the attach command: when an owner is live, a watch attaches to its relay and streams the same events without opening anything, so the hooks, a Monitor, Codex or another agent all see one stream; an inbox watch (`--inbox`) that loses is refused loudly (rule 131). An owner whose heartbeat is quiet for 60 s is stopped and alerted (`>>> ONE PROCESS PER ACCOUNT`, `hungOwner`), and the next start becomes the owner; when the owner closes, its session file goes with it. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-14).
+
+**Rule 133.** 2026-11-04 · matt, to deepman: "whenever the agent wants to perform an action based on the streamed event information, it must first claim the relevant event ... only the session that successfully claims an event should be allowed to perform the corresponding action. Once the action has been executed through the state machine, the lock is released ... every time an action is executed, the system should also index and persist the associated information". Every message a push channel brings in has an event id (`eventIdOf`, shown in the hook's `>>> CLAIM BEFORE YOU ACT` beside who holds its chat). A session claims a chat before it drafts (`log inbox claim`, MCP `inboxClaim`, 10 minutes, renewed by claiming again; `claimChat`, `src/inbox/claims`, an exclusive claim file per chat, the session being its MCP server's process), and a second session is refused (`chatClaimedElsewhere`). Every send (`log discord send`, `log slack send`, `log twitter dm`, the queue's dms, `log instagram send`) claims the chat itself first (`guardSend`) and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. An X chat is one chat whether it is named by the person's id or the X Chat pair. A claim held by a session that ended, or past its time, frees itself. Every claim, renewal, refusal, send, interruption, failure and release is written to `~/.logCli/inbox/actions.jsonl`, read with `log inbox actions --chat <id>` (MCP `inboxActions`) before acting; `log inbox claims` lists who holds what. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-15).

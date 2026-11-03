@@ -15,6 +15,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_inbox["inbox"]
     c_browsers["browsers"]
     c_job["job"]
     c_mcp["mcp"]
@@ -186,6 +187,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_inbox
+  mcp --> c_inbox
   cli --> c_browsers
   mcp --> c_browsers
   cli --> c_job

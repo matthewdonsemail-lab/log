@@ -3,6 +3,7 @@ import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } 
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
 import { dmInterruptedLines, dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
+import { guardSend } from "../../../inbox/claims/index.ts";
 import {
   addToQueue,
   approvalProblem,
@@ -263,7 +264,18 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (kind === "like" || item.action !== "dm" || !plan.spec.text || !item.userId) return (await opened.engine(spec)).answer;
           const split = dmSplit(plan.spec.text, item.userId, false);
           if (split.parts.length > 1) log(`#${item.n} dm ${splitLine(split)}`);
-          const { answers, last, interrupted } = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
+          const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
+          if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+          let parts: Awaited<ReturnType<typeof sendDmParts>>;
+          try {
+            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
+          } catch (error) {
+            guard.done("failed", error instanceof Error ? error.message : String(error));
+            throw error;
+          }
+          const { answers, last, interrupted } = parts;
+          const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}`);
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           if (interrupted.length) {
             for (const line of dmInterruptedLines(opened.account.accountName, split, done, interrupted)) log(`#${item.n} @${item.handle ?? "?"}: ${line}`);
