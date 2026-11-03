@@ -163,7 +163,7 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
-const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit')]
+const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit'), join('vendor', 'instagrapi', 'instagrapi')]
 const CODE_FILE = /\.(ts|py)$/
 const stampPath = () => join(inboxRoot(), 'codeStamp.json')
 
@@ -266,6 +266,19 @@ export function startSlackWatch(account: string, repo: string): number | null {
   }
 }
 
+export function startInstagramWatch(account: string, repo: string): number | null {
+  const dir = join(inboxRoot(), 'instagram', account)
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'instagram', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
 export function localTime(iso: string): string {
   const at = new Date(iso)
   if (Number.isNaN(at.getTime())) return iso
@@ -303,12 +316,26 @@ function slackContext(messages: readonly InboxMessage[]): string {
   ].join('\n')
 }
 
+function instagramContext(messages: readonly InboxMessage[]): string {
+  const lines = messages.map((m) => `  @${m.with} on instagram ${m.account} at ${localTime(m.at)}: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (thread ${m.conversationId})`)
+  const { account } = messages[0]
+  return [
+    `>>> NEW INSTAGRAM MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Instagram's realtime connection the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one (never through the browser):`,
+    `  1. Read the thread around it: \`instagramDms\` { account: "${account}", with: "<handle or thread>", limit: "20" }.`,
+    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<who>", context: "<what they said>" } (no text). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
+    '  3. Gate it: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
+    `  4. ${SEND_RULE} (\`instagramSendLive\` { account: "${account}", with: "<handle or thread>", text: "<draft>", approvedBy: "matt", confirmLive: true }; a meme or picture goes as photo: "<file>").`,
+    ...lines,
+  ].join('\n')
+}
+
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
   const discord = messages.filter((m) => m.platform === 'discord')
   const slack = messages.filter((m) => m.platform === 'slack')
-  const rest = messages.filter((m) => m.platform !== 'discord' && m.platform !== 'slack')
-  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : []), ...(slack.length ? [slackContext(slack)] : [])]
+  const instagram = messages.filter((m) => m.platform === 'instagram')
+  const rest = messages.filter((m) => m.platform !== 'discord' && m.platform !== 'slack' && m.platform !== 'instagram')
+  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : []), ...(slack.length ? [slackContext(slack)] : []), ...(instagram.length ? [instagramContext(instagram)] : [])]
   return parts.join('\n\n')
 }
 

@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { findPlatformAccount, platformGate, recordPlatformSession, runPlatformEngine } from '../../../platformKit/session/index'
+import { findPlatformAccount, platformGate, recordPlatformSession, runPlatformEngine, runPlatformEngineLive } from '../../../platformKit/session/index'
 import type { PlatformAccount, PlatformEngineRun, PlatformEngineSpec, PlatformGate, PlatformShape } from '../../../platformKit/session/index'
 import type { TwentyClient } from '../../../twenty/graphql/index'
 
@@ -23,6 +23,10 @@ export function instagramGate(account: PlatformAccount): PlatformGate {
 
 export function runInstagramEngine(account: PlatformAccount, spec: PlatformEngineSpec): PlatformEngineRun {
   return runPlatformEngine(INSTAGRAM_PLATFORM, account, spec)
+}
+
+export function runInstagramEngineLive(account: PlatformAccount, spec: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void): Promise<PlatformEngineRun> {
+  return runPlatformEngineLive(INSTAGRAM_PLATFORM, account, spec, onLive)
 }
 
 export function recordInstagramSession(twenty: TwentyClient, account: PlatformAccount, run: PlatformEngineRun, now: Date): Promise<string[]> {

@@ -2,7 +2,7 @@
 import { join } from 'node:path'
 import { platformStateRoot, twitterStateRoot } from '../../src/directApi/engine/index'
 import { inboxTextWithVoiceNotes } from '../../src/media/voiceNotes/index'
-import { clearDeadQueueLocks, codeStamp, coolingDown, ensureLiveWatchers, hookReaderOf, stopStaleWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startSlackWatch, startTwitterWatch, storedInboxContext, takePending, twitterAccounts } from '../../src/inbox/watch/index'
+import { clearDeadQueueLocks, codeStamp, coolingDown, ensureLiveWatchers, hookReaderOf, stopStaleWatchers, inboxContext, inboxReaders, pollReaders, releasePoll, startDiscordWatch, startInstagramWatch, startSlackWatch, startTwitterWatch, storedInboxContext, takePending, twitterAccounts } from '../../src/inbox/watch/index'
 
 const repo = join(import.meta.dir, '..', '..')
 
@@ -25,10 +25,12 @@ const stamp = codeStamp(repo)
 stopStaleWatchers('twitter', twitterAccounts(), stamp)
 stopStaleWatchers('discord', twitterAccounts(platformStateRoot('discord')), stamp)
 stopStaleWatchers('slack', twitterAccounts(platformStateRoot('slack')), stamp)
+stopStaleWatchers('instagram', twitterAccounts(platformStateRoot('instagram')), stamp)
 clearDeadQueueLocks()
 ensureLiveWatchers('twitter', twitterAccounts().filter((a) => !coolingDown(twitterStateRoot(), a)), (account) => startTwitterWatch(account, repo))
 ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')).filter((a) => !coolingDown(platformStateRoot('discord'), a)), (account) => startDiscordWatch(account, repo))
 ensureLiveWatchers('slack', twitterAccounts(platformStateRoot('slack')).filter((a) => !coolingDown(platformStateRoot('slack'), a)), (account) => startSlackWatch(account, repo))
+ensureLiveWatchers('instagram', twitterAccounts(platformStateRoot('instagram')).filter((a) => !coolingDown(platformStateRoot('instagram'), a)), (account) => startInstagramWatch(account, repo))
 
 const pushed = inboxContext(takePending(hookReaderOf(raw)).map((m) => ({ ...m, text: inboxTextWithVoiceNotes(m) })))
 const stored = event === 'SessionStart' ? storedInboxContext(twitterAccounts()) : null

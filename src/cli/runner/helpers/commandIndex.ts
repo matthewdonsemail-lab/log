@@ -84,4 +84,6 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "cookies", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackCookiesCommand" },
   { name: "session", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramSessionCommand" },
   { name: "dms", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramDmsCommand" },
+  { name: "send", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramSendCommand" },
+  { name: "watch", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramWatchCommand" },
 ]

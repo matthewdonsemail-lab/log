@@ -100,6 +100,8 @@ flowchart TB
   subgraph g_instagram["Instagram"]
     c_instagramSession["session"]
     c_instagramDms["dms"]
+    c_instagramSend["send"]
+    c_instagramWatch["watch"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -279,6 +281,11 @@ flowchart TB
   mcp --> c_instagramSession
   cli --> c_instagramDms
   mcp --> c_instagramDms
+  cli --> c_instagramSend
+  mcp --> c_instagramSend
+  cli --> c_instagramWatch
+  mcp --> c_instagramWatch
+  c_instagramWatch --> live
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

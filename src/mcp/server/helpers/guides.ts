@@ -35,7 +35,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   knowledgeAndSearch: { about: "Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it", commands: ["any:kb", "any:search", "any:transcribe"], skills: ["knowledgeBase"] },
   extensions: { about: "Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context", commands: ["any:memelord"], skills: ["memelord"] },
   newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
-  instagram: { about: "An Instagram account: its session, and reading its DMs (the inbox, or one thread)", commands: ["instagram:session", "instagram:dms"], skills: [] },
+  instagram: { about: "An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch", commands: ["instagram:session", "instagram:dms", "instagram:send", "instagram:watch"], skills: [] },
 };
 
 export const guideKey = (command: Pick<Command, "platform" | "name">): string => `${command.platform}:${command.name}`;

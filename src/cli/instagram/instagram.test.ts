@@ -7,6 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { INSTAGRAM_PLATFORM } from "../../instagram/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
+import { inboxContext, takePending } from "../../inbox/watch/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -101,5 +102,73 @@ describe("log instagram dms", () => {
     const engine = spawnSync(process.env.LOG_PYTHON || "python", [INSTAGRAM_PLATFORM.engine, spec], { encoding: "utf8" });
     if (engine.error) return;
     expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "threadNeeded" });
+  });
+});
+
+describe("log instagram send", () => {
+  test("without --live it is a dry run that calls nothing", async () => {
+    const r = await run(["instagram", "send", "--account", "instagramOne", "--with", "someone", "--text", "yo\nwhats good", "--photo", "meme.jpg"]);
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual([]);
+    expect(r.out).toContain("dry run");
+    expect(r.out).toContain("1. (photo) meme.jpg");
+    expect(r.out).toContain("3. whats good");
+  });
+
+  test("--live needs --approvedBy before anything is sent", async () => {
+    const r = await run(["instagram", "send", "--account", "instagramOne", "--with", "someone", "--text", "yo", "--live"]);
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("notApproved");
+    expect(r.calls).toEqual([]);
+  });
+
+  test("--live sends through the engine and reports each message's id", async () => {
+    const r = await run(["instagram", "send", "--account", "instagramOne", "--with", "someone", "--text", "yo", "--photo", "meme.jpg", "--live", "--approvedBy", "matt"], { answer: { ok: true, loginState: "loggedIn", sent: [{ id: "p1", kind: "photo" }, { id: "t1", kind: "text", text: "yo" }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["instagramOne:send"]);
+    expect(r.out).toContain("sent 2 message(s)");
+    expect(r.out).toContain("yo · t1");
+  });
+});
+
+describe("log instagram watch", () => {
+  test("new messages from others go to the inbox, the account's own don't", async () => {
+    process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "inbox"));
+    const lines: string[] = [];
+    const code = await runCli(["instagram", "watch", "--account", "instagramOne", "--seconds", "5", "--inbox"], {
+      twenty: fixture(),
+      out: () => {},
+      err: (l) => lines.push(l),
+      directInstagramLive: async (_account, spec, onLive) => {
+        expect(spec.action).toBe("watch");
+        onLive({ type: "watching", host: "edge-mqtt.facebook.com" });
+        onLive({ type: "message", thread: "111", title: "someone", from: "someone", fromMe: false, text: "yo", at: "2026-11-04T00:00:00Z" });
+        onLive({ type: "message", thread: "111", title: "someone", from: "me", fromMe: true, text: "hey", at: "2026-11-04T00:00:01Z" });
+        return { answer: { ok: true, loginState: "loggedIn", watchedSeconds: 5 }, refreshed: null };
+      },
+    });
+    const pending = takePending();
+    expect(code).toBe(0);
+    expect(lines.join("\n")).toContain("@someone: yo");
+    expect(pending).toHaveLength(1);
+    expect(pending[0]).toMatchObject({ platform: "instagram", account: "instagramOne", conversationId: "111", with: "someone", text: "yo" });
+  });
+
+  test("the inbox hook tells the agent to answer on Instagram through the MCP, never the browser", () => {
+    const text = inboxContext([{ platform: "instagram", account: "instagramOne", conversationId: "111", with: "someone", text: "yo", at: "2026-11-04T00:00:00Z", box: "dm", seenAt: "2026-11-04T00:00:01Z" }])!;
+    expect(text).toContain("NEW INSTAGRAM MESSAGE");
+    expect(text).toContain("never through the browser");
+    expect(text).toContain("`instagramSendLive` { account: \"instagramOne\"");
+  });
+
+  test("the engine refuses a send with nothing in it, before it calls Instagram", () => {
+    const dir = mkdtempSync(join(tmpdir(), "instagramEngine"));
+    const cookiesPath = join(dir, "cookies.json");
+    writeFileSync(cookiesPath, JSON.stringify({ sessionid: "x".repeat(40) }));
+    const spec = join(dir, "spec.json");
+    writeFileSync(spec, JSON.stringify({ action: "send", with: "someone", live: true, approvedBy: "matt", account: "instagramOne", platform: "instagram", stateRoot: join(dir, "state"), cookiesPath }));
+    const engine = spawnSync(process.env.LOG_PYTHON || "python", [INSTAGRAM_PLATFORM.engine, spec], { encoding: "utf8" });
+    if (engine.error) return;
+    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "nothingToSend" });
   });
 });

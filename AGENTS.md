@@ -1702,6 +1702,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     needs a local model (Ollama or vLLM), which this machine doesn't have,
     so it isn't wired. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-07, 08).
 
+128. 2026-11-04 · matt: "you're not meant to open up the browser", after a
+    meme went to someone on Instagram through the account's AdsPower browser.
+    Instagram is worked through the direct-API engine on vendor/instagrapi,
+    over the MCP, and the browser is never used for an Instagram action:
+    `log instagram dms` reads the threads or one thread, `log instagram send`
+    sends text and photos (a meme goes as `--photo`, a dry run unless `--live`
+    with `--approvedBy`), and `log instagram watch` holds Instagram's own
+    realtime connection (MQTT to edge-mqtt.facebook.com, the DM sync
+    subscribed), which the inbox hook starts for every signed-in Instagram
+    account so each new DM reaches the agent (`>>> NEW INSTAGRAM MESSAGE`,
+    rule 123). An action the engine doesn't have yet is built on it, never
+    done in the browser. Every HTTP call goes through curl_cffi: instagrapi's
+    private and public transports are both set to curl (`curl-adapter` for
+    the public one), and `check:instagramTransport` (pre-commit and pre-push)
+    refuses anything else; the realtime MQTT socket isn't HTTP and is the one
+    exception. Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-05 to 08).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

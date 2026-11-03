@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import socket
 import sys
+import time
+from datetime import timezone
 from pathlib import Path
 from typing import Any
 
@@ -16,10 +20,12 @@ from platformKit import media
 
 PLATFORM = "instagram"
 LIBRARY = "vendor/instagrapi"
-WRITES: tuple[str, ...] = ()
+WRITES: tuple[str, ...] = ("send",)
 SESSION_COOKIES = ("sessionid",)
 TRANSPORT = "curl"
 INBOX_SEARCH = 100
+PING_EVERY = 60
+SHARES = ("media", "raven_media", "visual_media", "animated_media", "reel_share", "story_share", "felix_share", "link", "generic_xma", "xma_story_share", "xma_profile")
 
 
 def message_of(message_id: str, at: str | None, sender: str | None, from_me: bool, text: str | None, attachments: list[dict[str, Any]]) -> dict[str, Any]:
@@ -30,7 +36,7 @@ def client_of() -> Any:
     from instagrapi import Client
 
     client = Client()
-    client.set_retry_config(private_transport=TRANSPORT, public_request_retries_count=0)
+    client.set_retry_config(private_transport=TRANSPORT, public_transport=TRANSPORT, public_request_retries_count=0)
     return client
 
 
@@ -76,7 +82,7 @@ def missing_session(cookies: dict[str, str]) -> dict[str, Any] | None:
 
 
 def iso(value: Any) -> str | None:
-    return value.strftime("%Y-%m-%dT%H:%M:%SZ") if value else None
+    return value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ") if value else None
 
 
 def owner_of(shared: Any) -> str | None:
@@ -88,10 +94,13 @@ def attachments_of(m: Any) -> list[dict[str, Any]]:
     kind = str(m.item_type or "")
     if kind == "voice_media":
         return [{"name": f"voice_{m.id}.m4a", "type": "audio/mp4", "kind": kind}]
-    if kind in ("clip", "media_share", "xma_clip", "xma_media_share"):
+    if kind in ("clip", "media_share"):
         shared = m.clip or m.media_share
         return [{"name": kind, "type": "share", "kind": kind, "owner": owner_of(shared), "code": getattr(shared, "code", None)}]
-    if kind in ("media", "raven_media", "visual_media", "animated_media", "reel_share", "story_share", "felix_share", "link", "generic_xma", "xma_story_share", "xma_profile"):
+    if kind in ("xma_clip", "xma_media_share"):
+        shared = m.xma_share
+        return [{"name": kind, "type": "share", "kind": kind, "owner": getattr(shared, "header_title_text", None) or None}]
+    if kind in SHARES:
         return [{"name": kind, "type": "share", "kind": kind}]
     return []
 
@@ -188,7 +197,169 @@ async def thread(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     return missing_session(cookies) or await asyncio.to_thread(thread_sync, cookies, said, limit)
 
 
-ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread}
+def recipients_of(client: Any, said: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    found = match_threads(client.direct_threads(amount=INBOX_SEARCH, thread_message_limit=1), said)
+    if len(found) == 1:
+        return {"thread_ids": [int(found[0].id)]}, {"id": found[0].id, "title": found[0].thread_title, "with": [u.username for u in found[0].users]}
+    if len(found) > 1:
+        raise LookupError(json.dumps({"code": "threadAmbiguous", "detail": f"{said} matches {len(found)} threads: give one's id", "candidates": [{"id": t.id, "title": t.thread_title, "with": [u.username for u in t.users]} for t in found]}))
+    handle = said.strip().lstrip("@")
+    if handle.isdigit():
+        raise LookupError(json.dumps({"code": "threadNotFound", "detail": f"no thread in the latest {INBOX_SEARCH} has the id {said}"}))
+    return {"user_ids": [int(client.user_id_from_username(handle))]}, {"id": None, "title": handle, "with": [handle]}
+
+
+def lines_of(text: str, as_one: bool) -> list[str]:
+    if as_one:
+        return [text.strip()] if text.strip() else []
+    return [line.strip() for line in text.split("\n") if line.strip()]
+
+
+def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one: bool) -> dict[str, Any]:
+    client, answer = signed_in(cookies)
+    if not client:
+        return answer
+    try:
+        to, recipient = recipients_of(client, said)
+    except LookupError as error:
+        return {"ok": False, **json.loads(str(error))}
+    except Exception as error:
+        refusal = refused(error)
+        if refusal:
+            return refusal
+        return {"ok": False, "code": "recipientNotFound", "detail": f"Instagram has no user {said}"}
+    lines = lines_of(text, as_one)
+    sent: list[dict[str, Any]] = []
+    try:
+        if photo:
+            message = client.direct_send_photo(Path(photo), **to)
+            sent.append({"id": str(message.id), "kind": "photo", "thread": str(message.thread_id or "")})
+            to = {"thread_ids": [int(message.thread_id)]} if message.thread_id else to
+        for index, line in enumerate(lines):
+            if index or photo:
+                time.sleep(1.5)
+            message = client.direct_send(line, **to)
+            sent.append({"id": str(message.id), "kind": "text", "text": line, "thread": str(message.thread_id or "")})
+            to = {"thread_ids": [int(message.thread_id)]} if message.thread_id else to
+    except Exception as error:
+        out = refused(error) or {"ok": False, "code": type(error).__name__, "detail": str(error)[:300]}
+        return {**out, "sent": sent}
+    return {**answer, "to": recipient, "sent": sent}
+
+
+def live(event: dict[str, Any]) -> None:
+    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+
+
+def item_of(value: Any) -> dict[str, Any] | None:
+    if not isinstance(value, dict):
+        return None
+    if "item_id" in value or "item_type" in value:
+        return value
+    for key in ("item", "message"):
+        if isinstance(value.get(key), dict):
+            return item_of(value[key])
+    return None
+
+
+def message_event(wrapper: dict[str, Any], me: str, names: dict[str, str], titles: dict[str, str]) -> dict[str, Any] | None:
+    if str(wrapper.get("op") or "") not in ("add", "replace") or "/items/" not in str(wrapper.get("path") or ""):
+        return None
+    item = item_of(wrapper)
+    if not item or not item.get("item_id"):
+        return None
+    item_id = str(item["item_id"])
+    user = str(item.get("user_id") or "")
+    kind = str(item.get("item_type") or "")
+    attachments = [{"name": f"voice_{item_id}.m4a", "type": "audio/mp4"}] if kind == "voice_media" else []
+    text = media.text_with_audio(item.get("text"), attachments) or ("" if kind == "text" else f"({kind})")
+    stamp = int(item.get("timestamp") or 0)
+    thread_id = str(wrapper.get("thread_id") or "")
+    return {
+        "type": "message",
+        "thread": thread_id,
+        "title": titles.get(thread_id),
+        "itemId": item_id,
+        "userId": user,
+        "from": "me" if user == me else names.get(user, user),
+        "fromMe": user == me,
+        "kind": kind,
+        "text": text,
+        "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(stamp / 1_000_000)) if stamp else None,
+    }
+
+
+def watch_sync(cookies: dict[str, str], seconds: int) -> dict[str, Any]:
+    client, answer = signed_in(cookies)
+    if not client:
+        return answer
+    me = str(answer["userId"])
+    threads = client.direct_threads(amount=INBOX_SEARCH, thread_message_limit=1)
+    names = {str(u.pk): u.username or str(u.pk) for t in threads for u in t.users}
+    titles = {str(t.id): t.thread_title for t in threads}
+    seen: set[str] = set()
+    counts = {"message": 0}
+
+    def on_message(payload: Any) -> None:
+        wrapper = payload.get("message") if isinstance(payload, dict) else None
+        event = message_event(wrapper, me, names, titles) if isinstance(wrapper, dict) else None
+        if not event or event["itemId"] in seen:
+            return
+        seen.add(event["itemId"])
+        counts["message"] += 1
+        live(event)
+
+    try:
+        client.realtime_on("message", on_message)
+        realtime = client.realtime_connect()
+        realtime.direct_subscribe(amount=1)
+    except Exception as error:
+        refusal = refused(error)
+        if refusal:
+            return refusal
+        return {"ok": False, "code": "realtimeRefused", "detail": f"Instagram's realtime (edge-mqtt.facebook.com) didn't take this session: {str(error)[:200]}", "loginState": "unknown", "event": "dropped"}
+    live({"type": "watching", "host": "edge-mqtt.facebook.com", "seconds": seconds, "threads": len(threads)})
+    started = time.monotonic()
+    pinged = started
+    try:
+        while not seconds or time.monotonic() - started < seconds:
+            try:
+                client.realtime_read_once()
+            except (socket.timeout, TimeoutError):
+                pass
+            if time.monotonic() - pinged >= PING_EVERY:
+                client.realtime_ping()
+                pinged = time.monotonic()
+    except (ConnectionError, OSError) as error:
+        return {"ok": False, "code": "realtimeDropped", "detail": f"Instagram closed the realtime connection: {str(error)[:200]}", "loginState": "unknown", "counts": counts, "event": "dropped"}
+    finally:
+        try:
+            client.realtime_disconnect()
+        except Exception:
+            pass
+    return {**answer, "watchedSeconds": seconds, "counts": counts}
+
+
+async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    said = str(spec.get("with") or "").strip()
+    text = str(spec.get("text") or "")
+    photo = str(spec.get("photo") or "").strip()
+    if not said:
+        return {"ok": False, "code": "threadNeeded", "detail": "give who it goes to: their handle, a thread's name, or its id"}
+    if not text.strip() and not photo:
+        return {"ok": False, "code": "nothingToSend", "detail": "give the text, a photo, or both"}
+    if photo and not Path(photo).is_file():
+        return {"ok": False, "code": "photoMissing", "detail": f"no file at {photo}"}
+    return missing_session(cookies) or await asyncio.to_thread(send_sync, cookies, said, text, photo, bool(spec.get("asOne")))
+
+
+async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    seconds = int(spec.get("seconds") or 0)
+    seconds = 0 if seconds <= 0 else max(5, min(seconds, 86400))
+    return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds)
+
+
+ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "watch": watch}
 
 
 if __name__ == "__main__":

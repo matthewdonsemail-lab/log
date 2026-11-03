@@ -14,7 +14,7 @@ import type { CommandIndexEntry } from "./helpers/commandIndex.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { runLinkedinEngine } from "../../linkedin/account/session/index.ts";
 import { runSlackEngine, runSlackEngineLive } from "../../slack/account/session/index.ts";
-import { runInstagramEngine } from "../../instagram/account/session/index.ts";
+import { runInstagramEngine, runInstagramEngineLive } from "../../instagram/account/session/index.ts";
 
 export const ALIASES: Record<string, string> = {
   firefoxCapture: "capture",
@@ -51,6 +51,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     directSlack: overrides.directSlack ?? runSlackEngine,
     directSlackLive: overrides.directSlackLive ?? runSlackEngineLive,
     directInstagram: overrides.directInstagram ?? runInstagramEngine,
+    directInstagramLive: overrides.directInstagramLive ?? runInstagramEngineLive,
   };
 }
 

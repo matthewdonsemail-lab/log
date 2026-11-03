@@ -2,6 +2,8 @@ import { findInstagramAccount, recordInstagramSession, instagramGate } from "../
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
+import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
+import { addPending } from "../../inbox/watch/index.ts";
 
 export const INSTAGRAM_SESSION_USAGE = [
   "Usage: log instagram session check --account <accountName> [--json]",
@@ -153,6 +155,145 @@ export const instagramDmsCommand: Command = {
       };
     } catch (error) {
       return refuseError("instagram dms", error);
+    }
+  },
+};
+
+export const INSTAGRAM_SEND_USAGE = [
+  'Usage: log instagram send --account <accountName> --with <handle|thread name|thread id> [--text "<message>"] [--photo <file>] [--asOne] [--approvedBy <who>] [--live] [--json]',
+  "Sends to an Instagram DM on the direct-API engine (vendor/instagrapi, no browser): --with is matched to one thread by handle, name or id, or to a new DM with that handle. --photo sends a picture first (direct_send_photo), then the text one message per line (rule 90), --asOne as one message.",
+  "Without --live it is a dry run and Instagram is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Instagram's answer decides: each message comes back with its id, anything else stops the run with nothing retried (rule 94). The copy is read for what AI chat interfaces leave in text first (rule 111).",
+].join("\n");
+
+export const INSTAGRAM_SEND_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Send text and a photo to an Instagram DM; a dry run unless --live",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
+        { name: "with", kind: "string", required: true, description: "Who it goes to: their handle, a thread's name, or its id" },
+        { name: "text", kind: "string", description: "The message, as matt gave it; one message per line" },
+        { name: "photo", kind: "string", description: "A picture to send first (a meme, a screenshot): the file's path" },
+        { name: "asOne", kind: "boolean", description: "Send the text as one message, never split" },
+        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
+export const instagramSendCommand: Command = {
+  usage: INSTAGRAM_SEND_USAGE,
+  platform: "instagram",
+  name: "send",
+  effect: "write",
+  input: INSTAGRAM_SEND_INPUT,
+  summary: "Send text and a photo to an Instagram DM, on the direct-API engine; a dry run unless --live",
+  args: '--account <a> --with <handle|id> [--text "<message>"] [--photo <file>] [--asOne] [--approvedBy <who>] [--live] [--json]',
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_SEND_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log instagram send: ${parsed.error}\n${INSTAGRAM_SEND_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, stderr: `log instagram send: takes no words, only flags\n${INSTAGRAM_SEND_USAGE}` };
+    const said = String(parsed.flags["with"]).trim();
+    const text = typeof parsed.flags["text"] === "string" ? parsed.flags["text"] : "";
+    const photo = typeof parsed.flags["photo"] === "string" ? parsed.flags["photo"].trim() : "";
+    const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
+    const asOne = parsed.flags["asOne"] === true;
+    const live = parsed.flags["live"] === true;
+    if (!said) return { code: 1, stderr: `log instagram send: --with can't be empty\n${INSTAGRAM_SEND_USAGE}` };
+    if (!text.trim() && !photo) return { code: 1, stderr: `log instagram send: give --text, --photo or both\n${INSTAGRAM_SEND_USAGE}` };
+    if (live && !approvedBy) return refuse("instagram send", "notApproved", "--live needs --approvedBy <who> (rule 8)");
+    const watermark = watermarkReadingOf(text);
+    if (text && watermark.level === "artifacts") return refuse("instagram send", "aiArtifacts", `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
+    const lines = asOne ? (text.trim() ? [text.trim()] : []) : text.split("\n").map((l) => l.trim()).filter(Boolean);
+    const plan = [...(photo ? [`(photo) ${photo}`] : []), ...lines];
+    try {
+      const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
+      const gate = instagramGate(account);
+      if (!gate.ok) return refuse("instagram send", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
+      if (!context.directInstagram) return { code: 1, stderr: "log instagram send: the direct-API engine isn't wired in this context" };
+      if (text) context.err(`${account.accountName}: ${watermarkLine(watermark)}`);
+      if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ok: true, dryRun: true, with: said, plan, watermark }, null, 2) };
+      if (!live) return { code: 0, stdout: [`log instagram send: dry run: ${account.accountName} would send to ${said}, ${plan.length} message(s):`, ...plan.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends the text as one message."].join("\n") };
+      context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
+      const run = context.directInstagram(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy });
+      const sent = (run.answer.sent as { id: string; kind: string; text?: string }[] | undefined) ?? [];
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
+      if (!run.answer.ok) return { code, stdout: [`log instagram send: ${account.accountName}: ${sent.length} of ${plan.length} sent, then ${run.answer.code}: ${run.answer.detail ?? ""}. What was sent stays sent; nothing is retried (rule 94).`, ...(dmsFailed(account, run.answer).stdout ?? "").split("\n").slice(1)].join("\n") };
+      return { code, stdout: [`log instagram send: ${account.accountName} sent ${sent.length} message(s) to ${said}:`, ...sent.map((s) => `  ${s.kind === "photo" ? "(photo)" : s.text} · ${s.id}`)].join("\n") };
+    } catch (error) {
+      return refuseError("instagram send", error);
+    }
+  },
+};
+
+export const INSTAGRAM_WATCH_USAGE = [
+  "Usage: log instagram watch --account <accountName> [--seconds <s>] [--inbox] [--json]",
+  "Opens Instagram's own realtime connection on the direct-API engine (vendor/instagrapi, MQTT to edge-mqtt.facebook.com, subscribed to the DM sync, no browser) and prints each DM the moment Instagram pushes it, nothing polled. --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new message from someone else to the inbox hook, which puts it in front of the agent with what to do next (rule 123). Sends nothing.",
+].join("\n");
+
+export const INSTAGRAM_WATCH_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Every Instagram DM as Instagram's realtime connection pushes it, sending nothing",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
+        { name: "seconds", kind: "string", description: "Stop after this many seconds (at least 5); default: until stopped" },
+        { name: "inbox", kind: "boolean", description: "Hand each new message from someone else to the inbox hook" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
+export function instagramWatchLine(event: Record<string, unknown>): string {
+  if (event.type === "message") return `${event.at ?? ""} ${event.title ?? event.thread} · ${event.fromMe ? "me" : `@${event.from}`}: ${String(event.text ?? "").replace(/\s+/g, " ").slice(0, 400)}`;
+  return `${String(event.type)}${event.host ? ` on ${event.host}` : ""}${event.threads ? `, ${event.threads} thread(s) known` : ""}`;
+}
+
+export function instagramInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
+  return { platform: "instagram", account, conversationId: String(event.thread ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: "dm", seenAt: now.toISOString() };
+}
+
+export const instagramWatchCommand: Command = {
+  usage: INSTAGRAM_WATCH_USAGE,
+  platform: "instagram",
+  name: "watch",
+  effect: "read",
+  input: INSTAGRAM_WATCH_INPUT,
+  summary: "Watch an Instagram account's DMs as Instagram's realtime connection pushes them, nothing polled, sending nothing",
+  args: "--account <a> [--seconds <s>] [--inbox] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_WATCH_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log instagram watch: ${parsed.error}\n${INSTAGRAM_WATCH_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, stderr: `log instagram watch: takes no words, only flags\n${INSTAGRAM_WATCH_USAGE}` };
+    const seconds = parsed.flags["seconds"] === undefined ? 0 : Number(parsed.flags["seconds"]);
+    if (!Number.isFinite(seconds) || (seconds !== 0 && seconds < 5)) return refuse("instagram watch", "secondsInvalid", "--seconds must be at least 5");
+    try {
+      const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
+      const gate = instagramGate(account);
+      if (!gate.ok) return refuse("instagram watch", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
+      if (!context.directInstagramLive) return { code: 1, stderr: "log instagram watch: the direct-API engine isn't wired in this context" };
+      const toInbox = parsed.flags["inbox"] === true;
+      context.err(`${account.accountName}: opening Instagram's realtime connection through vendor/instagrapi${seconds ? `, for ${seconds} s` : ", until stopped"}${toInbox ? "; new messages from others go to the inbox hook" : ""}`);
+      const seen: Record<string, unknown>[] = [];
+      const run = await context.directInstagramLive(account, { action: "watch", seconds }, (event) => {
+        if (event.type === "message") seen.push(event);
+        if (toInbox && event.type === "message" && !event.fromMe) addPending([instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+        context.err(parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event));
+      });
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ...run.answer, messages: seen }, null, 2) };
+      if (!run.answer.ok) return dmsFailed(account, run.answer);
+      return { code, stdout: `log instagram watch: ${account.accountName}: ${seen.length} message(s) pushed in ${run.answer.watchedSeconds ?? seconds} s, nothing polled.` };
+    } catch (error) {
+      return refuseError("instagram watch", error);
     }
   },
 };

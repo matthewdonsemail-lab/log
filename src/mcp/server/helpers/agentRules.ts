@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 127;
+export const RULES_REVIEWED_THROUGH = 128;
 
 export const AGENTS_URI = "log://agents";
 
@@ -47,6 +47,7 @@ export const CORE_PRINCIPLES = [
   "40. Slack is reached only through vendor/gabrielSlack's one curl_cffi AsyncSession pinned to Chrome (`IMPERSONATE`, `chrome150`) with that target's own user agent, for its web API and its websocket alike, never httpx or websockets (`check:slackTransport`, rule 125).",
   "41. Audio is detected once, in the shared message layer (python/platformKit/media.py, src/platformKit/media): every platform keeps its messages' attachments, and every voice note goes through one AssemblyAI path (`transcribe`), kept by its file's hash and written into the conversation store as (voice note: \"…\") (rule 126).",
   "42. The voice gate also measures matt's own phrasing: a draft whose word pairs he has written fall below his own 10th percentile fails, with the pairs he never wrote named (\"is wild\"), and the vendored ai-watermark-scrambler (layer A) reads every draft for invisible or lookalike characters; both go to SubQ (rule 127).",
+  "43. Instagram is worked on the direct-API engine only, vendor/instagrapi over the MCP: `instagramDms` reads, `instagramSendLive` sends text and photos (a meme goes as `photo`), `instagramWatch` holds Instagram's realtime connection and the inbox hook puts each new DM in front of the agent. Never the account's browser for an Instagram action; a missing action is built on the engine (rule 128).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -145,6 +146,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
   instagramSession: [13, 63, 64, 73, 83],
   instagramDms: [13, 63, 64, 73, 83, 94, 126],
+  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111],
+  instagramWatch: [13, 26, 63, 64, 73, 83, 94, 123],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

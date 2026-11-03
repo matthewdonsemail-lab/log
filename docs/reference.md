@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (15 commands of its own), Reddit (1 command of its own), Discord (6 commands of its own), LinkedIn (2 commands of its own), Slack (7 commands of its own), Instagram (2 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (15 commands of its own), Reddit (1 command of its own), Discord (6 commands of its own), LinkedIn (2 commands of its own), Slack (7 commands of its own), Instagram (4 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -56,9 +56,9 @@ flowchart LR
   e_gabrielSlack --> api
   p_slack -->|"browser: the any-platform commands"| b_slack["Slack's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_slack --> drivers
-  p_instagram["Instagram (INSTAGRAM): 2 commands of its own"]
+  p_instagram["Instagram (INSTAGRAM): 4 commands of its own"]
   twenty --> p_instagram
-  p_instagram -->|"direct API: instagram session, instagram dms"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
+  p_instagram -->|"direct API: instagram session, instagram dms, instagram send, instagram watch"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
   e_instagrapi --> api
   p_instagram -->|"browser: the any-platform commands"| b_instagram["Instagram's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_instagram --> drivers
@@ -95,7 +95,7 @@ flowchart LR
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
   account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read, slack read"]
-  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, slack watch"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, slack watch, instagram watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
   nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick
@@ -104,15 +104,15 @@ flowchart LR
 Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
-- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `instagram session`, `instagram dms`.
+- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `instagram session`, `instagram dms`, `instagram send`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 34 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 36 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -168,6 +168,8 @@ A command on the direct-API engine calls the platform's internal API with the ac
 
 - `log instagram session`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, account.ping for the session check; no browser).
 - `log instagram dms`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, messages.direct_threads for the dms (the inbox, or one thread with --with); no browser).
+- `log instagram send`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, messages.direct_send for the send --live (text one message per line, and --photo through direct_send_photo); no browser).
+- `log instagram watch`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, websocket.realtime_connect for the watch (Instagram pushes each DM over its realtime MQTT, edge-mqtt.facebook.com, nothing polled); no browser).
 
 ### How a call reaches log-cli
 
@@ -178,9 +180,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 138 command tools + saved flows"]
+  mcp["MCP server log: 141 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 78 commands (COMMANDS)"]
+  runCli["runCli: 80 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -310,6 +312,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log slack cookies`](#log-slack-cookies) | Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack | `slack` first | `--account <accountName>` `--name <label>` `--workspace <domain>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 97, 125, 30, 38, 39, 40, 41 |
 | [`log instagram session`](#log-instagram-session) | Check that Instagram still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `instagram` first | `--account <accountName>` `--json` | direct API only | none | `instagramSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 | [`log instagram dms`](#log-instagram-dms) | Read an Instagram account's DMs: its threads, or one thread's messages with --with, on the direct-API engine, sending nothing | `instagram` first | `--account <accountName>` `--with <handle|thread name|thread id>` `--limit <n>` `--json` | direct API only | none | `instagramDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41 |
+| [`log instagram send`](#log-instagram-send) | Send text and a photo to an Instagram DM, on the direct-API engine; a dry run unless --live | `instagram` first | `--account <accountName>` `--with <handle|thread name|thread id>` `--text` `--photo <file>` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `instagramSend`, `instagramSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 94, 111, 30, 38, 39, 40, 41 |
+| [`log instagram watch`](#log-instagram-watch) | Watch an Instagram account's DMs as Instagram's realtime connection pushes them, nothing polled, sending nothing | `instagram` first | `--account <accountName>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `instagramWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 123, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -440,6 +444,8 @@ flowchart TB
   subgraph g_instagram["Instagram"]
     c_instagramSession["session"]
     c_instagramDms["dms"]
+    c_instagramSend["send"]
+    c_instagramWatch["watch"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -619,6 +625,11 @@ flowchart TB
   mcp --> c_instagramSession
   cli --> c_instagramDms
   mcp --> c_instagramDms
+  cli --> c_instagramSend
+  mcp --> c_instagramSend
+  cli --> c_instagramWatch
+  mcp --> c_instagramWatch
+  c_instagramWatch --> live
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -1644,6 +1655,25 @@ Read an Instagram account's DMs: its threads, or one thread's messages with --wi
 log instagram dms --account <accountName> [--with <handle|thread name|thread id>] [--limit <n>] [--json]
 Without --with, lists the account's Instagram DM threads, newest first: who each is with, its last message and whether it is unread. With --with, reads that one thread's latest messages, oldest first.
 On the direct-API engine (vendor/instagrapi, direct_threads and direct_thread, no browser). Sends nothing, and marks nothing seen.
+```
+
+#### log instagram send
+
+Send text and a photo to an Instagram DM, on the direct-API engine; a dry run unless --live MCP tools: `instagramSend`, `instagramSendLive`, one per form, with named fields.
+
+```text
+log instagram send --account <accountName> --with <handle|thread name|thread id> [--text "<message>"] [--photo <file>] [--asOne] [--approvedBy <who>] [--live] [--json]
+Sends to an Instagram DM on the direct-API engine (vendor/instagrapi, no browser): --with is matched to one thread by handle, name or id, or to a new DM with that handle. --photo sends a picture first (direct_send_photo), then the text one message per line (rule 90), --asOne as one message.
+Without --live it is a dry run and Instagram is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Instagram's answer decides: each message comes back with its id, anything else stops the run with nothing retried (rule 94). The copy is read for what AI chat interfaces leave in text first (rule 111).
+```
+
+#### log instagram watch
+
+Watch an Instagram account's DMs as Instagram's realtime connection pushes them, nothing polled, sending nothing MCP tools: `instagramWatch`, one per form, with named fields.
+
+```text
+log instagram watch --account <accountName> [--seconds <s>] [--inbox] [--json]
+Opens Instagram's own realtime connection on the direct-API engine (vendor/instagrapi, MQTT to edge-mqtt.facebook.com, subscribed to the DM sync, no browser) and prints each DM the moment Instagram pushes it, nothing polled. --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new message from someone else to the inbox hook, which puts it in front of the agent with what to do next (rule 123). Sends nothing.
 ```
 
 <!-- surface:end -->
