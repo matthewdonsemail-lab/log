@@ -11,8 +11,8 @@ from dataclasses import dataclass
 from types import TracebackType
 from typing import Any, Literal, TypeVar, overload
 
-import httpx
 
+from ..core.transport import SlackTransport
 from ..core.auth import AuthDead, AuthEvent, AuthOptions
 from ..core.core import GabrielCore, ProtocolDriftInfo
 from ..core.metadata import ClientMetadata, Endpoints
@@ -125,7 +125,7 @@ class AdvancedOptions:
 
     metadata: ClientMetadata | Mapping[str, str] | None = None
     endpoints: Endpoints | Mapping[str, str | None] | None = None
-    http_client: httpx.AsyncClient | None = None
+    http_client: SlackTransport | None = None
     ws_factory: WebSocketFactory | None = None
     gateway_server: str | None = None
     #: Seconds ``start()`` waits for the first ``connection.ready`` (default 60).

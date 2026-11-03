@@ -22,6 +22,7 @@ from ..util.logger import Logger, silent_logger
 from ..util.redact import scrub_secrets
 from .auth import AuthManager, RefreshTrigger
 from .metadata import ClientMetadata, Endpoints, build_start_args
+from .transport import ConnectionClosed, ws_connect
 from .types import MetricsSink, RawWsFrame, WebSocketFactory, WebSocketLike, noop_metrics
 
 FIRST_SEQ_ID = 16385  # 0x4001, as used by the web client
@@ -139,34 +140,12 @@ def _close_code(ws: WebSocketLike, err: BaseException) -> int:
 
 
 def _is_connection_closed(err: BaseException) -> bool:
-    try:
-        from websockets.exceptions import ConnectionClosed
-    except ImportError:  # pragma: no cover
-        return False
     return isinstance(err, ConnectionClosed) or type(err).__name__ in ("ConnectionClosed", "FakeConnectionClosed")
 
 
 async def default_ws_factory(url: str, headers: dict[str, str]) -> WebSocketLike:
-    """Opens a connection with the ``websockets`` package.
-
-    The browser User-Agent replaces websockets' own ``User-Agent`` header; compression and
-    protocol-level pings are disabled (the Slack protocol has its own ``ping`` frames), like
-    the reference implementation's ``ws`` options.
-    """
-    from websockets.asyncio.client import connect
-
-    user_agent = next((v for k, v in headers.items() if k.lower() == "user-agent"), None)
-    extra = {k: v for k, v in headers.items() if k.lower() != "user-agent"}
-    conn = await connect(
-        url,
-        additional_headers=extra,
-        user_agent_header=user_agent,
-        compression=None,
-        max_size=MAX_FRAME_SIZE,
-        ping_interval=None,
-        open_timeout=HANDSHAKE_TIMEOUT,
-    )
-    return conn
+    """Opens the connection through curl_cffi, impersonating the pinned browser (transport.py)."""
+    return await ws_connect(url, headers, HANDSHAKE_TIMEOUT)
 
 
 class _Pending:

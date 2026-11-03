@@ -36,7 +36,7 @@ Slack's own answer decides. The result goes to socialAccounts.sessionState, and 
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackWorkspaces`
 
@@ -47,7 +47,7 @@ Lists the workspaces the account's d cookie is signed in to, on the direct-API e
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackChats`
 
@@ -58,7 +58,7 @@ Lists the account's DMs and group DMs in one workspace with their ids and who th
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackRead`
 
@@ -70,7 +70,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackWatch`
 
@@ -81,7 +81,7 @@ Opens each workspace's own websocket on the direct-API engine (vendor/gabrielSla
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 83, 94, 123, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 83, 94, 123, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackSend`
 
@@ -92,7 +92,7 @@ Sends a message to a Slack DM, group DM or channel (by its id, or who it is with
 A draft written on several lines goes out one message per line (rule 90); a one-line draft is split the way matt writes in that chat (log voice index), and --asOne always sends one. Without --live it is a dry run and Slack is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Slack's answer decides: a ts is sent, anything else stops the run with nothing retried (rule 94). The governor counts each message as a write. The copy is read for what AI chat interfaces leave in text first (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts.
 Fill the named fields; each value goes through whole. What acts on Slack is `slackSendLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `slackSendLive`
 
@@ -105,7 +105,7 @@ A draft written on several lines goes out one message per line (rule 90); a one-
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -142,3 +142,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 111.** 2026-11-02 · matt: find GitHub repos "good for claude watermarking ... so we're able to pass it through context into the sends so that we can see how likely it is to be watermarked". Claude's own watermark is statistical (word choice under a secret key) and Anthropic's text detector is private preview, so no public repo can score it (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`). What can be read is what AI chat interfaces leave in text: `OfirYC/claude-watermark-checker` is vendored at `vendor/claudeArtifactDetector` (MIT, no dependencies) and every send's copy is read by it (`watermarkReadingOf`, `src/twitter/copy/watermark`): `clean`, `stylistic` (curly quotes, em dashes) or `artifacts` (zero-width or other hidden characters, odd spaces, pasted Claude HTML), with `statistical: unknown` always said. `planSend` refuses a send with artifacts (`aiArtifacts`) and carries the reading in its plan; `log voice` shows it and fails a draft with artifacts; a direct send and each queue send log it.
 
 **Rule 123.** 2026-11-03 · matt: "make it a rule all platforms need the web socket hooks stuff there". Every platform log-cli talks to gets the live hooks X and Discord have. Its account's one session holds the platform's own push channel open: X Chat's socket, Discord's gateway, Slack's `wss-primary.slack.com`. That is never a poll from a second client. The inbox hook starts that watcher for every account and puts each new message, mention and reply in front of the agent with what to do (`>>> NEW MESSAGE`), per session (rules 105, 108, 115). It also stops a watcher running older code, skips an account cooling off, and stops on any refusal (rule 94). A platform isn't done until its watcher is in the inbox hook (`scripts/hooks/inbox.ts`, `src/inbox/watch`), starting with Slack. Reddit and LinkedIn aren't built yet. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-12).
+
+**Rule 125.** 2026-11-03 · matt: "Check slack via cli it needs to be swapped to use curl_cffi same as X". Slack goes out looking like a browser, the way X (rule 81) and LinkedIn (rule 102) do. `vendor/gabrielSlack` reaches Slack, its web API, its cookie exchange and its websocket (`wss-primary.slack.com`), only through `gabriel/core/transport.py`: one curl_cffi `AsyncSession` made by `new_session`, pinned to one impersonation target (`IMPERSONATE`, `chrome150`), sending that target's own user agent (`USER_AGENT`, which the client's default metadata uses), never httpx, websockets, aiohttp, requests or a socket of its own. It keeps no cookies between calls: the d cookie is sent on each one. gabriel's own login CLI, which drove Chrome through httpx and websockets, is removed. `python/checks/slackTransport.py` maps every transport touchpoint by syntax tree (`--map`), rewrites what has a curl_cffi equivalent (`--apply`) and refuses the rest (`--check`, `bun run check:slackTransport`, pre-commit and pre-push). Spec: `docs/specs/slack.md` (REQ-SLACK-05).

@@ -13,13 +13,12 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlencode, urljoin, urlsplit
 
-import httpx
-
 from ..errors import TOKEN_INVALID_ERRORS, GabrielError, cancelled_error, from_slack_error
 from ..util.aio import AbortSignal, full_jitter_delay, race_signal, sleep
 from ..util.logger import Logger, silent_logger
 from .auth import AuthManager, WorkspaceSession
 from .metadata import ClientMetadata, Endpoints
+from .transport import TIMEOUT_ERRORS, SlackResponse, SlackTransport
 from .types import MetricsSink, RequestOpts, noop_metrics
 
 DEFAULT_WEB_API_TIMEOUT = 15.0
@@ -181,7 +180,7 @@ class HttpEngine:
     def __init__(
         self,
         *,
-        http_client: httpx.AsyncClient,
+        http_client: SlackTransport,
         auth: AuthManager,
         metadata: ClientMetadata,
         endpoints: Endpoints,
@@ -269,12 +268,11 @@ class HttpEngine:
         timeout: float | None = None,
         bearer: bool = True,
         stream: bool = False,
-    ) -> httpx.Response:
+    ) -> SlackResponse:
         """Authenticated raw request (file transfer).
 
         Adds cookie + bearer token only for Slack-owned hosts; never sends credentials to
-        arbitrary URLs. Redirects are followed (httpx drops the cookie and, cross-origin, the
-        bearer token on redirect). ``timeout`` is a total budget in seconds (``None``: none).
+        arbitrary URLs. Redirects are followed. ``timeout`` is a total budget in seconds (``None``: none).
         With ``stream=True`` the body is not read; the caller must ``await resp.aclose()``.
         """
         if not is_slack_host(url):
@@ -285,11 +283,11 @@ class HttpEngine:
         merged = {**self._headers(session), **(headers or {})}
         if bearer:
             merged["Authorization"] = f"Bearer {session.token}"
-        request = self._client.build_request(method, url, headers=merged, content=content, timeout=timeout)
-
-        async def send() -> httpx.Response:
+        async def send() -> SlackResponse:
             async with asyncio.timeout(timeout):
-                return await self._client.send(request, stream=stream, follow_redirects=True)
+                return await self._client.request(
+                    method, url, headers=merged, content=content, timeout=timeout, follow_redirects=True, stream=stream
+                )
 
         try:
             return await race_signal(send(), signal)
@@ -307,7 +305,7 @@ class HttpEngine:
             "User-Agent": self._metadata.user_agent,
         }
 
-    async def _send(self, built: _Built, budget: float) -> httpx.Response:
+    async def _send(self, built: _Built, budget: float) -> SlackResponse:
         async with asyncio.timeout(budget):
             resp = await self._client.post(built.url, headers=built.headers, content=built.content, timeout=budget)
             await resp.aread()
@@ -340,7 +338,7 @@ class HttpEngine:
             except Exception as err:
                 if signal is not None and signal.aborted:
                     raise cancelled_error(signal.reason) from err
-                timed_out = isinstance(err, TimeoutError | httpx.TimeoutException)
+                timed_out = isinstance(err, TIMEOUT_ERRORS)
                 error = GabrielError(
                     "NETWORK_TIMEOUT", f"{label}: {'request timed out' if timed_out else 'network error'}", cause=err
                 )

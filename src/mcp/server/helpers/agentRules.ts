@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 124;
+export const RULES_REVIEWED_THROUGH = 125;
 
 export const AGENTS_URI = "log://agents";
 
@@ -44,6 +44,7 @@ export const CORE_PRINCIPLES = [
   "37. Full context at the time of sending, every time: before drafting to anyone read `twitterDms` { with }, which gives their whole thread (including what matt sent from outside log) and what they did on the account's posts (likes, retweets, replies, quotes, mentions, follows); someone who already did the action is thanked, never asked. The queue reads it again right before each send and holds the item when anything changed since the draft; redraft it and put it back with `twitterQueueEdit`, never by editing the queue file (rule 109).",
   "38. Reply only to people with 1500 followers or fewer: an account that is too large isn't worth it yet. Pick reply-guy targets from the niche map under 1500 followers; the engine skips a larger author (`authorTooBig`) before liking, following or sending, and the queue goes on (rule 121).",
   "39. Every platform gets the live websocket hooks X and Discord have: its account's one session holds the platform's own push channel open (X Chat, the Discord gateway, Slack's wss-primary), the inbox hook starts that watcher and puts each new message in front of the agent (`>>> NEW MESSAGE`), and a platform isn't done until it has one (rule 123).",
+  "40. Slack is reached only through vendor/gabrielSlack's one curl_cffi AsyncSession pinned to Chrome (`IMPERSONATE`, `chrome150`) with that target's own user agent, for its web API and its websocket alike, never httpx or websockets (`check:slackTransport`, rule 125).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -132,13 +133,13 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordWatch: [13, 26, 63, 64, 73, 83, 94],
   discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
-  slackSession: [13, 63, 64, 73, 83],
-  slackWorkspaces: [13, 63, 64, 73, 83],
-  slackChats: [13, 63, 64, 73, 83, 94],
-  slackRead: [13, 63, 64, 73, 83, 94],
-  slackWatch: [13, 26, 63, 64, 73, 83, 94, 123],
-  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111],
-  slackCookies: [13, 21, 63, 64, 73, 83, 97],
+  slackSession: [13, 63, 64, 73, 83, 125],
+  slackWorkspaces: [13, 63, 64, 73, 83, 125],
+  slackChats: [13, 63, 64, 73, 83, 94, 125],
+  slackRead: [13, 63, 64, 73, 83, 94, 125],
+  slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125],
+  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125],
+  slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

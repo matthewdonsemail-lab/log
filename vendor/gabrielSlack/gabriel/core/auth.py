@@ -13,8 +13,8 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 from urllib.parse import quote, urljoin
 
-import httpx
 
+from .transport import SlackTransport
 from ..errors import GabrielError
 from ..util.aio import AbortSignal, Singleflight, race_signal, sleep
 from ..util.logger import Logger, silent_logger
@@ -115,7 +115,7 @@ class AuthOptions:
 
 @dataclass(slots=True, kw_only=True)
 class AuthDeps:
-    http_client: httpx.AsyncClient
+    http_client: SlackTransport
     metadata: ClientMetadata
     endpoints: Endpoints
     logger: Logger = silent_logger

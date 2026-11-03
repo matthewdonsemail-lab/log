@@ -18,7 +18,7 @@ Slack is a platform of its own: every command is `log slack <command> …`, and 
 
 Picked from a GitHub code search for the internal names Slack's own web client uses (`client.getWebSocketURL`, `wss-primary.slack.com`, `user_change_subscribe_request`, `xoxc-` with `client.init`…) and a SubQ matrix over the 16 clients it found: gabriel-slack scored highest (19.2 of 30, 95%) as a Python library that signs in as the user with the browser's `d` cookie and holds Slack's websocket. The search and matrix are in `RESEARCH/SLACK_CLIENT_VENDOR_MATRIX_2026_11_03.md` in the Buzz workspace.
 
-It is vendored as its Python package only (`vendor/gabrielSlack/gabriel`), at the commit in `UPSTREAM`, with its `LICENSE` and `README.md`. log uses:
+It is vendored as its Python package only (`vendor/gabrielSlack/gabriel`), at the commit in `UPSTREAM`, with its `LICENSE` and `README.md`. We keep it ourselves: its transport is ours (rule 125). log uses:
 
 | What | gabriel | Slack |
 | --- | --- | --- |
@@ -51,4 +51,4 @@ One `d` cookie can be signed in to many workspaces. `log slack workspaces` lists
 - **Pacing:** every call goes through the account's governor (`python/platformKit/engine.py`). A message on several lines goes out one per line (rule 90), each its own engine call, with matt's own gap between them.
 - **Writes:** `send` is the only write. It is a dry run unless `--live` with `--approvedBy` (rule 8), and its copy is read for AI artifacts first (rule 111).
 - **No proxy, no browser:** the account calls Slack from this machine.
-- **Transport:** gabriel uses httpx and websockets as published. It is not yet moved to curl_cffi the way twikit (rule 81) and openLinkedinApi (rule 102) were.
+- **Transport (rule 125):** gabriel reaches Slack only through `vendor/gabrielSlack/gabriel/core/transport.py`: one curl_cffi `AsyncSession` pinned to `IMPERSONATE` (`chrome150`), sending Chrome 150's own user agent, for the web API, the cookie exchange and the websocket alike. It keeps no cookies between calls. httpx, websockets and gabriel's own login CLI are gone. `bun run check:slackTransport` refuses anything else.

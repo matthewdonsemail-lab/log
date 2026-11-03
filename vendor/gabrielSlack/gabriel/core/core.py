@@ -5,12 +5,10 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from http.cookiejar import CookieJar, DefaultCookiePolicy
 from types import TracebackType
 from typing import Any, Self
 from urllib.parse import urljoin
 
-import httpx
 
 from ..errors import GabrielError
 from ..util.logger import Logger, silent_logger
@@ -28,6 +26,7 @@ from .auth import (
 from .http import HttpEngine
 from .metadata import DEFAULT_CLIENT_METADATA, DEFAULT_ENDPOINTS, ClientMetadata, Endpoints
 from .types import MetricsSink, RawWsFrame, RequestOpts, WebSocketFactory, noop_metrics
+from .transport import SlackTransport
 from .ws import HelloInfo, WsConnection, WsState, WsTimings, default_ws_factory
 
 #: Frame types the reference implementation knows about; anything else is reported as protocol drift.
@@ -67,10 +66,8 @@ class ProtocolDriftInfo:
     unknown_subtype: str | None = None
 
 
-def _new_http_client() -> httpx.AsyncClient:
-    # Like fetch: no cookie jar (cookies are only ever sent explicitly) and no implicit redirects.
-    no_cookies = CookieJar(policy=DefaultCookiePolicy(allowed_domains=[]))
-    return httpx.AsyncClient(cookies=no_cookies, follow_redirects=False)
+def _new_http_client() -> SlackTransport:
+    return SlackTransport()
 
 
 def _merge(base: Any, override: Any) -> Any:
@@ -116,7 +113,7 @@ class GabrielCore:
         auth: AuthOptions,
         metadata: ClientMetadata | Mapping[str, str] | None = None,
         endpoints: Endpoints | Mapping[str, str | None] | None = None,
-        http_client: httpx.AsyncClient | None = None,
+        http_client: SlackTransport | None = None,
         ws_factory: WebSocketFactory | None = None,
         gateway_server: str | None = None,
         logger: Logger | None = None,
@@ -129,8 +126,8 @@ class GabrielCore:
             auth: Session credentials.
             metadata: Client identity; a mapping overrides individual default fields.
             endpoints: Network endpoints; a mapping overrides individual default fields.
-            http_client: Custom ``httpx.AsyncClient`` (proxies, tests). Not closed by :meth:`close`.
-            ws_factory: Custom WebSocket factory (proxies, tests). Defaults to ``websockets``.
+            http_client: Custom ``SlackTransport`` (tests). Not closed by :meth:`close`.
+            ws_factory: Custom WebSocket factory (proxies, tests). Defaults to curl_cffi (transport.ws_connect).
             gateway_server: Gateway shard override, defaults to ``{team_id}-1``.
             max_http_retries: Max automatic retries for transient HTTP failures (default 3).
             ws_timings: WebSocket protocol timings (tests only; defaults follow the spec).

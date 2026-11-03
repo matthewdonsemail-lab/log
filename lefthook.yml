@@ -12,6 +12,9 @@ pre-commit:
     linkedinTransport:
       run: bun run check:linkedinTransport
 
+    slackTransport:
+      run: bun run check:slackTransport
+
     platforms:
       run: bun run check:platforms
 
@@ -53,6 +56,9 @@ pre-push:
 
     linkedinTransport:
       run: bun run check:linkedinTransport
+
+    slackTransport:
+      run: bun run check:slackTransport
 
     platforms:
       run: bun run check:platforms

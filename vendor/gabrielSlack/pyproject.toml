@@ -8,8 +8,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "EzEasy" }]
 requires-python = ">=3.11"
 dependencies = [
-  "httpx>=0.27",
-  "websockets>=14",
+  "curl_cffi>=0.16",
 ]
 keywords = ["slack", "realtime", "websocket", "sdk", "ai", "llm", "agent"]
 classifiers = [
@@ -29,8 +28,6 @@ Homepage = "https://github.com/Easy-Ez/gabriel-slack/tree/main/sdks/python#readm
 Repository = "https://github.com/Easy-Ez/gabriel-slack"
 Issues = "https://github.com/Easy-Ez/gabriel-slack/issues"
 
-[project.scripts]
-gabriel = "gabriel.cli.main:main"
 
 [build-system]
 requires = ["hatchling>=1.26"]

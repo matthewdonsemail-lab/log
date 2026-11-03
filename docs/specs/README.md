@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 31 domains, 380 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 32 domains, 385 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -540,3 +540,13 @@ log-cli is read-only on Facebook except where matt asked for an action. Posting 
 - **REQ-LISTING-21** Anything but full access is the account's suspended issue
 - **REQ-LISTING-22** Each listing's state on Selling goes into Twenty
 - **REQ-LISTING-23** Seller chats are counted and kept as sent
+
+## [Slack](./slack.md)
+
+What `log new platform slack` made, and what the platform's code must keep doing as it grows. Rules 83, 117, 123, 124 and 125.
+
+- **REQ-SLACK-01** The account is found on its own platform's row and gated
+- **REQ-SLACK-02** The engine runs the account through the shared platform kit
+- **REQ-SLACK-03** Slack's own answer is what gets recorded
+- **REQ-SLACK-04** The platform is wired into the CLI and the direct-API routes
+- **REQ-SLACK-05** Slack is reached only through one curl_cffi session that impersonates Chrome

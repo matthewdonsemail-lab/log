@@ -1642,6 +1642,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     commit. As the platform grows, its new behaviour goes into that spec with
     its anchors. Spec: `docs/specs/platformScaffold.md` (REQ-PLATFORM-14).
 
+125. 2026-11-03 · matt: "Check slack via cli it needs to be swapped to use
+    curl_cffi same as X". Slack goes out looking like a browser, the way X
+    (rule 81) and LinkedIn (rule 102) do. `vendor/gabrielSlack` reaches Slack,
+    its web API, its cookie exchange and its websocket (`wss-primary.slack.com`),
+    only through `gabriel/core/transport.py`: one curl_cffi `AsyncSession` made
+    by `new_session`, pinned to one impersonation target (`IMPERSONATE`,
+    `chrome150`), sending that target's own user agent (`USER_AGENT`, which the
+    client's default metadata uses), never httpx, websockets, aiohttp, requests
+    or a socket of its own. It keeps no cookies between calls: the d cookie is
+    sent on each one. gabriel's own login CLI, which drove Chrome through httpx
+    and websockets, is removed. `python/checks/slackTransport.py` maps every
+    transport touchpoint by syntax tree (`--map`), rewrites what has a curl_cffi
+    equivalent (`--apply`) and refuses the rest (`--check`, `bun run
+    check:slackTransport`, pre-commit and pre-push). Spec: `docs/specs/slack.md`
+    (REQ-SLACK-05).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

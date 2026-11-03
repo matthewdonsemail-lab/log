@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlencode
 
+from .transport import USER_AGENT
+
 
 @dataclass(frozen=True, slots=True)
 class ClientMetadata:
@@ -22,10 +24,7 @@ class ClientMetadata:
 
 
 DEFAULT_CLIENT_METADATA = ClientMetadata(
-    user_agent=(
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/148.0.0.0 Safari/537.36"
-    ),
+    user_agent=USER_AGENT,
     agent_version="1792732050",
     origin="https://app.slack.com",
 )
