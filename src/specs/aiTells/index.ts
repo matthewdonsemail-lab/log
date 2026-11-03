@@ -41,7 +41,7 @@ export const aiTells = {
     'REQ-AITELLS-05': [
       { kind: 'symbol', file: TELLS, name: 'aiPhrases' },
       { kind: 'symbol', file: TELLS, name: 'buildAiIndex' },
-      { kind: 'value', file: TYPES, name: 'JINA_EMBED_MODEL', equals: 'jina-embeddings-v3' },
+      { kind: 'value', file: TYPES, name: 'JINA_EMBED_MODEL', equals: 'jina-embeddings-v5-omni-small' },
       { kind: 'symbol', file: 'src/voice/aiTells/helpers/jina.ts', name: 'jinaEmbedder' },
       { kind: 'string', file: TELLS, includes: 'feedHive' },
       { kind: 'string', file: TELLS, includes: 'sanderFrentz' },
@@ -61,7 +61,7 @@ export const aiTells = {
     ],
     'REQ-AITELLS-10': [
       { kind: 'symbol', file: TELLS, name: 'chunksOf' },
-      { kind: 'value', file: TYPES, name: 'JINA_RERANK_MODEL', equals: 'jina-reranker-v2-base-multilingual' },
+      { kind: 'value', file: TYPES, name: 'JINA_RERANK_MODEL', equals: 'jina-reranker-v3.5' },
     ],
     'REQ-AITELLS-11': [{ kind: 'symbol', file: TELLS, name: 'readAiTells' }],
     'REQ-AITELLS-12': [
@@ -85,7 +85,7 @@ export const aiTells = {
     'REQ-AITELLS-09': noul('Does mattsOwnPhrases count, for each vale rule match, how many of the replies contain it and keep the matches with at least MATT_SAYS_IT_TIMES, does buildAiIndex store them as baseline.mattsPhrases, and does readAiTells put index.baseline.mattsPhrases into the muted set it passes to ruleHits?'),
     'REQ-AITELLS-10': noul('Does readAiTells cut the text with chunksOf into lines and word windows, find each chunk\'s best phrase by cosine, and rerank the closest with embedder.rerank?'),
     'REQ-AITELLS-11': noul("Does readAiTells set flagged when the closest cosine score is above the baseline p99, and pass only when there are no hits and it is not flagged?"),
-    'REQ-AITELLS-12': noul('Does the voice command call ensureAiIndex, which builds the index when aiIndexStale finds it missing or older than pairs.json, and does reading.pass require aiTells.pass?'),
+    'REQ-AITELLS-12': noul('Does gateReading call ensureAiIndex, which builds the index when aiIndexStale finds it missing, made with another model than JINA_EMBED_MODEL, or older than pairs.json, and does reading.pass require aiTells.pass?'),
     'REQ-AITELLS-13': noul('Does discordSendCommand call watermarkReadingOf on the text before the dry run or any send, refuse without calling directDiscord when the level is artifacts, and otherwise log watermarkLine(watermark) and put watermark in its dry run and --json output?'),
     unspecifiedBehavior: noul('Does a draft or send pass the watermark or AI tells reading by a route the specification does not describe, such as planSend allowing artifacts or readAiTells passing despite a vale hit?'),
   },

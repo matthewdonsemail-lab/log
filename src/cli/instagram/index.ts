@@ -5,6 +5,7 @@ import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { instagramCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
@@ -250,6 +251,11 @@ export const instagramSendCommand: Command = {
       context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
       const caught = await waitCaughtUp("instagram", account.accountName);
       if (!caught.ok) return refuse("instagram send", "accountBehind", caught.refused);
+      if (text.trim()) {
+        const voiced = await gateDeps.gate(context, { platform: "instagram", account: account.accountName, to: said, text, handle: said });
+        if (!voiced.ok) return refuse("instagram send", "voiceGateFailed", voiced.refused);
+        context.err(voiced.line);
+      }
       const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said });
       if (!guard.ok) return refuse("instagram send", "chatClaimedElsewhere", guard.refused);
       let run: ReturnType<NonNullable<typeof context.directInstagram>>;

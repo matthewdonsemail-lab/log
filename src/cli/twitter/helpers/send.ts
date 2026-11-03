@@ -14,6 +14,7 @@ import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
 import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
 import { guardSend } from "../../../inbox/claims/index.ts";
 import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
+import { gateDeps } from "./voice.ts";
 import type { InboxMessage } from "../../../inbox/watch/index.ts";
 import type { SplitPlan, VoiceProfile } from "../../../voice/pairs/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
@@ -198,6 +199,9 @@ function sendCommand(shape: SendShape): Command {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
           const caught = await waitCaughtUp("twitter", account.accountName);
           if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
+          const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
+          if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
+          context.err(voiced.line);
           const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
           if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
           let parts: Awaited<ReturnType<typeof sendDmParts>>;

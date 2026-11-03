@@ -98,5 +98,7 @@ describe("catching up after a gap (rule 135)", () => {
     expect(socketChange({ type: "socket", state: "reconnecting" })).toBe("dropped");
     expect(socketChange({ type: "socket", state: "open" })).toBe("open");
     expect(socketChange({ type: "message", state: "closed" })).toBeNull();
+    expect(socketChange({ kind: "closed", detail: "the gateway closed" })).toBe("dropped");
+    expect(socketChange({ kind: "open" })).toBe("open");
   });
 });

@@ -4,6 +4,7 @@ import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { slackCatchUp, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
@@ -436,6 +437,9 @@ export const slackSendCommand: Command = {
       context.err(`${opened.account.accountName}: send to ${chat.label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const caught = await waitCaughtUp("slack", opened.account.accountName);
       if (!caught.ok) return refuse("slack send", "accountBehind", caught.refused);
+      const voiced = await gateDeps.gate(context, { platform: "slack", account: opened.account.accountName, to: chat.label, text, conversationId: chat.id });
+      if (!voiced.ok) return refuse("slack send", "voiceGateFailed", voiced.refused);
+      context.err(voiced.line);
       const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id });
       if (!guard.ok) return refuse("slack send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];

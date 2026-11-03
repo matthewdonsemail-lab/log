@@ -6,6 +6,7 @@ import { dmInterruptedLines, dmSplit, localMedia, sendDmParts, splitLine } from 
 import { guardSend } from "../../../inbox/claims/index.ts";
 import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
+import { gateDeps } from "./voice.ts";
 import {
   addToQueue,
   approvalProblem,
@@ -241,6 +242,14 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
     const held = chatContextOf("twitter", queue.account, who, since);
     const activity = activityOf(held.activity as unknown as TwitterNotification[], who, since);
     const changed = contextChangesSince(held.messages, activity, since);
+    if (!changed.length && item.text?.trim()) {
+      const voiced = await gateDeps.gate(context, { platform: "twitter", account: queue.account, to: item.handle ? `@${item.handle.replace(/^@/, "")}` : String(item.userId), text: item.text, handle: item.handle ?? null, userId: item.userId ?? null });
+      if (!voiced.ok) {
+        log(`#${item.n} @${item.handle ?? "?"}: ${voiced.refused}`);
+        return voiced.refused.split("\n").slice(1).map((l) => `voice gate: ${l.replace(/^\s*-\s*/, "")}`);
+      }
+      log(`#${item.n} @${item.handle ?? "?"}: ${voiced.line}`);
+    }
     log(`#${item.n} @${item.handle ?? "?"}: context read from the .db right before sending (their messages both ways and what they did on the account's posts since the draft at ${since}, the account caught up): ${changed.length ? `${changed.length} new` : "nothing new"}`);
     return changed;
   };

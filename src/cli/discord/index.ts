@@ -3,6 +3,7 @@ import { findDiscordAccount, recordDiscordSession, discordGate } from "../../dis
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
@@ -480,6 +481,9 @@ export const discordSendCommand: Command = {
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const caught = await waitCaughtUp("discord", account.accountName);
       if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
+      const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: label, text, conversationId: target });
+      if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
+      context.err(voiced.line);
       const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });
       if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];

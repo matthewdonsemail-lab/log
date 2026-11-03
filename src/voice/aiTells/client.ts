@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { aiIndexOf, saveAiIndex, saveVectors, vectorsFor } from '../../inbox/store/index'
 import { homedir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -180,21 +181,19 @@ export async function buildAiIndex(embedder: AiEmbedder, replies: readonly strin
   }
   const baseline: AiBaseline = { messages: scores.length, p50: percentile(scores, 50), p99: percentile(scores, 99), mutedRules: mutedRules(replies, rules), mattsPhrases: mattsOwnPhrases(replies, rules) }
   const meta: AiIndexMeta = { model: embedder.model, dimensions: embedder.dimensions, builtAt: new Date().toISOString(), phrases, baseline }
-  mkdirSync(dir, { recursive: true })
-  writeFileSync(join(dir, 'index.json'), JSON.stringify(meta))
-  const flatVectors = new Float32Array(vectors.length * embedder.dimensions)
-  vectors.forEach((v, i) => flatVectors.set(v, i * embedder.dimensions))
-  writeFileSync(join(dir, 'vectors.f32'), Buffer.from(flatVectors.buffer))
+  saveVectors(embedder.model, embedder.dimensions, phrases.map((p, i) => ({ text: p.text, vector: vectors[i], kind: 'aiPhrase' })))
+  saveAiIndex(dir, embedder.model, meta)
   return meta
 }
 
-export function openAiIndex(dir = aiIndexDir()): AiIndex | null {
-  if (!existsSync(join(dir, 'index.json')) || !existsSync(join(dir, 'vectors.f32'))) return null
-  const meta = JSON.parse(readFileSync(join(dir, 'index.json'), 'utf8')) as AiIndexMeta
-  const raw = readFileSync(join(dir, 'vectors.f32'))
-  const all = new Float32Array(raw.buffer, raw.byteOffset, raw.byteLength / 4)
-  const vectors = meta.phrases.map((_, i) => all.subarray(i * meta.dimensions, (i + 1) * meta.dimensions))
-  return { ...meta, vectors }
+export function openAiIndex(dir = aiIndexDir(), model: string | null = null): AiIndex | null {
+  const row = aiIndexOf(dir)
+  if (!row) return null
+  const meta = JSON.parse(row.meta) as AiIndexMeta
+  if (model && meta.model !== model) return null
+  const found = vectorsFor(meta.model, meta.dimensions, meta.phrases.map((p) => p.text))
+  if (found.some((v) => !v)) return null
+  return { ...meta, vectors: found as Float32Array[] }
 }
 
 export async function readAiTells(text: string, index: AiIndex, embedder: AiEmbedder, rules = valeRules(), words = overusedWords(), top = 8): Promise<AiReading> {

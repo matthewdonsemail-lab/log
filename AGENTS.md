@@ -1880,6 +1880,31 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     theirs, and X's notifications arrive through the owner's badge poll
     (rule 115). Spec: `docs/specs/fullContext.md` (REQ-CONTEXT-04, 10).
 
+137. 2026-11-04 · matt: keep every part of the voice gate ("necessary") and
+    run it "as the whole voice process on the new .db", required inside every
+    send, only at send time, scoped to that send, quiet; then "Yes, both" to
+    jina-embeddings-v5-omni and the local media model. The voice gate is one
+    step (`gateSend`, `src/cli/twitter/helpers/voice.ts`) inside `log discord
+    send`, `log slack send`, `log twitter dm`, the queue's sends and `log
+    instagram send`, after the account has caught up (rule 135) and before
+    the chat is claimed (rule 133): a draft that fails is refused with
+    `voiceGateFailed` whether or not `log voice` ran first, and in the X queue
+    the item is held to be rewritten with `twitterQueueEdit`. All five checks
+    stay: SubQ's read of matt's voice, the AI tells index with its reranker
+    (rule 112), his own phrasing (rule 127), the watermark checker (rule 111)
+    and the scrambler (rule 127). It reads the chat's context from the .db
+    (rule 136), embeds it, ranks it against the moment being answered
+    (cosine, then `jina-reranker-v3.5`) and gives SubQ the top moments in full
+    (`rankedContext`, `thisConversationRankedForThisMoment`). Only embeddings
+    are kept, in the .db (`embeddings`: the text's hash, model, dimensions and
+    vector, each made once), with the AI tells index's phrase list and matt's
+    baseline (`aiIndexes`); every result is worked out fresh for each send,
+    never saved. Jina is `jina-embeddings-v5-omni-small` at 1024 dimensions
+    (`text-matching`), and an index made with another model is rebuilt. The
+    local embedder stays loaded in its process. A pass is one line; a fail
+    names only what failed and why. Spec: `docs/specs/voiceGate.md`
+    (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

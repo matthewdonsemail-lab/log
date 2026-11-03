@@ -64,9 +64,9 @@ export interface AiReading {
   pass: boolean
 }
 
-export const JINA_EMBED_MODEL = 'jina-embeddings-v3'
-export const JINA_RERANK_MODEL = 'jina-reranker-v2-base-multilingual'
-export const JINA_DIMENSIONS = 256
+export const JINA_EMBED_MODEL = 'jina-embeddings-v5-omni-small'
+export const JINA_RERANK_MODEL = 'jina-reranker-v3.5'
+export const JINA_DIMENSIONS = 1024
 export const MUTE_IF_MATT_USES = 0.02
 export const MATT_SAYS_IT_TIMES = 5
 export const X_COMPLAINT = 'xComplaint'

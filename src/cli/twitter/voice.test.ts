@@ -1,19 +1,24 @@
 import { describe, expect, test } from "bun:test";
 import { mkdtempSync, utimesSync, writeFileSync } from "node:fs";
+import { saveAiIndex } from "../../inbox/store/index.ts";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { aiIndexStale } from "./helpers/voice.ts";
 
 function aiIndexAt(builtAt: string): string {
   const dir = mkdtempSync(join(tmpdir(), "aiTells"));
-  writeFileSync(join(dir, "index.json"), JSON.stringify({ model: "m", dimensions: 2, builtAt, phrases: [], baseline: { messages: 0, p50: 0, p99: 0, mutedRules: [] } }));
-  writeFileSync(join(dir, "vectors.f32"), Buffer.alloc(0));
+  saveAiIndex(dir, "m", { model: "m", dimensions: 2, builtAt, phrases: [], baseline: { messages: 0, p50: 0, p99: 0, mutedRules: [] } });
   return dir;
 }
 
 describe("log voice keeps its own AI tells index current (rule 112)", () => {
   test("a missing index is rebuilt by the gate itself", () => {
     expect(aiIndexStale(mkdtempSync(join(tmpdir(), "none")), join(tmpdir(), "noPairs.json"))).toBe(true);
+  });
+
+  test("an index made with another embedding model is rebuilt (rule 137)", () => {
+    expect(aiIndexStale(aiIndexAt("2026-11-02T05:00:00Z"), join(tmpdir(), "noPairs.json"), "jina-embeddings-v5-omni-small")).toBe(true);
+    expect(aiIndexStale(aiIndexAt("2026-11-02T05:00:00Z"), join(tmpdir(), "noPairs.json"), "m")).toBe(false);
   });
 
   test("an index older than matt's voice index is rebuilt, a newer one is kept", () => {

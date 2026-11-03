@@ -51,7 +51,7 @@ export const STAGES: readonly Stage[] = ['received', 'appended', 'relayed', 'sho
 
 export const KNOWN_TYPES: Record<string, readonly string[]> = {
   twitter: ['message', 'ownMessage', 'watching', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused'],
-  discord: ['message', 'ownMessage', 'watching', 'open'],
+  discord: ['message', 'ownMessage', 'watching', 'open', 'closed'],
   slack: ['message', 'ownMessage', 'watching', 'hello', 'reconnect_url'],
   instagram: ['message', 'ownMessage', 'watching'],
 }

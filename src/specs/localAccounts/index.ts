@@ -44,7 +44,7 @@ export const localAccounts = {
     'REQ-LOCAL-06': noul('When localOnly is true (LOG_ACCOUNTS is local), do list, get, create, update and loginSecrets for socialAccounts use only the local file and never call the remote client for an account?'),
     'REQ-LOCAL-07': noul('Does update on socialAccounts write the change to the local file with writeLocalAccounts when the row is in the file, without calling remote.update?'),
     'REQ-LOCAL-08': noul('For every object other than socialAccounts, do list, get, create and update in withLocalAccounts call the remote client whatever localOnly says?'),
-    'REQ-LOCAL-09': noul('Does the COMMAND_RULES entry for localAccount include rule 97?'),
+    'REQ-LOCAL-09': noul('In src/mcp/server/helpers/agentRules.ts, the COMMAND_RULES object has one key per command with the rule numbers it falls under. Does its localAccount key list the number 97?'),
     unspecifiedBehavior: noul('Does the local accounts code write an account to Twenty when it should stay local, read Twenty with LOG_ACCOUNTS=local, or keep listings, groups or conversations in the local file, by a route the specification does not describe?'),
   },
   assertions: {

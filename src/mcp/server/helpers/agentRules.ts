@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 136;
+export const RULES_REVIEWED_THROUGH = 137;
 
 export const AGENTS_URI = "log://agents";
 
@@ -55,6 +55,7 @@ export const CORE_PRINCIPLES = [
   "48. The inbox lives in one SQLite database, `~/.logCli/log.db`: the owner appends every event once with a sequence number and each session reads from its own cursor; owners, claims (each with a generation, checked before every part of a send), actions, alerts and stage timings are rows in it, and an event type nobody catalogued is stored and raised loudly. Never read or write the old inbox files by hand (rule 134).",
   "49. Missing context is filled by catching up, never by re-reading the platform: each owner keeps the platform's last position, a gap (a restart or a dropped socket) marks the account behind, and one catch-up job in the owner pulls only the delta through the one session. A send waits for it and is refused with `accountBehind` if it can't; a refused catch-up stops everything on that account until matt says so (rule 135).",
   "50. The context right before a send comes from the .db, not from X: messages both ways and what they did on the account's posts, once the account has caught up. Only catch-up, backfill and discovery read the platform (rule 136).",
+  "51. The voice gate runs inside every send (discord, slack, twitter dm, the queue, instagram), whether or not voice ran first: SubQ's read, the AI tells index with its reranker, matt's own phrasing, the watermark checker and the scrambler, against this chat's context from the .db ranked for the moment. A failing draft is refused with `voiceGateFailed` (held in the queue): rewrite it from what failed. Only embeddings are stored; results are fresh each send (rule 137).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -123,8 +124,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137],
   runs: [19, 22, 25, 27, 66, 73],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136],
   browsers: [29, 35, 54, 55],
@@ -143,18 +144,18 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94, 126],
   discordWatch: [13, 26, 63, 64, 73, 83, 94, 126, 131, 132],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],
   slackChats: [13, 63, 64, 73, 83, 94, 125],
   slackRead: [13, 63, 64, 73, 83, 94, 125, 126],
   slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125, 131, 132],
-  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 130, 133, 134, 135],
+  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 130, 133, 134, 135, 137],
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
   instagramSession: [13, 63, 64, 73, 83, 129],
   instagramDms: [13, 63, 64, 73, 83, 94, 126, 129],
-  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130, 133, 135],
+  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130, 133, 135, 137],
   instagramWatch: [13, 26, 63, 64, 73, 83, 94, 123, 129, 131, 132],
 };
 

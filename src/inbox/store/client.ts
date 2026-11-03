@@ -22,6 +22,8 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS positions (platform TEXT NOT NULL, account TEXT NOT NULL, scope TEXT NOT NULL DEFAULT '', position TEXT NOT NULL, updatedAt TEXT NOT NULL, PRIMARY KEY (platform, account, scope))`,
   `CREATE TABLE IF NOT EXISTS gaps (id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT NOT NULL, account TEXT NOT NULL, fromAt TEXT NOT NULL, toAt TEXT, reason TEXT NOT NULL, status TEXT NOT NULL, detail TEXT, appended INTEGER NOT NULL DEFAULT 0, openedAt TEXT NOT NULL, closedAt TEXT)`,
   `CREATE INDEX IF NOT EXISTS gapsOpen ON gaps (platform, account, status)`,
+  `CREATE TABLE IF NOT EXISTS embeddings (hash TEXT NOT NULL, model TEXT NOT NULL, dimensions INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'text', text TEXT NOT NULL, vector BLOB NOT NULL, createdAt TEXT NOT NULL, PRIMARY KEY (hash, model, dimensions))`,
+  `CREATE TABLE IF NOT EXISTS aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt TEXT NOT NULL)`,
 ]
 
 const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]
@@ -202,4 +204,53 @@ export function lastEventAt(platform: string, account: string, handle: Database 
 export function chatEvents(platform: string, account: string, match: (conversationId: string, withWho: string) => boolean, since = ''): StoredEvent[] {
   const rows = db().prepare("SELECT * FROM events WHERE platform = ? AND account = ? AND receivedAt > ? AND type IN ('message', 'ownMessage', 'notification') ORDER BY seq").all(platform, account, since) as StoredEvent[]
   return rows.filter((r) => match(r.conversationId, r.withWho))
+}
+
+export function textHash(text: string): string {
+  return createHash('sha256').update(text).digest('hex').slice(0, 32)
+}
+
+export function vectorsFor(model: string, dimensions: number, texts: readonly string[]): (Float32Array | null)[] {
+  const read = db().prepare('SELECT vector FROM embeddings WHERE hash = ? AND model = ? AND dimensions = ?')
+  return texts.map((text) => {
+    const row = read.get(textHash(text), model, dimensions) as { vector: Uint8Array } | null
+    if (!row) return null
+    const bytes = Uint8Array.from(row.vector)
+    return new Float32Array(bytes.buffer, 0, bytes.byteLength / 4)
+  })
+}
+
+export function saveVectors(model: string, dimensions: number, items: readonly { text: string; vector: ArrayLike<number>; kind?: string }[], now: Date = new Date()): void {
+  if (!items.length) return
+  immediate((handle) => {
+    const write = handle.prepare('INSERT OR IGNORE INTO embeddings (hash, model, dimensions, kind, text, vector, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    for (const item of items) write.run(textHash(item.text), model, dimensions, item.kind ?? 'text', item.text.slice(0, 4000), Buffer.from(Float32Array.from(item.vector).buffer), now.toISOString())
+  })
+}
+
+export function saveAiIndex(name: string, model: string, meta: unknown, now: Date = new Date()): void {
+  db().prepare('INSERT INTO aiIndexes (name, model, meta, builtAt) VALUES (?, ?, ?, ?) ON CONFLICT(name) DO UPDATE SET model = excluded.model, meta = excluded.meta, builtAt = excluded.builtAt').run(name, model, JSON.stringify(meta), now.toISOString())
+}
+
+export function aiIndexOf(name: string): { model: string; meta: string; builtAt: string } | null {
+  return (db().prepare('SELECT model, meta, builtAt FROM aiIndexes WHERE name = ?').get(name) as { model: string; meta: string; builtAt: string } | null) ?? null
+}
+
+export function storedEmbedder<E extends { model: string; dimensions: number; embed(texts: string[]): Promise<Float32Array[]>; stop?(): void }>(inner: E, kind = 'text'): E {
+  return {
+    ...inner,
+    async embed(texts: string[]) {
+      if (!texts.length) return []
+      const held = vectorsFor(inner.model, inner.dimensions, texts)
+      const missing = [...new Set(texts.filter((_, i) => !held[i]))]
+      const made = new Map<string, Float32Array>()
+      if (missing.length) {
+        const fresh = await inner.embed(missing)
+        missing.forEach((text, i) => made.set(text, fresh[i]))
+        saveVectors(inner.model, inner.dimensions, missing.map((text, i) => ({ text, vector: fresh[i], kind })))
+      }
+      return texts.map((text, i) => held[i] ?? made.get(text)!)
+    },
+    stop: () => inner.stop?.(),
+  }
 }

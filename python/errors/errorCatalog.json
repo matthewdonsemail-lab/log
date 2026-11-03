@@ -867,6 +867,17 @@
     "monitor": "blocked",
     "action": "Leave the chat to the session holding it. See who holds what with `log inbox claims`, and what was done with `log inbox actions --chat <id>`. A claim held by a session that ended frees itself; one left by a live session frees itself after 10 minutes."
   },
+  "voiceGateFailed": {
+    "layer": "account",
+    "meaning": "The voice gate read the draft right before it went out (rule 137) and it failed one of its checks: SubQ's read of matt's voice, the AI tells index, matt's own phrasing, the watermark checker or the scrambler. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "voice/gate"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Rewrite the draft in matt's words from what the refusal names, then send it again. In the X queue the item is held: put the rewrite back with `twitterQueueEdit`."
+  },
   "accountBehind": {
     "layer": "account",
     "meaning": "The account's owner is catching up on a gap (rule 135): the push channel dropped, the owner restarted or no owner was running, so the context in the .db is incomplete. A send waits up to 90 s for the catch-up to close the gap, and this one didn't, or the catch-up was refused. Nothing was sent.",

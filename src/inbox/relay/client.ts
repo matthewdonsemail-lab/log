@@ -172,7 +172,10 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
 }
 
 export function socketChange(event: Record<string, unknown>): 'dropped' | 'open' | null {
-  if (event.type !== 'socket') return null
+  const kind = String(event.type ?? event.kind ?? '')
+  if (kind === 'closed') return 'dropped'
+  if (kind === 'open') return 'open'
+  if (kind !== 'socket') return null
   const state = String(event.state ?? '')
   if (/^(open|opened|connected|resumed|ready)$/i.test(state)) return 'open'
   if (/clos|drop|disconnect|reconnect|error|lost/i.test(state) || event.error) return 'dropped'
