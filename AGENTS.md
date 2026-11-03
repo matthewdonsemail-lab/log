@@ -1843,6 +1843,43 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     confirmed, indexed). Alerts are rows in `alerts`. Spec:
     `docs/specs/agentHooks.md` (REQ-HOOKS-16).
 
+135. 2026-11-04 · matt (through his side session): missing context "is
+    filled by catching up, never by every caller re-reading the client".
+    Each account's owner keeps the platform's own last position in the .db
+    (`positions`: X Chat's sequence id, Discord's last message id per DM,
+    Slack's last ts per chat, Instagram's last activity). A gap opens
+    (`gaps`: from, to, reason, status) when an owner takes over from a
+    stopped or dead one (from its last heartbeat), when the first owner
+    starts on an account that already has events (from the newest), or when
+    the push channel drops. While a gap is open the account is behind, and
+    one catch-up job inside the owner (`catchUpRunner`, `src/inbox/catchUp`)
+    pulls only the delta through the account's own session and governor,
+    paced like reads (0.8 to 2.5 s): X's delta sync after its saved sequence
+    id, Discord's DMs after each one's saved message id, Slack's history
+    after each chat's saved ts (`oldest`), and Instagram's threads active
+    since its last activity. What it pulls is appended to `events` like live
+    pushes, marked `source: catchUp`, and the gap closes. A send (Discord,
+    Slack, X dm and the queue's sends, Instagram) waits up to 90 s for the
+    account to catch up (`waitCaughtUp`) and never reads the platform
+    itself; still behind, it is refused with `accountBehind`. A refused
+    catch-up (a 429 or any refusal) stops, keeps the account behind, alerts
+    (`catchUpRefused`), and nothing resumes until matt says so (rule 94).
+    Discord's gateway RESUME is not used yet. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-17).
+
+136. 2026-11-04 · matt: "these must be completed", with the direction that
+    the context before a send comes from the .db, not from a fresh platform
+    read. This changes rule 109's last read: right before each queued send,
+    the run reads that person's messages both ways and what they did on the
+    account's posts from the .db (`chatContextOf`, `src/inbox/context`),
+    once the account has caught up (rule 135), and holds the item when
+    anything happened since its draft, as before. X is not read for it. The
+    platform is read only by the catch-up job, by backfill (history from
+    before the push channel existed) and by discovery (unknown event types).
+    Every owner stores the account's own messages (`ownMessage`) as well as
+    theirs, and X's notifications arrive through the owner's badge poll
+    (rule 115). Spec: `docs/specs/fullContext.md` (REQ-CONTEXT-04, 10).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 34 domains, 414 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 34 domains, 416 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -64,6 +64,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-14** One owner per account, every other watch attaches to its relay
 - **REQ-HOOKS-15** Only the session that claims a chat acts on it
 - **REQ-HOOKS-16** The inbox is one database, read from cursors
+- **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -356,12 +357,13 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-01** twitterDms with a handle gives the thread and the person's activity
 - **REQ-CONTEXT-02** Activity names what they did and their words
 - **REQ-CONTEXT-03** Notifications are read again only when older than 2 minutes
-- **REQ-CONTEXT-04** The queue reads the thread and activity again before each send
+- **REQ-CONTEXT-04** The queue reads the context again from the .db before each send
 - **REQ-CONTEXT-05** Changes are counted since the item was drafted
 - **REQ-CONTEXT-06** An item whose context changed is held, not sent
 - **REQ-CONTEXT-07** A held item is put back only with queue edit
 - **REQ-CONTEXT-08** An item cannot be edited while its run is going
 - **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
+- **REQ-CONTEXT-10** The context before a send is read from the .db once the account has caught up
 
 ## [Voice gate](./voiceGate.md)
 

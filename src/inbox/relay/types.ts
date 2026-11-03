@@ -1,3 +1,5 @@
+import type { GapRow } from '../store/index'
+
 export type RelayStatus = 'connecting' | 'streaming' | 'reconnecting' | 'error'
 
 export interface RelaySession {
@@ -30,3 +32,5 @@ export interface AttachResult {
 export const HEARTBEAT_MS = 5_000
 export const STALE_MS = 60_000
 export const MAX_BUFFERED_BYTES = 1_000_000
+
+export type CatchUp = (gap: GapRow) => Promise<{ appended: number; refused?: string; detail?: string }>

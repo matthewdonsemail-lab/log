@@ -206,6 +206,8 @@ async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
         cursor: str | None = None
         while len(messages) < limit:
             fields = {"channel": chat, "limit": str(min(200, limit - len(messages)))}
+            if spec.get("oldest"):
+                fields["oldest"] = str(spec["oldest"])
             if cursor:
                 fields["cursor"] = cursor
             page = await core.call_web_api("conversations.history", fields)

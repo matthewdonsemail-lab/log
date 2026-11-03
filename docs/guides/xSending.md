@@ -461,7 +461,7 @@ A draft written on several lines goes out one message per line, and a one-line d
 Fill the named fields; each value goes through whole. What acts on X is `twitterDmLive`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterDmLive`
 
@@ -475,7 +475,7 @@ A draft written on several lines goes out one message per line, and a one-line d
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueBuild`
 
@@ -489,7 +489,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagementReplies" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/nicheMapRegion" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueShow`
 
@@ -502,7 +502,7 @@ run walks the plan as an XState machine (planned, waiting, liking, replying, ret
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueCheck`
 
@@ -516,7 +516,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagementReplies" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/nicheMapRegion" }), getGuide({ useCase: "twitter/recruiting" }), getGuide({ useCase: "twitter/topicReplies" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueStatus`
 
@@ -530,7 +530,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/recruiting" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueApprove`
 
@@ -544,7 +544,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueuePlan`
 
@@ -558,7 +558,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/topicReplies" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueRun`
 
@@ -571,7 +571,7 @@ run walks the plan as an XState machine (planned, waiting, liking, replying, ret
 Fill the named fields; each value goes through whole. What acts on X is `twitterQueueRunLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueRunLive`
 
@@ -586,7 +586,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueAdd`
 
@@ -600,7 +600,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/networkMaxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueNudge`
 
@@ -613,7 +613,7 @@ run walks the plan as an XState machine (planned, waiting, liking, replying, ret
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `twitterQueueEdit`
 
@@ -627,7 +627,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
-AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -700,3 +700,7 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 130.** 2026-11-04 · matt: "we need to make it so we have a monitor on there that will then listen for the new info coming over via the websocket, because look, he responded halfway through ... he just asked something, it breaks the flow". On 2026-11-03 Abel wrote "is this ai" on Discord while an 8-line send was going out, and lines 6 to 8 went on top of his question. A message sent one line at a time stops the moment they write: before each line after the first, the send reads what the platform's push channel put in the inbox for that chat since the send began (`incomingSince`, `src/inbox/watch`, from `pending.jsonl`), and if they wrote, the rest is held and the answer leads with `>>> INTERRUPTED`: what they said and the lines not sent (`interruptedLines`). It holds for `log discord send`, `log slack send`, `log twitter dm` (old DMs and X Chat), the queue's dms and `log instagram send` (in its engine). What was sent stays sent, nothing is resent, and they are answered first (rule 109). An agent following a conversation keeps a Monitor on `~/.logCli/inbox/pending.jsonl` so each push wakes it. Spec: `docs/specs/messageSplit.md` (REQ-SPLIT-08).
 
 **Rule 133.** 2026-11-04 · matt, to deepman: "whenever the agent wants to perform an action based on the streamed event information, it must first claim the relevant event ... only the session that successfully claims an event should be allowed to perform the corresponding action. Once the action has been executed through the state machine, the lock is released ... every time an action is executed, the system should also index and persist the associated information". Every message a push channel brings in has an event id (`eventIdOf`, shown in the hook's `>>> CLAIM BEFORE YOU ACT` beside who holds its chat). A session claims a chat before it drafts (`log inbox claim`, MCP `inboxClaim`, 10 minutes, renewed by claiming again; `claimChat`, `src/inbox/claims`, an exclusive claim file per chat, the session being its MCP server's process), and a second session is refused (`chatClaimedElsewhere`). Every send (`log discord send`, `log slack send`, `log twitter dm`, the queue's dms, `log instagram send`) claims the chat itself first (`guardSend`) and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. An X chat is one chat whether it is named by the person's id or the X Chat pair. A claim held by a session that ended, or past its time, frees itself. Every claim, renewal, refusal, send, interruption, failure and release is written to `~/.logCli/inbox/actions.jsonl`, read with `log inbox actions --chat <id>` (MCP `inboxActions`) before acting; `log inbox claims` lists who holds what. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-15).
+
+**Rule 135.** 2026-11-04 · matt (through his side session): missing context "is filled by catching up, never by every caller re-reading the client". Each account's owner keeps the platform's own last position in the .db (`positions`: X Chat's sequence id, Discord's last message id per DM, Slack's last ts per chat, Instagram's last activity). A gap opens (`gaps`: from, to, reason, status) when an owner takes over from a stopped or dead one (from its last heartbeat), when the first owner starts on an account that already has events (from the newest), or when the push channel drops. While a gap is open the account is behind, and one catch-up job inside the owner (`catchUpRunner`, `src/inbox/catchUp`) pulls only the delta through the account's own session and governor, paced like reads (0.8 to 2.5 s): X's delta sync after its saved sequence id, Discord's DMs after each one's saved message id, Slack's history after each chat's saved ts (`oldest`), and Instagram's threads active since its last activity. What it pulls is appended to `events` like live pushes, marked `source: catchUp`, and the gap closes. A send (Discord, Slack, X dm and the queue's sends, Instagram) waits up to 90 s for the account to catch up (`waitCaughtUp`) and never reads the platform itself; still behind, it is refused with `accountBehind`. A refused catch-up (a 429 or any refusal) stops, keeps the account behind, alerts (`catchUpRefused`), and nothing resumes until matt says so (rule 94). Discord's gateway RESUME is not used yet. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-17).
+
+**Rule 136.** 2026-11-04 · matt: "these must be completed", with the direction that the context before a send comes from the .db, not from a fresh platform read. This changes rule 109's last read: right before each queued send, the run reads that person's messages both ways and what they did on the account's posts from the .db (`chatContextOf`, `src/inbox/context`), once the account has caught up (rule 135), and holds the item when anything happened since its draft, as before. X is not read for it. The platform is read only by the catch-up job, by backfill (history from before the push channel existed) and by discovery (unknown event types). Every owner stores the account's own messages (`ownMessage`) as well as theirs, and X's notifications arrive through the owner's badge poll (rule 115). Spec: `docs/specs/fullContext.md` (REQ-CONTEXT-04, 10).

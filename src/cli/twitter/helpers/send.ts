@@ -13,6 +13,7 @@ import type { TwitterEngineSpec } from "../../../twitter/account/session/index.t
 import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
 import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
 import { guardSend } from "../../../inbox/claims/index.ts";
+import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
 import type { InboxMessage } from "../../../inbox/watch/index.ts";
 import type { SplitPlan, VoiceProfile } from "../../../voice/pairs/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
@@ -195,6 +196,8 @@ function sendCommand(shape: SendShape): Command {
         context.err(`${account.accountName}: ${shape.action === "post" ? "new post" : `${shape.action} ${plan.target}`}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
+          const caught = await waitCaughtUp("twitter", account.accountName);
+          if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
           const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
           if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
           let parts: Awaited<ReturnType<typeof sendDmParts>>;

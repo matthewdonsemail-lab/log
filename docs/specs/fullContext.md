@@ -28,9 +28,9 @@ Checked by: code and SubQ
 
 ## Right before each send
 
-### REQ-CONTEXT-04: The queue reads the thread and activity again before each send
+### REQ-CONTEXT-04: The queue reads the context again from the .db before each send
 
-Right before each queued dm, reply or quote, the run reads that person's thread and the account's notifications again, before the engine is asked to send.
+Right before each queued dm, reply or quote, the run reads that person's messages both ways and what they did on the account's posts again, from the .db, once the account has caught up (rule 136), before the engine is asked to send. X is not read for it.
 
 Checked by: SubQ
 
@@ -62,6 +62,12 @@ Checked by: code and SubQ
 
 ### REQ-CONTEXT-09: A like and the parts of a split dm ride on their send's context read
 
-A queued like only goes out after its own item was sent in the same run (`sentAtRun` is this plan), so it follows the context read made right before that send and needs no read of its own. The parts of one dm split into lines are one send: the context is read once before the first part, and the rest follow it. A read that fails before a send, or an item with no handle, holds the item instead of sending it on half its context.
+A queued like only goes out after its own item was sent in the same run (`sentAtRun` is this plan), so it follows the context read made right before that send and needs no read of its own. The parts of one dm split into lines are one send: the context is read once before the first part, and the rest follow it. An account still behind or whose catch-up was refused (rule 135), or an item with neither a handle nor a user id, holds the item instead of sending it on half its context.
 
 Checked by: SubQ
+
+### REQ-CONTEXT-10: The context before a send is read from the .db once the account has caught up
+
+The queue's context check first waits for the account to catch up (rule 135), and an account still behind or whose catch-up was refused holds the item with the reason. It then takes that person's messages from either side and their activity (likes, retweets, replies, quotes, mentions, follows) from the .db, matched by their user id, handle or chat, and never calls the inbox or notifications engine actions. Rule 136.
+
+Checked by: code and SubQ

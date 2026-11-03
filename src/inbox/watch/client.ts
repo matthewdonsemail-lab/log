@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
-import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, latestSeq, markStage, readCursor, writeCursor } from '../store/index'
+import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, openGap, readCursor, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
@@ -175,7 +175,7 @@ export function coolingDown(stateRoot: string, account: string, now: Date = new 
 const ALERTS_READER = (reader: string) => `alerts:${reader}`
 
 export function watchHolder(platform: string, account: string, alive: (pid: number) => boolean = processAlive): number {
-  const row = db().prepare('SELECT pid FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number } | null
+  const row = db().prepare("SELECT pid FROM owners WHERE platform = ? AND account = ? AND status != 'stopped'").get(platform, account) as { pid: number } | null
   return row && alive(row.pid) ? row.pid : 0
 }
 
@@ -185,13 +185,15 @@ export function addAlert(alert: { platform: string; account: string; kind: strin
 
 export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive, now: Date = new Date()): { ok: true } | { ok: false; holder: number } {
   const claimed = immediate((handle) => {
-    const row = handle.prepare('SELECT pid, generation FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number; generation: number } | null
+    const row = handle.prepare('SELECT pid, generation, heartbeat, status FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number; generation: number; heartbeat: string; status: string } | null
     if (row && row.pid === pid) return { ok: true as const }
-    if (row && alive(row.pid)) {
+    if (row && row.status !== 'stopped' && alive(row.pid)) {
       addAlertRow({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${row.pid} owns it; it was refused and exited, so there is still one process` }, now, handle)
       return { ok: false as const, holder: row.pid }
     }
     const stamp = now.toISOString()
+    const fromAt = row?.heartbeat ?? lastEventAt(platform, account, handle)
+    if (fromAt) openGap(platform, account, fromAt, row ? 'ownerRestarted' : 'noOwner', now, handle)
     handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation`).run(platform, account, pid, hostname(), stamp, stamp, (row?.generation ?? 0) + 1)
     return { ok: true as const }
   })
@@ -203,7 +205,7 @@ export function claimWatcher(platform: string, account: string, pid: number = pr
 }
 
 export function releaseWatcher(platform: string, account: string, pid: number = process.pid): void {
-  db().prepare('DELETE FROM owners WHERE platform = ? AND account = ? AND pid = ?').run(platform, account, pid)
+  db().prepare("UPDATE owners SET status = 'stopped', port = 0, token = '', subscribers = 0, heartbeat = ? WHERE platform = ? AND account = ? AND pid = ?").run(new Date().toISOString(), platform, account, pid)
 }
 
 export function takeAlerts(reader: string): string[] {

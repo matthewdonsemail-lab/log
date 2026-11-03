@@ -3,9 +3,9 @@ import type { AddressInfo, Socket } from 'node:net'
 import { createHash, randomBytes } from 'node:crypto'
 import { hostname } from 'node:os'
 import { addAlert, claimWatcher, killTree, processAlive, releaseWatcher, watchHolder } from '../watch/index'
-import { appendEvent, db, markStage } from '../store/index'
+import { appendEvent, behindOf, db, lastEventAt, markGap, markStage, openGap } from '../store/index'
 import { HEARTBEAT_MS, MAX_BUFFERED_BYTES, STALE_MS } from './types'
-import type { AttachResult, Relay, RelaySession, RelayStatus } from './types'
+import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
 
 export function readSession(platform: string, account: string): RelaySession | null {
   const row = db().prepare('SELECT * FROM owners WHERE platform = ? AND account = ?').get(platform, account) as (Omit<RelaySession, 'lastHeartbeat'> & { heartbeat: string }) | null
@@ -125,7 +125,7 @@ export function attachRelay(session: RelaySession, onEvent: (event: Record<strin
 
 export type OwnOrAttach<R> = { owner: true; result: R } | { owner: false; attached: AttachResult } | { owner: false; refused: string }
 
-export async function ownOrAttach<R>(platform: string, account: string, options: { inbox: boolean; seconds?: number; run: (emit: (event: Record<string, unknown>) => void) => Promise<R>; onAttached: (event: Record<string, unknown>) => void }): Promise<OwnOrAttach<R>> {
+export async function ownOrAttach<R>(platform: string, account: string, options: { inbox: boolean; seconds?: number; run: (emit: (event: Record<string, unknown>) => void) => Promise<R>; onAttached: (event: Record<string, unknown>) => void; catchUp?: CatchUp; log?: (line: string) => void }): Promise<OwnOrAttach<R>> {
   const claim = claimWatcher(platform, account)
   if (!claim.ok) {
     if (options.inbox) return { owner: false, refused: `>>> ONE PROCESS PER ACCOUNT: pid ${claim.holder} already owns ${account}'s ${platform} connection and writes its inbox, so this one stopped before opening anything` }
@@ -134,16 +134,22 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
     return { owner: false, attached: await attachRelay(session, options.onAttached, options.seconds) }
   }
   const relay = await openRelay(platform, account)
+  const catching = catchUpRunner(platform, account, options.catchUp, options.log)
+  void catching.run()
   try {
     const result = await options.run((event) => {
       relay.setStatus('streaming')
+      const drop = socketChange(event)
+      if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
+      if (drop === 'open') void catching.run()
       const type = String(event.type ?? event.kind ?? 'unknown')
-      const stored = type === 'message' ? null : appendEvent({ platform, account, conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
+      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
       relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
       if (stored) markStage(stored.eventId, 'relayed')
     })
     return { owner: true, result }
   } finally {
+    await catching.settled()
     await relay.close()
     releaseWatcher(platform, account)
   }
@@ -163,4 +169,48 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
     replaced.push(account)
   }
   return replaced
+}
+
+export function socketChange(event: Record<string, unknown>): 'dropped' | 'open' | null {
+  if (event.type !== 'socket') return null
+  const state = String(event.state ?? '')
+  if (/^(open|opened|connected|resumed|ready)$/i.test(state)) return 'open'
+  if (/clos|drop|disconnect|reconnect|error|lost/i.test(state) || event.error) return 'dropped'
+  return null
+}
+
+export function catchUpRunner(platform: string, account: string, catchUp: CatchUp | undefined, log: (line: string) => void = () => {}): { run: () => Promise<void>; settled: () => Promise<void> } {
+  let running: Promise<void> | null = null
+  const once = async () => {
+    const gap = behindOf(platform, account)
+    if (!gap || gap.status === 'refused') return
+    if (!catchUp) {
+      log(`${platform} ${account}: behind from ${gap.fromAt} (${gap.reason}), and this owner has no catch-up yet`)
+      return
+    }
+    markGap(gap.id, 'catchingUp')
+    log(`${platform} ${account}: catching up from ${gap.fromAt} (${gap.reason}) through its own session`)
+    try {
+      const got = await catchUp(gap)
+      if (got.refused) {
+        markGap(gap.id, 'refused', got.refused, got.appended)
+        log(`${platform} ${account}: catch-up refused: ${got.refused}; it stays behind until matt says so (rule 94)`)
+        return
+      }
+      markGap(gap.id, 'closed', got.detail ?? null, got.appended)
+      log(`${platform} ${account}: caught up, ${got.appended} event(s) added from the gap`)
+    } catch (error) {
+      markGap(gap.id, 'open', error instanceof Error ? error.message : String(error))
+      log(`${platform} ${account}: catch-up failed (${error instanceof Error ? error.message : String(error)}), still behind`)
+    }
+  }
+  return {
+    run: () => {
+      if (!running) running = once().finally(() => (running = null))
+      return running
+    },
+    settled: async () => {
+      if (running) await running
+    },
+  }
 }

@@ -5,6 +5,8 @@ import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { recordPosition } from "../../inbox/store/index.ts";
+import { instagramCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { saveConversations } from "../../search/conversations/index.ts";
@@ -246,6 +248,8 @@ export const instagramSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, ok: true, dryRun: true, with: said, plan, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log instagram send: dry run: ${account.accountName} would send to ${said}, ${plan.length} message(s):`, ...plan.map((p, i) => `  ${i + 1}. ${p}`), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends the text as one message."].join("\n") };
       context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
+      const caught = await waitCaughtUp("instagram", account.accountName);
+      if (!caught.ok) return refuse("instagram send", "accountBehind", caught.refused);
       const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said });
       if (!guard.ok) return refuse("instagram send", "chatClaimedElsewhere", guard.refused);
       let run: ReturnType<NonNullable<typeof context.directInstagram>>;
@@ -331,9 +335,13 @@ export const instagramWatchCommand: Command = {
             emit(event);
             if (event.type === "message") seen.push(event);
             if (event.type === "message" && !event.fromMe) addPending([instagramInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+            if (event.type === "message" && event.fromMe && event.thread) storeRead("instagram", account.accountName, String(event.thread), "dm", { id: String(event.id ?? ""), at: String(event.at ?? ""), from: "me", fromMe: true, text: String(event.text ?? "") }, context.now?.() ?? new Date(), "live");
+            if (event.type === "message" && event.at) recordPosition("instagram", account.accountName, String(event.at));
             context.err(parsed.flags["json"] ? JSON.stringify(event) : instagramWatchLine(event));
           });
         },
+        log: (line) => context.err(line),
+        catchUp: (gap) => instagramCatchUp(account, gap, context.directInstagram!, context.now?.() ?? new Date()),
       });
       if ("refused" in owned) return refuse("instagram watch", "watcherAlreadyRunning", owned.refused);
       if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log instagram watch: ${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };

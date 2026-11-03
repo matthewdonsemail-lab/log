@@ -867,6 +867,17 @@
     "monitor": "blocked",
     "action": "Leave the chat to the session holding it. See who holds what with `log inbox claims`, and what was done with `log inbox actions --chat <id>`. A claim held by a session that ended frees itself; one left by a live session frees itself after 10 minutes."
   },
+  "accountBehind": {
+    "layer": "account",
+    "meaning": "The account's owner is catching up on a gap (rule 135): the push channel dropped, the owner restarted or no owner was running, so the context in the .db is incomplete. A send waits up to 90 s for the catch-up to close the gap, and this one didn't, or the catch-up was refused. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "inbox/catchUp"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Wait for the owner's catch-up (its watch log says when it has caught up), then send again. If the catch-up was refused (a 429 or another refusal), nothing resumes on the account until matt says so (rule 94)."
+  },
   "watcherAlreadyRunning": {
     "layer": "account",
     "meaning": "Another watcher process already holds this account's push channel on this platform (rule 131): one process per account, shared by every Claude session through the inbox. This one stopped before opening anything.",

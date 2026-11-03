@@ -3,6 +3,8 @@ import { findDiscordAccount, recordDiscordSession, discordGate } from "../../dis
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { recordPosition } from "../../inbox/store/index.ts";
+import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
@@ -286,6 +288,10 @@ export const discordWatchCommand: Command = {
           context.err(`${account.accountName}: the one owner of Discord's gateway through vendor/endcord${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages, mentions and replies go to the inbox and every event to every attached subscriber`);
           return directDiscordLive(account, { action: "watch", seconds }, (event) => {
             emit(event);
+            if (event.kind === "message" && !event.guildId && event.channelId && event.id) {
+              recordPosition("discord", account.accountName, String(event.id), String(event.channelId));
+              if (event.fromMe) storeRead("discord", account.accountName, String(event.channelId), "dm", { id: String(event.id), at: String(event.at ?? ""), from: "me", fromMe: true, text: String(event.text ?? "") }, context.now?.() ?? new Date(), "live");
+            }
             const mine = toInboxOf(event);
             if (mine) {
               const inbox = discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
@@ -298,6 +304,8 @@ export const discordWatchCommand: Command = {
             context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
           });
         },
+        log: (line) => context.err(line),
+        catchUp: (gap) => discordCatchUp(account, gap, context.directDiscord!, context.now?.() ?? new Date()),
       });
       if ("refused" in owned) return refuse("discord watch", "watcherAlreadyRunning", owned.refused);
       if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log discord watch: ${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
@@ -470,6 +478,8 @@ export const discordSendCommand: Command = {
       if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
+      const caught = await waitCaughtUp("discord", account.accountName);
+      if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
       const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });
       if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];

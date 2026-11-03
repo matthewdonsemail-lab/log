@@ -14,6 +14,7 @@ export interface StoredEvent {
   receivedAt: string
   appendedAt: string
   ownerPid: number
+  source: string
 }
 
 export interface OwnerRow {
@@ -49,10 +50,26 @@ export type Stage = 'received' | 'appended' | 'relayed' | 'shown' | 'claimed' | 
 export const STAGES: readonly Stage[] = ['received', 'appended', 'relayed', 'shown', 'claimed', 'actionStart', 'confirmed', 'indexed']
 
 export const KNOWN_TYPES: Record<string, readonly string[]> = {
-  twitter: ['message', 'watching', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused'],
-  discord: ['message', 'watching', 'open'],
-  slack: ['message', 'watching', 'hello', 'reconnect_url'],
-  instagram: ['message', 'watching'],
+  twitter: ['message', 'ownMessage', 'watching', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused'],
+  discord: ['message', 'ownMessage', 'watching', 'open'],
+  slack: ['message', 'ownMessage', 'watching', 'hello', 'reconnect_url'],
+  instagram: ['message', 'ownMessage', 'watching'],
 }
 
 export const INTERNAL_TYPES: readonly string[] = ['relayJoined']
+
+export type GapStatus = 'open' | 'catchingUp' | 'closed' | 'refused'
+
+export interface GapRow {
+  id: number
+  platform: string
+  account: string
+  fromAt: string
+  toAt: string | null
+  reason: string
+  status: GapStatus
+  detail: string | null
+  appended: number
+  openedAt: string
+  closedAt: string | null
+}

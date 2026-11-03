@@ -4,6 +4,8 @@ import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { recordPosition } from "../../inbox/store/index.ts";
+import { slackCatchUp, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
@@ -348,6 +350,7 @@ export const slackWatchCommand: Command = {
           context.err(`${opened.account.accountName}: the one owner of ${opened.workspace || "every workspace"}'s websocket through vendor/gabrielSlack${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages and mentions go to the inbox and every event to every attached subscriber`);
           return directSlackLive(opened.account, { action: "watch", seconds, ...inWorkspace(opened.workspace) }, (event) => {
             emit(event);
+            if (event.type === "message" && event.channel && event.ts && slackToInboxOf({ ...event, fromMe: false })) recordPosition("slack", opened.account.accountName, String(event.ts), String(event.channel));
             const mine = slackToInboxOf(event);
             if (mine) addPending([slackInboxMessageOf(opened.account.accountName, event, context.now?.() ?? new Date())]);
             if (!shown(event) || (toInbox && event.type === "message" && !mine)) return;
@@ -355,6 +358,8 @@ export const slackWatchCommand: Command = {
             context.err(parsed.flags["json"] ? JSON.stringify(event) : slackWatchLine(event));
           });
         },
+        log: (line) => context.err(line),
+        catchUp: (gap) => slackCatchUp(opened.account, gap, context.directSlack!, context.now?.() ?? new Date(), undefined, inWorkspace(opened.workspace)),
       });
       if ("refused" in owned) return refuse("slack watch", "watcherAlreadyRunning", owned.refused);
       if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log slack watch: ${opened.account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
@@ -429,6 +434,8 @@ export const slackSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ok: true, dryRun: true, chat: chat.id, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log slack send: dry run: ${opened.account.accountName} would send to ${chat.label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       context.err(`${opened.account.accountName}: send to ${chat.label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
+      const caught = await waitCaughtUp("slack", opened.account.accountName);
+      if (!caught.ok) return refuse("slack send", "accountBehind", caught.refused);
       const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id });
       if (!guard.ok) return refuse("slack send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];
