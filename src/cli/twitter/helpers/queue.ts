@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
-import { dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
+import { dmInterruptedLines, dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
 import {
   addToQueue,
   approvalProblem,
@@ -263,8 +263,12 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (kind === "like" || item.action !== "dm" || !plan.spec.text || !item.userId) return (await opened.engine(spec)).answer;
           const split = dmSplit(plan.spec.text, item.userId, false);
           if (split.parts.length > 1) log(`#${item.n} dm ${splitLine(split)}`);
-          const { answers, last } = await sendDmParts(context, opened.engine, spec, split);
+          const { answers, last, interrupted } = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
+          if (interrupted.length) {
+            for (const line of dmInterruptedLines(opened.account.accountName, split, done, interrupted)) log(`#${item.n} @${item.handle ?? "?"}: ${line}`);
+            return { ...answers[done - 1], detail: `${done} of ${split.parts.length} parts sent, then they wrote while it was going out ("${interrupted[0].text}"), so the rest was held; what was sent stays sent, never resent` };
+          }
           if (done && done < split.parts.length) return { ...answers[done - 1], detail: `${done} of ${split.parts.length} parts sent, then ${last.answer.event ?? last.answer.code}: ${last.answer.detail ?? ""}; what was sent stays sent, never resent` };
           return last.answer;
         },

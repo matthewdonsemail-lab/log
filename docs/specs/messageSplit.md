@@ -44,6 +44,12 @@ When X or Discord does not answer a part as sent, the parts after it are not sen
 
 Checked by: code and SubQ
 
+### REQ-SPLIT-08: A send stops the moment they write back
+
+Before each part after the first, the send reads what the platform's push channel put in the inbox for that chat since the send began. If the other person wrote, the parts left are not sent, and the answer leads with `>>> INTERRUPTED`: what they said and the parts not sent. This holds for an X dm sent directly or by the queue (matched in either inbox), a Discord message, a Slack message and an Instagram message. Rule 130.
+
+Checked by: code and SubQ
+
 ## The opener
 
 ### REQ-SPLIT-07: A first message is gated whole as the opener

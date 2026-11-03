@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 129;
+export const RULES_REVIEWED_THROUGH = 130;
 
 export const AGENTS_URI = "log://agents";
 
@@ -48,6 +48,7 @@ export const CORE_PRINCIPLES = [
   "41. Audio is detected once, in the shared message layer (python/platformKit/media.py, src/platformKit/media): every platform keeps its messages' attachments, and every voice note goes through one AssemblyAI path (`transcribe`), kept by its file's hash and written into the conversation store as (voice note: \"…\") (rule 126).",
   "42. The voice gate also measures matt's own phrasing: a draft whose word pairs he has written fall below his own 10th percentile fails, with the pairs he never wrote named (\"is wild\"), and the vendored ai-watermark-scrambler (layer A) reads every draft for invisible or lookalike characters; both go to SubQ (rule 127).",
   "43. Instagram is worked on the direct-API engine only, vendor/instagrapi over the MCP: `instagramDms` reads, `instagramSendLive` sends text and photos (a meme goes as `photo`), `instagramWatch` holds Instagram's realtime connection and the inbox hook puts each new DM in front of the agent. Never the account's browser for an Instagram action; a missing action is built on the engine (rule 128). Every Instagram call goes through the account's one session host: one client signed in once, one realtime connection, never a second process signing in (rule 129).",
+  "44. A message sent one line at a time stops the moment they write back: before each line after the first, the send reads what the push channel put in the inbox for that chat since it began, and if they wrote, the rest is held and the answer leads with `>>> INTERRUPTED` (what they said, the lines not sent). Answer them first, never resend. Discord, Slack, X dms (and the queue's) and Instagram alike; keep a Monitor on `~/.logCli/inbox/pending.jsonl` so each push wakes you (rule 130).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -116,8 +117,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
@@ -135,18 +136,18 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94, 126],
   discordWatch: [13, 26, 63, 64, 73, 83, 94, 126],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],
   slackChats: [13, 63, 64, 73, 83, 94, 125],
   slackRead: [13, 63, 64, 73, 83, 94, 125, 126],
   slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125],
-  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125],
+  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 130],
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
   instagramSession: [13, 63, 64, 73, 83, 129],
   instagramDms: [13, 63, 64, 73, 83, 94, 126, 129],
-  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129],
+  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130],
   instagramWatch: [13, 26, 63, 64, 73, 83, 94, 123, 129],
 };
 

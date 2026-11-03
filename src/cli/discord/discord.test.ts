@@ -7,7 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
-import { toInboxOf } from "./index.ts";
+import { discordDeps, toInboxOf } from "./index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -94,6 +94,29 @@ describe("log discord session check", () => {
     expect(r.calls).toEqual(["discordOne:send"]);
     expect(r.out).toContain("sent message 1564911647925997649");
   });
+  test("a multi-line send stops the moment they write back, and the rest is held", async () => {
+    const saved = { ...discordDeps };
+    let checks = 0;
+    discordDeps.wait = async () => {};
+    discordDeps.now = () => "2026-11-03T19:23:36.000Z";
+    discordDeps.incoming = (account, channel, since) => {
+      checks++;
+      expect([account, channel, since]).toEqual(["discordOne", "1481513072660185149", "2026-11-03T19:23:36.000Z"]);
+      return checks < 2 ? [] : [{ platform: "discord", account, conversationId: channel, with: "x", text: "is this ai", at: "2026-11-03T19:24:13.300Z", box: "dm", seenAt: "2026-11-03T19:24:13.865Z" }];
+    };
+    try {
+      const r = await run(["discord", "send", "--account", "discordOne", "--channel", "1481513072660185149", "--text", "one\ntwo\nthree\nfour", "--approvedBy", "matt", "--live"], { answer: { ok: true, event: "sent", messageId: "1", channelId: "1481513072660185149", timestamp: "t" }, refreshed: null });
+      expect(r.code).toBe(1);
+      expect(r.calls).toEqual(["discordOne:send", "discordOne:send"]);
+      expect(r.out).toContain(">>> INTERRUPTED");
+      expect(r.out).toContain('"is this ai"');
+      expect(r.out).toContain("not sent: three");
+      expect(r.out).toContain("not sent: four");
+    } finally {
+      Object.assign(discordDeps, saved);
+    }
+  });
+
   test("delete without --live reads the messages and deletes nothing", async () => {
     const r = await run(["discord", "delete", "--account", "discordOne", "--channel", "1434928149904228392", "--message", "1566872902840619151,1566872961531777095"], { answer: { ok: true, loginState: "loggedIn", messages: [{ id: "1566872902840619151", fromMe: true, text: "lad im skint again" }, { id: "1566872961531777095", fromMe: false, text: "theirs" }] }, refreshed: null });
     expect(r.code).toBe(0);

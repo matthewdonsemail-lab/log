@@ -53,6 +53,38 @@ export function addPending(messages: readonly InboxMessage[]): void {
   appendFileSync(pendingPath(), messages.map((m) => JSON.stringify(m)).join('\n') + '\n')
 }
 
+export function incomingSince(platform: string, account: string, inChat: string | ((conversationId: string) => boolean), since: string): InboxMessage[] {
+  const matches = typeof inChat === 'string' ? (id: string) => id === inChat : inChat
+  if (!existsSync(pendingPath())) return []
+  const kept = new Set<string>()
+  return readFileSync(pendingPath(), 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .flatMap((l) => {
+      try {
+        return [JSON.parse(l) as InboxMessage]
+      } catch {
+        return []
+      }
+    })
+    .filter((m) => m.platform === platform && m.account === account && matches(m.conversationId) && (m.seenAt || m.at) > since)
+    .filter((m) => {
+      const key = `${m.at}|${m.text}`
+      if (kept.has(key)) return false
+      kept.add(key)
+      return true
+    })
+}
+
+export function interruptedLines(account: string, heard: readonly InboxMessage[], held: readonly string[], sentCount: number, total: number): string[] {
+  return [
+    `>>> INTERRUPTED: ${account}: ${sentCount} of ${total} sent, then they wrote while it was going out, so the rest was held:`,
+    ...heard.map((m) => `  ${m.with || 'they'} at ${m.at}: "${m.text}"`),
+    ...held.map((p) => `  not sent: ${p}`),
+    'Read them and answer what they said before sending anything else (rule 109).',
+  ]
+}
+
 export function pollReaders(readers: readonly InboxReader[], now: Date = new Date()): InboxMessage[] {
   const found: InboxMessage[] = []
   for (const reader of readers) {

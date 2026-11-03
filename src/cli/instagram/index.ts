@@ -3,7 +3,8 @@ import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
-import { addPending } from "../../inbox/watch/index.ts";
+import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
+import type { InboxMessage } from "../../inbox/watch/index.ts";
 
 export const INSTAGRAM_SESSION_USAGE = [
   "Usage: log instagram session check --account <accountName> [--json]",
@@ -224,6 +225,8 @@ export const instagramSendCommand: Command = {
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, approvedBy, ...run.answer }, null, 2) };
       if (!run.answer.ok) return { code, stdout: [`log instagram send: ${account.accountName}: ${sent.length} of ${plan.length} sent, then ${run.answer.code}: ${run.answer.detail ?? ""}. What was sent stays sent; nothing is retried (rule 94).`, ...(dmsFailed(account, run.answer).stdout ?? "").split("\n").slice(1)].join("\n") };
+      const heard = (run.answer.interrupted as InboxMessage[] | undefined) ?? [];
+      if (heard.length) return { code: 1, stdout: interruptedLines(account.accountName, heard, (run.answer.held as string[] | undefined) ?? [], sent.length, plan.length).join("\n") };
       return { code, stdout: [`log instagram send: ${account.accountName} sent ${sent.length} message(s) to ${said}:`, ...sent.map((s) => `  ${s.kind === "photo" ? "(photo)" : s.text} · ${s.id}`)].join("\n") };
     } catch (error) {
       return refuseError("instagram send", error);

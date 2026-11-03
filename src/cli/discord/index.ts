@@ -1,7 +1,8 @@
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
-import { addPending } from "../../inbox/watch/index.ts";
+import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
+import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
@@ -67,7 +68,12 @@ export const discordSessionCommand: Command = {
   },
 };
 
-export const discordDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void> } = { profiles: () => readProfiles(), wait: (ms) => new Promise((done) => setTimeout(done, ms)) };
+export const discordDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void>; incoming: (account: string, channel: string, since: string) => InboxMessage[]; now: () => string } = {
+  profiles: () => readProfiles(),
+  wait: (ms) => new Promise((done) => setTimeout(done, ms)),
+  incoming: (account, channel, since) => incomingSince("discord", account, channel, since),
+  now: () => new Date().toISOString(),
+};
 
 const DISCORD_ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The DISCORD socialAccount's accountName (its handle)" };
 
@@ -449,8 +455,14 @@ export const discordSendCommand: Command = {
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const sent: PlatformAnswer[] = [];
+      const startedAt = discordDeps.now();
+      let interrupted: InboxMessage[] = [];
       for (const [i, part] of plan.parts.entries()) {
-        if (i) await discordDeps.wait(plan.gapSeconds * 1000);
+        if (i) {
+          await discordDeps.wait(plan.gapSeconds * 1000);
+          interrupted = discordDeps.incoming(account.accountName, target, startedAt);
+          if (interrupted.length) break;
+        }
         const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
         sent.push(run.answer);
         if (!run.answer.ok || run.answer.event !== "sent") break;
@@ -459,7 +471,8 @@ export const discordSendCommand: Command = {
       const last = sent[sent.length - 1];
       const done = sent.filter((a) => a.ok && a.event === "sent");
       const code = done.length === plan.parts.length ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent }, null, 2) };
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent, interrupted }, null, 2) };
+      if (interrupted.length) return { code, stdout: interruptedLines(account.accountName, interrupted, plan.parts.slice(done.length), done.length, plan.parts.length).join("\n") };
       if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent ${done.length === 1 ? `message ${last.messageId}` : `${done.length} messages (${done.map((a) => a.messageId).join(", ")})`} to channel ${last.channelId}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}, the last at ${last.timestamp}.` };
       return { code, stdout: `log discord send: ${account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried.` };
     } catch (error) {

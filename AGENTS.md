@@ -1736,6 +1736,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     since). `LOG_INSTAGRAM_HOST=inline` runs the old way, for tests only.
     Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-09).
 
+130. 2026-11-04 · matt: "we need to make it so we have a monitor on there
+    that will then listen for the new info coming over via the websocket,
+    because look, he responded halfway through ... he just asked something,
+    it breaks the flow". On 2026-11-03 Abel wrote "is this ai" on Discord
+    while an 8-line send was going out, and lines 6 to 8 went on top of his
+    question. A message sent one line at a time stops the moment they write:
+    before each line after the first, the send reads what the platform's
+    push channel put in the inbox for that chat since the send began
+    (`incomingSince`, `src/inbox/watch`, from `pending.jsonl`), and if they
+    wrote, the rest is held and the answer leads with `>>> INTERRUPTED`:
+    what they said and the lines not sent (`interruptedLines`). It holds for
+    `log discord send`, `log slack send`, `log twitter dm` (old DMs and X
+    Chat), the queue's dms and `log instagram send` (in its engine). What was
+    sent stays sent, nothing is resent, and they are answered first (rule
+    109). An agent following a conversation keeps a Monitor on
+    `~/.logCli/inbox/pending.jsonl` so each push wakes it. Spec:
+    `docs/specs/messageSplit.md` (REQ-SPLIT-08).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

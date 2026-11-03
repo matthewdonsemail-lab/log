@@ -8,7 +8,7 @@ import socket
 import sys
 import threading
 import time
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -236,7 +236,34 @@ def lines_of(text: str, as_one: bool) -> list[str]:
     return [line.strip() for line in text.split("\n") if line.strip()]
 
 
-def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one: bool) -> dict[str, Any]:
+def utc_now() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+def heard_since(account: str, thread: str, since: str) -> list[dict[str, Any]]:
+    path = Path(os.environ.get("LOG_INBOX_STATE") or Path.home() / ".logCli" / "inbox") / "pending.jsonl"
+    if not account or not thread or not path.is_file():
+        return []
+    heard: list[dict[str, Any]] = []
+    kept: set[tuple[str, str]] = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            message = json.loads(line)
+        except ValueError:
+            continue
+        if message.get("platform") != "instagram" or message.get("account") != account or str(message.get("conversationId")) != thread:
+            continue
+        if str(message.get("seenAt") or message.get("at") or "") <= since:
+            continue
+        key = (str(message.get("at")), str(message.get("text")))
+        if key in kept:
+            continue
+        kept.add(key)
+        heard.append(message)
+    return heard
+
+
+def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one: bool, account: str = "") -> dict[str, Any]:
     client, answer = signed_in(cookies)
     if not client:
         return answer
@@ -251,6 +278,7 @@ def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one:
         return {"ok": False, "code": "recipientNotFound", "detail": f"Instagram has no user {said}"}
     lines = lines_of(text, as_one)
     sent: list[dict[str, Any]] = []
+    started = utc_now()
     try:
         if photo:
             message = client.direct_send_photo(Path(photo), **to)
@@ -259,6 +287,9 @@ def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one:
         for index, line in enumerate(lines):
             if index or photo:
                 time.sleep(1.5)
+                heard = heard_since(account, str(sent[-1].get("thread") or ""), started) if sent else []
+                if heard:
+                    return {**answer, "to": recipient, "sent": sent, "interrupted": heard, "held": lines[index:]}
             message = client.direct_send(line, **to)
             sent.append({"id": str(message.id), "kind": "text", "text": line, "thread": str(message.thread_id or "")})
             to = {"thread_ids": [int(message.thread_id)]} if message.thread_id else to
@@ -430,7 +461,7 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
         return {"ok": False, "code": "nothingToSend", "detail": "give the text, a photo, or both"}
     if photo and not Path(photo).is_file():
         return {"ok": False, "code": "photoMissing", "detail": f"no file at {photo}"}
-    return missing_session(cookies) or await asyncio.to_thread(locked, send_sync, cookies, said, text, photo, bool(spec.get("asOne")))
+    return missing_session(cookies) or await asyncio.to_thread(locked, send_sync, cookies, said, text, photo, bool(spec.get("asOne")), str(spec.get("account") or ""))
 
 
 async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
