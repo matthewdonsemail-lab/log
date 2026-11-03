@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { addPending, claimPoll, ensureLiveWatchers, inboxContext, localTime, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
+import { addPending, claimPoll, ensureLiveWatchers, hookReaderOf, inboxContext, localTime, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
@@ -44,6 +44,20 @@ describe("inbox watch", () => {
     expect(takePending()).toEqual([]);
   });
 
+  test("each session and each subagent gets every new message once, so a subagent never takes the session's", () => {
+    const main = hookReaderOf(JSON.stringify({ session_id: "s1" }));
+    const sub = hookReaderOf(JSON.stringify({ session_id: "s1", agent_id: "a9" }));
+    expect(main).toBe("s1");
+    expect(sub).toBe("s1_a9");
+    expect(takePending(main)).toEqual([]);
+    expect(takePending(sub)).toEqual([]);
+    addPending([{ platform: "twitter", account: "acct", conversationId: "c", with: "nefer", text: "what up G", at: "2026-11-02T18:57:46Z", box: "xchat", seenAt: "2026-11-02T18:57:48Z" }]);
+    expect(takePending(sub).map((m) => m.with)).toEqual(["nefer"]);
+    expect(takePending(main).map((m) => m.with)).toEqual(["nefer"]);
+    expect(takePending(main)).toEqual([]);
+    expect(takePending(sub)).toEqual([]);
+  });
+
   test("a poll is claimed at most once per gap, never while one runs, never when off", () => {
     const t0 = new Date("2026-10-26T05:00:00Z");
     expect(claimPoll(t0, () => 0)).toBe(true);
@@ -62,6 +76,15 @@ describe("inbox watch", () => {
     expect(text).toContain(">>> NEW DISCORD MESSAGE (1)");
     expect(text).toContain("VIBE BOT on discord sourcedandsoldtothehighestbidder (replied to you in a server channel)");
     expect(text).toContain("`discordSendLive` { account: \"sourcedandsoldtothehighestbidder\", channel: \"<channel>\"");
+  });
+
+  test("a Slack message pushed by the workspace's websocket is told with the Slack steps", () => {
+    addPending([{ platform: "slack", account: "mattSlack", conversationId: "D0EXAMPLE01", with: "Sam", text: "yo hows it going", at: "2026-11-03T07:00:00Z", box: "dm", seenAt: "2026-11-03T07:00:01Z", workspace: "acme" }]);
+    const text = inboxContext(takePending())!;
+    expect(text).toContain(">>> NEW SLACK MESSAGE (1)");
+    expect(text).toContain("Sam on slack mattSlack in acme (DM)");
+    expect(text).toContain("(chat D0EXAMPLE01)");
+    expect(text).toContain("`slackSendLive` { account: \"mattSlack\"");
   });
 });
 

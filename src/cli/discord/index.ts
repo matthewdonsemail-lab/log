@@ -281,6 +281,93 @@ export const discordWatchCommand: Command = {
   },
 };
 
+export const DISCORD_DELETE_USAGE = [
+  "Usage: log discord delete --account <accountName> --channel <channelId|chat name> --message <messageId>[,<messageId>...] [--approvedBy <who>] [--live] [--json]",
+  "Deletes the account's own messages by id (from log discord read) in a DM, group DM or server channel, on the direct-API engine (no browser): a duplicate or a mistake. Each message is read first and only deleted when the account sent it; someone else's is refused with notOwnMessage. Without --live it is a dry run that reads each message and deletes nothing. --live deletes, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides (204 is deleted). Each delete counts as a write, they go 4 s apart, and the first refusal stops the run with nothing retried (rule 94).",
+].join("\n");
+
+export const DISCORD_DELETE_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      effect: "write",
+      summary: "Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live",
+      positionals: [],
+      flags: [
+        DISCORD_ACCOUNT,
+        { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
+        { name: "message", kind: "string", required: true, description: "The message id to delete, or several separated by commas (ids from log discord read)" },
+        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
+        { name: "live", kind: "boolean", live: true, description: "Delete on Discord, only when matt asked (rule 8); without it a dry run deletes nothing" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
+export const discordDeleteCommand: Command = {
+  usage: DISCORD_DELETE_USAGE,
+  platform: "discord",
+  name: "delete",
+  effect: "write",
+  input: DISCORD_DELETE_INPUT,
+  summary: "Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live",
+  args: "--account <a> --channel <id|name> --message <id>[,<id>] [--approvedBy <who>] [--live] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(DISCORD_DELETE_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log discord delete: ${parsed.error}\n${DISCORD_DELETE_USAGE}` };
+    if (parsed.positionals.length) return { code: 1, stderr: `log discord delete: takes no words, only flags\n${DISCORD_DELETE_USAGE}` };
+    const channel = String(parsed.flags["channel"]).trim();
+    const ids = String(parsed.flags["message"]).split(",").map((s) => s.trim()).filter(Boolean);
+    const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
+    const live = parsed.flags["live"] === true;
+    if (!ids.length || ids.some((id) => !/^\d{15,22}$/.test(id))) return refuse("discord delete", "messageInvalid", "--message takes Discord message ids (from log discord read), separated by commas");
+    if (live && !approvedBy) return refuse("discord delete", "notApproved", "--live needs --approvedBy <who> (rule 8)");
+    try {
+      const account = await findDiscordAccount(context.twenty, String(parsed.flags["account"]));
+      const gate = discordGate(account);
+      if (!gate.ok) return refuse("discord delete", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
+      if (!context.directDiscord) return { code: 1, stderr: "log discord delete: the direct-API engine isn't wired in this context" };
+      let target = channel;
+      if (!/^\d{15,22}$/.test(channel)) {
+        const listed = context.directDiscord(account, { action: "chats" });
+        if (!listed.answer.ok) return { code: 1, stdout: `log discord delete: ${account.accountName}: reading its chats to find "${channel}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+        const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], channel);
+        if (!found.ok) return refuse("discord delete", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
+        target = found.chat.id;
+        context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`);
+      }
+      if (!live) {
+        const read = context.directDiscord(account, { action: "read", channel: target, limit: 100 });
+        const messages = (read.answer.messages as DiscordRead[] | undefined) ?? [];
+        const rows = ids.map((id) => {
+          const m = messages.find((x) => x.id === id);
+          return !m ? { id, would: "notFound", text: "" } : { id, would: m.fromMe ? "delete" : "notOwnMessage", text: m.text };
+        });
+        if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ok: true, dryRun: true, channelId: target, messages: rows }, null, 2) };
+        return { code: 0, stdout: [`log discord delete: dry run: ${account.accountName} in ${target}:`, ...rows.map((r) => `  ${r.id}  ${r.would === "delete" ? "would delete" : r.would === "notFound" ? "not in the latest 100 messages" : "refused, someone else sent it"}${r.text ? `: ${r.text.replace(/\s+/g, " ").slice(0, 160)}` : ""}`), "Nothing was deleted. --live --approvedBy <who> deletes them (rule 8)."].join("\n") };
+      }
+      context.err(`${account.accountName}: delete ${ids.length} message(s) in ${target} on the direct-API engine, approved by ${approvedBy}`);
+      const done: PlatformAnswer[] = [];
+      for (const [i, id] of ids.entries()) {
+        if (i) await discordDeps.wait(4000);
+        const run = context.directDiscord(account, { action: "delete", channel: target, message: id, live: true, approvedBy });
+        done.push(run.answer);
+        if (!run.answer.ok) break;
+        context.err(`  ${i + 1}/${ids.length} deleted ${id}: ${String(run.answer.content ?? "").replace(/\s+/g, " ").slice(0, 160)}`);
+      }
+      const deleted = done.filter((a) => a.ok && a.event === "deleted");
+      const code = deleted.length === ids.length ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, channelId: target, deleted: done }, null, 2) };
+      if (code === 0) return { code, stdout: `log discord delete: ${account.accountName} deleted ${deleted.length} message(s) in ${target} (${deleted.map((a) => a.messageId).join(", ")}).` };
+      const last = done[done.length - 1];
+      return { code, stdout: `log discord delete: ${account.accountName}: ${deleted.length} of ${ids.length} deleted, then ${last.code}: ${last.detail ?? ""}. Nothing is retried (rule 94).` };
+    } catch (error) {
+      return refuseError("discord delete", error);
+    }
+  },
+};
+
 export const DISCORD_SEND_USAGE = [
   'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
   "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).",

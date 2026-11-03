@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 31 domains, 378 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 31 domains, 380 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -59,6 +59,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-09** Every MCP tool is hooked
 - **REQ-HOOKS-10** Every long-running tool points at the live log
 - **REQ-HOOKS-11** Every resolver is a real call
+- **REQ-HOOKS-12** Every platform's push channel reaches the agent through the inbox hook
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -443,6 +444,7 @@ A new platform is made whole with one command, `log new platform <name>` (MCP `n
 - **REQ-PLATFORM-11** Inspect goes only to known platforms' hosts
 - **REQ-PLATFORM-12** A no-proxy platform opens with no proxy
 - **REQ-PLATFORM-13** The AdsPower sync gives every browser platform's accounts a profile
+- **REQ-PLATFORM-14** A new platform is made with its spec and anchors
 
 ## [Conversation search](./search.md)
 

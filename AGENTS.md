@@ -1610,6 +1610,38 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Every reply that does go out likes the post and follows the author
     first. Spec: `docs/specs/xQueue.md` (REQ-QUEUE-15).
 
+122. 2026-11-03 · matt: "bump discord to 120". A Discord account sends up
+    to 120 messages a day, not 60 (this replaces rule 91's number;
+    `WRITES_PER_DAY`, `src/directApi/engine`, handed to the engine's governor
+    in each run's spec). Rule 94 still holds: a 429 or any refusal stops the
+    run, and cold DMs to strangers stay a few a day, minutes apart. X keeps
+    240, LinkedIn 10, every other platform 40. Spec:
+    `docs/specs/writeBudgets.md` (REQ-BUDGET-01).
+
+123. 2026-11-03 · matt: "make it a rule all platforms need the web socket
+    hooks stuff there". Every platform log-cli talks to gets the live hooks X
+    and Discord have. Its account's one session holds the platform's own push
+    channel open: X Chat's socket, Discord's gateway, Slack's
+    `wss-primary.slack.com`. That is never a poll from a second client. The
+    inbox hook starts that watcher for every account and puts each new
+    message, mention and reply in front of the agent with what to do
+    (`>>> NEW MESSAGE`), per session (rules 105, 108, 115). It also stops a
+    watcher running older code, skips an account cooling off, and stops on any
+    refusal (rule 94). A platform isn't done until its watcher is in the inbox
+    hook (`scripts/hooks/inbox.ts`, `src/inbox/watch`), starting with Slack.
+    Reddit and LinkedIn aren't built yet. Spec: `docs/specs/agentHooks.md`
+    (REQ-HOOKS-12).
+
+124. 2026-11-03 · matt: "on creation of a new platform we need to auto
+    build anchors as well". `log new platform <name>` writes the platform's
+    spec with the rest of the platform: `docs/specs/<name>.md` and
+    `src/specs/<name>/index.ts`. The spec has one requirement each for the
+    session, the engine, the platform's own answer recorded, and the wiring,
+    each with its SubQ question. Every anchor is on what the command just
+    wrote, so the spec gate (rule 117) proves the new platform from its first
+    commit. As the platform grows, its new behaviour goes into that spec with
+    its anchors. Spec: `docs/specs/platformScaffold.md` (REQ-PLATFORM-14).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

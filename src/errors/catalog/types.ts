@@ -140,6 +140,33 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Copy the cookies from a browser signed in to that profile, or give --account the public id the cookies belong to.'
   },
+  slackCookiesRefused: {
+    layer: 'account',
+    meaning: "Slack didn't accept the d cookie typed into log slack cookies save, so nothing was saved.",
+    retryable: false,
+    raisedIn: ['cli/slack'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Copy the d cookie again from a browser where the account is signed in to app.slack.com, and run it again.'
+  },
+  workspaceNeeded: {
+    layer: 'account',
+    meaning: 'The Slack session is signed in to more than one workspace and the command was not told which one.',
+    retryable: true,
+    raisedIn: ['cli/slack'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Give --workspace with one of the domains it lists (log slack workspaces shows them all).'
+  },
+  slackRefused: {
+    layer: 'account',
+    meaning: 'Slack answered a send with ok false (its error is in the detail). The run stopped and nothing was retried.',
+    retryable: false,
+    raisedIn: ['cli/slack'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: tellMatt
+  },
   twitterCookiesWrongAccount: {
     layer: 'account',
     meaning: 'The cookies typed into log twitter cookies save are signed in to a different X account than --account names, so nothing was saved.',
@@ -218,6 +245,34 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['cli/discord'],
     action: 'Pick one of the chats listed and give its id, or say more of its name.'
+  },
+  messageInvalid: {
+    layer: 'runtime',
+    meaning: "The --message given to log discord delete isn't a Discord message id, or a list of them separated by commas.",
+    retryable: false,
+    raisedIn: ['cli/discord'],
+    action: 'Give the message ids from log discord read, separated by commas.'
+  },
+  messageNotFound: {
+    layer: 'runtime',
+    meaning: 'Discord has no message with that id in that channel.',
+    retryable: false,
+    raisedIn: ['cli/discord'],
+    action: 'Read the chat again with log discord read and take the id from there.'
+  },
+  notOwnMessage: {
+    layer: 'runtime',
+    meaning: "The message was sent by someone else; log discord delete only deletes the account's own messages.",
+    retryable: false,
+    raisedIn: ['cli/discord'],
+    action: 'Pick only messages the account sent, marked (me) in log discord read.'
+  },
+  deleteFailed: {
+    layer: 'runtime',
+    meaning: "Discord didn't take the delete: it refused it or didn't answer.",
+    retryable: false,
+    raisedIn: ['cli/discord'],
+    action: "Nothing is retried (rule 94). Tell matt Discord's answer and wait for him."
   },
   secondsInvalid: {
     layer: 'twitter',

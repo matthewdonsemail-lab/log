@@ -13,6 +13,7 @@ import { COMMAND_INDEX } from "./helpers/commandIndex.ts";
 import type { CommandIndexEntry } from "./helpers/commandIndex.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { runLinkedinEngine } from "../../linkedin/account/session/index.ts";
+import { runSlackEngine, runSlackEngineLive } from "../../slack/account/session/index.ts";
 
 export const ALIASES: Record<string, string> = {
   firefoxCapture: "capture",
@@ -46,6 +47,8 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     directDiscord: overrides.directDiscord ?? runDiscordEngine,
     directDiscordLive: overrides.directDiscordLive ?? runDiscordEngineLive,
     directLinkedin: overrides.directLinkedin ?? runLinkedinEngine,
+    directSlack: overrides.directSlack ?? runSlackEngine,
+    directSlackLive: overrides.directSlackLive ?? runSlackEngineLive,
   };
 }
 

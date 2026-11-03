@@ -4,7 +4,7 @@ import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 
 export const LOCAL_ACCOUNT_USAGE = [
-  "Usage: log localAccount add --platform <facebook|twitter|reddit|discord|linkedin> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]",
+  "Usage: log localAccount add --platform <facebook|twitter|reddit|discord|linkedin|slack> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]",
   "       log localAccount list [--json]",
   "       log localAccount pull [--platform <p>] [--refresh] [--json]   (copies every account Twenty has, cookies and login included, into the file; an account already there is kept unless --refresh; each keeps its Twenty id, so listings and groups still find it)",
   "A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves it), not in Twenty. Every command finds it by its accountName, a local row winning over a Twenty row of the same name, and the session a run captures is saved back to the file. LOG_ACCOUNTS=local leaves Twenty out of accounts entirely.",

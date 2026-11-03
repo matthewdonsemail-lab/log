@@ -67,11 +67,11 @@ describe('the hook context comes from each account folder', () => {
     expect(text).toContain('a2: session not read yet, 12/500 requests, 1/40 writes today, PAUSED 10 min')
   })
 
-  test('discord gets 60 writes a day, every other platform 40, and the hook says each one', () => {
-    expect(writesPerDayOf('discord')).toBe(60)
+  test('discord gets 120 writes a day, every other platform 40, and the hook says each one', () => {
+    expect(writesPerDayOf('discord')).toBe(120)
     expect(writesPerDayOf('reddit')).toBe(40)
     const now = new Date('2026-10-25T10:00:00Z')
     const text = engineContext([{ account: 'discord d1', writesPerDay: writesPerDayOf('discord'), sessionState: 'loggedIn', checkedAt: null, day: '2026-10-25', today: 50, mutations: 45, cooldownSeconds: 0, softBlocks: 0 }], now)
-    expect(text).toContain('discord d1: session loggedIn, 50/500 requests, 45/60 writes today')
+    expect(text).toContain('discord d1: session loggedIn, 50/500 requests, 45/120 writes today')
   })
 })

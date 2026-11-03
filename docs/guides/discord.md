@@ -1,6 +1,6 @@
 # discord
 
-A Discord account: its session, chats, reading, the live gateway watch and sending.
+A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -12,6 +12,7 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|---|
 | `getGuide({ useCase: "discord/groupChatRead" })` | Reading a Discord group chat without Twenty | "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>" |
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
 
 ## The tools in this guide
 
@@ -23,6 +24,8 @@ When the owner asks for one of these, follow its page step by step.
 | `discordWatch` | Every Discord message as Discord pushes it, over the gateway, sending… |
 | `discordSend` | Send one message on Discord, on the direct-API engine |
 | `discordSendLive` | Send one message on Discord, on the direct-API engine, live on Discord |
+| `discordDelete` | Delete the account's own Discord messages by id, on the direct-API… |
+| `discordDeleteLive` | Delete the account's own Discord messages by id, on…, live on Discord |
 
 ## Every tool, in full
 
@@ -35,7 +38,7 @@ Checks that Discord still accepts the account's saved session, on the direct-API
 Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `discordChats`
@@ -45,8 +48,8 @@ List the account's DMs and group DMs with their ids, on the direct-API engine, s
 log discord chats --account <accountName> [--json]
 Lists the account's DMs and group DMs with their ids, names and members, on the direct-API engine (no browser). Sends nothing.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `discordRead`
@@ -57,8 +60,8 @@ log discord read --account <accountName> --channel <channelId|chat name> [--limi
 Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `discordWatch`
@@ -69,7 +72,7 @@ log discord watch --account <accountName> [--channel <channelId|chat name>] [--s
 Opens the account's Discord gateway on the direct-API engine (wss://gateway.discord.gg, no browser) and prints every message the moment Discord pushes it, nothing polled. --channel keeps only one chat or channel; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message, mention of the account or reply to it from someone else to the inbox hook, which puts it in front of the agent with what to do next. Sends nothing.
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `discordSend`
@@ -80,8 +83,8 @@ log discord send --account <accountName> --channel <channelId|chat name> --text 
 Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).
 A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json.
 Fill the named fields; each value goes through whole. What acts on Discord is `discordSendLive`.
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 91, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `discordSendLive`
 
@@ -92,9 +95,30 @@ log discord send --account <accountName> --channel <channelId|chat name> --text 
 Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).
 A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch and sending).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 91, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `discordDelete`
+
+Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live.
+Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live
+log discord delete --account <accountName> --channel <channelId|chat name> --message <messageId>[,<messageId>...] [--approvedBy <who>] [--live] [--json]
+Deletes the account's own messages by id (from log discord read) in a DM, group DM or server channel, on the direct-API engine (no browser): a duplicate or a mistake. Each message is read first and only deleted when the account sent it; someone else's is refused with notOwnMessage. Without --live it is a dry run that reads each message and deletes nothing. --live deletes, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides (204 is deleted). Each delete counts as a write, they go 4 s apart, and the first refusal stops the run with nothing retried (rule 94).
+Fill the named fields; each value goes through whole. What acts on Discord is `discordDeleteLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 122, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `discordDeleteLive`
+
+Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live.
+Live on Discord: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live
+log discord delete --account <accountName> --channel <channelId|chat name> --message <messageId>[,<messageId>...] [--approvedBy <who>] [--live] [--json]
+Deletes the account's own messages by id (from log discord read) in a DM, group DM or server channel, on the direct-API engine (no browser): a duplicate or a mistake. Each message is read first and only deleted when the account sent it; someone else's is refused with notOwnMessage. Without --live it is a dry run that reads each message and deletes nothing. --live deletes, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides (204 is deleted). Each delete counts as a write, they go 4 s apart, and the first refusal stops the run with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 122, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -129,3 +153,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 91.** 2026-10-28 · matt: "make it 60." A Discord account sends up to 60 messages a day, not 40 (`WRITES_PER_DAY`, `src/directApi/engine`, handed to the engine's governor in each run's spec). Every other platform keeps 40. `FBK_GOVERNOR_MUTATION_DAILY` still overrides it for one run when matt asks. The hook's status line shows each account's own limit.
 
 **Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
+
+**Rule 122.** 2026-11-03 · matt: "bump discord to 120". A Discord account sends up to 120 messages a day, not 60 (this replaces rule 91's number; `WRITES_PER_DAY`, `src/directApi/engine`, handed to the engine's governor in each run's spec). Rule 94 still holds: a 429 or any refusal stops the run, and cold DMs to strangers stay a few a day, minutes apart. X keeps 240, LinkedIn 10, every other platform 40. Spec: `docs/specs/writeBudgets.md` (REQ-BUDGET-01).

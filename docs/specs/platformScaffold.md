@@ -87,3 +87,9 @@ Checked by: code and SubQ
 `log adsPower sync` plans a profile for the accounts of every browser platform. An account on a no-proxy platform needs no home: it is not released for its home being outside the homes kept, and its profile runs in en-US when it has no home.
 
 Checked by: code and SubQ
+
+### REQ-PLATFORM-14: A new platform is made with its spec and anchors
+
+`log new platform` also writes the platform's spec, `docs/specs/<name>.md`, and its questions and anchors, `src/specs/<name>/index.ts`. They cover the account's session, the engine, the platform's own answer being recorded, and the wiring. Every anchor points at a symbol or string in the files the command just wrote or edited, so the spec gate proves them by syntax tree from the first commit (rules 117 and 124).
+
+Checked by: code and SubQ

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { buildPlatformClientMap, needlesOf, operationOf, readsOf, requestNameOf, slicesFor, stablePath } from './index'
+import { aliasHost, buildPlatformClientMap, methodNameOf, needlesOf, operationOf, PLATFORM_CLIENT_RULES, readsOf, requestNameOf, slicesFor, stablePath } from './index'
 
 const bundle = [
   'function ai(e){return ni({operation:`ExposeVariant`,variables:{input:e}})}',
@@ -34,6 +34,19 @@ describe('reading a platform client', () => {
     const slices = slicesFor(needlesOf('www.reddit.com', '/svc/shreddit/token', null), [{ file: 'b.js', text: bundle }])
     expect(slices[0].text).toStartWith('async function ln()')
     expect(slices[0].calledFrom).toBe('b.js:4 ln')
+  })
+
+  test('a Slack call is named by its API method, on any workspace, and found where the method is declared', () => {
+    const slack = PLATFORM_CLIENT_RULES.slack
+    expect(slack.apiMethod?.exec('/api/chat.postMessage')?.[1]).toBe('chat.postMessage')
+    expect(slack.apiMethod?.exec('/api/users.prefs.get')?.[1]).toBe('users.prefs.get')
+    expect(methodNameOf('chat.postMessage')).toBe('chatPostMessage')
+    expect(methodNameOf('users.prefs.get')).toBe('usersPrefsGet')
+    expect(aliasHost('acme-team.slack.com', slack.hostAliases)).toBe('workspace.slack.com')
+    expect(aliasHost('edgeapi.slack.com', slack.hostAliases)).toBe('edgeapi.slack.com')
+    expect(aliasHost('app.slack.com', slack.hostAliases)).toBe('app.slack.com')
+    const fetcher = 'n.d(H,{},{});let Y="chat.postMessage",q=(0,z.r)("chatPostMessageFetcher",Y);'
+    expect(slicesFor(['chat.postMessage'], [{ file: 's.js', text: fetcher }], { exact: true })).toHaveLength(1)
   })
 
   test("what an answer reads is its fields two levels down", () => {

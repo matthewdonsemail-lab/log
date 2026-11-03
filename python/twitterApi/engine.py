@@ -396,6 +396,28 @@ async def upload_post_media(client: Any, paths: list[str]) -> list[str]:
 
 
 DM_MEDIA_CATEGORIES = {".mp4": "dm_video", ".mov": "dm_video", ".gif": "dm_gif"}
+MEDIA_LINK = re.compile(r"^https?://\S+?\.(mp4|mov|gif|jpe?g|png|webp)(\?\S*)?$", re.I)
+
+
+def media_links_out(spec: dict[str, Any]) -> tuple[str, list[str]]:
+    import hashlib
+    import urllib.request
+
+    kept, links = [], []
+    for line in str(spec.get("text") or "").split("\n"):
+        (links if MEDIA_LINK.match(line.strip()) else kept).append(line.strip() if MEDIA_LINK.match(line.strip()) else line)
+    media = list(spec.get("media") or [])
+    folder = state_dir(str(spec["account"])) / "media" / "outgoing"
+    folder.mkdir(parents=True, exist_ok=True)
+    for link in links:
+        suffix = Path(link.split("?")[0]).suffix.lower()
+        path = folder / f"{hashlib.sha1(link.encode()).hexdigest()[:16]}{suffix}"
+        if not path.exists():
+            with urllib.request.urlopen(urllib.request.Request(link, headers={"User-Agent": "Mozilla/5.0"}), timeout=60) as answer:
+                path.write_bytes(answer.read())
+        print(f"media link {link} sent as media, not as text ({path.stat().st_size} bytes)", file=sys.stderr, flush=True)
+        media.append(str(path))
+    return "\n".join(kept).strip(), media
 
 
 async def upload_dm_media(client: Any, path: str) -> str:
@@ -1240,6 +1262,9 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if not str(getattr(user, "id", "") or ""):
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the follow with no user: nobody was followed"}
         return {"ok": True, "event": "sent", "followed": True, "userId": user_id, "handle": getattr(user, "screen_name", None) or getattr(before, "screen_name", None)}
+    if action in ("dm", "post", "reply"):
+        text, media = media_links_out(spec)
+        spec = {**spec, "text": text, "media": media}
     if action == "dm":
         media = list(spec.get("media") or [])
         dm_media_id = await upload_dm_media(client, str(media[0])) if media else None

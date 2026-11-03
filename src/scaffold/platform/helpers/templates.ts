@@ -217,3 +217,95 @@ Made by \`log new platform ${n.name}\`. ${n.label} is a platform of its own: eve
 3. Add each family as an action in the engine, a command in \`src/cli/${n.name}\` and its rules in \`COMMAND_RULES\`, with a \`…Live\` flag for anything that acts on ${n.label}.
 `;
 }
+
+export function specDoc(n: PlatformNames): string {
+  const id = n.constant.replace(/_/g, "");
+  return `---
+title: "${n.label}"
+---
+
+# ${n.label}
+
+What \`log new platform ${n.name}\` made, and what the platform's code must keep doing as it grows. Rules 83, 117 and 123.
+
+## The account's session
+
+### REQ-${id}-01: The account is found on its own platform's row and gated
+
+An account is found in socialAccounts by its platform, ${n.twentyPlatform}, and checked by the platform's gate before its engine runs.
+
+Checked by: code and SubQ
+
+### REQ-${id}-02: The engine runs the account through the shared platform kit
+
+Every ${n.label} call goes through \`python/${n.name}Api/engine.py\` on the shared platform kit, with the account's own governor, never a script of its own.
+
+Checked by: code and SubQ
+
+### REQ-${id}-03: ${n.label}'s own answer is what gets recorded
+
+\`log ${n.name} session check\` sends nothing, and writes ${n.label}'s own answer to the account's sessionState. Refreshed cookies for ${n.cookieDomain} are merged back into the row.
+
+Checked by: code and SubQ
+
+## Wiring
+
+### REQ-${id}-04: The platform is wired into the CLI and the direct-API routes
+
+${n.name} is in PLATFORMS and PLATFORM_SITES, its session command is in COMMANDS, and its session route is in DIRECT_ROUTES.
+
+Checked by: code and SubQ
+`;
+}
+
+export function specIndex(n: PlatformNames): string {
+  const id = n.constant.replace(/_/g, "");
+  return `import { noul } from 'jev-spec'
+import { MET, NOT_VIOLATED } from '../types'
+
+const SESSION = 'src/${n.name}/account/session/client.ts'
+const COMMAND = 'src/cli/${n.name}/index.ts'
+const PLATFORMS = 'src/cli/runner/helpers/platforms.ts'
+const ROUTES = 'src/directApi/engine/client.ts'
+
+export const ${n.name} = {
+  description: '${n.label}: the account session, its engine, its own answer recorded, and its wiring',
+  specPath: 'docs/specs/${n.name}.md',
+  codePaths: [SESSION, COMMAND, PLATFORMS, ROUTES],
+  anchors: {
+    'REQ-${id}-01': [
+      { kind: 'symbol', file: SESSION, name: '${n.constant}_PLATFORM' },
+      { kind: 'symbol', file: SESSION, name: 'find${n.pascal}Account' },
+      { kind: 'symbol', file: SESSION, name: '${n.name}Gate' },
+      { kind: 'string', file: SESSION, includes: '${n.twentyPlatform}' },
+    ],
+    'REQ-${id}-02': [
+      { kind: 'symbol', file: SESSION, name: 'run${n.pascal}Engine' },
+      { kind: 'string', file: SESSION, includes: '${n.name}Api' },
+    ],
+    'REQ-${id}-03': [
+      { kind: 'symbol', file: SESSION, name: 'record${n.pascal}Session' },
+      { kind: 'symbol', file: COMMAND, name: '${n.name}SessionCommand' },
+    ],
+    'REQ-${id}-04': [
+      { kind: 'string', file: PLATFORMS, includes: '${n.name}' },
+      { kind: 'string', file: ROUTES, includes: '${n.name}' },
+    ],
+  },
+  rubrics: {
+    'REQ-${id}-01': noul('Does find${n.pascal}Account find the account through findPlatformAccount with ${n.constant}_PLATFORM, whose twentyPlatform is ${n.twentyPlatform}, and does ${n.name}Gate check it with platformGate before the engine runs?'),
+    'REQ-${id}-02': noul('Does run${n.pascal}Engine run the account through runPlatformEngine with ${n.constant}_PLATFORM, whose engine is python/${n.name}Api/engine.py?'),
+    'REQ-${id}-03': noul('Does the ${n.name} session check command send nothing to ${n.label} beyond the check, and record the answer ${n.label} gave through record${n.pascal}Session, which merges refreshed cookies for ${n.constant}_COOKIE_DOMAIN back into the row?'),
+    'REQ-${id}-04': noul('Is ${n.name} listed in PLATFORMS and PLATFORM_SITES, and does DIRECT_ROUTES have a ${n.sessionKey} route for platform ${n.name}?'),
+    unspecifiedBehavior: noul('Does the ${n.label} code call ${n.label} outside the engine and its governor, or record anything but the answer ${n.label} gave, by a route the specification does not describe?'),
+  },
+  assertions: {
+    'REQ-${id}-01': MET,
+    'REQ-${id}-02': MET,
+    'REQ-${id}-03': MET,
+    'REQ-${id}-04': MET,
+    unspecifiedBehavior: NOT_VIOLATED,
+  },
+}
+`;
+}

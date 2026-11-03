@@ -49,7 +49,7 @@ function threadLine(thread: TwitterDmThread, index: number): string {
 }
 
 function messageLine(message: TwitterDmMessage): string {
-  return `  ${message.time ?? "?"} ${message.fromMe ? "you" : `@${message.from ?? message.senderId}`}: ${oneLine(message.text, 400) || "(no text)"}`;
+  return `  ${message.time ?? "?"} ${message.fromMe ? "you" : `@${message.from ?? message.senderId}`}: ${oneLine(message.text, Number.POSITIVE_INFINITY) || "(no text)"}`;
 }
 
 function render(account: string, answer: TwitterSessionAnswer, waiting: boolean): string {

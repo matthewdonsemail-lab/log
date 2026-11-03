@@ -4,6 +4,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
+import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../agentHooks/sessionOffsets/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -13,6 +14,7 @@ export function inboxRoot(): string {
 
 const pendingPath = () => join(inboxRoot(), 'pending.jsonl')
 const deliveredPath = () => join(inboxRoot(), 'delivered')
+const PENDING_OFFSET = 'pending'
 const planPath = () => join(inboxRoot(), 'next.json')
 const lockPath = () => join(inboxRoot(), 'poll.lock')
 const seenPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'seen.json')
@@ -70,12 +72,31 @@ export function pollReaders(readers: readonly InboxReader[], now: Date = new Dat
   return found
 }
 
-export function takePending(): InboxMessage[] {
-  if (!existsSync(pendingPath())) return []
-  const lines = readFileSync(pendingPath(), 'utf8').split('\n').filter(Boolean)
-  const delivered = Number(existsSync(deliveredPath()) ? readFileSync(deliveredPath(), 'utf8') : '0') || 0
-  if (lines.length <= delivered) return []
-  writeFileSync(deliveredPath(), String(lines.length))
+export function hookReaderOf(raw: string): string {
+  try {
+    const input = JSON.parse(raw || '{}') as { session_id?: string; agent_id?: string }
+    const clean = (s: string) => s.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80)
+    const session = input.session_id ? clean(input.session_id) : SHARED_SESSION
+    return input.agent_id ? `${session}_${clean(input.agent_id)}` : session || SHARED_SESSION
+  } catch {
+    return SHARED_SESSION
+  }
+}
+
+export function takePending(reader?: string): InboxMessage[] {
+  if (reader === undefined && !existsSync(pendingPath())) return []
+  const lines = existsSync(pendingPath()) ? readFileSync(pendingPath(), 'utf8').split('\n').filter(Boolean) : []
+  let delivered: number
+  if (reader === undefined) {
+    delivered = Number(existsSync(deliveredPath()) ? readFileSync(deliveredPath(), 'utf8') : '0') || 0
+    if (lines.length <= delivered) return []
+    writeFileSync(deliveredPath(), String(lines.length))
+  } else {
+    const { offsets, firstLook } = readSessionOffsets(inboxRoot(), reader)
+    delivered = firstLook ? lines.length : offsets[PENDING_OFFSET] ?? lines.length
+    if (firstLook || lines.length !== delivered) writeSessionOffsets(inboxRoot(), reader, { ...offsets, [PENDING_OFFSET]: lines.length })
+    if (lines.length <= delivered) return []
+  }
   return lines.slice(delivered).flatMap((l) => {
     try {
       return [JSON.parse(l) as InboxMessage]
@@ -232,6 +253,19 @@ export function startDiscordWatch(account: string, repo: string): number | null 
   }
 }
 
+export function startSlackWatch(account: string, repo: string): number | null {
+  const dir = join(inboxRoot(), 'slack', account)
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'slack', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
 export function localTime(iso: string): string {
   const at = new Date(iso)
   if (Number.isNaN(at.getTime())) return iso
@@ -256,11 +290,25 @@ function discordContext(messages: readonly InboxMessage[]): string {
   ].join('\n')
 }
 
+function slackContext(messages: readonly InboxMessage[]): string {
+  const lines = messages.map((m) => `  ${m.with} on slack ${m.account}${m.workspace ? ` in ${m.workspace}` : ''} (${m.box === 'dm' ? 'DM' : m.box === 'group' ? 'group DM' : 'mentioned you in a channel'}) at ${localTime(m.at)}: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (chat ${m.conversationId})`)
+  const { account } = messages[0]
+  return [
+    `>>> NEW SLACK MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by the workspace's websocket the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
+    `  1. Read the chat around it: \`slackRead\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", limit: "20" }.`,
+    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<who>", with: "<chat>", context: "<what they said>" } (no text): his messages to them first, then his whole history. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
+    '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
+    `  4. ${SEND_RULE} (\`slackSendLive\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
+    ...lines,
+  ].join('\n')
+}
+
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
   const discord = messages.filter((m) => m.platform === 'discord')
-  const rest = messages.filter((m) => m.platform !== 'discord')
-  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : [])]
+  const slack = messages.filter((m) => m.platform === 'slack')
+  const rest = messages.filter((m) => m.platform !== 'discord' && m.platform !== 'slack')
+  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : []), ...(slack.length ? [slackContext(slack)] : [])]
   return parts.join('\n\n')
 }
 

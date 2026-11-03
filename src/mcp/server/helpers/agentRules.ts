@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 121;
+export const RULES_REVIEWED_THROUGH = 124;
 
 export const AGENTS_URI = "log://agents";
 
@@ -26,12 +26,12 @@ export const CORE_PRINCIPLES = [
   "19. An inspect session has a goal (`goal` on `inspectStart`, or `inspectGoal` with `set`), and the turn is not over until a step's reading says it is reached. A step that went wrong gets its P.E.E. finding before the next step, with `inspectFinding`: point (the issue, one sentence), explain (why the evidence shows it, what caused it); the evidence is quoted from the step's reading. Once reached, each finding says how it was fixed (`fixes`, `fix`). What only a person can clear is said to matt (rule 75).",
   "20. Flows are deterministic: a control is one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the dialog the step names (`within`), never a guess (`controlAmbiguous`, `controlMissing`, `controlDisabled`); every step waits for the call it must cause and checks its answer before the next fires; before its first click a flow clears the known overlays (the browser-notifications notice, an ended \"What happened\" notice) with Escape, each checked, or stops with `overlayNotCleared`. Run `preflight` before opening accounts: it says what would stop each one (timezone, hours, proxy, kernel, opens left, a session left open, its picture) and `--apply` fetches a missing kernel (rule 79).",
   "21. X (Twitter) is a platform of its own, `log twitter <command>`, on the direct-API engine only: twikit (vendor/twikit) with the account's saved cookies from Twenty, no browser and no proxy. X accounts call X directly, as twitter-controller does. X's own answer decides (`socialAccounts.sessionState`), each account has its own governor, and refreshed cookies are merged back (rule 80). We maintain vendor/twikit ourselves: its transport is curl_cffi (impersonating Safari), never httpx (`check:twikitTransport`, rule 81). When matt says to send anyway, `force` goes past the account's governor (its pause and caps) for that call or run only; X's answer still decides (rule 86).",
-  "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
+  "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, and its spec with SubQ questions and anchors (docs/specs/<name>.md, src/specs/<name>), wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rules 83, 124).",
   "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
   "24. The knowledge base is in ListeningKit's Twenty and searched through Redis: before guessing at a rule, a skill, a page state, an account, node02 or what an earlier session learned, search it with `kb search` (keyword and meaning at once); save what a session learned with `kb remember`; `kb sync` refreshes it from the repo, the memory files and log-cli's Twenty. Nothing secret is ever written to it (rule 93).",
   "25. Never act on an account in quick succession: every platform call goes through log-cli's own commands and their governor, never a hand-rolled script with an account's token or cookies; a 429 or a failed send stops the run with nothing retried and the next action waits for matt; a bulk read of a server, group or member list is its own session, never in the same one as sending; cold DMs go out a few a day, minutes apart, each new DM channel counted as a write; after a block, disable, captcha or cooldown nothing resumes on that account until matt says so. One person's X Chat is opened as X's app opens it (`twitterDms` with `with`), never by reading the whole inbox (rule 94).",
   "26. The work matt asks for again and again is a use case (docs/useCases/<platform>/<page>.md): how he asks for it, then its steps, each naming its tool. When he asks for work a use case covers, read it with `getGuide({ useCase })` and follow it step by step, never improvise; each tool names the use cases that call it. The pre-commit review asks SubQ whether this session's work left a page stale or uncovered (rule 95).",
-  "27. An X account makes up to 240 writes a day (sends, likes, reposts, follows), Discord 60, every other platform 40; X's own answer (344) still stops it (rules 96, 101).",
+  "27. An X account makes up to 240 writes a day (sends, likes, reposts, follows), Discord 120, every other platform 40; X's own answer (344) still stops it (rules 96, 101, 122).",
   "28. A first message to someone matt has never talked with is the opener only: about them and what they posted, always relevant, never the ask (no pitch, no \"you using treg\", no call); the ask waits until they answer, and `voice` fails a first message with one (rule 98).",
   "29. Network maxing grows matt's network, which is his niche map: new people come from it first (real roles, closest first, not yet talked to), and every message is about them and what they're doing, never what he sells (rule 99).",
   "30. A reaction to matt's message, or their read receipt past it, means they opened it: `twitterDms` { waiting: true, limit: \"200\" } lists it apart as a follow-up to send (about them and what they're doing, never the opener again, never the ask), not a reply they're waiting on (rule 100).",
@@ -43,6 +43,7 @@ export const CORE_PRINCIPLES = [
   "36. If something isn't working, fix it: never report a broken thing to matt as a fact and stop. Find the cause and fix it in the same turn; only when the fix needs something from matt, say exactly what (a restart, a login, a key, a yes). Nothing runs stale: the hooks clear dead queue locks and restart inbox watchers and X session hosts that run older code than the checkout. When someone answers matt, a reply that answers them and fits that conversation is sent straight away (matt gave full authority); only a meeting, a promise, money or a conversation you can't place waits for him. Times are said in matt's own clock (rule 108).",
   "37. Full context at the time of sending, every time: before drafting to anyone read `twitterDms` { with }, which gives their whole thread (including what matt sent from outside log) and what they did on the account's posts (likes, retweets, replies, quotes, mentions, follows); someone who already did the action is thanked, never asked. The queue reads it again right before each send and holds the item when anything changed since the draft; redraft it and put it back with `twitterQueueEdit`, never by editing the queue file (rule 109).",
   "38. Reply only to people with 1500 followers or fewer: an account that is too large isn't worth it yet. Pick reply-guy targets from the niche map under 1500 followers; the engine skips a larger author (`authorTooBig`) before liking, following or sending, and the queue goes on (rule 121).",
+  "39. Every platform gets the live websocket hooks X and Discord have: its account's one session holds the platform's own push channel open (X Chat, the Discord gateway, Slack's wss-primary), the inbox hook starts that watcher and puts each new message in front of the agent (`>>> NEW MESSAGE`), and a platform isn't done until it has one (rule 123).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -129,7 +130,15 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94],
   discordWatch: [13, 26, 63, 64, 73, 83, 94],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122],
+  discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
+  slackSession: [13, 63, 64, 73, 83],
+  slackWorkspaces: [13, 63, 64, 73, 83],
+  slackChats: [13, 63, 64, 73, 83, 94],
+  slackRead: [13, 63, 64, 73, 83, 94],
+  slackWatch: [13, 26, 63, 64, 73, 83, 94, 123],
+  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111],
+  slackCookies: [13, 21, 63, 64, 73, 83, 97],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

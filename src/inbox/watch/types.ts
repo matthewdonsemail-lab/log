@@ -22,6 +22,7 @@ export interface InboxMessage {
   at: string
   box: string
   seenAt: string
+  workspace?: string
 }
 
 export type SeenThreads = Record<string, string>

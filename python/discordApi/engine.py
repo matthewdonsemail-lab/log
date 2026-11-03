@@ -18,7 +18,7 @@ from platformKit import engine as kit
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
-WRITES: tuple[str, ...] = ("send",)
+WRITES: tuple[str, ...] = ("send", "delete")
 
 
 def client_of(token: str) -> Any:
@@ -271,7 +271,39 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await asyncio.to_thread(send_of, token, channel, text)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "watch": watch}
+def delete_of(token: str, channel: str, message: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    data, status = client.request("GET", f"/api/v9/channels/{channel}/messages?around={message}&limit=1", None, client.header)
+    if not status:
+        return {"ok": False, "code": "platformError", "detail": f"Discord didn't answer the read of message {message}", "loginState": "unknown", "event": "dropped"}
+    if status != 200:
+        return refusal_of(status, data, f"channel {channel} message {message}")
+    found = [m for m in json.loads(data) if str(m.get("id")) == message]
+    if not found:
+        return {"ok": False, "code": "messageNotFound", "detail": f"message {message} isn't in channel {channel}", "loginState": "loggedIn"}
+    if str((found[0].get("author") or {}).get("id")) != str(client.my_id):
+        return {"ok": False, "code": "notOwnMessage", "detail": f"message {message} was sent by someone else; only the account's own messages are deleted", "loginState": "loggedIn"}
+    deleted = client.delete_message(channel, message)
+    if deleted is None:
+        return {"ok": False, "code": "deleteFailed", "detail": f"Discord didn't answer the delete of message {message}", "loginState": "unknown", "event": "dropped"}
+    if not deleted:
+        return {"ok": False, "code": "deleteFailed", "detail": f"Discord refused the delete of message {message}", "loginState": "loggedIn", "event": "throttled"}
+    return {"ok": True, "loginState": "loggedIn", "event": "deleted", "channelId": channel, "messageId": message, "content": found[0].get("content") or ""}
+
+
+async def delete(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel, message = str(spec.get("channel") or "").strip(), str(spec.get("message") or "").strip()
+    if not channel.isdigit() or not message.isdigit():
+        return {"ok": False, "code": "sendInvalid", "detail": "delete needs a channel id and a message id"}
+    return await asyncio.to_thread(delete_of, token, channel, message)
+
+
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "watch": watch}
 
 
 if __name__ == "__main__":
