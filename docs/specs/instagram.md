@@ -52,6 +52,12 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-INSTAGRAM-09: One continuous session per account, never a cold start per call
+
+Every Instagram call goes through the account's one session host (`python/instagramApi/host.py`), started on the first call and kept running: one process, one signed-in instagrapi client and one realtime connection. Each later call reuses that client (its answer says `reused`) instead of signing in again, and every `log instagram watch` is a listener on the host's one realtime connection, never a connection of its own. Calls other than watch run one at a time. `host.lock` stops a second host for the same account, and a call that can't reach the host is refused with `instagramSessionHostDown`, never run in a session of its own. The host closes after 30 idle minutes, or when the engine or instagrapi code changes, and every answer carries `instagramSession` (pid, calls, since). `LOG_INSTAGRAM_HOST=inline` runs a call in its own process, for tests only. Rule 129.
+
+Checked by: code and SubQ
+
 ## Wiring
 
 ### REQ-INSTAGRAM-04: The platform is wired into the CLI and the direct-API routes

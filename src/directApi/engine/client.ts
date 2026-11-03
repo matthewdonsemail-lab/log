@@ -154,7 +154,7 @@ export function engineContext(states: LocalEngineState[] = allEngineStates(), no
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
     const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'
-    const open = s.session ? `, its one X session open (pid ${s.session.pid} since ${localClock(s.session.since)}, ${s.session.calls} calls)` : ''
+    const open = s.session ? `, its one session open (pid ${s.session.pid} since ${localClock(s.session.since)}, ${s.session.calls} calls)` : ''
     lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${localClock(s.checkedAt)})` : ''}, ${used}${pause}${open}`)
   }
   return lines.join('\n')

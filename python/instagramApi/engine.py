@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
+import os
 import socket
 import sys
+import threading
 import time
 from datetime import timezone
 from pathlib import Path
@@ -25,6 +28,11 @@ SESSION_COOKIES = ("sessionid",)
 TRANSPORT = "curl"
 INBOX_SEARCH = 100
 PING_EVERY = 60
+SESSION: dict[str, Any] = {}
+HTTP = threading.Lock()
+LIVE_TARGET: contextvars.ContextVar[Any] = contextvars.ContextVar("LIVE_TARGET", default=None)
+REALTIME: dict[str, Any] = {}
+STOPPING = threading.Event()
 SHARES = ("media", "raven_media", "visual_media", "animated_media", "reel_share", "story_share", "felix_share", "link", "generic_xma", "xma_story_share", "xma_profile")
 
 
@@ -54,6 +62,9 @@ def refused(error: Exception) -> dict[str, Any] | None:
 
 
 def signed_in(cookies: dict[str, str]) -> tuple[Any, dict[str, Any]]:
+    held = SESSION.get("held")
+    if held and held["sessionid"] == cookies["sessionid"]:
+        return held["client"], {**held["answer"], "reused": True}
     client = client_of()
     try:
         client.login_by_sessionid(cookies["sessionid"])
@@ -67,7 +78,17 @@ def signed_in(cookies: dict[str, str]) -> tuple[Any, dict[str, Any]]:
     user_id = str(client.authorization_data.get("ds_user_id") or "") or None
     if cookies.get("ds_user_id") and user_id and cookies["ds_user_id"] != user_id:
         return None, {"ok": False, "code": "sessionMismatch", "detail": f"Instagram says this sessionid is user {user_id}, the account's cookies say {cookies['ds_user_id']}", "loginState": "unknown"}
-    return client, {"ok": True, "loginState": "loggedIn", "screenName": client.username, "userId": user_id, "transport": TRANSPORT}
+    answer = {"ok": True, "loginState": "loggedIn", "screenName": client.username, "userId": user_id, "transport": TRANSPORT}
+    SESSION["held"] = {"sessionid": cookies["sessionid"], "client": client, "answer": answer}
+    return client, {**answer, "reused": False}
+
+
+def locked(work: Any, *args: Any) -> dict[str, Any]:
+    with HTTP:
+        out = work(*args)
+    if out.get("code") in ("sessionDead", "sessionMismatch", "challenged"):
+        SESSION.pop("held", None)
+    return out
 
 
 def check(cookies: dict[str, str]) -> dict[str, Any]:
@@ -181,12 +202,12 @@ def thread_sync(cookies: dict[str, str], said: str, limit: int) -> dict[str, Any
 
 
 async def ping(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
-    return missing_session(cookies) or await asyncio.to_thread(check, cookies)
+    return missing_session(cookies) or await asyncio.to_thread(locked, check, cookies)
 
 
 async def inbox(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     limit = max(1, min(int(spec.get("limit") or 20), 100))
-    return missing_session(cookies) or await asyncio.to_thread(inbox_sync, cookies, limit)
+    return missing_session(cookies) or await asyncio.to_thread(locked, inbox_sync, cookies, limit)
 
 
 async def thread(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
@@ -194,7 +215,7 @@ async def thread(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     if not said:
         return {"ok": False, "code": "threadNeeded", "detail": "give the thread: who it is with (their handle), its name, or its id"}
     limit = max(1, min(int(spec.get("limit") or 30), 200))
-    return missing_session(cookies) or await asyncio.to_thread(thread_sync, cookies, said, limit)
+    return missing_session(cookies) or await asyncio.to_thread(locked, thread_sync, cookies, said, limit)
 
 
 def recipients_of(client: Any, said: str) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -247,8 +268,21 @@ def send_sync(cookies: dict[str, str], said: str, text: str, photo: str, as_one:
     return {**answer, "to": recipient, "sent": sent}
 
 
+def write_line(writer: Any, line: str) -> None:
+    writer.write((line + "\n").encode("utf-8"))
+
+
+def emit(target: Any, event: dict[str, Any]) -> None:
+    line = json.dumps({"liveEvent": event}, default=str)
+    if target is None:
+        print(line, flush=True)
+        return
+    loop, writer = target
+    loop.call_soon_threadsafe(write_line, writer, line)
+
+
 def live(event: dict[str, Any]) -> None:
-    print(json.dumps({"liveEvent": event}, default=str), flush=True)
+    emit(LIVE_TARGET.get(), event)
 
 
 def item_of(value: Any) -> dict[str, Any] | None:
@@ -289,55 +323,101 @@ def message_event(wrapper: dict[str, Any], me: str, names: dict[str, str], title
     }
 
 
-def watch_sync(cookies: dict[str, str], seconds: int) -> dict[str, Any]:
-    client, answer = signed_in(cookies)
-    if not client:
-        return answer
-    me = str(answer["userId"])
+class Realtime:
+    def __init__(self, client: Any, me: str, names: dict[str, str], titles: dict[str, str]) -> None:
+        self.client = client
+        self.me = me
+        self.names = names
+        self.titles = titles
+        self.listeners: dict[int, Any] = {}
+        self.seen: set[str] = set()
+        self.alive = False
+        self.error = ""
+        self.started = time.time()
+        self.thread: threading.Thread | None = None
+
+    def dispatch(self, payload: Any) -> None:
+        wrapper = payload.get("message") if isinstance(payload, dict) else None
+        event = message_event(wrapper, self.me, self.names, self.titles) if isinstance(wrapper, dict) else None
+        if not event or event["itemId"] in self.seen:
+            return
+        self.seen.add(event["itemId"])
+        for listener in list(self.listeners.values()):
+            listener(event)
+
+    def start(self) -> None:
+        self.client.realtime_on("message", self.dispatch)
+        realtime = self.client.realtime_connect()
+        realtime.direct_subscribe(amount=1)
+        self.alive = True
+        self.thread = threading.Thread(target=self.run, name="instagramRealtime", daemon=True)
+        self.thread.start()
+
+    def run(self) -> None:
+        pinged = time.monotonic()
+        try:
+            while self.alive and not STOPPING.is_set():
+                try:
+                    self.client.realtime_read_once()
+                except (socket.timeout, TimeoutError):
+                    pass
+                if time.monotonic() - pinged >= PING_EVERY:
+                    self.client.realtime_ping()
+                    pinged = time.monotonic()
+        except (ConnectionError, OSError) as error:
+            self.error = str(error)[:200]
+        finally:
+            self.alive = False
+            try:
+                self.client.realtime_disconnect()
+            except Exception:
+                pass
+
+
+def realtime_for(client: Any, me: str) -> tuple[Any, bool]:
+    held = REALTIME.get("held")
+    if held and held.alive and held.client is client:
+        return held, True
     threads = client.direct_threads(amount=INBOX_SEARCH, thread_message_limit=1)
     names = {str(u.pk): u.username or str(u.pk) for t in threads for u in t.users}
     titles = {str(t.id): t.thread_title for t in threads}
-    seen: set[str] = set()
-    counts = {"message": 0}
+    realtime = Realtime(client, me, names, titles)
+    realtime.start()
+    REALTIME["held"] = realtime
+    return realtime, False
 
-    def on_message(payload: Any) -> None:
-        wrapper = payload.get("message") if isinstance(payload, dict) else None
-        event = message_event(wrapper, me, names, titles) if isinstance(wrapper, dict) else None
-        if not event or event["itemId"] in seen:
-            return
-        seen.add(event["itemId"])
-        counts["message"] += 1
-        live(event)
 
+def watch_sync(cookies: dict[str, str], seconds: int, target: Any = None) -> dict[str, Any]:
     try:
-        client.realtime_on("message", on_message)
-        realtime = client.realtime_connect()
-        realtime.direct_subscribe(amount=1)
+        with HTTP:
+            client, answer = signed_in(cookies)
+            if not client:
+                return answer
+            realtime, shared = realtime_for(client, str(answer["userId"]))
     except Exception as error:
         refusal = refused(error)
         if refusal:
+            SESSION.pop("held", None)
             return refusal
         return {"ok": False, "code": "realtimeRefused", "detail": f"Instagram's realtime (edge-mqtt.facebook.com) didn't take this session: {str(error)[:200]}", "loginState": "unknown", "event": "dropped"}
-    live({"type": "watching", "host": "edge-mqtt.facebook.com", "seconds": seconds, "threads": len(threads)})
+    counts = {"message": 0}
+
+    def listener(event: dict[str, Any]) -> None:
+        counts["message"] += 1
+        emit(target, event)
+
+    key = id(listener)
+    realtime.listeners[key] = listener
+    emit(target, {"type": "watching", "host": "edge-mqtt.facebook.com", "seconds": seconds, "threads": len(realtime.titles), "shared": shared})
     started = time.monotonic()
-    pinged = started
     try:
-        while not seconds or time.monotonic() - started < seconds:
-            try:
-                client.realtime_read_once()
-            except (socket.timeout, TimeoutError):
-                pass
-            if time.monotonic() - pinged >= PING_EVERY:
-                client.realtime_ping()
-                pinged = time.monotonic()
-    except (ConnectionError, OSError) as error:
-        return {"ok": False, "code": "realtimeDropped", "detail": f"Instagram closed the realtime connection: {str(error)[:200]}", "loginState": "unknown", "counts": counts, "event": "dropped"}
+        while realtime.alive and not STOPPING.is_set() and (not seconds or time.monotonic() - started < seconds):
+            time.sleep(0.5)
     finally:
-        try:
-            client.realtime_disconnect()
-        except Exception:
-            pass
-    return {**answer, "watchedSeconds": seconds, "counts": counts}
+        realtime.listeners.pop(key, None)
+    if not realtime.alive:
+        return {"ok": False, "code": "realtimeDropped", "detail": f"Instagram closed the realtime connection: {realtime.error or 'no reason given'}", "loginState": "unknown", "counts": counts, "event": "dropped"}
+    return {**answer, "watchedSeconds": seconds, "counts": counts, "sharedConnection": shared}
 
 
 async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
@@ -350,17 +430,27 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
         return {"ok": False, "code": "nothingToSend", "detail": "give the text, a photo, or both"}
     if photo and not Path(photo).is_file():
         return {"ok": False, "code": "photoMissing", "detail": f"no file at {photo}"}
-    return missing_session(cookies) or await asyncio.to_thread(send_sync, cookies, said, text, photo, bool(spec.get("asOne")))
+    return missing_session(cookies) or await asyncio.to_thread(locked, send_sync, cookies, said, text, photo, bool(spec.get("asOne")))
 
 
 async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     seconds = int(spec.get("seconds") or 0)
     seconds = 0 if seconds <= 0 else max(5, min(seconds, 86400))
-    return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds)
+    return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds, LIVE_TARGET.get())
 
 
 ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "watch": watch}
 
 
+def main() -> int:
+    if os.environ.get("LOG_INSTAGRAM_HOST") == "inline":
+        return kit.main(ACTIONS, WRITES, LIBRARY)
+    from instagramApi import host
+
+    out = host.call(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")))
+    print(json.dumps(out, default=str))
+    return 0 if out.get("ok") else 1
+
+
 if __name__ == "__main__":
-    raise SystemExit(kit.main(ACTIONS, WRITES, LIBRARY))
+    raise SystemExit(main())

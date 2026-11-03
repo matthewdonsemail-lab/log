@@ -1719,6 +1719,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     refuses anything else; the realtime MQTT socket isn't HTTP and is the one
     exception. Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-05 to 08).
 
+129. 2026-11-04 · matt: "it will always be one continuous [session] so we
+    can't have cold start stuff ... we can't open multiple python processes
+    for this because that is going to fuck up our accounts". An Instagram
+    account has one session, always, the way an X account does (rule 105).
+    Every Instagram call (CLI, MCP, the inbox hook's watch) goes through the
+    account's one session host (`python/instagramApi/host.py`, started on the
+    first call, closed after 30 idle minutes or when the engine or instagrapi
+    changes): one process, one instagrapi client signed in once from the
+    saved `sessionid` and reused by every call after (`reused` in its answer),
+    and one realtime connection to edge-mqtt.facebook.com that every watch
+    listens on. Calls other than the watch run one at a time. A second host
+    can't start (`host.lock`); a call that can't reach the host is refused
+    with `instagramSessionHostDown` and sends nothing, never falling back to a
+    session of its own. Every answer carries `instagramSession` (pid, calls,
+    since). `LOG_INSTAGRAM_HOST=inline` runs the old way, for tests only.
+    Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-09).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -34,7 +34,7 @@ Instagram's own answer decides. The result goes to socialAccounts.sessionState, 
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 129, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `instagramDms`
 
@@ -46,7 +46,7 @@ On the direct-API engine (vendor/instagrapi, direct_threads and direct_thread, n
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
-AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 126, 129, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `instagramSend`
 
@@ -57,7 +57,7 @@ Sends to an Instagram DM on the direct-API engine (vendor/instagrapi, no browser
 Without --live it is a dry run and Instagram is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Instagram's answer decides: each message comes back with its id, anything else stops the run with nothing retried (rule 94). The copy is read for what AI chat interfaces leave in text first (rule 111).
 Fill the named fields; each value goes through whole. What acts on Instagram is `instagramSendLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `instagramSendLive`
 
@@ -70,7 +70,7 @@ Without --live it is a dry run and Instagram is not contacted. --live sends it, 
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
-AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `instagramWatch`
 
@@ -81,7 +81,7 @@ Opens Instagram's own realtime connection on the direct-API engine (vendor/insta
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "instagram" }) (An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 83, 94, 123, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 83, 94, 123, 129, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -120,3 +120,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 123.** 2026-11-03 · matt: "make it a rule all platforms need the web socket hooks stuff there". Every platform log-cli talks to gets the live hooks X and Discord have. Its account's one session holds the platform's own push channel open: X Chat's socket, Discord's gateway, Slack's `wss-primary.slack.com`. That is never a poll from a second client. The inbox hook starts that watcher for every account and puts each new message, mention and reply in front of the agent with what to do (`>>> NEW MESSAGE`), per session (rules 105, 108, 115). It also stops a watcher running older code, skips an account cooling off, and stops on any refusal (rule 94). A platform isn't done until its watcher is in the inbox hook (`scripts/hooks/inbox.ts`, `src/inbox/watch`), starting with Slack. Reddit and LinkedIn aren't built yet. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-12).
 
 **Rule 126.** 2026-11-03 · matt: every voice note he was sent or sent, transcribed with AssemblyAI, and "inside of the discord layer we have that and then the social media platforms at large, how can we detect when we have audio". Audio is detected once, in the shared message layer (`python/platformKit/media.py`, `src/platformKit/media`), never per platform: a content type of `audio/*` or `video/ogg`, an extension (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag (Discord's voice-message flag 8192 with its duration and waveform, X Chat's audio media, Slack's `slack_audio` file). Every platform's messages keep their attachments, and an audio one adds `(audio: <name>)` to the text. Whatever is audio goes through one AssemblyAI path (`log transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its file's hash in `~/.logCli/transcripts`, written into the conversation store as `(voice note: "<what was said>")` so search, voice and SubQ see it, and done as they come in `discordRead`, `twitterDms`, `slackRead` and the inbox. Files come only through the platform's own engine and session (X's one session, Discord's sound search, Slack's own transport), and any refusal stops the run (rule 94). The key is `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`, `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed. `log new platform` writes the attachments into a new platform's message shape, and `check:platforms` refuses an engine whose messages drop them. Spec: `docs/specs/voiceNotes.md`.
+
+**Rule 129.** 2026-11-04 · matt: "it will always be one continuous [session] so we can't have cold start stuff ... we can't open multiple python processes for this because that is going to fuck up our accounts". An Instagram account has one session, always, the way an X account does (rule 105). Every Instagram call (CLI, MCP, the inbox hook's watch) goes through the account's one session host (`python/instagramApi/host.py`, started on the first call, closed after 30 idle minutes or when the engine or instagrapi changes): one process, one instagrapi client signed in once from the saved `sessionid` and reused by every call after (`reused` in its answer), and one realtime connection to edge-mqtt.facebook.com that every watch listens on. Calls other than the watch run one at a time. A second host can't start (`host.lock`); a call that can't reach the host is refused with `instagramSessionHostDown` and sends nothing, never falling back to a session of its own. Every answer carries `instagramSession` (pid, calls, since). `LOG_INSTAGRAM_HOST=inline` runs the old way, for tests only. Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-09).

@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 34 domains, 408 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 34 domains, 409 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -534,6 +534,7 @@ What `log new platform instagram` made, and what the platform's code must keep d
 - **REQ-INSTAGRAM-06** DMs are read through instagrapi, sending nothing and marking nothing seen
 - **REQ-INSTAGRAM-07** Sending goes through instagrapi, a dry run unless --live
 - **REQ-INSTAGRAM-08** New DMs are pushed by Instagram's realtime connection to the inbox hook
+- **REQ-INSTAGRAM-09** One continuous session per account, never a cold start per call
 - **REQ-INSTAGRAM-04** The platform is wired into the CLI and the direct-API routes
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
