@@ -5,6 +5,9 @@ import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
+import { saveConversations } from "../../search/conversations/index.ts";
+import type { Conversation } from "../../search/conversations/index.ts";
+import { twitterDmsDeps } from "../twitter/helpers/dms.ts";
 
 export const INSTAGRAM_SESSION_USAGE = [
   "Usage: log instagram session check --account <accountName> [--json]",
@@ -104,6 +107,22 @@ interface InstagramThread {
   last?: InstagramMessage | null;
 }
 
+export function instagramConversationOf(account: string, thread: InstagramThread, messages: readonly InstagramMessage[]): Conversation {
+  return {
+    platform: "instagram",
+    account,
+    conversationId: thread.id,
+    box: thread.group ? `group ${thread.title}` : "dm",
+    with: thread.with.length ? thread.with : [thread.title],
+    messages: messages.map((m) => ({ id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text || (m.kind ? `(${m.kind})` : "") })),
+  };
+}
+
+export const instagramDmsDeps: { save: (conversations: Conversation[]) => number; reindex: () => void } = {
+  save: (conversations) => saveConversations(conversations),
+  reindex: () => twitterDmsDeps.reindex(),
+};
+
 function threadLine(t: InstagramThread): string {
   const who = t.group ? `${t.title} (${t.with.map((u) => `@${u}`).join(", ")})` : `@${t.with[0] ?? t.title}`;
   const last = t.last ? ` · ${t.last.fromMe ? "you: " : ""}${t.last.text || `(${t.last.kind})`}` : "";
@@ -147,6 +166,11 @@ export const instagramDmsCommand: Command = {
       }
       const thread = run.answer.thread as InstagramThread;
       const messages = (run.answer.messages as InstagramMessage[] | undefined) ?? [];
+      if (messages.length) {
+        instagramDmsDeps.save([instagramConversationOf(account.accountName, thread, messages)]);
+        instagramDmsDeps.reindex();
+        context.err(`${account.accountName}: the thread kept for log search and the voice index, the index updating in the background`);
+      }
       return {
         code,
         stdout: [

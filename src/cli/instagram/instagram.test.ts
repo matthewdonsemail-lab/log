@@ -8,6 +8,8 @@ import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { INSTAGRAM_PLATFORM } from "../../instagram/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
 import { inboxContext, takePending } from "../../inbox/watch/index.ts";
+import { instagramDmsDeps } from "./index.ts";
+import type { Conversation } from "../../search/conversations/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -70,13 +72,23 @@ describe("log instagram dms", () => {
     expect(r.out).toContain("● @someone · hi");
   });
 
-  test("with --with it reads that thread's messages, oldest first", async () => {
+  test("with --with it reads that thread's messages, oldest first, and keeps it for search and the voice index", async () => {
+    const saved: Conversation[] = [];
+    let reindexed = 0;
+    const was = { ...instagramDmsDeps };
+    instagramDmsDeps.save = (c) => saved.push(...c);
+    instagramDmsDeps.reindex = () => void reindexed++;
     const r = await run(["instagram", "dms", "--account", "instagramOne", "--with", "@someone"], { answer: { ok: true, loginState: "loggedIn", thread, messages: [{ id: "m1", at: "2026-11-03T18:00:00Z", from: "me", fromMe: true, text: "whats up", kind: "text" }, { id: "m2", at: "2026-11-03T18:01:00Z", from: "someone", fromMe: false, text: "(clip from @creator)", kind: "clip" }] }, refreshed: null });
     expect(r.code).toBe(0);
     expect(r.calls).toEqual(["instagramOne:thread"]);
     expect(r.out).toContain("2 message(s) with @someone");
     expect(r.out).toContain("me: whats up");
     expect(r.out).toContain("@someone: (clip from @creator)");
+    Object.assign(instagramDmsDeps, was);
+    expect(saved).toHaveLength(1);
+    expect(saved[0]).toMatchObject({ platform: "instagram", account: "instagramOne", conversationId: thread.id });
+    expect(saved[0]!.messages.map((m) => m.text)).toEqual(["whats up", "(clip from @creator)"]);
+    expect(reindexed).toBe(1);
   });
 
   test("a name that matches several threads lists them to pick from", async () => {
