@@ -140,3 +140,20 @@ describe('a running queue takes in what is added and sends it all through one ru
   })
 })
 
+
+describe('a reply can carry a meme', () => {
+  test('a target with media keeps it on its item, a quote never does, and an item without media keeps its old fingerprint', () => {
+    const now = new Date(START)
+    const replies = buildQueue({ account: 'matthewsoldit', action: 'reply', targets: [{ handle: 'a', tweetUrl: 'https://x.com/a/status/1', text: 'son im crine', media: 'https://memes.example/fries.webp' }, { handle: 'b', tweetUrl: 'https://x.com/b/status/2', text: 'real' }], lines: [], sources: [], seed: 1, now })
+    expect(replies.items[0].media).toEqual(['https://memes.example/fries.webp'])
+    expect(replies.items[1].media).toBeUndefined()
+    const quotes = buildQueue({ account: 'matthewsoldit', action: 'quote', targets: [{ handle: 'a', tweetUrl: 'https://x.com/a/status/1', text: 'real', media: ['x.webp'] }], lines: [], sources: [], seed: 1, now })
+    expect(quotes.items[0].media).toBeUndefined()
+    const approved = approveQueue(replies, 'matt', now)
+    const plain = approveQueue({ ...replies, items: replies.items.map(({ media, ...rest }) => rest) }, 'matt', now)
+    expect(approved.approval!.fingerprint).not.toBe(plain.approval!.fingerprint)
+    const second = approveQueue({ ...replies, items: [replies.items[1]] }, 'matt', now)
+    const secondPlain = approveQueue({ ...replies, items: [{ ...replies.items[1] }] }, 'matt', now)
+    expect(second.approval!.fingerprint).toBe(secondPlain.approval!.fingerprint)
+  })
+})

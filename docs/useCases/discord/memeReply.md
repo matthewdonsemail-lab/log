@@ -38,6 +38,7 @@ flowchart TD
 
 ## What the runs taught
 
+- **His taste ranks the results.** Search leads with matt's taste and ranks each template by it (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts, and the memes he has sent, rule 120): pick from the top. On "waiting" it put Skeleton Underwater first and Sad Kermit last.
 - **Short queries find more.** "deciding how much money to charge a client" found one weak clip; "money" with `method: "combined"` found eight still memes (2026-11-02, the log group).
 - **Send by the chat id.** A chat named in words makes the engine list every chat first, which is one more call, and the account's governor then waits a random gap before the send (about 30 s on 2026-11-02). With the id the send is one call.
 - **A meme can joke about money; it never names a price** (rule 108). On 2026-11-02 matt asked the log group "how much shall i charge", and the answer sent was Floyd Mayweather's Cash Stacks, not a number.

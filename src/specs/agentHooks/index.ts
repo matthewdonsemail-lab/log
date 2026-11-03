@@ -7,6 +7,8 @@ const LIVE_LOG = 'src/agentHooks/liveLog/index.ts'
 const LIVE_LOGS = 'scripts/hooks/liveLogs.ts'
 const CHECK = 'scripts/checks/checkAgentHooks.ts'
 const STATES = 'src/browser/flow/helpers/pageState.ts'
+const INBOX_HOOK = 'scripts/hooks/inbox.ts'
+const INBOX_WATCH = 'src/inbox/watch/client.ts'
 
 export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
@@ -19,8 +21,19 @@ export const agentHooks = {
     'scripts/hooks/pageState.ts',
     'scripts/hooks/liveLogs.ts',
     'scripts/checks/checkAgentHooks.ts',
+    'scripts/hooks/inbox.ts',
+    'src/inbox/watch/client.ts',
   ],
   anchors: {
+    'REQ-HOOKS-12': [
+      { kind: 'symbol', file: INBOX_WATCH, name: 'ensureLiveWatchers' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'stopStaleWatchers' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'startTwitterWatch' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'startDiscordWatch' },
+      { kind: 'symbol', file: INBOX_WATCH, name: 'startSlackWatch' },
+      { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
+      { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
+    ],
     'REQ-HOOKS-01': [
       { kind: 'symbol', file: REGISTRY, name: 'AGENT_HOOKS' },
       { kind: 'symbol', file: REGISTRY, name: 'hooksFor' },
@@ -68,6 +81,7 @@ export const agentHooks = {
     'REQ-HOOKS-09': noul('Does checkAgentHooks add a problem for every tool from toolsFromCommands and toolsFromFlows for which toolIsHooked is false?'),
     'REQ-HOOKS-10': noul('Does checkAgentHooks add a problem for every MCP tool of a LONG_RUNNING command whose description does not point at the live log?'),
     'REQ-HOOKS-11': noul('Does checkAgentHooks add a problem for a PAGE_STATES state with no RESOLVE_CALLS entry, a RESOLVE_CALLS key that is not a page state, a resolver whose sample call names a tool that is not an MCP tool, and a state whose resolve text names a log command that is not in COMMANDS?'),
+    'REQ-HOOKS-12': noul('Does the inbox hook script, on every event, call stopStaleWatchers and then ensureLiveWatchers for twitter, discord and slack accounts, leaving out accounts for which coolingDown is true, so that startTwitterWatch, startDiscordWatch and startSlackWatch run the account watch with --inbox, and does it put the messages from takePending into the agent context through inboxContext?'),
     unspecifiedBehavior: noul('Does the hook code hold the turn on a state only a person can clear, let a log run piped through tail or head through, or let the check pass drift between the hooks, the CLI and the MCP tools by a route the specification does not describe?'),
   },
   assertions: {
@@ -82,6 +96,7 @@ export const agentHooks = {
     'REQ-HOOKS-09': MET,
     'REQ-HOOKS-10': MET,
     'REQ-HOOKS-11': MET,
+    'REQ-HOOKS-12': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

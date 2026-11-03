@@ -1,3 +1,6 @@
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { writesPerDayOf } from "../../../directApi/engine/index.ts";
 import { fileSize, mediaKindOf, planSend } from "../../../twitter/post/send/index.ts";
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
@@ -16,7 +19,26 @@ import type { Engine } from "./account.ts";
 const ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle) that sends it" };
 const TWEET: FlagSpec = { name: "tweet", kind: "string", required: true, description: "The post's url (https://x.com/<handle>/status/<id>), from treg research" };
 const USER_ID: FlagSpec = { name: "userId", kind: "string", required: true, description: "The recipient's numeric X user id, from treg research" };
-const MEDIA: FlagSpec = { name: "media", kind: "string", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp); uploaded to X before the post" };
+const MEDIA: FlagSpec = { name: "media", kind: "string", description: "Files to attach, comma separated: one video (.mp4 .mov) or gif, or up to 4 images (.jpg .png .webp) on a post or a reply, one file on a dm (it goes on the first message); a file path or an https url, which is downloaded first; uploaded to X before it is sent" };
+
+export async function localMedia(entries: readonly string[] | undefined, fetcher: typeof fetch = fetch): Promise<string[] | undefined> {
+  if (!entries?.length) return entries as string[] | undefined;
+  const out: string[] = [];
+  for (const entry of entries) {
+    if (!/^https:\/\//.test(entry)) {
+      out.push(entry);
+      continue;
+    }
+    const answer = await fetcher(entry);
+    if (!answer.ok) throw Object.assign(new Error(`${entry}: the download answered HTTP ${answer.status}`), { code: "mediaInvalid" });
+    const name = (new URL(entry).pathname.split("/").filter(Boolean).slice(-2).join("_") || "media").replace(/[^A-Za-z0-9._]/g, "_");
+    const dir = mkdtempSync(join(tmpdir(), "logMedia"));
+    const path = join(dir, name);
+    writeFileSync(path, Buffer.from(await answer.arrayBuffer()));
+    out.push(path);
+  }
+  return out;
+}
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
 const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
@@ -45,7 +67,7 @@ const SHAPES: Record<SendAction, SendShape> = {
 
 function usageOf(shape: SendShape): string {
   const target = shape.target === "tweet" ? "--tweet <postUrl>" : shape.target === "userId" ? "--userId <id>" : "";
-  const text = shape.text ? ` --text "<copy>"${shape.action === "post" ? " [--media <file>[,<file>]]" : ""}` : "";
+  const text = shape.text ? ` --text "<copy>"${shape.action === "post" || shape.action === "reply" ? " [--media <file>[,<file>]]" : shape.action === "dm" ? " [--media <file|url>]" : ""}` : "";
   const skip = shape.text ? ` [--skipStyleCheck]${shape.action === "dm" ? " [--asOne]" : ""}` : "";
   return [
     `Usage: log twitter ${shape.action} --account <accountName>${target ? ` ${target}` : ""}${text} [--approvedBy <who>]${skip} [--force] [--live] [--json]`,
@@ -56,7 +78,7 @@ function usageOf(shape: SendShape): string {
 }
 
 function inputOf(shape: SendShape): CommandInput {
-  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
+  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
   return { forms: [{ words: [], effect: "write", summary: shape.summary, positionals: [], flags }] };
 }
 
@@ -95,7 +117,7 @@ export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">
   let last: Awaited<ReturnType<Engine>> | undefined;
   for (const [i, part] of plan.parts.entries()) {
     if (i) await sleep(plan.gapSeconds * 1000);
-    last = await engine({ ...spec, text: part });
+    last = await engine({ ...spec, text: part, ...(i && spec.media ? { media: undefined } : {}) });
     answers.push(last.answer);
     if (!last.answer.ok || last.answer.event !== "sent") break;
     if (plan.parts.length > 1) context.err(`  ${i + 1}/${plan.parts.length} sent: ${part}`);
@@ -114,7 +136,7 @@ function sendCommand(shape: SendShape): Command {
     effect: "write",
     input,
     summary: shape.summary,
-    args: `--account <a>${shape.target === "tweet" ? " --tweet <url>" : shape.target === "userId" ? " --userId <id>" : ""}${shape.text ? ' --text "<copy>"' : ""}${shape.action === "post" ? " [--media <files>]" : ""} [--approvedBy <who>] [--force] [--live] [--json]`,
+    args: `--account <a>${shape.target === "tweet" ? " --tweet <url>" : shape.target === "userId" ? " --userId <id>" : ""}${shape.text ? ' --text "<copy>"' : ""}${shape.action === "post" || shape.action === "reply" ? " [--media <files>]" : shape.action === "dm" ? " [--media <file|url>]" : ""} [--approvedBy <who>] [--force] [--live] [--json]`,
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
@@ -123,7 +145,12 @@ function sendCommand(shape: SendShape): Command {
       if (typeof ref !== "string") return { code: 1, stderr: `log ${label}: --account is needed\n${usage}` };
       const str = (name: string) => (typeof parsed.flags[name] === "string" ? (parsed.flags[name] as string) : undefined);
       const live = parsed.flags["live"] === true;
-      const media = str("media")?.split(",").map((m) => m.trim()).filter(Boolean);
+      let media: string[] | undefined;
+      try {
+        media = await localMedia(str("media")?.split(",").map((m) => m.trim()).filter(Boolean));
+      } catch (error) {
+        return refuseError(label, error);
+      }
       const request = { action: shape.action, tweetUrl: str("tweet"), userId: str("userId"), text: str("text"), media, approvedBy: str("approvedBy"), skipStyleCheck: parsed.flags["skipStyleCheck"] === true, live };
       const early = planSend({ ...request, skipStyleCheck: true });
       if (!early.ok) return refuse(label, early.problem.code, early.problem.detail);
@@ -147,7 +174,7 @@ function sendCommand(shape: SendShape): Command {
           const what = shape.action === "post" ? `make a new post${attached}${plan.spec.text ? `, text "${plan.spec.text}"` : ""}` : `${shape.verb} ${plan.target}${plan.spec.text ? ` with "${plan.spec.text}"` : ""}`;
           return { code: 0, stdout: `log ${label}: dry run: ${account.accountName} would ${what}. Checked; X was not contacted. --live --approvedBy <who> sends it (rule 8).` };
         }
-        if (plan.spec.media?.length) context.err(`${account.accountName}: uploading ${plan.spec.media.length} file${plan.spec.media.length === 1 ? "" : "s"} to X first (${plan.spec.media.map((m) => mediaKindOf(m)).join(", ")}), then the post`);
+        if (plan.spec.media?.length) context.err(`${account.accountName}: uploading ${plan.spec.media.length} file${plan.spec.media.length === 1 ? "" : "s"} to X first (${plan.spec.media.map((m) => mediaKindOf(m)).join(", ")}), then the ${shape.action === "dm" ? "dm" : shape.action === "reply" ? "reply" : "post"}`);
         context.err(`${account.accountName}: ${shape.action === "post" ? "new post" : `${shape.action} ${plan.target}`}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;

@@ -15,7 +15,7 @@ export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'notifi
 
 export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post']
 
-export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
+export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'tooBig' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
 
 export interface TwitterEngineSpec {
   action: TwitterAction
@@ -36,6 +36,8 @@ export interface TwitterEngineSpec {
   media?: string[]
   pages?: number
   screenName?: string
+  mediaEvents?: string[]
+  olderPages?: number
 }
 
 export interface TwitterInboxSync {
@@ -114,6 +116,15 @@ export interface TwitterDmMessage {
   text: string
   fromMe?: boolean
   from?: string | null
+  media?: TwitterDmMedia[]
+}
+
+export interface TwitterDmMedia {
+  type?: string
+  audio?: boolean
+  filename?: string
+  path?: string
+  error?: string
 }
 
 export interface TwitterFollower {

@@ -107,7 +107,7 @@ export function pyJson(value: unknown): string {
 }
 
 export function fingerprint(queue: Pick<Queue, 'account' | 'items'>): string {
-  const rows = queue.items.filter((it) => it.status !== 'skipped').map((it) => [it.n, it.action, targetOfItem(it) ?? null, it.text])
+  const rows = queue.items.filter((it) => it.status !== 'skipped').map((it) => (it.media?.length ? [it.n, it.action, targetOfItem(it) ?? null, it.text, it.media] : [it.n, it.action, targetOfItem(it) ?? null, it.text]))
   return createHash('sha256').update(pyJson([queue.account, rows]), 'utf8').digest('hex')
 }
 
@@ -138,7 +138,8 @@ export function buildQueue(input: { account: string; action: QueueAction; target
   const shuffled = shuffle(pool, seededRandom(input.seed))
   let next = 0
   const items: QueueItem[] = input.targets.map((target, i) => {
-    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const, draftedAt: input.now.toISOString() }
+    const media = (Array.isArray(target.media) ? target.media : target.media ? [target.media] : []).map((m) => String(m).trim()).filter(Boolean)
+    const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const, draftedAt: input.now.toISOString(), ...(media.length && input.action !== 'quote' ? { media } : {}) }
     if (input.action === 'dm') {
       if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a dm queue needs each recipient's id`)
       return { ...base, userId: String(target.userId) }

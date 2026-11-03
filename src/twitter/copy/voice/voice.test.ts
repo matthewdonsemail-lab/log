@@ -29,6 +29,19 @@ describe('the voice gate', () => {
     expect(Object.keys(asked[0].questions)).toContain('openerOnly')
   })
 
+  test('a reply in a chat matt already talks in is never judged as a first message', async () => {
+    const asked: DecisionRequest[] = []
+    const decide = async (request: DecisionRequest) => {
+      asked.push(request)
+      return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: 0.95 }, inContext: { type: 'noul' as const, noul: 0.95 }, friendLike: { type: 'noul' as const, noul: 0.95 }, openerOnly: { type: 'noul' as const, noul: 0.4 }, toThem: { type: 'noul' as const, noul: 0.95 } }, usage: { input_tokens: 1, output_tokens: 1 } }
+    }
+    const evidence = { chat: 'lior', profile: 'short lowercase', replies: [], recent: [{ said: 'lets do it matt', reply: 'let goo' }] }
+    const reading = await readVoice({ to: 'lior', text: 'whats the plan with it', context: 'do you have some reddit knowledge', evidence } as never, 'GUIDE', decide)
+    expect(reading.openerOnly).toBe(1)
+    expect(reading.pass).toBe(true)
+    expect((asked[0].state as Record<string, unknown>).alreadyTalkedInThisChat).toBe(true)
+  })
+
   test('a draft that sounds like ai fails on voice', async () => {
     const { decide } = answering(0.6)
     expect((await readVoice({ to: 'x', text: 'love this take' }, 'GUIDE', decide)).pass).toBe(false)

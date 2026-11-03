@@ -52,6 +52,9 @@ flowchart TD
 
 ## What to know
 
+- **A meme can carry the nudge.** For someone who said they'd do it and went quiet ("bet will do"), a Memelord meme that fits the moment goes on the first message as an image (`twitterDmLive` { media: "<meme url>" }), then the nudge in the owner's words: 2026-11-02, @gabesweats got Waiting Skeleton with "me waiting on your bug report / you break it yet lad". Find it with `memelordSearch`, gate the text with `voice` as always.
+- **At the cap, only the owner can lift it.** `force: true` on the read and the send goes past the governor for that call when the owner says so (rule 86); the governor still counts each request.
+
 - **The owner's ask is the point.** Don't drop it to make a message softer. Put it after a line that answers them, so it reads like a mate asking a favour.
 - **Full context at the time of sending, every time.** What someone did a minute ago changes what you say: they liked it, retweeted it, replied, or the owner messaged them from his phone. Read it with `twitterDms` { with } before drafting, and the queue reads it again before each send and holds anything that changed (rule 109).
 - **The context line comes first, every time.** The owner has said he doesn't know what half the conversations are about. Step 4's table is what he reads, so keep it plain and short.

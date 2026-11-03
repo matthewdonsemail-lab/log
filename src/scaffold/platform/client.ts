@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { addImport, addToArray, addToInterface, addToObject, addToReturnedObject, arrayHasText, hasImport, interfaceHasMember, objectHasKey, returnedObjectHasKey } from "./helpers/index.ts";
-import { accountIndex, cliIndex, cliTest, platformDoc, pythonEngine, sessionClient, sessionIndex } from "./helpers/index.ts";
+import { accountIndex, cliIndex, cliTest, platformDoc, pythonEngine, sessionClient, sessionIndex, specDoc, specIndex } from "./helpers/index.ts";
 import type { NewPlatformOptions, PlannedEdit, PlannedFile, PlatformNames, PlatformPlan } from "./types.ts";
 import { NEW_PLATFORM_RULE } from "./types.ts";
 
@@ -70,6 +70,8 @@ export function planNewPlatform(root: string, options: NewPlatformOptions): Plat
     { path: `python/${n.name}Api/__init__.py`, content: "" },
     { path: `python/${n.name}Api/engine.py`, content: pythonEngine(n) },
     { path: `docs/platforms/${n.name}/README.md`, content: platformDoc(n) },
+    { path: `docs/specs/${n.name}.md`, content: specDoc(n) },
+    { path: `src/specs/${n.name}/index.ts`, content: specIndex(n) },
   ];
   for (const file of files) if (existsSync(join(root, file.path))) throw new Error(`${file.path} already exists: nothing is overwritten`);
   const contextType = `import("../../platformKit/session/index.ts")`;

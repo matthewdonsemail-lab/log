@@ -22,6 +22,7 @@ import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
+import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
@@ -36,8 +37,9 @@ import { watchCommand } from "../watch/index.ts";
 import { dispatchWith, runWith } from "./client.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { redditSessionCommand } from "../reddit/index.ts";
-import { discordChatsCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
+import { discordChatsCommand, discordDeleteCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
 import { linkedinCookiesCommand, linkedinSessionCommand } from "../linkedin/index.ts";
+import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
 
 export * from "./helpers/index.ts";
 export { ALIASES, createContext, defaultSendInspect, runFast, takeProxyMs } from "./client.ts";
@@ -92,6 +94,7 @@ export const COMMANDS: Command[] = [
   searchCommand,
   kbCommand,
   memelordCommand,
+  transcribeCommand,
   followersCommand,
   notificationsCommand,
   replyCommand,
@@ -109,8 +112,16 @@ export const COMMANDS: Command[] = [
   discordReadCommand,
   discordWatchCommand,
   discordSendCommand,
+  discordDeleteCommand,
   linkedinSessionCommand,
   linkedinCookiesCommand,
+  slackSessionCommand,
+  slackWorkspacesCommand,
+  slackChatsCommand,
+  slackReadCommand,
+  slackWatchCommand,
+  slackSendCommand,
+  slackCookiesCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

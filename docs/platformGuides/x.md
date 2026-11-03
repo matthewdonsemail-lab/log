@@ -61,6 +61,7 @@ The full steps: [Adding an account](../accounts.md).
 - [Recruiting with a reply queue](../useCases/twitter/recruiting.md)
 - [Finding who needs something from you](../useCases/twitter/whoNeedsYou.md)
 - [Network maxing](../useCases/twitter/networkMaxing.md)
+- [Collab maxxing](../useCases/twitter/collabMaxxing.md)
 - [Affiliate marketing through your DMs](../useCases/twitter/affiliateMarketing.md)
 
 ## Full detail

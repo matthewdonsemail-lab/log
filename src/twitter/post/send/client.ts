@@ -64,7 +64,8 @@ export function planSend(request: SendRequest, sizeOf: SizeOf = fileSize): SendP
   const watermark = text ? watermarkReadingOf(text) : null
   if (watermark?.level === 'artifacts') return { ok: false, problem: { code: 'aiArtifacts', detail: `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(', ')}` } }
   const media = (request.media ?? []).map((m) => m.trim()).filter(Boolean).map((m) => resolve(m))
-  if (media.length && request.action !== 'post') return { ok: false, problem: { code: 'mediaInvalid', detail: `${request.action} takes no media: only a post does` } }
+  if (media.length && request.action !== 'post' && request.action !== 'dm' && request.action !== 'reply') return { ok: false, problem: { code: 'mediaInvalid', detail: `${request.action} takes no media: only a post, a reply or a dm does` } }
+  if (media.length > 1 && request.action === 'dm') return { ok: false, problem: { code: 'mediaInvalid', detail: `${media.length} files: a dm carries one image, gif or video` } }
   const badMedia = mediaProblem(media, sizeOf)
   if (badMedia) return { ok: false, problem: badMedia }
   const approvedBy = request.approvedBy?.trim()

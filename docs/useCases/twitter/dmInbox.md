@@ -38,6 +38,9 @@ Who wrote last is already in context at the start of a session: the SessionStart
 
 ## What to know
 
+- **Past the daily cap only when the owner says.** At its request cap the governor refuses every read; `twitterDms` { force: true } reads past it for that call, and the governor still counts it (rule 86). On 2026-11-02 matthewsoldit read its inbox at 501-506 of 500 this way, with matt's go-ahead.
+- **A nudge can be a meme.** Where someone owes a reply or promised something, `twitterDmLive` { media: "<meme url>" } sends the meme as an image on the first message, with the nudge after it (docs/extensions/memelord.md). A chat where the owner's last messages are still unanswered gets nothing stacked on top.
+
 - `twitterDms` reads the inbox, the message requests and X's encrypted Chat. X Chat opens with the account's X Chat PIN, saved once in a masked terminal prompt (`log twitter chat pin --account <account>`); without it X Chat threads show who and when, not what.
 - A person can have both an old DM thread and an X Chat thread. Read them together with `twitterDms` { account, with: "<handle>" } before answering, so nothing they said in X Chat is missed.
 - Every X Chat message opens with the saved PIN: a reaction shows as `(reacted 🔥)`, an edit as `(edited) …`, a photo as `(image: name.jpg)`, a shared post or link as its URL, and a read marker is hidden, so "they read it and haven't answered" never looks like a message waiting on you. A message still showing "could not open" is reopened the next time its chat is read, and each sync reopens a few on its own. Group chats are read with `twitterDms` { account, conversation: "g…" }.
@@ -47,6 +50,8 @@ Who wrote last is already in context at the start of a session: the SessionStart
 - X has its own daily limit on tweets and messages (code 344; the governor allows 240 writes a day, likes, reposts and follows included, and X can still stop it before that), and going past the governor doesn't get past it. Spend the day's writes on people who answered first. After a 344 nothing more goes out until the owner says so.
 - To find something said in any conversation, search instead of reading every thread: `search` { query, with, after } after `searchIndex`.
 - A DM send counts as a write against the account's 240 a day.
+- **Missed openings** ("look on my twitter for missed opportunities"). The waiting list only shows who wrote last right now. It misses a thread where someone explained their model, said they're hiring, said "lets do it" or offered an intro, and the talk then stopped. Go through the saved conversations instead (`~/.logCli/conversations/twitter/<account>/*.json`, merged by `with`, since the old DM and X Chat files of one person are two files). Keep the threads from the last two weeks where they wrote last, or where their last few messages carry a deal signal (hiring, retainer, price, collab, intro, a question). Then read each one in full with `twitterDms` { with } before saying anything. The saved copy can be behind: on 2026-11-03 it showed @shaw_gtm unanswered when the owner had already replied. Group banter, spam and cold pitches at the owner aren't openings. What to send to the openings is [collabMaxxing.md](collabMaxxing.md).
+- The waiting list can show people the owner already answered in the old DM inbox (seen 2026-11-03: Mario, Sam, Johanes). Check the thread before treating one as waiting.
 
 ## Next
 

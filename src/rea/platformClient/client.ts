@@ -9,9 +9,9 @@ import { parseSteps, splitHarBySteps } from "../capture/helpers/index";
 import type { ReaRunner } from "../capture/types";
 import { clientFactsPath, findRunCaptures, scriptsFromHar, writeOperationDocs } from "../facebookClient/index";
 import type { ClientOperation, RequestSeen, RunCapture } from "../facebookClient/index";
-import { domainOfRequest, forgetParsed, needlesOf, operationOf, requestNameOf, slicesFor, stablePath } from "./helpers/index";
+import { aliasHost, domainOfRequest, forgetParsed, methodNameOf, needlesOf, operationOf, requestNameOf, slicesFor, stablePath } from "./helpers/index";
 import { PLATFORM_CLIENT_RULES } from "./types";
-import type { BundleScript, SourceSlice } from "./types";
+import type { BundleScript, PlatformClientRules, SourceSlice } from "./types";
 
 export interface BuildPlatformMapOptions {
   platform: Platform;
@@ -56,7 +56,7 @@ export function readsOf(answer: unknown, depth = 2, prefix = ""): string[] {
   return out;
 }
 
-export function platformRequestsInRun(capture: RunCapture, hosts: readonly string[]): SeenOn[] {
+export function platformRequestsInRun(capture: RunCapture, hosts: readonly string[], rules?: PlatformClientRules): SeenOn[] {
   const har = JSON.parse(readFileSync(join(capture.dir, "session.har"), "utf8")) as { log?: { entries?: { startedDateTime?: string }[] } };
   const stepsFile = join(capture.dir, "steps.jsonl");
   let steps = existsSync(stepsFile) ? parseSteps(readFileSync(stepsFile, "utf8")) : [];
@@ -68,12 +68,14 @@ export function platformRequestsInRun(capture: RunCapture, hosts: readonly strin
     const stepAt = Date.parse(steps[part.index - 1].at);
     for (const exchange of exchangesOf(part.har, new Set(), [])) {
       if (exchange.kind !== "api" || !onHosts(exchange.host, hosts)) continue;
-      const operation = operationOf(exchange.sent, exchange.path);
-      const label = exchange.host.split(".")[0];
+      const host = aliasHost(exchange.host, rules?.hostAliases);
+      const method = rules?.apiMethod?.exec(exchange.path)?.[1] ?? null;
+      const operation = method ?? operationOf(exchange.sent, exchange.path);
+      const label = host.split(".")[0];
       seen.push({
-        name: requestNameOf(exchange.host, exchange.path, operation),
+        name: method ? methodNameOf(method) : requestNameOf(host, exchange.path, operation),
         docId: null,
-        path: label === "www" ? stablePath(exchange.path) : `${exchange.host}${stablePath(exchange.path)}`,
+        path: method ? `/api/${method}` : label === "www" ? stablePath(exchange.path) : `${host}${stablePath(exchange.path)}`,
         graphql: !!operation,
         variables: variablesOf(exchange.sent),
         run: capture.run,
@@ -85,7 +87,7 @@ export function platformRequestsInRun(capture: RunCapture, hosts: readonly strin
         errors: exchange.errors,
         sent: exchange.sent,
         answer: exchange.answer,
-        host: exchange.host,
+        host,
         operation,
       });
     }
@@ -216,7 +218,7 @@ export async function buildPlatformClientMap(options: BuildPlatformMapOptions): 
   const used: RunCapture[] = [];
   for (const capture of captures) {
     try {
-      const requests = platformRequestsInRun(capture, site.hosts);
+      const requests = platformRequestsInRun(capture, site.hosts, rules);
       if (!requests.length) continue;
       used.push(capture);
       seen.push(...requests);

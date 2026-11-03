@@ -42,7 +42,7 @@ Checked by: code and SubQ
 
 ### REQ-AITELLS-05: The index embeds every literal phrase with Jina
 
-`log voice aiIndex` collects every literal phrase from vale-ai-tells first, then ai-slop-detector, ai-vocabulary, SLOP_Detector, the AI-written samples and the X complaints, and embeds them with Jina `jina-embeddings-v3`.
+`log voice aiIndex` collects every literal phrase from vale-ai-tells first, then ai-slop-detector, ai-vocabulary, SLOP_Detector, the X complaints and the AI-written samples, and embeds them with Jina `jina-embeddings-v3`.
 
 Checked by: code and SubQ
 

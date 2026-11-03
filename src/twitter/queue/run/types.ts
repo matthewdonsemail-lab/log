@@ -32,7 +32,7 @@ export interface RunDeps {
   cancelled?: () => boolean
 }
 
-export type FailureKind = 'auth' | 'gone' | 'refused' | 'network' | 'broken'
+export type FailureKind = 'auth' | 'gone' | 'tooBig' | 'refused' | 'network' | 'broken'
 
 export interface XRefusal {
   code: string

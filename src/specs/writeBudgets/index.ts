@@ -19,7 +19,7 @@ export const writeBudgets = {
   anchors: {
     'REQ-BUDGET-01': [
       { kind: 'value', file: TYPES, name: 'WRITES_PER_DAY', path: ['twitter'], equals: 240 },
-      { kind: 'value', file: TYPES, name: 'WRITES_PER_DAY', path: ['discord'], equals: 60 },
+      { kind: 'value', file: TYPES, name: 'WRITES_PER_DAY', path: ['discord'], equals: 120 },
       { kind: 'value', file: TYPES, name: 'WRITES_PER_DAY', path: ['linkedin'], equals: 10 },
       { kind: 'value', file: TYPES, name: 'WRITES_PER_DAY_DEFAULT', equals: 40 },
       { kind: 'symbol', file: TYPES, name: 'writesPerDayOf' },

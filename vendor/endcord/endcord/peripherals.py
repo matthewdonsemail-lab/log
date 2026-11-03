@@ -41,18 +41,7 @@ RUNTIME_TEMP = False   # forces all temp files to be written to runtime dir
 have_termux_notify = False
 if sys.platform == "win32":
     import win32clipboard
-    try:
-        from windows_toasts import (
-            AudioSource,
-            Toast,
-            ToastAudio,
-            ToastDisplayImage,
-            WindowsToaster,
-        )
-        toaster = WindowsToaster(APP_NAME)
-    except OSError:
-        toaster = None
-        logger.warn("Failed initializing notification system")
+    toaster = None
     # for pasting
     user32 = ctypes.windll.user32
     user32.OpenClipboard.argtypes = [wintypes.HWND]

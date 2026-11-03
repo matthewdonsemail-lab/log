@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { checkAnchors, unpairedSpecs } from "../../specs/index.ts";
 import { addImport, addToArray, addToInterface, addToObject, addToReturnedObject, AstEditError, applyPlan, namesOf, planNewPlatform } from "./index.ts";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
@@ -58,6 +60,21 @@ describe("log new platform", () => {
     expect(read("src/mcp/server/helpers/agentRules.ts")).toContain(`${PROBE}Session: [13, 63, 64, 73, 83]`);
     for (const file of [`src/${PROBE}/account/session/client.ts`, `src/cli/${PROBE}/index.ts`, `src/cli/${PROBE}/${PROBE}.test.ts`, `python/${PROBE}Api/engine.py`, `python/${PROBE}Api/__init__.py`, `docs/platforms/${PROBE}/README.md`]) expect(existsSync(join(root, file))).toBe(true);
     expect(read(`src/${PROBE}/account/session/client.ts`)).toContain("sessionCookies: ['probe_session']");
+  });
+
+  test("a new platform gets its spec and anchors, and every anchor is proved by the syntax tree on what was written", async () => {
+    const root = copyOfRepo();
+    cpSync(join(REPO, "src/specs/types.ts"), join(root, "src/specs/types.ts"));
+    symlinkSync(join(REPO, "node_modules"), join(root, "node_modules"), "junction");
+    applyPlan(root, planNewPlatform(root, { name: PROBE, sessionCookies: ["probe_session"] }));
+    expect(existsSync(join(root, `docs/specs/${PROBE}.md`))).toBe(true);
+    expect(unpairedSpecs(root)).toEqual([]);
+    const spec = (await import(pathToFileURL(join(root, "src/specs", PROBE, "index.ts")).href))[PROBE];
+    expect(Object.keys(spec.rubrics).sort()).toEqual([...Object.keys(spec.anchors), "unspecifiedBehavior"].sort());
+    const report = checkAnchors(root, PROBE, spec.anchors);
+    expect(report.findings).toEqual([]);
+    expect(report.checked).toBeGreaterThan(8);
+    for (const id of Object.keys(spec.anchors)) expect(readFileSync(join(root, `docs/specs/${PROBE}.md`), "utf8")).toContain(`### ${id}:`);
   });
 
   test("an existing platform, a bad name or a missing library is refused before anything is written", () => {

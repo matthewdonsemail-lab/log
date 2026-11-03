@@ -30,7 +30,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-04: A first message is only the opener
 
-A first message to someone matt has never talked with fails when it carries an ask: a pitch, a question about a tool, product or service of his, a call, or a link to his own stuff. Rule 98.
+A first message to someone matt has never talked with fails when it carries an ask: a pitch, a question about a tool, product or service of his, a call, or a link to his own stuff. Rule 98. A chat where matt has already sent messages (the voice index's latest messages in that chat) is never judged as a first message: SubQ is told so (`alreadyTalkedInThisChat`) and the opener check passes.
 
 Checked by: SubQ
 
@@ -47,5 +47,19 @@ Checked by: code and SubQ
 ### REQ-VOICE-06: A draft passes only when every answer passes
 
 A draft passes only when the voice answer reaches its threshold, the context, friend-like and opener answers reach theirs, the chat answer reaches its threshold when there is a chat, no never-said phrase is found and the watermark finds no artifacts.
+
+Checked by: code and SubQ
+
+## His own phrasing and the scrambler
+
+### REQ-VOICE-07: A draft written in word pairs matt has never written fails
+
+Every reply in the voice index is cut into pairs of words. The gate counts how many of the draft's pairs matt has written at least twice, leaving out pairs that use words from what the other person said. A draft whose share is below matt's own 10th percentile fails, measured over his replies with each reply's own pairs left out. The pairs he has never written are named in the result and handed to SubQ, so "is wild" fails because matt never wrote it.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-08: The vendored watermark scrambler reads every draft
+
+The draft goes through `vendor/aiWatermarkScrambler` (novatechflow/ai-watermark-scrambler, layer A) for invisible and lookalike characters. A draft with any fails, and its count and kinds are handed to SubQ. The statistical watermark is not checked here.
 
 Checked by: code and SubQ

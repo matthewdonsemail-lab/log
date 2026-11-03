@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-25T13:32:57.719Z",
-  "runs": 1,
+  "builtAt": "2026-11-03T07:16:50.558Z",
+  "runs": 2,
   "operations": [
     {
       "name": "ChatRedditors",
@@ -55,6 +55,15 @@
       "doc": "background/piP.md",
       "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
       "seen": 7
+    },
+    {
+      "name": "pixelConfigPixelsConfig",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/pixelConfigPixelsConfig.md",
+      "reaEvidenceId": "ev_d2728c276e2bd0500e61b6f3b0f50180a5cc5e72fc8e3506145a9c5228c7c883",
+      "seen": 3
     },
     {
       "name": "StoreUxtargetingAction",

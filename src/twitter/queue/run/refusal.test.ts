@@ -58,6 +58,22 @@ describe('a refusal from X stops the run (rule 94)', () => {
     })
   }
 
+  test('an author over the follower cap is skipped, not a refusal, and the run goes on (rule 121)', async () => {
+    const queue = queueOf()
+    const sent: string[] = []
+    const alerts: string[] = []
+    const logs: string[] = []
+    const tooBig: TwitterSessionAnswer = { ok: false, code: 'authorTooBig', event: 'tooBig', detail: '@a has 974212 followers, over 1500: too big to reply to yet, so nothing was liked, followed or sent' }
+    expect(failureOf(tooBig)).toBe('tooBig')
+    const result = await runQueue(queue, depsOf([tooBig], sent, alerts, logs))
+    expect(result.state).toBe('finished')
+    expect(sent).toEqual(['a', 'b'])
+    expect(queue.items.map((i) => i.status)).toEqual(['skipped', 'sent'])
+    expect(queue.randomRun!.events[0].skipped).toBe('tooBig')
+    expect(alerts).toHaveLength(0)
+    expect(logs.join('\n')).toContain('TOO BIG reply #1 @a: @a has 974212 followers, over 1500')
+  })
+
   test('a network drop is not a refusal: it is tried again and the run goes on', async () => {
     const queue = queueOf()
     const sent: string[] = []

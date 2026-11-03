@@ -23,7 +23,7 @@
       "sections": [
         {
           "title": "Platforms",
-          "pages": ["platformGuides/x.md", "platformGuides/reddit.md", "platformGuides/facebook.md", "platformGuides/discord.md", "platformGuides/linkedin.md"]
+          "pages": ["platformGuides/x.md", "platformGuides/reddit.md", "platformGuides/facebook.md", "platformGuides/discord.md", "platformGuides/slack.md", "platformGuides/linkedin.md"]
         }
       ]
     },
@@ -52,7 +52,7 @@
         { "title": "Browsers and proxies", "pages": ["browsers.md", "browserSetup.md", "adsPower.md", "proxies.md"], "folders": ["proxyVendors"] },
         {
           "title": "Facebook in depth",
-          "pages": ["groupListening.md", "groupMembers.md", "groupRead.md", "conversations.md", "listingMonitor.md", "listingMedia.md", "recordToFlow.md"],
+          "pages": ["groupListening.md", "groupMembers.md", "groupRead.md", "conversations.md", "voiceNotes.md", "listingMonitor.md", "listingMedia.md", "recordToFlow.md"],
           "folders": ["listingPublish"]
         },
         { "title": "Platform APIs", "folder": "platforms" },

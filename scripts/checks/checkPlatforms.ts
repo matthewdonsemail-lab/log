@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
@@ -17,6 +17,11 @@ for (const platform of PLATFORMS.filter((p) => p !== PLATFORMS[0])) {
   if (!has(`src/${platform}`)) problems.push(`${platform}: no src/${platform} (rule 64)`);
   if (!has(`src/cli/${platform}/index.ts`)) problems.push(`${platform}: no src/cli/${platform}/index.ts`);
   if (!has(`python/${platform}Api/engine.py`)) problems.push(`${platform}: no python/${platform}Api/engine.py`);
+  else {
+    const engine = readFileSync(join(root, `python/${platform}Api/engine.py`), "utf8");
+    const keepsMedia = /^from platformKit import media\b/m.test(engine) && /"(attachments|media)"/.test(engine);
+    if (/"messages"/.test(engine) && !keepsMedia) problems.push(`${platform}: python/${platform}Api/engine.py answers with messages but drops their attachments: keep each message's attachments and mark audio with python/platformKit/media.py (rule 126)`);
+  }
   if (!has(`docs/platforms/${platform}/README.md`) && !has(`docs/${platform}Platform.md`)) problems.push(`${platform}: no docs/platforms/${platform}/README.md`);
   const commands = COMMANDS.filter((c) => c.platform === platform);
   if (!commands.length) problems.push(`${platform}: no command in COMMANDS has platform ${platform}`);

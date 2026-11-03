@@ -17,6 +17,8 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from platformKit import media as media_kit
+
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch")
 WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
@@ -395,6 +397,42 @@ async def upload_post_media(client: Any, paths: list[str]) -> list[str]:
     return ids
 
 
+DM_MEDIA_CATEGORIES = {".mp4": "dm_video", ".mov": "dm_video", ".gif": "dm_gif"}
+MEDIA_LINK = re.compile(r"^https?://\S+?\.(mp4|mov|gif|jpe?g|png|webp)(\?\S*)?$", re.I)
+
+
+def media_links_out(spec: dict[str, Any]) -> tuple[str, list[str]]:
+    import hashlib
+    import urllib.request
+
+    kept, links = [], []
+    for line in str(spec.get("text") or "").split("\n"):
+        (links if MEDIA_LINK.match(line.strip()) else kept).append(line.strip() if MEDIA_LINK.match(line.strip()) else line)
+    media = list(spec.get("media") or [])
+    folder = state_dir(str(spec["account"])) / "media" / "outgoing"
+    folder.mkdir(parents=True, exist_ok=True)
+    for link in links:
+        suffix = Path(link.split("?")[0]).suffix.lower()
+        path = folder / f"{hashlib.sha1(link.encode()).hexdigest()[:16]}{suffix}"
+        if not path.exists():
+            with urllib.request.urlopen(urllib.request.Request(link, headers={"User-Agent": "Mozilla/5.0"}), timeout=60) as answer:
+                path.write_bytes(answer.read())
+        print(f"media link {link} sent as media, not as text ({path.stat().st_size} bytes)", file=sys.stderr, flush=True)
+        media.append(str(path))
+    return "\n".join(kept).strip(), media
+
+
+async def upload_dm_media(client: Any, path: str) -> str:
+    category = DM_MEDIA_CATEGORIES.get(Path(path).suffix.lower(), "dm_image")
+    media_id = await asyncio.wait_for(
+        client.upload_media(path, wait_for_completion=category != "dm_image", media_category=category),
+        timeout=MEDIA_PROCESSING_SECONDS,
+    )
+    if not str(media_id or ""):
+        raise RuntimeError(f"x gave no media id for {Path(path).name}: nothing was sent")
+    return str(media_id)
+
+
 def keep_create_answers(client: Any) -> dict[str, Any]:
     raw: dict[str, Any] = {}
     create = client.gql.create_tweet
@@ -410,17 +448,23 @@ def keep_create_answers(client: Any) -> dict[str, Any]:
 
 
 async def follows(client: Any, cookies: dict[str, str], handles: list[str]) -> dict[str, Any]:
-    me = getattr(await client.get_user_by_id(own_user_id(cookies)), "screen_name", None)
+    my_id = own_user_id(cookies)
+    me = None
     checked = []
     for handle in handles:
         try:
             data, _ = await client.get(
                 "https://x.com/i/api/1.1/friendships/show.json",
-                params={"source_screen_name": me, "target_screen_name": handle},
+                params={"source_id": my_id, "target_screen_name": handle},
                 headers=client._base_headers,
             )
-            relationship = (data or {}).get("relationship") or {}
-            checked.append({"handle": handle, "followsYou": bool((relationship.get("target") or {}).get("following")), "youFollow": bool((relationship.get("source") or {}).get("following"))})
+            relationship = (data or {}).get("relationship") if isinstance(data, dict) else None
+            if not relationship:
+                checked.append({"handle": handle, "error": f"x gave no relationship: {json.dumps(data)[:200]}", "event": "failed"})
+                continue
+            source = relationship.get("source") or {}
+            me = me or source.get("screen_name")
+            checked.append({"handle": handle, "followsYou": bool(source.get("followed_by")), "youFollow": bool(source.get("following"))})
         except Exception as e:
             checked.append({"handle": handle, "error": redact(e, cookies)[:200], "event": event_of(e)})
         await asyncio.sleep(1.5)
@@ -535,7 +579,7 @@ def xchat_message(m: dict[str, Any], me: str, handles: dict[str, str]) -> dict[s
     extra = media_line(m)
     out = {"id": str(m.get("event_id") or ""), "conversationId": str(m.get("conversation_id") or ""), "time": iso_of(m.get("time_ms")), "senderId": sender, "recipientId": None, "text": f"{text} {extra}".strip() if extra else text, "fromMe": sender == me, "from": handles.get(sender)}
     if m.get("media"):
-        out["media"] = [{k: a.get(k) for k in ("type", "filename", "path", "error") if a.get(k)} for a in m["media"]]
+        out["media"] = [{**{k: a.get(k) for k in ("type", "filename", "path", "error") if a.get(k)}, "audio": media_kit.is_audio({"name": a.get("filename"), "type": "audio/" if str(a.get("type") or "").lower() == "audio" else a.get("type")})} for a in m["media"]]
     return out
 
 
@@ -760,12 +804,14 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     stored = stored_xchat(spec, conversation_id)
     unopened = [str(m.get("event_id")) for m in stored if m.get("text") is None and m.get("event_id") and inboxSync_shown(m)][-5:]
     unfetched = [str(m.get("event_id")) for m in stored if m.get("event_id") and not m.get("media") and MEDIA_TEXT.search(m.get("text") or "")][-3:]
-    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=unopened + [i for i in unfetched if i not in unopened])
+    asked = [str(i) for i in spec.get("mediaEvents") or [] if str(i).isdigit()][:MEDIA_EVENTS_PER_READ]
+    reopen = list(dict.fromkeys(unopened + unfetched + asked))
+    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=reopen)
     handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
     for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
         await handle_of(client, user_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
-    await save_xchat_media(client, spec, conversation_id, page["messages"])
+    await save_xchat_media(client, spec, conversation_id, page["messages"], set(asked))
     keep_opened(spec, conversation_id, page["messages"])
     held = stored_xchat(spec, conversation_id)
     for m in held:
@@ -780,6 +826,7 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
 
 
 MEDIA_PER_READ = 8
+MEDIA_EVENTS_PER_READ = 9
 MEDIA_TEXT = re.compile(r"\((image|gif|video|audio|media|file)[:)]")
 
 
@@ -790,10 +837,12 @@ def media_path(spec: dict[str, Any], conversation_id: str, attachment: dict[str,
     return state_dir(str(spec["account"])) / "media" / re.sub(r"[^0-9A-Za-z_-]", "_", conversation_id) / f"{stem}{suffix}"
 
 
-async def save_xchat_media(client: Any, spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]]) -> None:
+async def save_xchat_media(client: Any, spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]], asked: set[str] | None = None) -> None:
     if not spec.get("account"):
         return
-    wanted = [(m, a) for m in messages for a in (m.get("media") or [])][-MEDIA_PER_READ:]
+    every = [(m, a) for m in messages for a in (m.get("media") or [])]
+    latest = every[-MEDIA_PER_READ:]
+    wanted = latest + [(m, a) for m, a in every if str(m.get("event_id") or "") in (asked or set()) and (m, a) not in latest]
     for m, attachment in wanted:
         path = media_path(spec, conversation_id, attachment)
         if not path.is_file():
@@ -1107,7 +1156,9 @@ def live_worthy(row: dict[str, Any], before: set[str], now: float | None = None)
     return (now if now is not None else time.time()) - at <= LIVE_WINDOW_SECONDS
 
 
-NETWORK_ERROR = re.compile(r"curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve", re.IGNORECASE)
+BADGE_POLL_TIMEOUT_SECONDS = 45
+
+NETWORK_ERROR = re.compile(r"curl: \(\d+\)|Connection (was )?reset|timed out|Recv failure|Could not resolve|TimeoutError", re.IGNORECASE)
 
 
 def network_only(error: str) -> bool:
@@ -1123,14 +1174,14 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
         try:
             if governor is not None:
                 governor.before_request(is_mutation=False, quiet=True)
-            answer, _ = await client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS})
+            answer, _ = await asyncio.wait_for(client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS}), timeout=BADGE_POLL_TIMEOUT_SECONDS)
             counts = badge_counts_of(answer)
             if counts is not None and counts != last:
                 append_live(account, {"type": "badge", **counts})
                 live_line({"type": "badge", **counts})
                 if notification_rose(last, counts):
                     refused = False
-                    for event in await new_notifications(client, cookies, spec, governor):
+                    for event in await asyncio.wait_for(new_notifications(client, cookies, spec, governor), timeout=BADGE_POLL_TIMEOUT_SECONDS * 2):
                         append_live(account, event)
                         live_line(event)
                         refused = refused or event.get("type") == "notificationsRefused"
@@ -1140,7 +1191,9 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
         except asyncio.CancelledError:
             raise
         except Exception as e:
-            error = redact(e, cookies)[:200]
+            error = (redact(e, cookies) or type(e).__name__)[:200]
+            if isinstance(e, asyncio.TimeoutError):
+                error = f"TimeoutError: no answer from x in {BADGE_POLL_TIMEOUT_SECONDS}s"
             append_live(account, {"type": "pollRefused", "error": error})
             live_line({"type": "pollRefused", "error": error})
             if not network_only(error):
@@ -1216,26 +1269,107 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if not str(getattr(user, "id", "") or ""):
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the follow with no user: nobody was followed"}
         return {"ok": True, "event": "sent", "followed": True, "userId": user_id, "handle": getattr(user, "screen_name", None) or getattr(before, "screen_name", None)}
+    if action in ("dm", "post", "reply"):
+        text, media = media_links_out(spec)
+        spec = {**spec, "text": text, "media": media}
     if action == "dm":
-        message = await client.send_dm(str(spec["userId"]), spec["text"])
+        media = list(spec.get("media") or [])
+        dm_media_id = await upload_dm_media(client, str(media[0])) if media else None
+        message = await client.send_dm(str(spec["userId"]), spec["text"], media_id=dm_media_id)
         message_id = str(getattr(message, "id", "") or "") or None
         if not message_id:
             return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": "x answered the dm with no message id: nothing was sent"}
         pair = sorted([str(getattr(message, "sender_id", "") or ""), str(getattr(message, "recipient_id", "") or "")], key=lambda i: int(i) if i.isdigit() else 0)
-        return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"])}
+        return {"ok": True, "event": "sent", "mode": "dm", "messageId": message_id, "conversationId": "-".join(pair), "userId": str(spec["userId"]), **({"mediaIds": [dm_media_id]} if dm_media_id else {})}
     media_ids: list[str] = []
+    followed: dict[str, Any] | None = None
+    liked: dict[str, Any] | None = None
     if action == "post":
         media_ids = await upload_post_media(client, list(spec.get("media") or []))
         tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None)
     elif action == "reply":
-        tweet = await client.create_tweet(text=spec["text"], reply_to=tweet_id_from_url(spec["tweetUrl"]))
+        too_big = await author_too_big(client, spec)
+        if too_big:
+            print(f"reply to {spec.get('tweetUrl')}: skipped, {too_big['detail']}", file=sys.stderr, flush=True)
+            return too_big
+        liked = await like_post_first(client, spec)
+        followed = await follow_author_first(client, spec)
+        print(f"reply to {spec.get('tweetUrl')}: like first {json.dumps(liked)}, follow first {json.dumps(followed)}", file=sys.stderr, flush=True)
+        media_ids = await upload_post_media(client, list(spec.get("media") or []))
+        tweet = await client.create_tweet(text=spec["text"], media_ids=media_ids or None, reply_to=tweet_id_from_url(spec["tweetUrl"]))
     else:
         tweet = await client.create_tweet(text=spec["text"], attachment_url=spec["tweetUrl"])
-    tweet_id = getattr(tweet, "id", None)
+    tweet_id = getattr(tweet, "id", None) or created_id_of(raw.get("body"))
     if not tweet_id:
         limits = raw.get("limits") or {}
         return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": f"x created no tweet (empty result): nothing was posted. x said: {json.dumps(raw.get('body'))[:300]}", "limits": limits, "rateLimitReset": reset_of(limits)}
-    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), "limits": raw.get("limits") or {}}
+    return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), **({"likedPost": liked} if liked else {}), **({"followedAuthor": followed} if followed else {}), "limits": raw.get("limits") or {}}
+
+
+def created_id_of(body: Any) -> str | None:
+    data = (body or {}).get("data") or {} if isinstance(body, dict) else {}
+    made = data.get("create_tweet") or data.get("notetweet_create") or {}
+    result = ((made.get("tweet_results") or {}).get("result")) or {}
+    if result.get("__typename") == "TweetWithVisibilityResults":
+        result = result.get("tweet") or {}
+    rest_id = result.get("rest_id")
+    return str(rest_id) if rest_id else None
+
+
+def handle_from_post_url(url: str) -> str | None:
+    match = re.match(r"https?://(?:www\.)?(?:x|twitter)\.com/([A-Za-z0-9_]{1,15})/status/\d+", str(url or ""))
+    return match.group(1) if match and match.group(1).lower() not in ("i", "home") else None
+
+
+MAX_AUTHOR_FOLLOWERS = 1500
+
+
+async def author_too_big(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
+    cap = spec.get("maxAuthorFollowers", MAX_AUTHOR_FOLLOWERS)
+    if cap is None or cap is False or spec.get("force") is True:
+        return None
+    screen_name = handle_from_post_url(spec["tweetUrl"])
+    if not screen_name:
+        return None
+    try:
+        author = await client.get_user_by_screen_name(screen_name)
+    except (KeyError, IndexError, TypeError):
+        return None
+    count = getattr(author, "followers_count", None)
+    if not isinstance(count, int) or count <= int(cap):
+        return None
+    return {"ok": False, "event": "tooBig", "code": "authorTooBig", "detail": f"@{screen_name} has {count} followers, over {int(cap)}: too big to reply to yet, so nothing was liked, followed or sent", "followers": count}
+
+
+async def like_post_first(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
+    if spec.get("likeFirst") is False:
+        return None
+    tweet_id = tweet_id_from_url(spec["tweetUrl"])
+    data, _ = await client.gql.favorite_tweet(tweet_id)
+    errors = data.get("errors") if isinstance(data, dict) else None
+    if errors and any(e.get("code") == 139 for e in errors):
+        return {"tweetId": tweet_id, "already": True}
+    if errors or ((data or {}).get("data") or {}).get("favorite_tweet") != "Done":
+        return {"tweetId": tweet_id, "skipped": f"x did not like the post: {json.dumps(data)[:200]}"}
+    return {"tweetId": tweet_id, "already": False}
+
+
+async def follow_author_first(client: Any, spec: dict[str, Any]) -> dict[str, Any] | None:
+    if spec.get("followFirst") is False:
+        return None
+    screen_name = handle_from_post_url(spec["tweetUrl"])
+    try:
+        author = await client.get_user_by_screen_name(screen_name) if screen_name else getattr(await client.get_tweet_by_id(tweet_id_from_url(spec["tweetUrl"])), "user", None)
+    except (KeyError, IndexError, TypeError) as error:
+        return {"skipped": f"the author could not be read ({type(error).__name__}: {error}), so they were not followed"}
+    user_id = str(getattr(author, "id", "") or "")
+    if not user_id or user_id == str(getattr(client, "_user_id", "") or ""):
+        return None
+    handle = getattr(author, "screen_name", None)
+    if getattr(author, "following", False):
+        return {"userId": user_id, "handle": handle, "already": True}
+    await client.follow_user(user_id)
+    return {"userId": user_id, "handle": handle, "already": False}
 
 
 def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:

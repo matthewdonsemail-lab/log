@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 5 platforms so far, Facebook (23 commands of its own), X (15 commands of its own), Reddit (1 command of its own), Discord (5 commands of its own), LinkedIn (2 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 6 platforms so far, Facebook (23 commands of its own), X (15 commands of its own), Reddit (1 command of its own), Discord (6 commands of its own), LinkedIn (2 commands of its own), Slack (7 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -38,9 +38,9 @@ flowchart LR
   e_rdvwr --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 5 commands of its own"]
+  p_discord["Discord (DISCORD): 6 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send, discord delete"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
@@ -50,12 +50,19 @@ flowchart LR
   e_openLinkedinApi --> api
   p_linkedin -->|"browser: the any-platform commands"| b_linkedin["LinkedIn's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_linkedin --> drivers
+  p_slack["Slack (SLACK): 7 commands of its own"]
+  twenty --> p_slack
+  p_slack -->|"direct API: slack session, slack workspaces, slack chats, slack read, slack watch, slack send, slack cookies"| e_gabrielSlack["gabrielSlack (vendor/gabrielSlack): the saved session, a governor per account"]
+  e_gabrielSlack --> api
+  p_slack -->|"browser: the any-platform commands"| b_slack["Slack's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
+  b_slack --> drivers
   anyB["Any platform with a browser path: inspect, flow"]
   anyB --> b_facebook
   anyB --> b_reddit
   anyB --> b_discord
   anyB --> b_linkedin
-  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, new"]
+  anyB --> b_slack
+  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -71,7 +78,7 @@ log-cli is browser-agnostic: each account's browser is a driver picked from Twen
 flowchart LR
   twenty["Twenty socialAccounts: platform, browserDriver, adsPowerProfileId"]
   pick{"driverNameOf"}
-  gates["Every driver: the proxy gate (Facebook: a proxy in the home country, rule 12. Reddit, Discord, LinkedIn: no proxy, rule 84), self-check, HAR, human mouse (rules 17, 22, 32)"]
+  gates["Every driver: the proxy gate (Facebook: a proxy in the home country, rule 12. Reddit, Discord, LinkedIn, Slack: no proxy, rule 84), self-check, HAR, human mouse (rules 17, 22, 32)"]
   session["One Playwright context: python/browser/browserDriver.py"]
   twenty --> pick
   pick -->|"browserDriver camoufox, or no profile"| d_camoufox["camoufox"]
@@ -80,8 +87,8 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read"]
-  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch"]
+  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read, slack read"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, slack watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
   nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick
@@ -89,16 +96,16 @@ flowchart LR
 
 Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
-- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `linkedin session`, `linkedin cookies`.
+- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (5 clients, 24 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (6 clients, 32 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -133,11 +140,22 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log discord read`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.get_messages for the read (a chat or channel, paged with before); no browser).
 - `log discord watch`: the direct-API engine only (endcord, vendored in vendor/endcord, gateway.Gateway for the watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled); no browser).
 - `log discord send`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.send_message for the send --live; no browser).
+- `log discord delete`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.delete_message for the delete --live (only the account own messages, each read first); no browser).
 
 **LinkedIn.** LinkedIn's own answer decides. Each account has its own governor under ~/.logCli/linkedin/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 - `log linkedin session`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, account.ping for the session check; no browser).
 - `log linkedin cookies`: the direct-API engine only (openLinkedinApi, vendored in vendor/openLinkedinApi, account.ping for the cookies save (the cookies are checked with LinkedIn before they are saved); no browser).
+
+**Slack.** Slack's own answer decides. Each account has its own governor under ~/.logCli/slack/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+
+- `log slack session`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, account.exchange_cookie for the session check (and auth.test with --workspace); no browser).
+- `log slack workspaces`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, account.exchange_cookie for the workspaces (the ones the d cookie is signed in to); no browser).
+- `log slack chats`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, messages.conversations.list for the chats (the DMs and group DMs); no browser).
+- `log slack read`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, messages.conversations.history for the read (a chat, paged by cursor); no browser).
+- `log slack watch`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, websocket.connect for the watch (Slack pushes each event over wss-primary.slack.com, nothing polled); no browser).
+- `log slack send`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, messages.chat.postMessage for the send --live; no browser).
+- `log slack cookies`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, account.exchange_cookie for the cookies save (the d cookie is checked with Slack before it is saved); no browser).
 
 ### How a call reaches log-cli
 
@@ -148,12 +166,12 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 124 command tools + saved flows"]
+  mcp["MCP server log: 136 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 67 commands (COMMANDS)"]
+  runCli["runCli: 76 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
-  direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi (vendor/), the account's saved session, a governor per account"]
+  direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi, gabrielSlack (vendor/), the account's saved session, a governor per account"]
   browser["The account's browser (one per day, rule 35)"]
   api["The platform's internal API: its answer decides (rule 73)"]
   twenty[("Twenty: socialAccounts.sessionState, refreshed cookies")]
@@ -208,7 +226,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | none | `accountShow`, `accountResave`, `accountResetOpens`, `accountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 78, 30, 38, 39, 40, 41 |
 | [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` `--homes <US,IE>` | none | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 78, 84, 30, 38, 39, 40, 41 |
-| [`log localAccount`](#log-localaccount) | Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them | any (none) | `--platform <facebook|twitter|reddit|discord|linkedin>` `--account <accountName>` `--adsPower <profileId>` `--proxy <scheme://user:pass@host:port>` `--home <CC>` `--city <city>` `--json` `--refresh` | none | none | `localAccount` | PreToolUse, PostToolUse · PostToolUse | no | 13, 42, 44, 78, 84, 97, 30, 38, 39, 40, 41 |
+| [`log localAccount`](#log-localaccount) | Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them | any (none) | `--platform <facebook|twitter|reddit|discord|linkedin|slack>` `--account <accountName>` `--adsPower <profileId>` `--proxy <scheme://user:pass@host:port>` `--home <CC>` `--city <city>` `--json` `--refresh` | none | none | `localAccount` | PreToolUse, PostToolUse · PostToolUse | no | 13, 42, 44, 78, 84, 97, 30, 38, 39, 40, 41 |
 | [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `--account <name>` `--json` `--write` | none | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook preflight`](#log-facebook-preflight) | Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk | `facebook` first | `--account <accountName>` `--homes <US,CA>` `--noProxy` `--apply` `--json` | none | none | `preflight` | PreToolUse, PostToolUse · PostToolUse | no | 12, 18, 24, 33, 35, 37, 79, 30, 38, 39, 40, 41 |
 | [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `--json` | browser | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
@@ -243,32 +261,41 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log twitter session`](#log-twitter-session) | Check that X still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `twitter` first | `--account <accountName>` `--json` | direct API only | none | `twitterSessionCheck`, `twitterSessionWebClient` | PreToolUse, PostToolUse · PostToolUse | no | 13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113, 30, 38, 39, 40, 41 |
 | [`log twitter follows`](#log-twitter-follows) | Read whether handles follow an X account and it follows them, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--handles <handle,handle…>` `--json` | direct API only | none | `twitterFollows` | PreToolUse, PostToolUse · PostToolUse | no | 13, 53, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
-| [`log twitter dms`](#log-twitter-dms) | Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--waiting` `--with <handle>` `--conversation <id>` `--full` `--json` | direct API only | none | `twitterDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 30, 38, 39, 40, 41 |
+| [`log twitter dms`](#log-twitter-dms) | Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--waiting` `--with <handle>` `--conversation <id>` `--full` `--force` `--json` | direct API only | none | `twitterDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126, 30, 38, 39, 40, 41 |
 | [`log twitter chat`](#log-twitter-chat) | X Chat's PIN for the account's encrypted DMs: asked in a Clack prompt, kept in Twenty, never printed | `twitter` first | `--account <accountName>` `--show` `--seconds <n>` `--inbox` `--json` | direct API only | none | terminal only: asks matt for the X Chat PIN in a Clack prompt (masked). He runs `log twitter chat pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105, 30, 38, 39, 40, 41 |
-| [`log twitter cookies`](#log-twitter-cookies) | Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style | `twitter` first | `--account <handle>` `--style <copyStyle>` `--name <label>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, or a LinkedIn account's. Run `log twitter cookies save --account <handle>` or `log linkedin cookies save --account <publicId>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
-| [`log voice`](#log-voice) | Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing | any (none) | `--to <handle>` `--text` `--context` `--with <person or chat>` `--json` | none | none | `voice`, `voiceAiIndex`, `voiceIndex` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 63, 64, 98, 112, 30, 38, 39, 40, 41 |
+| [`log twitter cookies`](#log-twitter-cookies) | Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style | `twitter` first | `--account <handle>` `--style <copyStyle>` `--name <label>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
+| [`log voice`](#log-voice) | Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing | any (none) | `--to <handle>` `--text` `--context` `--with <person or chat>` `--json` | none | none | `voice`, `voiceAiIndex`, `voiceIndex` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 63, 64, 98, 112, 127, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rebuild` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 30, 93, 30, 38, 39, 40, 41 |
-| [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 119, 30, 38, 39, 40, 41 |
+| [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` `--build` `--from <posts.json>` `--noTaste` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 119, 120, 30, 38, 39, 40, 41 |
+| [`log transcribe`](#log-transcribe) | Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ | any (none) | `--platform` `--account <a>` `--list` `--noIndex` `--json` | none | none | `transcribe`, `transcribeFile` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--json` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter notifications`](#log-twitter-notifications) | Read who liked, reposted, replied to, quoted or followed an X account, new and historical, kept locally, sending nothing | `twitter` first | `--account <accountName>` `--type` `--since <date>` `--post <id|url>` `--full` `--pages <n>` `--stored` `--limit <n>` `--json` | direct API only | none | `twitterNotifications` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 73, 80, 81, 94, 104, 105, 30, 38, 39, 40, 41 |
-| [`log twitter reply`](#log-twitter-reply) | Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterReply`, `twitterReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
+| [`log twitter reply`](#log-twitter-reply) | Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--media <file>` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterReply`, `twitterReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121, 30, 38, 39, 40, 41 |
 | [`log twitter quote`](#log-twitter-quote) | Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterQuote`, `twitterQuoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter post`](#log-twitter-post) | Make one original post on X with approved copy and optional media (a video, a gif or up to 4 images), on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--text` `--media <file>` `--approvedBy <who>` `--skipStyleCheck` `--force` `--live` `--json` | direct API only | none | `twitterPost`, `twitterPostLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter like`](#log-twitter-like) | Like one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterLike`, `twitterLikeLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter repost`](#log-twitter-repost) | Repost one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterRepost`, `twitterRepostLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter follow`](#log-twitter-follow) | Follow one person on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterFollow`, `twitterFollowLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
-| [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--asOne` `--force` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 30, 38, 39, 40, 41 |
-| [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--skipXChatCheck` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--keepOpen` `--live` `--replies <n>` `--n <n>` `--text` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 30, 38, 39, 40, 41 |
+| [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--media <file|url>` `--approvedBy <who>` `--skipStyleCheck` `--asOne` `--force` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 30, 38, 39, 40, 41 |
+| [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--skipXChatCheck` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--keepOpen` `--live` `--replies <n>` `--n <n>` `--text` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 30, 38, 39, 40, 41 |
 | [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--hosts <a.com,b.com>` `--home <https://…>` `--noProxy` `--noBrowser` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
 | [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 | [`log discord session`](#log-discord-session) | Check that Discord still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
 | [`log discord chats`](#log-discord-chats) | List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordChats` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
-| [`log discord read`](#log-discord-read) | Read a Discord chat or channel's latest messages, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--limit <n>` `--after <messageId>` `--json` | direct API only | the account's | `discordRead` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
-| [`log discord watch`](#log-discord-watch) | Watch the account's Discord messages as Discord pushes them over its gateway, nothing polled, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `discordWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
-| [`log discord send`](#log-discord-send) | Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--text` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordSend`, `discordSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 91, 94, 30, 38, 39, 40, 41 |
+| [`log discord read`](#log-discord-read) | Read a Discord chat or channel's latest messages, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--limit <n>` `--after <messageId>` `--json` | direct API only | the account's | `discordRead` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41 |
+| [`log discord watch`](#log-discord-watch) | Watch the account's Discord messages as Discord pushes them over its gateway, nothing polled, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `discordWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41 |
+| [`log discord send`](#log-discord-send) | Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--text` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordSend`, `discordSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 30, 38, 39, 40, 41 |
+| [`log discord delete`](#log-discord-delete) | Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--message <messageId>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordDelete`, `discordDeleteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 94, 122, 30, 38, 39, 40, 41 |
 | [`log linkedin session`](#log-linkedin-session) | Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `linkedin` first | `--account <accountName>` `--json` | direct API only | none | `linkedinSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41 |
-| [`log linkedin cookies`](#log-linkedin-cookies) | Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn | `linkedin` first | `--account <publicId>` `--name <label>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, or a LinkedIn account's. Run `log twitter cookies save --account <handle>` or `log linkedin cookies save --account <publicId>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41 |
+| [`log linkedin cookies`](#log-linkedin-cookies) | Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn | `linkedin` first | `--account <publicId>` `--name <label>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41 |
+| [`log slack session`](#log-slack-session) | Check that Slack still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to its row | `slack` first | `--account <accountName>` `--workspace <domain>` `--json` | direct API only | none | `slackSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 125, 30, 38, 39, 40, 41 |
+| [`log slack workspaces`](#log-slack-workspaces) | List the workspaces a Slack account is signed in to, on the direct-API engine, sending nothing | `slack` first | `--account <accountName>` `--json` `--workspace` | direct API only | none | `slackWorkspaces` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 125, 30, 38, 39, 40, 41 |
+| [`log slack chats`](#log-slack-chats) | List a Slack account's DMs and group DMs in a workspace with their ids, on the direct-API engine, sending nothing | `slack` first | `--account <accountName>` `--workspace <domain>` `--limit <n>` `--json` | direct API only | none | `slackChats` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 94, 125, 30, 38, 39, 40, 41 |
+| [`log slack read`](#log-slack-read) | Read a Slack chat's latest messages, on the direct-API engine, sending nothing | `slack` first | `--account <accountName>` `--chat <chatId|who it is with>` `--workspace <domain>` `--limit <n>` `--json` | direct API only | the account's | `slackRead` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 63, 64, 73, 83, 94, 125, 126, 30, 38, 39, 40, 41 |
+| [`log slack watch`](#log-slack-watch) | Watch a Slack workspace's events as its websocket pushes them, nothing polled, sending nothing | `slack` first | `--account <accountName>` `--workspace <domain>` `--chat <chatId|who it is with>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `slackWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 123, 125, 30, 38, 39, 40, 41 |
+| [`log slack send`](#log-slack-send) | Send a message to a Slack DM, group or channel, on the direct-API engine; a dry run unless --live | `slack` first | `--account <accountName>` `--chat <chatId|who it is with>` `--text` `--workspace <domain>` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `slackSend`, `slackSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 30, 38, 39, 40, 41 |
+| [`log slack cookies`](#log-slack-cookies) | Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack | `slack` first | `--account <accountName>` `--name <label>` `--workspace <domain>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 97, 125, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -324,6 +351,7 @@ flowchart TB
     c_search["search"]
     c_kb["kb"]
     c_memelord["memelord"]
+    c_transcribe["transcribe"]
     c_new["new"]
   end
   subgraph g_byArgument["Platform named first"]
@@ -380,10 +408,20 @@ flowchart TB
     c_discordRead["read"]
     c_discordWatch["watch"]
     c_discordSend["send"]
+    c_discordDelete["delete"]
   end
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
     c_linkedinCookies["cookies"]
+  end
+  subgraph g_slack["Slack"]
+    c_slackSession["session"]
+    c_slackWorkspaces["workspaces"]
+    c_slackChats["chats"]
+    c_slackRead["read"]
+    c_slackWatch["watch"]
+    c_slackSend["send"]
+    c_slackCookies["cookies"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -498,6 +536,8 @@ flowchart TB
   mcp --> c_kb
   cli --> c_memelord
   mcp --> c_memelord
+  cli --> c_transcribe
+  mcp --> c_transcribe
   cli --> c_twitterFollowers
   mcp --> c_twitterFollowers
   cli --> c_twitterNotifications
@@ -535,10 +575,28 @@ flowchart TB
   c_discordWatch --> live
   cli --> c_discordSend
   mcp --> c_discordSend
+  cli --> c_discordDelete
+  mcp --> c_discordDelete
   cli --> c_linkedinSession
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
   c_linkedinCookies -.- terminal
+  cli --> c_slackSession
+  mcp --> c_slackSession
+  cli --> c_slackWorkspaces
+  mcp --> c_slackWorkspaces
+  cli --> c_slackChats
+  mcp --> c_slackChats
+  cli --> c_slackRead
+  mcp --> c_slackRead
+  c_slackRead --> live
+  cli --> c_slackWatch
+  mcp --> c_slackWatch
+  c_slackWatch --> live
+  cli --> c_slackSend
+  mcp --> c_slackSend
+  cli --> c_slackCookies
+  c_slackCookies -.- terminal
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -613,7 +671,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/engines.ts`](../scripts/hooks/engines.ts) | which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 106) |
 | UserPromptSubmit | every turn | [`scripts/hooks/engines.ts`](../scripts/hooks/engines.ts) | the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/knowledge.ts`](../scripts/hooks/knowledge.ts) | the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93) |
-| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes, and what each account's live watcher pushed: X Chat's socket, Discord's gateway, Slack's websocket in every workspace, rule 123), said loudly so a reply is never missed; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply |
 | UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114) |
@@ -643,7 +701,7 @@ sequenceDiagram
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
   Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout, and which code files have uncommitted local changes (rule 106)
   Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93)
-  Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
+  Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes, and what each account's live watcher pushed: X Chat's socket, Discord's gateway, Slack's websocket in every workspace, rule 123), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
   Note over Hook: what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)
   Note over Hook: what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)
   matt->>Agent: a prompt
@@ -820,7 +878,7 @@ log adsPower sync [--apply] [--account <accountName>] [--homes <US,IE>] [--json]
 Accounts kept in a local file instead of Twenty: add one, with the account's browser profile, pull every Twenty account in, or list them MCP tool: `localAccount` (`args` takes the same arguments).
 
 ```text
-log localAccount add --platform <facebook|twitter|reddit|discord|linkedin> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]
+log localAccount add --platform <facebook|twitter|reddit|discord|linkedin|slack> --account <accountName> [--adsPower <profileId>] [--proxy <scheme://user:pass@host:port>] [--home <CC>] [--city <city>]
 log localAccount list [--json]
 log localAccount pull [--platform <p>] [--refresh] [--json]   (copies every account Twenty has, cookies and login included, into the file; an account already there is kept unless --refresh; each keeps its Twenty id, so listings and groups still find it)
 A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves it), not in Twenty. Every command finds it by its accountName, a local row winning over a Twenty row of the same name, and the session a run captures is saved back to the file. LOG_ACCOUNTS=local leaves Twenty out of accounts entirely.
@@ -1179,7 +1237,7 @@ X's own answer decides: one friendships/show read per handle, 1.5 s apart, after
 Read an X account's direct messages and who is waiting on a reply, on the direct-API engine, sending nothing MCP tools: `twitterDms`, one per form, with named fields.
 
 ```text
-log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--json]
+log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--force] [--json]
 Reads the account's X direct messages on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing and marks nothing read.
 Without --conversation it syncs the inbox the way X's own chat app does (dm-core): the first read takes the whole X Chat inbox (GetInitialXChatPageQuery, then GetInboxPageRequestQuery pages) and the old DM inbox (dm/inbox_initial_state, then dm/inbox_timeline pages, 1.5 s apart) and keeps them in ~/.logCli/twitter/<account>/inboxSync.json with the newest event's sequence id; every read after that asks X only for what is newer (GetMessageEventsPageQuery from that sequence id, beside one dm/inbox_initial_state), unlocks the PIN and decrypts only when something is new, opening just those conversations' keys (GetInboxPageConversationDataQuery), and keeps each event once by its id. --full reads everything again. Each read saves its conversations for log search and updates the search index in the background with only the chunks that changed. It then lists the newest conversations first, one row per person (their old DM thread and X Chat thread merged): who, when, the last message from either and whether it was yours. --waiting keeps only the ones whose last message isn't yours, the people waiting on a reply, and lists apart the ones that opened your last message, by reacting to it or reading it without replying (read receipts, where the person keeps them on): so each is a follow-up to send, not a reply they're waiting on (--json: followUps). --conversation <id> reads one conversation's messages, oldest first: a legacy id (two user ids joined by a dash) through dm/conversation, an X Chat id (joined by a colon) the same way --with reads it, never the whole inbox.
 --with <handle> reads everything with one person by their handle and nobody else: their user id, their legacy thread (dm/conversation) and their X Chat thread (read the way X's own chat app opens a chat, from its dm-core: GetInboxPageConversationDataQuery for that one conversation, then GetConversationPageQuery from the oldest message held, its fetchOlderMessages, up to 5 pages 1.5 s apart while X says there is more), merged into one timeline, oldest first, a message mirrored into both shown once. It never reads the whole inbox. A 429 stops the read with nothing retried, as X's app does (it retries only 5xx), and pauses the account's governor (rule 94). X Chat (encrypted DMs) is opened with the account's X Chat PIN from Twenty (`log twitter chat pin`), recovered through Juicebox by the vendored chat-xdk; without a PIN its text stays encrypted. An old DM thread (<a>-<b>) and its X Chat thread (<a>:<b>) with one person are one conversation: X shows them in the same place, and a dm sent through the old DM API shows in their X Chat too. A sent answer is delivered whichever conversation id it names: never resend it and never call it the wrong inbox. X's own answer decides: the session check first, then the inbox's answer. --limit is how many conversations (or messages) to show, default 20, at most 200.
@@ -1198,7 +1256,7 @@ watch keeps one socket open to X Chat, the way X's own chat app does (read with 
 
 #### log twitter cookies
 
-Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style Terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, or a LinkedIn account's. Run `log twitter cookies save --account <handle>` or `log linkedin cookies save --account <publicId>` in a terminal.
+Add or refresh an X account in Twenty: its session cookies from a masked prompt, checked against X, and its copy style Terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal.
 
 ```text
 log twitter cookies save --account <handle> [--style <copyStyle>] [--name <label>]
@@ -1243,14 +1301,27 @@ Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twent
 
 #### log memelord
 
-The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) MCP tools: `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, one per form, with named fields.
+The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) MCP tools: `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste`, one per form, with named fields.
 
 ```text
 log memelord search "<what the moment is>" [--type meme|video|sticker] [--method context|combined|media|fulltext|fuzzy] [--limit <n>] [--json]
 log memelord template <id> [--json]   (one template: its name, media url, text slots and what it means)
 log memelord trending [--limit <n>] [--media image|video] [--json]   (what is trending now, with its cultural context)
 log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--json]   (the catalog of one-shot image tools; log never runs them)
+log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build reads a file of his X media posts)
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
+```
+
+#### log transcribe
+
+Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ MCP tools: `transcribe`, `transcribeFile`, one per form, with named fields.
+
+```text
+log transcribe [--platform twitter|discord] [--account <a>] [--list] [--noIndex] [--json]
+log transcribe file <path> [--json]   (one audio file, transcribed and kept by its hash)
+Transcribes every voice note in the saved conversations with AssemblyAI (upload, transcript, polled until done) and writes each into the conversation store as (voice note: "<what was said>") in place of its (audio: <name>) marker, so log search, voice and SubQ matrices see what was said. X voice notes come from the X Chat files the account's one session saved, and a missing one is fetched through that session (the conversation read again, its audio events reopened). Discord voice notes are found with Discord's own sound search, one chat at a time through log's Discord engine, and each file is fetched from its fresh attachment url there; any refusal stops it (rule 94). Each transcript is kept once by its file's hash in ~/.logCli/transcripts, so nothing is sent to AssemblyAI twice. The search index is then updated with what changed (--noIndex skips it).
+--list only lists the voice notes the store holds and which have their file, calling nothing. The key is ASSEMBLYAI_API_KEY or ASSEMBLY_AI_KEY (the environment, .env.local, ~/.buzz/.env.local or ~/filmcraft/.env.local), never printed; without it the command refuses with assemblyAiKeyMissing.
 ```
 
 #### log twitter followers
@@ -1279,7 +1350,7 @@ Without --full it reads only what is new: the newest page, then older pages unti
 Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live MCP tools: `twitterReply`, `twitterReplyLive`, one per form, with named fields.
 
 ```text
-log twitter reply --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
+log twitter reply --account <accountName> --tweet <postUrl> --text "<copy>" [--media <file>[,<file>]] [--approvedBy <who>] [--skipStyleCheck] [--force] [--live] [--json]
 Reply to one post on X with approved copy, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
 Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits). Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
@@ -1345,7 +1416,7 @@ X's follow answer decides: the followed user back is sent, already following is 
 Send one approved direct message on X, on the direct-API engine; a dry run unless --live MCP tools: `twitterDm`, `twitterDmLive`, one per form, with named fields.
 
 ```text
-log twitter dm --account <accountName> --userId <id> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--asOne] [--force] [--live] [--json]
+log twitter dm --account <accountName> --userId <id> --text "<copy>" [--media <file|url>] [--approvedBy <who>] [--skipStyleCheck] [--asOne] [--force] [--live] [--json]
 Send one approved direct message on X, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).
 Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). An old DM thread (<a>-<b>) and its X Chat thread (<a>:<b>) with one person are one conversation: X shows them in the same place, and a dm sent through the old DM API shows in their X Chat too. A sent answer is delivered whichever conversation id it names: never resend it and never call it the wrong inbox. A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
@@ -1438,6 +1509,15 @@ Sends one message to a DM, a group DM (by its id or its name, from log discord c
 A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json.
 ```
 
+#### log discord delete
+
+Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live MCP tools: `discordDelete`, `discordDeleteLive`, one per form, with named fields.
+
+```text
+log discord delete --account <accountName> --channel <channelId|chat name> --message <messageId>[,<messageId>...] [--approvedBy <who>] [--live] [--json]
+Deletes the account's own messages by id (from log discord read) in a DM, group DM or server channel, on the direct-API engine (no browser): a duplicate or a mistake. Each message is read first and only deleted when the account sent it; someone else's is refused with notOwnMessage. Without --live it is a dry run that reads each message and deletes nothing. --live deletes, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides (204 is deleted). Each delete counts as a write, they go 4 s apart, and the first refusal stops the run with nothing retried (rule 94).
+```
+
 #### log linkedin session
 
 Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `linkedinSessionCheck`, one per form, with named fields.
@@ -1450,12 +1530,78 @@ LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, a
 
 #### log linkedin cookies
 
-Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn Terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, or a LinkedIn account's. Run `log twitter cookies save --account <handle>` or `log linkedin cookies save --account <publicId>` in a terminal.
+Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn Terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal.
 
 ```text
 log linkedin cookies save --account <publicId> [--name <label>]
 Saves a LinkedIn account's session to Twenty from a masked Clack prompt: its li_at and JSESSIONID cookies, copied from a browser signed in to linkedin.com, never passed as flags or printed. --account is the profile's public id, the part after linkedin.com/in/.
 They are checked first: the direct-API engine (openLinkedinApi, no browser, no proxy) reads /voyager/api/me with them, and only cookies LinkedIn accepts for that same profile are saved. A profile Twenty doesn't have yet gets a new LINKEDIN socialAccounts row (rule 13); one it has gets its cookies replaced.
+```
+
+#### log slack session
+
+Check that Slack still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to its row MCP tools: `slackSessionCheck`, one per form, with named fields.
+
+```text
+log slack session check --account <accountName> [--workspace <domain>] [--json]
+Checks that Slack still accepts the account's saved d cookie, on the direct-API engine (vendor/gabrielSlack, no browser): the workspaces it is signed in to, and with --workspace who it is there (auth.test). Sends nothing.
+Slack's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+```
+
+#### log slack workspaces
+
+List the workspaces a Slack account is signed in to, on the direct-API engine, sending nothing MCP tools: `slackWorkspaces`, one per form, with named fields.
+
+```text
+log slack workspaces --account <accountName> [--json]
+Lists the workspaces the account's d cookie is signed in to, on the direct-API engine (Slack's own cookie exchange, vendor/gabrielSlack, no browser): each one's id, name and domain, the domain being what --workspace takes. Sends nothing.
+```
+
+#### log slack chats
+
+List a Slack account's DMs and group DMs in a workspace with their ids, on the direct-API engine, sending nothing MCP tools: `slackChats`, one per form, with named fields.
+
+```text
+log slack chats --account <accountName> [--workspace <domain>] [--limit <n>] [--json]
+Lists the account's DMs and group DMs in one workspace with their ids and who they are with, newest first, on the direct-API engine (vendor/gabrielSlack, conversations.list, no browser). Sends nothing.
+```
+
+#### log slack read
+
+Read a Slack chat's latest messages, on the direct-API engine, sending nothing MCP tools: `slackRead`, one per form, with named fields.
+
+```text
+log slack read --account <accountName> --chat <chatId|who it is with> [--workspace <domain>] [--limit <n>] [--json]
+Reads a DM, group DM or channel's latest messages, oldest first, on the direct-API engine (vendor/gabrielSlack, conversations.history, no browser): who sent each, when, its text and its thread. Sends nothing, and marks nothing read.
+```
+
+#### log slack watch
+
+Watch a Slack workspace's events as its websocket pushes them, nothing polled, sending nothing MCP tools: `slackWatch`, one per form, with named fields.
+
+```text
+log slack watch --account <accountName> [--workspace <domain>] [--chat <chatId|who it is with>] [--seconds <s>] [--inbox] [--json]
+Opens each workspace's own websocket on the direct-API engine (vendor/gabrielSlack, wss-primary.slack.com, no browser), every workspace the session is signed in to unless --workspace names one, and prints each message, typing, read marker, reaction and draft the moment Slack pushes it, nothing polled. --chat keeps one chat; --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new DM, group message or mention of the account from someone else to the inbox hook, which puts it in front of the agent with what to do next (rule 123). Sends nothing.
+```
+
+#### log slack send
+
+Send a message to a Slack DM, group or channel, on the direct-API engine; a dry run unless --live MCP tools: `slackSend`, `slackSendLive`, one per form, with named fields.
+
+```text
+log slack send --account <accountName> --chat <chatId|who it is with> --text "<message>" [--workspace <domain>] [--asOne] [--approvedBy <who>] [--live] [--json]
+Sends a message to a Slack DM, group DM or channel (by its id, or who it is with from log slack chats), on the direct-API engine (vendor/gabrielSlack, chat.postMessage, no browser).
+A draft written on several lines goes out one message per line (rule 90); a one-line draft is split the way matt writes in that chat (log voice index), and --asOne always sends one. Without --live it is a dry run and Slack is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Slack's answer decides: a ts is sent, anything else stops the run with nothing retried (rule 94). The governor counts each message as a write. The copy is read for what AI chat interfaces leave in text first (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts.
+```
+
+#### log slack cookies
+
+Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack Terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal.
+
+```text
+log slack cookies save --account <accountName> [--name <label>] [--workspace <domain>]
+Saves a Slack account's session locally (~/.logCli/localAccounts.json, rule 97) from a masked Clack prompt: its d cookie (xoxd-…), copied from a browser signed in to app.slack.com, never passed as a flag or printed.
+It is checked first: the direct-API engine (vendor/gabrielSlack, no browser, no proxy) exchanges it with Slack for the workspaces it is signed in to, and only a cookie Slack accepts is saved. An account log doesn't have yet gets a new local SLACK row; one it has gets its d cookie replaced and keeps the rest.
 ```
 
 <!-- surface:end -->

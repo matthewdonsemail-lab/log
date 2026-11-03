@@ -77,3 +77,11 @@ Checked by: code and SubQ
 The check fails on a page state with no resolver call, a resolver call that names a tool that isn't an MCP tool, a resolver for a state that doesn't exist, and a state whose resolve text names a `log` command that doesn't exist.
 
 Checked by: code and SubQ
+
+## Live platform hooks
+
+### REQ-HOOKS-12: Every platform's push channel reaches the agent through the inbox hook
+
+On every event the inbox hook starts the live watcher for each account of every watched platform, if it isn't already running: X's X Chat watch, Discord's gateway watch and Slack's websocket watch (every workspace the account's d cookie is signed in to), each through the account's one session. It stops a watcher that runs older code than the checkout and skips an account whose governor is cooling off. Each message a watcher pushes is put into the agent's context with what to do. A platform without a watcher isn't done yet (rule 123: Reddit and LinkedIn next).
+
+Checked by: code and SubQ

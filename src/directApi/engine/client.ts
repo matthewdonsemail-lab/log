@@ -44,8 +44,16 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   discordRead: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_messages', when: 'read (a chat or channel, paged with before)', seam: 'directDiscord' },
   discordWatch: { platform: 'discord', library: 'endcord', only: true, surface: 'gateway', method: 'Gateway', when: 'watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled)', seam: 'directDiscordLive' },
   discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' },
+  discordDelete: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'delete_message', when: 'delete --live (only the account own messages, each read first)', seam: 'directDiscord' },
   linkedinSession: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directLinkedin' },
-  linkedinCookies: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'cookies save (the cookies are checked with LinkedIn before they are saved)', seam: 'directLinkedin' }
+  linkedinCookies: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'cookies save (the cookies are checked with LinkedIn before they are saved)', seam: 'directLinkedin' },
+  slackSession: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'session check (and auth.test with --workspace)', seam: 'directSlack' },
+  slackWorkspaces: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'workspaces (the ones the d cookie is signed in to)', seam: 'directSlack' },
+  slackChats: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.list', when: 'chats (the DMs and group DMs)', seam: 'directSlack' },
+  slackRead: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.history', when: 'read (a chat, paged by cursor)', seam: 'directSlack' },
+  slackWatch: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'websocket', method: 'connect', when: 'watch (Slack pushes each event over wss-primary.slack.com, nothing polled)', seam: 'directSlackLive' },
+  slackSend: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'chat.postMessage', when: 'send --live', seam: 'directSlack' },
+  slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' }
 }
 
 export function commandEngine(command: string): CommandEngine {

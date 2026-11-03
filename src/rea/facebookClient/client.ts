@@ -285,18 +285,20 @@ export async function buildClientMap(options: BuildClientMapOptions): Promise<st
   log(`Runs: ${captures.length} capture(s) under ${options.capturesRoot}`);
   const seen: RequestSeen[] = [];
   const evidenceByStep = new Map<string, string>();
+  const withFacebook: RunCapture[] = [];
   for (const capture of captures) {
     try {
       const requests = requestsInRun(capture);
       seen.push(...requests);
+      if (requests.length) withFacebook.push(capture);
       for (const [step, id] of stepEvidence(capture)) evidenceByStep.set(`${capture.run}\u0000${step}`, id);
       log(`  ${capture.run}: ${requests.length} request(s) to Facebook`);
     } catch (error) {
       log(`  ${capture.run}: skipped (${error instanceof Error ? error.message : String(error)})`);
     }
   }
-  log("Facebook's bundles: parsing into a syntax tree");
-  const modules = indexRunModules(captures, log);
+  log(withFacebook.length ? "Facebook's bundles: parsing into a syntax tree" : "Facebook's bundles: no run has Facebook requests, none parsed");
+  const modules = indexRunModules(withFacebook, log);
   const operations = mergeOperations(seen, modules);
   for (const operation of operations) {
     if (operation.kind !== "endpoint") continue;

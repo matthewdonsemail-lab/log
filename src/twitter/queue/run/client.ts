@@ -17,6 +17,7 @@ const atSeconds = (event: PlanEvent) => new Date(event.at).getTime() / 1000
 export function failureOf(answer: TwitterSessionAnswer): FailureKind {
   if (answer.event === 'sessionDead' || answer.event === 'restricted' || answer.code === 'noSession') return 'auth'
   if (answer.event === 'gone') return 'gone'
+  if (answer.event === 'tooBig' || answer.code === 'authorTooBig') return 'tooBig'
   if (answer.event && answer.event !== 'failed') return 'refused'
   const said = `${answer.code ?? ''} ${answer.detail ?? ''}`
   if (answer.code === 'governorBlocked' || answer.code === 'rateLimited' || answer.httpStatus === 429 || /(?<!\d)429(?!\d)/.test(said)) return 'refused'
@@ -208,6 +209,15 @@ export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: Insp
       event.skipped = 'gone'
       dropPost(todo, event.n, 'gone')
       deps.log(`GONE ${what}: post deleted, hidden or replies off, skipping it`)
+      send({ type: 'ACTED' })
+      deps.save()
+      continue
+    }
+    if (failure === 'tooBig') {
+      if (item.status === 'pending') item.status = 'skipped'
+      event.skipped = 'tooBig'
+      dropPost(todo, event.n, 'tooBig')
+      deps.log(`TOO BIG ${what}: ${answer.detail ?? 'the author is over the follower cap'}, skipping it`)
       send({ type: 'ACTED' })
       deps.save()
       continue

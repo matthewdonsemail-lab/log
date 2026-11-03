@@ -15,10 +15,12 @@ for p in (str(ROOT), str(VENDOR / "endcord")):
         sys.path.insert(0, p)
 
 from platformKit import engine as kit
+from platformKit import media
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
-WRITES: tuple[str, ...] = ("send",)
+WRITES: tuple[str, ...] = ("send", "delete")
+SEARCH_PAGE = 25
 
 
 def client_of(token: str) -> Any:
@@ -72,6 +74,44 @@ def refusal_of(status: int, answer: Any, where: str) -> dict[str, Any]:
     if status == 401:
         return {"ok": False, "code": "sessionDead", "detail": detail, "loginState": "loggedOut", "httpStatus": status, "answer": said}
     return {"ok": False, "code": "platformError", "detail": detail, "loginState": "loggedIn", "httpStatus": status, "answer": said}
+
+
+def attachments_of(embeds: Any) -> list[dict[str, Any]]:
+    return [{k: e.get(k) for k in ("name", "type", "url", "duration") if e.get(k) is not None} for e in embeds or [] if isinstance(e, dict) and e.get("name") and e.get("url")]
+
+
+def raw_attachments_of(d: dict[str, Any]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in raw_fields(a) if v is not None} for a in d.get("attachments") or [] if isinstance(a, dict) and a.get("filename") and a.get("url")]
+
+
+def raw_fields(a: dict[str, Any]) -> tuple[tuple[str, Any], ...]:
+    return (("name", a.get("filename")), ("type", a.get("content_type")), ("url", a.get("url")), ("duration", round(a["duration_secs"]) if a.get("duration_secs") else None), ("waveform", True if a.get("waveform") else None))
+
+
+def is_audio(attachment: dict[str, Any], flags: int | None = None) -> bool:
+    return media.is_audio(attachment, flags)
+
+
+def text_of(content: str | None, attachments: list[dict[str, Any]], flags: int | None = None) -> str:
+    return media.text_with_audio(content, attachments, flags)
+
+
+def plain_embeds(embeds: Any) -> list[dict[str, Any]]:
+    return [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in embeds or [] if isinstance(e, dict) and not e.get("name")]
+
+
+def audio_file_of(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachment: dict[str, Any]) -> dict[str, Any]:
+    path = media.audio_path(spec, channel_id, message_id, str(attachment.get("name") or "audio"))
+    if path.is_file() and path.stat().st_size:
+        return {**attachment, "path": str(path)}
+    saved = client.get_file(str(attachment["url"]), str(path.parent), path.name)
+    if not saved or not Path(saved).is_file():
+        return {**attachment, "error": "Discord's CDN didn't send the file"}
+    return {**attachment, "path": str(saved)}
+
+
+def saved_audio(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]], flags: int | None = None) -> list[dict[str, Any]]:
+    return [audio_file_of(client, spec, channel_id, message_id, a) for a in attachments if is_audio(a, flags)]
 
 
 def dms_of(client: Any) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
@@ -140,6 +180,14 @@ def history_of(client: Any, channel_id: str, limit: int, pause: float) -> tuple[
     return out, None
 
 
+def exported_message(m: dict[str, Any], me: str) -> dict[str, Any]:
+    attachments = attachments_of(m.get("embeds"))
+    out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": text_of(m["content"], attachments)}
+    if attachments:
+        out["attachments"] = [{k: v for k, v in a.items() if k != "url"} for a in attachments]
+    return out
+
+
 def exported_of(d: dict[str, Any], messages: list[dict[str, Any]], me: str) -> dict[str, Any]:
     kinds = {1: "dm", 3: "group"}
     return {
@@ -147,7 +195,7 @@ def exported_of(d: dict[str, Any], messages: list[dict[str, Any]], me: str) -> d
         "kind": kinds.get(d["type"], str(d["type"])),
         "name": d["name"],
         "members": [r.get("global_name") or r["username"] for r in d["recipients"]],
-        "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": m["content"] or ""} for m in reversed(messages)],
+        "messages": [exported_message(m, me) for m in reversed(messages)],
     }
 
 
@@ -181,10 +229,11 @@ async def export(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     return await asyncio.to_thread(export_of, token, int(spec.get("limit") or 200), float(spec.get("pause") or 0.4))
 
 
-def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str, Any]:
+def read_of(token: str, channel: str, limit: int, after: str | None, spec: dict[str, Any] | None = None) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
         return failed
+    spec = spec or {}
     messages, stop = history_of(client, channel, limit, 0.4)
     refused = {k: v for k, v in stop.items() if k != "refused"} if stop and stop["refused"] else None
     if refused and not messages:
@@ -194,7 +243,15 @@ def read_of(token: str, channel: str, limit: int, after: str | None) -> dict[str
     me = str(client.my_id)
     picked = [m for m in reversed(messages) if not after or int(m["id"]) > int(after)]
     said = {"httpStatus": refused["httpStatus"], **({"event": refused["event"]} if refused.get("event") else {})} if refused else {}
-    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": stop["detail"], **said} if stop else {}), "messages": [{"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": m["content"] or "", "embeds": [{k: e.get(k) for k in ("title", "description", "url") if e.get(k)} for e in (m.get("embeds") or []) if isinstance(e, dict)]} for m in picked]}
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, **({"stopped": stop["detail"], **said} if stop else {}), "messages": [read_message(client, spec, channel, m, me) for m in picked]}
+
+
+def read_message(client: Any, spec: dict[str, Any], channel: str, m: dict[str, Any], me: str) -> dict[str, Any]:
+    attachments = attachments_of(m.get("embeds"))
+    out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": text_of(m["content"], attachments), "embeds": plain_embeds(m.get("embeds")), "attachments": attachments}
+    if spec.get("saveAudio") is not False and any(is_audio(a) for a in attachments):
+        out["audio"] = saved_audio(client, spec, channel, str(m["id"]), attachments)
+    return out
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
@@ -205,14 +262,14 @@ async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     if not channel.isdigit():
         return {"ok": False, "code": "sendInvalid", "detail": "read needs a channel id"}
     after = str(spec.get("after") or "").strip() or None
-    return await asyncio.to_thread(read_of, token, channel, int(spec.get("limit") or 20), after)
+    return await asyncio.to_thread(read_of, token, channel, int(spec.get("limit") or 20), after, spec)
 
 
 def live(event: dict[str, Any]) -> None:
     print(json.dumps({"liveEvent": event}, default=str), flush=True)
 
 
-def watch_of(token: str, seconds: float) -> dict[str, Any]:
+def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]:
     from endcord import client_properties as props
     from endcord import gateway
 
@@ -231,6 +288,7 @@ def watch_of(token: str, seconds: float) -> dict[str, Any]:
     me = str(socket.get_my_id())
     live({"kind": "open", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "detail": "wss://gateway.discord.gg open, every message pushed as it lands"})
     count = 0
+    rest = None
     while not seconds or time.time() - started < seconds:
         event = socket.get_messages()
         if event is None:
@@ -243,7 +301,13 @@ def watch_of(token: str, seconds: float) -> dict[str, Any]:
             continue
         d = event.get("d") or {}
         count += 1
-        live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), "id": d.get("id"), "at": d.get("timestamp"), "from": d.get("global_name") or d.get("username"), "fromId": str(d.get("user_id")), "fromMe": str(d.get("user_id")) == me, "bot": bool(d.get("bot")), "replyTo": (d.get("referenced_message") or {}).get("id"), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me, "text": d.get("content") or ""})
+        attachments = raw_attachments_of(d)
+        audio: list[dict[str, Any]] = []
+        flags = d.get("flags")
+        if any(is_audio(a, flags) for a in attachments) and str(d.get("user_id")) != me:
+            rest = rest or open_client(token)[0]
+            audio = saved_audio(rest, spec, str(d.get("channel_id")), str(d.get("id")), attachments, flags) if rest else [{**a, "error": "no REST session to fetch it"} for a in attachments if is_audio(a, flags)]
+        live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), "id": d.get("id"), "at": d.get("timestamp"), "from": d.get("global_name") or d.get("username"), "fromId": str(d.get("user_id")), "fromMe": str(d.get("user_id")) == me, "bot": bool(d.get("bot")), "replyTo": (d.get("referenced_message") or {}).get("id"), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me, "text": text_of(d.get("content"), attachments, d.get("flags")), **({"attachments": attachments} if attachments else {}), **({"audio": audio} if audio else {})})
     return {"ok": True, "loginState": "loggedIn", "messages": count, "seconds": round(time.time() - started)}
 
 
@@ -251,7 +315,7 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     token = cookies.get("token")
     if not token:
         return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
-    return await asyncio.to_thread(watch_of, token, float(spec.get("seconds") or 0))
+    return await asyncio.to_thread(watch_of, token, float(spec.get("seconds") or 0), spec)
 
 
 async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
@@ -271,7 +335,103 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await asyncio.to_thread(send_of, token, channel, text)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "watch": watch}
+def delete_of(token: str, channel: str, message: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    data, status = client.request("GET", f"/api/v9/channels/{channel}/messages?around={message}&limit=1", None, client.header)
+    if not status:
+        return {"ok": False, "code": "platformError", "detail": f"Discord didn't answer the read of message {message}", "loginState": "unknown", "event": "dropped"}
+    if status != 200:
+        return refusal_of(status, data, f"channel {channel} message {message}")
+    found = [m for m in json.loads(data) if str(m.get("id")) == message]
+    if not found:
+        return {"ok": False, "code": "messageNotFound", "detail": f"message {message} isn't in channel {channel}", "loginState": "loggedIn"}
+    if str((found[0].get("author") or {}).get("id")) != str(client.my_id):
+        return {"ok": False, "code": "notOwnMessage", "detail": f"message {message} was sent by someone else; only the account's own messages are deleted", "loginState": "loggedIn"}
+    deleted = client.delete_message(channel, message)
+    if deleted is None:
+        return {"ok": False, "code": "deleteFailed", "detail": f"Discord didn't answer the delete of message {message}", "loginState": "unknown", "event": "dropped"}
+    if not deleted:
+        return {"ok": False, "code": "deleteFailed", "detail": f"Discord refused the delete of message {message}", "loginState": "loggedIn", "event": "throttled"}
+    return {"ok": True, "loginState": "loggedIn", "event": "deleted", "channelId": channel, "messageId": message, "content": found[0].get("content") or ""}
+
+
+async def delete(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel, message = str(spec.get("channel") or "").strip(), str(spec.get("message") or "").strip()
+    if not channel.isdigit() or not message.isdigit():
+        return {"ok": False, "code": "sendInvalid", "detail": "delete needs a channel id and a message id"}
+    return await asyncio.to_thread(delete_of, token, channel, message)
+
+
+def sound_search_of(client: Any, channel_id: str, pause: float) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    from endcord.message import prepare_messages
+
+    found: list[dict[str, Any]] = []
+    offset = 0
+    while True:
+        url = f"/api/v9/channels/{channel_id}/messages/search?has=sound" + (f"&offset={offset}" if offset else "")
+        data, status = client.request("GET", url, None, client.header)
+        if not status:
+            return found, {"refused": False, "detail": f"channel {channel_id} sound search: the network dropped, Discord didn't answer"}
+        if status == 202:
+            return found, {"refused": False, "detail": f"channel {channel_id} sound search: Discord answered 202, its search index for this chat isn't built yet"}
+        if status != 200:
+            return found, {"refused": True, **refusal_of(status, data, f"channel {channel_id} sound search")}
+        body = json.loads(data)
+        page = prepare_messages([hit[0] for hit in body.get("messages") or [] if hit], have_channel_id=True)
+        found.extend(page)
+        offset += SEARCH_PAGE
+        if not page or offset >= int(body.get("total_results") or 0):
+            return found, None
+        time.sleep(pause)
+
+
+def voice_notes_of(token: str, spec: dict[str, Any]) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    pause = float(spec.get("pause") or 1.5)
+    wanted = [str(c) for c in spec.get("channels") or [] if str(c).isdigit()]
+    if not wanted:
+        dms, refused = dms_of(client)
+        if refused:
+            return refused
+        wanted = [d["id"] for d in dms]
+    me = str(client.my_id)
+    notes: list[dict[str, Any]] = []
+    searched: list[str] = []
+    problems: list[dict[str, Any]] = []
+    for index, channel_id in enumerate(wanted, 1):
+        messages, stop = sound_search_of(client, channel_id, pause)
+        for m in messages:
+            attachments = attachments_of(m.get("embeds"))
+            for a in saved_audio(client, spec, channel_id, str(m["id"]), attachments):
+                notes.append({"channelId": channel_id, "messageId": str(m["id"]), "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromMe": str(m["user_id"]) == me, "text": text_of(m["content"], attachments), **{k: v for k, v in a.items() if k != "url"}})
+        if stop and stop["refused"]:
+            answer = {k: v for k, v in stop.items() if k != "refused"}
+            print(json.dumps({"liveEvent": "progress", "line": f"discord voice notes {index}/{len(wanted)}: stopped, {answer['detail']}"}), file=sys.stderr, flush=True)
+            return {**answer, "stopped": {"channelId": channel_id, "httpStatus": answer["httpStatus"], "answer": answer["answer"], "channelsLeft": len(wanted) - index}, "notes": notes, "searched": searched, "problems": problems}
+        if stop:
+            problems.append({"channelId": channel_id, "problem": stop["detail"]})
+        else:
+            searched.append(channel_id)
+        print(json.dumps({"liveEvent": "progress", "line": f"discord voice notes {index}/{len(wanted)}: channel {channel_id}, {len(messages)} with sound"}), file=sys.stderr, flush=True)
+        time.sleep(pause)
+    return {"ok": True, "loginState": "loggedIn", "notes": notes, "searched": searched, "problems": problems}
+
+
+async def voice_notes(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    return await asyncio.to_thread(voice_notes_of, token, spec)
+
+
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "watch": watch, "voiceNotes": voice_notes}
 
 
 if __name__ == "__main__":

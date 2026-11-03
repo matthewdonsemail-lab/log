@@ -94,6 +94,42 @@ describe("log discord session check", () => {
     expect(r.calls).toEqual(["discordOne:send"]);
     expect(r.out).toContain("sent message 1564911647925997649");
   });
+  test("delete without --live reads the messages and deletes nothing", async () => {
+    const r = await run(["discord", "delete", "--account", "discordOne", "--channel", "1434928149904228392", "--message", "1566872902840619151,1566872961531777095"], { answer: { ok: true, loginState: "loggedIn", messages: [{ id: "1566872902840619151", fromMe: true, text: "lad im skint again" }, { id: "1566872961531777095", fromMe: false, text: "theirs" }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["discordOne:read"]);
+    expect(r.out).toContain("1566872902840619151  would delete: lad im skint again");
+    expect(r.out).toContain("1566872961531777095  refused, someone else sent it");
+    expect(r.out).toContain("Nothing was deleted");
+  });
+
+  test("delete --live needs --approvedBy and takes only message ids", async () => {
+    expect((await run(["discord", "delete", "--account", "discordOne", "--channel", "1434928149904228392", "--message", "1566872902840619151", "--live"])).calls).toEqual([]);
+    const bad = await run(["discord", "delete", "--account", "discordOne", "--channel", "1434928149904228392", "--message", "skint"]);
+    expect(bad.code).not.toBe(0);
+    expect(bad.err).toContain("messageInvalid");
+    expect(bad.calls).toEqual([]);
+  });
+
+  test("delete --live deletes each id through the engine and stops at the first refusal", async () => {
+    const twenty = fixture();
+    const calls: string[] = [];
+    const out: string[] = [];
+    const answers: PlatformEngineRun["answer"][] = [{ ok: true, event: "deleted", loginState: "loggedIn", messageId: "1566872902840619151", content: "lad im skint again" }, { ok: false, code: "notOwnMessage", detail: "someone else's" }];
+    const code = await runCli(["discord", "delete", "--account", "discordOne", "--channel", "1434928149904228392", "--message", "1566872902840619151,1566872961531777095,1566873006607966331", "--approvedBy", "matt", "--live"], {
+      twenty,
+      out: (l) => out.push(l),
+      err: () => {},
+      directDiscord: (_account, spec) => {
+        calls.push(`${spec.action}:${spec.message}:${spec.live}`);
+        return { answer: answers.shift() ?? { ok: false, code: "notExpected" }, refreshed: null };
+      },
+    });
+    expect(code).toBe(1);
+    expect(calls).toEqual(["delete:1566872902840619151:true", "delete:1566872961531777095:true"]);
+    expect(out.join("\n")).toContain("1 of 3 deleted, then notOwnMessage");
+  }, 20_000);
+
   test("send finds the chat the way matt says it, then sends by its id", async () => {
     const twenty = fixture();
     const sent: unknown[] = [];

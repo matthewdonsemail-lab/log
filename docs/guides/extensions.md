@@ -11,6 +11,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "twitter/getTheAction" })` | Getting people to do the thing: retweet, like, try it | "get me all them people who liked it ... yo cool to see that you liked that, would you give that a wee retweet", "notifications: people who like, comment, reply", "go through all the people there who need a message", "get them to retweet the thing", "would you do me a favour and give it a wee retweet", "I need them to retweet it so I can get some inbound leads", "I don't know what they're even talking about, explain the context", "make them do the action I need", "get the full context of everything on the account at the time of sending the message". |
 
 ## The tools in this guide
 
@@ -20,6 +21,7 @@ When the owner asks for one of these, follow its page step by step.
 | `memelordTemplate` | One Memelord template by its id |
 | `memelordTrending` | Memelord's trending templates right now, each with its cultural… |
 | `memelordTools` | Memelord's catalog of one-shot image tools |
+| `memelordTaste` | matt's meme taste |
 
 ## The work, step by step: memelord
 
@@ -33,6 +35,9 @@ tools, so nothing here costs money (rule 41).
 
 ### Hard boundaries
 
+- **Only where it carries the chat on.** A chat waiting on them (they owe a
+  reply, or they promised something) can take a meme that nudges it; a chat
+  where matt's last messages are still unanswered never gets one stacked on top.
 - **Free tools only.** `memelordSearch`, `memelordTemplate`, `memelordTrending`
   and `memelordTools`. Nothing that generates, edits or runs a model is
   reachable from log, and `memelordTools` lists the image tools without ever
@@ -50,7 +55,10 @@ tools, so nothing here costs money (rule 41).
    chat's id from the first line (`… in <channelId>`).
 2. Find the moment: the last thing said that a person would answer with a
    reaction (a question to the group, a joke, a win, a fail).
-3. Search: `memelordSearch` { query: [the moment in a few words] }. Short
+3. Search: `memelordSearch` { query: [the moment in a few words] }. The
+   answer leads with matt's taste and ranks by it (deep fried, larping,
+   streamer reacts like FlightReacts, Zias and Bloo, shitposts, and the memes
+   he has sent): pick from the top, a clean corporate meme is never his. Short
    queries match best: a long sentence often returns one result or none. Use
    `method: "combined"` to add keyword matching, `type: "meme"` for a still
    image, `"video"` for a clip. `memelordTrending` gives what is current, each
@@ -59,10 +67,21 @@ tools, so nothing here costs money (rule 41).
    url (`.webp`/`.png` for an image, `.mp4` for a clip).
 5. Gate it: `voice` { to: <chat>, with: <chat>, context: <the moment and the
    meme picked>, text: <the url, and a line if one fits> }.
-6. Send it by the chat's id, so the engine doesn't list every chat first:
+6. On X, send it as a dm with the meme attached: `twitterDmLive` { account,
+   userId, text: <a line or two>, media: <the meme url>, approvedBy: "matt",
+   confirmLive: true }. The url is downloaded, uploaded as X dm media and put on
+   the first message; the dm's other lines follow it.
+7. On Discord, send it by the chat's id, so the engine doesn't list every chat first:
    `discordSendLive` { account, channel: <channelId>, text, approvedBy: "matt",
    confirmLive: true }. A url on a line of its own is a message of its own
    (rule 90), and Discord shows it inline.
+
+### His taste
+
+`memelordTaste` shows it; `memelordTaste` { build: true, from: <posts.json> }
+rebuilds it from his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`,
+the timeline items of every page, joined in one file). Rebuild when he has
+posted a run of new memes.
 
 ### Where things are
 
@@ -79,42 +98,57 @@ tools, so nothing here costs money (rule 41).
 Search Memelord's template library (memes, videos, stickers) by meaning or keyword, for a meme that fits the moment.
 The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only)
 log memelord search "<what the moment is>" [--type meme|video|sticker] [--method context|combined|media|fulltext|fuzzy] [--limit <n>] [--json]
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
-AGENTS.md (log://agents): rules 41, 94, 119, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTemplate`
 
 One Memelord template by its id: name, media url, text slots and what it means.
 The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only)
 log memelord template <id> [--json]   (one template: its name, media url, text slots and what it means)
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
-AGENTS.md (log://agents): rules 41, 94, 119, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTrending`
 
 Memelord's trending templates right now, each with its cultural context.
 The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only)
 log memelord trending [--limit <n>] [--media image|video] [--json]   (what is trending now, with its cultural context)
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
-AGENTS.md (log://agents): rules 41, 94, 119, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTools`
 
 Memelord's catalog of one-shot image tools (face swaps, filters, generators); log lists them and never runs them.
 The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only)
 log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--json]   (the catalog of one-shot image tools; log never runs them)
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
-AGENTS.md (log://agents): rules 41, 94, 119, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `memelordTaste`
+
+matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build makes it from a file of his X media posts.
+The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only)
+log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build reads a file of his X media posts)
+Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
+Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context).
+AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -133,3 +167,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
 
 **Rule 119.** 2026-11-02 · matt: extensions, "things that we think are going to make the experience of using social media more human", first Memelord ("we will only use these": `search_memes`, `get_meme_template`, `get_trending_memes`, `list_image_tools`, all free). An extension is an outside service log reaches through its own command and MCP tools, never by hand (rule 106), documented in its own docs area, `docs/extensions/` (a tab of its own on the docs site). Memelord's client (`src/extensions/memelord`) knows only those four GET endpoints of `https://www.memelord.com/api/v1`, with `MEMELORD_API_KEY` as a bearer token; nothing that generates, edits or runs a model has a path in log (rule 41). `log memelord search|template|trending|tools` (MCP `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, the `extensions` guide, the `memelord` skill) answers each template with its media url. A meme goes out on Discord as that url on a line of its own, which Discord shows inline: read the chat, pick the moment, search, gate it with `voice`, send it by the chat's id (`docs/useCases/discord/memeReply.md`). First sent 2026-11-02 to the log group: Floyd Mayweather's Cash Stacks, on "how much shall i charge". Spec: `docs/specs/memelord.md`.
+
+**Rule 120.** 2026-11-02 · matt: "start creating meme taste ... injecting into the context the kind of memes that we need": deep fried memes, memes about larping, streamer reaction clips like FlightReacts, Zias and Bloo, and shitposts, "those are the type of memes that I think are bangers", and "a meme index for taste ... over the type of memes we've done before". His taste lives in `~/.logCli/memes/taste.json` (`src/extensions/memeTaste`): `log memelord taste --build --from <posts.json>` reads every picture in his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`, which matt said to spend on) and asks SubQ, from the picture, whether it is a meme and which of his styles it is (`TASTE_STYLES`, or other), keeping the memes. `log memelord search` scores each template's picture against his taste with SubQ (`tasteFit`) and ranks by it, `--noTaste` keeping Memelord's order, and every answer leads with his taste (`tasteSummary`), so the agent picking a meme has it in context. `log memelord taste` (MCP `memelordTaste`) shows it. Spec: `docs/specs/memelord.md` (REQ-MEME-09, REQ-MEME-10).

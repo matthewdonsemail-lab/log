@@ -10,7 +10,7 @@ How many times an account may write on its platform in a day, how matt can push 
 
 ### REQ-BUDGET-01: Each platform has its own daily write budget
 
-An X account makes up to 240 writes a day, a Discord account 60, a LinkedIn account 10, and every other platform 40. Rules 91, 96, 101 and 102.
+An X account makes up to 240 writes a day, a Discord account 120, a LinkedIn account 10, and every other platform 40. Rules 91, 96, 101, 102 and 122.
 
 Checked by: code and SubQ
 

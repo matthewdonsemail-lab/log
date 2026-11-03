@@ -1580,6 +1580,128 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     group: Floyd Mayweather's Cash Stacks, on "how much shall i charge".
     Spec: `docs/specs/memelord.md`.
 
+120. 2026-11-02 · matt: "start creating meme taste ... injecting into the
+    context the kind of memes that we need": deep fried memes, memes about
+    larping, streamer reaction clips like FlightReacts, Zias and Bloo, and
+    shitposts, "those are the type of memes that I think are bangers", and "a
+    meme index for taste ... over the type of memes we've done before". His
+    taste lives in `~/.logCli/memes/taste.json` (`src/extensions/memeTaste`):
+    `log memelord taste --build --from <posts.json>` reads every picture in
+    his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`, which matt
+    said to spend on) and asks SubQ, from the picture, whether it is a meme
+    and which of his styles it is (`TASTE_STYLES`, or other), keeping the
+    memes. `log memelord search` scores each template's picture against his
+    taste with SubQ (`tasteFit`) and ranks by it, `--noTaste` keeping
+    Memelord's order, and every answer leads with his taste
+    (`tasteSummary`), so the agent picking a meme has it in context.
+    `log memelord taste` (MCP `memelordTaste`) shows it. Spec:
+    `docs/specs/memelord.md` (REQ-MEME-09, REQ-MEME-10).
+
+121. 2026-11-03 · matt: "those accounts are too big, a person who is too
+    large isn't worth it yet, sub 1500 is ideal". A reply goes only to an
+    author with 1500 followers or fewer. Reply-guy targets come from the
+    niche map under 1500 followers. Before a reply likes, follows or sends
+    anything, the engine reads the author's follower count
+    (`author_too_big`, `MAX_AUTHOR_FOLLOWERS` in `python/twitterApi/engine.py`),
+    and a larger author gets nothing (`authorTooBig`). The queue marks that
+    item skipped (`TOO BIG`) and goes on: it is not a refusal (rule 118).
+    A reply matt asks for by name goes out whatever the author's size, with
+    `force` (rule 86), as his reply to @sporadica (222k) did on 2026-11-03.
+    Every reply that does go out likes the post and follows the author
+    first. Spec: `docs/specs/xQueue.md` (REQ-QUEUE-15).
+
+122. 2026-11-03 · matt: "bump discord to 120". A Discord account sends up
+    to 120 messages a day, not 60 (this replaces rule 91's number;
+    `WRITES_PER_DAY`, `src/directApi/engine`, handed to the engine's governor
+    in each run's spec). Rule 94 still holds: a 429 or any refusal stops the
+    run, and cold DMs to strangers stay a few a day, minutes apart. X keeps
+    240, LinkedIn 10, every other platform 40. Spec:
+    `docs/specs/writeBudgets.md` (REQ-BUDGET-01).
+
+123. 2026-11-03 · matt: "make it a rule all platforms need the web socket
+    hooks stuff there". Every platform log-cli talks to gets the live hooks X
+    and Discord have. Its account's one session holds the platform's own push
+    channel open: X Chat's socket, Discord's gateway, Slack's
+    `wss-primary.slack.com`. That is never a poll from a second client. The
+    inbox hook starts that watcher for every account and puts each new
+    message, mention and reply in front of the agent with what to do
+    (`>>> NEW MESSAGE`), per session (rules 105, 108, 115). It also stops a
+    watcher running older code, skips an account cooling off, and stops on any
+    refusal (rule 94). A platform isn't done until its watcher is in the inbox
+    hook (`scripts/hooks/inbox.ts`, `src/inbox/watch`), starting with Slack.
+    Reddit and LinkedIn aren't built yet. Spec: `docs/specs/agentHooks.md`
+    (REQ-HOOKS-12).
+
+124. 2026-11-03 · matt: "on creation of a new platform we need to auto
+    build anchors as well". `log new platform <name>` writes the platform's
+    spec with the rest of the platform: `docs/specs/<name>.md` and
+    `src/specs/<name>/index.ts`. The spec has one requirement each for the
+    session, the engine, the platform's own answer recorded, and the wiring,
+    each with its SubQ question. Every anchor is on what the command just
+    wrote, so the spec gate (rule 117) proves the new platform from its first
+    commit. As the platform grows, its new behaviour goes into that spec with
+    its anchors. Spec: `docs/specs/platformScaffold.md` (REQ-PLATFORM-14).
+
+125. 2026-11-03 · matt: "Check slack via cli it needs to be swapped to use
+    curl_cffi same as X". Slack goes out looking like a browser, the way X
+    (rule 81) and LinkedIn (rule 102) do. `vendor/gabrielSlack` reaches Slack,
+    its web API, its cookie exchange and its websocket (`wss-primary.slack.com`),
+    only through `gabriel/core/transport.py`: one curl_cffi `AsyncSession` made
+    by `new_session`, pinned to one impersonation target (`IMPERSONATE`,
+    `chrome150`), sending that target's own user agent (`USER_AGENT`, which the
+    client's default metadata uses), never httpx, websockets, aiohttp, requests
+    or a socket of its own. It keeps no cookies between calls: the d cookie is
+    sent on each one. gabriel's own login CLI, which drove Chrome through httpx
+    and websockets, is removed. `python/checks/slackTransport.py` maps every
+    transport touchpoint by syntax tree (`--map`), rewrites what has a curl_cffi
+    equivalent (`--apply`) and refuses the rest (`--check`, `bun run
+    check:slackTransport`, pre-commit and pre-push). Spec: `docs/specs/slack.md`
+    (REQ-SLACK-05).
+
+126. 2026-11-03 · matt: every voice note he was sent or sent, transcribed
+    with AssemblyAI, and "inside of the discord layer we have that and then
+    the social media platforms at large, how can we detect when we have
+    audio". Audio is detected once, in the shared message layer
+    (`python/platformKit/media.py`, `src/platformKit/media`), never per
+    platform: a content type of `audio/*` or `video/ogg`, an extension
+    (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag
+    (Discord's voice-message flag 8192 with its duration and waveform, X
+    Chat's audio media, Slack's `slack_audio` file). Every platform's
+    messages keep their attachments, and an audio one adds `(audio: <name>)`
+    to the text. Whatever is audio goes through one AssemblyAI path (`log
+    transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its
+    file's hash in `~/.logCli/transcripts`, written into the conversation
+    store as `(voice note: "<what was said>")` so search, voice and SubQ see
+    it, and done as they come in `discordRead`, `twitterDms`, `slackRead`
+    and the inbox. Files come only through the platform's own engine and
+    session (X's one session, Discord's sound search, Slack's own
+    transport), and any refusal stops the run (rule 94). The key is
+    `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`,
+    `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed.
+    `log new platform` writes the attachments into a new platform's message
+    shape, and `check:platforms` refuses an engine whose messages drop them.
+    Spec: `docs/specs/voiceNotes.md`.
+
+127. 2026-11-03 · matt: "the watermarking has began ... research the saying
+    'is wild' no one says that", then "B is the only right option ... we're
+    writing across everything i said and how i write it", and "install this
+    and add it to the subq" (novatechflow/ai-watermark-scrambler). The voice
+    gate passed "yc and a pageant in the same week is wild" because nothing
+    compared a draft with what matt has actually written. His 66,116 messages
+    never say "is wild", and another account's reply had used the same line
+    word for word three hours earlier. Now the gate also measures his phrasing
+    (`src/voice/phrases`): every reply in the voice index is cut into word
+    pairs, a draft's share of pairs he has written at least twice (leaving
+    out words from what they said) is set against his own 10th percentile,
+    measured over his replies with each one's own pairs left out
+    (`phrases.json`, built with the voice index), and a draft below it fails
+    with the pairs he never wrote named. The vendored scrambler
+    (`vendor/aiWatermarkScrambler`, Apache-2.0, layer A `inspect_text.py`)
+    reads every draft for invisible and lookalike characters, and a hit
+    fails it. Both readings go to SubQ with the draft. Its layer B rewrite
+    needs a local model (Ollama or vLLM), which this machine doesn't have,
+    so it isn't wired. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-07, 08).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

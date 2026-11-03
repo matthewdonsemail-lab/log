@@ -16,12 +16,14 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Finding who needs something from you, or who matters](twitter/whoNeedsYou.md) | reads every conversation for what it's about and sorts people by need, importance and how close to money, sends nothing |
 | X | [Following up in your own voice](twitter/followUps.md) | drafts each follow-up from how you write to that person, gates it, and sends one message per line after you say yes |
 | X | [Network maxing: grow the network, the niche map](twitter/networkMaxing.md) | gets to know everyone who messaged and new people from the niche map, each conversation about them and what they're doing, never a pitch |
+| X | [Collab maxxing: turn open conversations into collabs](twitter/collabMaxxing.md) | turns the people already talking to the owner, and the missed openings, into collabs: scope, position the open-source collab, then the small ask, with money always the owner's call |
 | X | [A new region of the niche map, then outbound to it](twitter/nicheMapRegion.md) | adds a new world to the niche map, runs it through the pipeline, then opens on the warmest of it |
 | X | [Getting people to do the thing](twitter/getTheAction.md) | explains each conversation in a line, then a reply that answers them and asks for the one action (retweet, like, try it) |
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |
 | Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
 | Discord | [Replying with a meme in a Discord chat](discord/memeReply.md) | reads the chat, finds a Memelord meme that fits the moment, gates it and sends it inline |
+| Slack | [Reading and answering a Slack DM](slack/dmReply.md) | finds the chat by who it is with, reads it, drafts in matt's voice, gates it and sends it one line at a time |
 
 ## The parts every use case is built from
 

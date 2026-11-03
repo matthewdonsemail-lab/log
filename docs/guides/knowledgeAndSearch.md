@@ -1,6 +1,6 @@
 # knowledgeAndSearch
 
-Finding context: the knowledge base and the conversation search, keyword and meaning at once.
+Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -11,6 +11,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
+| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
 | `getGuide({ useCase: "twitter/dmInbox" })` | Reading the DM inbox: who is waiting on you | see the page |
 | `getGuide({ useCase: "twitter/followUps" })` | Following up in your own voice | "follow up with these, not for anything in particular, just warming up the relationship", "say it was cool to meet him", "ask him for some advice on what he's doing", "take him up on the doc he offered". |
 | `getGuide({ useCase: "twitter/whoNeedsYou" })` | Finding who needs something from you, or who matters | "look through my messages and find someone who clearly needs something off me", "summarise everything on my twitter, how likely is it we make money", "who's worth following up". |
@@ -26,6 +27,8 @@ When the owner asks for one of these, follow its page step by step.
 | `kbSync` | Collect every source into the knowledge base in Twenty and index what… |
 | `kbRemember` | Save an agent memory as a knowledge base note, in Twenty and Redis at… |
 | `kbShow` | Show one knowledge base article in full |
+| `transcribe` | Transcribe every voice note in the saved X and Discord conversations… |
+| `transcribeFile` | Transcribe one audio file with AssemblyAI, kept by its hash |
 
 ## The work, step by step: knowledgeBase
 
@@ -125,8 +128,8 @@ Hybrid search across every conversation (BM25 keyword + vector meaning, fused wi
 log search "<query>" [--limit <n>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--json]
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/whoNeedsYou" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/whoNeedsYou" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchIndex`
@@ -137,7 +140,7 @@ log search index [--platform <twitter|discord>] [--account <a>] [--saved] [--reb
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchBench`
@@ -147,7 +150,7 @@ Hybrid search across every conversation (BM25 keyword + vector meaning, fused wi
 log search bench [--rounds <n>]   (times realistic queries on the built index, cold and warm, and prints p50, p95 and p99 beside a plain linear scan)
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbSearch`
@@ -157,7 +160,7 @@ The knowledge base: search it, sync every source into Twenty and Redis, remember
 log kb search "<query>" [--kind <kind>] [--limit <n>] [--json]
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbSync`
@@ -167,7 +170,7 @@ The knowledge base: search it, sync every source into Twenty and Redis, remember
 log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, skills, docs, infra notes, every Claude memory file, the known page states and the accounts from log-cli's Twenty, writes them to the knowledge base in ListeningKit's Twenty, and indexes what changed into Redis)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbRemember`
@@ -177,7 +180,7 @@ The knowledge base: search it, sync every source into Twenty and Redis, remember
 log kb remember "<text>" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbShow`
@@ -187,8 +190,30 @@ The knowledge base: search it, sync every source into Twenty and Redis, remember
 log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base and the conversation search, keyword and meaning at once).
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
 AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `transcribe`
+
+Transcribe every voice note in the saved X and Discord conversations with AssemblyAI and write them into the conversation store.
+Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ
+log transcribe [--platform twitter|discord] [--account <a>] [--list] [--noIndex] [--json]
+Transcribes every voice note in the saved conversations with AssemblyAI (upload, transcript, polled until done) and writes each into the conversation store as (voice note: "<what was said>") in place of its (audio: <name>) marker, so log search, voice and SubQ matrices see what was said. X voice notes come from the X Chat files the account's one session saved, and a missing one is fetched through that session (the conversation read again, its audio events reopened). Discord voice notes are found with Discord's own sound search, one chat at a time through log's Discord engine, and each file is fetched from its fresh attachment url there; any refusal stops it (rule 94). Each transcript is kept once by its file's hash in ~/.logCli/transcripts, so nothing is sent to AssemblyAI twice. The search index is then updated with what changed (--noIndex skips it).
+--list only lists the voice notes the store holds and which have their file, calling nothing. The key is ASSEMBLYAI_API_KEY or ASSEMBLY_AI_KEY (the environment, .env.local, ~/.buzz/.env.local or ~/filmcraft/.env.local), never printed; without it the command refuses with assemblyAiKeyMissing.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
+AGENTS.md (log://agents): rules 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `transcribeFile`
+
+Transcribe one audio file with AssemblyAI, kept by its hash.
+Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ
+log transcribe file <path> [--json]   (one audio file, transcribed and kept by its hash)
+Transcribes every voice note in the saved conversations with AssemblyAI (upload, transcript, polled until done) and writes each into the conversation store as (voice note: "<what was said>") in place of its (audio: <name>) marker, so log search, voice and SubQ matrices see what was said. X voice notes come from the X Chat files the account's one session saved, and a missing one is fetched through that session (the conversation read again, its audio events reopened). Discord voice notes are found with Discord's own sound search, one chat at a time through log's Discord engine, and each file is fetched from its fresh attachment url there; any refusal stops it (rule 94). Each transcript is kept once by its file's hash in ~/.logCli/transcripts, so nothing is sent to AssemblyAI twice. The search index is then updated with what changed (--noIndex skips it).
+--list only lists the voice notes the store holds and which have their file, calling nothing. The key is ASSEMBLYAI_API_KEY or ASSEMBLY_AI_KEY (the environment, .env.local, ~/.buzz/.env.local or ~/filmcraft/.env.local), never printed; without it the command refuses with assemblyAiKeyMissing.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
+AGENTS.md (log://agents): rules 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -218,4 +243,10 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 
 **Rule 93.** 2026-10-27 · matt: "we need to build a knowledge base inside of it", all of it, agent memory too, with Redis. The knowledge base lives in ListeningKit's Twenty on node02 (`knowledgeArticles`: key, kind, body, source, tags, author, content hash; reached over the tailnet at `node02.tail4fcf85.ts.net`, never through the public login gate) and is searched through Redis 8 on node02 (`kb-redis`, the search module's `kbIdx`: BM25 keyword and HNSW meaning over local all-MiniLM-L6-v2, fused with reciprocal rank fusion). `log kb sync` collects AGENTS.md's rules and sections, every skill, every doc (`docs/infra/` as infra, never `docs/vendors`), every Claude memory file, the known page states and the accounts from log-cli's Twenty (no credential, proxy URL or cookie), writes what changed to Twenty and re-indexes what changed into Redis; an article a person writes or edits in Twenty is indexed on the next sync. `log kb search "<query>" [--kind]` is how an agent finds context, `log kb remember "<text>"` saves an agent memory to both at once, `log kb show <key>` reads one in full. Secrets are scrubbed before anything is written (named keys, URLs with a login, JWTs, private keys, long random strings). The logins are files in `~/.config/listeningkit/`, never in the repo or the knowledge base. `src/knowledge/base`, `docs/knowledgeBase.md`.
 
+**Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
+
 **Rule 105.** 2026-11-01 · matt: "we cannot be opening multiple sessions there, that defeats the core purpose of what we use this tool for ... it should always be one, and then it needs to loudly create issues". An X account has one session, always. Every X call (CLI, MCP, hooks, the queue, the X Chat watch) goes through the account's one engine host (`python/twitterApi/host.py`, started on the first call, closed after 30 idle minutes or when the engine code changes): one twikit client, one connection, one cookie jar and one transaction key, the way X's own web app keeps one page and signs every call from it (x-web `startup-dynamic`, read with rea 2026-11-01). A second host can't start (`host.lock`); a call that can't reach the host is refused with `xSessionHostDown` and sends nothing, never falls back to a session of its own. The hook's account line shows the open session (pid, since, calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.
+
+**Rule 106.** 2026-11-01 · matt: "when doing stuff like changing the code or anything, ensure that there hasn't been any changes to it locally, like to the engine ... you're not allowed hand-rolled commands, it always has to be through the MCP basically". Two things, enforced by the hooks: - **Through the MCP only.** Every log action an agent takes goes through the log MCP tools (`mcp__log__…`), never a hand-run `log …` or `bun bin/log.ts …` from a shell. The PreToolUse hook (`liveLogs`, `handRunDenial` in `src/agentHooks/liveLog`) refuses one and names the MCP instead. Only the terminal-only prompts (`TERMINAL_ONLY`: launch, login, mcp, chat pin, cookies save, messenger pin) are run in a terminal, by matt. A stale MCP server is said to matt (restart the app), never worked around. - **Local changes first.** Before changing code, check what is already changed and uncommitted in the checkout. The engines hook says it loudly at session start and whenever it changes (`>>> UNCOMMITTED LOCAL CHANGES`, `localChangesLine` in `src/mcp/freshness`): read each one's diff, and never overwrite, revert, stage, publish or ship someone else's uncommitted work without matt.
+
+**Rule 126.** 2026-11-03 · matt: every voice note he was sent or sent, transcribed with AssemblyAI, and "inside of the discord layer we have that and then the social media platforms at large, how can we detect when we have audio". Audio is detected once, in the shared message layer (`python/platformKit/media.py`, `src/platformKit/media`), never per platform: a content type of `audio/*` or `video/ogg`, an extension (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag (Discord's voice-message flag 8192 with its duration and waveform, X Chat's audio media, Slack's `slack_audio` file). Every platform's messages keep their attachments, and an audio one adds `(audio: <name>)` to the text. Whatever is audio goes through one AssemblyAI path (`log transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its file's hash in `~/.logCli/transcripts`, written into the conversation store as `(voice note: "<what was said>")` so search, voice and SubQ see it, and done as they come in `discordRead`, `twitterDms`, `slackRead` and the inbox. Files come only through the platform's own engine and session (X's one session, Discord's sound search, Slack's own transport), and any refusal stops the run (rule 94). The key is `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`, `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed. `log new platform` writes the attachments into a new platform's message shape, and `check:platforms` refuses an engine whose messages drop them. Spec: `docs/specs/voiceNotes.md`.

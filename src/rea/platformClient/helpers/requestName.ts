@@ -30,6 +30,15 @@ export function requestNameOf(host: string, path: string, operation: string | nu
   return endpointName(label === 'www' ? stablePath(path) : `${label}/${stablePath(path)}`)
 }
 
+export function methodNameOf(method: string): string {
+  return method.split('.').map((part, i) => (i === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1))).join('')
+}
+
+export function aliasHost(host: string, aliases: [RegExp, string][] = []): string {
+  for (const [pattern, alias] of aliases) if (pattern.test(host)) return alias
+  return host
+}
+
 export function operationOf(sent: unknown, path: string): string | null {
   if (!/graphql/i.test(path)) return null
   const body = sent && typeof sent === 'object' && !Array.isArray(sent) && 'body' in (sent as Record<string, unknown>) ? (sent as Record<string, unknown>).body : sent

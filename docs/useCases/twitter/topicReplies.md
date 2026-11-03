@@ -17,7 +17,7 @@ Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <articl
 flowchart TD
   s0["0. Session check<br/><i>twitterSessionCheck</i>"]
   s1["1. Find the posts: the topic's words, latest first, original posts…<br/><i>treg's X post search</i>"]
-  s2["2. One post per person<br/><i>treg's posts read on the account, for i…</i>"]
+  s2["2. One post per person, only from people with 1500 followers or fe…<br/><i>followers</i>"]
   s3["3. For each post, a one-line summary of what they said, and a repl…<br/><i>house style</i>"]
   s4["4. Write the list somewhere the owner can read it on a phone: numb…<br/><i>a shared page</i>"]
   s5["5. Queue it: each target carries its own text, build, check, appro…<br/><i>twitterQueuePlan</i>"]
@@ -33,7 +33,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
 | 1 | Find the posts: the topic's words, latest first, original posts and replies with a real take | treg's X post search | a pool of posts, newest first |
-| 2 | One post per person. Drop anyone the account already replied to, and accounts that only repost news | treg's posts read on the account, for its past replies | a unique list |
+| 2 | One post per person, only from people with 1500 followers or fewer (bigger accounts aren't worth it yet, rule 121; niche map people first). Drop anyone the account already replied to, and accounts that only repost news | the niche map's `followers`, treg's posts read on the account, for its past replies | a unique list, everyone at 1500 followers or under |
 | 3 | For each post, a one-line summary of what they said, and a reply that answers it with one of your facts. Mark which link it carries (article or video) | house style | every line passes `twitterQueueCheck` |
 | 4 | Write the list somewhere the owner can read it on a phone: number, handle, link type, post url, "they said", the reply | a shared page | the owner says yes |
 | 5 | Queue it: each target carries its own `text`, build, check, approve, plan, run live. Plan only what fits today's limit (`limit`), and plan the rest on later days | README queue steps, `twitterQueuePlan` { limit } | the queue's `pending` reaches 0 |

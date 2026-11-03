@@ -8,6 +8,7 @@ import { chunksOf, onePerPerson, percentiles, reciprocalRankFusion } from './hel
 import { SEARCH_DEPTH } from './types'
 import type { Chunk, Conversation, Embedder, Latency, SearchHit, SearchOptions } from './types'
 import type { TwitterDmConversation } from '../../twitter/account/session/index'
+import { applyTranscripts } from '../../media/voiceNotes/helpers/store'
 
 type ChunkMeta = { platform: string; account: string; conversationId: string; at: string }
 
@@ -30,7 +31,7 @@ export function conversationsRoot(): string {
 }
 
 export function saveConversations(conversations: Conversation[], root = conversationsRoot()): number {
-  for (const c of conversations) {
+  for (const c of applyTranscripts(conversations).conversations) {
     const dir = join(root, c.platform, c.account)
     mkdirSync(dir, { recursive: true })
     writeFileSync(join(dir, `${c.conversationId.replace(/[^\w-]/g, '_')}.json`), JSON.stringify(c))

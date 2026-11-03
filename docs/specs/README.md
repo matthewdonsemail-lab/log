@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 31 domains, 375 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 33 domains, 400 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -59,6 +59,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-09** Every MCP tool is hooked
 - **REQ-HOOKS-10** Every long-running tool points at the live log
 - **REQ-HOOKS-11** Every resolver is a real call
+- **REQ-HOOKS-12** Every platform's push channel reaches the agent through the inbox hook
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -342,6 +343,7 @@ An X account sends more than one thing only through its queue (`log twitter queu
 - **REQ-QUEUE-12** Held items, sends, refusals, stops and starts go into the agent's context
 - **REQ-QUEUE-13** The hook says what to do
 - **REQ-QUEUE-14** A refusal from X stops the run, and only a network drop is tried again
+- **REQ-QUEUE-15** A reply goes only to an author with 1500 followers or fewer
 
 ## [Full context before a send](./fullContext.md)
 
@@ -367,6 +369,8 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-04** A first message is only the opener
 - **REQ-VOICE-05** A draft with AI artifacts fails
 - **REQ-VOICE-06** A draft passes only when every answer passes
+- **REQ-VOICE-07** A draft written in word pairs matt has never written fails
+- **REQ-VOICE-08** The vendored watermark scrambler reads every draft
 
 ## [AI tells and watermark](./aiTells.md)
 
@@ -442,6 +446,7 @@ A new platform is made whole with one command, `log new platform <name>` (MCP `n
 - **REQ-PLATFORM-11** Inspect goes only to known platforms' hosts
 - **REQ-PLATFORM-12** A no-proxy platform opens with no proxy
 - **REQ-PLATFORM-13** The AdsPower sync gives every browser platform's accounts a profile
+- **REQ-PLATFORM-14** A new platform is made with its spec and anchors
 
 ## [Conversation search](./search.md)
 
@@ -497,6 +502,26 @@ log's first extension: Memelord's meme templates, clips and stickers, searched f
 - **REQ-MEME-06** Values are camelCase in log and converted at the boundary
 - **REQ-MEME-07** A bad limit is refused before any call
 - **REQ-MEME-08** The image tools are listed, never run
+- **REQ-MEME-09** The taste index is read from the pictures he sent
+- **REQ-MEME-10** Search ranks by his taste and says it first
+
+## [Voice notes](./voiceNotes.md)
+
+Every voice note on X and Discord, sent to matt or by him, is transcribed with AssemblyAI and written into the conversation store, so search, the voice gate and SubQ see what was said. Rules 26, 41, 88, 89, 94, 105, 106 and 126.
+
+- **REQ-TRANSCRIBE-01** Upload, ask, poll until done
+- **REQ-TRANSCRIBE-02** No key means no call
+- **REQ-TRANSCRIBE-03** AssemblyAI's failure is passed on
+- **REQ-TRANSCRIBE-04** A file is transcribed once
+- **REQ-TRANSCRIBE-05** The marker becomes what was said
+- **REQ-TRANSCRIBE-06** A fresh read never loses a transcript
+- **REQ-TRANSCRIBE-07** Discord keeps its attachments
+- **REQ-TRANSCRIBE-08** X voice notes come through the account's one session
+- **REQ-TRANSCRIBE-09** Discord voice notes come from Discord's sound search
+- **REQ-TRANSCRIBE-10** A refusal stops it
+- **REQ-TRANSCRIBE-11** Reads and the inbox transcribe as they go
+- **REQ-TRANSCRIBE-12** Audio is detected once, for every platform
+- **REQ-TRANSCRIBE-13** A new platform keeps its attachments from the start
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
 
@@ -535,3 +560,13 @@ log-cli is read-only on Facebook except where matt asked for an action. Posting 
 - **REQ-LISTING-21** Anything but full access is the account's suspended issue
 - **REQ-LISTING-22** Each listing's state on Selling goes into Twenty
 - **REQ-LISTING-23** Seller chats are counted and kept as sent
+
+## [Slack](./slack.md)
+
+What `log new platform slack` made, and what the platform's code must keep doing as it grows. Rules 83, 117, 123, 124 and 125.
+
+- **REQ-SLACK-01** The account is found on its own platform's row and gated
+- **REQ-SLACK-02** The engine runs the account through the shared platform kit
+- **REQ-SLACK-03** Slack's own answer is what gets recorded
+- **REQ-SLACK-04** The platform is wired into the CLI and the direct-API routes
+- **REQ-SLACK-05** Slack is reached only through one curl_cffi session that impersonates Chrome

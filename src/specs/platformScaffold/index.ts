@@ -6,6 +6,7 @@ const AST = 'src/scaffold/platform/helpers/astEdits.ts'
 const NEW = 'src/cli/new/index.ts'
 const PLATFORMS = 'src/cli/runner/helpers/platforms.ts'
 const CHECK = 'scripts/checks/checkPlatforms.ts'
+const TEMPLATES = 'src/scaffold/platform/helpers/templates.ts'
 
 export const platformScaffold = {
   description: 'log new platform and PLATFORM_SITES: one command makes a platform whole, one table says what each platform is',
@@ -14,6 +15,7 @@ export const platformScaffold = {
     'src/scaffold/platform/client.ts',
     'src/scaffold/platform/helpers/astEdits.ts',
     'src/scaffold/platform/types.ts',
+    'src/scaffold/platform/helpers/templates.ts',
     'src/cli/new/index.ts',
     'scripts/checks/checkPlatforms.ts',
     'src/cli/runner/helpers/platforms.ts',
@@ -23,6 +25,11 @@ export const platformScaffold = {
     'src/browser/adsPower/helpers/profileRequest.ts',
   ],
   anchors: {
+    'REQ-PLATFORM-14': [
+      { kind: 'symbol', file: TEMPLATES, name: 'specDoc' },
+      { kind: 'symbol', file: TEMPLATES, name: 'specIndex' },
+      { kind: 'symbol', file: SCAFFOLD, name: 'planNewPlatform' },
+    ],
     'REQ-PLATFORM-01': [
       { kind: 'symbol', file: SCAFFOLD, name: 'planNewPlatform' },
       { kind: 'symbol', file: NEW, name: 'newCommand' },
@@ -75,7 +82,7 @@ export const platformScaffold = {
     ],
   },
   rubrics: {
-    'REQ-PLATFORM-01': noul('Does planNewPlatform plan the account session client and index under src/<name>/account, the session command under src/cli/<name> with its test, python/<name>Api with its __init__.py and engine.py on the shared engine kit, and docs/platforms/<name>/README.md?'),
+    'REQ-PLATFORM-01': noul('Does planNewPlatform plan the account session client and index under src/<name>/account, the session command under src/cli/<name> with its test, python/<name>Api with its __init__.py and engine.py on the shared engine kit (its message_of keeping attachments through platformKit media), and docs/platforms/<name>/README.md?'),
     'REQ-PLATFORM-02': noul('Does planNewPlatform plan every edit to the repo through the astEdits helpers, which parse the source into a syntax tree rather than searching its text, and key the new DIRECT_ROUTES and COMMAND_RULES entries by the platform-qualified sessionKey?'),
     'REQ-PLATFORM-03': noul('Does applyPlan apply every edit in memory, throw before writing any file when any edit.landed returns false, and only then write the planned files and the edited sources?'),
     'REQ-PLATFORM-04': noul('When the apply flag is not given, does newCommand return the list of planned files, edits and notes without calling applyPlan or writing anything?'),
@@ -87,6 +94,7 @@ export const platformScaffold = {
     'REQ-PLATFORM-11': noul('Does parseInspectAction refuse goto when hostOnPlatforms is false, and does hostOnPlatforms return true only for an https URL whose hostname equals, or ends with a dot and, a host in PLATFORM_SITES?'),
     'REQ-PLATFORM-12': noul('For an account that is not FACEBOOK, does checkRunnable refuse it when its site has no browser path, and return ok with a direct connection and no proxy server when its site proxy is none, while a FACEBOOK account still needs a proxy and a homeCountry?'),
     'REQ-PLATFORM-13': noul('Does planSync skip the homes check and the home locale check for an account whose site proxy is none, and does profileRequest use the US home (en-US) when such an account has no home?'),
+    'REQ-PLATFORM-14': noul('Does planNewPlatform add docs/specs/<name>.md from specDoc and src/specs/<name>/index.ts from specIndex to the files it writes, and does specIndex give every requirement in specDoc anchors on symbols or strings in the session client, the cli command, PLATFORMS and DIRECT_ROUTES that the plan writes or edits, with a rubric for each and MET assertions?'),
     unspecifiedBehavior: noul('Does the code write files or edits for a new platform, overwrite an existing one, change Twenty, or open a browser for a platform outside PLATFORM_SITES, by a route the specification does not describe?'),
   },
   assertions: {
@@ -102,6 +110,7 @@ export const platformScaffold = {
     'REQ-PLATFORM-11': MET,
     'REQ-PLATFORM-12': MET,
     'REQ-PLATFORM-13': MET,
+    'REQ-PLATFORM-14': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

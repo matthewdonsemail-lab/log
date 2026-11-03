@@ -15,6 +15,8 @@ export interface PlatformClientRules {
   domains: [string, RegExp][]
   mutation: RegExp
   reasoning: ReasoningPrompts
+  apiMethod?: RegExp
+  hostAliases?: [RegExp, string][]
 }
 
 export const MAX_SLICES = 4
@@ -43,5 +45,21 @@ export const PLATFORM_CLIENT_RULES: Record<string, PlatformClientRules> = {
     ],
     mutation: /^(Create|Update|Store|Expose|Enroll|Delete|Add|Remove|Set|Mark|Submit|Send|Save)/,
     reasoning: GENERIC_REASONING
+  },
+  slack: {
+    domains: [
+      ['messages', /^(chat|messages|drafts|reactions|pins|bookmarks|conversationsHistory|conversationsReplies|conversationsView|conversationsMark|subscriptions)/],
+      ['conversations', /^(conversations|client(Channels|Dms|Counts)|channels|edgeapiCacheChannels)/],
+      ['boot', /^(clientInit|clientExtras|clientShouldReload|clientGetWebSocketUrl|clientAppCommands|apiFeatures|apiGetFlannelHttpUrl|appBoot|bootClient|experiments|features|team|megaphone|promo|users(Prefs|StateMachine|Interactions))/i],
+      ['people', /^(users|dnd|edgeapiCacheUsers|edgeapiCachePermissions)/],
+      ['files', /^(files|canvas|quip|saved|search|workspaceCanvas)/],
+      ['activity', /^(activity|huddles|edgeapiCacheHuddles|calendar|workflows|functions|aiApps|help|links|sfdc|sharedInvites|ublock)/],
+      ['signin', /^(signin|auth)/],
+      ['telemetry', /(clogTrack|beaconError|ClogTrack|BeaconError)/]
+    ],
+    mutation: /^[a-z]+(Post|Create|Update|Delete|Mark|Set|Add|Remove|Send|Join|Leave|Open|Close|Invite|Archive|Rename|Track)/,
+    reasoning: GENERIC_REASONING,
+    apiMethod: /^\/api\/([a-z][A-Za-z]*(?:\.[A-Za-z]+)+)$/,
+    hostAliases: [[/^(?!app\.|edgeapi\.|wss|www\.|slack\.com$)[a-z0-9-]+\.slack\.com$/, 'workspace.slack.com']]
   }
 }
