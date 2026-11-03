@@ -23,7 +23,7 @@
       "sections": [
         {
           "title": "Platforms",
-          "pages": ["platformGuides/x.md", "platformGuides/reddit.md", "platformGuides/facebook.md", "platformGuides/discord.md", "platformGuides/linkedin.md"]
+          "pages": ["platformGuides/x.md", "platformGuides/reddit.md", "platformGuides/facebook.md", "platformGuides/discord.md", "platformGuides/slack.md", "platformGuides/linkedin.md"]
         }
       ]
     },
