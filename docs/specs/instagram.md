@@ -32,6 +32,14 @@ The engine's ping reaches Instagram only through the vendored client in `vendor/
 
 Checked by: code and SubQ
 
+## DMs
+
+### REQ-INSTAGRAM-06: DMs are read through instagrapi, sending nothing and marking nothing seen
+
+`log instagram dms` lists the account's threads (who each is with, the last message, whether it is unread), or with `--with` reads one thread's latest messages oldest first, through the engine's `inbox` and `thread` actions on the vendored instagrapi (`direct_threads`, `direct_thread`). It sends nothing and marks nothing seen. `--with` is matched to one thread by handle, thread name or thread id: none is `threadNotFound`, several are `threadAmbiguous` with the candidates listed, and a thread read with nothing named is `threadNeeded` before any call. A voice message carries the shared audio marker; a shared reel or post is named by its kind and owner.
+
+Checked by: code and SubQ
+
 ## Wiring
 
 ### REQ-INSTAGRAM-04: The platform is wired into the CLI and the direct-API routes

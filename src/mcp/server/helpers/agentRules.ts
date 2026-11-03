@@ -144,6 +144,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125],
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
   instagramSession: [13, 63, 64, 73, 83],
+  instagramDms: [13, 63, 64, 73, 83, 94, 126],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

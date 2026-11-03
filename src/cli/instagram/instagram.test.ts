@@ -57,3 +57,49 @@ describe("log instagram session check", () => {
     expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "sessionDead", loginState: "loggedOut" });
   });
 });
+
+describe("log instagram dms", () => {
+  const thread = { id: "340282366841710301", title: "someone", group: false, with: ["someone"], lastActivity: "2026-11-03T18:00:00Z", unread: true, pending: false };
+
+  test("without --with it lists the threads from the engine's inbox, sending nothing", async () => {
+    const r = await run(["instagram", "dms", "--account", "instagramOne"], { answer: { ok: true, loginState: "loggedIn", screenName: "instagramOne", threads: [{ ...thread, last: { id: "m1", at: thread.lastActivity, from: "someone", fromMe: false, text: "hi", kind: "text" } }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["instagramOne:inbox"]);
+    expect(r.out).toContain("1 thread(s)");
+    expect(r.out).toContain("● @someone · hi");
+  });
+
+  test("with --with it reads that thread's messages, oldest first", async () => {
+    const r = await run(["instagram", "dms", "--account", "instagramOne", "--with", "@someone"], { answer: { ok: true, loginState: "loggedIn", thread, messages: [{ id: "m1", at: "2026-11-03T18:00:00Z", from: "me", fromMe: true, text: "whats up", kind: "text" }, { id: "m2", at: "2026-11-03T18:01:00Z", from: "someone", fromMe: false, text: "(clip from @creator)", kind: "clip" }] }, refreshed: null });
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["instagramOne:thread"]);
+    expect(r.out).toContain("2 message(s) with @someone");
+    expect(r.out).toContain("me: whats up");
+    expect(r.out).toContain("@someone: (clip from @creator)");
+  });
+
+  test("a name that matches several threads lists them to pick from", async () => {
+    const r = await run(["instagram", "dms", "--account", "instagramOne", "--with", "some"], { answer: { ok: false, code: "threadAmbiguous", detail: "some matches 2 threads: give one's id", candidates: [{ id: "1", title: "someone", with: ["someone"] }, { id: "2", title: "somebody", with: ["somebody"] }] }, refreshed: null });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("threadAmbiguous");
+    expect(r.out).toContain("  2  somebody (@somebody)");
+  });
+
+  test("a limit out of range is refused before the engine is called", async () => {
+    const r = await run(["instagram", "dms", "--account", "instagramOne", "--limit", "500"]);
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("--limit must be 1 to 100");
+    expect(r.calls).toEqual([]);
+  });
+
+  test("the engine refuses a thread read with no thread named, before it calls Instagram", () => {
+    const dir = mkdtempSync(join(tmpdir(), "instagramEngine"));
+    const cookiesPath = join(dir, "cookies.json");
+    writeFileSync(cookiesPath, JSON.stringify({ sessionid: "x".repeat(40) }));
+    const spec = join(dir, "spec.json");
+    writeFileSync(spec, JSON.stringify({ action: "thread", account: "instagramOne", platform: "instagram", stateRoot: join(dir, "state"), cookiesPath }));
+    const engine = spawnSync(process.env.LOG_PYTHON || "python", [INSTAGRAM_PLATFORM.engine, spec], { encoding: "utf8" });
+    if (engine.error) return;
+    expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "threadNeeded" });
+  });
+});

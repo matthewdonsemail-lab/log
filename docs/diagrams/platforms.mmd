@@ -39,9 +39,9 @@ flowchart LR
   e_gabrielSlack --> api
   p_slack -->|"browser: the any-platform commands"| b_slack["Slack's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_slack --> drivers
-  p_instagram["Instagram (INSTAGRAM): 1 command of its own"]
+  p_instagram["Instagram (INSTAGRAM): 2 commands of its own"]
   twenty --> p_instagram
-  p_instagram -->|"direct API: instagram session"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
+  p_instagram -->|"direct API: instagram session, instagram dms"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
   e_instagrapi --> api
   p_instagram -->|"browser: the any-platform commands"| b_instagram["Instagram's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_instagram --> drivers

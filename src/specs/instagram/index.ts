@@ -32,6 +32,12 @@ export const instagram = {
       { kind: 'string', file: ENGINE, includes: 'challenged' },
       { kind: 'string', file: ENGINE, includes: 'sessionMismatch' },
     ],
+    'REQ-INSTAGRAM-06': [
+      { kind: 'symbol', file: COMMAND, name: 'instagramDmsCommand' },
+      { kind: 'string', file: ENGINE, includes: 'threadAmbiguous' },
+      { kind: 'string', file: ENGINE, includes: 'threadNeeded' },
+      { kind: 'string', file: ENGINE, includes: 'voice_media' },
+    ],
     'REQ-INSTAGRAM-04': [
       { kind: 'string', file: PLATFORMS, includes: 'instagram' },
       { kind: 'string', file: ROUTES, includes: 'instagram' },
@@ -42,6 +48,7 @@ export const instagram = {
     'REQ-INSTAGRAM-02': noul('Does runInstagramEngine run the account through runPlatformEngine with INSTAGRAM_PLATFORM, whose engine is python/instagramApi/engine.py?'),
     'REQ-INSTAGRAM-03': noul('Does the instagram session check command send nothing to Instagram beyond the check, and record the answer Instagram gave through recordInstagramSession, which merges refreshed cookies for INSTAGRAM_COOKIE_DOMAIN back into the row?'),
     'REQ-INSTAGRAM-05': noul('Does ping in python/instagramApi/engine.py answer sessionDead without calling Instagram when the cookies have no sessionid, and otherwise sign in only through the vendored instagrapi Client with login_by_sessionid, its private transport set to curl, answering sessionMismatch when the user Instagram returns differs from the cookies\' ds_user_id, and challenged, rateLimited or sessionDead for instagrapi\'s challenge, rate limit and login errors?'),
+    'REQ-INSTAGRAM-06': noul('Does instagramDmsCommand call the engine with action inbox without --with and action thread with it, and do the engine\'s inbox and thread read only through instagrapi\'s direct_threads and direct_thread (never a send or a mark-seen call), answering threadNeeded before any call when no thread is named, threadNotFound when none matches, and threadAmbiguous with the candidates when several do?'),
     'REQ-INSTAGRAM-04': noul('Is instagram listed in PLATFORMS and PLATFORM_SITES, and does DIRECT_ROUTES have a instagramSession route for platform instagram?'),
     unspecifiedBehavior: noul('Does the Instagram code call Instagram outside the engine and its governor, or record anything but the answer Instagram gave, by a route the specification does not describe?'),
   },
@@ -51,6 +58,7 @@ export const instagram = {
     'REQ-INSTAGRAM-03': MET,
     'REQ-INSTAGRAM-04': MET,
     'REQ-INSTAGRAM-05': MET,
+    'REQ-INSTAGRAM-06': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

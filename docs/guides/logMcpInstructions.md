@@ -160,7 +160,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `knowledgeAndSearch` | Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it |
 | `extensions` | Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context |
 | `newPlatform` | Making a new platform whole with one command, and where every new file goes |
-| `instagram` | An Instagram account's session |
+| `instagram` | An Instagram account: its session, and reading its DMs (the inbox, or one thread) |
 
 ## How a run reports back
 
