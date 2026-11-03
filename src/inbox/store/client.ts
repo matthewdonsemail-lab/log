@@ -38,7 +38,7 @@ export function db(): Database {
   handle.exec('PRAGMA busy_timeout = 5000')
   handle.exec('PRAGMA synchronous = NORMAL')
   for (const statement of SCHEMA) handle.exec(statement)
-  const seed = handle.prepare(`INSERT OR IGNORE INTO eventTypes (platform, type, status, firstSeenAt) VALUES (?, ?, 'known', ?)`)
+  const seed = handle.prepare(`INSERT INTO eventTypes (platform, type, status, firstSeenAt) VALUES (?, ?, 'known', ?) ON CONFLICT(platform, type) DO UPDATE SET status = 'known'`)
   const now = new Date().toISOString()
   for (const [platform, types] of Object.entries(KNOWN_TYPES)) for (const type of types) seed.run(platform, type, now)
   opened = { path, db: handle }

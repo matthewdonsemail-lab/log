@@ -49,10 +49,10 @@ export type Stage = 'received' | 'appended' | 'relayed' | 'shown' | 'claimed' | 
 export const STAGES: readonly Stage[] = ['received', 'appended', 'relayed', 'shown', 'claimed', 'actionStart', 'confirmed', 'indexed']
 
 export const KNOWN_TYPES: Record<string, readonly string[]> = {
-  twitter: ['message', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused'],
-  discord: ['message'],
-  slack: ['message'],
-  instagram: ['message'],
+  twitter: ['message', 'watching', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused'],
+  discord: ['message', 'watching', 'open'],
+  slack: ['message', 'watching', 'hello', 'reconnect_url'],
+  instagram: ['message', 'watching'],
 }
 
 export const INTERNAL_TYPES: readonly string[] = ['relayJoined']
