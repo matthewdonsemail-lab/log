@@ -31,6 +31,8 @@ export async function readVoice(draft: VoiceDraft, guide: string, decide: Decisi
       ...(draft.everywhere ? { howMattWritesEverywhere: draft.everywhere.profile, mattsRealRepliesEverywhere: draft.everywhere.replies, mattsClosestWordingEverywhere: draft.everywhere.wording ?? [] } : {}),
       ...(draft.evidence ? { thisChat: draft.evidence.chat, howMattWritesInThisChat: draft.evidence.profile, mattsRealRepliesHere: draft.evidence.replies, mattsClosestRealWording: draft.evidence.wording ?? [], mattsLatestMessagesHere: draft.evidence.recent ?? [] } : {}),
       phrasesMattNeverSays: NEVER_SAYS,
+      ...(draft.phrasesNewToMatt ? { wordPairsMattHasNeverWritten: draft.phrasesNewToMatt } : {}),
+      ...(draft.scrambler ? { watermarkScramblerLayerA: draft.scrambler } : {}),
       recipient: draft.to,
       whatTheySaid: draft.context ?? null,
       dm: draft.text,

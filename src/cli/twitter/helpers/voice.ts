@@ -14,8 +14,13 @@ import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/in
 import { buildVoiceIndex, closestWording, nearestPairs, offProfile, openVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
 import type { VoicePair } from "../../../voice/pairs/index.ts";
 import type { NearPair, VoiceProfile, VoiceTarget } from "../../../voice/pairs/index.ts";
+import { buildPhraseIndex, openPhraseIndex, phrasesLine, readPhrases, writePhraseIndex } from "../../../voice/phrases/index.ts";
+import type { PhraseReading } from "../../../voice/phrases/index.ts";
+import { scramblerLine, scramblerReadingOf } from "../../../twitter/copy/scrambler/index.ts";
+import type { ScramblerReading } from "../../../twitter/copy/scrambler/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
+
 
 export const VOICE_USAGE = [
   "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--json]",
@@ -55,15 +60,17 @@ export const VOICE_INPUT: CommandInput = {
   ],
 };
 
-export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder(), aiEmbedder: () => jinaEmbedder() };
+export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder; scrambler: (text: string) => ScramblerReading } = { decisions: () => createDecisionsClient(), embedder: () => localEmbedder(), aiEmbedder: () => jinaEmbedder(), scrambler: (text) => scramblerReadingOf(text) };
 
-export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTells?: AiReading }): string {
+export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler?: ScramblerReading }): string {
   const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
   const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
   const watermark = reading.watermark ? `\n  ${watermarkLine(reading.watermark)}` : "";
   const ai = reading.aiTells ? `\n  ${aiTellsLine(reading.aiTells)}` : "";
-  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${ai}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
+  const phrases = reading.phrases ? `\n  ${phrasesLine(reading.phrases)}` : "";
+  const scrambler = reading.scrambler ? `\n  ${scramblerLine(reading.scrambler)}` : "";
+  return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${ai}${phrases}${scrambler}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
 }
 
 function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {
@@ -158,6 +165,17 @@ async function ensureAiIndex(context: CommandContext): Promise<void> {
   await buildAiIndex(voiceDeps.aiEmbedder(), replies, aiIndexDir(), undefined, undefined, (line) => context.err(line));
 }
 
+export function ensurePhraseIndex(context: CommandContext, dir = voiceDir()) {
+  const existing = openPhraseIndex(dir);
+  const pairsFile = join(dir, "pairs.json");
+  if (existing && (!existsSync(pairsFile) || statSync(pairsFile).mtimeMs <= Date.parse(existing.builtAt))) return existing;
+  if (!existsSync(pairsFile)) return null;
+  context.err("voice: measuring how matt words things from every reply in the voice index (rule 127)");
+  const built = buildPhraseIndex((JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply));
+  writePhraseIndex(built, dir);
+  return built;
+}
+
 export const voiceCommand: Command = {
   usage: VOICE_USAGE,
   platform: "any",
@@ -220,13 +238,17 @@ export const voiceCommand: Command = {
       }
       const everywhere = await evidenceAnywhere(context, said, to, text);
       context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")} against matt's writing across all his conversations${evidence ? ` and his real replies in ${evidence.chat}` : ""}, with his writing guide`);
-      const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}) }, guide, voiceDeps.decisions());
+      const phraseIndex = ensurePhraseIndex(context);
+      if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
+      const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
+      const scrambler = voiceDeps.scrambler(text);
+      const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
       const notHere = evidence ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
       await ensureAiIndex(context);
       const aiIndex = openAiIndex();
       if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
       const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;
-      const reading = { ...scored, notHere, ...(aiTells ? { aiTells } : {}), pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) };
+      const reading = { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
       if (parsed.flags["json"]) return { code: reading.pass ? 0 : 1, stdout: JSON.stringify(reading, null, 2) };
       return { code: reading.pass ? 0 : 1, stdout: renderVoice(reading) };
     } catch (error) {

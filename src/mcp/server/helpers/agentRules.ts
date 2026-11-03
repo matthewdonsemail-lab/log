@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 126;
+export const RULES_REVIEWED_THROUGH = 127;
 
 export const AGENTS_URI = "log://agents";
 
@@ -46,6 +46,7 @@ export const CORE_PRINCIPLES = [
   "39. Every platform gets the live websocket hooks X and Discord have: its account's one session holds the platform's own push channel open (X Chat, the Discord gateway, Slack's wss-primary), the inbox hook starts that watcher and puts each new message in front of the agent (`>>> NEW MESSAGE`), and a platform isn't done until it has one (rule 123).",
   "40. Slack is reached only through vendor/gabrielSlack's one curl_cffi AsyncSession pinned to Chrome (`IMPERSONATE`, `chrome150`) with that target's own user agent, for its web API and its websocket alike, never httpx or websockets (`check:slackTransport`, rule 125).",
   "41. Audio is detected once, in the shared message layer (python/platformKit/media.py, src/platformKit/media): every platform keeps its messages' attachments, and every voice note goes through one AssemblyAI path (`transcribe`), kept by its file's hash and written into the conversation store as (voice note: \"…\") (rule 126).",
+  "42. The voice gate also measures matt's own phrasing: a draft whose word pairs he has written fall below his own 10th percentile fails, with the pairs he never wrote named (\"is wild\"), and the vendored ai-watermark-scrambler (layer A) reads every draft for invisible or lookalike characters; both go to SubQ (rule 127).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -101,7 +102,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
-  voice: [30, 39, 41, 63, 64, 98, 112],
+  voice: [30, 39, 41, 63, 64, 98, 112, 127],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],

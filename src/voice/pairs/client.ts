@@ -6,6 +6,7 @@ import type { Collection } from 'verso-db'
 import { reciprocalRankFusion, searchRoot } from '../../search/conversations/index'
 import type { Conversation, Embedder } from '../../search/conversations/index'
 import { profileOf, startRatesOf, wordCounts } from './helpers/index'
+import { buildPhraseIndex, writePhraseIndex } from '../phrases/index'
 import { NEAR_PAIRS, SAID_MESSAGES, TIER_ORDER, VOICE_DEPTH } from './types'
 import type { NearPair, VoicePair, VoiceProfile, VoiceTarget } from './types'
 
@@ -92,6 +93,7 @@ export async function buildVoiceIndex(conversations: readonly Conversation[], em
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'pairs.json'), JSON.stringify(pairs))
   writeFileSync(join(dir, 'profiles.json'), JSON.stringify(profiles))
+  writePhraseIndex(buildPhraseIndex(pairs.map((p) => p.reply)), dir)
   writeFileSync(join(dir, 'model.json'), JSON.stringify({ model: embedder.model, dimensions: embedder.dimensions, builtAt: new Date().toISOString() }))
   const keyword = new BM25()
   keyword.index(tokenize(pairs.map(situationOf)))

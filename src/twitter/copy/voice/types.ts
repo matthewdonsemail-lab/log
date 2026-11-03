@@ -13,6 +13,8 @@ export interface VoiceDraft {
   context?: string
   evidence?: VoiceEvidence
   everywhere?: VoiceEvidence
+  phrasesNewToMatt?: string[]
+  scrambler?: { suspicious: number; kinds: string[] }
 }
 
 export interface VoiceReading {

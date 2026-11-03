@@ -1682,6 +1682,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     shape, and `check:platforms` refuses an engine whose messages drop them.
     Spec: `docs/specs/voiceNotes.md`.
 
+127. 2026-11-03 · matt: "the watermarking has began ... research the saying
+    'is wild' no one says that", then "B is the only right option ... we're
+    writing across everything i said and how i write it", and "install this
+    and add it to the subq" (novatechflow/ai-watermark-scrambler). The voice
+    gate passed "yc and a pageant in the same week is wild" because nothing
+    compared a draft with what matt has actually written. His 66,116 messages
+    never say "is wild", and another account's reply had used the same line
+    word for word three hours earlier. Now the gate also measures his phrasing
+    (`src/voice/phrases`): every reply in the voice index is cut into word
+    pairs, a draft's share of pairs he has written at least twice (leaving
+    out words from what they said) is set against his own 10th percentile,
+    measured over his replies with each one's own pairs left out
+    (`phrases.json`, built with the voice index), and a draft below it fails
+    with the pairs he never wrote named. The vendored scrambler
+    (`vendor/aiWatermarkScrambler`, Apache-2.0, layer A `inspect_text.py`)
+    reads every draft for invisible and lookalike characters, and a hit
+    fails it. Both readings go to SubQ with the draft. Its layer B rewrite
+    needs a local model (Ollama or vLLM), which this machine doesn't have,
+    so it isn't wired. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-07, 08).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

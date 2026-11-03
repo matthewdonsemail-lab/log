@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 33 domains, 398 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 33 domains, 400 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -369,6 +369,8 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-04** A first message is only the opener
 - **REQ-VOICE-05** A draft with AI artifacts fails
 - **REQ-VOICE-06** A draft passes only when every answer passes
+- **REQ-VOICE-07** A draft written in word pairs matt has never written fails
+- **REQ-VOICE-08** The vendored watermark scrambler reads every draft
 
 ## [AI tells and watermark](./aiTells.md)
 
