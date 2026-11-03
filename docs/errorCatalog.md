@@ -279,6 +279,8 @@ stateDiagram-v2
 | `uncatalogued` | no | `worker`, `session` | publish→failed, monitor→failed | A Python process sent a code that is not in this catalog. The detail starts with the code it sent. | Add the code to src/errors/catalog/types.ts, then `bun run errors:export`. |
 | `sessionOpen` | yes | `cli/preflight` | command exits | A live session already holds the account's browser, so another can't open it. | Use that session, or close it: log inspect do stop --account <a>. |
 | `opensSpent` | yes | `lifecycle.opening`, `cli/preflight` | command exits | The host already opened the account's browser the most times allowed today (rule 35). | It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37). |
+| `assemblyAiKeyMissing` | no | `cli/transcribe`, `media/voiceNotes` | command exits | ASSEMBLYAI_API_KEY is not set, so no voice note can be transcribed. Nothing was read from a platform and nothing was sent to AssemblyAI. | Tell matt: the AssemblyAI key goes in ~/.buzz/.env.local (or the repo .env.local) as ASSEMBLYAI_API_KEY; ~/filmcraft/.env.local ASSEMBLY_AI_KEY is read too. Never print it. |
+| `transcriptionFailed` | yes | `cli/transcribe`, `media/voiceNotes` | command exits | AssemblyAI didn't give a transcript for a voice note: its upload, its transcript request or its poll answered with an error, or it was still not done after 15 minutes. | Read AssemblyAI's answer in the detail. Run log transcribe again: what is done is kept by its file's hash and isn't sent again. |
 
 ## twenty
 

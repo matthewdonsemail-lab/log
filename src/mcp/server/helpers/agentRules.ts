@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 125;
+export const RULES_REVIEWED_THROUGH = 126;
 
 export const AGENTS_URI = "log://agents";
 
@@ -45,6 +45,7 @@ export const CORE_PRINCIPLES = [
   "38. Reply only to people with 1500 followers or fewer: an account that is too large isn't worth it yet. Pick reply-guy targets from the niche map under 1500 followers; the engine skips a larger author (`authorTooBig`) before liking, following or sending, and the queue goes on (rule 121).",
   "39. Every platform gets the live websocket hooks X and Discord have: its account's one session holds the platform's own push channel open (X Chat, the Discord gateway, Slack's wss-primary), the inbox hook starts that watcher and puts each new message in front of the agent (`>>> NEW MESSAGE`), and a platform isn't done until it has one (rule 123).",
   "40. Slack is reached only through vendor/gabrielSlack's one curl_cffi AsyncSession pinned to Chrome (`IMPERSONATE`, `chrome150`) with that target's own user agent, for its web API and its websocket alike, never httpx or websockets (`check:slackTransport`, rule 125).",
+  "41. Audio is detected once, in the shared message layer (python/platformKit/media.py, src/platformKit/media): every platform keeps its messages' attachments, and every voice note goes through one AssemblyAI path (`transcribe`), kept by its file's hash and written into the conversation store as (voice note: \"…\") (rule 126).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -97,13 +98,14 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   check: [8, 13, 18, 22, 29, 35, 69, 73],
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81, 104, 105],
-  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113],
+  twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
   voice: [30, 39, 41, 63, 64, 98, 112],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
+  transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121],
@@ -129,14 +131,14 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   linkedinCookies: [13, 21, 63, 64, 73, 83, 102],
   discordSession: [13, 63, 64, 73, 83, 94],
   discordChats: [13, 63, 64, 73, 83, 94],
-  discordRead: [13, 63, 64, 73, 83, 94],
-  discordWatch: [13, 26, 63, 64, 73, 83, 94],
+  discordRead: [13, 63, 64, 73, 83, 94, 126],
+  discordWatch: [13, 26, 63, 64, 73, 83, 94, 126],
   discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],
   slackChats: [13, 63, 64, 73, 83, 94, 125],
-  slackRead: [13, 63, 64, 73, 83, 94, 125],
+  slackRead: [13, 63, 64, 73, 83, 94, 125, 126],
   slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125],
   slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125],
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],

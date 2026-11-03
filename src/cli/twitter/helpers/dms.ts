@@ -8,6 +8,9 @@ import type { Command, CommandInput } from "../../runner/types.ts";
 import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
 import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
+import { withVoiceNotes } from "../../transcribe/index.ts";
+
+const audioOf = (m: TwitterDmMessage) => (m.media ?? []).filter((a) => a.filename).map((a) => ({ name: a.filename, ...(a.audio !== undefined ? { audio: a.audio } : a.type === "audio" ? { audio: true } : {}), path: a.path ?? null, ...(a.error ? { error: a.error } : {}) }));
 
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--force] [--json]",
@@ -130,7 +133,7 @@ export const dmsCommand: Command = {
         context.err(`${opened.account.accountName}: reading @${needle}'s conversations only (their DM thread, then their X Chat the way X's app opens a chat: GetInboxPageConversationDataQuery, then older pages)${chatPin ? ", X Chat opened with the saved PIN" : ""}`);
         const person = await read({ limit, withHandle: needle });
         if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
-        const answer = { ...person.answer, messages: dropMirrors(person.answer.messages ?? []).slice(-limit) };
+        const answer = { ...person.answer, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: `with:${needle}` }, dropMirrors(person.answer.messages ?? []).slice(-limit), audioOf, context.err) };
         context.err(`${opened.account.accountName}: and what @${needle} did on the account's posts (its notifications, what is new read first)`);
         const kept = readNotificationStore(notificationStorePath(opened.account.accountName));
         const notes = notificationsFresh(kept, context.now?.() ?? new Date()) ? { answer: { ok: true } as TwitterSessionAnswer } : await opened.engine({ action: "notifications", screenName: opened.account.accountName });
@@ -154,7 +157,8 @@ export const dmsCommand: Command = {
         const kept = keepForSearch(opened.account.accountName, raw.answer);
         if (kept) context.err(`${opened.account.accountName}: ${kept} conversations kept for log search${raw.answer.sync?.mode === "full" || (raw.answer.sync?.newMessages ?? 0) > 0 ? ", the index updating in the background with what changed" : ", nothing new to index"}`);
       }
-      const { conversations: _kept, ...lean } = raw.answer;
+      const { conversations: _kept, ...answered } = raw.answer;
+      const lean = answered.messages ? { ...answered, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: convoId ?? "" }, answered.messages, audioOf, context.err) } : answered;
       const run = lean.ok && lean.threads ? { ...raw, answer: onePerPerson(lean) } : { ...raw, answer: lean };
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {

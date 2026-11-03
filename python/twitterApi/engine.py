@@ -17,6 +17,8 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+from platformKit import media as media_kit
+
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch")
 WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
@@ -577,7 +579,7 @@ def xchat_message(m: dict[str, Any], me: str, handles: dict[str, str]) -> dict[s
     extra = media_line(m)
     out = {"id": str(m.get("event_id") or ""), "conversationId": str(m.get("conversation_id") or ""), "time": iso_of(m.get("time_ms")), "senderId": sender, "recipientId": None, "text": f"{text} {extra}".strip() if extra else text, "fromMe": sender == me, "from": handles.get(sender)}
     if m.get("media"):
-        out["media"] = [{k: a.get(k) for k in ("type", "filename", "path", "error") if a.get(k)} for a in m["media"]]
+        out["media"] = [{**{k: a.get(k) for k in ("type", "filename", "path", "error") if a.get(k)}, "audio": media_kit.is_audio({"name": a.get("filename"), "type": "audio/" if str(a.get("type") or "").lower() == "audio" else a.get("type")})} for a in m["media"]]
     return out
 
 
@@ -802,12 +804,14 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     stored = stored_xchat(spec, conversation_id)
     unopened = [str(m.get("event_id")) for m in stored if m.get("text") is None and m.get("event_id") and inboxSync_shown(m)][-5:]
     unfetched = [str(m.get("event_id")) for m in stored if m.get("event_id") and not m.get("media") and MEDIA_TEXT.search(m.get("text") or "")][-3:]
-    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=unopened + [i for i in unfetched if i not in unopened])
+    asked = [str(i) for i in spec.get("mediaEvents") or [] if str(i).isdigit()][:MEDIA_EVENTS_PER_READ]
+    reopen = list(dict.fromkeys(unopened + unfetched + asked))
+    page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=reopen)
     handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
     for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
         await handle_of(client, user_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
-    await save_xchat_media(client, spec, conversation_id, page["messages"])
+    await save_xchat_media(client, spec, conversation_id, page["messages"], set(asked))
     keep_opened(spec, conversation_id, page["messages"])
     held = stored_xchat(spec, conversation_id)
     for m in held:
@@ -822,6 +826,7 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
 
 
 MEDIA_PER_READ = 8
+MEDIA_EVENTS_PER_READ = 9
 MEDIA_TEXT = re.compile(r"\((image|gif|video|audio|media|file)[:)]")
 
 
@@ -832,10 +837,12 @@ def media_path(spec: dict[str, Any], conversation_id: str, attachment: dict[str,
     return state_dir(str(spec["account"])) / "media" / re.sub(r"[^0-9A-Za-z_-]", "_", conversation_id) / f"{stem}{suffix}"
 
 
-async def save_xchat_media(client: Any, spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]]) -> None:
+async def save_xchat_media(client: Any, spec: dict[str, Any], conversation_id: str, messages: list[dict[str, Any]], asked: set[str] | None = None) -> None:
     if not spec.get("account"):
         return
-    wanted = [(m, a) for m in messages for a in (m.get("media") or [])][-MEDIA_PER_READ:]
+    every = [(m, a) for m in messages for a in (m.get("media") or [])]
+    latest = every[-MEDIA_PER_READ:]
+    wanted = latest + [(m, a) for m, a in every if str(m.get("event_id") or "") in (asked or set()) and (m, a) not in latest]
     for m, attachment in wanted:
         path = media_path(spec, conversation_id, attachment)
         if not path.is_file():

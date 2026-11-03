@@ -2,6 +2,8 @@ import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending } from "../../inbox/watch/index.ts";
+import { withVoiceNotes } from "../transcribe/index.ts";
+import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
@@ -139,6 +141,8 @@ interface DiscordRead {
   replyTo: string | null;
   text: string;
   embeds: { title?: string; description?: string; url?: string }[];
+  attachments?: { name: string; type?: string; url?: string; duration?: number }[];
+  audio?: AudioOf[];
 }
 
 export const discordReadCommand: Command = {
@@ -173,14 +177,14 @@ export const discordReadCommand: Command = {
       }
       const run = context.directDiscord(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
       const code = run.answer.ok ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ...run.answer }, null, 2) };
+      const messages = await withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: target }, (run.answer.messages as DiscordRead[] | undefined) ?? [], (m) => m.audio ?? [], context.err);
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ...run.answer, ...(run.answer.messages ? { messages } : {}) }, null, 2) };
       if (!run.answer.ok) return { code, stdout: `log discord read: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
-      const messages = (run.answer.messages as DiscordRead[] | undefined) ?? [];
       return {
         code,
         stdout: [
           `log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}`,
-          ...messages.map((m) => [`  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.embeds.map((e) => `    [embed] ${[e.title, e.description, e.url].filter(Boolean).join(" · ")}`)].join("\n")),
+          ...messages.map((m) => [`  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.embeds.map((e) => `    [embed] ${[e.title, e.description, e.url].filter(Boolean).join(" · ")}`), ...(m.attachments ?? []).filter((a) => !(m.audio ?? []).some((v) => v.name === a.name)).map((a) => `    [attachment] ${a.name}`)].join("\n")),
         ].join("\n"),
       };
     } catch (error) {
@@ -268,7 +272,12 @@ export const discordWatchCommand: Command = {
         const mine = toInbox && toInboxOf(event);
         if (toInbox && event.kind === "message" && !mine) return;
         if (event.kind === "message") seen.push(event);
-        if (mine) addPending([discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+        if (mine) {
+          const inbox = discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+          const audio = (event.audio as AudioOf[] | undefined) ?? [];
+          if (!audio.length) addPending([inbox]);
+          else void withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: inbox.conversationId }, [{ id: String(event.id ?? ""), text: inbox.text }], () => audio, context.err).then(([m]) => addPending([{ ...inbox, text: m.text }]), () => addPending([inbox]));
+        }
         context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
       });
       const code = run.answer.ok ? 0 : 1;

@@ -1800,6 +1800,20 @@ export const ERROR_CATALOG = {
     raisedIn: ['lifecycle.opening', 'cli/preflight'],
     action: 'It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37).'
   },
+  assemblyAiKeyMissing: {
+    layer: 'runtime',
+    meaning: 'ASSEMBLYAI_API_KEY is not set, so no voice note can be transcribed. Nothing was read from a platform and nothing was sent to AssemblyAI.',
+    retryable: false,
+    raisedIn: ['cli/transcribe', 'media/voiceNotes'],
+    action: 'Tell matt: the AssemblyAI key goes in ~/.buzz/.env.local (or the repo .env.local) as ASSEMBLYAI_API_KEY; ~/filmcraft/.env.local ASSEMBLY_AI_KEY is read too. Never print it.'
+  },
+  transcriptionFailed: {
+    layer: 'runtime',
+    meaning: "AssemblyAI didn't give a transcript for a voice note: its upload, its transcript request or its poll answered with an error, or it was still not done after 15 minutes.",
+    retryable: true,
+    raisedIn: ['cli/transcribe', 'media/voiceNotes'],
+    action: "Read AssemblyAI's answer in the detail. Run log transcribe again: what is done is kept by its file's hash and isn't sent again."
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG

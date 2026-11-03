@@ -2,7 +2,7 @@ import { twitterAccounts } from "../../inbox/watch/client.ts";
 import { platformStateRoot } from "../../directApi/engine/index.ts";
 import { discordGate, findDiscordAccount } from "../../discord/account/session/index.ts";
 import { benchmark, buildIndex, linearScan, loadConversations, localEmbedder, openIndex, saveConversations, search, twitterConversationOf, updateIndex } from "../../search/conversations/index.ts";
-import type { Conversation, Embedder, SearchHit } from "../../search/conversations/index.ts";
+import type { Conversation, ConversationAttachment, Embedder, SearchHit } from "../../search/conversations/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput } from "../runner/types.ts";
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
@@ -53,7 +53,7 @@ interface DiscordExported {
   kind: string;
   name: string | null;
   members: string[];
-  messages: { id: string; at: string | null; from: string | null; fromMe: boolean; text: string }[];
+  messages: { id: string; at: string | null; from: string | null; fromMe: boolean; text: string; attachments?: ConversationAttachment[] }[];
 }
 
 function discordConversationOf(account: string, c: DiscordExported): Conversation {
@@ -63,7 +63,7 @@ function discordConversationOf(account: string, c: DiscordExported): Conversatio
     conversationId: c.id,
     box: c.name ? `${c.kind} ${c.name}` : c.kind,
     with: c.members,
-    messages: c.messages.map((m) => ({ id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text })),
+    messages: c.messages.map((m) => ({ id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text, ...(m.attachments?.length ? { attachments: m.attachments } : {}) })),
   };
 }
 

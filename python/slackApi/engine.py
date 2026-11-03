@@ -14,6 +14,7 @@ for p in (str(ROOT), str(VENDOR / "gabrielSlack")):
         sys.path.insert(0, p)
 
 from platformKit import engine as kit
+from platformKit import media
 
 PLATFORM = "slack"
 LIBRARY = "vendor/gabrielSlack"
@@ -35,6 +36,29 @@ def gabriel_error(err: Exception) -> dict[str, Any] | None:
     if code == "RATE_LIMITED":
         return {"ok": False, "code": "rateLimited", "detail": detail, "loginState": "unknown", "event": "throttled", "retryAfter": getattr(err, "retry_after", None)}
     return {"ok": False, "code": f"slack{code.title().replace('_', '')}", "detail": detail, "loginState": "unknown"}
+
+
+def files_of(m: dict[str, Any]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in (("name", f.get("name") or f.get("title") or f.get("id")), ("type", f.get("mimetype")), ("subtype", f.get("subtype")), ("id", f.get("id")), ("url", f.get("url_private_download") or f.get("url_private")), ("duration", round(f["duration_ms"] / 1000) if f.get("duration_ms") else None)) if v is not None} for f in m.get("files") or [] if isinstance(f, dict)]
+
+
+async def audio_file_of(core: Any, spec: dict[str, Any], chat: str, ts: str, attachment: dict[str, Any]) -> dict[str, Any]:
+    plain = {k: v for k, v in attachment.items() if k != "url"}
+    path = media.audio_path(spec, chat, ts, str(attachment.get("name") or "audio"))
+    if path.is_file() and path.stat().st_size:
+        return {**plain, "path": str(path)}
+    if not attachment.get("url"):
+        return {**plain, "error": "Slack gave no private url for the file"}
+    resp = await core.http.fetch_authenticated(str(attachment["url"]), method="GET")
+    if not resp.is_success or "text/html" in str(resp.headers.get("content-type", "")):
+        return {**plain, "error": f"Slack answered {resp.status_code} to the file"}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(resp.content)
+    return {**plain, "path": str(path)}
+
+
+async def saved_audio(core: Any, spec: dict[str, Any], chat: str, ts: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [await audio_file_of(core, spec, chat, ts, a) for a in attachments if media.is_audio(a)]
 
 
 def core_for(cookies: dict[str, str], workspace: str | None) -> Any:
@@ -190,19 +214,23 @@ async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
             if not page.get("has_more") or not cursor:
                 break
         names = await names_for(core, [str(m.get("user") or "") for m in messages])
-        rows = [
-            {
+        rows = []
+        for m in messages[:limit]:
+            attachments = files_of(m)
+            row = {
                 "ts": m.get("ts"),
                 "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(float(m.get("ts") or 0))),
                 "userId": m.get("user"),
                 "from": "me" if m.get("user") == session.user_id else names.get(str(m.get("user") or ""), m.get("user") or m.get("username")),
-                "text": m.get("text") or "",
+                "text": media.text_with_audio(m.get("text"), attachments),
                 "subtype": m.get("subtype"),
                 "threadTs": m.get("thread_ts"),
                 "replies": m.get("reply_count"),
+                "attachments": [{k: v for k, v in a.items() if k != "url"} for a in attachments],
             }
-            for m in messages[:limit]
-        ]
+            if spec.get("saveAudio") is not False and any(media.is_audio(a) for a in attachments):
+                row["audio"] = await saved_audio(core, spec, chat, str(m.get("ts") or ""), attachments)
+            rows.append(row)
         rows.reverse()
         return {"ok": True, "loginState": "loggedIn", "chat": chat, "messages": rows}
 
@@ -270,7 +298,10 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
                     text = str(data.get("text") or "")
                     row["fromMe"] = user == session.user_id
                     row["from"] = "me" if row["fromMe"] else names.get(user, user or data.get("username") or "?")
-                    row["text"] = text
+                    attachments = files_of(data)
+                    row["text"] = media.text_with_audio(text, attachments)
+                    if attachments:
+                        row["attachments"] = [{k: v for k, v in a.items() if k != "url"} for a in attachments]
                     row["mentionsMe"] = f"<@{session.user_id}>" in text
                     row["threadTs"] = data.get("thread_ts")
                     row["at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(float(data.get("ts") or time.time())))

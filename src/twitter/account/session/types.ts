@@ -36,6 +36,8 @@ export interface TwitterEngineSpec {
   media?: string[]
   pages?: number
   screenName?: string
+  mediaEvents?: string[]
+  olderPages?: number
 }
 
 export interface TwitterInboxSync {
@@ -114,6 +116,15 @@ export interface TwitterDmMessage {
   text: string
   fromMe?: boolean
   from?: string | null
+  media?: TwitterDmMedia[]
+}
+
+export interface TwitterDmMedia {
+  type?: string
+  audio?: boolean
+  filename?: string
+  path?: string
+  error?: string
 }
 
 export interface TwitterFollower {

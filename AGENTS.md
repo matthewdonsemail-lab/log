@@ -1658,6 +1658,30 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     check:slackTransport`, pre-commit and pre-push). Spec: `docs/specs/slack.md`
     (REQ-SLACK-05).
 
+126. 2026-11-03 · matt: every voice note he was sent or sent, transcribed
+    with AssemblyAI, and "inside of the discord layer we have that and then
+    the social media platforms at large, how can we detect when we have
+    audio". Audio is detected once, in the shared message layer
+    (`python/platformKit/media.py`, `src/platformKit/media`), never per
+    platform: a content type of `audio/*` or `video/ogg`, an extension
+    (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag
+    (Discord's voice-message flag 8192 with its duration and waveform, X
+    Chat's audio media, Slack's `slack_audio` file). Every platform's
+    messages keep their attachments, and an audio one adds `(audio: <name>)`
+    to the text. Whatever is audio goes through one AssemblyAI path (`log
+    transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its
+    file's hash in `~/.logCli/transcripts`, written into the conversation
+    store as `(voice note: "<what was said>")` so search, voice and SubQ see
+    it, and done as they come in `discordRead`, `twitterDms`, `slackRead`
+    and the inbox. Files come only through the platform's own engine and
+    session (X's one session, Discord's sound search, Slack's own
+    transport), and any refusal stops the run (rule 94). The key is
+    `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`,
+    `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed.
+    `log new platform` writes the attachments into a new platform's message
+    shape, and `check:platforms` refuses an engine whose messages drop them.
+    Spec: `docs/specs/voiceNotes.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

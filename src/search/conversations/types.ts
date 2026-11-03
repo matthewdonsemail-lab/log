@@ -4,6 +4,13 @@ export interface ConversationMessage {
   from: string | null
   fromMe: boolean
   text: string
+  attachments?: ConversationAttachment[]
+}
+
+export interface ConversationAttachment {
+  name: string
+  type?: string
+  duration?: number
 }
 
 export interface Conversation {

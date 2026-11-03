@@ -3,6 +3,8 @@ import { findSlackAccount, recordSlackSession, slackGate } from "../../slack/acc
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { addPending } from "../../inbox/watch/index.ts";
+import { withVoiceNotes } from "../transcribe/index.ts";
+import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
@@ -218,6 +220,8 @@ interface SlackRead {
   text: string;
   threadTs: string | null;
   replies: number | null;
+  attachments?: AudioOf[];
+  audio?: AudioOf[];
 }
 
 export const slackReadCommand: Command = {
@@ -241,9 +245,9 @@ export const slackReadCommand: Command = {
       if (!chat.ok) return chat.result;
       const run = context.directSlack!(opened.account, { action: "read", chat: chat.id, limit, ...inWorkspace(opened.workspace) });
       const code = run.answer.ok ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ...run.answer }, null, 2) };
+      const messages = (await withVoiceNotes({ platform: "slack", account: opened.account.accountName, conversationId: chat.id }, ((run.answer.messages as SlackRead[] | undefined) ?? []).map((m) => ({ ...m, id: m.ts })), (m) => m.audio ?? [], context.err));
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ...run.answer, ...(run.answer.messages ? { messages } : {}) }, null, 2) };
       if (!run.answer.ok) return failed("slack read", opened.account, run.answer);
-      const messages = (run.answer.messages as SlackRead[] | undefined) ?? [];
       return {
         code,
         stdout: [

@@ -23,3 +23,5 @@ process.env.LOG_TWITTER_STATE ??= join(scratch, "twitterState")
 process.env.LOG_PLATFORM_STATE ??= join(scratch, "platformState")
 process.env.LOG_CONVERSATIONS_DIR ??= join(scratch, "conversations")
 process.env.LOG_SEARCH_DIR ??= join(scratch, "search")
+process.env.LOG_TRANSCRIPTS_DIR ??= join(scratch, "transcripts")
+delete process.env.ASSEMBLYAI_API_KEY
