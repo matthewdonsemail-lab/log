@@ -11,6 +11,7 @@ import { slackDeps, slackToInboxOf } from "./index.ts";
 import { withD } from "./helpers/index.ts";
 import { liveLogVerdict } from "../../agentHooks/liveLog/index.ts";
 import { chatEvents } from "../../inbox/store/index.ts";
+import { takePending } from "../../inbox/watch/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -81,6 +82,7 @@ describe("log slack chats, read and send", () => {
     await read();
     const stored = chatEvents("slack", "slackOne", (id) => id === chat);
     expect(stored.map((e) => [e.type, e.text, e.source])).toEqual([["message", "sent u 20", "backfill"], ["ownMessage", "thanks bro", "backfill"]]);
+    expect(takePending().filter((m) => m.conversationId === chat)).toEqual([]);
   });
 
   test("workspaceNeeded lists the workspaces to pick from", async () => {
