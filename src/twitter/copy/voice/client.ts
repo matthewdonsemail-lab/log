@@ -21,9 +21,15 @@ export function neverSaysIn(text: string): string[] {
   return NEVER_SAYS.filter((p) => lower.includes(p))
 }
 
+export function alreadyTalkedIn(draft: Pick<VoiceDraft, 'evidence' | 'conversation'>): boolean {
+  if ((draft.evidence?.recent?.length ?? 0) > 0) return true
+  if ((draft.conversation ?? []).some((m) => m.from === 'matt')) return true
+  return (draft.evidence?.replies ?? []).some((r) => r.tier === 'sameChat' || r.tier === 'samePerson')
+}
+
 export async function readVoice(draft: VoiceDraft, guide: string, decide: DecisionsClient): Promise<VoiceReading> {
   const neverSays = neverSaysIn(draft.text)
-  const alreadyTalked = (draft.evidence?.recent?.length ?? 0) > 0
+  const alreadyTalked = alreadyTalkedIn(draft)
   const response = await decide({
     model: VOICE_MODEL,
     state: {

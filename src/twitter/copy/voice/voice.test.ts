@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import type { DecisionRequest } from '../../../subq/decisions/index'
-import { neverSaysIn, readVoice } from './index'
+import { alreadyTalkedIn, neverSaysIn, readVoice } from './index'
 
 const answering = (voice: number, inContext = 0.95, friendLike = 0.95, openerOnly = 0.95) => {
   const asked: DecisionRequest[] = []
@@ -73,3 +73,15 @@ describe('the voice gate', () => {
   })
 })
 
+
+describe("the opener rule only reads a first message (rule 98)", () => {
+  test("a chat with matt's own messages in it, or his replies from that chat or person, is already talking", () => {
+    expect(alreadyTalkedIn({ conversation: [{ from: "1663390258099101696", text: "i cannot even mention to you who they are", at: "2026-11-03T15:51:49Z" }, { from: "matt", text: "fair enough", at: "2026-11-03T15:40:00Z" }] })).toBe(true);
+    expect(alreadyTalkedIn({ evidence: { chat: "shaw_gtm (twitter dm)", profile: null, replies: [{ said: "x", reply: "y", chat: "shaw_gtm", tier: "samePerson" }], recent: [] } as never })).toBe(true);
+  });
+
+  test("someone matt has never talked with is still a first message", () => {
+    expect(alreadyTalkedIn({ conversation: [{ from: "123", text: "hey", at: "2026-11-04T00:00:00Z" }], evidence: { chat: "anywhere", profile: null, replies: [{ said: "x", reply: "y", chat: "other", tier: "anywhere" }], recent: [] } as never })).toBe(false);
+    expect(alreadyTalkedIn({})).toBe(false);
+  });
+});
