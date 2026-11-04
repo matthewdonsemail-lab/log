@@ -106,7 +106,7 @@ export const twitterReactCommand = reactCommandOf({
   chat: { name: "chat", kind: "string", required: true, description: "The conversation's id, from log twitter dms (a-b for old DMs, a:b for X Chat, which is tried as the same pair)" },
   message: { name: "message", kind: "string", required: true, description: "The message's id, from log twitter dms --with" },
   extra: [],
-  emoji: "X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.",
+  emoji: "X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (twikit's add_reaction_to_message), so a message only X Chat holds may be refused, and X's answer says so.",
   engine: "vendor/twikit",
   async resolve(context, label, flags) {
     const opened = await openTwitterAccount(context, label, String(flags["account"]));

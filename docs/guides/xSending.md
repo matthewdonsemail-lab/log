@@ -485,7 +485,7 @@ AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 
 React to a X message with an emoji, on the direct-API engine; a dry run unless --live.
 React to a X message with an emoji, on the direct-API engine; a dry run unless --live
 log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
-Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (twikit's add_reaction_to_message), so a message only X Chat holds may be refused, and X's answer says so.
 Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
 Fill the named fields; each value goes through whole. What acts on X is `twitterReactLive`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
@@ -498,7 +498,7 @@ React to a X message with an emoji, on the direct-API engine; a dry run unless -
 Live on X: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
 React to a X message with an emoji, on the direct-API engine; a dry run unless --live
 log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
-Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (twikit's add_reaction_to_message), so a message only X Chat holds may be refused, and X's answer says so.
 Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).

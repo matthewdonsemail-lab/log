@@ -134,7 +134,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter repost`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.retweet for the repost; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter follow`: the direct-API engine only (twikit, vendored in vendor/twikit, users.follow_user for the follow; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter dm`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80).
-- `log twitter react`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.useDMReactionMutationAddMutation for the react --live (--remove takes it off); no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter react`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.add_reaction_to_message for the react --live (--remove takes it off); no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter queue`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80).
 
 **Reddit.** Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
@@ -1512,7 +1512,7 @@ React to a X message with an emoji, on the direct-API engine; a dry run unless -
 
 ```text
 log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
-Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (twikit's add_reaction_to_message), so a message only X Chat holds may be refused, and X's answer says so.
 Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
 ```
 
