@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 import threading
 import time
 import sys
@@ -140,6 +141,36 @@ def chats_of(token: str) -> dict[str, Any]:
     return {"ok": True, "loginState": "loggedIn", "chats": chats}
 
 
+MEDIA_LINK = re.compile(r"^https?://\S+?\.(mp4|mov|gif|jpe?g|png|webp)(\?\S*)?$", re.I)
+OUTGOING_MEDIA = Path.home() / ".logCli" / "discord" / "media" / "outgoing"
+
+
+def media_file_of(link: str) -> Path:
+    import hashlib
+    import urllib.request
+
+    OUTGOING_MEDIA.mkdir(parents=True, exist_ok=True)
+    path = OUTGOING_MEDIA / f"{hashlib.sha1(link.encode()).hexdigest()[:16]}{Path(link.split('?')[0]).suffix.lower()}"
+    if not path.exists():
+        with urllib.request.urlopen(urllib.request.Request(link, headers={"User-Agent": "Mozilla/5.0"}), timeout=60) as answer:
+            path.write_bytes(answer.read())
+    return path
+
+
+def attached_media(client: Any, channel: str, text: str) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    link = text.strip()
+    if not MEDIA_LINK.match(link):
+        return [], None
+    path = media_file_of(link)
+    slot, code = client.request_attachment_url(channel, str(path), f"meme{path.suffix}")
+    if code or not slot:
+        return [], {"ok": False, "code": "sendFailed", "detail": f"Discord gave no upload slot for {path.name} (code {code}): nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+    if not client.upload_attachment(slot["upload_url"], str(path)):
+        return [], {"ok": False, "code": "sendFailed", "detail": f"the upload of {path.name} to Discord failed: nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+    print(f"media link {link} sent as an attachment, not as text ({path.stat().st_size} bytes)", file=sys.stderr, flush=True)
+    return [{"upload_url": slot["upload_url"], "upload_filename": slot["upload_filename"], "name": f"meme{path.suffix}"}], None
+
+
 def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
@@ -153,7 +184,10 @@ def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
         if len(named) != 1:
             return {"ok": False, "code": "chatNotFound" if not named else "chatAmbiguous", "detail": f"{len(named)} of the account's DMs and groups are called {channel!r}", "loginState": "loggedIn"}
         target = named[0]["id"]
-    sent = client.send_message(target, text)
+    files, failed = attached_media(client, target, text)
+    if failed:
+        return failed
+    sent = client.send_message(target, "" if files else text, attachments=files or None)
     if not sent:
         return {"ok": False, "code": "sendFailed", "detail": f"Discord didn't take the message in channel {target}", "loginState": "loggedIn", "event": "dropped", "channelId": target}
     return {"ok": True, "loginState": "loggedIn", "event": "sent", "channelId": sent["channel_id"], "messageId": sent["id"], "timestamp": sent["timestamp"], "content": sent["content"]}
