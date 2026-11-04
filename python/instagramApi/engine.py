@@ -327,6 +327,42 @@ def item_of(value: Any) -> dict[str, Any] | None:
     return None
 
 
+def media_ref_of(item: dict[str, Any]) -> dict[str, str] | None:
+    item_id = str(item.get("item_id") or "")
+    if str(item.get("item_type") or "") == "animated_media":
+        url = (((item.get("animated_media") or {}).get("images") or {}).get("fixed_height") or {}).get("url")
+        return {"url": str(url), "name": f"{item_id}.gif", "type": "image/gif"} if url else None
+    found = item.get("media") or (item.get("visual_media") or {}).get("media") or {}
+    if not isinstance(found, dict):
+        return None
+    videos = found.get("video_versions") or []
+    if videos and videos[0].get("url"):
+        return {"url": str(videos[0]["url"]), "name": f"{item_id}.mp4", "type": "video/mp4"}
+    candidates = (found.get("image_versions2") or {}).get("candidates") or []
+    if candidates and candidates[0].get("url"):
+        return {"url": str(candidates[0]["url"]), "name": f"{item_id}.jpg", "type": "image/jpeg"}
+    return None
+
+
+def saved_media(client: Any, thread_id: str, ref: dict[str, str]) -> dict[str, Any]:
+    plain = {"name": ref["name"], "type": ref["type"]}
+    root = REALTIME.get("stateRoot")
+    if not root:
+        return {**plain, "error": "no state folder to keep the file in"}
+    path = media.media_dir({"stateRoot": root, "account": REALTIME.get("account") or "instagram"}, thread_id) / ref["name"]
+    if path.is_file() and path.stat().st_size:
+        return {**plain, "path": str(path)}
+    with HTTP:
+        response = client.private.get(ref["url"], timeout=30)
+    if response.status_code != 200:
+        return {**plain, "error": f"Instagram answered {response.status_code} to the file"}
+    if len(response.content) > media.VISUAL_MAX_BYTES:
+        return {**plain, "error": f"the file is over the {media.VISUAL_MAX_BYTES // 1024 // 1024} MB kept"}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(response.content)
+    return {**plain, "path": str(path)}
+
+
 def message_event(wrapper: dict[str, Any], me: str, names: dict[str, str], titles: dict[str, str]) -> dict[str, Any] | None:
     if str(wrapper.get("op") or "") not in ("add", "replace") or "/items/" not in str(wrapper.get("path") or ""):
         return None
@@ -351,6 +387,7 @@ def message_event(wrapper: dict[str, Any], me: str, names: dict[str, str], title
         "kind": kind,
         "text": text,
         "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(stamp / 1_000_000)) if stamp else None,
+        **({"media": media_ref_of(item)} if media_ref_of(item) and user != me else {}),
     }
 
 
@@ -373,8 +410,22 @@ class Realtime:
         if not event or event["itemId"] in self.seen:
             return
         self.seen.add(event["itemId"])
+        ref = event.pop("media", None)
+        if ref:
+            threading.Thread(target=self.save_then_emit, args=(event, ref), name="instagramMedia", daemon=True).start()
+            return
+        self.emit(event)
+
+    def emit(self, event: dict[str, Any]) -> None:
         for listener in list(self.listeners.values()):
             listener(event)
+
+    def save_then_emit(self, event: dict[str, Any], ref: dict[str, str]) -> None:
+        try:
+            event["attachments"] = [saved_media(self.client, str(event.get("thread") or ""), ref)]
+        except Exception as e:
+            event["attachments"] = [{"name": ref["name"], "type": ref["type"], "error": str(e)[:200]}]
+        self.emit(event)
 
     def start(self) -> None:
         self.client.realtime_on("message", self.dispatch)
@@ -467,6 +518,9 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
 async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     seconds = int(spec.get("seconds") or 0)
     seconds = 0 if seconds <= 0 else max(5, min(seconds, 86400))
+    if spec.get("stateRoot"):
+        REALTIME["stateRoot"] = str(spec["stateRoot"])
+        REALTIME["account"] = str(spec.get("account") or "")
     return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds, LIVE_TARGET.get())
 
 

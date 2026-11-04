@@ -8,6 +8,9 @@ AUDIO_SUFFIXES = (".ogg", ".oga", ".opus", ".m4a", ".mp3", ".wav", ".aac", ".fla
 AUDIO_TYPES = ("audio/", "video/ogg")
 DISCORD_VOICE_FLAG = 8192
 SLACK_AUDIO_SUBTYPES = ("slack_audio",)
+VISUAL_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".mp4", ".mov", ".m4v", ".mkv")
+VISUAL_TYPES = ("image/", "video/")
+VISUAL_MAX_BYTES = 50 * 1024 * 1024
 
 
 def is_audio(attachment: dict[str, Any], message_flags: int | None = None) -> bool:
@@ -38,3 +41,11 @@ def media_dir(spec: dict[str, Any], conversation_id: str) -> Path:
 
 def audio_path(spec: dict[str, Any], conversation_id: str, message_id: str, name: str) -> Path:
     return media_dir(spec, conversation_id) / f"{re.sub(r'[^0-9A-Za-z._-]', '_', message_id)}_{re.sub(r'[^0-9A-Za-z._-]', '_', name or 'audio')[-80:]}"
+
+
+def is_visual(attachment: dict[str, Any]) -> bool:
+    if is_audio(attachment):
+        return False
+    kind = str(attachment.get("type") or "").lower()
+    name = str(attachment.get("name") or "").lower()
+    return any(kind.startswith(t) for t in VISUAL_TYPES) or name.endswith(VISUAL_SUFFIXES)

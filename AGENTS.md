@@ -1928,6 +1928,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     and `log media status` shows the queue. Spec:
     `docs/specs/mediaDescriber.md`.
 
+139. 2026-11-04 · matt: "Yes, do it here", having the engines save the
+    images and videos the describer needs (rule 138). Each platform engine
+    keeps a local copy of every image, gif and video someone sends, fetched
+    through the account's own session, at most 50 MB, in its media folder
+    (`is_visual`, `python/platformKit/media.py`): Slack's watch through its
+    authenticated session (`file_of`, `saved_visuals`), Instagram's
+    realtime watch through instagrapi's private session on curl_cffi, never
+    its plain-requests downloads (`media_ref_of`, `saved_media`, under the
+    engine's one-call lock), and X Chat through the files its one session
+    already decrypts and saves. Each watch passes the saved path with the
+    attachment, so the describer gets it at once; a fetch that fails is
+    listed with why. Discord's engine has uncommitted work of someone
+    else's in it (rule 106), so its images stay not described yet until that
+    is settled. Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-06).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

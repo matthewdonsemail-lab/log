@@ -10,7 +10,7 @@ const CONTEXT = 'src/inbox/context/client.ts'
 export const mediaDescriber = {
   description: 'Every image, meme and video described by one local model into the .db before anyone replies',
   specPath: 'docs/specs/mediaDescriber.md',
-  codePaths: ['src/media/describer/client.ts', 'src/media/describer/helpers/model.ts', 'src/media/describer/types.ts', 'src/cli/media/index.ts', 'src/inbox/watch/client.ts', 'src/inbox/context/client.ts', 'scripts/hooks/inbox.ts', 'src/cli/discord/index.ts', 'src/cli/slack/index.ts', 'src/cli/instagram/index.ts'],
+  codePaths: ['src/media/describer/client.ts', 'src/media/describer/helpers/model.ts', 'src/media/describer/types.ts', 'src/cli/media/index.ts', 'src/inbox/watch/client.ts', 'src/inbox/context/client.ts', 'scripts/hooks/inbox.ts', 'src/cli/discord/index.ts', 'src/cli/slack/index.ts', 'src/cli/instagram/index.ts', 'src/cli/twitter/helpers/chat.ts', 'python/platformKit/media.py', 'python/slackApi/engine.py', 'python/instagramApi/engine.py'],
   anchors: {
     'REQ-MEDIA-01': [
       { kind: 'symbol', file: CLIENT, name: 'runDescriber' },
@@ -33,6 +33,12 @@ export const mediaDescriber = {
       { kind: 'value', file: TYPES, name: 'QUEUE_LIMIT', equals: 20 },
       { kind: 'string', file: CLIENT, includes: 'mediaQueueFull' },
     ],
+    'REQ-MEDIA-06': [
+      { kind: 'symbol', file: 'python/platformKit/media.py', name: 'is_visual' },
+      { kind: 'symbol', file: 'python/slackApi/engine.py', name: 'saved_visuals' },
+      { kind: 'symbol', file: 'python/instagramApi/engine.py', name: 'media_ref_of' },
+      { kind: 'symbol', file: 'python/instagramApi/engine.py', name: 'saved_media' },
+    ],
     'REQ-MEDIA-05': [
       { kind: 'symbol', file: CLIENT, name: 'mediaLine' },
       { kind: 'symbol', file: CONTEXT, name: 'chatContextOf' },
@@ -44,6 +50,7 @@ export const mediaDescriber = {
     'REQ-MEDIA-03': noul('Does describeRow describe a video from the frames framesOf takes with ffmpeg at VIDEO_FRAMES, label the description with the row kind, store it with the model on the media row as described, and store its vector with saveVectors when an embedder is given; and does runDescriber mark a row failed with the reason when describing throws?'),
     'REQ-MEDIA-04': noul('Does enqueueMedia mark audio, plain files, items without a path and items past QUEUE_LIMIT waiting as notDescribed with a detail saying why, add a mediaQueueFull alert for the full queue, and queue the rest as pending; and do the discord, slack and instagram watch commands call enqueueAttachments with each inbox message and its attachments?'),
     'REQ-MEDIA-05': noul('Does chatContextOf attach mediaLine of every media row of each message as mediaLines, does mediaLine give the description once described and a not described yet line with the detail otherwise, and does the inbox messageOf add the same lines to the text it shows?'),
+    'REQ-MEDIA-06': noul('Does is_visual say true for image and video types and suffixes and false for audio; does the slack watch, for a message from someone else with visual attachments, fetch each through core.http.fetch_authenticated with file_of (refusing files over VISUAL_MAX_BYTES) before it calls live with the saved paths; does the instagram realtime dispatch take media_ref_of the item (image, video or gif url) and, in a thread, fetch it with saved_media through client.private.get under the HTTP lock, never instagrapi photo or video downloads, before emitting the event with its attachment path; and does the X chat watch pass each message media filename, type and path to enqueueAttachments?'),
     unspecifiedBehavior: noul('Does the describer send media to a remote service to describe it, describe audio, run more than one model process, or let a message with undescribed media reach the context without saying so, by a route the specification does not describe?'),
   },
   assertions: {
@@ -52,6 +59,7 @@ export const mediaDescriber = {
     'REQ-MEDIA-03': MET,
     'REQ-MEDIA-04': MET,
     'REQ-MEDIA-05': MET,
+    'REQ-MEDIA-06': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

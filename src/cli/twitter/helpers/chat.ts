@@ -4,6 +4,7 @@ import type { LaunchTTY } from "../../launch/helpers/index.ts";
 import { addPending } from "../../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../../inbox/relay/index.ts";
 import { appendEvent, eventIdOf, recordPosition } from "../../../inbox/store/index.ts";
+import { enqueueAttachments } from "../../../media/describer/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
@@ -155,7 +156,11 @@ async function watchChat(context: CommandContext, argv: string[]): Promise<Comma
         events.push(event);
         context.err(liveLine(event));
         emit(event as unknown as Record<string, unknown>);
-        if (isChatMessage(event) && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+        if (isChatMessage(event) && !event.fromMe) {
+          const inbox = inboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+          enqueueAttachments(inbox, (((event as unknown as { media?: { filename?: string; type?: string; path?: string }[] }).media) ?? []).map((m) => ({ name: m.filename, type: m.type ?? "", path: m.path ?? null })));
+          addPending([inbox]);
+        }
         if (isChatMessage(event) && event.fromMe) storeOwnMessage(account.accountName, inboxMessageOf(account.accountName, event, context.now?.() ?? new Date()), "live");
       });
     },

@@ -39,3 +39,9 @@ Checked by: code and SubQ
 The inbox hook's message lines and the chat context the voice gate ranks carry each message's media: its description once described, `[kind name not described yet: why]` until then.
 
 Checked by: code and SubQ
+
+### REQ-MEDIA-06: The engines keep a local copy of every image and video sent
+
+Slack's watch fetches every image, gif and video someone sends through the account's own authenticated session, Instagram's realtime watch through instagrapi's private session (never its plain-requests downloads, and under the engine's one-call lock), and X Chat's are the files its one session already decrypts. Each is kept in the account's media folder, at most 50 MB, and its path goes with the attachment to the describer's queue. A fetch that fails is listed with why. Rule 139.
+
+Checked by: code and SubQ
