@@ -81,3 +81,9 @@ Checked by: code and SubQ
 A vector is stored in the .db's `embeddings` table by the text's hash, the model and the dimensions, and an embedder looks there first and embeds only what has no vector yet. The AI tells index's phrase list and matt's baseline are in `aiIndexes`. No reading, score or verdict is saved. Rule 137.
 
 Checked by: code and SubQ
+
+### REQ-VOICE-12: The gate inside a send reads matt's real replies in that chat
+
+The gate inside a send finds the chat in matt's saved conversations by what the send knows (`chatIdFor`): its conversation id on that platform, or, on X, the conversation whose pair holds the person's user id, or their handle on that platform only. It gives SubQ his real replies there, the same evidence `log voice --with` gives. When the chat isn't there, the gate still reads his writing everywhere. On 2026-11-04 drafts that `voice` passed at 0.99 were refused inside the send at 0.36, because the send gave SubQ none of them. Rule 137.
+
+Checked by: code and SubQ

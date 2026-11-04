@@ -3,7 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { appendEvent } from "../../inbox/store/index.ts";
-import { failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
+import { chatIdFor, failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
 import type { GateReading } from "./helpers/voice.ts";
 
 const passing: GateReading = { to: "@x", voice: 0.95, inContext: 0.9, friendLike: 0.9, openerOnly: 1, toThem: null, neverSays: [], watermark: { level: "clean", findings: [] } as unknown as GateReading["watermark"], pass: true, model: "m", notHere: [], scrambler: { ran: true, suspicious: 0, hits: [] } as unknown as GateReading["scrambler"], ranked: [] };
@@ -30,5 +30,23 @@ describe("the voice gate inside every send (rule 137)", () => {
     } finally {
       voiceDeps.aiEmbedder = before;
     }
+  });
+});
+
+describe("the gate inside a send finds the chat's real replies by what the send knows", () => {
+  const conversations = [
+    { platform: "twitter", account: "matthewsoldit", conversationId: "1491032180553920513:1974596626342686720", with: ["SalesPsych0"], box: "xchat", messages: [] },
+    { platform: "twitter", account: "matthewsoldit", conversationId: "1663390258099101696-1974596626342686720", with: ["shaw_gtm"], box: "dm", messages: [] },
+    { platform: "discord", account: "sourcedandsoldtothehighestbidder", conversationId: "1565734133609668780", with: ["rvaclassic"], box: "dm", messages: [] },
+  ] as never[];
+
+  test("an X send with only the user id finds the person's chat, whichever pair names it", () => {
+    expect(chatIdFor(conversations, { platform: "twitter", userId: "1491032180553920513" })).toBe("twitter:salespsych0");
+    expect(chatIdFor(conversations, { platform: "twitter", userId: "1663390258099101696" })).toBe("twitter:shaw_gtm");
+  });
+
+  test("another platform's send finds its chat by the conversation id, never another platform's chat of the same name", () => {
+    expect(chatIdFor(conversations, { platform: "discord", conversationId: "1565734133609668780" })).toBe("discord:1565734133609668780");
+    expect(chatIdFor(conversations, { platform: "slack", handle: "rvaclassic" })).toBeNull();
   });
 });
