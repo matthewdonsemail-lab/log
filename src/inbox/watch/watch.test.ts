@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { addPending, claimPoll, ensureLiveWatchers, hookReaderOf, inboxContext, localTime, newMessages, pollReaders, releasePoll, storedInboxContext, storedWaiting, takePending } from "./index.ts";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { addPending, claimPoll, claimWatcher, ensureLiveWatchers, hookReaderOf, inboxContext, localTime, newMessages, pollReaders, releasePoll, releaseWatcher, storedInboxContext, storedWaiting, takeAlerts, takePending, watchHolder } from "./index.ts";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import type { InboxReader, InboxThread } from "./index.ts";
 
 const thread = (id: string, who: string, at: string, fromMe: boolean, box = "inbox", text: string | null = "hey"): InboxThread => ({ conversationId: id, with: who, lastAt: at, lastFromMe: fromMe, lastText: text, box });
@@ -11,6 +11,36 @@ const thread = (id: string, who: string, at: string, fromMe: boolean, box = "inb
 beforeEach(() => {
   process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "inbox"));
   delete process.env.LOG_INBOX_POLL;
+});
+
+describe("one watcher per account, never two (rule 131)", () => {
+  test("the first watcher takes the account and a second one is refused loudly while the first lives", () => {
+    const alive = (pid: number) => pid === 111 || pid === 222;
+    expect(claimWatcher("twitter", "matthewsoldit", 111, alive)).toEqual({ ok: true });
+    expect(watchHolder("twitter", "matthewsoldit", alive)).toBe(111);
+    expect(claimWatcher("twitter", "matthewsoldit", 222, alive)).toEqual({ ok: false, holder: 111 });
+    const alerts = takeAlerts("sessionA");
+    expect(alerts.join("\n")).toContain("DUPLICATEWATCHER twitter matthewsoldit");
+    expect(alerts.join("\n")).toContain("pid 222");
+  });
+
+  test("a dead holder's lock is taken over, and only the holder can release it", () => {
+    expect(claimWatcher("discord", "acct", 111, () => false)).toEqual({ ok: true });
+    expect(claimWatcher("discord", "acct", 333, (pid) => pid === 333)).toEqual({ ok: true });
+    releaseWatcher("discord", "acct", 111);
+    expect(watchHolder("discord", "acct", (pid) => pid === 333)).toBe(333);
+    releaseWatcher("discord", "acct", 333);
+    expect(watchHolder("discord", "acct", () => true)).toBe(0);
+  });
+
+  test("the hook never starts a second watcher while one holds the account", () => {
+    const alive = (pid: number) => pid === 111;
+    expect(claimWatcher("slack", "mattSlack", 111, alive)).toEqual({ ok: true });
+    rmSync(join(process.env.LOG_INBOX_STATE!, "slack", "mattSlack", "watch.pid"), { force: true });
+    let started = 0;
+    expect(ensureLiveWatchers("slack", ["mattSlack"], () => ++started, alive)).toEqual([]);
+    expect(started).toBe(0);
+  });
 });
 
 describe("inbox watch", () => {

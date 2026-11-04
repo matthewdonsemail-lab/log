@@ -14,7 +14,12 @@ replies show up the second they land and no inbox read ever hits X's 429.
 1. **Never poll the inbox to find replies.** The inbox hook keeps
    `log twitter chat watch --inbox` running per signed-in X account. Read a
    thread only to answer it.
-2. **Read everything with the person first:** `log twitter dms --account
+2. **Claim the chat before drafting** (rule 133): `log inbox claim --platform
+   twitter --account <a> --chat <conversation id> --event <event id>` (MCP
+   `inboxClaim`), and read `log inbox actions --chat <id>` to see what was
+   already done there. Another session holding it means leave it; the send
+   releases the claim.
+3. **Read everything with the person first:** `log twitter dms --account
    <a> --with <handle>` (the old DM thread and X Chat are one conversation,
    rule 88).
 3. **Draft from matt's guide, with his facts only.** Read

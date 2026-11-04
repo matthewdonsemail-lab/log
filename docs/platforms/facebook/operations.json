@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-03T07:16:41.216Z",
-  "runs": 6,
+  "builtAt": "2026-11-04T03:00:24.614Z",
+  "runs": 8,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -45,7 +45,7 @@
       "docId": null,
       "doc": "background/ajaxQm.md",
       "reaEvidenceId": "ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf",
-      "seen": 168
+      "seen": 172
     },
     {
       "name": "ajaxReactComposerAttachmentsPhotoUpload",
@@ -1215,6 +1215,15 @@
       "docId": "24240167975570263",
       "doc": "background/GroupsEntityScopedCometTypeaheadDialogQuery.md",
       "reaEvidenceId": "ev_fda608ecc0f1e7e7108ed8ec0bac589115e9a29da38449fc6dcce6d25ffae4a9",
+      "seen": 1
+    },
+    {
+      "name": "instagramLoginSyncUpdate",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/instagramLoginSyncUpdate.md",
+      "reaEvidenceId": null,
       "seen": 1
     },
     {

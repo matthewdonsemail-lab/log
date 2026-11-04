@@ -11,6 +11,11 @@ import type { Command, CommandInput, FlagSpec } from "../../runner/types.ts";
 import { ONE_INBOX_NOTE } from "../../../twitter/dm/person/index.ts";
 import type { TwitterEngineSpec } from "../../../twitter/account/session/index.ts";
 import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
+import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
+import { guardSend } from "../../../inbox/claims/index.ts";
+import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
+import { gateDeps } from "./voice.ts";
+import type { InboxMessage } from "../../../inbox/watch/index.ts";
 import type { SplitPlan, VoiceProfile } from "../../../voice/pairs/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
@@ -94,7 +99,11 @@ export function renderSent(label: string, account: string, answer: TwitterSessio
   return `log ${label}: ${account}: ${answer.event ?? answer.code}${answer.code && answer.event ? ` (${answer.code})` : ""}: ${answer.detail ?? ""}${reset}`;
 }
 
-export const twitterSendDeps: { profiles: () => Record<string, VoiceProfile> } = { profiles: () => readProfiles() };
+export const twitterSendDeps: { profiles: () => Record<string, VoiceProfile>; incoming: (account: string, userId: string, since: string) => InboxMessage[]; now: () => string } = {
+  profiles: () => readProfiles(),
+  incoming: (account, userId, since) => incomingSince("twitter", account, (id) => id.split(/[-:]/).includes(userId), since),
+  now: () => new Date().toISOString(),
+};
 
 export function dmChatProfile(profiles: Record<string, VoiceProfile>, userId: string): VoiceProfile | null {
   const chats = Object.entries(profiles).filter(([key, p]) => key.startsWith("chat:twitter:") && p.replies && key.slice("chat:twitter:".length).split(/[-:]/).includes(userId));
@@ -111,18 +120,28 @@ export function splitLine(plan: SplitPlan): string {
   return `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
 }
 
-export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">, engine: Engine, spec: TwitterEngineSpec, plan: SplitPlan): Promise<{ answers: TwitterSessionAnswer[]; last: Awaited<ReturnType<Engine>> }> {
+export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">, engine: Engine, spec: TwitterEngineSpec, plan: SplitPlan, watch?: { account: string; userId: string }): Promise<{ answers: TwitterSessionAnswer[]; last: Awaited<ReturnType<Engine>>; interrupted: InboxMessage[] }> {
   const sleep = context.sleep ?? ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)));
   const answers: TwitterSessionAnswer[] = [];
+  const startedAt = twitterSendDeps.now();
+  let interrupted: InboxMessage[] = [];
   let last: Awaited<ReturnType<Engine>> | undefined;
   for (const [i, part] of plan.parts.entries()) {
-    if (i) await sleep(plan.gapSeconds * 1000);
+    if (i) {
+      await sleep(plan.gapSeconds * 1000);
+      if (watch) interrupted = twitterSendDeps.incoming(watch.account, watch.userId, startedAt);
+      if (interrupted.length) break;
+    }
     last = await engine({ ...spec, text: part, ...(i && spec.media ? { media: undefined } : {}) });
     answers.push(last.answer);
     if (!last.answer.ok || last.answer.event !== "sent") break;
     if (plan.parts.length > 1) context.err(`  ${i + 1}/${plan.parts.length} sent: ${part}`);
   }
-  return { answers, last: last! };
+  return { answers, last: last!, interrupted };
+}
+
+export function dmInterruptedLines(account: string, plan: SplitPlan, sentCount: number, heard: readonly InboxMessage[]): string[] {
+  return interruptedLines(account, heard, plan.parts.slice(sentCount), sentCount, plan.parts.length);
 }
 
 function sendCommand(shape: SendShape): Command {
@@ -178,10 +197,27 @@ function sendCommand(shape: SendShape): Command {
         context.err(`${account.accountName}: ${shape.action === "post" ? "new post" : `${shape.action} ${plan.target}`}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
-          const { answers, last } = await sendDmParts(context, engine, spec, split);
+          const caught = await waitCaughtUp("twitter", account.accountName);
+          if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
+          const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
+          if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
+          context.err(voiced.line);
+          const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
+          if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
+          let parts: Awaited<ReturnType<typeof sendDmParts>>;
+          try {
+            parts = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target });
+          } catch (error) {
+            guard.done("failed", error instanceof Error ? error.message : String(error));
+            throw error;
+          }
+          const { answers, last, interrupted } = parts;
+          const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}: ${split.parts.slice(0, okParts).join(" / ").slice(0, 300)}`);
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           const code = done === split.parts.length ? 0 : 1;
-          if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, action: shape.action, target: plan.target, approvedBy: plan.spec.approvedBy, split: { parts: split.parts, gapSeconds: split.gapSeconds, why: split.why }, sent: answers, ...last.answer }, null, 2) };
+          if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, action: shape.action, target: plan.target, approvedBy: plan.spec.approvedBy, split: { parts: split.parts, gapSeconds: split.gapSeconds, why: split.why }, sent: answers, interrupted, ...last.answer }, null, 2) };
+          if (interrupted.length) return { code, stdout: dmInterruptedLines(account.accountName, split, done, interrupted).join("\n") };
           const governor = governorLine(last);
           const failed = renderSent(label, account.accountName, last.answer).replace(`log ${label}: ${account.accountName}: `, "");
           const head = split.parts.length === 1 ? renderSent(label, account.accountName, last.answer) : code === 0 ? `log ${label}: ${account.accountName} sent the dm as ${done} messages, ${split.gapSeconds} s apart (conversation ${last.answer.conversationId}): delivered, it shows in their X Chat too, so it is never resent.` : `log ${label}: ${account.accountName}: ${done} of ${split.parts.length} sent, then ${failed}. What was sent stays sent; nothing is retried.`;

@@ -38,4 +38,5 @@ These three files stay in step:
 - **`log.md`** says what happened, commit by commit, starting from an AST of the code.
 - **`AGENTS.md`** holds the hard rules matt has set.
 - **`skills/`** holds the routines that follow those rules.
+| [`instagram`](skills/instagram/SKILL.md) | Work an Instagram account through the direct-API engine and its one session host, never the browser: read the thread, draft in matt's voice, gate it, send text or a meme as a photo, the realtime watch pushes every DM |
 | [`xchatReplies`](skills/xchatReplies/SKILL.md) | Answer people who write to matt on X: X pushes each message over one socket (no polling), read the thread, draft from his guide, gate it with `log voice`, send only when he says |

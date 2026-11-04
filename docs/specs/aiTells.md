@@ -42,7 +42,7 @@ Checked by: code and SubQ
 
 ### REQ-AITELLS-05: The index embeds every literal phrase with Jina
 
-`log voice aiIndex` collects every literal phrase from vale-ai-tells first, then ai-slop-detector, ai-vocabulary, SLOP_Detector, the X complaints and the AI-written samples, and embeds them with Jina `jina-embeddings-v3`.
+`log voice aiIndex` collects every literal phrase from vale-ai-tells first, then ai-slop-detector, ai-vocabulary, SLOP_Detector, the X complaints and the AI-written samples, and embeds them with Jina `jina-embeddings-v5-omni-small` at 1024 dimensions. The vectors and the index are stored in the .db, and an index made with another model is rebuilt (rule 137).
 
 Checked by: code and SubQ
 
@@ -72,7 +72,7 @@ Checked by: code and SubQ
 
 ### REQ-AITELLS-10: Each chunk's closest AI phrase is found and reranked
 
-The draft is cut into lines and word windows, each chunk's closest AI phrase is found by cosine, and the closest are reranked with `jina-reranker-v2-base-multilingual`.
+The draft is cut into lines and word windows, each chunk's closest AI phrase is found by cosine, and the closest are reranked with `jina-reranker-v3.5`.
 
 Checked by: code and SubQ
 

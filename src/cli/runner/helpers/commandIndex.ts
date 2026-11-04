@@ -39,6 +39,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "graph", platform: "any", module: "src/cli/errors/index.ts", exportName: "graphCommand" },
   { name: "capture", platform: "facebook", module: "src/cli/capture/index.ts", exportName: "captureCommand" },
   { name: "runs", platform: "any", module: "src/cli/runs/index.ts", exportName: "runsCommand" },
+  { name: "inbox", platform: "any", module: "src/cli/inbox/index.ts", exportName: "inboxCommand" },
+  { name: "media", platform: "any", module: "src/cli/media/index.ts", exportName: "mediaCommand" },
   { name: "browsers", platform: "any", module: "src/cli/browsers/index.ts", exportName: "browsersCommand" },
   { name: "job", platform: "any", module: "src/cli/job/index.ts", exportName: "jobCommand" },
   { name: "mcp", platform: "any", module: "src/cli/mcp/index.ts", exportName: "mcpCommand" },
@@ -82,4 +84,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "watch", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackWatchCommand" },
   { name: "send", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackSendCommand" },
   { name: "cookies", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackCookiesCommand" },
+  { name: "session", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramSessionCommand" },
+  { name: "dms", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramDmsCommand" },
+  { name: "send", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramSendCommand" },
+  { name: "watch", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramWatchCommand" },
 ]

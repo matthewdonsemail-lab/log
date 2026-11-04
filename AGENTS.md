@@ -1702,6 +1702,250 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     needs a local model (Ollama or vLLM), which this machine doesn't have,
     so it isn't wired. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-07, 08).
 
+128. 2026-11-04 · matt: "you're not meant to open up the browser", after a
+    meme went to someone on Instagram through the account's AdsPower browser.
+    Instagram is worked through the direct-API engine on vendor/instagrapi,
+    over the MCP, and the browser is never used for an Instagram action:
+    `log instagram dms` reads the threads or one thread, `log instagram send`
+    sends text and photos (a meme goes as `--photo`, a dry run unless `--live`
+    with `--approvedBy`), and `log instagram watch` holds Instagram's own
+    realtime connection (MQTT to edge-mqtt.facebook.com, the DM sync
+    subscribed), which the inbox hook starts for every signed-in Instagram
+    account so each new DM reaches the agent (`>>> NEW INSTAGRAM MESSAGE`,
+    rule 123). An action the engine doesn't have yet is built on it, never
+    done in the browser. Every HTTP call goes through curl_cffi: instagrapi's
+    private and public transports are both set to curl (`curl-adapter` for
+    the public one), and `check:instagramTransport` (pre-commit and pre-push)
+    refuses anything else; the realtime MQTT socket isn't HTTP and is the one
+    exception. Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-05 to 08).
+
+129. 2026-11-04 · matt: "it will always be one continuous [session] so we
+    can't have cold start stuff ... we can't open multiple python processes
+    for this because that is going to fuck up our accounts". An Instagram
+    account has one session, always, the way an X account does (rule 105).
+    Every Instagram call (CLI, MCP, the inbox hook's watch) goes through the
+    account's one session host (`python/instagramApi/host.py`, started on the
+    first call, closed after 30 idle minutes or when the engine or instagrapi
+    changes): one process, one instagrapi client signed in once from the
+    saved `sessionid` and reused by every call after (`reused` in its answer),
+    and one realtime connection to edge-mqtt.facebook.com that every watch
+    listens on. Calls other than the watch run one at a time. A second host
+    can't start (`host.lock`); a call that can't reach the host is refused
+    with `instagramSessionHostDown` and sends nothing, never falling back to a
+    session of its own. Every answer carries `instagramSession` (pid, calls,
+    since). `LOG_INSTAGRAM_HOST=inline` runs the old way, for tests only.
+    Spec: `docs/specs/instagram.md` (REQ-INSTAGRAM-09).
+
+130. 2026-11-04 · matt: "we need to make it so we have a monitor on there
+    that will then listen for the new info coming over via the websocket,
+    because look, he responded halfway through ... he just asked something,
+    it breaks the flow". On 2026-11-03 Abel wrote "is this ai" on Discord
+    while an 8-line send was going out, and lines 6 to 8 went on top of his
+    question. A message sent one line at a time stops the moment they write:
+    before each line after the first, the send reads what the platform's
+    push channel put in the inbox for that chat since the send began
+    (`incomingSince`, `src/inbox/watch`, from `pending.jsonl`), and if they
+    wrote, the rest is held and the answer leads with `>>> INTERRUPTED`:
+    what they said and the lines not sent (`interruptedLines`). It holds for
+    `log discord send`, `log slack send`, `log twitter dm` (old DMs and X
+    Chat), the queue's dms and `log instagram send` (in its engine). What was
+    sent stays sent, nothing is resent, and they are answered first (rule
+    109). An agent following a conversation keeps a Monitor on
+    `~/.logCli/inbox/pending.jsonl` so each push wakes it. Spec:
+    `docs/specs/messageSplit.md` (REQ-SPLIT-08).
+
+131. 2026-11-04 · matt: "WE NEED TO LOUDLY ALERT THAT THIS CANNOT HAPPEN
+    ... WE CAN ONLY HAVE ONE PROCESS PER ACTUAL THING". On 2026-11-04 every
+    watcher was running two or three times (X Chat for both X accounts,
+    Discord and Slack): each new Claude session's hook started them again,
+    the cleanup only killed the pid in `watch.pid`, which the new one had
+    overwritten, and the doubled X watchers polled X's badge counts in
+    bunches until X answered 429 on both accounts. One watcher process per
+    account per platform, always, and every Claude session subscribes to it
+    through the inbox (`pending.jsonl`), never by starting its own. Each
+    watcher takes `watch.lock` (exclusive create, its pid) before it opens
+    anything (`claimWatcher`, `src/inbox/watch`); a second one is refused
+    with `watcherAlreadyRunning` and exits, and the refusal goes to
+    `~/.logCli/inbox/alerts.jsonl`, which the inbox hook puts first in the
+    agent's context (`>>> ONE PROCESS PER ACCOUNT, NEVER TWO`) to be told to
+    matt. A dead holder's lock is taken over, only the holder releases it,
+    the hook never starts a watcher while a live one holds the lock, and the
+    stale-code cleanup stops the holder as well as the pid file's process.
+    Tests run the Instagram engine inline (`LOG_INSTAGRAM_HOST=inline` in the
+    preload) so they never leave a real session host behind. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-13).
+
+132. 2026-11-04 · matt: "this is what I expect to happen with all
+    platforms": a singleton primary with an exclusive lock and a
+    multi-subscriber relay. On every platform (X Chat, Discord, Slack,
+    Instagram) the first watch to take an account's `watch.lock` is its one
+    owner (`ownOrAttach`, `src/inbox/relay`): it opens the platform's push
+    connection, writes `session.json` (pid, hostname, started, a heartbeat
+    every 5 s, status connecting, streaming, reconnecting or error, its relay
+    port and token, and how many are attached), writes the inbox
+    (`pending.jsonl`) as its only writer, and sends every event to every
+    attached subscriber over its local relay (127.0.0.1, the token first).
+    `log <platform> watch` is the attach command: when an owner is live, a
+    watch attaches to its relay and streams the same events without opening
+    anything, so the hooks, a Monitor, Codex or another agent all see one
+    stream; an inbox watch (`--inbox`) that loses is refused loudly (rule
+    131). An owner whose heartbeat is quiet for 60 s is stopped and alerted
+    (`>>> ONE PROCESS PER ACCOUNT`, `hungOwner`), and the next start becomes
+    the owner; when the owner closes, its session file goes with it.
+    Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-14).
+
+133. 2026-11-04 · matt, to deepman: "whenever the agent wants to perform
+    an action based on the streamed event information, it must first claim
+    the relevant event ... only the session that successfully claims an
+    event should be allowed to perform the corresponding action. Once the
+    action has been executed through the state machine, the lock is
+    released ... every time an action is executed, the system should also
+    index and persist the associated information". Every message a push
+    channel brings in has an event id (`eventIdOf`, shown in the hook's
+    `>>> CLAIM BEFORE YOU ACT` beside who holds its chat). A session claims
+    a chat before it drafts (`log inbox claim`, MCP `inboxClaim`, 10 minutes,
+    renewed by claiming again; `claimChat`, `src/inbox/claims`, an exclusive
+    claim file per chat, the session being its MCP server's process), and a
+    second session is refused (`chatClaimedElsewhere`). Every send (`log
+    discord send`, `log slack send`, `log twitter dm`, the queue's dms, `log
+    instagram send`) claims the chat itself first (`guardSend`) and releases
+    it once it is sent, interrupted or failed, so two sessions never answer
+    the same chat. An X chat is one chat whether it is named by the person's
+    id or the X Chat pair. A claim held by a session that ended, or past its
+    time, frees itself. Every claim, renewal, refusal, send, interruption,
+    failure and release is written to `~/.logCli/inbox/actions.jsonl`, read
+    with `log inbox actions --chat <id>` (MCP `inboxActions`) before acting;
+    `log inbox claims` lists who holds what. Spec: `docs/specs/agentHooks.md`
+    (REQ-HOOKS-15).
+
+134. 2026-11-04 · matt: "Yes, go", moving the inbox's state out of loose
+    files into one SQLite database, `~/.logCli/log.db` (`LOG_DB` moves it;
+    `src/inbox/store`, WAL, every write in a `BEGIN IMMEDIATE` transaction).
+    The owner appends every event its push channel brings in to `events`
+    with a sequence number, once (`appendEvent`, by its event id), and each
+    session reads from its own cursor (`cursors`), so nothing is shown twice
+    or lost between sessions; `pending.jsonl` is imported once and no longer
+    written. An event type nobody has catalogued is stored with its raw
+    payload and raised loudly (`unknownEventType`, `eventTypes`), to be named
+    from rea, the docs and SubQ (rule one). The one owner per account
+    (rules 131, 132) is a row in `owners` (pid, hostname, heartbeat, status,
+    relay port and token, subscribers, a generation that rises with each new
+    owner), never `session.json`, and a relay subscriber that falls more
+    than 1 MB behind is dropped rather than slowing the owner. Claims (rule
+    133) are rows in `claims`, each with its chat's next generation, and a
+    send checks before every part after the first that its claim is still
+    the one held (`stillHeld`); a session whose claim was taken over stops,
+    and the rest is held. Every claim, send and release goes to `actions` in
+    the same transaction as the change it records, with what was done in
+    the chat before it (`stateBefore`), and what was done is searchable with
+    the events (`searchIndex`, FTS5). Each event's moments are timed
+    (`timings`: received, appended, relayed, claimed, actionStart,
+    confirmed, indexed). Alerts are rows in `alerts`. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-16).
+
+135. 2026-11-04 · matt (through his side session): missing context "is
+    filled by catching up, never by every caller re-reading the client".
+    Each account's owner keeps the platform's own last position in the .db
+    (`positions`: X Chat's sequence id, Discord's last message id per DM,
+    Slack's last ts per chat, Instagram's last activity). A gap opens
+    (`gaps`: from, to, reason, status) when an owner takes over from a
+    stopped or dead one (from its last heartbeat), when the first owner
+    starts on an account that already has events (from the newest), or when
+    the push channel drops. While a gap is open the account is behind, and
+    one catch-up job inside the owner (`catchUpRunner`, `src/inbox/catchUp`)
+    pulls only the delta through the account's own session and governor,
+    paced like reads (0.8 to 2.5 s): X's delta sync after its saved sequence
+    id, Discord's DMs after each one's saved message id, Slack's history
+    after each chat's saved ts (`oldest`), and Instagram's threads active
+    since its last activity. What it pulls is appended to `events` like live
+    pushes, marked `source: catchUp`, and the gap closes. A send (Discord,
+    Slack, X dm and the queue's sends, Instagram) waits up to 90 s for the
+    account to catch up (`waitCaughtUp`) and never reads the platform
+    itself; still behind, it is refused with `accountBehind`. A refused
+    catch-up (a 429 or any refusal) stops, keeps the account behind, alerts
+    (`catchUpRefused`), and nothing resumes until matt says so (rule 94).
+    Discord's gateway RESUME is not used yet. Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-17).
+
+136. 2026-11-04 · matt: "these must be completed", with the direction that
+    the context before a send comes from the .db, not from a fresh platform
+    read. This changes rule 109's last read: right before each queued send,
+    the run reads that person's messages both ways and what they did on the
+    account's posts from the .db (`chatContextOf`, `src/inbox/context`),
+    once the account has caught up (rule 135), and holds the item when
+    anything happened since its draft, as before. X is not read for it. The
+    platform is read only by the catch-up job, by backfill (history from
+    before the push channel existed) and by discovery (unknown event types).
+    Every owner stores the account's own messages (`ownMessage`) as well as
+    theirs, and X's notifications arrive through the owner's badge poll
+    (rule 115). Spec: `docs/specs/fullContext.md` (REQ-CONTEXT-04, 10).
+
+137. 2026-11-04 · matt: keep every part of the voice gate ("necessary") and
+    run it "as the whole voice process on the new .db", required inside every
+    send, only at send time, scoped to that send, quiet; then "Yes, both" to
+    jina-embeddings-v5-omni and the local media model. The voice gate is one
+    step (`gateSend`, `src/cli/twitter/helpers/voice.ts`) inside `log discord
+    send`, `log slack send`, `log twitter dm`, the queue's sends and `log
+    instagram send`, after the account has caught up (rule 135) and before
+    the chat is claimed (rule 133): a draft that fails is refused with
+    `voiceGateFailed` whether or not `log voice` ran first, and in the X queue
+    the item is held to be rewritten with `twitterQueueEdit`. All five checks
+    stay: SubQ's read of matt's voice, the AI tells index with its reranker
+    (rule 112), his own phrasing (rule 127), the watermark checker (rule 111)
+    and the scrambler (rule 127). It reads the chat's context from the .db
+    (rule 136), embeds it, ranks it against the moment being answered
+    (cosine, then `jina-reranker-v3.5`) and gives SubQ the top moments in full
+    (`rankedContext`, `thisConversationRankedForThisMoment`). Only embeddings
+    are kept, in the .db (`embeddings`: the text's hash, model, dimensions and
+    vector, each made once), with the AI tells index's phrase list and matt's
+    baseline (`aiIndexes`); every result is worked out fresh for each send,
+    never saved. Jina is `jina-embeddings-v5-omni-small` at 1024 dimensions
+    (`text-matching`), and an index made with another model is rebuilt. The
+    local embedder stays loaded in its process. A pass is one line; a fail
+    names only what failed and why. Spec: `docs/specs/voiceGate.md`
+    (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
+
+138. 2026-11-04 · matt: "a smaller local model" turns every piece of media
+    into "a text representation", labelled with what it is, after a message
+    went out answering only the text around a video someone sent; then "Yes,
+    both" to downloading it. One media describer per machine (`log media
+    describer`, `src/media/describer`), started by the inbox hook and locked
+    like an owner (rule 131, a second is refused), loads
+    `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the
+    transformers.js runtime log already uses) and keeps it warm. Every image,
+    meme, gif and video a watch receives goes into the .db's `media` queue
+    (`enqueueAttachments`). The describer takes one at a time, describes a
+    video from three frames (ffmpeg), labels each description with its kind,
+    stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5
+    s, and stops loudly past its memory ceiling (`describerMemory`). The
+    queue holds 20 at most: past that, an item is marked not described yet
+    and alerted (`mediaQueueFull`). Media with no description is shown as
+    `[video clip.mp4 not described yet: …]` in the inbox hook and in the
+    voice gate's ranked context, so nobody replies to it blind; a description
+    reaches both in its place. Audio stays with AssemblyAI (rule 126). A
+    file the platform engine hasn't saved locally yet is listed as not
+    described, with why. `log media describe <path>` queues one local file,
+    and `log media status` shows the queue. Spec:
+    `docs/specs/mediaDescriber.md`.
+
+139. 2026-11-04 · matt: "Yes, do it here", having the engines save the
+    images and videos the describer needs (rule 138). Each platform engine
+    keeps a local copy of every image, gif and video someone sends, fetched
+    through the account's own session, at most 50 MB, in its media folder
+    (`is_visual`, `python/platformKit/media.py`): Slack's watch through its
+    authenticated session (`file_of`, `saved_visuals`), Instagram's
+    realtime watch through instagrapi's private session on curl_cffi, never
+    its plain-requests downloads (`media_ref_of`, `saved_media`, under the
+    engine's one-call lock), and X Chat through the files its one session
+    already decrypts and saves. Each watch passes the saved path with the
+    attachment, so the describer gets it at once; a fetch that fails is
+    listed with why. Discord's watch keeps them too (matt, "Yes, do it
+    here", once its engine's uncommitted work was committed as his), for the
+    messages that reach the inbox only (DMs, mentions and replies to the
+    account), through its REST session as it already does for voice notes
+    (`with_visuals`, `visual_file_of`). Spec: `docs/specs/mediaDescriber.md`
+    (REQ-MEDIA-06).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

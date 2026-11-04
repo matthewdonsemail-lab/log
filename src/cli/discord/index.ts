@@ -1,7 +1,14 @@
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
-import { addPending } from "../../inbox/watch/index.ts";
+import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
+import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { enqueueAttachments } from "../../media/describer/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
+import { recordPosition } from "../../inbox/store/index.ts";
+import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
+import { guardSend } from "../../inbox/claims/index.ts";
+import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
@@ -67,7 +74,12 @@ export const discordSessionCommand: Command = {
   },
 };
 
-export const discordDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void> } = { profiles: () => readProfiles(), wait: (ms) => new Promise((done) => setTimeout(done, ms)) };
+export const discordDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void>; incoming: (account: string, channel: string, since: string) => InboxMessage[]; now: () => string } = {
+  profiles: () => readProfiles(),
+  wait: (ms) => new Promise((done) => setTimeout(done, ms)),
+  incoming: (account, channel, since) => incomingSince("discord", account, channel, since),
+  now: () => new Date().toISOString(),
+};
 
 const DISCORD_ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The DISCORD socialAccount's accountName (its handle)" };
 
@@ -263,23 +275,44 @@ export const discordWatchCommand: Command = {
           context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`);
         }
       }
-      context.err(`${account.accountName}: opening Discord's gateway through vendor/endcord${only ? `, only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}`);
       const seen: Record<string, unknown>[] = [];
       const toInbox = parsed.flags["inbox"] === true;
-      if (toInbox) context.err("new DMs, group messages, mentions and replies to the account go to the inbox hook");
-      const run = await context.directDiscordLive(account, { action: "watch", seconds }, (event) => {
-        if (event.kind === "message" && only && event.channelId !== only) return;
-        const mine = toInbox && toInboxOf(event);
-        if (toInbox && event.kind === "message" && !mine) return;
-        if (event.kind === "message") seen.push(event);
-        if (mine) {
-          const inbox = discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
-          const audio = (event.audio as AudioOf[] | undefined) ?? [];
-          if (!audio.length) addPending([inbox]);
-          else void withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: inbox.conversationId }, [{ id: String(event.id ?? ""), text: inbox.text }], () => audio, context.err).then(([m]) => addPending([{ ...inbox, text: m.text }]), () => addPending([inbox]));
-        }
-        context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
+      const shown = (event: Record<string, unknown>) => !(event.kind === "message" && only && event.channelId !== only);
+      const directDiscordLive = context.directDiscordLive;
+      const owned = await ownOrAttach("discord", account.accountName, {
+        inbox: toInbox,
+        seconds,
+        onAttached: (event) => {
+          if (event.type === "relayJoined") context.err(`${account.accountName}: attached to the one Discord gateway already open (${String(event.subscribers)} subscriber(s)), nothing new opened`);
+          else if (shown(event)) context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
+        },
+        run: (emit) => {
+          context.err(`${account.accountName}: the one owner of Discord's gateway through vendor/endcord${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages, mentions and replies go to the inbox and every event to every attached subscriber`);
+          return directDiscordLive(account, { action: "watch", seconds }, (event) => {
+            emit(event);
+            if (event.kind === "message" && !event.guildId && event.channelId && event.id) {
+              recordPosition("discord", account.accountName, String(event.id), String(event.channelId));
+              if (event.fromMe) storeRead("discord", account.accountName, String(event.channelId), "dm", { id: String(event.id), at: String(event.at ?? ""), from: "me", fromMe: true, text: String(event.text ?? "") }, context.now?.() ?? new Date(), "live");
+            }
+            const mine = toInboxOf(event);
+            if (mine) {
+              const inbox = discordInboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+              enqueueAttachments(inbox, ((event.attachments as { filename?: string; name?: string; content_type?: string; type?: string; path?: string }[] | undefined) ?? []).map((a) => ({ name: a.filename ?? a.name, type: a.content_type ?? a.type ?? "", path: a.path ?? null })));
+              const audio = (event.audio as AudioOf[] | undefined) ?? [];
+              if (!audio.length) addPending([inbox]);
+              else void withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: inbox.conversationId }, [{ id: String(event.id ?? ""), text: inbox.text }], () => audio, context.err).then(([m]) => addPending([{ ...inbox, text: m.text }]), () => addPending([inbox]));
+            }
+            if (!shown(event) || (toInbox && event.kind === "message" && !mine)) return;
+            if (event.kind === "message") seen.push(event);
+            context.err(parsed.flags["json"] ? JSON.stringify(event) : watchLine(event));
+          });
+        },
+        log: (line) => context.err(line),
+        catchUp: (gap) => discordCatchUp(account, gap, context.directDiscord!, context.now?.() ?? new Date()),
       });
+      if ("refused" in owned) return refuse("discord watch", "watcherAlreadyRunning", owned.refused);
+      if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log discord watch: ${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
+      const run = owned.result;
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ...run.answer, messages: seen }, null, 2) };
       if (!run.answer.ok) return { code, stdout: `log discord watch: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
@@ -448,18 +481,42 @@ export const discordSendCommand: Command = {
       if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
+      const caught = await waitCaughtUp("discord", account.accountName);
+      if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
+      const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: label, text, conversationId: target });
+      if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
+      context.err(voiced.line);
+      const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });
+      if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];
-      for (const [i, part] of plan.parts.entries()) {
-        if (i) await discordDeps.wait(plan.gapSeconds * 1000);
-        const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
-        sent.push(run.answer);
-        if (!run.answer.ok || run.answer.event !== "sent") break;
-        context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
+      const startedAt = discordDeps.now();
+      let interrupted: InboxMessage[] = [];
+      let fenced = false;
+      try {
+        for (const [i, part] of plan.parts.entries()) {
+          if (i) {
+            await discordDeps.wait(plan.gapSeconds * 1000);
+            interrupted = discordDeps.incoming(account.accountName, target, startedAt);
+            if (interrupted.length) break;
+            if (!guard.held()) {
+              fenced = true;
+              break;
+            }
+          }
+          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
+          sent.push(run.answer);
+          if (!run.answer.ok || run.answer.event !== "sent") break;
+          context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
+        }
+      } finally {
+        const ok = sent.filter((a) => a.ok && a.event === "sent").length;
+        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
       const last = sent[sent.length - 1];
       const done = sent.filter((a) => a.ok && a.event === "sent");
       const code = done.length === plan.parts.length ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent }, null, 2) };
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent, interrupted }, null, 2) };
+      if (interrupted.length) return { code, stdout: interruptedLines(account.accountName, interrupted, plan.parts.slice(done.length), done.length, plan.parts.length).join("\n") };
       if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent ${done.length === 1 ? `message ${last.messageId}` : `${done.length} messages (${done.map((a) => a.messageId).join(", ")})`} to channel ${last.channelId}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}, the last at ${last.timestamp}.` };
       return { code, stdout: `log discord send: ${account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried.` };
     } catch (error) {

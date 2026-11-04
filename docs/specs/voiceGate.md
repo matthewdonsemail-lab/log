@@ -63,3 +63,21 @@ Checked by: code and SubQ
 The draft goes through `vendor/aiWatermarkScrambler` (novatechflow/ai-watermark-scrambler, layer A) for invisible and lookalike characters. A draft with any fails, and its count and kinds are handed to SubQ. The statistical watermark is not checked here.
 
 Checked by: code and SubQ
+
+### REQ-VOICE-09: The gate runs inside every send and refuses a failing draft
+
+Every send as matt (Discord, Slack, an X dm, the X queue's dms, replies and quotes, Instagram text) runs the whole gate right before it goes out, after the account has caught up and before the chat is claimed, whether or not `log voice` ran first. A failing draft is refused with `voiceGateFailed` and nothing is sent; in the X queue the item is held with what failed. A pass is one line; a fail names only the checks that failed and why. Rule 137.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-10: The chat's context is ranked for the moment and given in full
+
+The gate takes the chat's messages from the .db (both ways), embeds them and what is being answered, keeps the closest 40 by cosine, reranks those with `jina-reranker-v3.5`, and gives SubQ the top 12 in full, in time order, with its question on whether the draft answers them in this conversation. Rule 137.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-11: Only embeddings are stored, each once, in the .db
+
+A vector is stored in the .db's `embeddings` table by the text's hash, the model and the dimensions, and an embedder looks there first and embeds only what has no vector yet. The AI tells index's phrase list and matt's baseline are in `aiIndexes`. No reading, score or verdict is saved. Rule 137.
+
+Checked by: code and SubQ

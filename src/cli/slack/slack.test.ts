@@ -104,6 +104,26 @@ describe("log slack chats, read and send", () => {
     expect(r.calls).toEqual(["slackOne:send", "slackOne:send"]);
     expect(r.out).toContain("1 of 3 sent");
   });
+
+  test("a multi-line send stops the moment they write back, and the rest is held", async () => {
+    const saved = { ...slackDeps };
+    slackDeps.profiles = () => ({});
+    slackDeps.wait = async () => {};
+    slackDeps.now = () => "2026-11-03T19:00:00.000Z";
+    let checks = 0;
+    slackDeps.incoming = (account, chat) => (++checks < 2 ? [] : [{ platform: "slack", account, conversationId: chat, with: "sam", text: "wait what", at: "2026-11-03T19:00:20.000Z", box: "dm", seenAt: "2026-11-03T19:00:20.500Z" }]);
+    try {
+      let n = 0;
+      const r = await run(["slack", "send", "--account", "slackOne", "--chat", "D0EXAMPLE01", "--text", "one\ntwo\nthree", "--live", "--approvedBy", "matt"], () => ({ answer: { ok: true, sent: [{ ts: String(++n) }] }, refreshed: null }));
+      expect(r.code).toBe(1);
+      expect(r.calls).toEqual(["slackOne:send", "slackOne:send"]);
+      expect(r.out).toContain(">>> INTERRUPTED");
+      expect(r.out).toContain('"wait what"');
+      expect(r.out).toContain("not sent: three");
+    } finally {
+      Object.assign(slackDeps, saved);
+    }
+  });
 });
 
 describe("the Slack watch and the d cookie", () => {

@@ -4,6 +4,14 @@ Making a new platform whole with one command, and where every new file goes.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
+## Use cases these tools are part of
+
+When the owner asks for one of these, follow its page step by step.
+
+| Use case | What it is | How the owner asks for it |
+|---|---|---|
+| `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client | "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work" |
+
 ## The tools in this guide
 
 | Tool | What it does |
@@ -60,6 +68,7 @@ log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--libr
 Makes a new platform for log-cli: its account session on the shared platformKit, `log <name> session check` with its MCP tool, a direct-API engine in python/<name>Api on the shared Python kit, and docs/platforms/<name>. The repo is wired by editing each file through its syntax tree (PLATFORMS, PLATFORM_LABELS, COMMANDS, COMMAND_INDEX, createContext, CommandContext, DIRECT_ROUTES, COMMAND_RULES), and every edit is checked to have landed before anything is written.
 Without --apply it lists what it would write and change, and writes nothing. Nothing is overwritten: an existing platform or file is refused. It says what Twenty is missing (the socialAccounts.platform option) but never changes Twenty. Then fill in the engine's actions and add the platform's families as commands (rule 83).
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "newPlatform" }) (Making a new platform whole with one command, and where every new file goes).
 AGENTS.md (log://agents): rules 1, 2, 63, 64, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

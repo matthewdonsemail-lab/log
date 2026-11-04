@@ -9,8 +9,26 @@ const SCRAMBLER = 'src/twitter/copy/scrambler/client.ts'
 export const voiceGate = {
   description: 'The voice gate every message to send as matt passes',
   specPath: 'docs/specs/voiceGate.md',
-  codePaths: ['src/twitter/copy/voice/client.ts', 'src/twitter/copy/voice/types.ts', 'src/cli/twitter/helpers/voice.ts', 'src/voice/phrases/client.ts', 'src/voice/phrases/types.ts', 'src/twitter/copy/scrambler/client.ts', 'src/twitter/copy/scrambler/types.ts'],
+  codePaths: ['src/inbox/store/client.ts', 'src/voice/aiTells/helpers/jina.ts', 'src/cli/discord/index.ts', 'src/cli/slack/index.ts', 'src/cli/instagram/index.ts', 'src/cli/twitter/helpers/send.ts', 'src/cli/twitter/helpers/queue.ts', 'src/twitter/copy/voice/client.ts', 'src/twitter/copy/voice/types.ts', 'src/cli/twitter/helpers/voice.ts', 'src/voice/phrases/client.ts', 'src/voice/phrases/types.ts', 'src/twitter/copy/scrambler/client.ts', 'src/twitter/copy/scrambler/types.ts'],
   anchors: {
+    'REQ-VOICE-09': [
+      { kind: 'symbol', file: COMMAND, name: 'gateSend' },
+      { kind: 'symbol', file: COMMAND, name: 'failedParts' },
+      { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'voiceGateFailed' },
+      { kind: 'string', file: 'src/cli/slack/index.ts', includes: 'voiceGateFailed' },
+      { kind: 'string', file: 'src/cli/instagram/index.ts', includes: 'voiceGateFailed' },
+      { kind: 'string', file: 'src/cli/twitter/helpers/send.ts', includes: 'voiceGateFailed' },
+    ],
+    'REQ-VOICE-10': [
+      { kind: 'symbol', file: COMMAND, name: 'rankedContext' },
+      { kind: 'value', file: 'src/twitter/copy/voice/types.ts', name: 'RANKED_CONTEXT', equals: 12 },
+      { kind: 'value', file: 'src/twitter/copy/voice/types.ts', name: 'RANKED_SHORTLIST', equals: 40 },
+    ],
+    'REQ-VOICE-11': [
+      { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'storedEmbedder' },
+      { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'vectorsFor' },
+      { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'saveAiIndex' },
+    ],
     'REQ-VOICE-07': [
       { kind: 'symbol', file: PHRASES, name: 'buildPhraseIndex' },
       { kind: 'symbol', file: PHRASES, name: 'readPhrases' },
@@ -43,6 +61,9 @@ export const voiceGate = {
     'REQ-VOICE-06': noul('Is pass true only when voice, inContext, friendLike and openerOnly reach their thresholds, toThem reaches its threshold when it is set, no never-said phrase is found and the watermark level is not artifacts?'),
     'REQ-VOICE-07': noul('Does buildPhraseIndex count every word pair in the replies of matt and set a p10 baseline from his replies with the own pairs of each reply left out, does readPhrases leave out pairs using words from what they said and fail a draft whose share of pairs matt wrote at least FAMILIAR_MIN_USES times is below that floor, and does the voice command fail the draft then and hand the unfamiliar pairs to readVoice?'),
     'REQ-VOICE-08': noul('Does the voice command run scramblerReadingOf on the draft through the vendored aiWatermarkScrambler inspect_text script, fail the draft when it finds any suspicious character, and hand its count and kinds to readVoice?'),
+    'REQ-VOICE-09': noul('Do the discord send, slack send, instagram send (when there is text) and twitter dm commands call gateDeps.gate (gateSend) after waitCaughtUp and before guardSend, and return voiceGateFailed with nothing sent when it fails; does the queue contextChanged call it for an item with text and return the failed parts so runQueue holds the item; does gateSend run gateReading (readVoice, the AI tells index, readPhrases, the watermark reading and the scrambler) and answer a one line pass or a refusal listing only failedParts?'),
+    'REQ-VOICE-10': noul('Does rankedContext take the chat messages from chatContextOf, embed the moment and the messages with voiceDeps.aiEmbedder, keep the RANKED_SHORTLIST closest by cosine, rerank them, return the top RANKED_CONTEXT in time order with their full text, and does readVoice put them in its state as thisConversationRankedForThisMoment and ask inContext against them?'),
+    'REQ-VOICE-11': noul('Does storedEmbedder look up every text with vectorsFor by its hash, model and dimensions, embed only the missing ones and store them with saveVectors, does jinaEmbedder do the same, do buildAiIndex and openAiIndex keep the phrase vectors and the index meta in the .db (saveVectors, saveAiIndex, aiIndexOf), and is no reading, score or verdict written anywhere?'),
     unspecifiedBehavior: noul('Does readVoice let a draft pass by a route the specification does not describe, such as skipping SubQ or passing when an answer is missing?'),
   },
   assertions: {
@@ -54,6 +75,9 @@ export const voiceGate = {
     'REQ-VOICE-06': MET,
     'REQ-VOICE-07': MET,
     'REQ-VOICE-08': MET,
+    'REQ-VOICE-09': MET,
+    'REQ-VOICE-10': MET,
+    'REQ-VOICE-11': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

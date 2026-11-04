@@ -42,7 +42,7 @@ def files_of(m: dict[str, Any]) -> list[dict[str, Any]]:
     return [{k: v for k, v in (("name", f.get("name") or f.get("title") or f.get("id")), ("type", f.get("mimetype")), ("subtype", f.get("subtype")), ("id", f.get("id")), ("url", f.get("url_private_download") or f.get("url_private")), ("duration", round(f["duration_ms"] / 1000) if f.get("duration_ms") else None)) if v is not None} for f in m.get("files") or [] if isinstance(f, dict)]
 
 
-async def audio_file_of(core: Any, spec: dict[str, Any], chat: str, ts: str, attachment: dict[str, Any]) -> dict[str, Any]:
+async def file_of(core: Any, spec: dict[str, Any], chat: str, ts: str, attachment: dict[str, Any]) -> dict[str, Any]:
     plain = {k: v for k, v in attachment.items() if k != "url"}
     path = media.audio_path(spec, chat, ts, str(attachment.get("name") or "audio"))
     if path.is_file() and path.stat().st_size:
@@ -52,13 +52,22 @@ async def audio_file_of(core: Any, spec: dict[str, Any], chat: str, ts: str, att
     resp = await core.http.fetch_authenticated(str(attachment["url"]), method="GET")
     if not resp.is_success or "text/html" in str(resp.headers.get("content-type", "")):
         return {**plain, "error": f"Slack answered {resp.status_code} to the file"}
+    if len(resp.content) > media.VISUAL_MAX_BYTES:
+        return {**plain, "error": f"the file is {len(resp.content) // 1024 // 1024} MB, over the {media.VISUAL_MAX_BYTES // 1024 // 1024} MB kept"}
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(resp.content)
     return {**plain, "path": str(path)}
 
 
 async def saved_audio(core: Any, spec: dict[str, Any], chat: str, ts: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [await audio_file_of(core, spec, chat, ts, a) for a in attachments if media.is_audio(a)]
+    return [await file_of(core, spec, chat, ts, a) for a in attachments if media.is_audio(a)]
+
+
+async def saved_visuals(core: Any, spec: dict[str, Any], chat: str, ts: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    out = []
+    for a in attachments:
+        out.append(await file_of(core, spec, chat, ts, a) if media.is_visual(a) else {k: v for k, v in a.items() if k != "url"})
+    return out
 
 
 def core_for(cookies: dict[str, str], workspace: str | None) -> Any:
@@ -206,6 +215,8 @@ async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
         cursor: str | None = None
         while len(messages) < limit:
             fields = {"channel": chat, "limit": str(min(200, limit - len(messages)))}
+            if spec.get("oldest"):
+                fields["oldest"] = str(spec["oldest"])
             if cursor:
                 fields["cursor"] = cursor
             page = await core.call_web_api("conversations.history", fields)
@@ -302,11 +313,12 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
                     row["text"] = media.text_with_audio(text, attachments)
                     if attachments:
                         row["attachments"] = [{k: v for k, v in a.items() if k != "url"} for a in attachments]
+                    visuals = [a for a in attachments if media.is_visual(a)] if not row["fromMe"] else []
                     row["mentionsMe"] = f"<@{session.user_id}>" in text
                     row["threadTs"] = data.get("thread_ts")
                     row["at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(float(data.get("ts") or time.time())))
-                    if user and user not in names and not row["fromMe"]:
-                        asyncio.ensure_future(name_then_live(core, names, user, row))
+                    if visuals or (user and user not in names and not row["fromMe"]):
+                        asyncio.ensure_future(name_then_live(core, names, user, row, spec, str(channel or ""), attachments if visuals else []))
                         return
                 live(row)
 
@@ -334,12 +346,18 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
         raise
 
 
-async def name_then_live(core: Any, names: dict[str, str], user: str, row: dict[str, Any]) -> None:
-    try:
-        names.update(await names_for(core, [user]))
-    except Exception:
-        pass
+async def name_then_live(core: Any, names: dict[str, str], user: str, row: dict[str, Any], spec: dict[str, Any] | None = None, chat: str = "", attachments: list[dict[str, Any]] | None = None) -> None:
+    if user and user not in names:
+        try:
+            names.update(await names_for(core, [user]))
+        except Exception:
+            pass
     row["from"] = names.get(user, user)
+    if attachments and spec is not None:
+        try:
+            row["attachments"] = await saved_visuals(core, spec, chat, str(row.get("ts") or ""), attachments)
+        except Exception as e:
+            row["attachments"] = [{**{k: v for k, v in a.items() if k != "url"}, "error": str(e)[:200]} for a in attachments]
     live(row)
 
 

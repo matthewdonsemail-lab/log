@@ -698,6 +698,51 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again. On X, find the other log twitter call still running on the account (a watch or a stuck run), let it end, then call again.'
   },
+  chatClaimedElsewhere: {
+    layer: 'account',
+    meaning: "Another Claude session has claimed this chat (rule 133): only the session that claims an event acts on it, and the claim is released once its send is done. Nothing was sent.",
+    retryable: true,
+    raisedIn: ['inbox/claims'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Leave the chat to the session holding it. See who holds what with `log inbox claims`, and what was done with `log inbox actions --chat <id>`. A claim held by a session that ended frees itself; one left by a live session frees itself after 10 minutes."
+  },
+  describerStopped: {
+    layer: 'account',
+    meaning: "The media describer stopped (rule 138): it went past its memory ceiling or its vision model could not load. What is queued waits, and every context shows it as not described yet.",
+    retryable: true,
+    raisedIn: ['media/describer'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'The next session start brings the describer back. Read its alert for why it stopped; a model that will not load usually means its files are still downloading or were cut off, and a new start fetches them again.'
+  },
+  voiceGateFailed: {
+    layer: 'account',
+    meaning: "The voice gate read the draft right before it went out (rule 137) and it failed one of its checks: SubQ's read of matt's voice, the AI tells index, matt's own phrasing, the watermark checker or the scrambler. Nothing was sent.",
+    retryable: true,
+    raisedIn: ['voice/gate'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Rewrite the draft in matt's words from what the refusal names, then send it again. In the X queue the item is held: put the rewrite back with `twitterQueueEdit`."
+  },
+  accountBehind: {
+    layer: 'account',
+    meaning: "The account's owner is catching up on a gap (rule 135): the push channel dropped, the owner restarted or no owner was running, so the context in the .db is incomplete. A send waits up to 90 s for the catch-up to close the gap, and this one didn't, or the catch-up was refused. Nothing was sent.",
+    retryable: true,
+    raisedIn: ['inbox/catchUp'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Wait for the owner's catch-up (its watch log says when it has caught up), then send again. If the catch-up was refused (a 429 or another refusal), nothing resumes on the account until matt says so (rule 94)."
+  },
+  watcherAlreadyRunning: {
+    layer: 'account',
+    meaning: "Another watcher process already holds this account's push channel on this platform (rule 131): one process per account, shared by every Claude session through the inbox. This one stopped before opening anything.",
+    retryable: false,
+    raisedIn: ['inbox/watch'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Don't start another. Read what the running watcher pushes from ~/.logCli/inbox/pending.jsonl (the inbox hook puts it in front of you), or keep a Monitor on that file."
+  },
   launchTooSoon: {
     layer: 'account',
     meaning: "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",

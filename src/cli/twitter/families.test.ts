@@ -11,6 +11,8 @@ import { runCli } from "../runner/index.ts";
 import { twitterSendDeps } from "./helpers/send.ts";
 import { twitterDmsDeps } from "./helpers/dms.ts";
 import { loadConversations } from "../../search/conversations/index.ts";
+import { appendEvent, markGap, openGap } from "../../inbox/store/index.ts";
+import { chatContextOf } from "../../inbox/context/index.ts";
 
 const POST_A = "https://x.com/alice/status/1900000000000000001";
 const POST_B = "https://x.com/bob/status/1900000000000000002";
@@ -429,10 +431,33 @@ describe("log twitter queue", () => {
 });
 
 describe("the context read right before a send (rule 109)", () => {
-  test("a thread that can't be read holds the item: it is never sent on half its context", async () => {
-    const h = harness((s) => (s.action === "inbox" ? { ok: false, code: "platformError", detail: "X answered 500" } : s.action === "notifications" ? { ok: true, messages: [] } : { ok: true, event: "sent" }));
-    const f = await builtAndPlanned(h);
-    await h.run(["twitter", "queue", "run", f.queue, "--live"]);
-    expect(h.calls.some((c) => c.action === "dm" || c.action === "reply")).toBe(false);
+  test("an account whose catch-up was refused holds the item: it is never sent on half its context, and X is not read for it (rule 135)", async () => {
+    const before = process.env.LOG_INBOX_STATE;
+    process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "behind"));
+    try {
+      const gap = openGap("twitter", "xTwo", "2026-11-01T00:00:00Z", "socketDropped");
+      markGap(gap.id, "refused", "429: rate limited");
+      const h = harness(() => ({ ok: true, event: "sent" }));
+      const f = await builtAndPlanned(h);
+      await h.run(["twitter", "queue", "run", f.queue, "--live"]);
+      expect(h.calls.some((c) => c.action === "dm" || c.action === "reply" || c.action === "inbox" || c.action === "notifications")).toBe(false);
+    } finally {
+      process.env.LOG_INBOX_STATE = before;
+    }
+  });
+
+  test("a message they sent since the draft, already in the .db, holds the item without reading X (rule 136)", () => {
+    const before = process.env.LOG_INBOX_STATE;
+    process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "context"));
+    try {
+      appendEvent({ platform: "twitter", account: "xTwo", conversationId: "42:99", type: "message", with: "oldfriend", text: "you about later", sourceAt: "2026-11-01T16:05:00Z", receivedAt: "2026-11-01T16:05:01Z" });
+      appendEvent({ platform: "twitter", account: "xTwo", conversationId: "", type: "notification", with: "oldfriend", payload: { type: "notification", kind: "like", at: "2026-11-01T16:06:00Z", userId: "42", handle: "oldfriend" } });
+      const held = chatContextOf("twitter", "xTwo", { userId: "42", handle: "oldfriend" }, "2026-11-01T16:00:00Z");
+      expect(held.messages.map((m) => m.text)).toEqual(["you about later"]);
+      expect(held.activity).toHaveLength(1);
+      expect(chatContextOf("twitter", "xTwo", { userId: "7", handle: "someoneelse" }, "2026-11-01T16:00:00Z").messages).toEqual([]);
+    } finally {
+      process.env.LOG_INBOX_STATE = before;
+    }
   });
 });

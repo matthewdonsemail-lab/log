@@ -2,7 +2,11 @@ import { spawnSync } from "node:child_process";
 import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
-import { dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
+import { dmInterruptedLines, dmSplit, localMedia, sendDmParts, splitLine } from "./send.ts";
+import { guardSend } from "../../../inbox/claims/index.ts";
+import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
+import { chatContextOf } from "../../../inbox/context/index.ts";
+import { gateDeps } from "./voice.ts";
 import {
   addToQueue,
   approvalProblem,
@@ -37,7 +41,7 @@ import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec, Po
 import { openTwitterAccount } from "./account.ts";
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import { activityOf, contextChangesSince } from "../../../twitter/dm/person/index.ts";
-import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
+import type { TwitterNotification } from "../../../twitter/notification/feed/index.ts";
 import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
 
 const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, description: "The queue file (.json)" };
@@ -226,23 +230,27 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   const nowMs = () => (context.now?.() ?? new Date()).getTime();
   const log = (line: string) => context.err(queueLog(path, line, new Date(nowMs())));
   const approvedBy = queue.approval!.by;
-  const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
-  const chatPin = secrets?.messengerPin ?? undefined;
   const contextChanged = async (item: QueueItem): Promise<string[]> => {
     const since = item.draftedAt ?? queue.created;
-    const kept = readNotificationStore(notificationStorePath(queue.account));
-    const notes = notificationsFresh(kept, new Date(nowMs())) ? null : await opened.engine({ action: "notifications", screenName: queue.account });
-    if (notes && !notes.answer.ok) {
-      log(`#${item.n}: notifications read before sending failed (${notes.answer.code ?? "?"}), so it is held, never sent on half its context (rule 109)`);
-      return [`their activity could not be read before sending: ${notes.answer.code ?? "?"}`];
+    if (!item.handle && !item.userId) return ["no handle or user id, so their context could not be read before sending"];
+    const caught = await waitCaughtUp("twitter", queue.account);
+    if (!caught.ok) {
+      log(`#${item.n}: ${caught.refused}`);
+      return [caught.refused];
     }
-    if (!item.handle) return ["no handle, so their thread could not be read before sending"];
-    const store = notes ? readNotificationStore(notes.answer.storePath ?? notificationStorePath(queue.account)) : kept;
-    const activity = activityOf(Object.values(store?.rows ?? {}), { userId: item.userId ?? null, handle: item.handle }, since);
-    const thread = await opened.engine({ action: "inbox", limit: 50, withHandle: item.handle.replace(/^@/, ""), ...(chatPin ? { chatPin } : {}) });
-    if (!thread.answer.ok) return [`their thread could not be read before sending: ${thread.answer.code ?? "?"}`];
-    const changed = contextChangesSince(thread.answer.messages ?? [], activity, since);
-    log(`#${item.n} @${item.handle ?? "?"}: full context read right before sending (their thread and what they did on the account's posts since the draft at ${since}): ${changed.length ? `${changed.length} new` : "nothing new"}`);
+    const who = { userId: item.userId ?? null, handle: item.handle ?? null };
+    const held = chatContextOf("twitter", queue.account, who, since);
+    const activity = activityOf(held.activity as unknown as TwitterNotification[], who, since);
+    const changed = contextChangesSince(held.messages, activity, since);
+    if (!changed.length && item.text?.trim()) {
+      const voiced = await gateDeps.gate(context, { platform: "twitter", account: queue.account, to: item.handle ? `@${item.handle.replace(/^@/, "")}` : String(item.userId), text: item.text, handle: item.handle ?? null, userId: item.userId ?? null });
+      if (!voiced.ok) {
+        log(`#${item.n} @${item.handle ?? "?"}: ${voiced.refused}`);
+        return voiced.refused.split("\n").slice(1).map((l) => `voice gate: ${l.replace(/^\s*-\s*/, "")}`);
+      }
+      log(`#${item.n} @${item.handle ?? "?"}: ${voiced.line}`);
+    }
+    log(`#${item.n} @${item.handle ?? "?"}: context read from the .db right before sending (their messages both ways and what they did on the account's posts since the draft at ${since}, the account caught up): ${changed.length ? `${changed.length} new` : "nothing new"}`);
     return changed;
   };
   try {
@@ -263,8 +271,25 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (kind === "like" || item.action !== "dm" || !plan.spec.text || !item.userId) return (await opened.engine(spec)).answer;
           const split = dmSplit(plan.spec.text, item.userId, false);
           if (split.parts.length > 1) log(`#${item.n} dm ${splitLine(split)}`);
-          const { answers, last } = await sendDmParts(context, opened.engine, spec, split);
+          const caught = await waitCaughtUp("twitter", opened.account.accountName);
+          if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+          const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
+          if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+          let parts: Awaited<ReturnType<typeof sendDmParts>>;
+          try {
+            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
+          } catch (error) {
+            guard.done("failed", error instanceof Error ? error.message : String(error));
+            throw error;
+          }
+          const { answers, last, interrupted } = parts;
+          const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}`);
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
+          if (interrupted.length) {
+            for (const line of dmInterruptedLines(opened.account.accountName, split, done, interrupted)) log(`#${item.n} @${item.handle ?? "?"}: ${line}`);
+            return { ...answers[done - 1], detail: `${done} of ${split.parts.length} parts sent, then they wrote while it was going out ("${interrupted[0].text}"), so the rest was held; what was sent stays sent, never resent` };
+          }
           if (done && done < split.parts.length) return { ...answers[done - 1], detail: `${done} of ${split.parts.length} parts sent, then ${last.answer.event ?? last.answer.code}: ${last.answer.detail ?? ""}; what was sent stays sent, never resent` };
           return last.answer;
         },

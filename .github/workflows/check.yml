@@ -32,7 +32,7 @@ jobs:
       - name: Python for the engines
         run: |
           uv venv --python 3.12 .venv
-          uv pip install --python .venv -r vendor/twikit/requirements.txt ./vendor/fbk ./vendor/endcord ./vendor/openLinkedinApi vendor/chatXdk/wheels/chatxdk-0.5.2-cp310-abi3-win_amd64.whl
+          uv pip install --python .venv -r vendor/twikit/requirements.txt ./vendor/fbk ./vendor/endcord ./vendor/openLinkedinApi "./vendor/instagrapi[curl]" vendor/chatXdk/wheels/chatxdk-0.5.2-cp310-abi3-win_amd64.whl
           echo "LOG_PYTHON=$(cygpath -w "$PWD/.venv/Scripts/python.exe")" >> "$GITHUB_ENV"
 
       - name: Install

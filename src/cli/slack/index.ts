@@ -2,7 +2,14 @@ import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/
 import { findSlackAccount, recordSlackSession, slackGate } from "../../slack/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
-import { addPending } from "../../inbox/watch/index.ts";
+import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
+import { ownOrAttach } from "../../inbox/relay/index.ts";
+import { enqueueAttachments } from "../../media/describer/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
+import { recordPosition } from "../../inbox/store/index.ts";
+import { slackCatchUp, waitCaughtUp } from "../../inbox/catchUp/index.ts";
+import { guardSend } from "../../inbox/claims/index.ts";
+import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
@@ -73,7 +80,12 @@ export const slackSessionCommand: Command = {
   },
 };
 
-export const slackDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void> } = { profiles: () => readProfiles(), wait: (ms) => new Promise((done) => setTimeout(done, ms)) };
+export const slackDeps: { profiles: () => Record<string, VoiceProfile>; wait: (ms: number) => Promise<void>; incoming: (account: string, chat: string, since: string) => InboxMessage[]; now: () => string } = {
+  profiles: () => readProfiles(),
+  wait: (ms) => new Promise((done) => setTimeout(done, ms)),
+  incoming: (account, chat, since) => incomingSince("slack", account, chat, since),
+  now: () => new Date().toISOString(),
+};
 
 const SLACK_ACCOUNT: FlagSpec = { name: "account", kind: "string", required: true, description: "The SLACK socialAccount's accountName (its handle)" };
 const SLACK_WORKSPACE: FlagSpec = { name: "workspace", kind: "string", description: "The workspace's domain (e.g. acme-team); needed when the session is signed in to more than one (log slack workspaces lists them)" };
@@ -325,18 +337,39 @@ export const slackWatchCommand: Command = {
         if (!chat.ok) return chat.result;
         only = chat.id;
       }
-      context.err(`${opened.account.accountName}: opening ${opened.workspace || "every workspace"}'s websocket through vendor/gabrielSlack${only ? `, only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}`);
       const seen: Record<string, unknown>[] = [];
       const toInbox = parsed.flags["inbox"] === true;
-      if (toInbox) context.err("new DMs, group messages and mentions of the account go to the inbox hook");
-      const run = await context.directSlackLive(opened.account, { action: "watch", seconds, ...inWorkspace(opened.workspace) }, (event) => {
-        if (only && event.channel && event.channel !== only) return;
-        const mine = toInbox && slackToInboxOf(event);
-        if (toInbox && event.type === "message" && !mine) return;
-        if (event.type === "message") seen.push(event);
-        if (mine) addPending([slackInboxMessageOf(opened.account.accountName, event, context.now?.() ?? new Date())]);
-        context.err(parsed.flags["json"] ? JSON.stringify(event) : slackWatchLine(event));
+      const shown = (event: Record<string, unknown>) => !(only && event.channel && event.channel !== only);
+      const directSlackLive = context.directSlackLive;
+      const owned = await ownOrAttach("slack", opened.account.accountName, {
+        inbox: toInbox,
+        seconds,
+        onAttached: (event) => {
+          if (event.type === "relayJoined") context.err(`${opened.account.accountName}: attached to the one Slack websocket already open (${String(event.subscribers)} subscriber(s)), nothing new opened`);
+          else if (shown(event)) context.err(parsed.flags["json"] ? JSON.stringify(event) : slackWatchLine(event));
+        },
+        run: (emit) => {
+          context.err(`${opened.account.accountName}: the one owner of ${opened.workspace || "every workspace"}'s websocket through vendor/gabrielSlack${only ? `, showing only ${only}` : ""}${seconds ? `, for ${seconds} s` : ", until stopped"}; new DMs, group messages and mentions go to the inbox and every event to every attached subscriber`);
+          return directSlackLive(opened.account, { action: "watch", seconds, ...inWorkspace(opened.workspace) }, (event) => {
+            emit(event);
+            if (event.type === "message" && event.channel && event.ts && slackToInboxOf({ ...event, fromMe: false })) recordPosition("slack", opened.account.accountName, String(event.ts), String(event.channel));
+            const mine = slackToInboxOf(event);
+            if (mine) {
+              const inbox = slackInboxMessageOf(opened.account.accountName, event, context.now?.() ?? new Date());
+              enqueueAttachments(inbox, (event.attachments as { name?: string; type?: string; path?: string }[] | undefined) ?? []);
+              addPending([inbox]);
+            }
+            if (!shown(event) || (toInbox && event.type === "message" && !mine)) return;
+            if (event.type === "message") seen.push(event);
+            context.err(parsed.flags["json"] ? JSON.stringify(event) : slackWatchLine(event));
+          });
+        },
+        log: (line) => context.err(line),
+        catchUp: (gap) => slackCatchUp(opened.account, gap, context.directSlack!, context.now?.() ?? new Date(), undefined, inWorkspace(opened.workspace)),
       });
+      if ("refused" in owned) return refuse("slack watch", "watcherAlreadyRunning", owned.refused);
+      if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log slack watch: ${opened.account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
+      const run = owned.result;
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ...run.answer, messages: seen }, null, 2) };
       if (!run.answer.ok) return failed("slack watch", opened.account, run.answer);
@@ -407,18 +440,42 @@ export const slackSendCommand: Command = {
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ok: true, dryRun: true, chat: chat.id, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark }, null, 2) };
       if (!live) return { code: 0, stdout: [`log slack send: dry run: ${opened.account.accountName} would send to ${chat.label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       context.err(`${opened.account.accountName}: send to ${chat.label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
+      const caught = await waitCaughtUp("slack", opened.account.accountName);
+      if (!caught.ok) return refuse("slack send", "accountBehind", caught.refused);
+      const voiced = await gateDeps.gate(context, { platform: "slack", account: opened.account.accountName, to: chat.label, text, conversationId: chat.id });
+      if (!voiced.ok) return refuse("slack send", "voiceGateFailed", voiced.refused);
+      context.err(voiced.line);
+      const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id });
+      if (!guard.ok) return refuse("slack send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];
+      const startedAt = slackDeps.now();
+      let interrupted: InboxMessage[] = [];
+      let fenced = false;
+      try {
       for (const [i, part] of plan.parts.entries()) {
-        if (i) await slackDeps.wait(plan.gapSeconds * 1000);
+        if (i) {
+          await slackDeps.wait(plan.gapSeconds * 1000);
+          interrupted = slackDeps.incoming(opened.account.accountName, chat.id, startedAt);
+          if (interrupted.length) break;
+          if (!guard.held()) {
+            fenced = true;
+            break;
+          }
+        }
         const run = context.directSlack!(opened.account, { action: "send", chat: chat.id, lines: [part], live: true, approvedBy, ...inWorkspace(opened.workspace) });
         sent.push(run.answer);
         if (!run.answer.ok) break;
         context.err(`  ${i + 1}/${plan.parts.length} sent ${((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? ""}: ${part}`);
       }
+      } finally {
+        const ok = sent.filter((a) => a.ok).length;
+        guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
+      }
       const done = sent.filter((a) => a.ok);
       const last = sent[sent.length - 1];
       const code = done.length === plan.parts.length ? 0 : 1;
-      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, approvedBy, chat: chat.id, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent }, null, 2) };
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, approvedBy, chat: chat.id, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent, interrupted }, null, 2) };
+      if (interrupted.length) return { code, stdout: interruptedLines(opened.account.accountName, interrupted, plan.parts.slice(done.length), done.length, plan.parts.length).join("\n") };
       if (code === 0) return { code, stdout: `log slack send: ${opened.account.accountName} sent ${done.length} message(s) to ${chat.label}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}.` };
       return { code, stdout: `log slack send: ${opened.account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried (rule 94).` };
     } catch (error) {

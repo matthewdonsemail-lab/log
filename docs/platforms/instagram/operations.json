@@ -1,0 +1,78 @@
+{
+  "builtAt": "2026-11-04T03:07:01.403Z",
+  "runs": 2,
+  "operations": [
+    {
+      "name": "ajaxBz",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/ajaxBz.md",
+      "reaEvidenceId": "ev_68f5d753b5ee697e2b34f2d44b07d990d78a155f0aa9263cc7d2f529c931d638",
+      "seen": 20
+    },
+    {
+      "name": "ajaxQm",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/ajaxQm.md",
+      "reaEvidenceId": "ev_70b4b0680bbe7f18eabb519a67ad336bc1bf11b0743cea7d6234042706e41c2e",
+      "seen": 6
+    },
+    {
+      "name": "apiDiscoverWebExploreGrid",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/apiDiscoverWebExploreGrid.md",
+      "reaEvidenceId": "ev_81f93ca399ab17c211a4b7ac3fce16f7251a1535a1bbceb4efcb3b68ac1d0cd5",
+      "seen": 1
+    },
+    {
+      "name": "apiGraphql",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/apiGraphql.md",
+      "reaEvidenceId": "ev_27eceaba6115086f4af94c2fc0c0d7947c1495c9588392e6a8d948ff7f80c47b",
+      "seen": 113
+    },
+    {
+      "name": "apiWebFxcalIgSsoUsers",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/apiWebFxcalIgSsoUsers.md",
+      "reaEvidenceId": "ev_0a57ebc56fb777bb1746dc7dd547957fa8c816b670a11954dd078f19a4f83801",
+      "seen": 4
+    },
+    {
+      "name": "graphqlQuery",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/graphqlQuery.md",
+      "reaEvidenceId": "ev_9526128ceabbf057d2d22a7013da9a214adbe53a32932238933540d4c03b7101",
+      "seen": 4
+    },
+    {
+      "name": "ruploadMessengerImage",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/ruploadMessengerImage.md",
+      "reaEvidenceId": "ev_35622837eca4a4aa15a7b0e66fa7a38ebe62da38674d0ade9b0e0a090e931fca",
+      "seen": 2
+    },
+    {
+      "name": "syncInstagram",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/syncInstagram.md",
+      "reaEvidenceId": "ev_42cc6233fb35c7a12f5b1b6e444cbb8ea0320a699d0b1c88cfb3ecbe95bede95",
+      "seen": 4
+    }
+  ]
+}

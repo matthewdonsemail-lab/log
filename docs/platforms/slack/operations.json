@@ -1,0 +1,663 @@
+{
+  "builtAt": "2026-11-04T03:06:45.167Z",
+  "runs": 2,
+  "operations": [
+    {
+      "name": "activityFeed",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/activityFeed.md",
+      "reaEvidenceId": "ev_7561c58048793f56009510ea5b6d5edb12270f68a068cad2f2b1160b9c835346",
+      "seen": 3
+    },
+    {
+      "name": "activityViews",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/activityViews.md",
+      "reaEvidenceId": "ev_0837ce7ca7507bc888b1eadd8362b902a8bdd19760a1bbf7318f7230fb011fad",
+      "seen": 4
+    },
+    {
+      "name": "aiAppsList",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/aiAppsList.md",
+      "reaEvidenceId": "ev_d147c11b5443c862cf8014421fbb8a3ea0c08600e006a5d5f359fe61cd77d96d",
+      "seen": 2
+    },
+    {
+      "name": "apiFeatures",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/apiFeatures.md",
+      "reaEvidenceId": "ev_1d54471c83d0e4beade9f26c5f556d7aa7a8fda485f4e34881297a1010f427a6",
+      "seen": 2
+    },
+    {
+      "name": "apiGetFlannelHttpUrl",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/apiGetFlannelHttpUrl.md",
+      "reaEvidenceId": "ev_7ddb64541b988ce0d78e2608d31cf4d1894a133b795174337daaf20c71b573f4",
+      "seen": 2
+    },
+    {
+      "name": "appBoot",
+      "domain": "boot",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "boot/appBoot.md",
+      "reaEvidenceId": "ev_3f950f5511e42ad6153036f13fd5395b0a2449e37d42dc8d71c817d7af0194b7",
+      "seen": 1
+    },
+    {
+      "name": "appClogTrack",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/appClogTrack.md",
+      "reaEvidenceId": "ev_3f950f5511e42ad6153036f13fd5395b0a2449e37d42dc8d71c817d7af0194b7",
+      "seen": 1
+    },
+    {
+      "name": "bookmarksList",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/bookmarksList.md",
+      "reaEvidenceId": "ev_40d3903db77a72ccaeaab50917039bb895fce5af28babe9b1304895404c96802",
+      "seen": 2
+    },
+    {
+      "name": "calendarGetInstalledCalendars",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/calendarGetInstalledCalendars.md",
+      "reaEvidenceId": "ev_27798859e318688f0df5a046e58941768c2b8f864bb91f7e6ee7b291e3ad1a70",
+      "seen": 2
+    },
+    {
+      "name": "chatPostMessage",
+      "domain": "messages",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "messages/chatPostMessage.md",
+      "reaEvidenceId": "ev_2cfc7f21f22baeccaef22dc290b92d3d636210c9ef80112f14aa7228c9c28c23",
+      "seen": 4
+    },
+    {
+      "name": "clientAppCommands",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/clientAppCommands.md",
+      "reaEvidenceId": "ev_55a6fa408c20ebeabe44fdae92e9bcfd39e913ab4e6198dab07a384ec2b614d7",
+      "seen": 1
+    },
+    {
+      "name": "clientChannels",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/clientChannels.md",
+      "reaEvidenceId": "ev_785fbb3fccac7189d193fb23f8d798decd1eed93c410adce714e423f355e75f4",
+      "seen": 2
+    },
+    {
+      "name": "clientCounts",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/clientCounts.md",
+      "reaEvidenceId": "ev_a86fe74a91fad953021f06e73c8039c1c3b2b4c52523fba8841e4164ca4de847",
+      "seen": 3
+    },
+    {
+      "name": "clientDms",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/clientDms.md",
+      "reaEvidenceId": "ev_a13fc52804073bfb00598ae35b2d8423b6c780212c02a1b59a064f824b314775",
+      "seen": 1
+    },
+    {
+      "name": "clientExtras",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/clientExtras.md",
+      "reaEvidenceId": "ev_c9fe1f0442839e09888210f67ae438498321d994bf73af4f7232c51ba282598b",
+      "seen": 2
+    },
+    {
+      "name": "clientGetWebSocketURL",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/clientGetWebSocketURL.md",
+      "reaEvidenceId": "ev_51ccc56eec661692e09ef6bbff958d9df505a7e706f58b323b19ae855768c702",
+      "seen": 1
+    },
+    {
+      "name": "clientInit",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/clientInit.md",
+      "reaEvidenceId": "ev_e942310078276f18690d9db6f8b6b3cb309fe84f36b3b458e894fc57e75c23aa",
+      "seen": 2
+    },
+    {
+      "name": "clientShouldReload",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/clientShouldReload.md",
+      "reaEvidenceId": "ev_2996fdc433a0d8c3802737045c4c2ddf029d1fd662a71194c2326befe2a9286f",
+      "seen": 2
+    },
+    {
+      "name": "conversationsGenericInfo",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/conversationsGenericInfo.md",
+      "reaEvidenceId": "ev_b0b9b469d7f4ea706fbef57e76f36fd79776b009477d63e3da46553eee76d18c",
+      "seen": 2
+    },
+    {
+      "name": "conversationsHistory",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/conversationsHistory.md",
+      "reaEvidenceId": "ev_11ed74c75a76c1fe765d328b3636a7ee87faefb6d6d67305edf8e854a4df3fb4",
+      "seen": 4
+    },
+    {
+      "name": "conversationsListPrefs",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/conversationsListPrefs.md",
+      "reaEvidenceId": "ev_ece15874928453e39fcf14aae0aedbc39be3079aa0487749047b787f47d63b8f",
+      "seen": 3
+    },
+    {
+      "name": "conversationsMark",
+      "domain": "messages",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "messages/conversationsMark.md",
+      "reaEvidenceId": "ev_b6ad05ea9c4f6bbe03389fcba1bcaaf1c6f6c7316b1abcd0ffd0305b4f722462",
+      "seen": 2
+    },
+    {
+      "name": "conversationsSearchLinks",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/conversationsSearchLinks.md",
+      "reaEvidenceId": "ev_6f6e69bfefce6e514717cc40b351c99fbccbf7ca680ffc79b890c9047ea53d9f",
+      "seen": 2
+    },
+    {
+      "name": "conversationsTeamConnections",
+      "domain": "conversations",
+      "kind": "query",
+      "docId": null,
+      "doc": "conversations/conversationsTeamConnections.md",
+      "reaEvidenceId": "ev_bf332ce057b02c915546a8471d8ceda0774db452c4bd0813ce0701c6ad3faa7f",
+      "seen": 1
+    },
+    {
+      "name": "conversationsView",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/conversationsView.md",
+      "reaEvidenceId": "ev_228206b12795c642f70ae405e9ec13d7b4581bac87ee57a88d8cf472063a4945",
+      "seen": 2
+    },
+    {
+      "name": "dndInfo",
+      "domain": "people",
+      "kind": "query",
+      "docId": null,
+      "doc": "people/dndInfo.md",
+      "reaEvidenceId": "ev_9fcaf9c15ef062642e32d15435406fc3694dd7d4085eff1e354774b9beb7340f",
+      "seen": 2
+    },
+    {
+      "name": "dndTeamInfo",
+      "domain": "people",
+      "kind": "query",
+      "docId": null,
+      "doc": "people/dndTeamInfo.md",
+      "reaEvidenceId": "ev_e155976e730445a1e2ee00e54f9fbcbc57f4556e541ad2d601de0b94c62a2f4e",
+      "seen": 2
+    },
+    {
+      "name": "draftsCreate",
+      "domain": "messages",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "messages/draftsCreate.md",
+      "reaEvidenceId": "ev_ab1a20f58a433cdc1c7a9f9eff1309fec620995c3114f9dad3b6e5a543687711",
+      "seen": 4
+    },
+    {
+      "name": "draftsDelete",
+      "domain": "messages",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "messages/draftsDelete.md",
+      "reaEvidenceId": "ev_70a2c8c1076d1c4aa77ef1c0614ac5d9ed75e9a42a6a10dc7e67783412ef2ac0",
+      "seen": 1
+    },
+    {
+      "name": "draftsList",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/draftsList.md",
+      "reaEvidenceId": "ev_f3479f7f5b9daa9dceef7b15a9ad2713400dad3dbb01d17a2c8d0e74f2742b2c",
+      "seen": 2
+    },
+    {
+      "name": "draftsListActive",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/draftsListActive.md",
+      "reaEvidenceId": "ev_9f45ef2fef0bed99d00f70d43072cc308f3ce7a605544e48fba9626d281a1385",
+      "seen": 1
+    },
+    {
+      "name": "draftsUpdate",
+      "domain": "messages",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "messages/draftsUpdate.md",
+      "reaEvidenceId": "ev_393c379ebcd2d612034a5b6a17f377c66133e9187f6250b2610105c57300caa5",
+      "seen": 1
+    },
+    {
+      "name": "edgeapiCacheChannelsInfo",
+      "domain": "conversations",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "conversations/edgeapiCacheChannelsInfo.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 4
+    },
+    {
+      "name": "edgeapiCacheChannelsMembership",
+      "domain": "conversations",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "conversations/edgeapiCacheChannelsMembership.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 1
+    },
+    {
+      "name": "edgeapiCacheHuddlesInfo",
+      "domain": "activity",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "activity/edgeapiCacheHuddlesInfo.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 4
+    },
+    {
+      "name": "edgeapiCacheHuddlesList",
+      "domain": "activity",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "activity/edgeapiCacheHuddlesList.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 2
+    },
+    {
+      "name": "edgeapiCachePermissionsInfo",
+      "domain": "people",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "people/edgeapiCachePermissionsInfo.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 12
+    },
+    {
+      "name": "edgeapiCacheUsersCounts",
+      "domain": "people",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "people/edgeapiCacheUsersCounts.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 1
+    },
+    {
+      "name": "edgeapiCacheUsersInfo",
+      "domain": "people",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "people/edgeapiCacheUsersInfo.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 11
+    },
+    {
+      "name": "edgeapiCacheUsersList",
+      "domain": "people",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "people/edgeapiCacheUsersList.md",
+      "reaEvidenceId": "ev_c768a8dd3a32ade2e987e251d0627a66b7d798dc007c87a92e41828826c7a8e2",
+      "seen": 2
+    },
+    {
+      "name": "experimentsGetByUser",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/experimentsGetByUser.md",
+      "reaEvidenceId": "ev_c1f0045fb8d971ed590cc6de38e0a27b19246d205b6e190ed91fac4cabfedbae",
+      "seen": 2
+    },
+    {
+      "name": "featuresAccessPoliciesList",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/featuresAccessPoliciesList.md",
+      "reaEvidenceId": "ev_7f96348a092aafff7bc33ebbf88e3b2d0490512a370bd68c7b2e6d032a514bb3",
+      "seen": 2
+    },
+    {
+      "name": "filesChannelSettingsAllowDownloads",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/filesChannelSettingsAllowDownloads.md",
+      "reaEvidenceId": "ev_edb2eb822fc0e6f3b5ece5b0154145b1fb85ac6e241192c0f8691b7d79cb39b7",
+      "seen": 2
+    },
+    {
+      "name": "filesCollectionsList",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/filesCollectionsList.md",
+      "reaEvidenceId": "ev_f05c61f401ab56ba3699a78c0655e8f6ebc87a000b70cc91d182848f77e516a0",
+      "seen": 2
+    },
+    {
+      "name": "filesInfo",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/filesInfo.md",
+      "reaEvidenceId": "ev_12ba4cbff16bcfff03c965806d7b9ef2b8cd4fa735ec9b7a8a1cf8c7cfa9bb71",
+      "seen": 1
+    },
+    {
+      "name": "functionsWorkflowsList",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/functionsWorkflowsList.md",
+      "reaEvidenceId": "ev_d937ea767a7267c2663cc1ef22506520d6e297b8d2e8d426a4189b01ea42679a",
+      "seen": 2
+    },
+    {
+      "name": "helpIssuesTicketStats",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/helpIssuesTicketStats.md",
+      "reaEvidenceId": "ev_eda8b0eeda36dea9dd5e62631a4c5eb57372e9a048a40b6aa5bb18ad64003d02",
+      "seen": 2
+    },
+    {
+      "name": "linksGetDomains",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/linksGetDomains.md",
+      "reaEvidenceId": "ev_4a8886575dabfa8974994a6184592e0c330698626980cf00b54a7909f0d9eec9",
+      "seen": 1
+    },
+    {
+      "name": "megaphoneNotificationsList",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/megaphoneNotificationsList.md",
+      "reaEvidenceId": "ev_e17cfbdfab177a94900b80d1ca7b2fe660af932547648ecd8e88b642d2eb9d73",
+      "seen": 5
+    },
+    {
+      "name": "messagesList",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/messagesList.md",
+      "reaEvidenceId": "ev_c214088d5c37b96db1863c7fc1132784da2ee2181aa4d4d6115355253ee62580",
+      "seen": 2
+    },
+    {
+      "name": "promoCampaignsEligibilityInfo",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/promoCampaignsEligibilityInfo.md",
+      "reaEvidenceId": "ev_30d1b73f84d4a18cd2ef1b4bb78339644d7b1314b12c79a724547f1d9d21ac17",
+      "seen": 1
+    },
+    {
+      "name": "quipGetControllerInitData",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/quipGetControllerInitData.md",
+      "reaEvidenceId": "ev_a47771702afcf6462bd855c398bf3b93af40c68eaaf29daf82d7f8e230768ee1",
+      "seen": 1
+    },
+    {
+      "name": "quipLookupThreadIds",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/quipLookupThreadIds.md",
+      "reaEvidenceId": "ev_ded8f36da996e21cd24d54a17b9c52bd574b65bfa6a382b17d43adf174e8944f",
+      "seen": 1
+    },
+    {
+      "name": "savedList",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/savedList.md",
+      "reaEvidenceId": "ev_62782e16f780de89eb58fb07151807e89dcf2a22c4a01e7a51a6e22fcfb2bc55",
+      "seen": 1
+    },
+    {
+      "name": "searchModulesFiles",
+      "domain": "files",
+      "kind": "query",
+      "docId": null,
+      "doc": "files/searchModulesFiles.md",
+      "reaEvidenceId": "ev_312d4cfd4b0b2db945b0030733025ba07f628a7848e92a01308d6763541539f1",
+      "seen": 5
+    },
+    {
+      "name": "sfdcIntegrationListOrgs",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/sfdcIntegrationListOrgs.md",
+      "reaEvidenceId": "ev_a798b7b6340b3e08f62a20eeac16b71596ede646cbfa5970cd07f123f44281ef",
+      "seen": 2
+    },
+    {
+      "name": "sharedInvitesCanGetLink",
+      "domain": "activity",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "activity/sharedInvitesCanGetLink.md",
+      "reaEvidenceId": "ev_2906b68ca898d9b503bd70e2e03c98ea207957870def4d3f71556b63a336e441",
+      "seen": 2
+    },
+    {
+      "name": "signinFindWorkspaces",
+      "domain": "signin",
+      "kind": "query",
+      "docId": null,
+      "doc": "signin/signinFindWorkspaces.md",
+      "reaEvidenceId": "ev_d0f640a6f473253defb026e7558c7e35073a8ccd86d05a61e21ddde6ffd69496",
+      "seen": 2
+    },
+    {
+      "name": "slackBeaconError",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/slackBeaconError.md",
+      "reaEvidenceId": "ev_bdfab10512b46ded775d22e8102fdb497797c1e0af64f1c1366855e7e9a17cfd",
+      "seen": 12
+    },
+    {
+      "name": "slackClogTrack",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/slackClogTrack.md",
+      "reaEvidenceId": "ev_bdfab10512b46ded775d22e8102fdb497797c1e0af64f1c1366855e7e9a17cfd",
+      "seen": 3
+    },
+    {
+      "name": "subscriptionsThreadGet",
+      "domain": "messages",
+      "kind": "query",
+      "docId": null,
+      "doc": "messages/subscriptionsThreadGet.md",
+      "reaEvidenceId": "ev_a43314148da83fd9fe8fd728f37ab130d0765c5beffcd87246fa0be2eb978482",
+      "seen": 5
+    },
+    {
+      "name": "teamInfo",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/teamInfo.md",
+      "reaEvidenceId": "ev_4f6cc81b74b9b976c4bb3eafd5b31bc09b8d38784a2e4de7a74b27eda7aca68a",
+      "seen": 2
+    },
+    {
+      "name": "teamTargetingCriteria",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/teamTargetingCriteria.md",
+      "reaEvidenceId": "ev_c76a2f4b23303c5d6cb742e67c195f1e41c727894432459bbfa72ca602379f7e",
+      "seen": 2
+    },
+    {
+      "name": "ublockworkaroundHistory",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/ublockworkaroundHistory.md",
+      "reaEvidenceId": "ev_2f8dd806490806c59de0f0b61fac07f8b79263d795e0780144a6544292b6ea5e",
+      "seen": 1
+    },
+    {
+      "name": "usersCustomStatusList",
+      "domain": "people",
+      "kind": "query",
+      "docId": null,
+      "doc": "people/usersCustomStatusList.md",
+      "reaEvidenceId": "ev_9b329f109ece119a5ee9eaa1772ab1fafca7445da1e77b7a6358c53385f505b9",
+      "seen": 2
+    },
+    {
+      "name": "usersInteractionsList",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/usersInteractionsList.md",
+      "reaEvidenceId": "ev_7a56e8c265c0a541a39c3e03b4b433d1e417707288187b78005958f4cb4dde5a",
+      "seen": 10
+    },
+    {
+      "name": "usersPrefsGet",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/usersPrefsGet.md",
+      "reaEvidenceId": "ev_59a3e2f0c8361999276f19b41c8aaba6b4592bc614aa292fd175d0b50c70d59a",
+      "seen": 4
+    },
+    {
+      "name": "usersProfileGet",
+      "domain": "people",
+      "kind": "query",
+      "docId": null,
+      "doc": "people/usersProfileGet.md",
+      "reaEvidenceId": "ev_faa9f7318ff0f6d50c372eeec541ae040c0c16f852fe8046533df4f9dd1da0c8",
+      "seen": 2
+    },
+    {
+      "name": "usersStateMachine",
+      "domain": "boot",
+      "kind": "query",
+      "docId": null,
+      "doc": "boot/usersStateMachine.md",
+      "reaEvidenceId": "ev_e1063020a3dbf78451ebdfca64ab4e699ceebc1b556f62d91d9b8c7b1c97e6ab",
+      "seen": 1
+    },
+    {
+      "name": "workflowsTriggersList",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/workflowsTriggersList.md",
+      "reaEvidenceId": "ev_a8dbfb68db434860e0915a9b1b3369c622f026f6a4fe915525979649c5b4a2f0",
+      "seen": 2
+    },
+    {
+      "name": "workflowsTriggersListRecentlyRunForUser",
+      "domain": "activity",
+      "kind": "query",
+      "docId": null,
+      "doc": "activity/workflowsTriggersListRecentlyRunForUser.md",
+      "reaEvidenceId": "ev_dedefe8f5c9bf25865878532dacaef0267cd959144206d2bf7454178e4b7d09a",
+      "seen": 2
+    },
+    {
+      "name": "workspaceCanvasLoadDataEditor",
+      "domain": "files",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "files/workspaceCanvasLoadDataEditor.md",
+      "reaEvidenceId": "ev_8e526ea44d509b2345523a2b8fbad8f3132d9bb96337397d521928ad1b65e5a9",
+      "seen": 1
+    },
+    {
+      "name": "workspaceClogTrack",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/workspaceClogTrack.md",
+      "reaEvidenceId": "ev_ffc95fd1733d84ad5e1d814282109c4a915794e3e7d4c911c430d7c30bbf1f40",
+      "seen": 15
+    }
+  ]
+}

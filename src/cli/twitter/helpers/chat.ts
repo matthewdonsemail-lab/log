@@ -2,11 +2,15 @@ import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
 import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
 import { addPending } from "../../../inbox/watch/index.ts";
+import { ownOrAttach } from "../../../inbox/relay/index.ts";
+import { appendEvent, eventIdOf, recordPosition } from "../../../inbox/store/index.ts";
+import { enqueueAttachments } from "../../../media/describer/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult } from "../../runner/types.ts";
 import { openTwitterAccount } from "./account.ts";
+import type { Engine } from "./account.ts";
 
 export const CHAT_USAGE = [
   "Usage: log twitter chat pin --account <accountName> [--show]",
@@ -142,15 +146,56 @@ async function watchChat(context: CommandContext, argv: string[]): Promise<Comma
   const toInbox = parsed.flags["inbox"] === true;
   const json = parsed.flags["json"] === true;
   const events: XChatLiveEvent[] = [];
-  context.err(`${account.accountName}: watching X Chat over X's own socket (wss://chat-ws.x.com)${chatPin ? ", opened with the saved PIN" : ", no PIN saved so messages stay encrypted"}${toInbox ? ", new messages go to the inbox hook" : ""}`);
-  const run = await live(account, { action: "xchatWatch", ...(seconds ? { seconds } : {}), ...(chatPin ? { chatPin } : {}) }, (event) => {
-    events.push(event);
-    context.err(liveLine(event));
-    if (toInbox && isChatMessage(event) && !event.fromMe) addPending([inboxMessageOf(account.accountName, event, context.now?.() ?? new Date())]);
+  const owned = await ownOrAttach("twitter", account.accountName, {
+    inbox: toInbox,
+    seconds,
+    onAttached: (event) => context.err(event.type === "relayJoined" ? `@${account.accountName}: attached to the one X Chat connection already open (${String(event.subscribers)} subscriber(s)), nothing new opened` : liveLine(event as unknown as XChatLiveEvent)),
+    run: (emit) => {
+      context.err(`${account.accountName}: the one owner of X Chat's socket (wss://chat-ws.x.com)${chatPin ? ", opened with the saved PIN" : ", no PIN saved so messages stay encrypted"}; new messages go to the inbox and to every attached subscriber`);
+      return live(account, { action: "xchatWatch", ...(seconds ? { seconds } : {}), ...(chatPin ? { chatPin } : {}) }, (event) => {
+        events.push(event);
+        context.err(liveLine(event));
+        emit(event as unknown as Record<string, unknown>);
+        if (isChatMessage(event) && !event.fromMe) {
+          const inbox = inboxMessageOf(account.accountName, event, context.now?.() ?? new Date());
+          enqueueAttachments(inbox, (((event as unknown as { media?: { filename?: string; type?: string; path?: string }[] }).media) ?? []).map((m) => ({ name: m.filename, type: m.type ?? "", path: m.path ?? null })));
+          addPending([inbox]);
+        }
+        if (isChatMessage(event) && event.fromMe) storeOwnMessage(account.accountName, inboxMessageOf(account.accountName, event, context.now?.() ?? new Date()), "live");
+      });
+    },
+    log: (line) => context.err(line),
+    catchUp: (gap) => twitterCatchUp(account.accountName, opened.engine, chatPin, gap.fromAt, context.now?.() ?? new Date()),
   });
+  if ("refused" in owned) return refuse("twitter chat watch", "watcherAlreadyRunning", owned.refused);
+  if (!owned.owner) return { code: owned.attached.ok ? 0 : 1, stdout: `log twitter chat watch: @${account.accountName}: attached to the one owner, ${owned.attached.events} event(s) received; ${owned.attached.reason}` };
+  const run = owned.result;
   for (const line of await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
   const messages = events.filter(isChatMessage);
   if (json) return { code: run.answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, ...run.answer, events: messages }, null, 2) };
   if (!run.answer.ok) return { code: 1, stdout: `log twitter chat watch: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
   return { code: 0, stdout: `log twitter chat watch: @${account.accountName}, ${messages.length} message${messages.length === 1 ? "" : "s"} pushed by X while watching, nothing polled` };
+}
+
+export function storeOwnMessage(account: string, m: ReturnType<typeof inboxMessageOf>, source: "live" | "catchUp"): boolean {
+  return !!appendEvent({ platform: "twitter", account, conversationId: m.conversationId, type: "ownMessage", with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.at, eventId: eventIdOf(m), source });
+}
+
+type CatchUpMessage = { conversationId?: string; senderId?: string; from?: string | null; text?: string | null; time?: string | null; fromMe?: boolean };
+
+export async function twitterCatchUp(account: string, engine: Engine, chatPin: string | undefined, fromAt: string, now: Date): Promise<{ appended: number; refused?: string; detail?: string }> {
+  const run = await engine({ action: "inbox", limit: 200, export: true, ...(chatPin ? { chatPin } : {}) });
+  const answer = run.answer as { ok?: boolean; code?: string; detail?: string; conversations?: { conversationId: string; box: string; messages: CatchUpMessage[] }[]; sync?: { maxSequenceId?: string; mode?: string } };
+  if (!answer.ok) return { appended: 0, refused: `${answer.code ?? "refused"}: ${answer.detail ?? ""}` };
+  let appended = 0;
+  for (const c of answer.conversations ?? []) {
+    for (const m of c.messages) {
+      if (m.text == null || !m.time || m.time <= fromAt) continue;
+      const row = { platform: "twitter", account, conversationId: c.conversationId, with: m.from || m.senderId || "?", text: m.text, at: m.time, box: c.box, seenAt: now.toISOString() };
+      const stored = m.fromMe ? storeOwnMessage(account, row, "catchUp") : !!appendEvent({ platform: "twitter", account, conversationId: row.conversationId, type: "message", with: row.with, text: row.text, box: row.box, payload: row, sourceAt: row.at, receivedAt: now.toISOString(), eventId: eventIdOf(row), source: "catchUp" });
+      if (stored) appended++;
+    }
+  }
+  if (answer.sync?.maxSequenceId) recordPosition("twitter", account, String(answer.sync.maxSequenceId), "", now);
+  return { appended, detail: `X ${answer.sync?.mode ?? "sync"} from sequence ${answer.sync?.maxSequenceId ?? "?"}` };
 }

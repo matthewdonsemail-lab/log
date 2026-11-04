@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 33 domains, 400 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 35 domains, 425 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -60,6 +60,11 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-10** Every long-running tool points at the live log
 - **REQ-HOOKS-11** Every resolver is a real call
 - **REQ-HOOKS-12** Every platform's push channel reaches the agent through the inbox hook
+- **REQ-HOOKS-13** One watcher process per account, never two
+- **REQ-HOOKS-14** One owner per account, every other watch attaches to its relay
+- **REQ-HOOKS-15** Only the session that claims a chat acts on it
+- **REQ-HOOKS-16** The inbox is one database, read from cursors
+- **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -352,12 +357,13 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-01** twitterDms with a handle gives the thread and the person's activity
 - **REQ-CONTEXT-02** Activity names what they did and their words
 - **REQ-CONTEXT-03** Notifications are read again only when older than 2 minutes
-- **REQ-CONTEXT-04** The queue reads the thread and activity again before each send
+- **REQ-CONTEXT-04** The queue reads the context again from the .db before each send
 - **REQ-CONTEXT-05** Changes are counted since the item was drafted
 - **REQ-CONTEXT-06** An item whose context changed is held, not sent
 - **REQ-CONTEXT-07** A held item is put back only with queue edit
 - **REQ-CONTEXT-08** An item cannot be edited while its run is going
 - **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
+- **REQ-CONTEXT-10** The context before a send is read from the .db once the account has caught up
 
 ## [Voice gate](./voiceGate.md)
 
@@ -371,6 +377,9 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-06** A draft passes only when every answer passes
 - **REQ-VOICE-07** A draft written in word pairs matt has never written fails
 - **REQ-VOICE-08** The vendored watermark scrambler reads every draft
+- **REQ-VOICE-09** The gate runs inside every send and refuses a failing draft
+- **REQ-VOICE-10** The chat's context is ranked for the moment and given in full
+- **REQ-VOICE-11** Only embeddings are stored, each once, in the .db
 
 ## [AI tells and watermark](./aiTells.md)
 
@@ -400,6 +409,7 @@ How a message to a person goes out: a draft on several lines goes out one messag
 - **REQ-SPLIT-04** The parts go out with his usual gap
 - **REQ-SPLIT-05** Every chat splits the same way
 - **REQ-SPLIT-06** A part that is not sent stops the rest
+- **REQ-SPLIT-08** A send stops the moment they write back
 - **REQ-SPLIT-07** A first message is gated whole as the opener
 
 ## [X Chat](./xChat.md)
@@ -522,6 +532,31 @@ Every voice note on X and Discord, sent to matt or by him, is transcribed with A
 - **REQ-TRANSCRIBE-11** Reads and the inbox transcribe as they go
 - **REQ-TRANSCRIBE-12** Audio is detected once, for every platform
 - **REQ-TRANSCRIBE-13** A new platform keeps its attachments from the start
+
+## [Media described](./mediaDescriber.md)
+
+Every image, meme, gif and video sent or received is described by one local vision model into the .db before anyone replies, and anything not described yet is shown as such. Rules 126, 131, 137 and 138.
+
+- **REQ-MEDIA-01** One describer per machine, the model loaded once
+- **REQ-MEDIA-02** It beats, and stops loudly past its memory ceiling
+- **REQ-MEDIA-03** Each description is labelled and embedded
+- **REQ-MEDIA-04** Every attachment a watch receives is queued, bounded
+- **REQ-MEDIA-05** The context shows the description, or that there is none yet
+- **REQ-MEDIA-06** The engines keep a local copy of every image and video sent
+
+## [Instagram](./instagram.md)
+
+What `log new platform instagram` made, and what the platform's code must keep doing as it grows. Rules 83, 117 and 123.
+
+- **REQ-INSTAGRAM-01** The account is found on its own platform's row and gated
+- **REQ-INSTAGRAM-02** The engine runs the account through the shared platform kit
+- **REQ-INSTAGRAM-03** Instagram's own answer is what gets recorded
+- **REQ-INSTAGRAM-05** The session is checked through the vendored instagrapi over curl_cffi
+- **REQ-INSTAGRAM-06** DMs are read through instagrapi, sending nothing and marking nothing seen
+- **REQ-INSTAGRAM-07** Sending goes through instagrapi, a dry run unless --live
+- **REQ-INSTAGRAM-08** New DMs are pushed by Instagram's realtime connection to the inbox hook
+- **REQ-INSTAGRAM-09** One continuous session per account, never a cold start per call
+- **REQ-INSTAGRAM-04** The platform is wired into the CLI and the direct-API routes
 
 ## [Marketplace copy versions](./marketplaceCopy.md)
 

@@ -1,10 +1,13 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { homedir, hostname } from 'node:os'
 import { join } from 'node:path'
 import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
-import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../agentHooks/sessionOffsets/index'
+import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
+import { mediaLine, mediaOf } from '../../media/describer/index'
+import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, openGap, readCursor, writeCursor } from '../store/index'
+import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -14,7 +17,7 @@ export function inboxRoot(): string {
 
 const pendingPath = () => join(inboxRoot(), 'pending.jsonl')
 const deliveredPath = () => join(inboxRoot(), 'delivered')
-const PENDING_OFFSET = 'pending'
+const SHARED_READER = 'shared'
 const planPath = () => join(inboxRoot(), 'next.json')
 const lockPath = () => join(inboxRoot(), 'poll.lock')
 const seenPath = (platform: string, account: string) => join(inboxRoot(), platform, account, 'seen.json')
@@ -47,10 +50,41 @@ export function newMessages(platform: string, account: string, threads: InboxThr
   return { messages, seen: next }
 }
 
+function messageOf(row: StoredEvent): InboxMessage {
+  const media = (mediaOf([row.eventId]).get(row.eventId) ?? []).map(mediaLine)
+  const payload = (() => {
+    try {
+      return JSON.parse(row.payload) as Record<string, unknown>
+    } catch {
+      return {}
+    }
+  })()
+  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: row.withWho, text: [row.text, ...media].filter(Boolean).join(" "), at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
+}
+
+function migrated(): void {
+  importPendingFile(pendingPath())
+}
+
 export function addPending(messages: readonly InboxMessage[]): void {
   if (!messages.length) return
-  mkdirSync(inboxRoot(), { recursive: true })
-  appendFileSync(pendingPath(), messages.map((m) => JSON.stringify(m)).join('\n') + '\n')
+  migrated()
+  for (const m of messages) appendEvent({ platform: m.platform, account: m.account, conversationId: m.conversationId, type: 'message', with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.seenAt || m.at, eventId: eventIdOf(m) })
+}
+
+export function incomingSince(platform: string, account: string, inChat: string | ((conversationId: string) => boolean), since: string): InboxMessage[] {
+  const matches = typeof inChat === 'string' ? (id: string) => id === inChat : inChat
+  const rows = db().prepare(`SELECT * FROM events WHERE platform = ? AND account = ? AND type = 'message' AND receivedAt > ? ORDER BY seq`).all(platform, account, since) as StoredEvent[]
+  return rows.filter((row) => matches(row.conversationId)).map(messageOf)
+}
+
+export function interruptedLines(account: string, heard: readonly InboxMessage[], held: readonly string[], sentCount: number, total: number): string[] {
+  return [
+    `>>> INTERRUPTED: ${account}: ${sentCount} of ${total} sent, then they wrote while it was going out, so the rest was held:`,
+    ...heard.map((m) => `  ${m.with || 'they'} at ${m.at}: "${m.text}"`),
+    ...held.map((p) => `  not sent: ${p}`),
+    'Read them and answer what they said before sending anything else (rule 109).',
+  ]
 }
 
 export function pollReaders(readers: readonly InboxReader[], now: Date = new Date()): InboxMessage[] {
@@ -84,26 +118,19 @@ export function hookReaderOf(raw: string): string {
 }
 
 export function takePending(reader?: string): InboxMessage[] {
-  if (reader === undefined && !existsSync(pendingPath())) return []
-  const lines = existsSync(pendingPath()) ? readFileSync(pendingPath(), 'utf8').split('\n').filter(Boolean) : []
-  let delivered: number
-  if (reader === undefined) {
-    delivered = Number(existsSync(deliveredPath()) ? readFileSync(deliveredPath(), 'utf8') : '0') || 0
-    if (lines.length <= delivered) return []
-    writeFileSync(deliveredPath(), String(lines.length))
-  } else {
-    const { offsets, firstLook } = readSessionOffsets(inboxRoot(), reader)
-    delivered = firstLook ? lines.length : offsets[PENDING_OFFSET] ?? lines.length
-    if (firstLook || lines.length !== delivered) writeSessionOffsets(inboxRoot(), reader, { ...offsets, [PENDING_OFFSET]: lines.length })
-    if (lines.length <= delivered) return []
+  migrated()
+  const key = reader ?? SHARED_READER
+  const cursor = readCursor(key)
+  const latest = latestSeq()
+  if (cursor === null && reader !== undefined) {
+    writeCursor(key, latest)
+    return []
   }
-  return lines.slice(delivered).flatMap((l) => {
-    try {
-      return [JSON.parse(l) as InboxMessage]
-    } catch {
-      return []
-    }
-  })
+  const rows = eventsAfter(cursor ?? 0, { type: 'message' })
+  if (latest !== cursor) writeCursor(key, latest)
+  const now = new Date()
+  for (const row of rows) markStage(row.eventId, 'shown', now)
+  return rows.map(messageOf)
 }
 
 export function claimPoll(now: Date = new Date(), random: () => number = Math.random): boolean {
@@ -147,6 +174,52 @@ export function coolingDown(stateRoot: string, account: string, now: Date = new 
   return state.day === localDay(now) && typeof state.day_count === 'number' && state.day_count >= dailyCap
 }
 
+const ALERTS_READER = (reader: string) => `alerts:${reader}`
+
+export function watchHolder(platform: string, account: string, alive: (pid: number) => boolean = processAlive): number {
+  const row = db().prepare("SELECT pid FROM owners WHERE platform = ? AND account = ? AND status != 'stopped'").get(platform, account) as { pid: number } | null
+  return row && alive(row.pid) ? row.pid : 0
+}
+
+export function addAlert(alert: { platform: string; account: string; kind: string; detail: string }, now: Date = new Date()): void {
+  addAlertRow(alert, now)
+}
+
+export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive, now: Date = new Date()): { ok: true } | { ok: false; holder: number } {
+  const claimed = immediate((handle) => {
+    const row = handle.prepare('SELECT pid, generation, heartbeat, status FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number; generation: number; heartbeat: string; status: string } | null
+    if (row && row.pid === pid) return { ok: true as const }
+    if (row && row.status !== 'stopped' && alive(row.pid)) {
+      addAlertRow({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${row.pid} owns it; it was refused and exited, so there is still one process` }, now, handle)
+      return { ok: false as const, holder: row.pid }
+    }
+    const stamp = now.toISOString()
+    const fromAt = row?.heartbeat ?? lastEventAt(platform, account, handle)
+    if (fromAt) openGap(platform, account, fromAt, row ? 'ownerRestarted' : 'noOwner', now, handle)
+    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation`).run(platform, account, pid, hostname(), stamp, stamp, (row?.generation ?? 0) + 1)
+    return { ok: true as const }
+  })
+  if (claimed.ok) {
+    mkdirSync(join(inboxRoot(), platform, account), { recursive: true })
+    writeFileSync(watchPidPath(platform, account), String(pid))
+  }
+  return claimed
+}
+
+export function releaseWatcher(platform: string, account: string, pid: number = process.pid): void {
+  db().prepare("UPDATE owners SET status = 'stopped', port = 0, token = '', subscribers = 0, heartbeat = ? WHERE platform = ? AND account = ? AND pid = ?").run(new Date().toISOString(), platform, account, pid)
+}
+
+export function takeAlerts(reader: string): string[] {
+  const key = ALERTS_READER(reader)
+  const cursor = readCursor(key)
+  const latest = (db().prepare('SELECT COALESCE(MAX(id), 0) AS id FROM alerts').get() as { id: number }).id
+  const from = cursor === null ? Math.max(0, latest - 5) : cursor
+  if (latest !== cursor) writeCursor(key, latest)
+  const rows = db().prepare('SELECT * FROM alerts WHERE id > ? ORDER BY id').all(from) as { platform: string; account: string; kind: string; detail: string; at: string }[]
+  return rows.map((a) => `!!! ${a.kind.toUpperCase()} ${a.platform} ${a.account} at ${a.at}: ${a.detail}`)
+}
+
 export function ensureLiveWatchers(platform: string, accounts: readonly string[], start: (account: string) => number | null, alive: (pid: number) => boolean = processAlive): string[] {
   if (process.env.LOG_INBOX_POLL === 'off') return []
   const started: string[] = []
@@ -154,6 +227,11 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
     const path = watchPidPath(platform, account)
     const pid = Number(existsSync(path) ? readFileSync(path, 'utf8').trim() : '') || 0
     if (pid && alive(pid)) continue
+    const holder = watchHolder(platform, account, alive)
+    if (holder) {
+      writeJson(path, holder)
+      continue
+    }
     if (watcherGone(platform, account)) continue
     const child = start(account)
     if (!child) continue
@@ -163,7 +241,7 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
-const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit')]
+const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit'), join('vendor', 'instagrapi', 'instagrapi')]
 const CODE_FILE = /\.(ts|py)$/
 const stampPath = () => join(inboxRoot(), 'codeStamp.json')
 
@@ -208,6 +286,8 @@ export function stopStaleWatchers(platform: string, accounts: readonly string[],
     const pid = Number(readFileSync(path, 'utf8').trim()) || 0
     if (!pid || !alive(pid) || statSync(path).mtimeMs >= stamp) continue
     kill(pid)
+    const holder = watchHolder(platform, account, alive)
+    if (holder && holder !== pid) kill(holder)
     rmSync(path, { force: true })
     stopped.push(account)
   }
@@ -253,12 +333,45 @@ export function startDiscordWatch(account: string, repo: string): number | null 
   }
 }
 
+export function describerEnv(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  const key = Object.keys(env).find((k) => k.toLowerCase() === 'path') ?? 'PATH'
+  const separator = process.platform === 'win32' ? ';' : ':'
+  const kept = String(env[key] ?? '').split(separator).filter((dir) => dir && !/msys64|mingw/i.test(dir))
+  return { ...env, [key]: kept.join(separator) }
+}
+
+export function startDescriber(repo: string): number | null {
+  const dir = join(inboxRoot(), 'model', 'describer')
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'scripts', 'media', 'describer.ts')], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: describerEnv() })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
 export function startSlackWatch(account: string, repo: string): number | null {
   const dir = join(inboxRoot(), 'slack', account)
   mkdirSync(dir, { recursive: true })
   const log = openSync(join(dir, 'watch.log'), 'a')
   try {
     const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'slack', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
+    child.unref()
+    return child.pid ?? null
+  } finally {
+    closeSync(log)
+  }
+}
+
+export function startInstagramWatch(account: string, repo: string): number | null {
+  const dir = join(inboxRoot(), 'instagram', account)
+  mkdirSync(dir, { recursive: true })
+  const log = openSync(join(dir, 'watch.log'), 'a')
+  try {
+    const child = spawn('bun', [join(repo, 'bin', 'log.ts'), 'instagram', 'watch', '--account', account, '--inbox'], { cwd: repo, detached: true, stdio: ['ignore', log, log], windowsHide: true, env: process.env })
     child.unref()
     return child.pid ?? null
   } finally {
@@ -303,12 +416,26 @@ function slackContext(messages: readonly InboxMessage[]): string {
   ].join('\n')
 }
 
+function instagramContext(messages: readonly InboxMessage[]): string {
+  const lines = messages.map((m) => `  @${m.with} on instagram ${m.account} at ${localTime(m.at)}: "${m.text.replace(/\s+/g, ' ').slice(0, 240)}" (thread ${m.conversationId})`)
+  const { account } = messages[0]
+  return [
+    `>>> NEW INSTAGRAM MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Instagram's realtime connection the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one (never through the browser):`,
+    `  1. Read the thread around it: \`instagramDms\` { account: "${account}", with: "<handle or thread>", limit: "20" }.`,
+    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<who>", context: "<what they said>" } (no text). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
+    '  3. Gate it: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
+    `  4. ${SEND_RULE} (\`instagramSendLive\` { account: "${account}", with: "<handle or thread>", text: "<draft>", approvedBy: "matt", confirmLive: true }; a meme or picture goes as photo: "<file>").`,
+    ...lines,
+  ].join('\n')
+}
+
 export function inboxContext(messages: readonly InboxMessage[]): string | null {
   if (!messages.length) return null
   const discord = messages.filter((m) => m.platform === 'discord')
   const slack = messages.filter((m) => m.platform === 'slack')
-  const rest = messages.filter((m) => m.platform !== 'discord' && m.platform !== 'slack')
-  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : []), ...(slack.length ? [slackContext(slack)] : [])]
+  const instagram = messages.filter((m) => m.platform === 'instagram')
+  const rest = messages.filter((m) => m.platform !== 'discord' && m.platform !== 'slack' && m.platform !== 'instagram')
+  const parts = [...(rest.length ? [twitterContext(rest)] : []), ...(discord.length ? [discordContext(discord)] : []), ...(slack.length ? [slackContext(slack)] : []), ...(instagram.length ? [instagramContext(instagram)] : [])]
   return parts.join('\n\n')
 }
 

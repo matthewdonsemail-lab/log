@@ -27,6 +27,8 @@ import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
+import { inboxCommand } from "../inbox/index.ts";
+import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
 import { jobCommand } from "../job/index.ts";
 import { mcpCommand } from "../mcp/index.ts";
@@ -40,6 +42,7 @@ import { redditSessionCommand } from "../reddit/index.ts";
 import { discordChatsCommand, discordDeleteCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
 import { linkedinCookiesCommand, linkedinSessionCommand } from "../linkedin/index.ts";
 import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
+import { instagramDmsCommand, instagramSendCommand, instagramSessionCommand, instagramWatchCommand } from "../instagram/index.ts";
 
 export * from "./helpers/index.ts";
 export { ALIASES, createContext, defaultSendInspect, runFast, takeProxyMs } from "./client.ts";
@@ -79,6 +82,8 @@ export const COMMANDS: Command[] = [
   graphCommand,
   captureCommand,
   runsCommand,
+  inboxCommand,
+  mediaCommand,
   browsersCommand,
   jobCommand,
   mcpCommand,
@@ -122,6 +127,10 @@ export const COMMANDS: Command[] = [
   slackWatchCommand,
   slackSendCommand,
   slackCookiesCommand,
+  instagramSessionCommand,
+  instagramDmsCommand,
+  instagramSendCommand,
+  instagramWatchCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

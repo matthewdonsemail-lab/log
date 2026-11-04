@@ -53,7 +53,11 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   slackRead: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.history', when: 'read (a chat, paged by cursor)', seam: 'directSlack' },
   slackWatch: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'websocket', method: 'connect', when: 'watch (Slack pushes each event over wss-primary.slack.com, nothing polled)', seam: 'directSlackLive' },
   slackSend: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'chat.postMessage', when: 'send --live', seam: 'directSlack' },
-  slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' }
+  slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' },
+  instagramSession: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directInstagram' },
+  instagramDms: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_threads', when: 'dms (the inbox, or one thread with --with)', seam: 'directInstagram' },
+  instagramSend: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_send', when: 'send --live (text one message per line, and --photo through direct_send_photo)', seam: 'directInstagram' },
+  instagramWatch: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'websocket', method: 'realtime_connect', when: 'watch (Instagram pushes each DM over its realtime MQTT, edge-mqtt.facebook.com, nothing polled)', seam: 'directInstagramLive' }
 }
 
 export function commandEngine(command: string): CommandEngine {
@@ -150,7 +154,7 @@ export function engineContext(states: LocalEngineState[] = allEngineStates(), no
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''
     const used = s.day === today ? `${s.today}/500 requests, ${s.mutations}/${s.writesPerDay ?? WRITES_PER_DAY_DEFAULT} writes today` : 'no requests today'
-    const open = s.session ? `, its one X session open (pid ${s.session.pid} since ${localClock(s.session.since)}, ${s.session.calls} calls)` : ''
+    const open = s.session ? `, its one session open (pid ${s.session.pid} since ${localClock(s.session.since)}, ${s.session.calls} calls)` : ''
     lines.push(`  ${s.account}: session ${s.sessionState ?? 'not read yet'}${s.checkedAt ? ` (${localClock(s.checkedAt)})` : ''}, ${used}${pause}${open}`)
   }
   return lines.join('\n')

@@ -1,3 +1,4 @@
+import { saveVectors, vectorsFor } from '../../../inbox/store/index'
 import { JINA_DIMENSIONS, JINA_EMBED_MODEL, JINA_RERANK_MODEL } from '../types'
 import type { AiEmbedder } from '../types'
 
@@ -19,13 +20,17 @@ export function jinaEmbedder(key = process.env.JINA_API_KEY ?? '', batch = 256):
     model: JINA_EMBED_MODEL,
     dimensions: JINA_DIMENSIONS,
     async embed(texts) {
-      const out: number[][] = []
-      for (let start = 0; start < texts.length; start += batch) {
-        const answer = await call('embeddings', key, { model: JINA_EMBED_MODEL, task: 'text-matching', dimensions: JINA_DIMENSIONS, input: texts.slice(start, start + batch) })
+      const held = vectorsFor(JINA_EMBED_MODEL, JINA_DIMENSIONS, texts)
+      const missing = [...new Set(texts.filter((_, i) => !held[i]))]
+      const made = new Map<string, number[]>()
+      for (let start = 0; start < missing.length; start += batch) {
+        const slice = missing.slice(start, start + batch)
+        const answer = await call('embeddings', key, { model: JINA_EMBED_MODEL, task: 'text-matching', dimensions: JINA_DIMENSIONS, input: slice })
         const data = (answer.data as { index: number; embedding: number[] }[]).sort((a, b) => a.index - b.index)
-        out.push(...data.map((d) => d.embedding))
+        data.forEach((d, i) => made.set(slice[i], d.embedding))
+        saveVectors(JINA_EMBED_MODEL, JINA_DIMENSIONS, data.map((d, i) => ({ text: slice[i], vector: d.embedding })))
       }
-      return out
+      return texts.map((text, i) => (held[i] ? Array.from(held[i]!) : made.get(text)!))
     },
     async rerank(query, documents) {
       if (!documents.length) return []

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 127;
+export const RULES_REVIEWED_THROUGH = 139;
 
 export const AGENTS_URI = "log://agents";
 
@@ -47,6 +47,16 @@ export const CORE_PRINCIPLES = [
   "40. Slack is reached only through vendor/gabrielSlack's one curl_cffi AsyncSession pinned to Chrome (`IMPERSONATE`, `chrome150`) with that target's own user agent, for its web API and its websocket alike, never httpx or websockets (`check:slackTransport`, rule 125).",
   "41. Audio is detected once, in the shared message layer (python/platformKit/media.py, src/platformKit/media): every platform keeps its messages' attachments, and every voice note goes through one AssemblyAI path (`transcribe`), kept by its file's hash and written into the conversation store as (voice note: \"…\") (rule 126).",
   "42. The voice gate also measures matt's own phrasing: a draft whose word pairs he has written fall below his own 10th percentile fails, with the pairs he never wrote named (\"is wild\"), and the vendored ai-watermark-scrambler (layer A) reads every draft for invisible or lookalike characters; both go to SubQ (rule 127).",
+  "43. Instagram is worked on the direct-API engine only, vendor/instagrapi over the MCP: `instagramDms` reads, `instagramSendLive` sends text and photos (a meme goes as `photo`), `instagramWatch` holds Instagram's realtime connection and the inbox hook puts each new DM in front of the agent. Never the account's browser for an Instagram action; a missing action is built on the engine (rule 128). Every Instagram call goes through the account's one session host: one client signed in once, one realtime connection, never a second process signing in (rule 129).",
+  "44. A message sent one line at a time stops the moment they write back: before each line after the first, the send reads what the push channel put in the inbox for that chat since it began, and if they wrote, the rest is held and the answer leads with `>>> INTERRUPTED` (what they said, the lines not sent). Answer them first, never resend. Discord, Slack, X dms (and the queue's) and Instagram alike; keep a Monitor on `~/.logCli/inbox/pending.jsonl` so each push wakes you (rule 130).",
+  "45. One watcher process per account per platform, never two: every Claude session shares it through the inbox (`pending.jsonl`). Never start a watch of your own while the inbox watcher holds the account: it is refused with `watcherAlreadyRunning`. A `>>> ONE PROCESS PER ACCOUNT, NEVER TWO` alert means a second one tried to start; tell matt at once (rule 131).",
+  "46. Every platform has one owner per account and everyone else attaches: the first watch is the owner (it holds the connection, writes the inbox and session.json with a 5 s heartbeat, and relays every event); any later `twitterChat` watch, `discordWatch`, `slackWatch` or `instagramWatch` attaches to that owner's relay and streams the same events without opening anything. An owner quiet for 60 s is stopped and alerted, and the next start takes over (rule 132).",
+  "47. Only the session that claims a chat acts on it. Every pushed message carries an event id; before drafting a reply, claim its chat with `inboxClaim` (10 minutes, renewed by claiming again). Every send claims the chat itself and releases it once sent, interrupted or failed, and a send into a chat another session holds is refused with `chatClaimedElsewhere`: leave it to that session. Read `inboxActions` for the chat first to see what was already done there (rule 133).",
+  "48. The inbox lives in one SQLite database, `~/.logCli/log.db`: the owner appends every event once with a sequence number and each session reads from its own cursor; owners, claims (each with a generation, checked before every part of a send), actions, alerts and stage timings are rows in it, and an event type nobody catalogued is stored and raised loudly. Never read or write the old inbox files by hand (rule 134).",
+  "49. Missing context is filled by catching up, never by re-reading the platform: each owner keeps the platform's last position, a gap (a restart or a dropped socket) marks the account behind, and one catch-up job in the owner pulls only the delta through the one session. A send waits for it and is refused with `accountBehind` if it can't; a refused catch-up stops everything on that account until matt says so (rule 135).",
+  "50. The context right before a send comes from the .db, not from X: messages both ways and what they did on the account's posts, once the account has caught up. Only catch-up, backfill and discovery read the platform (rule 136).",
+  "51. The voice gate runs inside every send (discord, slack, twitter dm, the queue, instagram), whether or not voice ran first: SubQ's read, the AI tells index with its reranker, matt's own phrasing, the watermark checker and the scrambler, against this chat's context from the .db ranked for the moment. A failing draft is refused with `voiceGateFailed` (held in the queue): rewrite it from what failed. Only embeddings are stored; results are fresh each send (rule 137).",
+  "52. Media is read before anyone replies: one local vision model (LFM2.5-VL-450M, kept warm in one describer per machine) describes every image, meme and video into the .db, and anything not described yet is shown so in the context; never answer a message whose media says not described yet as if you had seen it (rule 138).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -100,13 +110,14 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81, 104, 105],
   twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126],
-  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105],
+  twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105, 131, 132],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
   voice: [30, 39, 41, 63, 64, 98, 112, 127],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
+  media: [26, 41, 126, 131, 137, 138, 139],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121],
@@ -115,9 +126,10 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111],
-  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138],
   runs: [19, 22, 25, 27, 66, 73],
+  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
   mcp: [21, 47],
@@ -133,16 +145,20 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordSession: [13, 63, 64, 73, 83, 94],
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94, 126],
-  discordWatch: [13, 26, 63, 64, 73, 83, 94, 126],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122],
+  discordWatch: [13, 26, 63, 64, 73, 83, 94, 126, 131, 132],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],
   slackChats: [13, 63, 64, 73, 83, 94, 125],
   slackRead: [13, 63, 64, 73, 83, 94, 125, 126],
-  slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125],
-  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125],
+  slackWatch: [13, 26, 63, 64, 73, 83, 94, 123, 125, 131, 132],
+  slackSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 130, 133, 134, 135, 137, 138],
   slackCookies: [13, 21, 63, 64, 73, 83, 97, 125],
+  instagramSession: [13, 63, 64, 73, 83, 129],
+  instagramDms: [13, 63, 64, 73, 83, 94, 126, 129],
+  instagramSend: [8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130, 133, 135, 137, 138],
+  instagramWatch: [13, 26, 63, 64, 73, 83, 94, 123, 129, 131, 132],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

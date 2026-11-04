@@ -15,6 +15,7 @@ export interface VoiceDraft {
   everywhere?: VoiceEvidence
   phrasesNewToMatt?: string[]
   scrambler?: { suspicious: number; kinds: string[] }
+  conversation?: { from: string; text: string; at: string }[]
 }
 
 export interface VoiceReading {
@@ -32,6 +33,8 @@ export interface VoiceReading {
 
 export const VOICE_PASS = 0.8
 export const CONTEXT_PASS = 0.7
+export const RANKED_CONTEXT = 12
+export const RANKED_SHORTLIST = 40
 export const VOICE_MODEL = 'subq-snap-1.1'
 
 export const NEVER_SAYS: readonly string[] = [

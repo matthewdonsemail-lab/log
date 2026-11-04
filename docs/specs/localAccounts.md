@@ -18,7 +18,7 @@ Checked by: code and SubQ
 
 ### REQ-LOCAL-02: Pull copies every Twenty account in, keeping its Twenty id
 
-`log localAccount pull` copies every Twenty account (or one platform's, `--platform`) into the file with its cookies and its login (email, password, two-step secret, PIN). Each pulled row keeps its Twenty id, so its listings and groups still find it. An account already in the file is kept as it is unless `--refresh`. Twenty is not changed.
+`log localAccount pull` copies every Twenty account (or one platform's, `--platform`) into the file with its cookies and its login (email, password, two-step secret, PIN). Each pulled row keeps its Twenty id, so its listings and groups still find it. A Twenty row with no account name is skipped. An account already in the file (the same id, or the same platform and account name) is kept as it is unless `--refresh`. Twenty is not changed.
 
 Checked by: code and SubQ
 

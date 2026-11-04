@@ -1,0 +1,34 @@
+import { describe, expect, test } from "bun:test";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { appendEvent } from "../../inbox/store/index.ts";
+import { failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
+import type { GateReading } from "./helpers/voice.ts";
+
+const passing: GateReading = { to: "@x", voice: 0.95, inContext: 0.9, friendLike: 0.9, openerOnly: 1, toThem: null, neverSays: [], watermark: { level: "clean", findings: [] } as unknown as GateReading["watermark"], pass: true, model: "m", notHere: [], scrambler: { ran: true, suspicious: 0, hits: [] } as unknown as GateReading["scrambler"], ranked: [] };
+
+describe("the voice gate inside every send (rule 137)", () => {
+  test("a pass names nothing, and a fail names only what failed", () => {
+    expect(failedParts(passing)).toEqual([]);
+    const failing = { ...passing, voice: 0.4, neverSays: ["spot on"], pass: false };
+    const parts = failedParts(failing);
+    expect(parts).toHaveLength(2);
+    expect(parts[0]).toContain("spot on");
+    expect(parts[1]).toContain("voice 0.40");
+  });
+
+  test("the chat's context is ranked against the moment being answered, from the .db, in full", async () => {
+    process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "gate"));
+    const before = voiceDeps.aiEmbedder;
+    const words = ["camera", "video", "tax", "weather"];
+    voiceDeps.aiEmbedder = () => ({ model: "fake", dimensions: 4, embed: async (texts: string[]) => texts.map((t) => words.map((w) => (t.toLowerCase().includes(w) ? 1 : 0))), rerank: async (query: string, docs: string[]) => docs.map((d) => (d.toLowerCase().includes(query.split(" ")[0].toLowerCase()) ? 1 : 0)) });
+    try {
+      for (const [i, text] of ["the weather is grim", "camera arrived today, sent you the video", "tax return done"].entries()) appendEvent({ platform: "discord", account: "acct", conversationId: "D1", type: "message", with: "abel", text, sourceAt: `2026-11-04T0${i}:00:00Z`, receivedAt: `2026-11-04T0${i}:00:01Z` });
+      const ranked = await rankedContext("discord", "acct", { conversationId: "D1" }, "camera ok?", 1);
+      expect(ranked).toEqual([{ from: "abel", text: "camera arrived today, sent you the video", at: "2026-11-04T01:00:00Z" }]);
+    } finally {
+      voiceDeps.aiEmbedder = before;
+    }
+  });
+});

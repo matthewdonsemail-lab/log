@@ -37,14 +37,14 @@ export const localAccounts = {
   },
   rubrics: {
     'REQ-LOCAL-01': noul('Does localAccountsPath return the LOG_LOCAL_ACCOUNTS environment value when it is set and the default file otherwise, and does writeLocalAccounts write the file readable by its owner only (mode 0o600)?'),
-    'REQ-LOCAL-02': noul('Does pullLocalAccounts list Twenty socialAccounts (filtered by platform when given), merge each row with the non-empty values of loginSecrets, keep the Twenty row id on a new row, keep a row already in the file unless refresh is set, and never call create or update on Twenty?'),
+    'REQ-LOCAL-02': noul('Does pullLocalAccounts list Twenty socialAccounts (filtered by platform when given), skip a row with neither accountName nor name, match a row already in the file by its id or by platform and accountName, merge each other row with the non-empty values of loginSecrets, keep the Twenty row id on a new row, keep a row already in the file unless refresh is set, and never call create or update on Twenty?'),
     'REQ-LOCAL-03': noul('Does localAccount add accept any platform in PLATFORMS, save the row with upsertLocalAccount under the id LOCAL_ID_PREFIX, then the platform, a colon and the accountName, set adsPowerProfileId and browserDriver adsPower when the adsPower flag is given, and never write to Twenty?'),
     'REQ-LOCAL-04': noul('Does localAccount list print every row from readLocalAccounts with its platform, accountName, adsPowerProfileId and sessionState?'),
     'REQ-LOCAL-05': noul('Does createContext wrap the Twenty client with withLocalAccounts, and does its list of socialAccounts return the local rows followed by the Twenty rows whose platform and accountName match no local row?'),
     'REQ-LOCAL-06': noul('When localOnly is true (LOG_ACCOUNTS is local), do list, get, create, update and loginSecrets for socialAccounts use only the local file and never call the remote client for an account?'),
     'REQ-LOCAL-07': noul('Does update on socialAccounts write the change to the local file with writeLocalAccounts when the row is in the file, without calling remote.update?'),
     'REQ-LOCAL-08': noul('For every object other than socialAccounts, do list, get, create and update in withLocalAccounts call the remote client whatever localOnly says?'),
-    'REQ-LOCAL-09': noul('Does the COMMAND_RULES entry for localAccount include rule 97?'),
+    'REQ-LOCAL-09': noul('In src/mcp/server/helpers/agentRules.ts, the COMMAND_RULES object has one key per command with the rule numbers it falls under. Does its localAccount key list the number 97?'),
     unspecifiedBehavior: noul('Does the local accounts code write an account to Twenty when it should stay local, read Twenty with LOG_ACCOUNTS=local, or keep listings, groups or conversations in the local file, by a route the specification does not describe?'),
   },
   assertions: {
