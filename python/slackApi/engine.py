@@ -15,10 +15,11 @@ for p in (str(ROOT), str(VENDOR / "gabrielSlack")):
 
 from platformKit import engine as kit
 from platformKit import media
+from platformKit import reactions
 
 PLATFORM = "slack"
 LIBRARY = "vendor/gabrielSlack"
-WRITES: tuple[str, ...] = ("send",)
+WRITES: tuple[str, ...] = ("send", "react")
 SESSION_COOKIES = ("d",)
 SEND_GAP_SECONDS = (1.5, 3.5)
 WATCHED = ("message", "user_typing", "im_marked", "channel_marked", "reaction_added", "reaction_removed", "presence_change", "draft_create", "draft_send", "draft_delete", "badge_counts_updated", "reconnect_url", "hello")
@@ -270,6 +271,23 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return await with_workspace(spec, cookies, work)
 
 
+async def react(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    chat, ts = str(spec.get("chat") or "").strip(), str(spec.get("ts") or "").strip()
+    name = reactions.slack_name_of(str(spec.get("emoji") or ""))
+    remove = spec.get("remove") is True
+    if not chat or not ts or not name:
+        return {"ok": False, "code": "reactInvalid", "detail": "react needs the chat's id, the message's ts and an emoji (a Slack name like joy, or a common emoji)"}
+    method, benign = ("reactions.remove", "no_reaction") if remove else ("reactions.add", "already_reacted")
+
+    async def work(core: Any, session: Any) -> dict[str, Any]:
+        answer = await core.call_web_api(method, {"channel": chat, "timestamp": ts, "name": name})
+        if not answer.get("ok") and answer.get("error") != benign:
+            return {"ok": False, "code": "slackRefused", "detail": f"{method} answered {answer.get('error')}", "loginState": "loggedIn"}
+        return {"ok": True, "loginState": "loggedIn", "event": "sent", "mode": "react", "removed": remove, "chat": chat, "ts": ts, "emoji": name, **({"already": True} if not answer.get("ok") else {})}
+
+    return await with_workspace(spec, cookies, work)
+
+
 def live(event: dict[str, Any]) -> None:
     print(json.dumps({"liveEvent": event}, default=str), flush=True)
 
@@ -361,7 +379,7 @@ async def name_then_live(core: Any, names: dict[str, str], user: str, row: dict[
     live(row)
 
 
-ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "watch": watch}
+ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "react": react, "watch": watch}
 
 
 if __name__ == "__main__":

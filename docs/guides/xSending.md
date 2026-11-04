@@ -11,6 +11,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
 | `getGuide({ useCase: "instagram/dmReply" })` | Reading and answering an Instagram DM | "read my instagram dms", "what did <someone> say on instagram", "reply to <someone> on instagram", "send <someone> a meme on instagram" |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM | "read the messages with <someone> on slack", "reply to <someone> on slack", "what did <someone> say in <workspace>" |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
@@ -46,6 +47,8 @@ When the owner asks for one of these, follow its page step by step.
 | `twitterFollowLive` | Follow one person on X, on the direct-API engine, live on X |
 | `twitterDm` | Send one approved direct message on X, on the direct-API engine |
 | `twitterDmLive` | Send one approved direct message on X, on the…, live on X |
+| `twitterReact` | React to a X message with an emoji, on the direct-API engine |
+| `twitterReactLive` | React to a X message with an emoji, on the direct-API…, live on X |
 | `twitterQueueBuild` | Build a queue file pairing each target with one unique approved line… |
 | `twitterQueueShow` | Show a queue |
 | `twitterQueueCheck` | Check every pending item's target and house style |
@@ -477,6 +480,31 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
+### `twitterReact`
+
+React to a X message with an emoji, on the direct-API engine; a dry run unless --live.
+React to a X message with an emoji, on the direct-API engine; a dry run unless --live
+log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole. What acts on X is `twitterReactLive`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterReactLive`
+
+React to a X message with an emoji, on the direct-API engine; a dry run unless --live.
+Live on X: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+React to a X message with an emoji, on the direct-API engine; a dry run unless --live
+log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (useDMReactionMutationAddMutation), so a message only X Chat holds may be refused, and X's answer says so.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
 ### `twitterQueueBuild`
 
 Build a queue file pairing each target with one unique approved line, sending nothing.
@@ -708,3 +736,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 137.** 2026-11-04 · matt: keep every part of the voice gate ("necessary") and run it "as the whole voice process on the new .db", required inside every send, only at send time, scoped to that send, quiet; then "Yes, both" to jina-embeddings-v5-omni and the local media model. The voice gate is one step (`gateSend`, `src/cli/twitter/helpers/voice.ts`) inside `log discord send`, `log slack send`, `log twitter dm`, the queue's sends and `log instagram send`, after the account has caught up (rule 135) and before the chat is claimed (rule 133): a draft that fails is refused with `voiceGateFailed` whether or not `log voice` ran first, and in the X queue the item is held to be rewritten with `twitterQueueEdit`. All five checks stay: SubQ's read of matt's voice, the AI tells index with its reranker (rule 112), his own phrasing (rule 127), the watermark checker (rule 111) and the scrambler (rule 127). It reads the chat's context from the .db (rule 136), embeds it, ranks it against the moment being answered (cosine, then `jina-reranker-v3.5`) and gives SubQ the top moments in full (`rankedContext`, `thisConversationRankedForThisMoment`). Only embeddings are kept, in the .db (`embeddings`: the text's hash, model, dimensions and vector, each made once), with the AI tells index's phrase list and matt's baseline (`aiIndexes`); every result is worked out fresh for each send, never saved. Jina is `jina-embeddings-v5-omni-small` at 1024 dimensions (`text-matching`), and an index made with another model is rebuilt. The local embedder stays loaded in its process. A pass is one line; a fail names only what failed and why. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
 
 **Rule 138.** 2026-11-04 · matt: "a smaller local model" turns every piece of media into "a text representation", labelled with what it is, after a message went out answering only the text around a video someone sent; then "Yes, both" to downloading it. One media describer per machine (`log media describer`, `src/media/describer`), started by the inbox hook and locked like an owner (rule 131, a second is refused), loads `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the transformers.js runtime log already uses) and keeps it warm. Every image, meme, gif and video a watch receives goes into the .db's `media` queue (`enqueueAttachments`). The describer takes one at a time, describes a video from three frames (ffmpeg), labels each description with its kind, stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5 s, and stops loudly past its memory ceiling (`describerMemory`). The queue holds 20 at most: past that, an item is marked not described yet and alerted (`mediaQueueFull`). Media with no description is shown as `[video clip.mp4 not described yet: …]` in the inbox hook and in the voice gate's ranked context, so nobody replies to it blind; a description reaches both in its place. Audio stays with AssemblyAI (rule 126). A file the platform engine hasn't saved locally yet is listed as not described, with why. `log media describe <path>` queues one local file, and `log media status` shows the queue. Spec: `docs/specs/mediaDescriber.md`.
+
+**Rule 140.** 2026-11-04 · matt: "we're able to send reactions as well, across all of the clients. We need to be able to send reactions to messages as well." Every chat platform reacts to a message with an emoji through its own engine and its one session, never the browser: `log twitter react`, `log discord react`, `log slack react` and `log instagram react` (MCP `twitterReact`, `discordReact`, `slackReact`, `instagramReact`, each with its `…Live` twin), `--remove` taking the account's own reaction off. Each calls the platform's own reaction call: X's DM reaction mutation in `vendor/twikit` (an X Chat id is tried as the same pair, and X's answer decides), endcord's `send_reaction`, Slack's `reactions.add` (by name; the common emoji are turned into their names, `python/platformKit/reactions.py`) and instagrapi's `direct_send_reaction`. A dry run unless `--live` with `--approvedBy` (rule 8). The chat is claimed first and released after, as for a send (rule 133), the governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94). `src/cli/react`. Spec: `docs/specs/reactions.md`.

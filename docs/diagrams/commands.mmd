@@ -73,6 +73,7 @@ flowchart TB
     c_twitterRepost["repost"]
     c_twitterFollow["follow"]
     c_twitterDm["dm"]
+    c_twitterReact["react"]
     c_twitterQueue["queue"]
   end
   subgraph g_reddit["Reddit"]
@@ -85,6 +86,7 @@ flowchart TB
     c_discordWatch["watch"]
     c_discordSend["send"]
     c_discordDelete["delete"]
+    c_discordReact["react"]
   end
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
@@ -98,12 +100,14 @@ flowchart TB
     c_slackWatch["watch"]
     c_slackSend["send"]
     c_slackCookies["cookies"]
+    c_slackReact["react"]
   end
   subgraph g_instagram["Instagram"]
     c_instagramSession["session"]
     c_instagramDms["dms"]
     c_instagramSend["send"]
     c_instagramWatch["watch"]
+    c_instagramReact["react"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -242,6 +246,8 @@ flowchart TB
   mcp --> c_twitterFollow
   cli --> c_twitterDm
   mcp --> c_twitterDm
+  cli --> c_twitterReact
+  mcp --> c_twitterReact
   cli --> c_twitterQueue
   mcp --> c_twitterQueue
   c_twitterQueue --> live
@@ -263,6 +269,8 @@ flowchart TB
   mcp --> c_discordSend
   cli --> c_discordDelete
   mcp --> c_discordDelete
+  cli --> c_discordReact
+  mcp --> c_discordReact
   cli --> c_linkedinSession
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
@@ -283,6 +291,8 @@ flowchart TB
   mcp --> c_slackSend
   cli --> c_slackCookies
   c_slackCookies -.- terminal
+  cli --> c_slackReact
+  mcp --> c_slackReact
   cli --> c_instagramSession
   mcp --> c_instagramSession
   cli --> c_instagramDms
@@ -292,6 +302,8 @@ flowchart TB
   cli --> c_instagramWatch
   mcp --> c_instagramWatch
   c_instagramWatch --> live
+  cli --> c_instagramReact
+  mcp --> c_instagramReact
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

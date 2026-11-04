@@ -1946,6 +1946,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`with_visuals`, `visual_file_of`). Spec: `docs/specs/mediaDescriber.md`
     (REQ-MEDIA-06).
 
+140. 2026-11-04 · matt: "we're able to send reactions as well, across all of
+    the clients. We need to be able to send reactions to messages as well."
+    Every chat platform reacts to a message with an emoji through its own
+    engine and its one session, never the browser: `log twitter react`,
+    `log discord react`, `log slack react` and `log instagram react` (MCP
+    `twitterReact`, `discordReact`, `slackReact`, `instagramReact`, each with
+    its `…Live` twin), `--remove` taking the account's own reaction off. Each
+    calls the platform's own reaction call: X's DM reaction mutation in
+    `vendor/twikit` (an X Chat id is tried as the same pair, and X's answer
+    decides), endcord's `send_reaction`, Slack's `reactions.add` (by name;
+    the common emoji are turned into their names, `python/platformKit/reactions.py`)
+    and instagrapi's `direct_send_reaction`. A dry run unless `--live` with
+    `--approvedBy` (rule 8). The chat is claimed first and released after, as
+    for a send (rule 133), the governor counts it as a write, the platform's
+    answer decides (rule 73), and a refusal stops with nothing retried (rule
+    94). `src/cli/react`. Spec: `docs/specs/reactions.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
