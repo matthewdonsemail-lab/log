@@ -43,3 +43,9 @@ flowchart TD
 | 7 | Tell the owner what they said and what went out | the reply to the owner | both quoted with their times |
 
 New messages arrive by themselves: the inbox hook keeps `log slack watch --inbox` open for every signed-in account and puts each new DM, group message or mention in front of the agent (`>>> NEW SLACK MESSAGE`).
+
+## What the runs taught
+
+- **Read the chat before sending.** The voice gate inside `slackSendLive` reads the chat's context from the .db, not from Slack (rule 137). `slackRead` stores what it reads there as backfill, so step 3 is what gives the gate the chat's history. On 2026-11-04 a thank-you to Archie was refused three times while the .db held only 2 of his messages, and the gate read it as a cold first message with an ask in it. Backfilled history is never shown as new messages.
+- **Send by who it is with.** Give `chat` as the person ("archie"), not only the D… id, so the gate matches matt's history with them by name.
+- **Don't stack messages on a chat matt already answered.** When matt's own messages are the newest in the chat (he has already said thanks), a third message is refused as not his voice, and it reads like it. Answer it with a reaction instead (`slackReactLive`, [inbox/reactions](../inbox/reactions.md)), or leave it. The 🙏 on Archie's "sent u £20" went out this way.

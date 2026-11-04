@@ -181,7 +181,7 @@ class Host:
 def start_host(account: str) -> None:
     options: dict[str, Any] = {}
     if os.name == "nt":
-        options["creationflags"] = 0x00000008 | 0x00000200
+        options["creationflags"] = 0x08000000 | 0x00000200
     else:
         options["start_new_session"] = True
     log = open(host_log(account), "ab")

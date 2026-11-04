@@ -12,7 +12,7 @@ export function scramblerScript(): string {
 export type ScramblerRunner = (text: string) => { status: number | null; stdout: string; stderr: string }
 
 export const runScrambler: ScramblerRunner = (text) => {
-  const done = spawnSync(process.env.LOG_PYTHON || 'python', ['-I', '-X', 'utf8', scramblerScript(), '-', '--json', '--aggressive'], { input: text, encoding: 'utf8', env: { ...process.env, PYTHONIOENCODING: 'utf-8' } })
+  const done = spawnSync(process.env.LOG_PYTHON || 'python', ['-I', '-X', 'utf8', scramblerScript(), '-', '--json', '--aggressive'], { input: text, encoding: 'utf8', windowsHide: true, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } })
   return { status: done.status, stdout: done.stdout ?? '', stderr: done.stderr ?? '' }
 }
 

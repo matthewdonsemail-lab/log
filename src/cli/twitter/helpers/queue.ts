@@ -185,7 +185,7 @@ function buzz(args: { channel?: string; replyTo?: string; mentions: string[] }, 
   const cmd = ["messages", "send", "--channel", args.channel, "--content", content];
   if (args.replyTo) cmd.push("--reply-to", args.replyTo);
   if (mention) for (const m of args.mentions) cmd.push("--mention", m);
-  const sent = spawnSync("buzz", cmd, { encoding: "utf8", timeout: 60_000 });
+  const sent = spawnSync("buzz", cmd, { encoding: "utf8", timeout: 60_000, windowsHide: true });
   return sent.status === 0 ? "buzz alert sent" : `buzz alert FAILED: ${(sent.stderr || sent.stdout || String(sent.error ?? "")).slice(-160)}`;
 }
 

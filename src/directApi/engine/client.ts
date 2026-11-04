@@ -192,7 +192,7 @@ function spawnEngine(spec: object): EngineAnswer {
     const body = 'cookies' in spec ? { ...spec, cookies: undefined, cookiesPath: join(dir, 'cookies.txt') } : spec
     if ('cookies' in spec) writeFileSync(join(dir, 'cookies.txt'), spec.cookies as string, { mode: 0o600 })
     writeFileSync(file, JSON.stringify(body), { mode: 0o600 })
-    const run = spawnSync(python(), [ENGINE, file], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
+    const run = spawnSync(python(), [ENGINE, file], { encoding: 'utf8', windowsHide: true, maxBuffer: 16 * 1024 * 1024 })
     return lastJsonLine(run.stdout || '') ?? { ok: false, code: 'engineNoAnswer', detail: (run.stderr || 'no output').slice(-300) }
   } finally {
     rmSync(dir, { recursive: true, force: true })

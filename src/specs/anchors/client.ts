@@ -55,7 +55,7 @@ export function tsDeclaration(project: Project, path: string, name: string): Nod
 
 export function pythonSymbols(root: string, files: string[]): Record<string, PythonFile> {
   if (!files.length) return {}
-  const run = spawnSync(pythonBin(root), [join(root, 'python', 'checks', 'symbols.py'), ...files.map((f) => join(root, f))], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+  const run = spawnSync(pythonBin(root), [join(root, 'python', 'checks', 'symbols.py'), ...files.map((f) => join(root, f))], { encoding: 'utf8', windowsHide: true, maxBuffer: 64 * 1024 * 1024 })
   if (run.status !== 0) throw new Error(`python symbols failed: ${run.stderr}`)
   const parsed = JSON.parse(run.stdout) as Record<string, PythonFile>
   return Object.fromEntries(files.map((f) => [f, parsed[join(root, f)]!]))

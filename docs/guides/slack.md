@@ -131,7 +131,7 @@ log slack react --account <accountName> --chat <chat> --message <id> --emoji <em
 Reacts to one message with an emoji, on the direct-API engine (vendor/gabrielSlack, reactions.add and reactions.remove, no browser), or takes the account's own reaction off with --remove. Slack reacts by name (joy, fire, eyes, or a workspace's own); the common emoji are turned into their names, and one it doesn't know is refused with reactInvalid, so give its name. Already reacted counts as done.
 Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "slack" }) (A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending).
 AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 125, 133, 140, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

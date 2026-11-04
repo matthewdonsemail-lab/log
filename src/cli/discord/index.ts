@@ -190,6 +190,7 @@ export const discordReadCommand: Command = {
       const run = context.directDiscord(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
       const code = run.answer.ok ? 0 : 1;
       const messages = await withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: target }, (run.answer.messages as DiscordRead[] | undefined) ?? [], (m) => m.audio ?? [], context.err);
+      if (run.answer.ok) for (const m of messages) storeRead("discord", account.accountName, target, "dm", { id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text }, context.now?.() ?? new Date(), "backfill");
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ...run.answer, ...(run.answer.messages ? { messages } : {}) }, null, 2) };
       if (!run.answer.ok) return { code, stdout: `log discord read: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
       return {

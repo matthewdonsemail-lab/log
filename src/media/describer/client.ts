@@ -57,12 +57,12 @@ export function nextMedia(handle = db()): MediaRow | null {
 }
 
 export function framesOf(path: string, out: string, ffmpeg = 'ffmpeg', ffprobe = 'ffprobe'): string[] {
-  const probe = spawnSync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path], { encoding: 'utf8' })
+  const probe = spawnSync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', path], { encoding: 'utf8', windowsHide: true })
   const seconds = Number(probe.stdout.trim()) || 0
   mkdirSync(out, { recursive: true })
   return VIDEO_FRAMES.map((at, i) => {
     const frame = join(out, `frame${i + 1}.png`)
-    spawnSync(ffmpeg, ['-v', 'error', '-y', '-ss', String((seconds * at).toFixed(2)), '-i', path, '-frames:v', '1', frame])
+    spawnSync(ffmpeg, ['-v', 'error', '-y', '-ss', String((seconds * at).toFixed(2)), '-i', path, '-frames:v', '1', frame], { windowsHide: true })
     return frame
   }).filter((f) => existsSync(f))
 }
