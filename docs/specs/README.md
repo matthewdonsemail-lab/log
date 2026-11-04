@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 35 domains, 425 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 36 domains, 429 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -543,6 +543,15 @@ Every image, meme, gif and video sent or received is described by one local visi
 - **REQ-MEDIA-04** Every attachment a watch receives is queued, bounded
 - **REQ-MEDIA-05** The context shows the description, or that there is none yet
 - **REQ-MEDIA-06** The engines keep a local copy of every image and video sent
+
+## [Reactions](./reactions.md)
+
+The account reacts to a message with an emoji on X, Discord, Slack and Instagram through each platform's own engine and its one session, never the browser, as a write like any send. Rule 140.
+
+- **REQ-REACT-01** One react command per chat platform, a dry run unless --live
+- **REQ-REACT-02** The chat is claimed first and released after
+- **REQ-REACT-03** Each engine calls the platform's own reaction call, as a write
+- **REQ-REACT-04** An emoji or its name works on every platform
 
 ## [Instagram](./instagram.md)
 

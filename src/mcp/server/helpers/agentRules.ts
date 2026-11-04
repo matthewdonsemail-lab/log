@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 139;
+export const RULES_REVIEWED_THROUGH = 140;
 
 export const AGENTS_URI = "log://agents";
 
@@ -57,6 +57,7 @@ export const CORE_PRINCIPLES = [
   "50. The context right before a send comes from the .db, not from X: messages both ways and what they did on the account's posts, once the account has caught up. Only catch-up, backfill and discovery read the platform (rule 136).",
   "51. The voice gate runs inside every send (discord, slack, twitter dm, the queue, instagram), whether or not voice ran first: SubQ's read, the AI tells index with its reranker, matt's own phrasing, the watermark checker and the scrambler, against this chat's context from the .db ranked for the moment. A failing draft is refused with `voiceGateFailed` (held in the queue): rewrite it from what failed. Only embeddings are stored; results are fresh each send (rule 137).",
   "52. Media is read before anyone replies: one local vision model (LFM2.5-VL-450M, kept warm in one describer per machine) describes every image, meme and video into the .db, and anything not described yet is shown so in the context; never answer a message whose media says not described yet as if you had seen it (rule 138).",
+  "53. Reacting to a message is a write like a send: `twitterReactLive`, `discordReactLive`, `slackReactLive` or `instagramReactLive` with the chat and the message's id from the platform's read, the emoji (or its name) and `remove` to take one off; it claims the chat first, the platform's answer decides, and a refusal stops (rule 140).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -148,6 +149,10 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordWatch: [13, 26, 63, 64, 73, 83, 94, 126, 131, 132],
   discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
+  discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
+  slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
+  instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
+  twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],
   slackChats: [13, 63, 64, 73, 83, 94, 125],

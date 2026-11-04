@@ -12,6 +12,7 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|---|
 | `getGuide({ useCase: "discord/groupChatRead" })` | Reading a Discord group chat without Twenty | "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>" |
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
 | `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
 
 ## The tools in this guide
@@ -26,6 +27,8 @@ When the owner asks for one of these, follow its page step by step.
 | `discordSendLive` | Send one message on Discord, on the direct-API engine, live on Discord |
 | `discordDelete` | Delete the account's own Discord messages by id, on the direct-API… |
 | `discordDeleteLive` | Delete the account's own Discord messages by id, on…, live on Discord |
+| `discordReact` | React to a Discord message with an emoji, on the direct-API engine |
+| `discordReactLive` | React to a Discord message with an emoji, on the…, live on Discord |
 
 ## Every tool, in full
 
@@ -60,7 +63,7 @@ log discord read --account <accountName> --channel <channelId|chat name> [--limi
 Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "twitter/collabMaxxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -120,6 +123,31 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 122, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
+### `discordReact`
+
+React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live.
+React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live
+log discord react --account <accountName> --channel <channel> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/endcord, no browser), or takes the account's own reaction off with --remove. Discord takes any emoji, a name (joy, fire, eyes) turned into it, or a server's own emoji as name:id.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole. What acts on Discord is `discordReactLive`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 122, 133, 140, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `discordReactLive`
+
+React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live.
+Live on Discord: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live
+log discord react --account <accountName> --channel <channel> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/endcord, no browser), or takes the account's own reaction off with --remove. Discord takes any emoji, a name (joy, fire, eyes) turned into it, or a server's own emoji as name:id.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reactions" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 94, 122, 133, 140, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
 ## The rules these tools fall under, in full
 
 From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
@@ -173,3 +201,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 137.** 2026-11-04 · matt: keep every part of the voice gate ("necessary") and run it "as the whole voice process on the new .db", required inside every send, only at send time, scoped to that send, quiet; then "Yes, both" to jina-embeddings-v5-omni and the local media model. The voice gate is one step (`gateSend`, `src/cli/twitter/helpers/voice.ts`) inside `log discord send`, `log slack send`, `log twitter dm`, the queue's sends and `log instagram send`, after the account has caught up (rule 135) and before the chat is claimed (rule 133): a draft that fails is refused with `voiceGateFailed` whether or not `log voice` ran first, and in the X queue the item is held to be rewritten with `twitterQueueEdit`. All five checks stay: SubQ's read of matt's voice, the AI tells index with its reranker (rule 112), his own phrasing (rule 127), the watermark checker (rule 111) and the scrambler (rule 127). It reads the chat's context from the .db (rule 136), embeds it, ranks it against the moment being answered (cosine, then `jina-reranker-v3.5`) and gives SubQ the top moments in full (`rankedContext`, `thisConversationRankedForThisMoment`). Only embeddings are kept, in the .db (`embeddings`: the text's hash, model, dimensions and vector, each made once), with the AI tells index's phrase list and matt's baseline (`aiIndexes`); every result is worked out fresh for each send, never saved. Jina is `jina-embeddings-v5-omni-small` at 1024 dimensions (`text-matching`), and an index made with another model is rebuilt. The local embedder stays loaded in its process. A pass is one line; a fail names only what failed and why. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
 
 **Rule 138.** 2026-11-04 · matt: "a smaller local model" turns every piece of media into "a text representation", labelled with what it is, after a message went out answering only the text around a video someone sent; then "Yes, both" to downloading it. One media describer per machine (`log media describer`, `src/media/describer`), started by the inbox hook and locked like an owner (rule 131, a second is refused), loads `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the transformers.js runtime log already uses) and keeps it warm. Every image, meme, gif and video a watch receives goes into the .db's `media` queue (`enqueueAttachments`). The describer takes one at a time, describes a video from three frames (ffmpeg), labels each description with its kind, stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5 s, and stops loudly past its memory ceiling (`describerMemory`). The queue holds 20 at most: past that, an item is marked not described yet and alerted (`mediaQueueFull`). Media with no description is shown as `[video clip.mp4 not described yet: …]` in the inbox hook and in the voice gate's ranked context, so nobody replies to it blind; a description reaches both in its place. Audio stays with AssemblyAI (rule 126). A file the platform engine hasn't saved locally yet is listed as not described, with why. `log media describe <path>` queues one local file, and `log media status` shows the queue. Spec: `docs/specs/mediaDescriber.md`.
+
+**Rule 140.** 2026-11-04 · matt: "we're able to send reactions as well, across all of the clients. We need to be able to send reactions to messages as well." Every chat platform reacts to a message with an emoji through its own engine and its one session, never the browser: `log twitter react`, `log discord react`, `log slack react` and `log instagram react` (MCP `twitterReact`, `discordReact`, `slackReact`, `instagramReact`, each with its `…Live` twin), `--remove` taking the account's own reaction off. Each calls the platform's own reaction call: X's DM reaction mutation in `vendor/twikit` (an X Chat id is tried as the same pair, and X's answer decides), endcord's `send_reaction`, Slack's `reactions.add` (by name; the common emoji are turned into their names, `python/platformKit/reactions.py`) and instagrapi's `direct_send_reaction`. A dry run unless `--live` with `--approvedBy` (rule 8). The chat is claimed first and released after, as for a send (rule 133), the governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94). `src/cli/react`. Spec: `docs/specs/reactions.md`.

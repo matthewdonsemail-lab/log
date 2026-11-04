@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (15 commands of its own), Reddit (1 command of its own), Discord (6 commands of its own), LinkedIn (2 commands of its own), Slack (7 commands of its own), Instagram (4 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (16 commands of its own), Reddit (1 command of its own), Discord (7 commands of its own), LinkedIn (2 commands of its own), Slack (8 commands of its own), Instagram (5 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -27,9 +27,9 @@ flowchart LR
   e_fbk --> api
   p_facebook -->|"browser: facebook doctor, facebook connect, facebook profile, facebook host, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"| b_facebook["Facebook's browser path: its proxy in the account's home country (rule 12)"]
   b_facebook --> drivers
-  p_twitter["X (TWITTER): 15 commands of its own"]
+  p_twitter["X (TWITTER): 16 commands of its own"]
   twenty --> p_twitter
-  p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter cookies, twitter followers, twitter notifications, twitter reply, twitter quote, twitter post, twitter like, twitter repost, twitter follow, twitter dm, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
+  p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter cookies, twitter followers, twitter notifications, twitter reply, twitter quote, twitter post, twitter like, twitter repost, twitter follow, twitter dm, twitter react, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
   e_twikit --> api
   p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
   p_reddit["Reddit (REDDIT): 1 command of its own"]
@@ -38,9 +38,9 @@ flowchart LR
   e_rdvwr --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
-  p_discord["Discord (DISCORD): 6 commands of its own"]
+  p_discord["Discord (DISCORD): 7 commands of its own"]
   twenty --> p_discord
-  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send, discord delete"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
+  p_discord -->|"direct API: discord session, discord chats, discord read, discord watch, discord send, discord delete, discord react"| e_endcord["endcord (vendor/endcord): the saved session, a governor per account"]
   e_endcord --> api
   p_discord -->|"browser: the any-platform commands"| b_discord["Discord's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_discord --> drivers
@@ -50,15 +50,15 @@ flowchart LR
   e_openLinkedinApi --> api
   p_linkedin -->|"browser: the any-platform commands"| b_linkedin["LinkedIn's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_linkedin --> drivers
-  p_slack["Slack (SLACK): 7 commands of its own"]
+  p_slack["Slack (SLACK): 8 commands of its own"]
   twenty --> p_slack
-  p_slack -->|"direct API: slack session, slack workspaces, slack chats, slack read, slack watch, slack send, slack cookies"| e_gabrielSlack["gabrielSlack (vendor/gabrielSlack): the saved session, a governor per account"]
+  p_slack -->|"direct API: slack session, slack workspaces, slack chats, slack read, slack watch, slack send, slack cookies, slack react"| e_gabrielSlack["gabrielSlack (vendor/gabrielSlack): the saved session, a governor per account"]
   e_gabrielSlack --> api
   p_slack -->|"browser: the any-platform commands"| b_slack["Slack's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_slack --> drivers
-  p_instagram["Instagram (INSTAGRAM): 4 commands of its own"]
+  p_instagram["Instagram (INSTAGRAM): 5 commands of its own"]
   twenty --> p_instagram
-  p_instagram -->|"direct API: instagram session, instagram dms, instagram send, instagram watch"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
+  p_instagram -->|"direct API: instagram session, instagram dms, instagram send, instagram watch, instagram react"| e_instagrapi["instagrapi (vendor/instagrapi): the saved session, a governor per account"]
   e_instagrapi --> api
   p_instagram -->|"browser: the any-platform commands"| b_instagram["Instagram's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_instagram --> drivers
@@ -105,14 +105,14 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `instagram session`, `instagram dms`, `instagram send`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 36 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 40 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -134,6 +134,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter repost`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.retweet for the repost; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter follow`: the direct-API engine only (twikit, vendored in vendor/twikit, users.follow_user for the follow; no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter dm`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter react`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.add_reaction_to_message for the react --live (--remove takes it off); no browser and no proxy: X accounts call X directly, rule 80).
 - `log twitter queue`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80).
 
 **Reddit.** Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
@@ -148,6 +149,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log discord watch`: the direct-API engine only (endcord, vendored in vendor/endcord, gateway.Gateway for the watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled); no browser).
 - `log discord send`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.send_message for the send --live; no browser).
 - `log discord delete`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.delete_message for the delete --live (only the account own messages, each read first); no browser).
+- `log discord react`: the direct-API engine only (endcord, vendored in vendor/endcord, messages.send_reaction for the react --live (--remove takes it off); no browser).
 
 **LinkedIn.** LinkedIn's own answer decides. Each account has its own governor under ~/.logCli/linkedin/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
@@ -163,6 +165,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log slack watch`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, websocket.connect for the watch (Slack pushes each event over wss-primary.slack.com, nothing polled); no browser).
 - `log slack send`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, messages.chat.postMessage for the send --live; no browser).
 - `log slack cookies`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, account.exchange_cookie for the cookies save (the d cookie is checked with Slack before it is saved); no browser).
+- `log slack react`: the direct-API engine only (gabrielSlack, vendored in vendor/gabrielSlack, messages.reactions.add for the react --live (--remove takes it off); no browser).
 
 **Instagram.** Instagram's own answer decides. Each account has its own governor under ~/.logCli/instagram/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
@@ -170,6 +173,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log instagram dms`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, messages.direct_threads for the dms (the inbox, or one thread with --with); no browser).
 - `log instagram send`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, messages.direct_send for the send --live (text one message per line, and --photo through direct_send_photo); no browser).
 - `log instagram watch`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, websocket.realtime_connect for the watch (Instagram pushes each DM over its realtime MQTT, edge-mqtt.facebook.com, nothing polled); no browser).
+- `log instagram react`: the direct-API engine only (instagrapi, vendored in vendor/instagrapi, messages.direct_send_reaction for the react --live (--remove takes it off); no browser).
 
 ### How a call reaches log-cli
 
@@ -180,9 +184,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 148 command tools + saved flows"]
+  mcp["MCP server log: 156 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 82 commands (COMMANDS)"]
+  runCli["runCli: 86 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -294,6 +298,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter repost`](#log-twitter-repost) | Repost one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterRepost`, `twitterRepostLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter follow`](#log-twitter-follow) | Follow one person on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--approvedBy <who>` `--force` `--live` `--json` | direct API only | none | `twitterFollow`, `twitterFollowLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41 |
 | [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--media <file|url>` `--approvedBy <who>` `--skipStyleCheck` `--asOne` `--force` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138, 30, 38, 39, 40, 41 |
+| [`log twitter react`](#log-twitter-react) | React to a X message with an emoji, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--chat <chat>` `--message <id>` `--emoji <emoji>` `--remove` `--approvedBy <who>` `--live` `--json` | direct API only | none | `twitterReact`, `twitterReactLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140, 30, 38, 39, 40, 41 |
 | [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--skipXChatCheck` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--keepOpen` `--live` `--replies <n>` `--n <n>` `--text` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138, 30, 38, 39, 40, 41 |
 | [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--hosts <a.com,b.com>` `--home <https://…>` `--noProxy` `--noBrowser` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
 | [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
@@ -303,6 +308,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log discord watch`](#log-discord-watch) | Watch the account's Discord messages as Discord pushes them over its gateway, nothing polled, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `discordWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 126, 131, 132, 30, 38, 39, 40, 41 |
 | [`log discord send`](#log-discord-send) | Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--text` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordSend`, `discordSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138, 30, 38, 39, 40, 41 |
 | [`log discord delete`](#log-discord-delete) | Delete the account's own Discord messages by id, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--message <messageId>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordDelete`, `discordDeleteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 94, 122, 30, 38, 39, 40, 41 |
+| [`log discord react`](#log-discord-react) | React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live | `discord` first | `--account <accountName>` `--channel <channel>` `--message <id>` `--emoji <emoji>` `--remove` `--approvedBy <who>` `--live` `--json` | direct API only | none | `discordReact`, `discordReactLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 94, 122, 133, 140, 30, 38, 39, 40, 41 |
 | [`log linkedin session`](#log-linkedin-session) | Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `linkedin` first | `--account <accountName>` `--json` | direct API only | none | `linkedinSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41 |
 | [`log linkedin cookies`](#log-linkedin-cookies) | Add or refresh a LinkedIn account in Twenty: its session cookies from a masked prompt, checked against LinkedIn | `linkedin` first | `--account <publicId>` `--name <label>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41 |
 | [`log slack session`](#log-slack-session) | Check that Slack still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to its row | `slack` first | `--account <accountName>` `--workspace <domain>` `--json` | direct API only | none | `slackSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 125, 30, 38, 39, 40, 41 |
@@ -312,10 +318,12 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log slack watch`](#log-slack-watch) | Watch a Slack workspace's events as its websocket pushes them, nothing polled, sending nothing | `slack` first | `--account <accountName>` `--workspace <domain>` `--chat <chatId|who it is with>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `slackWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 123, 125, 131, 132, 30, 38, 39, 40, 41 |
 | [`log slack send`](#log-slack-send) | Send a message to a Slack DM, group or channel, on the direct-API engine; a dry run unless --live | `slack` first | `--account <accountName>` `--chat <chatId|who it is with>` `--text` `--workspace <domain>` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `slackSend`, `slackSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 94, 111, 125, 130, 133, 134, 135, 137, 138, 30, 38, 39, 40, 41 |
 | [`log slack cookies`](#log-slack-cookies) | Add or refresh a Slack account locally: its d cookie from a masked prompt, checked against Slack | `slack` first | `--account <accountName>` `--name <label>` `--workspace <domain>` | direct API only | none | terminal only: asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 13, 21, 63, 64, 73, 83, 97, 125, 30, 38, 39, 40, 41 |
+| [`log slack react`](#log-slack-react) | React to a Slack message with an emoji, on the direct-API engine; a dry run unless --live | `slack` first | `--account <accountName>` `--chat <chat>` `--message <id>` `--emoji <emoji>` `--workspace <workspace>` `--remove` `--approvedBy <who>` `--live` `--json` | direct API only | none | `slackReact`, `slackReactLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 94, 125, 133, 140, 30, 38, 39, 40, 41 |
 | [`log instagram session`](#log-instagram-session) | Check that Instagram still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `instagram` first | `--account <accountName>` `--json` | direct API only | none | `instagramSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 129, 30, 38, 39, 40, 41 |
 | [`log instagram dms`](#log-instagram-dms) | Read an Instagram account's DMs: its threads, or one thread's messages with --with, on the direct-API engine, sending nothing | `instagram` first | `--account <accountName>` `--with <handle|thread name|thread id>` `--limit <n>` `--json` | direct API only | none | `instagramDms` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 94, 126, 129, 30, 38, 39, 40, 41 |
 | [`log instagram send`](#log-instagram-send) | Send text and a photo to an Instagram DM, on the direct-API engine; a dry run unless --live | `instagram` first | `--account <accountName>` `--with <handle|thread name|thread id>` `--text` `--photo <file>` `--asOne` `--approvedBy <who>` `--live` `--json` | direct API only | none | `instagramSend`, `instagramSendLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 90, 94, 111, 129, 130, 133, 135, 137, 138, 30, 38, 39, 40, 41 |
 | [`log instagram watch`](#log-instagram-watch) | Watch an Instagram account's DMs as Instagram's realtime connection pushes them, nothing polled, sending nothing | `instagram` first | `--account <accountName>` `--seconds <s>` `--inbox` `--json` | direct API only | Camoufox only | `instagramWatch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 26, 63, 64, 73, 83, 94, 123, 129, 131, 132, 30, 38, 39, 40, 41 |
+| [`log instagram react`](#log-instagram-react) | React to a Instagram message with an emoji, on the direct-API engine; a dry run unless --live | `instagram` first | `--account <accountName>` `--thread <thread>` `--message <id>` `--emoji <emoji>` `--remove` `--approvedBy <who>` `--live` `--json` | direct API only | none | `instagramReact`, `instagramReactLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -419,6 +427,7 @@ flowchart TB
     c_twitterRepost["repost"]
     c_twitterFollow["follow"]
     c_twitterDm["dm"]
+    c_twitterReact["react"]
     c_twitterQueue["queue"]
   end
   subgraph g_reddit["Reddit"]
@@ -431,6 +440,7 @@ flowchart TB
     c_discordWatch["watch"]
     c_discordSend["send"]
     c_discordDelete["delete"]
+    c_discordReact["react"]
   end
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
@@ -444,12 +454,14 @@ flowchart TB
     c_slackWatch["watch"]
     c_slackSend["send"]
     c_slackCookies["cookies"]
+    c_slackReact["react"]
   end
   subgraph g_instagram["Instagram"]
     c_instagramSession["session"]
     c_instagramDms["dms"]
     c_instagramSend["send"]
     c_instagramWatch["watch"]
+    c_instagramReact["react"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -588,6 +600,8 @@ flowchart TB
   mcp --> c_twitterFollow
   cli --> c_twitterDm
   mcp --> c_twitterDm
+  cli --> c_twitterReact
+  mcp --> c_twitterReact
   cli --> c_twitterQueue
   mcp --> c_twitterQueue
   c_twitterQueue --> live
@@ -609,6 +623,8 @@ flowchart TB
   mcp --> c_discordSend
   cli --> c_discordDelete
   mcp --> c_discordDelete
+  cli --> c_discordReact
+  mcp --> c_discordReact
   cli --> c_linkedinSession
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
@@ -629,6 +645,8 @@ flowchart TB
   mcp --> c_slackSend
   cli --> c_slackCookies
   c_slackCookies -.- terminal
+  cli --> c_slackReact
+  mcp --> c_slackReact
   cli --> c_instagramSession
   mcp --> c_instagramSession
   cli --> c_instagramDms
@@ -638,6 +656,8 @@ flowchart TB
   cli --> c_instagramWatch
   mcp --> c_instagramWatch
   c_instagramWatch --> live
+  cli --> c_instagramReact
+  mcp --> c_instagramReact
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -1486,6 +1506,16 @@ Without --live it is a dry run: the target, the text and its house style are che
 A draft written on several lines goes out one message per line, and a one-line draft is split the way matt writes in that chat (log voice index), with his usual gap between them; --asOne sends it as one, only when matt asked (rule 90). X's answer decides: a conversation id is sent, none is a drop, and a drop stops the rest: what was sent stays sent, nothing is retried (rule 94). An old DM thread (<a>-<b>) and its X Chat thread (<a>:<b>) with one person are one conversation: X shows them in the same place, and a dm sent through the old DM API shows in their X Chat too. A sent answer is delivered whichever conversation id it names: never resend it and never call it the wrong inbox. A refusal before X is called (styleFailed, a dry run) sent nothing, so that dm is sent once its copy is fixed. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 ```
 
+#### log twitter react
+
+React to a X message with an emoji, on the direct-API engine; a dry run unless --live MCP tools: `twitterReact`, `twitterReactLive`, one per form, with named fields.
+
+```text
+log twitter react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/twikit, no browser), or takes the account's own reaction off with --remove. X takes any emoji; a name (joy, fire, eyes) is turned into it. It goes through X's own DM reaction mutation (twikit's add_reaction_to_message), so a message only X Chat holds may be refused, and X's answer says so.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+```
+
 #### log twitter queue
 
 Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine MCP tools: `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit`, one per form, with named fields.
@@ -1582,6 +1612,16 @@ log discord delete --account <accountName> --channel <channelId|chat name> --mes
 Deletes the account's own messages by id (from log discord read) in a DM, group DM or server channel, on the direct-API engine (no browser): a duplicate or a mistake. Each message is read first and only deleted when the account sent it; someone else's is refused with notOwnMessage. Without --live it is a dry run that reads each message and deletes nothing. --live deletes, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides (204 is deleted). Each delete counts as a write, they go 4 s apart, and the first refusal stops the run with nothing retried (rule 94).
 ```
 
+#### log discord react
+
+React to a Discord message with an emoji, on the direct-API engine; a dry run unless --live MCP tools: `discordReact`, `discordReactLive`, one per form, with named fields.
+
+```text
+log discord react --account <accountName> --channel <channel> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/endcord, no browser), or takes the account's own reaction off with --remove. Discord takes any emoji, a name (joy, fire, eyes) turned into it, or a server's own emoji as name:id.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+```
+
 #### log linkedin session
 
 Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `linkedinSessionCheck`, one per form, with named fields.
@@ -1668,6 +1708,16 @@ Saves a Slack account's session locally (~/.logCli/localAccounts.json, rule 97) 
 It is checked first: the direct-API engine (vendor/gabrielSlack, no browser, no proxy) exchanges it with Slack for the workspaces it is signed in to, and only a cookie Slack accepts is saved. An account log doesn't have yet gets a new local SLACK row; one it has gets its d cookie replaced and keeps the rest.
 ```
 
+#### log slack react
+
+React to a Slack message with an emoji, on the direct-API engine; a dry run unless --live MCP tools: `slackReact`, `slackReactLive`, one per form, with named fields.
+
+```text
+log slack react --account <accountName> --chat <chat> --message <id> --emoji <emoji> [--workspace <workspace>] [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/gabrielSlack, reactions.add and reactions.remove, no browser), or takes the account's own reaction off with --remove. Slack reacts by name (joy, fire, eyes, or a workspace's own); the common emoji are turned into their names, and one it doesn't know is refused with reactInvalid, so give its name. Already reacted counts as done.
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
+```
+
 #### log instagram session
 
 Check that Instagram still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `instagramSessionCheck`, one per form, with named fields.
@@ -1705,6 +1755,16 @@ Watch an Instagram account's DMs as Instagram's realtime connection pushes them,
 ```text
 log instagram watch --account <accountName> [--seconds <s>] [--inbox] [--json]
 Opens Instagram's own realtime connection on the direct-API engine (vendor/instagrapi, MQTT to edge-mqtt.facebook.com, subscribed to the DM sync, no browser) and prints each DM the moment Instagram pushes it, nothing polled. --seconds stops after that long (at least 5), otherwise it runs until stopped. --inbox hands each new message from someone else to the inbox hook, which puts it in front of the agent with what to do next (rule 123). Sends nothing.
+```
+
+#### log instagram react
+
+React to a Instagram message with an emoji, on the direct-API engine; a dry run unless --live MCP tools: `instagramReact`, `instagramReactLive`, one per form, with named fields.
+
+```text
+log instagram react --account <accountName> --thread <thread> --message <id> --emoji <emoji> [--remove] [--approvedBy <who>] [--live] [--json]
+Reacts to one message with an emoji, on the direct-API engine (vendor/instagrapi, no browser), or takes the account's own reaction off with --remove. Instagram takes any emoji; a name (joy, fire, heart) is turned into it. It goes through instagrapi's direct_send_reaction (direct_delete_reaction with --remove) in the account's one session (rule 129).
+Without --live it is a dry run and nothing is contacted. --live reacts, only when matt asked, and needs --approvedBy (rule 8). The chat is claimed first, as for a send, and released once it is done (rule 133). The platform's own answer decides (rule 73), the governor counts it as a write, and a refusal stops with nothing retried (rule 94).
 ```
 
 <!-- surface:end -->

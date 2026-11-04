@@ -17,10 +17,11 @@ for p in (str(ROOT), str(VENDOR / "endcord")):
 
 from platformKit import engine as kit
 from platformKit import media
+from platformKit import reactions
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
-WRITES: tuple[str, ...] = ("send", "delete")
+WRITES: tuple[str, ...] = ("send", "delete", "react")
 SEARCH_PAGE = 25
 
 
@@ -418,6 +419,30 @@ async def delete(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any
     return await asyncio.to_thread(delete_of, token, channel, message)
 
 
+def react_of(token: str, channel: str, message: str, emoji: str, remove: bool) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    done = client.remove_reaction(channel, message, emoji) if remove else client.send_reaction(channel, message, emoji)
+    if done is None:
+        return {"ok": False, "code": "reactFailed", "detail": f"Discord didn't answer the reaction on message {message}", "loginState": "unknown", "event": "dropped"}
+    if not done:
+        return {"ok": False, "code": "reactRefused", "detail": f"Discord refused the reaction {emoji} on message {message}", "loginState": "loggedIn", "event": "throttled"}
+    return {"ok": True, "loginState": "loggedIn", "event": "sent", "mode": "react", "removed": remove, "channelId": channel, "messageId": message, "emoji": emoji}
+
+
+async def react(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel, message = str(spec.get("channel") or "").strip(), str(spec.get("message") or "").strip()
+    raw = str(spec.get("emoji") or "").strip()
+    emoji = raw if ":" in raw.strip(":") else reactions.unicode_of(raw)
+    if not channel.isdigit() or not message.isdigit() or not emoji:
+        return {"ok": False, "code": "reactInvalid", "detail": "react needs a channel id, a message id and an emoji (unicode, a known name, or a custom one as name:id)"}
+    return await asyncio.to_thread(react_of, token, channel, message, emoji, spec.get("remove") is True)
+
+
 def sound_search_of(client: Any, channel_id: str, pause: float) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
     from endcord.message import prepare_messages
 
@@ -482,7 +507,7 @@ async def voice_notes(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str
     return await asyncio.to_thread(voice_notes_of, token, spec)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "watch": watch, "voiceNotes": voice_notes}
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "watch": watch, "voiceNotes": voice_notes}
 
 
 if __name__ == "__main__":

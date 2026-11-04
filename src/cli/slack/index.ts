@@ -93,7 +93,7 @@ const SLACK_CHAT_ID = /^[CDG][A-Z0-9]{6,}$/;
 
 type Opened = { ok: true; account: PlatformAccount; workspace: string } | { ok: false; result: CommandResult };
 
-async function openAccount(context: CommandContext, label: string, flags: Record<string, unknown>): Promise<Opened> {
+export async function openAccount(context: CommandContext, label: string, flags: Record<string, unknown>): Promise<Opened> {
   const account = await findSlackAccount(context.twenty, String(flags["account"]));
   const gate = slackGate(account);
   if (!gate.ok) return { ok: false, result: refuse(label, gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail) };
@@ -101,7 +101,7 @@ async function openAccount(context: CommandContext, label: string, flags: Record
   return { ok: true, account, workspace: typeof flags["workspace"] === "string" ? flags["workspace"].trim() : "" };
 }
 
-function inWorkspace(workspace: string): { workspace?: string } {
+export function inWorkspace(workspace: string): { workspace?: string } {
   return workspace ? { workspace } : {};
 }
 
@@ -110,7 +110,7 @@ function failed(label: string, account: PlatformAccount, answer: PlatformAnswer)
   return { code: 1, stdout: [`log ${label}: ${account.accountName}: ${answer.code}: ${answer.detail ?? ""}`, ...listed].join("\n") };
 }
 
-async function chatIdOf(context: CommandContext, label: string, account: PlatformAccount, workspace: string, said: string): Promise<{ ok: true; id: string; label: string } | { ok: false; result: CommandResult }> {
+export async function chatIdOf(context: CommandContext, label: string, account: PlatformAccount, workspace: string, said: string): Promise<{ ok: true; id: string; label: string } | { ok: false; result: CommandResult }> {
   if (SLACK_CHAT_ID.test(said)) return { ok: true, id: said, label: said };
   const listed = context.directSlack!(account, { action: "chats", limit: 200, ...inWorkspace(workspace) });
   if (!listed.answer.ok) return { ok: false, result: failed(label, account, listed.answer) };

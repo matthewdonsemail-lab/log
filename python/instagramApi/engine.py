@@ -20,10 +20,11 @@ for p in (str(ROOT), str(VENDOR / "instagrapi")):
 
 from platformKit import engine as kit
 from platformKit import media
+from platformKit import reactions
 
 PLATFORM = "instagram"
 LIBRARY = "vendor/instagrapi"
-WRITES: tuple[str, ...] = ("send",)
+WRITES: tuple[str, ...] = ("send", "react")
 SESSION_COOKIES = ("sessionid",)
 TRANSPORT = "curl"
 INBOX_SEARCH = 100
@@ -515,6 +516,30 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return missing_session(cookies) or await asyncio.to_thread(locked, send_sync, cookies, said, text, photo, bool(spec.get("asOne")), str(spec.get("account") or ""))
 
 
+def react_sync(cookies: dict[str, str], thread_id: str, item_id: str, emoji: str, remove: bool) -> dict[str, Any]:
+    client, answer = signed_in(cookies)
+    if not client:
+        return answer
+    try:
+        done = (client.direct_delete_reaction if remove else client.direct_send_reaction)(int(thread_id), int(item_id), emoji)
+    except Exception as error:
+        refusal = refused(error)
+        if refusal:
+            return refusal
+        return {"ok": False, "code": "reactRefused", "detail": f"Instagram refused the reaction: {str(error)[:200]}", "loginState": "loggedIn"}
+    if not done:
+        return {"ok": False, "code": "reactRefused", "detail": f"Instagram didn't take the reaction {emoji} on item {item_id}", "loginState": "loggedIn"}
+    return {"ok": True, "loginState": "loggedIn", "event": "sent", "mode": "react", "removed": remove, "thread": thread_id, "itemId": item_id, "emoji": emoji}
+
+
+async def react(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    thread_id, item_id = str(spec.get("thread") or "").strip(), str(spec.get("itemId") or "").strip()
+    emoji = reactions.unicode_of(str(spec.get("emoji") or ""))
+    if not thread_id.isdigit() or not item_id.isdigit() or not emoji:
+        return {"ok": False, "code": "reactInvalid", "detail": "react needs the thread id, the message's item id and an emoji"}
+    return missing_session(cookies) or await asyncio.to_thread(locked, react_sync, cookies, thread_id, item_id, emoji, spec.get("remove") is True)
+
+
 async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     seconds = int(spec.get("seconds") or 0)
     seconds = 0 if seconds <= 0 else max(5, min(seconds, 86400))
@@ -524,7 +549,7 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds, LIVE_TARGET.get())
 
 
-ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "watch": watch}
+ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "react": react, "watch": watch}
 
 
 def main() -> int:

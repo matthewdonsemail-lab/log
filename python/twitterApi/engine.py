@@ -18,10 +18,11 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
         sys.path.insert(0, p)
 
 from platformKit import media as media_kit
+from platformKit import reactions
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post")
+WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react")
 ACTIONS = READS + WRITES
 
 
@@ -1260,6 +1261,8 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         if errors or not ((data or {}).get("data") or {}).get("create_retweet"):
             raise RuntimeError(f"x did not repost the post: {json.dumps(data)[:300]}")
         return {"ok": True, "event": "sent", "reposted": True, "tweetId": tweet_id}
+    if action == "react":
+        return await react(client, spec)
     if action == "follow":
         user_id = str(spec["userId"])
         before = await client.get_user_by_id(user_id)
@@ -1304,6 +1307,19 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         limits = raw.get("limits") or {}
         return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": f"x created no tweet (empty result): nothing was posted. x said: {json.dumps(raw.get('body'))[:300]}", "limits": limits, "rateLimitReset": reset_of(limits)}
     return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), **({"likedPost": liked} if liked else {}), **({"followedAuthor": followed} if followed else {}), "limits": raw.get("limits") or {}}
+
+
+async def react(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    conversation_id = str(spec["conversationId"]).replace(":", "-")
+    message_id = str(spec["messageId"])
+    emoji = str(reactions.unicode_of(str(spec["emoji"])))
+    remove = spec.get("remove") is True
+    call = client.gql.user_dm_reaction_mutation_remove_mutation if remove else client.gql.user_dm_reaction_mutation_add_mutation
+    data, _ = await call(message_id, conversation_id, emoji)
+    errors = data.get("errors") if isinstance(data, dict) else None
+    if errors or not (isinstance(data, dict) and data.get("data")):
+        return {"ok": False, "event": "dropped", "code": "reactRefused", "detail": f"x didn't take the reaction: {json.dumps(data)[:300]}"}
+    return {"ok": True, "event": "sent", "mode": "react", "removed": remove, "emoji": emoji, "messageId": message_id, "conversationId": conversation_id}
 
 
 def created_id_of(body: Any) -> str | None:
@@ -1380,6 +1396,8 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "notApproved", "detail": f"{action} needs the name of who approved it"}
     if action in ("reply", "quote", "like", "repost") and not spec.get("tweetUrl"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
+    if action == "react" and not (spec.get("conversationId") and spec.get("messageId") and reactions.unicode_of(str(spec.get("emoji") or ""))):
+        return {"ok": False, "code": "reactInvalid", "detail": "react needs the conversation id, the message id and an emoji"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action == "post" and any(not Path(str(m)).is_file() for m in (spec.get("media") or [])):
