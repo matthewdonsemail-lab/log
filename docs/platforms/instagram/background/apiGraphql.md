@@ -8,12 +8,12 @@
 | Kind | endpoint |
 | doc_id | — |
 | Path | `/api/graphql` |
-| Sends | `input`, `scale`, `render_succeeded`, `encrypted_context`, `failure_reason`, `device_id`, `captcha_response`, `device_id_for_iris_subscription`, `__relay_internal__pv__IGDMetaAIThreadingEnabledGKrelayprovider`, `data`, `surface_nux_ids`, `trigger_context`, `_request_data`, `payload`, `min_uq_seq_id`, `thread_fbid`, `__relay_internal__pv__IGDEnableOffMsysChatThemesQErelayprovider`, `__relay_internal__pv__IGDInitialMessagePageCountrelayprovider`, `folder`, `__relay_internal__pv__IGDIsProfessionalAccountGKrelayprovider`, `__relay_internal__pv__IGDPinnedThreadsRenderEnabledGKrelayprovider`, `__relay_internal__pv__IGDMaxUnreadMessagesCountrelayprovider`, `__relay_internal__pv__IGDThreadListActionsEnabledGKrelayprovider`, `newer_than_timestamp_ms`, `metadata`, `ig_thread_igid`, `offline_threading_id`, `recipient_igids`, `replied_to_client_context`, `replied_to_item_id`, `reply_to_message_id`, `sampled`, `text`, `mentions`, `mentioned_user_ids`, `commands`, `forwarded_from_thread_id`, `is_forwarded_from_own_message`, `send_attribution`, `attachment_fbid`, `thread_id` |
-| Reads | `data.caa_login_web`, `extensions.server_metadata`, `extensions.is_final`, `data.xfb_auth_platform_anti_scripting_content`, `data.xfb_auth_platform_recaptcha_render_outcome`, `data.xfb_auth_platform_user_passed_google_recaptcha`, `data.get_slide_mailbox_for_iris_subscription`, `data.get_paginated_share_sheet_ranked_items`, `data.xdt_api__v1__feed__reels_tray`, `data.xdt_viewer`, `data.ig_quick_promotion_batch_fetch_root`, `data.xdt_api__v1__web__accounts__get_encrypted_credentials` and 17 more |
-| Called from | `runs/inspect/20261103T180010_mattinferencesaver/script118.js:87 anonymous`, `runs/inspect/20261103T180010_mattinferencesaver/script120.js:165 anonymous`, `runs/inspect/20261103T180010_mattinferencesaver/script121.js:371 m` |
+| Sends | `device_id_for_iris_subscription`, `folder`, `__relay_internal__pv__IGDMetaAIThreadingEnabledGKrelayprovider`, `__relay_internal__pv__IGDIsProfessionalAccountGKrelayprovider`, `__relay_internal__pv__IGDPinnedThreadsRenderEnabledGKrelayprovider`, `__relay_internal__pv__IGDMaxUnreadMessagesCountrelayprovider`, `__relay_internal__pv__IGDThreadListActionsEnabledGKrelayprovider`, `newer_than_timestamp_ms`, `min_uq_seq_id`, `thread_fbid`, `__relay_internal__pv__IGDEnableOffMsysChatThemesQErelayprovider`, `__relay_internal__pv__IGDInitialMessagePageCountrelayprovider`, `data`, `scale`, `surface_nux_ids`, `trigger_context`, `_request_data`, `payload`, `metadata`, `attachment_fbid`, `thread_id`, `offline_threading_id`, `reply_to_message_id`, `forwarded_from_thread_id`, `is_forwarded_from_own_message`, `input`, `render_succeeded`, `encrypted_context`, `failure_reason`, `device_id`, `captcha_response`, `ig_thread_igid`, `recipient_igids`, `replied_to_client_context`, `replied_to_item_id`, `sampled`, `text`, `mentions`, `mentioned_user_ids`, `commands`, `send_attribution` |
+| Reads | `data.xdt_get_igd_automatic_previews_disabled`, `extensions.server_metadata`, `extensions.is_final`, `data.polling_intervals__`, `data.xfb_ix_ig_account_status_web`, `data.xfb_feature_limits`, `extensions.live_query`, `data.get_slide_mailbox_for_iris_subscription`, `data.xdt_api__v1__get__presence__disabled`, `data.xfb_viewer`, `data.viewer`, `data.get_slide_thread_nullable` and 17 more |
+| Called from | `runs/inspect/20261103T185330_mattinferencesaver/script2.js:87 anonymous`, `runs/inspect/20261103T185330_mattinferencesaver/script4.js:1309 anonymous`, `runs/inspect/20261103T185330_mattinferencesaver/script4.js:371 m` |
 | rea | `ev_27eceaba6115086f4af94c2fc0c0d7947c1495c9588392e6a8d948ff7f80c47b` |
 
-Seen 82 time(s) in 1 run(s).
+Seen 113 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,178 +25,15 @@ Seen 82 time(s) in 1 run(s).
 | inspect | step 10: wait 40s | 5 | 200 | 187–572 ms | 5740–63454 ms | — |
 | inspect | step 13: click e948 | 5 | 200 | 181–746 ms | 1201–63098 ms | — |
 | inspect | step 16: click e1036 | 3 | 200 | 249–485 ms | 1955–1991 ms | — |
+| inspect | step 1: goto /direct/t/<id>/ | 27 | 200 | 185–716 ms | 976–6844 ms | — |
+| inspect | upload: paulie.jpg handed to the file chooser | 1 | 200 | 284 ms | 6116 ms | — |
+| inspect | step 4: click e783 | 3 | 200 | 184–857 ms | 1249–1283 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261103T180010_mattinferencesaver**, step 1: goto /: 200, 2663 ms
-
-Sent:
-
-```json
-{
-  "__d": "www",
-  "qpl_active_flow_ids": "175125627,516759801",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useCDSWebLoginMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "actor_id": "0",
-      "client_mutation_id": "1",
-      "access_flow_version": "pre_mt_behavior",
-      "account_recovery_entry_point": null,
-      "app": "instagram",
-      "auth_domain_data_key": null,
-      "caa_login_request_extra_info": {
-        "ab_test_data": "",
-        "shared_prefs_data": "",
-        "cuid": "",
-        "guid": "f5010abbde3c87e40",
-        "lgndim": "",
-        "lgnjs": "1793728825",
-        "lgnrnd": "",
-        "locale": "",
-        "login_source": "caa_login",
-        "next": "",
-        "prefill_contact_point": "",
-        "prefill_source": "",
-        "prefill_type": "",
-        "skstamp": "",
-        "timezone": ""
-      },
-      "credential_type": "password",
-      "dyi_job_id": "",
-      "enc_password": {
-        "sensitive_string_value": "#PWD_BROWSER:10:1793728837:AexQAA0TMde8DkF2FwmRl+VGN2vQS/NFqx5PlThnMl56odY/z7Q7sMIb5mxENKvy8NwW1ppTlPlkVDLT4yVHHIdB1Xf2V+IoNtxkyG6z25WtoDAQRciXDR4aMMu3b+EHC8U0MfpE3J9rw7XlkcGqeg=="
-      },
-      "event_request_id": "9a4cc071-512d-4885-9535-f9c6c204beb6",
-      "identifier": "matthewdonsemail@gmail.com",
-      "ig_web_device_id": "DF1D3D1D-255B-4F43-9DDA-041497A618B6",
-      "initial_request_id": "1",
-      "lids": null,
-      "login_source": "COMET_HEADERLESS_LOGIN",
-      "next": null,
-      "passkey_payload": null,
-      "persistent": true,
-      "query_params": "{}",
-      "trusted_device_records": "{}",
-      "use_uid_to_login": false,
-      "waterfall_id": "3f4e6904-214b-43e8-8483-10db567b6fda"
-    },
-    "scale": 1
-  },
-  "doc_id": "28610511871940857",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=175125627,516759801"
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "caa_login_web": {
-      "error_code": 1348009,
-      "error_message": {
-        "text": "The login information you entered is incorrect. Find your account and log in.",
-        "inline_style_ranges": [],
-        "image_ranges": [],
-        "ranges": [
-          {
-            "entity_is_weak_reference": false,
-            "length": 29,
-            "offset": 48,
-            "entity": {
-              "__typename": "ExternalUrl",
-              "url": "http://instagram.com/accounts/password/reset/",
-              "__isNode": "ExternalUrl",
-              "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBcYS8vaW5zdGFncmFtLmNvbS9hY2NvdW50cy9wYXNzd29yZC9yZXNldC86Ojo6Ojo="
-            }
-          }
-        ],
-        "color_ranges": []
-      },
-      "error_style": "GENERIC_BANNER",
-      "redirect_uri": "https://www.instagram.com/auth_platform/?apc=AdrZ4Svkwz77as0G7nQcGYcQE8R5gv8Nk_LZIe-PdDdKgVagfpf-ivK_7yLOyfgxMaO0XGarfmi4FL1E9bQLZNww-xKn8UonR9bsme8gq2D96zlMTqUPJhJwwbZINHK8z0vQh1085dgXzutlfZcj0SVBURxcDB40je054g4wKaDLPcz_iuFib5gub177NTSnmmJVVFjBXnFn1TEHl9br_eSIBQULGfYO6QOCDL1-OK7diDhOKFuwHSxTYPa5vdJAjW5f95d-efCpXs8ra6oJs1WVYsLmHnDjzArKU2tfVrWcla8m_nUlXhh0KzDZu30mAhB3qBo0cwu-fTu_MISRxB1Uzr6MVIkAOLJ… (1337 chars)",
-      "two_factor_result": null,
-      "reg_nta_context": null,
-      "is_3pl": null,
-      "is_xapp_login": false,
-      "recaptcha_needed": true,
-      "is_ig_login_recaptcha": false,
-      "should_show_profile_selector": false,
-      "should_show_save_password_dialog": false,
-      "captcha_persist_data": null,
-      "crypted_uid": null,
-      "ig_nonce_refresh": null,
-      "ig_trusted_device_nonce_refresh": null,
-      "stop_deletion_payload": {
-        "stop_deletion_nonce": null,
-        "stop_deletion_date": null,
-        "is_feta": false,
-        "unified_screen_enabled": false
-      },
-      "ig_authenticated": false,
-      "ig_login_upsell_ar": null,
-      "should_show_google_oauth_after_failure": false,
-      "google_oauth_uri": null,
-      "lara_recovery_redirect_uri": null,
-      "lara_recovery_captcha_persist_data": null,
-      "lara_recovery_captcha_cipher": null,
-      "lara_recovery_method": null,
-      "lara_recovery_cuid": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1793728837191,
-      "time_at_flush_ms": 1793728839654
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261103T180010_mattinferencesaver**, step 2: snapshot: 200, 232 ms
-
-Sent:
-
-```json
-{
-  "__d": "www",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "AuthPlatformReCaptchaContentQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "34422716160661050"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "xfb_auth_platform_anti_scripting_content": {
-      "wait_screen_title": "We will now redirect you",
-      "wait_screen_subtitle": "You will be automatically redirected in a few seconds. Please wait."
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1793728840867,
-      "time_at_flush_ms": 1793728840886
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261103T180010_mattinferencesaver**, step 3: goto /direct/inbox/: 200, 186 ms
+**runs/inspect/20261103T185330_mattinferencesaver**, step 1: goto /direct/t/<id>/: 200, 199 ms
 
 Sent:
 
@@ -222,8 +59,137 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793728883126,
-      "time_at_flush_ms": 1793728883140
+      "request_start_time_ms": 1793732018125,
+      "time_at_flush_ms": 1793732018144
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261103T185330_mattinferencesaver**, upload: paulie.jpg handed to the file chooser: 200, 284 ms
+
+Sent:
+
+```json
+{
+  "__d": "www",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "IGDInboxInfoOffMsysQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "thread_fbid": "1659203035864604",
+    "__relay_internal__pv__IGDEnableOffMsysChatThemesQErelayprovider": false
+  },
+  "doc_id": "28792367400422466"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "get_slide_thread_nullable": {
+      "as_ig_direct_thread": {
+        "event_chat_info": null,
+        "id": "1659203035864604",
+        "isGroup": false,
+        "viewer_id": "23597386648",
+        "users": [
+          {
+            "id": "65125809236",
+            "fbid_v2": "17841465077090726",
+            "interop_messaging_user_fbid": "17844200922169237",
+            "friendship_status": {
+              "blocking": false
+            },
+            "username": "abelqx",
+            "profile_pic_url": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818172062_17969040024169237_3154656155475460693_n.jpg (577 chars)",
+            "ai_agent_type": null,
+            "fullName": "abel",
+            "profilePicUrl": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818172062_17969040024169237_3154656155475460693_n.jpg (577 chars)"
+          }
+        ],
+        "thread_subtype": "IG_BUSINESS_ACCOUNT_ONE_TO_ONE",
+        "ig_thread_capabilities": {
+          "capabilities_0": "2265317209872843830",
+          "capabilities_1": "84936834"
+        },
+        "thread_fbid": "1659203035864604",
+        "is_muted": false,
+        "is_group": false,
+        "mute_until": null,
+        "thread_id": "340282366841710301244259834220612951580",
+        "instamadillo_cutover": null,
+        "adminUserIds": [],
+        "viewer": {
+          "id": "23597386648",
+          "interop_messaging_user_fbid": "18117619519786649",
+          "fullName": "Matthew Don",
+          "username": "matthew164962",
+          "fbid_v2": "17841423599449673",
+          "profilePicUrl": "https://instagram.fdad3-6.fna.fbcdn.net/v/t51.82787-19/818743097_18117619684786649_8701037773198366673_n.jpg (579 chars)",
+          "ai_agent_type": null,
+          "friendship_status": null
+        },
+        "nicknames": []
+      },
+      "id": "1659203035864604"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793732056431,
+      "time_at_flush_ms": 1793732056541
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261103T185330_mattinferencesaver**, step 4: click e783: 200, 184 ms
+
+Sent:
+
+```json
+{
+  "__d": "www",
+  "qpl_active_flow_ids": "354954279",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useIGDMarkThreadAsReadMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "metadata": {
+      "ig_thread_igid": "340282366841710301244259834220612951580"
+    },
+    "data": {
+      "item_id": "",
+      "message_id": "mid.$7523457575324722502"
+    }
+  },
+  "doc_id": "27399783383056109",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=354954279"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xig_direct_item_seen_mutation_with_slide_messaging_response": {
+      "__typename": "XFBSlideReadReceipt",
+      "participant_eimu_id": "18117619519786649",
+      "watermark_timestamp_ms": "1793732065239"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1793732065222,
+      "time_at_flush_ms": 1793732065240
     },
     "is_final": true
   }
@@ -234,12 +200,12 @@ Answered:
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Instagram's web GraphQL endpoint, called 113 times in 2 runs with Relay query names and `doc_id`s, mostly while the Direct inbox and a thread were open (`goto /direct/inbox/` 25 times, `goto /direct/t/<id>/` 27 and 27). It sends things like `thread_fbid`, `folder`, `min_uq_seq_id` and `newer_than_timestamp_ms` and answers `data.get_slide_thread_nullable`, `data.get_slide_mailbox_for_iris_subscription`, `data.viewer` and `data.polling_intervals__`; one example is `PolarisAutomaticPreviewsDisabledContextProviderQuery`, which answered `disabled: 0`.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing waits on it in log-cli. The Instagram engine (`python/instagramApi/engine.py`, rule 128) reads and sends DMs through instagrapi's private API and its realtime MQTT watch, never through this web GraphQL path, and no inspect-flow step is decided on it. The recording is what shows how the web client loads the same inbox, for reference.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+Every recorded call answered 200 in 181-3780 ms with no errors. A failing or empty answer here would only mean the web inbox did not load in an inspect run; it cannot affect an engine send or watch.

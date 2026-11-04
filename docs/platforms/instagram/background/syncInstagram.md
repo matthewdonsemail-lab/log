@@ -10,20 +10,43 @@
 | Path | `/sync/instagram` |
 | Sends | `encrypted_data`, `__d`, `qpl_active_flow_ids` |
 | Reads | `__ar`, `rid`, `payload`, `lid` |
-| Called from | `runs/inspect/20261103T180010_mattinferencesaver/script262.js:1 statement`, `runs/inspect/20261103T180010_mattinferencesaver/script262.js:1 statement`, `runs/inspect/20261103T180010_mattinferencesaver/script115.js:1 statement`, `runs/inspect/20261103T180010_mattinferencesaver/script171.js:28 statement` |
+| Called from | `runs/inspect/20261103T180010_mattinferencesaver/script262.js:1 statement`, `runs/inspect/20261103T180010_mattinferencesaver/script262.js:1 statement`, `runs/inspect/20261103T180010_mattinferencesaver/script115.js:1 statement`, `runs/inspect/20261103T185330_mattinferencesaver/script31.js:28 statement` |
 | rea | `ev_42cc6233fb35c7a12f5b1b6e444cbb8ea0320a699d0b1c88cfb3ecbe95bede95` |
 
-Seen 3 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 2: snapshot | 1 | 200 | 194 ms | 23173 ms | — |
 | inspect | step 3: goto /direct/inbox/ | 1 | 200 | 191 ms | 5961 ms | — |
 | inspect | step 5: goto /direct/t/<id>/ | 1 | 200 | 199 ms | 5775 ms | — |
+| inspect | step 1: goto /direct/t/<id>/ | 1 | 200 | 194 ms | 7052 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261103T185330_mattinferencesaver**, step 1: goto /direct/t/<id>/: 200, 194 ms
+
+Sent:
+
+```json
+{
+  "encrypted_data": "AVkCx23qHrA1wtXXaH7_92KvmYRWKSPiiiCQ44O9nkA3lJkd6AhyxeLjerv2y-d9SfUN",
+  "__d": "www"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AZZp8jZxh0mBF7xWvkU9iR_",
+  "payload": null,
+  "lid": "7704020382008127603"
+}
+```
 
 **runs/inspect/20261103T180010_mattinferencesaver**, step 2: snapshot: 200, 194 ms
 
@@ -69,39 +92,16 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T180010_mattinferencesaver**, step 5: goto /direct/t/<id>/: 200, 199 ms
-
-Sent:
-
-```json
-{
-  "encrypted_data": "AVn_wpHziGq4YRwg5fAt3RnV26LMOuLKiTQyrPc0eozCNS9n5dYuhZwn2mc8GN2wuzev",
-  "__d": "www",
-  "qpl_active_flow_ids": "25305590"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "Ah6XQx4K7EBT6T2wPcu3P_v",
-  "payload": null,
-  "lid": "7704007281662164961"
-}
-```
-
 <!-- facts:end -->
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+A background sync the web client posts with an `encrypted_data` blob and `__d: www`, answered `payload: null`. It fired 4 times in 2 runs on `snapshot`, `goto /direct/inbox/` and `goto /direct/t/<id>/` steps, each 191-199 ms with status 200.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing: no machine waits on it, reads it or sends it; the blob is opaque to us and the engine's realtime watch does not use `/sync/instagram`.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+All 4 calls answered 200 with `payload: null` and no errors. A failure would only mean the page's background sync did not complete, which no run of ours decides on.

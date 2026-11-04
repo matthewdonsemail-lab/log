@@ -10,7 +10,7 @@
 | Path | `/api/discover/web/explore_grid` |
 | Sends | — |
 | Reads | `sectional_items`, `rank_token`, `auto_load_more_enabled`, `more_available`, `next_max_id`, `max_id`, `session_paging_token`, `clusters`, `debug_info`, `grid_overlay_debug_info`, `overlay_info`, `interests` and 4 more |
-| Called from | `runs/inspect/20261103T180010_mattinferencesaver/script103.js:25 anonymous`, `runs/inspect/20261103T180010_mattinferencesaver/script120.js:390 anonymous`, `runs/inspect/20261103T180010_mattinferencesaver/script156.js:1565 d`, `runs/inspect/20261103T180010_mattinferencesaver/script180.js:1 statement` |
+| Called from | `runs/inspect/20261103T185330_mattinferencesaver/script3.js:1299 anonymous`, `runs/inspect/20261103T185330_mattinferencesaver/script4.js:1828 anonymous`, `runs/inspect/20261103T185330_mattinferencesaver/script4.js:1565 d`, `runs/inspect/20261103T185330_mattinferencesaver/script51.js:1 statement` |
 | rea | `ev_81f93ca399ab17c211a4b7ac3fce16f7251a1535a1bbceb4efcb3b68ac1d0cd5` |
 
 Seen 1 time(s) in 1 run(s).
@@ -245,12 +245,12 @@ Answered:
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the Explore page's grid of suggested clips and posts (`module: explore_popular`, `is_nonpersonalized_explore: false`). It fired once, during `step 10: wait 40s` of run 20261103T180010, 41.6 s after the step started, took 2441 ms with status 200 and answered `sectional_items` with `rank_token`, `next_max_id` and `more_available` for paging.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing: no log-cli machine calls or waits on it, and `python/instagramApi/engine.py` has no Explore read. It only appeared because the account's page sat open for 40 s during an inspect run.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+It answered 200 with no errors in the one recorded call. If Instagram refused it, only the Explore grid would be empty; the DM work in the engine does not depend on it.
