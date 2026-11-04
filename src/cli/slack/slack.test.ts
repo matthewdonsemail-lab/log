@@ -10,6 +10,7 @@ import { runCli } from "../runner/index.ts";
 import { slackDeps, slackToInboxOf } from "./index.ts";
 import { withD } from "./helpers/index.ts";
 import { liveLogVerdict } from "../../agentHooks/liveLog/index.ts";
+import { chatEvents } from "../../inbox/store/index.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -70,6 +71,16 @@ describe("log slack chats, read and send", () => {
     expect(r.code).toBe(0);
     expect(r.calls).toEqual(["slackOne:chats", "slackOne:read"]);
     expect(r.out).toContain("fairs");
+  });
+
+  test("what a read finds is stored in the .db as backfill, so the voice gate inside a send has the chat's history", async () => {
+    const chat = `D${Date.now()}`;
+    const messages = [{ ts: "1.1", at: "2026-11-03T00:00:00Z", from: "Sam", text: "sent u 20", threadTs: null, replies: null }, { ts: "1.2", at: "2026-11-03T00:01:00Z", from: "me", text: "thanks bro", threadTs: null, replies: null }];
+    const read = () => run(["slack", "read", "--account", "slackOne", "--chat", chat, "--workspace", "team"], { answer: { ok: true, loginState: "loggedIn", chat, messages }, refreshed: null });
+    await read();
+    await read();
+    const stored = chatEvents("slack", "slackOne", (id) => id === chat);
+    expect(stored.map((e) => [e.type, e.text, e.source])).toEqual([["message", "sent u 20", "backfill"], ["ownMessage", "thanks bro", "backfill"]]);
   });
 
   test("workspaceNeeded lists the workspaces to pick from", async () => {

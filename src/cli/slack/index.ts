@@ -7,7 +7,7 @@ import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
-import { slackCatchUp, waitCaughtUp } from "../../inbox/catchUp/index.ts";
+import { slackCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
@@ -258,6 +258,7 @@ export const slackReadCommand: Command = {
       const run = context.directSlack!(opened.account, { action: "read", chat: chat.id, limit, ...inWorkspace(opened.workspace) });
       const code = run.answer.ok ? 0 : 1;
       const messages = (await withVoiceNotes({ platform: "slack", account: opened.account.accountName, conversationId: chat.id }, ((run.answer.messages as SlackRead[] | undefined) ?? []).map((m) => ({ ...m, id: m.ts })), (m) => m.audio ?? [], context.err));
+      if (run.answer.ok) for (const m of messages) storeRead("slack", opened.account.accountName, chat.id, "dm", { id: m.ts, at: m.at, from: m.from, fromMe: m.from === "me", text: m.text }, context.now?.() ?? new Date(), "backfill");
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "slack", account: opened.account.accountName, ...run.answer, ...(run.answer.messages ? { messages } : {}) }, null, 2) };
       if (!run.answer.ok) return failed("slack read", opened.account, run.answer);
       return {
