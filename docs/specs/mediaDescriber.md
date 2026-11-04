@@ -42,6 +42,6 @@ Checked by: code and SubQ
 
 ### REQ-MEDIA-06: The engines keep a local copy of every image and video sent
 
-Slack's watch fetches every image, gif and video someone sends through the account's own authenticated session, Instagram's realtime watch through instagrapi's private session (never its plain-requests downloads, and under the engine's one-call lock), and X Chat's are the files its one session already decrypts. Each is kept in the account's media folder, at most 50 MB, and its path goes with the attachment to the describer's queue. A fetch that fails is listed with why. Rule 139.
+Slack's watch fetches every image, gif and video someone sends through the account's own authenticated session, Discord's watch through its REST session for the DMs, mentions and replies to the account only, Instagram's realtime watch through instagrapi's private session (never its plain-requests downloads, and under the engine's one-call lock), and X Chat's are the files its one session already decrypts. Each is kept in the account's media folder, at most 50 MB, and its path goes with the attachment to the describer's queue. A fetch that fails is listed with why. Rule 139.
 
 Checked by: code and SubQ

@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const python = process.env.LOG_PYTHON || "python";
@@ -29,5 +31,24 @@ items = [
 ]
 print(json.dumps([engine.media_ref_of(i) for i in items]))`);
     expect(got).toEqual([{ url: "https://cdn/p.jpg", name: "1.jpg", type: "image/jpeg" }, { url: "https://cdn/v.mp4", name: "2.mp4", type: "video/mp4" }, { url: "https://cdn/g.gif", name: "3.gif", type: "image/gif" }, null]);
+  });
+
+  test("Discord keeps each image or video someone sends through its own REST session, and leaves audio and files to their own paths", () => {
+    if (spawnSync(python, ["-c", "import sys; sys.path.insert(0, " + JSON.stringify(root) + "); from discordApi import engine"], { encoding: "utf8" }).status !== 0) return;
+    const state = mkdtempSync(join(tmpdir(), "discordMedia"));
+    const got = run(`from discordApi import engine
+from pathlib import Path
+class Client:
+    def __init__(self): self.fetched = []
+    def get_file(self, url, folder, name):
+        self.fetched.append(url)
+        Path(folder).mkdir(parents=True, exist_ok=True)
+        (Path(folder) / name).write_bytes(b"x")
+        return str(Path(folder) / name)
+client = Client()
+spec = {"stateRoot": ${JSON.stringify(state)}, "account": "acct"}
+out = engine.with_visuals(client, spec, "D1", "m1", [{"name": "meme.png", "type": "image/png", "url": "https://cdn/a"}, {"name": "doc.pdf", "url": "https://cdn/b"}])
+print(json.dumps({"fetched": client.fetched, "kept": [bool(a.get("path")) for a in out]}))`);
+    expect(got).toEqual({ fetched: ["https://cdn/a"], kept: [true, false] });
   });
 });

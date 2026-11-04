@@ -1939,9 +1939,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     engine's one-call lock), and X Chat through the files its one session
     already decrypts and saves. Each watch passes the saved path with the
     attachment, so the describer gets it at once; a fetch that fails is
-    listed with why. Discord's engine has uncommitted work of someone
-    else's in it (rule 106), so its images stay not described yet until that
-    is settled. Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-06).
+    listed with why. Discord's watch keeps them too (matt, "Yes, do it
+    here", once its engine's uncommitted work was committed as his), for the
+    messages that reach the inbox only (DMs, mentions and replies to the
+    account), through its REST session as it already does for voice notes
+    (`with_visuals`, `visual_file_of`). Spec: `docs/specs/mediaDescriber.md`
+    (REQ-MEDIA-06).
 
 ## Checks
 

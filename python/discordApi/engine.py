@@ -111,6 +111,19 @@ def audio_file_of(client: Any, spec: dict[str, Any], channel_id: str, message_id
     return {**attachment, "path": str(saved)}
 
 
+def visual_file_of(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachment: dict[str, Any]) -> dict[str, Any]:
+    kept = audio_file_of(client, spec, channel_id, message_id, attachment)
+    path = Path(str(kept.get("path") or ""))
+    if kept.get("path") and path.is_file() and path.stat().st_size > media.VISUAL_MAX_BYTES:
+        path.unlink()
+        return {**attachment, "error": f"the file is over the {media.VISUAL_MAX_BYTES // 1024 // 1024} MB kept"}
+    return kept
+
+
+def with_visuals(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [visual_file_of(client, spec, channel_id, message_id, a) if media.is_visual(a) else a for a in attachments]
+
+
 def saved_audio(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]], flags: int | None = None) -> list[dict[str, Any]]:
     return [audio_file_of(client, spec, channel_id, message_id, a) for a in attachments if is_audio(a, flags)]
 
@@ -341,6 +354,10 @@ def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]
         if any(is_audio(a, flags) for a in attachments) and str(d.get("user_id")) != me:
             rest = rest or open_client(token)[0]
             audio = saved_audio(rest, spec, str(d.get("channel_id")), str(d.get("id")), attachments, flags) if rest else [{**a, "error": "no REST session to fetch it"} for a in attachments if is_audio(a, flags)]
+        to_me = not d.get("guild_id") or any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)) or str((d.get("referenced_message") or {}).get("user_id")) == me
+        if to_me and str(d.get("user_id")) != me and any(media.is_visual(a) for a in attachments):
+            rest = rest or open_client(token)[0]
+            attachments = with_visuals(rest, spec, str(d.get("channel_id")), str(d.get("id")), attachments) if rest else [{**a, "error": "no REST session to fetch it"} if media.is_visual(a) else a for a in attachments]
         live({"kind": "message", "channelId": d.get("channel_id"), "guildId": d.get("guild_id"), "id": d.get("id"), "at": d.get("timestamp"), "from": d.get("global_name") or d.get("username"), "fromId": str(d.get("user_id")), "fromMe": str(d.get("user_id")) == me, "bot": bool(d.get("bot")), "replyTo": (d.get("referenced_message") or {}).get("id"), "mentionsMe": any(str(u.get("id")) == me for u in (d.get("mentions") or []) if isinstance(u, dict)), "repliesToMe": str((d.get("referenced_message") or {}).get("user_id")) == me, "text": text_of(d.get("content"), attachments, d.get("flags")), **({"attachments": attachments} if attachments else {}), **({"audio": audio} if audio else {})})
     return {"ok": True, "loginState": "loggedIn", "messages": count, "seconds": round(time.time() - started)}
 
