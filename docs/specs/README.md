@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 36 domains, 430 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 37 domains, 431 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -553,6 +553,12 @@ The account reacts to a message with an emoji on X, Discord, Slack and Instagram
 - **REQ-REACT-02** The chat is claimed first and released after
 - **REQ-REACT-03** Each engine calls the platform's own reaction call, as a write
 - **REQ-REACT-04** An emoji or its name works on every platform
+
+## [X lists](./xLists.md)
+
+An X account's own lists, shown, made and added to through its one session on vendor/twikit. Rule 141.
+
+- **REQ-XLISTS-01** Lists are read, made once and added to through the engine
 
 ## [Instagram](./instagram.md)
 

@@ -1963,6 +1963,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     answer decides (rule 73), and a refusal stops with nothing retried (rule
     94). `src/cli/react`. Spec: `docs/specs/reactions.md`.
 
+141. 2026-11-04 · matt: "We're able to add people to a list, like the
+    actual Twitter lists ... make a new Twitter list called Go-Getters". An X
+    account's own lists are worked through its one session (rule 105) on
+    vendor/twikit's list calls, sent with X's live operation ids (rule 113):
+    `log twitter list show` lists them with their ids and member counts,
+    `list create --name` makes one (a list of that name already there is
+    answered as it is, never made twice), and `list add --list <name|id>
+    --handle|--userId` puts one person on one (MCP `twitterList…`). create
+    and add are dry runs unless `--live` with `--approvedBy` (rule 8), each a
+    write the governor counts; X's answer decides (rule 73) and a refusal
+    stops (rule 94). `src/cli/twitter/helpers/list.ts`. Spec:
+    `docs/specs/xLists.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

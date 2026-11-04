@@ -41,6 +41,11 @@ When the owner asks for one of these, follow its page step by step.
 | `twitterPostLive` | Make one original post on X with approved copy and…, live on X |
 | `twitterLike` | Like one post on X, on the direct-API engine |
 | `twitterLikeLive` | Like one post on X, on the direct-API engine, live on X |
+| `twitterListShow` | List the X account's lists with their ids and member counts, sending… |
+| `twitterListCreate` | Make an X list on the account |
+| `twitterListCreateLive` | Make an X list on the account, live on X |
+| `twitterListAdd` | Put one person on one of the account's X lists |
+| `twitterListAddLive` | Put one person on one of the account's X lists, live on X |
 | `twitterRepost` | Repost one post on X, on the direct-API engine |
 | `twitterRepostLive` | Repost one post on X, on the direct-API engine, live on X |
 | `twitterFollow` | Follow one person on X, on the direct-API engine |
@@ -401,6 +406,58 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
+### `twitterListShow`
+
+List the X account's lists with their ids and member counts, sending nothing.
+The X account's own lists: show them, make one, put someone on one; changes are dry runs unless --live
+log twitter list show --account <accountName> [--json]
+X's own lists, on the direct-API engine (vendor/twikit: ListsManagementPageTimeline, CreateList, ListAddMember), through the account's one session (rule 105). show lists the account's lists with their ids and member counts, sending nothing. create makes a list, and a list of that name already there is answered as it is, never made twice. add puts one person on a list, found by its name or id. create and add are dry runs unless --live, which needs --approvedBy (rule 8). Each is a write the governor counts, X's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterListCreate`
+
+Make an X list on the account; a dry run unless --live.
+The X account's own lists: show them, make one, put someone on one; changes are dry runs unless --live
+log twitter list create --account <accountName> --name <name> [--description <text>] [--private] [--approvedBy <who>] [--live] [--json]
+X's own lists, on the direct-API engine (vendor/twikit: ListsManagementPageTimeline, CreateList, ListAddMember), through the account's one session (rule 105). show lists the account's lists with their ids and member counts, sending nothing. create makes a list, and a list of that name already there is answered as it is, never made twice. add puts one person on a list, found by its name or id. create and add are dry runs unless --live, which needs --approvedBy (rule 8). Each is a write the governor counts, X's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole. What acts on X is `twitterListCreateLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterListCreateLive`
+
+Make an X list on the account; a dry run unless --live.
+Live on X: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+The X account's own lists: show them, make one, put someone on one; changes are dry runs unless --live
+log twitter list create --account <accountName> --name <name> [--description <text>] [--private] [--approvedBy <who>] [--live] [--json]
+X's own lists, on the direct-API engine (vendor/twikit: ListsManagementPageTimeline, CreateList, ListAddMember), through the account's one session (rule 105). show lists the account's lists with their ids and member counts, sending nothing. create makes a list, and a list of that name already there is answered as it is, never made twice. add puts one person on a list, found by its name or id. create and add are dry runs unless --live, which needs --approvedBy (rule 8). Each is a write the governor counts, X's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterListAdd`
+
+Put one person on one of the account's X lists; a dry run unless --live.
+The X account's own lists: show them, make one, put someone on one; changes are dry runs unless --live
+log twitter list add --account <accountName> --list <name|id> --handle <handle>|--userId <id> [--approvedBy <who>] [--live] [--json]
+X's own lists, on the direct-API engine (vendor/twikit: ListsManagementPageTimeline, CreateList, ListAddMember), through the account's one session (rule 105). show lists the account's lists with their ids and member counts, sending nothing. create makes a list, and a list of that name already there is answered as it is, never made twice. add puts one person on a list, found by its name or id. create and add are dry runs unless --live, which needs --approvedBy (rule 8). Each is a write the governor counts, X's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole. What acts on X is `twitterListAddLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `twitterListAddLive`
+
+Put one person on one of the account's X lists; a dry run unless --live.
+Live on X: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+The X account's own lists: show them, make one, put someone on one; changes are dry runs unless --live
+log twitter list add --account <accountName> --list <name|id> --handle <handle>|--userId <id> [--approvedBy <who>] [--live] [--json]
+X's own lists, on the direct-API engine (vendor/twikit: ListsManagementPageTimeline, CreateList, ListAddMember), through the account's one session (rule 105). show lists the account's lists with their ids and member counts, sending nothing. create makes a list, and a list of that name already there is answered as it is, never made twice. add puts one person on a list, found by its name or id. create and add are dry runs unless --live, which needs --approvedBy (rule 8). Each is a write the governor counts, X's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
+AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
 ### `twitterRepost`
 
 Repost one post on X, on the direct-API engine; a dry run unless --live.
@@ -738,3 +795,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 138.** 2026-11-04 · matt: "a smaller local model" turns every piece of media into "a text representation", labelled with what it is, after a message went out answering only the text around a video someone sent; then "Yes, both" to downloading it. One media describer per machine (`log media describer`, `src/media/describer`), started by the inbox hook and locked like an owner (rule 131, a second is refused), loads `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the transformers.js runtime log already uses) and keeps it warm. Every image, meme, gif and video a watch receives goes into the .db's `media` queue (`enqueueAttachments`). The describer takes one at a time, describes a video from three frames (ffmpeg), labels each description with its kind, stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5 s, and stops loudly past its memory ceiling (`describerMemory`). The queue holds 20 at most: past that, an item is marked not described yet and alerted (`mediaQueueFull`). Media with no description is shown as `[video clip.mp4 not described yet: …]` in the inbox hook and in the voice gate's ranked context, so nobody replies to it blind; a description reaches both in its place. Audio stays with AssemblyAI (rule 126). A file the platform engine hasn't saved locally yet is listed as not described, with why. `log media describe <path>` queues one local file, and `log media status` shows the queue. Spec: `docs/specs/mediaDescriber.md`.
 
 **Rule 140.** 2026-11-04 · matt: "we're able to send reactions as well, across all of the clients. We need to be able to send reactions to messages as well." Every chat platform reacts to a message with an emoji through its own engine and its one session, never the browser: `log twitter react`, `log discord react`, `log slack react` and `log instagram react` (MCP `twitterReact`, `discordReact`, `slackReact`, `instagramReact`, each with its `…Live` twin), `--remove` taking the account's own reaction off. Each calls the platform's own reaction call: X's DM reaction mutation in `vendor/twikit` (an X Chat id is tried as the same pair, and X's answer decides), endcord's `send_reaction`, Slack's `reactions.add` (by name; the common emoji are turned into their names, `python/platformKit/reactions.py`) and instagrapi's `direct_send_reaction`. A dry run unless `--live` with `--approvedBy` (rule 8). The chat is claimed first and released after, as for a send (rule 133), the governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94). `src/cli/react`. Spec: `docs/specs/reactions.md`.
+
+**Rule 141.** 2026-11-04 · matt: "We're able to add people to a list, like the actual Twitter lists ... make a new Twitter list called Go-Getters". An X account's own lists are worked through its one session (rule 105) on vendor/twikit's list calls, sent with X's live operation ids (rule 113): `log twitter list show` lists them with their ids and member counts, `list create --name` makes one (a list of that name already there is answered as it is, never made twice), and `list add --list <name|id> --handle|--userId` puts one person on one (MCP `twitterList…`). create and add are dry runs unless `--live` with `--approvedBy` (rule 8), each a write the governor counts; X's answer decides (rule 73) and a refusal stops (rule 94). `src/cli/twitter/helpers/list.ts`. Spec: `docs/specs/xLists.md`.

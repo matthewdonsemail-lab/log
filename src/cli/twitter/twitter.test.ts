@@ -86,3 +86,32 @@ describe("cookies", () => {
     expect(mergeCookieShape({ a: "1" }, { b: "2" })).toEqual({ a: "1", b: "2" });
   });
 });
+
+describe("log twitter list (rule 141)", () => {
+  const lists = { answer: { ok: true, loginState: "loggedIn", lists: [{ id: "77", name: "Go-Getters", mode: "Public", memberCount: 0, description: "" }] }, refreshed: null } as unknown as TwitterEngineRun;
+
+  test("show lists the account's lists and sends nothing", async () => {
+    const r = await run(["twitter", "list", "show", "--account", "xTwo"], lists);
+    expect(r.code).toBe(0);
+    expect(r.calls).toEqual(["xTwo:lists"]);
+    expect(r.out).toContain("77  Go-Getters");
+  });
+
+  test("create is a dry run without --live, a list already there is never made twice, and --live needs --approvedBy", async () => {
+    const dry = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "Builders"], lists);
+    expect(dry.out).toContain('would make the public list "Builders"');
+    expect(dry.calls).toEqual(["xTwo:lists"]);
+    const again = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "go-getters"], lists);
+    expect(again.out).toContain('already has the list "Go-Getters"');
+    const unapproved = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "Builders", "--live"], lists);
+    expect(unapproved.code).toBe(1);
+    expect(unapproved.calls).toEqual([]);
+  });
+
+  test("add finds the list by name and refuses one the account doesn't have", async () => {
+    const dry = await run(["twitter", "list", "add", "--account", "xTwo", "--list", "go-getters", "--handle", "shaw_gtm"], lists);
+    expect(dry.out).toContain('would put @shaw_gtm on "Go-Getters" (77)');
+    const missing = await run(["twitter", "list", "add", "--account", "xTwo", "--list", "nope", "--handle", "shaw_gtm"], lists);
+    expect(missing.err + missing.out).toContain("listInvalid");
+  });
+});

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 140;
+export const RULES_REVIEWED_THROUGH = 141;
 
 export const AGENTS_URI = "log://agents";
 
@@ -152,6 +152,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
   instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
+  twitterList: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141],
   twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],
   slackWorkspaces: [13, 63, 64, 73, 83, 125],

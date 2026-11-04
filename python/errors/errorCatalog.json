@@ -2374,6 +2374,25 @@
     ],
     "action": "Read the platform's answer in the detail. On X a message only X Chat holds may not take the old DM reaction. Nothing more goes out on that account until matt says so (rule 94)."
   },
+  "listInvalid": {
+    "layer": "runtime",
+    "meaning": "An X list change was missing what it needs: create needs the list's name, add needs a list the account has (by name or id) and the person's handle or user id. Nothing was sent.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/twitter",
+      "python/twitterApi"
+    ],
+    "action": "Run log twitter list show for the lists and their ids, then give the list and the person."
+  },
+  "listRefused": {
+    "layer": "runtime",
+    "meaning": "X answered a list change with no list: the list wasn't made, or the person wasn't added. Nothing was retried.",
+    "retryable": false,
+    "raisedIn": [
+      "python/twitterApi"
+    ],
+    "action": "Read X's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+  },
   "reactFailed": {
     "layer": "runtime",
     "meaning": "Discord didn't answer the reaction at all (no status). Whether it landed is unknown.",

@@ -11,9 +11,9 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
-export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'notifications' | 'webClient' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'repost' | 'dm' | 'follow' | 'post' | 'react'
+export type TwitterAction = 'ping' | 'follows' | 'inbox' | 'followers' | 'notifications' | 'webClient' | 'xchatContacts' | 'xchatUnlock' | 'xchatWatch' | 'reply' | 'quote' | 'like' | 'repost' | 'dm' | 'follow' | 'post' | 'react' | 'lists' | 'listCreate' | 'listAdd'
 
-export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post', 'react']
+export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm', 'follow', 'post', 'react', 'listCreate', 'listAdd']
 
 export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'tooBig' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
 
@@ -41,6 +41,10 @@ export interface TwitterEngineSpec {
   messageId?: string
   emoji?: string
   remove?: boolean
+  name?: string
+  description?: string
+  private?: boolean
+  listId?: string
 }
 
 export interface TwitterInboxSync {

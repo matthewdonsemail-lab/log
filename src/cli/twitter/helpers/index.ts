@@ -8,3 +8,4 @@ export * from "./notifications.ts";
 export * from "./queue.ts";
 export * from "./send.ts";
 export * from "./voice.ts";
+export { listCommand } from "./list.ts";
