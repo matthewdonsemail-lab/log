@@ -2026,6 +2026,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the shared layer, never a provider. Everything else in rule 142 holds.
     Spec: `docs/specs/voiceClone.md`.
 
+144. 2026-11-05 · matt: "bro fuckign send th efuckign shit", after the voice
+    gate refused three times the voice note he dictated to deepman word for
+    word ("my phone screen is broken the phone is fine like theres two big
+    green lines going down the side of it and that but it still works thank
+    the lord"). The gate grades speech as typed text and as a reply (voice
+    0.06 to 0.48, inContext 0.21), so it can't read a voice note in his own
+    spoken words. `--mattsWords` on `log discord|instagram|slack voice`
+    (MCP `mattsWords`) says the text is matt's own words, dictated by him
+    for this voice note: the voice gate's SubQ read is skipped, and the AI
+    artifact check (`watermarkReadingOf`) still runs and refuses
+    `aiArtifacts`. Only when matt gave the exact words; words the agent
+    drafted are always gated (rule 137). Sent live 2026-11-05 08:04 UTC,
+    Discord message 1567811929500811294. Spec: `docs/specs/voiceClone.md`
+    (REQ-VOICE-CLONE-10).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

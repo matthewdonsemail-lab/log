@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 431 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 432 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -559,10 +559,11 @@ The account reacts to a message with an emoji on X, Discord, Slack and Instagram
 An X account's own lists, shown, made and added to through its one session on vendor/twikit. Rule 141.
 
 - **REQ-XLISTS-01** Lists are read, made once and added to through the engine
+- **REQ-XLISTS-02** Only the account's own lists are read, past X's suggestions
 
 ## [Voice clone and voice notes](./voiceClone.md)
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142 and 143.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142, 143 and 144.
 
 
 ## [Instagram](./instagram.md)

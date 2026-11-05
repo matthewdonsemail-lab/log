@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 143;
+export const RULES_REVIEWED_THROUGH = 144;
 
 export const AGENTS_URI = "log://agents";
 
@@ -59,6 +59,7 @@ export const CORE_PRINCIPLES = [
   "52. Media is read before anyone replies: one local vision model (LFM2.5-VL-450M, kept warm in one describer per machine) describes every image, meme and video into the .db, and anything not described yet is shown so in the context; never answer a message whose media says not described yet as if you had seen it (rule 138).",
   "53. Reacting to a message is a write like a send: `twitterReactLive`, `discordReactLive`, `slackReactLive` or `instagramReactLive` with the chat and the message's id from the platform's read, the emoji (or its name) and `remove` to take one off; it claims the chat first, the platform's answer decides, and a refusal stops (rule 140).",
   "54. A voice note goes out only when matt asks for one, in his cloned voice, as the platform's own voice note: `discordVoiceLive`, `instagramVoiceLive` or `slackVoiceLive` with the chat and `text` in his words (never an audio file). It is gated like any send, said by the voice provider from his clone (`cloneVoice` once per provider, `cloneSpeak` to test), converted with ffmpeg, claimed, and the platform's answer decides; X has no voice note path (rule 142). The voice layer is provider-agnostic: `provider` (inworld or fishAudio), else LOG_VOICE_PROVIDER, else inworld (rule 143).",
+  "55. When matt dictates the exact words of a voice note, send them with `mattsWords`: the voice gate's read, which grades speech as typed text, is skipped, and the AI artifact check still runs. Words the agent drafted are always gated (rule 144).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -154,9 +155,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
   instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
-  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143],
-  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143],
-  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143],
+  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143, 144],
+  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143, 144],
+  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143, 144],
   twitterList: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141],
   twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],

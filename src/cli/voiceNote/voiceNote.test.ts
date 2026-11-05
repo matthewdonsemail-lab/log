@@ -7,11 +7,15 @@ import type { Rendered, VoiceNotePlatform, VoiceProvider } from "../../extension
 import type { PlatformEngineRun, PlatformEngineSpec } from "../../platformKit/session/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 import { voiceNoteDeps } from "./index.ts";
 
 const CHANNEL = "1434928149904228392";
 const originalRender = voiceNoteDeps.render;
+const originalGate = gateDeps.gate;
 let rendered: string[] = [];
+let gated: string[] = [];
+let gateRefuses = false;
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -35,6 +39,12 @@ async function run(argv: string[], answer: PlatformEngineRun["answer"] = { ok: f
 
 beforeEach(() => {
   rendered = [];
+  gated = [];
+  gateRefuses = false;
+  gateDeps.gate = async (_context, send) => {
+    gated.push(send.text);
+    return gateRefuses ? { ok: false, refused: "the gate graded it as typed text" } : { ok: true, line: "voice gate passed" };
+  };
   voiceNoteDeps.render = async (provider: VoiceProvider, platform: VoiceNotePlatform, text: string): Promise<Rendered> => {
     rendered.push(`${provider}:${platform}:${text}`);
     return { ok: true, note: { path: join(voiceNotesDir(), `note${platform === "discord" ? ".ogg" : ".m4a"}`), platform, seconds: 2.5, waveform: "AAAA", levels: [0.5, 1], provider, model: "inworld-tts-2-flash" } };
@@ -44,6 +54,7 @@ beforeEach(() => {
 
 afterEach(() => {
   voiceNoteDeps.render = originalRender;
+  gateDeps.gate = originalGate;
   rmSync(clonePath(), { force: true });
 });
 
@@ -116,6 +127,47 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
   test("X has no voice note command", async () => {
     const r = await run(["twitter", "voice", "--account", "x", "--text", "yo"]);
     expect(r.code).not.toBe(0);
+  });
+});
+
+const MATTS_WORDS = "my phone screen is broken the phone is fine like theres two big green lines going down the side of it and that but it still works thank the lord";
+
+describe("--mattsWords: matt's own dictated words (rule 144)", () => {
+  test("a dry run with --mattsWords says the gate's read is skipped and calls nothing", async () => {
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", MATTS_WORDS, "--mattsWords"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("dry run");
+    expect(r.out).toContain("--mattsWords");
+    expect(r.specs).toEqual([]);
+    expect(rendered).toEqual([]);
+    expect(gated).toEqual([]);
+  });
+
+  test("live with --mattsWords never calls the voice gate, and sends his words", async () => {
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", MATTS_WORDS, "--mattsWords", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn", messageId: "1567811929500811294" });
+    expect(r.code).toBe(0);
+    expect(gated).toEqual([]);
+    expect(rendered).toEqual([`inworld:discord:${MATTS_WORDS}`]);
+    expect(r.specs[0]).toMatchObject({ action: "voice", channel: CHANNEL });
+  });
+
+  test("without --mattsWords the voice gate still runs and its refusal stops the send", async () => {
+    gateRefuses = true;
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", MATTS_WORDS, "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
+    expect(r.code).toBe(1);
+    expect(r.err + r.out).toContain("voiceGateFailed");
+    expect(gated).toEqual([MATTS_WORDS]);
+    expect(rendered).toEqual([]);
+    expect(r.specs).toEqual([]);
+  });
+
+  test("AI artifacts are still refused with --mattsWords", async () => {
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", "my phone​ screen is broken", "--mattsWords", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
+    expect(r.code).toBe(1);
+    expect(r.err + r.out).toContain("aiArtifacts");
+    expect(gated).toEqual([]);
+    expect(rendered).toEqual([]);
+    expect(r.specs).toEqual([]);
   });
 });
 

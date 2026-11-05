@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142 and 143.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142, 143 and 144.
 
 ## The providers
 
@@ -50,7 +50,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-07: A live voice note is gated, made, converted and claimed like a send
 
-With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, waits for the account with `waitCaughtUp` (`accountBehind`), runs the text through `gateDeps.gate` (`voiceGateFailed`), then `renderVoiceNote` speaks it with that provider and converts it with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), measures its duration and waveform, and only then claims the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
+With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, waits for the account with `waitCaughtUp` (`accountBehind`), runs the text through `gateDeps.gate` (`voiceGateFailed`) unless `--mattsWords` says they are matt's own dictated words (REQ-VOICE-CLONE-10), then `renderVoiceNote` speaks it with that provider and converts it with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), measures its duration and waveform, and only then claims the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
 
 Checked by: code and SubQ
 
@@ -63,5 +63,11 @@ Checked by: code and SubQ
 ### REQ-VOICE-CLONE-09: X has no voice note
 
 `COMMAND_INDEX` (`src/cli/runner/helpers/commandIndex.ts`) has a `voice` entry for discord, slack and instagram, each from `src/cli/voiceNote/index.ts`, and none for twitter: twikit has no audio send and no vendored code shows X's DM voice upload, so nothing is guessed. (The `voice` entry for any platform is the voice gate, `log voice`, not a voice note.)
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-10: matt's own dictated words skip the gate's read, never the artifact check
+
+`voiceNoteCommandOf` in `src/cli/voiceNote/index.ts` takes `--mattsWords`: the text is matt's own words, dictated by him for this voice note. The voice gate grades speech as typed text and as a reply, so with `--mattsWords` a live send never calls `gateDeps.gate` and says on its progress line that the gate's read was skipped; the dry run says so too. `watermarkReadingOf` still reads the text before anything else, with or without the flag, and refuses `aiArtifacts`. Without `--mattsWords` the gate runs as REQ-VOICE-CLONE-07 says. Everything else (approval, clone, catch-up, render, claim, engine) is the same. Rule 144.
 
 Checked by: code and SubQ

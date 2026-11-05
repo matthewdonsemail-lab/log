@@ -1318,7 +1318,8 @@ def list_row(found: Any) -> dict[str, Any]:
 
 
 async def lists_of(client: Any) -> list[dict[str, Any]]:
-    return [list_row(found) for found in await client.get_lists(count=100)]
+    me = str(await client.user_id())
+    return [list_row(found) for found in await client.get_lists(count=100) if getattr(found, "owner_id", None) in (None, me)]
 
 
 async def list_create(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
