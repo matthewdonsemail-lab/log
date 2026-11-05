@@ -2279,6 +2279,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Spec: `docs/specs/voiceGate.md` (REQ-VOICE-15), `docs/specs/agentHooks.md`
     (REQ-HOOKS-20).
 
+156. 2026-11-05 · matt: "let's do some cold outbound sending them their
+    tweets then send a voice note after like a real brief one and then just
+    literally lock that in". Cold outbound on X is two touches through the
+    account's one queue (rules 104, 107): first the opener (their own recent
+    tweet forwarded, then one line about it, rule 98), then a brief voice
+    note in matt's cloned voice that goes one step further, a question about
+    what they posted, never the ask. The voice note is a queue action of its
+    own, `voice` (`QUEUE_ACTIONS`, `toAPerson`): its text is said with the
+    clone (`voiceNoteDeps.render`), gated as speech (`spoken`), and sent as an
+    X Chat voice message by the engine's `xchatVoice` with the saved PIN
+    (rules 151, 153), its chat claimed like a dm (rule 133). A dm or voice
+    item keeps the tweet it opens on (`postText`), and the send-time gate
+    judges it against that tweet (`said`), as it does a reply's. The voice
+    notes go into the same queue once the openers have gone out, so each
+    lands after its own opener. Targets come from the niche map: mutuals
+    under 1500 followers with a recent original post, not already talked to
+    (rules 99, 121, 87). Spec: `docs/specs/xQueue.md` (REQ-QUEUE-16).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

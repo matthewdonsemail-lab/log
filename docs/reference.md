@@ -1576,14 +1576,14 @@ Without --live it is a dry run and nothing is contacted. --live reacts, only whe
 Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine MCP tools: `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit`, one per form, with named fields.
 
 ```text
-log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]
+log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm|voice] [--seed <n>]
 log twitter queue show <queue.json> [--json]
 log twitter queue check <queue.json> [--skipXChatCheck] [--json]
 log twitter queue status <queue.json> [--json]
 log twitter queue approve <queue.json> --by <who>
 log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]
 log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--keepOpen] [--live]
-log twitter queue add <queue.json> --targets <targets.json> --by <who> [--action reply|quote|dm] [--window <2h|90m>] [--minGap <s>]
+log twitter queue add <queue.json> --targets <targets.json> --by <who> [--action reply|quote|dm|voice] [--window <2h|90m>] [--minGap <s>]
 log twitter queue nudge <queue.json> [--replies <n>]
 log twitter queue edit <queue.json> --n <n> --text "<new copy>" --by <who> [--window <30m>]
 A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).

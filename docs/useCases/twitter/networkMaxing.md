@@ -70,9 +70,11 @@ flowchart TD
   s1["8. Follow them first<br/><i>twitterFollow, twitterFollowLive</i>"]
   s2["9. Like the tweet the message is about, before the message<br/><i>twitterLike, twitterLikeLive</i>"]
   s3["10. Then the message: their tweet forwarded first, then one informa…<br/><i>voice, twitterDmLive, twitterQueueAdd, twitterQueueRunLive</i>"]
+  s4["11. Then a brief voice note in the owner's cloned voice, a few minu…<br/><i>voice, twitterQueueAdd</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
+  s3 --> s4
 ```
 <!-- /stepsDiagram -->
 
@@ -82,6 +84,7 @@ flowchart TD
 | 8 | Follow them first. Never send a cold message to someone the owner doesn't follow | `twitterFollow`, then `twitterFollowLive` { userId, approvedBy, confirmLive: true } | X's answer is `sent` (or already followed) |
 | 9 | Like the tweet the message is about, before the message | `twitterLike`, then `twitterLikeLive` { tweet, approvedBy, confirmLive: true } | X's answer is `sent` |
 | 10 | Then the message: their tweet forwarded first, then one informal line about it, the cold DM way in [engagerDms.md](engagerDms.md). The opener only, always relevant to them, never an ask (no pitch, no "you using `<tool>`"). Gated like every send, and sent the same way as step 6: two or more people through the account's one queue | `voice`, then `twitterDmLive`, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
+| 11 | Then a brief voice note in the owner's cloned voice, a few minutes after the opener: one spoken question that goes a step further on what they posted, never the ask (rule 156). Gate it as speech, then add it to the same queue once the openers have gone, so it lands after its own opener | `voice` { to, context, text, spoken: true }, then `twitterQueueAdd` { queue, targets, action: "voice", by } | X's answer is `sent` for the voice note |
 
 ## What to know
 

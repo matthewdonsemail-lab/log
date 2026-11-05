@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 442 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 443 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -353,6 +353,7 @@ An X account sends more than one thing only through its queue (`log twitter queu
 - **REQ-QUEUE-13** The hook says what to do
 - **REQ-QUEUE-14** A refusal from X stops the run, and only a network drop is tried again
 - **REQ-QUEUE-15** A reply goes only to an author with 1500 followers or fewer
+- **REQ-QUEUE-16** A queue sends voice notes, and a dm or voice item is judged against its tweet
 
 ## [Full context before a send](./fullContext.md)
 

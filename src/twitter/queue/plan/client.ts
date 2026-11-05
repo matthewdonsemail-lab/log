@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { appendFileSync, existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { planSend } from '../../post/send/index'
 import type { BuildTarget, EventKind, PlanEvent, PlanOptions, Queue, QueueAction, QueueItem, Rng } from './types'
-import { ITEM_STATUSES, QUEUE_ACTIONS } from './types'
+import { ITEM_STATUSES, QUEUE_ACTIONS, toAPerson } from './types'
 
 export const MIN_GAP_FLOOR = 30
 
@@ -95,7 +95,7 @@ export function queueLog(path: string, line: string, now = new Date()): string {
 }
 
 export function targetOfItem(item: Pick<QueueItem, 'action' | 'tweetUrl' | 'userId'>): string | undefined {
-  return item.action === 'dm' ? item.userId : item.tweetUrl
+  return toAPerson(item.action) ? item.userId : item.tweetUrl
 }
 
 export function pyJson(value: unknown): string {
@@ -140,9 +140,9 @@ export function buildQueue(input: { account: string; action: QueueAction; target
   const items: QueueItem[] = input.targets.map((target, i) => {
     const media = (Array.isArray(target.media) ? target.media : target.media ? [target.media] : []).map((m) => String(m).trim()).filter(Boolean)
     const base = { n: i + 1, action: input.action, handle: target.handle ?? null, text: own[i] ?? shuffled[next++], status: 'pending' as const, draftedAt: input.now.toISOString(), ...(media.length && input.action !== 'quote' ? { media } : {}) }
-    if (input.action === 'dm') {
-      if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a dm queue needs each recipient's id`)
-      return { ...base, userId: String(target.userId) }
+    if (toAPerson(input.action)) {
+      if (!target.userId) throw new Error(`target ${i + 1} has no user_id: a ${input.action} queue needs each recipient's id`)
+      return { ...base, userId: String(target.userId), ...(target.postText ? { postText: String(target.postText).slice(0, 200) } : {}) }
     }
     if (!target.tweetUrl) throw new Error(`target ${i + 1} has no tweet_url or post_url`)
     return { ...base, tweetUrl: target.tweetUrl, postText: (target.postText ?? '').slice(0, 200) }
@@ -170,6 +170,10 @@ export function itemProblems(queue: Queue, style?: string | null): { n: number; 
   for (const it of queue.items.filter((i) => i.status === 'pending')) {
     if (!QUEUE_ACTIONS.includes(it.action)) {
       out.push({ n: it.n, detail: `action ${it.action} isn't one of ${QUEUE_ACTIONS.join(', ')}` })
+      continue
+    }
+    if (it.action === 'voice') {
+      if (!it.userId || !it.text?.trim()) out.push({ n: it.n, detail: 'a voice item needs the user id of whoever it goes to and the words to say' })
       continue
     }
     const plan = planSend({ action: it.action, tweetUrl: it.tweetUrl, userId: it.userId, text: it.text, style, live: false })
@@ -226,7 +230,7 @@ export function interleave(events: { n: number; kind: EventKind }[], rng: Rng): 
 export function planQueue(queue: Queue, options: PlanOptions, rng: Rng, now: Date): Queue {
   if (options.minGap < MIN_GAP_FLOOR) throw new Error(`--minGap must be at least ${MIN_GAP_FLOOR} s`)
   const todo = queue.items.filter((i) => i.status === 'pending').slice(0, options.limit || undefined)
-  const kinds = todo.map((it) => ({ n: it.n, kinds: it.action === 'dm' ? (['reply'] as EventKind[]) : pickKinds(options.like, options.likeChance, rng) }))
+  const kinds = todo.map((it) => ({ n: it.n, kinds: toAPerson(it.action) ? (['reply'] as EventKind[]) : pickKinds(options.like, options.likeChance, rng) }))
   const total = kinds.reduce((sum, k) => sum + k.kinds.length, 0)
   const times = drawTimes(total, options.start.getTime() / 1000, parseSpan(options.window), options.minGap, rng)
   const order = interleave(kinds.flatMap((k) => k.kinds.map((kind) => ({ n: k.n, kind }))), rng)

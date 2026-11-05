@@ -11,6 +11,7 @@ export const xQueue = {
   specPath: 'docs/specs/xQueue.md',
   codePaths: [
     'src/twitter/queue/plan/client.ts',
+    'src/twitter/queue/plan/types.ts',
     'src/twitter/queue/run/client.ts',
     'src/twitter/queue/run/types.ts',
     'src/twitter/live/feed/client.ts',
@@ -33,6 +34,9 @@ export const xQueue = {
       { kind: 'symbol', file: PLAN, name: 'approvalProblem' },
     ],
     'REQ-QUEUE-03': [{ kind: 'symbol', file: RUN, name: 'runQueue' }],
+    'REQ-QUEUE-16': [
+      { kind: 'symbol', file: 'src/twitter/queue/plan/types.ts', name: 'toAPerson' },
+    ],
     'REQ-QUEUE-15': [
       { kind: 'value', file: 'python/twitterApi/engine.py', name: 'MAX_AUTHOR_FOLLOWERS', equals: 1500 },
       { kind: 'string', file: 'python/twitterApi/engine.py', includes: 'authorTooBig' },
@@ -84,6 +88,7 @@ export const xQueue = {
     'REQ-QUEUE-12': noul('Do QUEUE_EVENT_PATTERNS match the held, sent, refused, networkDrop, stopped, cancelled, fellBehind and started lines the run writes, does queueContext open its text with >>> QUEUE, does the hook script write that text as additionalContext, and is the hook registered on SessionStart, UserPromptSubmit and PostToolUse?'),
     'REQ-QUEUE-13': noul('Does queueContext tell the agent to redraft a held item and put it back with twitterQueueEdit, and say for a refused event or a stop that nothing goes out on that account until matt says so?'),
     'REQ-QUEUE-14': noul('When failureOf(answer) is not gone, not tooBig and not network, does runQueue return refusedStop, which sends FAIL, leaves the item status pending without marking the event done or skipped, alerts with mention true naming refusal.code, refusal.detail and refusal.at, and returns state halted with result.refusal set, without waiting and calling deps.send again; and does only a network failure (networkError true and no 429) wait and put the event back into todo, halting once drops passes MAX_DROPS?'),
+    'REQ-QUEUE-16': noul('Does QUEUE_ACTIONS include voice and toAPerson treat dm and voice alike in building (user id required), targetOfItem and planning (one send, no like); does the queue check a voice item for an id and words instead of planSend; in src/cli/twitter/helpers/queue.ts does a voice item wait for the catch-up, read the X Chat PIN and refuse xchatPinMissing without it, render with voiceNoteDeps.render, claim the chat with guardSend and send with the engine action xchatVoice; and does the send-time gate pass spoken for a voice item and said from postText whenever an item has one?'),
     'REQ-QUEUE-15': noul('In the engine, does send call author_too_big before like_post_first and follow_author_first for a reply, return event tooBig with code authorTooBig when the author has more than MAX_AUTHOR_FOLLOWERS (1500) followers, and does runQueue, when failureOf returns tooBig, mark the item skipped, drop the event with tooBig and go on to the next event instead of calling refusedStop?'),
     unspecifiedBehavior: noul('Does the queue send an item by a route the specification does not describe, such as sending two items at once, sending without approval, sending sooner than minGap after the last send without a nudge, or sending again after X refused a send?'),
   },
@@ -103,6 +108,7 @@ export const xQueue = {
     'REQ-QUEUE-13': MET,
     'REQ-QUEUE-14': MET,
     'REQ-QUEUE-15': MET,
+    'REQ-QUEUE-16': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

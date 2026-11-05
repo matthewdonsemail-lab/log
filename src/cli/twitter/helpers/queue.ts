@@ -1,4 +1,7 @@
 import { spawnSync } from "node:child_process";
+import { namedLabel } from "../../../inbox/store/index.ts";
+import { providerOf } from "../../../extensions/voiceClone/index.ts";
+import { voiceNoteDeps } from "../../voiceNote/index.ts";
 import { closeSync, existsSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { planSend } from "../../../twitter/post/send/index.ts";
@@ -24,6 +27,7 @@ import {
   nudgePathOf,
   planQueue,
   QUEUE_ACTIONS,
+  toAPerson,
   queueLog,
   saveQueue,
   sendIncoming,
@@ -47,14 +51,14 @@ import { findTwitterAccount } from "../../../twitter/account/session/index.ts";
 const QUEUE: PositionalSpec = { name: "queue", kind: "string", required: true, description: "The queue file (.json)" };
 
 export const QUEUE_USAGE = [
-  "Usage: log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]",
+  "Usage: log twitter queue build --targets <targets.json> [--variations <a.json,b.json>] --out <queue.json> --account <accountName> [--action reply|quote|dm|voice] [--seed <n>]",
   "       log twitter queue show <queue.json> [--json]",
   "       log twitter queue check <queue.json> [--skipXChatCheck] [--json]",
   "       log twitter queue status <queue.json> [--json]",
   "       log twitter queue approve <queue.json> --by <who>",
   "       log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]",
   "       log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--force] [--keepOpen] [--live]",
-  "       log twitter queue add <queue.json> --targets <targets.json> --by <who> [--action reply|quote|dm] [--window <2h|90m>] [--minGap <s>]",
+  "       log twitter queue add <queue.json> --targets <targets.json> --by <who> [--action reply|quote|dm|voice] [--window <2h|90m>] [--minGap <s>]",
   "       log twitter queue nudge <queue.json> [--replies <n>]",
   "       log twitter queue edit <queue.json> --n <n> --text \"<new copy>\" --by <who> [--window <30m>]",
   "A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).",
@@ -201,7 +205,7 @@ function dryRunLines(queue: Queue): string[] {
 
 function specFor(item: QueueItem, kind: EventKind, approvedBy: string, style: string | null | undefined, media?: string[]) {
   if (kind === "like") return planSend({ action: "like", tweetUrl: item.tweetUrl, approvedBy, live: true });
-  return planSend({ action: item.action as QueueAction, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, media, approvedBy, style, live: true });
+  return planSend({ action: (item.action === "voice" ? "dm" : item.action) as Exclude<QueueAction, "voice">, tweetUrl: item.tweetUrl, userId: item.userId, text: item.text, media, approvedBy, style, live: true });
 }
 
 async function runCommand(context: CommandContext, path: string, flags: Record<string, unknown>): Promise<CommandResult> {
@@ -243,7 +247,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
     const activity = activityOf(held.activity as unknown as TwitterNotification[], who, since);
     const changed = contextChangesSince(held.messages, activity, since);
     if (!changed.length && item.text?.trim()) {
-      const voiced = await gateDeps.gate(context, { platform: "twitter", account: queue.account, to: item.handle ? `@${item.handle.replace(/^@/, "")}` : String(item.userId), text: item.text, handle: item.handle ?? null, userId: item.userId ?? null, ...(item.action !== "dm" && item.postText?.trim() ? { said: item.postText } : {}) });
+      const voiced = await gateDeps.gate(context, { platform: "twitter", account: queue.account, to: item.handle ? `@${item.handle.replace(/^@/, "")}` : namedLabel("twitter", queue.account, String(item.userId ?? ""), String(item.userId ?? "")), text: item.text, handle: item.handle ?? null, userId: item.userId ?? null, ...(item.postText?.trim() ? { said: item.postText } : {}), ...(item.action === "voice" ? { spoken: true } : {}) });
       if (!voiced.ok) {
         log(`#${item.n} @${item.handle ?? "?"}: ${voiced.refused}`);
         return voiced.refused.split("\n").slice(1).map((l) => `voice gate: ${l.replace(/^\s*-\s*/, "")}`);
@@ -263,6 +267,24 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
             media = kind === "like" ? undefined : await localMedia(item.media);
           } catch (error) {
             return { ok: false, code: "mediaInvalid", detail: error instanceof Error ? error.message : String(error) };
+          }
+          if (kind !== "like" && item.action === "voice") {
+            if (!item.userId || !item.text?.trim()) return { ok: false, code: "targetMissing", detail: "a voice item needs the person's user id and the words to say" };
+            const caught = await waitCaughtUp("twitter", opened.account.accountName);
+            if (!caught.ok) return { ok: false, code: "accountBehind", detail: caught.refused };
+            const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
+            const chatPin = secrets?.messengerPin ? String(secrets.messengerPin) : "";
+            if (!chatPin) return { ok: false, code: "xchatPinMissing", detail: `${opened.account.accountName} has no X Chat PIN saved, so X Chat can't be opened to send a voice note` };
+            const chosen = providerOf(undefined);
+            if (!chosen.ok) return { ok: false, code: "voiceProviderInvalid", detail: String((chosen as { detail?: string }).detail ?? "no voice provider") };
+            const rendered = await voiceNoteDeps.render(chosen.provider, "twitter", item.text);
+            if (!rendered.ok) return { ok: false, code: rendered.code, detail: rendered.detail };
+            log(`#${item.n} @${item.handle ?? "?"}: voice note made in matt's cloned voice, ${rendered.note.seconds} s`);
+            const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
+            if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+            const answer = (await opened.engine({ action: "xchatVoice", userId: item.userId, path: rendered.note.path, seconds: rendered.note.seconds, live: true, approvedBy, chatPin, ...(flags["force"] === true ? { force: true } : {}) } as never)).answer;
+            guard.done(answer.ok && answer.event === "sent" ? "sent" : "failed", answer.ok ? "voice note" : String(answer.code ?? ""));
+            return answer;
           }
           const plan = specFor(item, kind, approvedBy, opened.account.copyStyle, media);
           if (!plan.ok) return { ok: false, code: plan.problem.code, detail: plan.problem.detail };
