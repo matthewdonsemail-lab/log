@@ -335,12 +335,17 @@ export async function chatEvidence(context: CommandContext, said: string, send: 
   return found?.ok ? found.evidence : undefined;
 }
 
+export function momentAnswered(messages: readonly { fromMe: boolean; text: string; time: string }[]): string {
+  const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
+  const newest = sorted[sorted.length - 1];
+  return newest && !newest.fromMe ? newest.text : "";
+}
+
 export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
-  const theirs = chatContextOf(send.platform, send.account, who).messages.filter((m) => !m.fromMe);
-  const said = send.said ?? theirs[theirs.length - 1]?.text ?? "";
+  const said = send.said ?? momentAnswered(chatContextOf(send.platform, send.account, who).messages);
   const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
   const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle: send.handle }, send.text);
   const reading = await gateReading(context, { to: send.handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}) });

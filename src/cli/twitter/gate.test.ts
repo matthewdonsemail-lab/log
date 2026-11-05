@@ -3,7 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { appendEvent } from "../../inbox/store/index.ts";
-import { chatIdFor, failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
+import { chatIdFor, momentAnswered, failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
 import type { GateReading } from "./helpers/voice.ts";
 
 const passing: GateReading = { to: "@x", voice: 0.95, inContext: 0.9, friendLike: 0.9, openerOnly: 1, toThem: null, neverSays: [], watermark: { level: "clean", findings: [] } as unknown as GateReading["watermark"], pass: true, model: "m", notHere: [], scrambler: { ran: true, suspicious: 0, hits: [] } as unknown as GateReading["scrambler"], ranked: [] };
@@ -48,5 +48,16 @@ describe("the gate inside a send finds the chat's real replies by what the send 
   test("another platform's send finds its chat by the conversation id, never another platform's chat of the same name", () => {
     expect(chatIdFor(conversations, { platform: "discord", conversationId: "1565734133609668780" })).toBe("discord:1565734133609668780");
     expect(chatIdFor(conversations, { platform: "slack", handle: "rvaclassic" })).toBeNull();
+  });
+});
+
+describe("the gate inside a send only grades an answer when there is something to answer", () => {
+  test("their newest message is what is being answered", () => {
+    expect(momentAnswered([{ fromMe: true, text: "you there", time: "2026-11-05T00:24:58Z" }, { fromMe: false, text: "Not me", time: "2026-11-05T00:26:44Z" }])).toBe("Not me");
+  });
+
+  test("when matt's own message is the newest, the send is new news, not a reply", () => {
+    expect(momentAnswered([{ fromMe: false, text: "Not me", time: "2026-11-05T00:26:44Z" }, { fromMe: true, text: "(voice note: look at my screen)", time: "2026-11-05T06:27:57Z" }])).toBe("");
+    expect(momentAnswered([])).toBe("");
   });
 });
