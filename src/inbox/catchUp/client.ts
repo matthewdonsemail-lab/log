@@ -9,7 +9,7 @@ export function pacedWait(random: () => number = Math.random): Promise<void> {
   return new Promise((done) => setTimeout(done, low + random() * (high - low)))
 }
 
-export function storeRead(platform: string, account: string, chat: string, box: string, m: ReadMessage, now: Date, source: 'live' | 'catchUp' = 'catchUp'): boolean {
+export function storeRead(platform: string, account: string, chat: string, box: string, m: ReadMessage, now: Date, source: 'live' | 'catchUp' | 'backfill' = 'catchUp'): boolean {
   if (m.text == null || !m.at) return false
   const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString() }
   return !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id: m.id ?? m.ts ?? null }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })

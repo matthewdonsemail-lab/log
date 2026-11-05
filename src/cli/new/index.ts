@@ -70,7 +70,7 @@ export const newCommand: Command = {
     }
     for (const line of done) context.err(line);
     context.err("bun run docs:build: the README, the diagrams and every MCP tool's description");
-    const docs = spawnSync("bun", ["scripts/docs/buildDocs.ts"], { cwd: REPO, encoding: "utf8" });
+    const docs = spawnSync("bun", ["scripts/docs/buildDocs.ts"], { cwd: REPO, encoding: "utf8", windowsHide: true });
     const docsLine = docs.status === 0 ? (docs.stdout.trim().split("\n").pop() ?? "docs built") : `docs:build failed: ${(docs.stderr || docs.stdout).slice(-300)}`;
     const next = [`Next: bun run check, then fill in python/${name}Api/engine.py's ping and add ${plan.names.label}'s families as commands (docs/platforms/${name}/README.md).`];
     if (parsed.flags["json"]) return { code: docs.status === 0 ? 0 : 1, stdout: JSON.stringify({ apply: true, names: plan.names, done, docs: docsLine, notes: plan.notes, next }, null, 2) };

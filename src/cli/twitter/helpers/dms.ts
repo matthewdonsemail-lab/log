@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { TwitterDmMessage, TwitterDmThread, TwitterInboxSync, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
+import { storeRead } from "../../../inbox/catchUp/index.ts";
 import { saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -11,6 +12,12 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 import { withVoiceNotes } from "../../transcribe/index.ts";
 
 const audioOf = (m: TwitterDmMessage) => (m.media ?? []).filter((a) => a.filename).map((a) => ({ name: a.filename, ...(a.audio !== undefined ? { audio: a.audio } : a.type === "audio" ? { audio: true } : {}), path: a.path ?? null, ...(a.error ? { error: a.error } : {}) }));
+
+export function backfillThread(account: string, messages: readonly TwitterDmMessage[], now: Date): number {
+  let stored = 0;
+  for (const m of messages) if (m.conversationId && m.time && storeRead("twitter", account, m.conversationId, "dm", { id: m.id, at: m.time, from: m.fromMe ? "me" : m.senderId, fromMe: m.fromMe === true, text: m.text }, now, "backfill")) stored++;
+  return stored;
+}
 
 export const DMS_USAGE = [
   "Usage: log twitter dms --account <accountName> [--limit <n>] [--waiting] [--with <handle>] [--conversation <id>] [--full] [--force] [--json]",
@@ -134,6 +141,7 @@ export const dmsCommand: Command = {
         const person = await read({ limit, withHandle: needle });
         if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
         const answer = { ...person.answer, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: `with:${needle}` }, dropMirrors(person.answer.messages ?? []).slice(-limit), audioOf, context.err) };
+        backfillThread(opened.account.accountName, answer.messages, context.now?.() ?? new Date());
         context.err(`${opened.account.accountName}: and what @${needle} did on the account's posts (its notifications, what is new read first)`);
         const kept = readNotificationStore(notificationStorePath(opened.account.accountName));
         const notes = notificationsFresh(kept, context.now?.() ?? new Date()) ? { answer: { ok: true } as TwitterSessionAnswer } : await opened.engine({ action: "notifications", screenName: opened.account.accountName });
@@ -159,6 +167,7 @@ export const dmsCommand: Command = {
       }
       const { conversations: _kept, ...answered } = raw.answer;
       const lean = answered.messages ? { ...answered, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: convoId ?? "" }, answered.messages, audioOf, context.err) } : answered;
+      if (lean.ok && lean.messages) backfillThread(opened.account.accountName, lean.messages, context.now?.() ?? new Date());
       const run = lean.ok && lean.threads ? { ...raw, answer: onePerPerson(lean) } : { ...raw, answer: lean };
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {

@@ -72,6 +72,7 @@ export function createAssemblyAiClient(options: AssemblyAiOptions): AssemblyAiCl
               transcriptId: job.id,
               file,
               transcribedAt: now().toISOString(),
+              ...(Array.isArray(state.words) ? { words: (state.words as Record<string, unknown>[]).map((w) => ({ text: String(w.text ?? ''), start: Number(w.start ?? 0), end: Number(w.end ?? 0), confidence: Number(w.confidence ?? 0) })) } : {}),
             },
           }
         }

@@ -21,8 +21,8 @@ from platformKit import media as media_kit
 from platformKit import reactions
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
-READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch")
-WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react")
+READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
+WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd")
 ACTIONS = READS + WRITES
 
 
@@ -1263,6 +1263,10 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "event": "sent", "reposted": True, "tweetId": tweet_id}
     if action == "react":
         return await react(client, spec)
+    if action == "listCreate":
+        return await list_create(client, spec)
+    if action == "listAdd":
+        return await list_add(client, spec)
     if action == "follow":
         user_id = str(spec["userId"])
         before = await client.get_user_by_id(user_id)
@@ -1307,6 +1311,40 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         limits = raw.get("limits") or {}
         return {"ok": False, "event": "dropped", "code": "xSentNothing", "detail": f"x created no tweet (empty result): nothing was posted. x said: {json.dumps(raw.get('body'))[:300]}", "limits": limits, "rateLimitReset": reset_of(limits)}
     return {"ok": True, "event": "sent", "mode": action, "tweetId": tweet_id, "target": spec.get("tweetUrl") or "newPost", **({"mediaIds": media_ids} if media_ids else {}), **({"likedPost": liked} if liked else {}), **({"followedAuthor": followed} if followed else {}), "limits": raw.get("limits") or {}}
+
+
+def list_row(found: Any) -> dict[str, Any]:
+    return {"id": str(found.id), "name": found.name, "mode": found.mode, "memberCount": found.member_count, "description": found.description}
+
+
+async def lists_of(client: Any) -> list[dict[str, Any]]:
+    me = str(await client.user_id())
+    return [list_row(found) for found in await client.get_lists(count=100) if getattr(found, "owner_id", None) in (None, me)]
+
+
+async def list_create(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    name = str(spec["name"]).strip()
+    for found in await lists_of(client):
+        if found["name"].lower() == name.lower():
+            return {"ok": True, "event": "sent", "mode": "listCreate", "already": True, "list": found}
+    made = await client.create_list(name, str(spec.get("description") or ""), is_private=spec.get("private") is True)
+    if not str(getattr(made, "id", "") or ""):
+        return {"ok": False, "event": "dropped", "code": "listRefused", "detail": f"x made no list called {name}"}
+    return {"ok": True, "event": "sent", "mode": "listCreate", "list": list_row(made)}
+
+
+async def list_add(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    user_id = str(spec.get("userId") or "")
+    handle = str(spec.get("screenName") or "").lstrip("@")
+    if not user_id:
+        user = await client.get_user_by_screen_name(handle)
+        user_id = str(getattr(user, "id", "") or "")
+        if not user_id:
+            return {"ok": False, "event": "dropped", "code": "targetMissing", "detail": f"x has no user @{handle}"}
+    added = await client.add_list_member(str(spec["listId"]), user_id)
+    if not str(getattr(added, "id", "") or ""):
+        return {"ok": False, "event": "dropped", "code": "listRefused", "detail": f"x didn't add {handle or user_id} to list {spec['listId']}"}
+    return {"ok": True, "event": "sent", "mode": "listAdd", "list": list_row(added), "userId": user_id, **({"handle": handle} if handle else {})}
 
 
 async def react(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
@@ -1398,6 +1436,10 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the post's url"}
     if action == "react" and not (spec.get("conversationId") and spec.get("messageId") and reactions.unicode_of(str(spec.get("emoji") or ""))):
         return {"ok": False, "code": "reactInvalid", "detail": "react needs the conversation id, the message id and an emoji"}
+    if action == "listCreate" and not str(spec.get("name") or "").strip():
+        return {"ok": False, "code": "listInvalid", "detail": "listCreate needs the list's name"}
+    if action == "listAdd" and not (str(spec.get("listId") or "").strip() and (spec.get("userId") or spec.get("screenName"))):
+        return {"ok": False, "code": "listInvalid", "detail": "listAdd needs the list's id and the person's user id or handle"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action == "post" and any(not Path(str(m)).is_file() for m in (spec.get("media") or [])):
@@ -1418,6 +1460,8 @@ async def act(client: Any, cookies: dict[str, str], spec: dict[str, Any], govern
     if state != "loggedIn":
         dead = state == "loggedOut"
         return {"ok": False, "code": "sessionDead" if dead else "sessionUnknown", "event": "sessionDead" if dead else "failed", "detail": f"X answered HTTP {status} to the session check before the {action}", "loginState": state, "httpStatus": status}
+    if action == "lists":
+        return {"ok": True, "loginState": "loggedIn", "lists": await lists_of(client)}
     if action == "follows":
         return await follows(client, cookies, [h.strip().lstrip("@") for h in spec["handles"] if h.strip()])
     if action == "followers":

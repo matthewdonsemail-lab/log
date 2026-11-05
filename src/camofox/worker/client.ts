@@ -14,6 +14,7 @@ export const runWorker: WorkerClient = <A extends WorkerAction>(
   return new Promise((resolve) => {
     const proc = spawn(python, [WORKER_PATH, JSON.stringify(request)], {
       stdio: [options.interactive ? "inherit" : "ignore", "pipe", "pipe"],
+      windowsHide: !options.interactive,
     });
     pipeProcessLog(proc.stderr, "worker");
     let stdout = "";

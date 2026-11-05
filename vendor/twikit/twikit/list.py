@@ -63,6 +63,7 @@ class List:
         self.description: str = data['description']
         self.following: bool = data['following']
         self.is_member: bool = data['is_member']
+        self.owner_id: str | None = (((data.get('user_results') or {}).get('result') or {}).get('rest_id'))
         self.member_count: bool = data['member_count']
         self.mode: Literal['Private', 'Public'] = data['mode']
         self.muting: bool = data['muting']

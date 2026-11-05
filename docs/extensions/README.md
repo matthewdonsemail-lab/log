@@ -9,6 +9,7 @@ Extensions are services log uses to make an account act more like a person on so
 | Extension | What it adds | Tools | Cost |
 | --- | --- | --- | --- |
 | [Memelord](./memelord.md) | Memes, clips and stickers found for the moment in a chat, sent in context | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools` | Free tools only |
+| [Voice clone](./voiceClone.md) ([Inworld](./inworld.md), [Fish Audio](./fishAudio.md)) | matt's own voice, cloned once per provider, for the voice notes he asks for, sent as each platform's native voice note | `cloneVoice`, `cloneSpeak`, `discordVoice`, `instagramVoice`, `slackVoice` | Inworld: cloning free, about 70 free speech minutes; Fish: needs API credit to clone |
 
 How an extension is used is a use case like any other: [replying with a meme in a Discord chat](../useCases/discord/memeReply.md). What each one must do is in its spec ([docs/specs/memelord.md](../specs/memelord.md)) and is checked against the code on every commit (rule 117).
 

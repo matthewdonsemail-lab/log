@@ -104,7 +104,7 @@ export async function makeProfilePicture(record: PersonaRecord, deps: PictureDep
 }
 
 function tregJson(args: string[]): Record<string, unknown> {
-  const out = spawnSync('treg', args, { encoding: 'utf8', env: { ...process.env, PYTHONIOENCODING: 'utf-8' }, shell: process.platform === 'win32' })
+  const out = spawnSync('treg', args, { encoding: 'utf8', windowsHide: true, env: { ...process.env, PYTHONIOENCODING: 'utf-8' }, shell: process.platform === 'win32' })
   if (out.status !== 0) throw Object.assign(new Error(`treg ${args[1]}: ${(out.stderr || out.stdout).slice(0, 300)}`), { code: 'tregFailed' })
   return JSON.parse(out.stdout) as Record<string, unknown>
 }

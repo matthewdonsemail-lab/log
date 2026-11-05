@@ -27,6 +27,11 @@ process.env.LOG_CONVERSATIONS_DIR ??= join(scratch, "conversations")
 process.env.LOG_SEARCH_DIR ??= join(scratch, "search")
 process.env.LOG_TRANSCRIPTS_DIR ??= join(scratch, "transcripts")
 delete process.env.ASSEMBLYAI_API_KEY
+process.env.LOG_VOICE_CLONE_DIR ??= join(scratch, "voice")
+process.env.LOG_VOICE_NOTES_DIR ??= join(scratch, "voiceNotes")
+delete process.env.FISH_API_KEY
+delete process.env.INWORLD_API_KEY
+delete process.env.LOG_VOICE_PROVIDER
 
 const { gateDeps } = await import('../../src/cli/twitter/helpers/voice.ts')
 gateDeps.gate = async (_context, send) => ({ ok: true, line: `voice gate: passed for ${send.to} (test)` })

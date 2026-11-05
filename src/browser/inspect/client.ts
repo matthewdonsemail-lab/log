@@ -84,7 +84,7 @@ export function clearCurrentInspect(path = currentInspectPath(), account?: strin
 export const runInspectSession: InspectSessionRunner = (config: InspectSessionConfig) =>
   new Promise((resolve) => {
     const python = process.env.LOG_PYTHON || 'python'
-    const proc = spawn(python, [INSPECT_SESSION_PATH, JSON.stringify(config)], { stdio: ['ignore', 'pipe', 'pipe'] })
+    const proc = spawn(python, [INSPECT_SESSION_PATH, JSON.stringify(config)], { stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true })
     pipeProcessLog(proc.stderr, 'session')
     pipeProcessLog(proc.stdout, 'session')
     proc.on('error', () => resolve(127))

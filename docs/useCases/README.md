@@ -26,6 +26,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Slack | [Reading and answering a Slack DM](slack/dmReply.md) | finds the chat by who it is with, reads it, drafts in matt's voice, gates it and sends it one line at a time |
 | Instagram | [Reading and answering an Instagram DM](instagram/dmReply.md) | reads the thread, drafts in matt's voice or picks a meme, gates it and sends it through the engine, never the browser |
 | Every chat | [Reacting to a message](inbox/reactions.md) | reacts with an emoji on X, Discord, Slack or Instagram through the platform's own engine, claimed and counted as a write |
+| Every chat | [Sending a voice note](inbox/voiceNote.md) | only when matt asks: his words said in his cloned voice and sent as Discord's, Instagram's or Slack's own voice note, gated and claimed like a send |
 | Instagram | [Bringing a new platform up, then vendoring its client](instagram/newPlatform.md) | makes the platform, opens it in the account's browser to sign in, reads its client's calls with rea, then vendors the GitHub client that speaks them |
 
 ## The parts every use case is built from

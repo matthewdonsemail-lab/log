@@ -318,14 +318,37 @@ export function failedParts(reading: GateReading): string[] {
   return out;
 }
 
+export function chatIdFor(conversations: readonly Conversation[], send: { platform: string; conversationId?: string | null; userId?: string | null; handle?: string | null }): string | null {
+  const mine = conversations.filter((c) => c.platform === send.platform);
+  const parties = (id: string) => id.split(/[-:]/).filter(Boolean);
+  const found = mine.find((c) => !!send.conversationId && c.conversationId === send.conversationId)
+    ?? (send.platform === "twitter" && send.userId ? mine.find((c) => parties(c.conversationId).includes(String(send.userId))) : undefined)
+    ?? (send.handle ? mine.find((c) => c.with.some((w) => w.replace(/^@/, "").toLowerCase() === String(send.handle).replace(/^@/, "").toLowerCase())) : undefined);
+  if (!found) return null;
+  return found.platform === "twitter" ? `twitter:${[...found.with].sort().join(",").toLowerCase()}` : `${found.platform}:${found.conversationId}`;
+}
+
+export async function chatEvidence(context: CommandContext, said: string, send: { platform: string; conversationId?: string | null; userId?: string | null; handle?: string | null }, draft: string): Promise<VoiceEvidence | undefined> {
+  const id = chatIdFor(loadConversations(), send);
+  if (!id) return undefined;
+  const found = await evidenceFor(context, said, id, draft).catch(() => null);
+  return found?.ok ? found.evidence : undefined;
+}
+
+export function momentAnswered(messages: readonly { fromMe: boolean; text: string; time: string }[]): string {
+  const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
+  const newest = sorted[sorted.length - 1];
+  return newest && !newest.fromMe ? newest.text : "";
+}
+
 export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
-  const theirs = chatContextOf(send.platform, send.account, who).messages.filter((m) => !m.fromMe);
-  const said = send.said ?? theirs[theirs.length - 1]?.text ?? "";
+  const said = send.said ?? momentAnswered(chatContextOf(send.platform, send.account, who).messages);
   const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
-  const reading = await gateReading(context, { to: send.to, text: send.text, said, guide, ranked });
+  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle: send.handle }, send.text);
+  const reading = await gateReading(context, { to: send.handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}) });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
   return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }

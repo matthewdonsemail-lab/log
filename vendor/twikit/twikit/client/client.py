@@ -4193,14 +4193,12 @@ class Client:
         response, _ = await self.gql.list_management_pace_timeline(count, cursor)
 
         entries = find_dict(response, 'entries', find_one=True)[0]
-        items = find_dict(entries, 'items')
-
-        if len(items) < 2:
-            return Result([])
-
         lists = []
-        for list in items[1]:
-            lists.append(List(self, list['item']['itemContent']['list']))
+        for module in find_dict(entries, 'items'):
+            for list in module:
+                content = ((list.get('item') or {}).get('itemContent') or {})
+                if 'list' in content:
+                    lists.append(List(self, content['list']))
 
         next_cursor = entries[-1]['content']['value']
 

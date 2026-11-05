@@ -24,7 +24,7 @@ from platformKit import reactions
 
 PLATFORM = "instagram"
 LIBRARY = "vendor/instagrapi"
-WRITES: tuple[str, ...] = ("send", "react")
+WRITES: tuple[str, ...] = ("send", "react", "voice")
 SESSION_COOKIES = ("sessionid",)
 TRANSPORT = "curl"
 INBOX_SEARCH = 100
@@ -516,6 +516,69 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     return missing_session(cookies) or await asyncio.to_thread(locked, send_sync, cookies, said, text, photo, bool(spec.get("asOne")), str(spec.get("account") or ""))
 
 
+def curl_voice_rupload(client: Any, audio_bytes: bytes, upload_id: str, rand_key: int) -> int:
+    from instagrapi.exceptions import ClientError
+    from instagrapi.transports import create_curl_h2_adapter
+
+    entity = f"{upload_id}_0_{rand_key}"
+    url = f"https://rupload.facebook.com/messenger_audio/{entity}"
+    session = type(client.private)()
+    session.mount("https://", create_curl_h2_adapter())
+    session.verify = client.tls_verify
+    if getattr(client, "proxy", None):
+        session.proxies = {"http": client.proxy, "https": client.proxy}
+    headers = client._messenger_rupload_headers({"audio_type": "FILE_ATTACHMENT"})
+    try:
+        offered = session.get(url, headers=headers, timeout=30)
+        if offered.status_code != 200:
+            raise ClientError(f"messenger_audio offset GET failed: {offered.status_code} {offered.text[:300]}")
+        try:
+            offset = int(offered.json().get("offset", 0))
+        except Exception:
+            offset = 0
+        posted = session.post(url, data=audio_bytes[offset:], headers={**headers, "content-type": "application/octet-stream", "offset": str(offset), "x-entity-length": str(len(audio_bytes)), "x-entity-name": entity, "x-entity-type": "audio/mp4"}, timeout=120)
+        if posted.status_code != 200:
+            raise ClientError(f"messenger_audio upload POST failed: {posted.status_code} {posted.text[:300]}")
+        try:
+            return int(posted.json()["media_id"])
+        except Exception as error:
+            raise ClientError(f"messenger_audio response missing media_id: {posted.text[:300]}") from error
+    finally:
+        session.close()
+
+
+def voice_sync(cookies: dict[str, str], said: str, path: Path, levels: list[float]) -> dict[str, Any]:
+    import types
+
+    client, answer = signed_in(cookies)
+    if not client:
+        return answer
+    try:
+        to, recipient = recipients_of(client, said)
+    except LookupError as error:
+        return {"ok": False, **json.loads(str(error))}
+    except Exception as error:
+        refusal = refused(error)
+        if refusal:
+            return refusal
+        return {"ok": False, "code": "recipientNotFound", "detail": f"Instagram has no user {said}"}
+    client._voice_rupload = types.MethodType(curl_voice_rupload, client)
+    try:
+        message = client.direct_send_voice(path, waveform=levels or None, **to)
+    except Exception as error:
+        return refused(error) or {"ok": False, "code": "voiceNoteRefused", "detail": f"Instagram refused the voice note: {str(error)[:300]}", "loginState": "loggedIn"}
+    return {**answer, "event": "sent", "mode": "voice", "to": recipient, "messageId": str(message.id), "thread": str(message.thread_id or "")}
+
+
+async def voice(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    said = str(spec.get("with") or "").strip()
+    path = media.voice_note_path(spec.get("path"), ".m4a")
+    levels = [max(0.0, min(1.0, float(x))) for x in (spec.get("levels") or []) if isinstance(x, (int, float))]
+    if not said or not path:
+        return {"ok": False, "code": "voiceNoteInvalid", "detail": "voice needs who it goes to and a voice note log made itself (an .m4a under ~/.logCli/voiceNotes): no other audio is sent"}
+    return missing_session(cookies) or await asyncio.to_thread(locked, voice_sync, cookies, said, path, levels)
+
+
 def react_sync(cookies: dict[str, str], thread_id: str, item_id: str, emoji: str, remove: bool) -> dict[str, Any]:
     client, answer = signed_in(cookies)
     if not client:
@@ -549,7 +612,7 @@ async def watch(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     return missing_session(cookies) or await asyncio.to_thread(watch_sync, cookies, seconds, LIVE_TARGET.get())
 
 
-ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "react": react, "watch": watch}
+ACTIONS = {"ping": ping, "inbox": inbox, "thread": thread, "send": send, "react": react, "voice": voice, "watch": watch}
 
 
 def main() -> int:

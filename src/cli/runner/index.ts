@@ -1,4 +1,4 @@
-import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followCommand, followsCommand, likeCommand, notificationsCommand, postCommand, repostCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
+import { chatCommand, cookiesCommand, dmCommand, dmsCommand, followersCommand, followCommand, followsCommand, likeCommand, listCommand, notificationsCommand, postCommand, repostCommand, queueCommand, quoteCommand, replyCommand, sessionCommand, voiceCommand } from "../twitter/index.ts";
 import { accountCommand, accountsCommand } from "../account/index.ts";
 import { adsPowerCommand } from "../adsPower/index.ts";
 import { localAccountCommand } from "../localAccount/index.ts";
@@ -22,6 +22,8 @@ import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
+import { cloneCommand } from "../clone/index.ts";
+import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
@@ -100,6 +102,7 @@ export const COMMANDS: Command[] = [
   searchCommand,
   kbCommand,
   memelordCommand,
+  cloneCommand,
   transcribeCommand,
   followersCommand,
   notificationsCommand,
@@ -107,6 +110,7 @@ export const COMMANDS: Command[] = [
   quoteCommand,
   postCommand,
   likeCommand,
+  listCommand,
   repostCommand,
   followCommand,
   dmCommand,
@@ -121,6 +125,7 @@ export const COMMANDS: Command[] = [
   discordSendCommand,
   discordDeleteCommand,
   discordReactCommand,
+  discordVoiceCommand,
   linkedinSessionCommand,
   linkedinCookiesCommand,
   slackSessionCommand,
@@ -131,11 +136,13 @@ export const COMMANDS: Command[] = [
   slackSendCommand,
   slackCookiesCommand,
   slackReactCommand,
+  slackVoiceCommand,
   instagramSessionCommand,
   instagramDmsCommand,
   instagramSendCommand,
   instagramWatchCommand,
   instagramReactCommand,
+  instagramVoiceCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

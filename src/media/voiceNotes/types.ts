@@ -17,6 +17,14 @@ export interface Transcript {
   transcriptId: string
   file: string
   transcribedAt: string
+  words?: TranscriptWord[]
+}
+
+export interface TranscriptWord {
+  text: string
+  start: number
+  end: number
+  confidence: number
 }
 
 export interface VoiceNote {

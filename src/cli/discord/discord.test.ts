@@ -8,6 +8,9 @@ import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
 import { discordDeps, toInboxOf } from "./index.ts";
+import { chatEvents } from "../../inbox/store/index.ts";
+import { takePending } from "../../inbox/watch/index.ts";
+import { backfillThread } from "../twitter/helpers/dms.ts";
 
 function fixture() {
   const twenty = marketplaceFixture();
@@ -323,5 +326,24 @@ describe("the Discord engine stops the whole read on a refusal (rule 94)", () =>
     expect(got.read429.calls).toHaveLength(2);
     expect(got.read429.answer).toMatchObject({ ok: true, httpStatus: 429, event: "throttled" });
     expect(got.read429.answer.messages).toHaveLength(100);
+  });
+});
+
+describe("reads keep the chat's history in the .db as backfill, for the gate inside a send", () => {
+  test("a Discord read stores each message once, and none of it shows as new", async () => {
+    const channel = String(1500000000000000000n + BigInt(Date.now()));
+    const answer = { ok: true, channelId: channel, messages: [{ id: "11", at: "2026-11-03T13:29:00Z", from: "rvaclassic", bot: false, fromMe: false, replyTo: null, text: "Tmrw i will", embeds: [] }, { id: "12", at: "2026-11-03T13:30:00Z", from: "me", bot: false, fromMe: true, replyTo: null, text: "sound lad", embeds: [] }] };
+    await run(["discord", "read", "--account", "discordOne", "--channel", channel], { answer, refreshed: null });
+    await run(["discord", "read", "--account", "discordOne", "--channel", channel], { answer, refreshed: null });
+    expect(chatEvents("discord", "discordOne", (id) => id === channel).map((e) => [e.type, e.text, e.source])).toEqual([["message", "Tmrw i will", "backfill"], ["ownMessage", "sound lad", "backfill"]]);
+    expect(takePending().filter((m) => m.conversationId === channel)).toEqual([]);
+  });
+
+  test("an X thread read stores each message under its own conversation", () => {
+    const conversation = `1974596626342686720:${Date.now()}`;
+    const messages = [{ id: "a", conversationId: conversation, time: "2026-11-04T01:53:30Z", senderId: "2084617266310909952", text: "im in ecom rn" }, { id: "b", conversationId: conversation, time: "2026-11-04T01:54:00Z", senderId: "1974596626342686720", text: "yeah", fromMe: true }];
+    expect(backfillThread("matthewsoldit", messages, new Date())).toBe(2);
+    expect(backfillThread("matthewsoldit", messages, new Date())).toBe(0);
+    expect(chatEvents("twitter", "matthewsoldit", (id) => id === conversation).map((e) => [e.type, e.withWho])).toEqual([["message", "2084617266310909952"], ["ownMessage", "me"]]);
   });
 });

@@ -17,7 +17,7 @@ export const startProfileSession: ProfileSessionFactory = (config: ProfileSessio
 
 function spawnSession<TStep extends string>(script: string, config: object): { call<T>(step: TStep, params?: Record<string, unknown>): Promise<T>; close(): Promise<void> } {
   const python = process.env.LOG_PYTHON || 'python'
-  const proc = spawn(python, [script, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'] })
+  const proc = spawn(python, [script, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true })
   pipeProcessLog(proc.stderr, 'session')
   let buffer = ''
   let nextId = 1

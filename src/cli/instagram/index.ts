@@ -172,6 +172,7 @@ export const instagramDmsCommand: Command = {
       }
       const thread = run.answer.thread as InstagramThread;
       const messages = (run.answer.messages as InstagramMessage[] | undefined) ?? [];
+      for (const m of messages) if (m.at) storeRead("instagram", account.accountName, thread.id, "dm", { id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text }, context.now?.() ?? new Date(), "backfill");
       if (messages.length) {
         instagramDmsDeps.save([instagramConversationOf(account.accountName, thread, messages)]);
         instagramDmsDeps.reindex();

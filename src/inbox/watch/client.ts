@@ -126,7 +126,7 @@ export function takePending(reader?: string): InboxMessage[] {
     writeCursor(key, latest)
     return []
   }
-  const rows = eventsAfter(cursor ?? 0, { type: 'message' })
+  const rows = eventsAfter(cursor ?? 0, { type: 'message' }).filter((row) => row.source !== 'backfill')
   if (latest !== cursor) writeCursor(key, latest)
   const now = new Date()
   for (const row of rows) markStage(row.eventId, 'shown', now)

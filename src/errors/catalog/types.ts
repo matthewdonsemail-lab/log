@@ -1873,12 +1873,117 @@ export const ERROR_CATALOG = {
     raisedIn: ['python/twitterApi', 'python/discordApi', 'python/instagramApi'],
     action: "Read the platform's answer in the detail. On X a message only X Chat holds may not take the old DM reaction. Nothing more goes out on that account until matt says so (rule 94)."
   },
+  listInvalid: {
+    layer: 'runtime',
+    meaning: "An X list change was missing what it needs: create needs the list's name, add needs a list the account has (by name or id) and the person's handle or user id. Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/twitter', 'python/twitterApi'],
+    action: 'Run log twitter list show for the lists and their ids, then give the list and the person.'
+  },
+  listRefused: {
+    layer: 'runtime',
+    meaning: "X answered a list change with no list: the list wasn't made, or the person wasn't added. Nothing was retried.",
+    retryable: false,
+    raisedIn: ['python/twitterApi'],
+    action: "Read X's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+  },
   reactFailed: {
     layer: 'runtime',
     meaning: "Discord didn't answer the reaction at all (no status). Whether it landed is unknown.",
     retryable: false,
     raisedIn: ['python/discordApi'],
     action: 'Read the chat again to see whether the reaction is there before anything else; never react again blind (rule 94).'
+  },
+  voiceKeyMissing: {
+    layer: 'runtime',
+    meaning: "The voice provider's key (INWORLD_API_KEY or FISH_API_KEY) is not set, so it was not called. Nothing was cloned or generated.",
+    retryable: false,
+    raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone', 'extensions/inworld', 'extensions/voiceClone'],
+    action: 'Put the provider key in .env.local (or ~/.buzz/.env.local); its name is in .env.example. Never print it.'
+  },
+  voiceProviderRefused: {
+    layer: 'runtime',
+    meaning: "The voice provider answered a clone or a text to speech with a refusal (its status and message are in the detail). Nothing was retried.",
+    retryable: false,
+    raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone', 'extensions/inworld', 'extensions/voiceClone'],
+    action: "Read the provider's answer in the detail. A 402, or a 403 saying a limit is reached, means the account needs credit: only matt decides whether to spend (rule 41). Another provider can be picked with --provider or LOG_VOICE_PROVIDER."
+  },
+  voiceProviderUnknown: {
+    layer: 'runtime',
+    meaning: 'The voice provider or its speech model named by --provider, LOG_VOICE_PROVIDER or --model is not one log knows. Nothing was called.',
+    retryable: false,
+    raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone'],
+    action: "Name inworld or fishAudio, and one of that provider's models (log clone speak --help lists them)."
+  },
+  voiceCloneMissing: {
+    layer: 'runtime',
+    meaning: "There is no clone of matt's voice on that provider yet (~/.logCli/voice/clone.json), so no voice note can be made.",
+    retryable: false,
+    raisedIn: ['cli/clone', 'cli/voiceNote', 'extensions/voiceClone'],
+    action: 'Run `log clone voice` to see the recordings it would use, then `log clone voice --apply` once (per provider).'
+  },
+  voiceRecordingsMissing: {
+    layer: 'runtime',
+    meaning: "Too few of matt's own voice notes (fromMe, at least 5 s each, within the provider's limit) were found to clone his voice: the provider needs its least (Inworld 3 s, Fish 10 s). Nothing was sent to the provider.",
+    retryable: false,
+    raisedIn: ['cli/clone', 'extensions/voiceClone'],
+    action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
+  },
+  voiceNoteInvalid: {
+    layer: 'runtime',
+    meaning: "A voice note was given no text, too much text, or an audio file instead of text; or an engine was handed audio log didn't make itself. A voice note is only ever made from words, in matt's cloned voice.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'extensions/voiceClone', 'python/discordApi', 'python/instagramApi', 'python/slackApi'],
+    action: 'Give --text with what matt says, in his words. Never pass an audio file: log makes the voice note itself.'
+  },
+  voiceNoteConvertFailed: {
+    layer: 'runtime',
+    meaning: "ffmpeg couldn't turn the generated speech into the platform's voice note format (ogg/opus for Discord, AAC in .m4a for Instagram and Slack). Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'extensions/voiceClone'],
+    action: 'Check ffmpeg is installed with libopus and aac (ffmpeg -encoders), then send it again.'
+  },
+  pronunciationUnknown: {
+    layer: 'runtime',
+    meaning: "The voice note's text has an acronym that isn't in the spoken lexicon (SPOKEN_LEXICON), so whether matt says it as a word or as letters isn't known. Nothing was spoken or sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
+    action: 'Write the word out the way matt says it, or add it to SPOKEN_LEXICON with how he says it (a word or letters) once he has said, then send it again.'
+  },
+  spokenMismatch: {
+    layer: 'runtime',
+    meaning: "The voice note was spoken, transcribed back with AssemblyAI and didn't say what was written: a lexicon word heard as something else or spelled out as letters, or too many words different. Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
+    action: 'Read what was heard in the detail, then rewrite the word the clone got wrong (or fix its lexicon entry) and send it again.'
+  },
+  spokenCheckFailed: {
+    layer: 'runtime',
+    meaning: "The voice note was spoken but couldn't be transcribed back to check its words (AssemblyAI's key missing, a refusal or no word timings). Nothing was sent: an unchecked voice note never goes out.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
+    action: 'Check ASSEMBLYAI_API_KEY (or ASSEMBLY_AI_KEY) in .env.local and the AssemblyAI answer in the detail, then send it again.'
+  },
+  voiceProcessingFailed: {
+    layer: 'runtime',
+    meaning: "ffmpeg couldn't read or write the spoken audio while shaping it like matt's own voice notes (his room tone, phone squash, mic drift and saturation). Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'cli/clone', 'extensions/voiceClone'],
+    action: 'Check ffmpeg runs (ffmpeg -version) and the detail, then send it again.'
+  },
+  voiceNoteRefused: {
+    layer: 'runtime',
+    meaning: "The platform refused the voice note's upload or its message (its answer is in the detail). Nothing was retried.",
+    retryable: false,
+    raisedIn: ['python/discordApi', 'python/instagramApi', 'python/slackApi'],
+    action: "Read the platform's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+  },
+  voiceNoteFailed: {
+    layer: 'runtime',
+    meaning: "Discord didn't answer the voice note's message at all (no status). Whether it landed is unknown.",
+    retryable: false,
+    raisedIn: ['python/discordApi'],
+    action: 'Read the chat again to see whether the voice note is there before anything else; never send it again blind (rule 94).'
   },
 } as const satisfies Record<string, ErrorEntry>
 

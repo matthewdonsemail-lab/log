@@ -76,7 +76,7 @@ export const mediaCommand: Command = {
         return { code: current.status === "described" ? 0 : 1, stdout: current.status === "described" ? `log media describe: ${current.description}` : `log media describe: #${row.id} ${current.status}${current.detail ? `: ${current.detail}` : ""}` };
       }
       context.err("media describer: runs in a process of its own (scripts/media/describer.ts), so only the vision model's image library is loaded in it");
-      const run = spawnSync("bun", [join(repoRoot(), "scripts", "media", "describer.ts")], { cwd: repoRoot(), stdio: ["ignore", "inherit", "inherit"], env: describerEnv() });
+      const run = spawnSync("bun", [join(repoRoot(), "scripts", "media", "describer.ts")], { cwd: repoRoot(), windowsHide: true, stdio: ["ignore", "inherit", "inherit"], env: describerEnv() });
       if (run.status !== 0) return refuse("media describer", "describerStopped", `the describer stopped with exit ${run.status ?? run.signal}: its last lines above say why`);
       return { code: 0, stdout: json ? JSON.stringify({ ok: true }, null, 2) : "log media describer: stopped" };
     } catch (error) {

@@ -33,6 +33,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   twitterReply: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'reply', seam: 'directTwitter' },
   twitterQuote: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'quote', seam: 'directTwitter' },
   twitterPost: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'create_tweet', when: 'post (media uploaded first with upload_media)', seam: 'directTwitter' },
+  twitterList: { platform: 'twitter', library: 'twikit', only: true, surface: 'lists', method: 'get_lists, create_list, add_list_member', when: 'list show, list create --live, list add --live', seam: 'directTwitter' },
   twitterReact: { platform: 'twitter', library: 'twikit', only: true, surface: 'messages', method: 'add_reaction_to_message', when: 'react --live (--remove takes it off)', seam: 'directTwitter' },
   twitterLike: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'favorite_tweet', when: 'like', seam: 'directTwitter' },
   twitterRepost: { platform: 'twitter', library: 'twikit', only: true, surface: 'tweets', method: 'retweet', when: 'repost', seam: 'directTwitter' },
@@ -44,6 +45,7 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   discordChats: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_dms', when: 'chats (the DMs and group DMs)', seam: 'directDiscord' },
   discordRead: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'get_messages', when: 'read (a chat or channel, paged with before)', seam: 'directDiscord' },
   discordWatch: { platform: 'discord', library: 'endcord', only: true, surface: 'gateway', method: 'Gateway', when: 'watch (Discord pushes each message over wss://gateway.discord.gg, nothing polled)', seam: 'directDiscordLive' },
+  discordVoice: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_voice_message', when: 'voice --live (a voice note in the voice cloned from matt, flags 8192)', seam: 'directDiscord' },
   discordReact: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_reaction', when: 'react --live (--remove takes it off)', seam: 'directDiscord' },
   discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' },
   discordDelete: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'delete_message', when: 'delete --live (only the account own messages, each read first)', seam: 'directDiscord' },
@@ -54,11 +56,13 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   slackChats: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.list', when: 'chats (the DMs and group DMs)', seam: 'directSlack' },
   slackRead: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'conversations.history', when: 'read (a chat, paged by cursor)', seam: 'directSlack' },
   slackWatch: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'websocket', method: 'connect', when: 'watch (Slack pushes each event over wss-primary.slack.com, nothing polled)', seam: 'directSlackLive' },
+  slackVoice: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'files.completeUploadExternal', when: 'voice --live (a voice note in the voice cloned from matt, uploaded then shared)', seam: 'directSlack' },
   slackReact: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'reactions.add', when: 'react --live (--remove takes it off)', seam: 'directSlack' },
   slackSend: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'messages', method: 'chat.postMessage', when: 'send --live', seam: 'directSlack' },
   slackCookies: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'cookies save (the d cookie is checked with Slack before it is saved)', seam: 'directSlack' },
   instagramSession: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directInstagram' },
   instagramDms: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_threads', when: 'dms (the inbox, or one thread with --with)', seam: 'directInstagram' },
+  instagramVoice: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_send_voice', when: 'voice --live (a voice note in the voice cloned from matt, its upload on curl_cffi)', seam: 'directInstagram' },
   instagramReact: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_send_reaction', when: 'react --live (--remove takes it off)', seam: 'directInstagram' },
   instagramSend: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'messages', method: 'direct_send', when: 'send --live (text one message per line, and --photo through direct_send_photo)', seam: 'directInstagram' },
   instagramWatch: { platform: 'instagram', library: 'instagrapi', only: true, surface: 'websocket', method: 'realtime_connect', when: 'watch (Instagram pushes each DM over its realtime MQTT, edge-mqtt.facebook.com, nothing polled)', seam: 'directInstagramLive' }
@@ -192,7 +196,7 @@ function spawnEngine(spec: object): EngineAnswer {
     const body = 'cookies' in spec ? { ...spec, cookies: undefined, cookiesPath: join(dir, 'cookies.txt') } : spec
     if ('cookies' in spec) writeFileSync(join(dir, 'cookies.txt'), spec.cookies as string, { mode: 0o600 })
     writeFileSync(file, JSON.stringify(body), { mode: 0o600 })
-    const run = spawnSync(python(), [ENGINE, file], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
+    const run = spawnSync(python(), [ENGINE, file], { encoding: 'utf8', windowsHide: true, maxBuffer: 16 * 1024 * 1024 })
     return lastJsonLine(run.stdout || '') ?? { ok: false, code: 'engineNoAnswer', detail: (run.stderr || 'no output').slice(-300) }
   } finally {
     rmSync(dir, { recursive: true, force: true })
