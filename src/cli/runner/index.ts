@@ -23,7 +23,7 @@ import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
 import { cloneCommand } from "../clone/index.ts";
-import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand } from "../voiceNote/index.ts";
+import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
@@ -143,6 +143,7 @@ export const COMMANDS: Command[] = [
   instagramWatchCommand,
   instagramReactCommand,
   instagramVoiceCommand,
+  twitterVoiceCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

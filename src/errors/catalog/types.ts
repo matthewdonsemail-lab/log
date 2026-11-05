@@ -1929,11 +1929,18 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/clone', 'extensions/voiceClone'],
     action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
   },
+  xchatPinMissing: {
+    layer: 'runtime',
+    meaning: "X Chat couldn't be opened to send, because the X account has no X Chat PIN saved. Sending in X Chat needs the conversation key, which only the PIN unlocks. Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'python/twitterApi'],
+    action: 'matt saves the PIN once in a terminal with log twitter chat pin --account <a>; then send again.'
+  },
   voiceNoteInvalid: {
     layer: 'runtime',
     meaning: "A voice note was given no text, too much text, or an audio file instead of text; or an engine was handed audio log didn't make itself. A voice note is only ever made from words, in matt's cloned voice.",
     retryable: false,
-    raisedIn: ['cli/voiceNote', 'extensions/voiceClone', 'python/discordApi', 'python/instagramApi', 'python/slackApi'],
+    raisedIn: ['cli/voiceNote', 'extensions/voiceClone', 'python/discordApi', 'python/instagramApi', 'python/slackApi', 'python/twitterApi'],
     action: 'Give --text with what matt says, in his words. Never pass an audio file: log makes the voice note itself.'
   },
   voiceNoteConvertFailed: {

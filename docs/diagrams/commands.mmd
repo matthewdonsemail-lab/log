@@ -77,6 +77,7 @@ flowchart TB
     c_twitterDm["dm"]
     c_twitterReact["react"]
     c_twitterQueue["queue"]
+    c_twitterVoice["voice"]
   end
   subgraph g_reddit["Reddit"]
     c_redditSession["session"]
@@ -319,6 +320,8 @@ flowchart TB
   mcp --> c_instagramReact
   cli --> c_instagramVoice
   mcp --> c_instagramVoice
+  cli --> c_twitterVoice
+  mcp --> c_twitterVoice
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

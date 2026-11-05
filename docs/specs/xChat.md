@@ -71,3 +71,9 @@ Checked by: code and SubQ
 `log twitter dms --waiting` lists the people waiting on a reply, and lists the follow-ups apart from them; with `--json` they are in `followUps`. Rule 100.
 
 Checked by: code and SubQ
+
+### REQ-XCHAT-11: twikit sends in X Chat the way X Chat's own app does
+
+`vendor/twikit` sends an X Chat message as X Chat's engine (`dm-core`) does, read from its own code (rule 151). `xchat_latest_key` reads the conversation's key change events with `GetInboxPageConversationDataQuery` and opens its newest key with chat-xdk's `extract_conversation_keys`. `upload_xchat_media` encrypts the file with `encrypt_stream`, starts the upload with `InitializeXChatMediaUploadMutation`, POSTs the parts as `application/octet-stream` to the conversation's `xchat_media` path on ton.x.com with `concurrent=true`, the `resumeId` and a `partNumber` from 0, and closes it with `FinalizeXChatMediaUploadMutation`; an error in either answer, or a part answered 400 or more, raises. `send_xchat_message` encrypts with `encrypt_message` under that key and sends `SendMessageCreateMutation` with the payload's `message_id`, `encrypted_content` and `encoded_event_signature`, raising when X answers no `encoded_message_event`. `send_xchat_voice` uploads the audio and sends it as the one attachment, media type `XCHAT_MEDIA_AUDIO` (4) with `duration_millis`. The operations are in `client/gql.py` (`XCHAT_SEND_MESSAGE_CREATE`, `XCHAT_INITIALIZE_MEDIA_UPLOAD`, `XCHAT_FINALIZE_MEDIA_UPLOAD`). Rule 151.
+
+Checked by: code and SubQ

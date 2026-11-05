@@ -11,6 +11,7 @@ import { watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace } from "../slack/index.ts";
+import { openTwitterAccount } from "../twitter/helpers/account.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 
 type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer } | { ok: false; result: CommandResult };
@@ -181,5 +182,26 @@ export const slackVoiceCommand = voiceNoteCommandOf({
     const chat = await slackChatIdOf(context, label, opened.account, opened.workspace, String(flags["chat"]).trim());
     if (!chat.ok) return chat;
     return { ok: true, account: opened.account.accountName, chatId: chat.id, label: chat.label, send: (note, approvedBy) => context.directSlack!(opened.account, { action: "voice", chat: chat.id, path: note.path, seconds: note.seconds, live: true, approvedBy, ...inWorkspace(opened.workspace) }).answer };
+  },
+});
+
+export const twitterVoiceCommand = voiceNoteCommandOf({
+  platform: "twitter",
+  chat: { name: "with", kind: "string", required: true, description: "Who it goes to: their X handle or numeric user id" },
+  extra: [],
+  native: "an X Chat voice message: the m4a encrypted with the conversation key (chat-xdk encrypt_stream), uploaded to the conversation's media store (InitializeXChatMediaUploadMutation, the parts POSTed to ton.x.com, FinalizeXChatMediaUploadMutation) and sent as the message's one AUDIO attachment with its duration (SendMessageCreateMutation), as X Chat's own recorder sends it",
+  engine: "vendor/twikit with vendor/chatXdk, in the account's one X session, X Chat opened with the saved PIN",
+  async resolve(context, label, flags) {
+    const opened = await openTwitterAccount(context, label, String(flags["account"]));
+    if (!opened.ok) return opened;
+    const direct = context.directTwitter;
+    if (!direct) return { ok: false, result: { code: 1, stderr: `log ${label}: the direct-API engine isn't wired in this context` } };
+    const secrets = await context.twenty.loginSecrets(opened.account.id).catch(() => null);
+    const chatPin = secrets?.messengerPin ? String(secrets.messengerPin) : "";
+    if (!chatPin) return { ok: false, result: refuse(label, "xchatPinMissing", `${opened.account.accountName} has no X Chat PIN saved, so X Chat can't be opened to send: matt saves it once with log twitter chat pin --account ${opened.account.accountName}`) };
+    const said = String(flags["with"]).trim().replace(/^@/, "");
+    const who = /^\d{5,25}$/.test(said) ? { userId: said } : { screenName: said };
+    const account = opened.account;
+    return { ok: true, account: account.accountName, chatId: said, label: /^\d+$/.test(said) ? said : `@${said}`, claimWith: said, gateHandle: said, send: (note, approvedBy) => direct(account, { action: "xchatVoice", ...who, path: note.path, seconds: note.seconds, live: true, approvedBy, chatPin } as never).answer as PlatformAnswer };
   },
 });

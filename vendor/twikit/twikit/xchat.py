@@ -331,6 +331,8 @@ def is_marker(message: dict) -> bool:
 
 
 XCHAT_MEDIA_URL = 'https://ton.x.com/i/ton/data/xchat_media/{conversation_id}/{media_hash_key}'
+XCHAT_MEDIA_PART_BYTES = 1024 * 1024
+XCHAT_MEDIA_AUDIO = 4
 
 
 def media_of(attachment: dict) -> dict | None:

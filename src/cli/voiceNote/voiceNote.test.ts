@@ -22,6 +22,8 @@ function fixture() {
   twenty.rows.socialAccounts!.push({ id: "discordOne", accountName: "discordOne", platform: "DISCORD", cookies: [], storageOrigins: [{ origin: "https://discord.com", localStorage: [{ name: "token", value: JSON.stringify("x".repeat(30)) }] }], proxy: null } as never);
   twenty.rows.socialAccounts!.push({ id: "instagramOne", accountName: "instagramOne", platform: "INSTAGRAM", cookies: { sessionid: "x".repeat(20), ds_user_id: "x".repeat(20), csrftoken: "x".repeat(20) }, proxy: null } as never);
   twenty.rows.socialAccounts!.push({ id: "slackOne", accountName: "slackOne", platform: "SLACK", cookies: { d: "x".repeat(20) }, proxy: null } as never);
+  twenty.rows.socialAccounts!.push({ id: "xOne", accountName: "xOne", platform: "TWITTER", cookies: { auth_token: "x".repeat(40), ct0: "y".repeat(40) }, messengerPin: "2580", proxy: null } as never);
+  twenty.rows.socialAccounts!.push({ id: "xNoPin", accountName: "xNoPin", platform: "TWITTER", cookies: { auth_token: "x".repeat(40), ct0: "y".repeat(40) }, proxy: null } as never);
   return twenty;
 }
 
@@ -33,7 +35,7 @@ async function run(argv: string[], answer: PlatformEngineRun["answer"] = { ok: f
     specs.push(spec);
     return { answer, refreshed: null };
   };
-  const code = await runCli(argv, { twenty: fixture(), out: (l) => out.push(l), err: (l) => err.push(l), directDiscord: engine, directInstagram: engine, directSlack: engine });
+  const code = await runCli(argv, { twenty: fixture(), out: (l) => out.push(l), err: (l) => err.push(l), directDiscord: engine, directInstagram: engine, directSlack: engine, directTwitter: engine as never });
   return { code, out: out.join("\n"), err: err.join("\n"), specs };
 }
 
@@ -124,9 +126,28 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
     expect(r.specs.length).toBe(1);
   });
 
-  test("X has no voice note command", async () => {
-    const r = await run(["twitter", "voice", "--account", "x", "--text", "yo"]);
+  test("an X voice note is a dry run without --live and contacts nothing", async () => {
+    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@AjeetVermai", "--text", "yo"]);
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("dry run");
+    expect(r.specs.length).toBe(0);
+    expect(rendered.length).toBe(0);
+  });
+
+  test("an X voice note goes to the engine as xchatVoice with the handle, the file, its seconds and the saved PIN (rule 151)", async () => {
+    const r = await run(["twitter", "voice", "--account", "xOne", "--with", "@AjeetVermai", "--text", "yo", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", mode: "xchatVoice", messageId: "m1" });
+    expect(r.code).toBe(0);
+    expect(rendered).toEqual(["inworld:twitter:yo"]);
+    expect(r.specs).toHaveLength(1);
+    expect(r.specs[0]).toMatchObject({ action: "xchatVoice", screenName: "AjeetVermai", seconds: 2.5, live: true, approvedBy: "matt", chatPin: "2580" });
+    expect(String(r.specs[0]!.path)).toEndWith(".m4a");
+  });
+
+  test("an X voice note without a saved X Chat PIN is refused before anything is made", async () => {
+    const r = await run(["twitter", "voice", "--account", "xNoPin", "--with", "123456789", "--text", "yo", "--approvedBy", "matt", "--live"]);
     expect(r.code).not.toBe(0);
+    expect(r.out + r.err).toContain("xchatPinMissing");
+    expect(r.specs.length).toBe(0);
   });
 });
 

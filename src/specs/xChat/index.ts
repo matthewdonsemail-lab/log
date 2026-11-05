@@ -13,8 +13,14 @@ const TWIKIT = 'vendor/twikit/twikit/client/client.py'
 export const xChat = {
   description: 'X Chat: the prior-conversation drop, reading it with the saved PIN, and reactions and read receipts as follow-ups',
   specPath: 'docs/specs/xChat.md',
-  codePaths: [QUEUE, DMS, CHAT, PERSON, SESSION, ENGINE, SYNC],
+  codePaths: [QUEUE, DMS, CHAT, PERSON, SESSION, ENGINE, SYNC, TWIKIT, 'vendor/twikit/twikit/client/gql.py'],
   anchors: {
+    'REQ-XCHAT-11': [
+      { kind: 'symbol', file: TWIKIT, name: 'send_xchat_voice' },
+      { kind: 'symbol', file: TWIKIT, name: 'upload_xchat_media' },
+      { kind: 'symbol', file: TWIKIT, name: 'send_xchat_message' },
+      { kind: 'symbol', file: TWIKIT, name: 'xchat_latest_key' },
+    ],
     'REQ-XCHAT-01': [
       { kind: 'string', file: QUEUE, includes: 'xchatContacts' },
       { kind: 'symbol', file: ENGINE, name: 'xchat_contacts' },
@@ -61,6 +67,7 @@ export const xChat = {
     'REQ-XCHAT-08': noul('Does reactedOnly return true when the thread last message is not from the account and its lastText is a (reacted ...) marker, and does waitingOnYou return false for such a thread?'),
     'REQ-XCHAT-09': noul('Is openedByThem true only when the account sent last and the other person last_read_event_id in thread_of, or their read-marker event time in inboxSync, is at or past that last message, and does followUpDue return true for a thread where openedNoReply is true?'),
     'REQ-XCHAT-10': noul('With --waiting, does the dms command keep only the threads where waitingOnYou is true, list the followUpDue threads apart as follow-ups, and put them in followUps with --json?'),
+    'REQ-XCHAT-11': noul('In vendor/twikit/twikit/client/client.py, does xchat_latest_key open the newest key from extract_conversation_keys over the conversation key change events of get_xchat_conversation_data; does upload_xchat_media encrypt with encrypt_stream, call initialize_xchat_media_upload, POST each part to XCHAT_MEDIA_URL with concurrent=true, resumeId and partNumber counting from 0 and Content-Type application/octet-stream, raise when a part answers 400 or more, and call finalize_xchat_media_upload with the number of parts; does send_xchat_message call encrypt_message with the conversation key and version and send_xchat_message_create with payload.message_id, payload.encrypted_content and payload.encoded_event_signature, raising without an encoded_message_event; and does send_xchat_voice send one attachment with media_type XCHAT_MEDIA_AUDIO and duration_millis?'),
     unspecifiedBehavior: noul('Is there a path where X Chat is read through a browser, the PIN is printed or passed as a flag, or a pending dm skips the prior-conversation check without --skipXChatCheck, that the specification does not describe?'),
   },
   assertions: {
@@ -74,6 +81,7 @@ export const xChat = {
     'REQ-XCHAT-08': MET,
     'REQ-XCHAT-09': MET,
     'REQ-XCHAT-10': MET,
+    'REQ-XCHAT-11': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

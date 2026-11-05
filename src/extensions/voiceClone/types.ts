@@ -26,13 +26,14 @@ export const CLONE_TITLE = 'matt'
 export const SHORTEST_CLIP = 5
 export const MAX_SPEAK_CHARACTERS = 600
 
-export const VOICE_NOTE_PLATFORMS = ['discord', 'instagram', 'slack'] as const
+export const VOICE_NOTE_PLATFORMS = ['discord', 'instagram', 'slack', 'twitter'] as const
 export type VoiceNotePlatform = (typeof VOICE_NOTE_PLATFORMS)[number]
 
 export const PLATFORM_AUDIO: Readonly<Record<VoiceNotePlatform, { suffix: string; container: string; args: readonly string[] }>> = {
   discord: { suffix: '.ogg', container: 'ogg/opus', args: ['-c:a', 'libopus', '-b:a', '32k', '-ar', '48000', '-ac', '1', '-application', 'voip'] },
   instagram: { suffix: '.m4a', container: 'AAC in .m4a', args: ['-c:a', 'aac', '-b:a', '64k', '-ar', '44100', '-ac', '1', '-movflags', '+faststart'] },
   slack: { suffix: '.m4a', container: 'AAC in .m4a', args: ['-c:a', 'aac', '-b:a', '64k', '-ar', '44100', '-ac', '1', '-movflags', '+faststart'] },
+  twitter: { suffix: '.m4a', container: 'AAC in .m4a (audio/mp4, as X Chat records)', args: ['-c:a', 'aac', '-b:a', '64k', '-ar', '44100', '-ac', '1', '-movflags', '+faststart'] },
 }
 
 export const AUDIO_SUFFIX = /\.(ogg|oga|opus|m4a|mp3|wav|aac|flac|webm|mp4)$/i

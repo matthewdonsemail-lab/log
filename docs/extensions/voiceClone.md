@@ -25,7 +25,7 @@ The provider is `--provider`, else `LOG_VOICE_PROVIDER` in `.env.local`, else `i
 | `instagramVoice`, `instagramVoiceLive` | `log instagram voice --account <a> --with <handle> --text "<words>" [--provider <p>]` | An Instagram voice clip through instagrapi's `direct_send_voice` |
 | `slackVoice`, `slackVoiceLive` | `log slack voice --account <a> --chat <chat> --text "<words>" [--provider <p>]` | An audio file shared into the chat through Slack's own upload, which Slack plays inline |
 
-`log fish clone|speak` became `log clone voice|speak` and is refused with that form. X has no voice note command: twikit has no audio send, and no vendored code or doc shows X's DM voice upload.
+`log fish clone|speak` became `log clone voice|speak` and is refused with that form. On X, `log twitter voice` sends it as an X Chat voice message through vendor/twikit, the way X Chat's own app does (rule 151).
 
 ## The clone
 

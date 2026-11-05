@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 149.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 151.
 
 ## The providers
 
@@ -60,9 +60,9 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
-### REQ-VOICE-CLONE-09: X has no voice note
+### REQ-VOICE-CLONE-09: An X voice note is an X Chat voice message
 
-`COMMAND_INDEX` (`src/cli/runner/helpers/commandIndex.ts`) has a `voice` entry for discord, slack and instagram, each from `src/cli/voiceNote/index.ts`, and none for twitter: twikit has no audio send and no vendored code shows X's DM voice upload, so nothing is guessed. (The `voice` entry for any platform is the voice gate, `log voice`, not a voice note.)
+`COMMAND_INDEX` (`src/cli/runner/helpers/commandIndex.ts`) has a `voice` entry for discord, slack, instagram and twitter, each from `src/cli/voiceNote/index.ts` (the `voice` entry for any platform is the voice gate, `log voice`, not a voice note). `twitterVoiceCommand` opens the X account, refuses with `xchatPinMissing` when its X Chat PIN isn't saved, and sends through `context.directTwitter` the engine action `xchatVoice` with the person's handle (`screenName`) or `userId`, the note's `path` and `seconds`, `live`, `approvedBy` and the saved `chatPin`. `PLATFORM_AUDIO.twitter` is AAC in .m4a. In `python/twitterApi/engine.py`, `xchatVoice` is in `WRITES`, `xchat_voice` takes only a voice note under the voice notes folder (`media_kit.voice_note_path`), opens X Chat with the PIN when it isn't open, finds the user, makes the conversation id from the two ids in ascending order, and calls `send_xchat_voice` with the file, its milliseconds and a `voice-note-<time>.m4a` name. Rule 151 (it replaces rule 142's "X isn't built").
 
 Checked by: code and SubQ
 

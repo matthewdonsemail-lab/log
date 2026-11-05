@@ -71,6 +71,9 @@ class Endpoint:
     XCHAT_MESSAGE_EVENTS_PAGE = XCHAT_HOST + '8ds29Y40jrxh_MZDbqWy0A/GetMessageEventsPageQuery'
     XCHAT_PUBLIC_KEYS = XCHAT_HOST + 'C-YphxeIcPLOGtFNGhkuOw/GetPublicKeysQuery'
     XCHAT_GENERATE_TOKEN = XCHAT_HOST + 'Qh3fZRjPPtPoHYR_2sCZsA/GenerateXChatTokenMutation'
+    XCHAT_SEND_MESSAGE_CREATE = XCHAT_HOST + 'TWRPP7gnKwV_R8-tE-Dd3Q/SendMessageCreateMutation'
+    XCHAT_INITIALIZE_MEDIA_UPLOAD = XCHAT_HOST + '6M543IPabOfZm7-yyIczdw/InitializeXChatMediaUploadMutation'
+    XCHAT_FINALIZE_MEDIA_UPLOAD = XCHAT_HOST + '3O4jPQ2hwW9LbqCc-wFmqA/FinalizeXChatMediaUploadMutation'
     USER_BY_REST_ID = url('tD8zKvQzwY3kdx5yz6YmOw/UserByRestId')
     TWEET_DETAIL = url('U0HTv-bAWTBYylwEMT7x5A/TweetDetail')
     TWEET_RESULT_BY_REST_ID = url('Xl5pC_lBk_gcO2ItU39DQw/TweetResultByRestId')
@@ -182,6 +185,20 @@ class GQLClient:
 
     async def generate_xchat_token(self):
         return await self.gql_post(Endpoint.XCHAT_GENERATE_TOKEN, {})
+
+    async def send_xchat_message_create(self, conversation_id: str, message_id: str, encoded_message_create_event: str, encoded_message_event_signature: str, conversation_token: str | None = None):
+        variables = {'conversation_id': conversation_id, 'message_id': message_id, 'encoded_message_create_event': encoded_message_create_event, 'encoded_message_event_signature': encoded_message_event_signature}
+        if conversation_token:
+            variables['conversation_token'] = conversation_token
+        return await self.gql_post(Endpoint.XCHAT_SEND_MESSAGE_CREATE, variables)
+
+    async def initialize_xchat_media_upload(self, conversation_id: str, message_id: str, total_bytes: int, content_type: str):
+        variables = {'conversation_id': conversation_id, 'message_id': message_id, 'total_bytes': str(total_bytes), 'is_public': False, 'content_type': content_type}
+        return await self.gql_post(Endpoint.XCHAT_INITIALIZE_MEDIA_UPLOAD, variables)
+
+    async def finalize_xchat_media_upload(self, conversation_id: str, message_id: str, media_hash_key: str, resume_id: str, num_parts: int):
+        variables = {'conversation_id': conversation_id, 'message_id': message_id, 'media_hash_key': media_hash_key, 'resume_id': str(resume_id), 'num_parts': str(num_parts), 'is_public': False}
+        return await self.gql_post(Endpoint.XCHAT_FINALIZE_MEDIA_UPLOAD, variables)
 
     async def gql_post(
         self,

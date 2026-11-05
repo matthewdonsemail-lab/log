@@ -22,7 +22,7 @@ from platformKit import reactions
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
-WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd")
+WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd", "xchatVoice")
 ACTIONS = READS + WRITES
 
 
@@ -247,7 +247,7 @@ def xchat_build_of(manifest: Any) -> str | None:
     return build if build and XCHAT_BUILD.match(build) else None
 
 
-XCHAT_LOCALE = re.compile(r"^assets/[a-z]{2,3}(-[a-z]{2,4})*-[A-Za-z0-9_-]{8}\.js$")
+XCHAT_LOCALE = re.compile(r"^assets/(ar|ar-x-fm|bg|bn|ca|cs|cy|da|de|el|en-gb|en-ss|en-xx|es|eu|fa|fi|fil|fr|ga|gl|gu|ha|he|hi|hr|hu|id|ig|it|ja|kk|kn|ko|mr|ms|msa|nb|nl|no|pl|pt|ro|ru|sk|sl|sq|sr|sv|sw|ta|te|th|tr|uk|ur|vi|yo|zh|zh-cn|zh-hk|zh-tw)-[A-Za-z0-9_-]{8}\.js$")
 
 
 def xchat_scripts_of(build: str, manifest: Any) -> list[str]:
@@ -267,9 +267,22 @@ def xchat_scripts_of(build: str, manifest: Any) -> list[str]:
                 walk(item)
 
     walk((manifest or {}).get("exposes") or [])
-    keep = [name for name in names if not XCHAT_LOCALE.match(name) or re.match(r"^assets/en-[A-Za-z0-9_-]{8}\.js$", name)]
+    keep = [name for name in names if not XCHAT_LOCALE.match(name)]
     public = build.rstrip("/").rsplit("/", 1)[0] + "/"
     return sorted(public + name for name in keep)
+
+
+XCHAT_MOST_FILES = 400
+
+
+def xchat_imports_of(code: str, url: str) -> list[str]:
+    base = url.rsplit("/", 1)[0] + "/"
+    found = []
+    for name in sorted(set(re.findall(r"[`'\"]\./([A-Za-z0-9_~.-]+-[A-Za-z0-9_-]{8}\.(?:js|wasm))[`'\"]", code))):
+        if XCHAT_LOCALE.match("assets/" + name):
+            continue
+        found.append(base + name)
+    return found
 
 
 async def save_xchat_build(client: Any, folder: Path, spacing: tuple[float, float]) -> dict[str, Any]:
@@ -286,15 +299,25 @@ async def save_xchat_build(client: Any, folder: Path, spacing: tuple[float, floa
     build = xchat_build_of(manifest)
     if not build:
         return {"ok": False, "status": 200, "detail": "embed-v1.json names no X Chat build"}
+    public = build.rstrip("/").rsplit("/", 1)[0] + "/"
     saved = []
-    for url in xchat_scripts_of(build, manifest):
+    wanted = list(xchat_scripts_of(build, manifest))
+    seen = set(wanted)
+    while wanted and len(seen) <= XCHAT_MOST_FILES:
+        url = wanted.pop(0)
         await asyncio.sleep(random.uniform(*spacing))
         got = await client.http.request("GET", url, headers=headers)
-        if got.status_code == 200:
-            target = out / url[len(build.rstrip("/").rsplit("/", 1)[0]) + 1:]
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(got.content)
-            saved.append({"url": url, "file": str(target.relative_to(folder)), "bytes": len(got.content)})
+        if got.status_code != 200:
+            continue
+        target = out / url[len(public):]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(got.content)
+        saved.append({"url": url, "file": str(target.relative_to(folder)), "bytes": len(got.content)})
+        if url.endswith(".js"):
+            for found in xchat_imports_of(got.text, url):
+                if found not in seen:
+                    seen.add(found)
+                    wanted.append(found)
     return {"ok": True, "build": build, "saved": saved}
 
 
@@ -1328,6 +1351,8 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "event": "sent", "reposted": True, "tweetId": tweet_id}
     if action == "react":
         return await react(client, spec)
+    if action == "xchatVoice":
+        return await xchat_voice(client, spec)
     if action == "listCreate":
         return await list_create(client, spec)
     if action == "listAdd":
@@ -1491,6 +1516,34 @@ async def follow_author_first(client: Any, spec: dict[str, Any]) -> dict[str, An
     return {"userId": user_id, "handle": handle, "already": False}
 
 
+XCHAT_VOICE_FILENAME = "voice-note-{stamp}.m4a"
+
+
+async def xchat_voice(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    path = media_kit.voice_note_path(spec.get("path"), ".m4a")
+    if not path:
+        return {"ok": False, "event": "dropped", "code": "voiceNoteInvalid", "detail": "xchatVoice sends only a voice note log made itself (an .m4a under ~/.logCli/voiceNotes): no other audio is sent"}
+    if getattr(client, "_xchat", None) is None:
+        if not spec.get("pinPath"):
+            return {"ok": False, "event": "dropped", "code": "xchatPinMissing", "detail": "X Chat has to be opened with the account's saved PIN to send"}
+        try:
+            await xchat_read_keys(client, spec)
+        except Exception as e:
+            return {"ok": False, "event": "dropped", "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {str(e)[:200]}"}
+    user_id = str(spec.get("userId") or "")
+    if not user_id and spec.get("screenName"):
+        user = await client.get_user_by_screen_name(str(spec["screenName"]))
+        user_id = str(getattr(user, "id", "") or "")
+    if not user_id.isdigit():
+        return {"ok": False, "event": "dropped", "code": "targetMissing", "detail": f"no X user found for {spec.get('screenName') or spec.get('userId')}"}
+    me = str(await client.user_id())
+    conversation_id = ":".join(sorted([me, user_id], key=int))
+    seconds = float(spec.get("seconds") or 0)
+    stamp = int(time.time() * 1000)
+    sent = await client.send_xchat_voice(conversation_id, path.read_bytes(), int(round(seconds * 1000)), XCHAT_VOICE_FILENAME.format(stamp=stamp))
+    return {"ok": True, "event": "sent", "mode": "xchatVoice", "messageId": sent["message_id"], "conversationId": conversation_id, "userId": user_id, "seconds": seconds, "keyVersion": sent["key_version"], "mediaHashKey": sent["media"]["media_hash_key"], "parts": sent["media"]["parts"]}
+
+
 def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
     action = spec["action"]
     if action in WRITES and spec.get("live") is not True:
@@ -1505,6 +1558,10 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "listInvalid", "detail": "listCreate needs the list's name"}
     if action == "listAdd" and not (str(spec.get("listId") or "").strip() and (spec.get("userId") or spec.get("screenName"))):
         return {"ok": False, "code": "listInvalid", "detail": "listAdd needs the list's id and the person's user id or handle"}
+    if action == "xchatVoice" and not (spec.get("userId") or spec.get("screenName")):
+        return {"ok": False, "code": "targetMissing", "detail": "xchatVoice needs the person's user id or handle"}
+    if action == "xchatVoice" and not spec.get("path"):
+        return {"ok": False, "code": "voiceNoteInvalid", "detail": "xchatVoice needs the voice note log made"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action == "post" and any(not Path(str(m)).is_file() for m in (spec.get("media") or [])):

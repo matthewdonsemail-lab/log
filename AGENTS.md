@@ -2170,6 +2170,37 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `docs/specs/agentHooks.md` (REQ-HOOKS-18), `docs/specs/xSession.md`
     (REQ-XSESSION-15).
 
+151. 2026-11-05 · matt: "build the voice nots on X from X's own client so
+    we'll figure out how it's done via the bundle itself ... and then we'll
+    add it into the vendor itself", then "Yes, build it". An X voice note is
+    an X Chat voice message, sent the way X Chat's own app sends one, read
+    from its own code: `log twitter session webClient` now saves X Chat's
+    whole app, following each script's imports (rule 150), so its engine,
+    `dm-core` (Kotlin compiled to JS), is saved too. In it: the recorder makes
+    `audio/mp4`; the file is encrypted with the conversation key
+    (chat-xdk `encrypt_stream`); `InitializeXChatMediaUploadMutation`
+    (`6M543IPabOfZm7-yyIczdw`) answers a `media_hash_key` and `resume_id`; the
+    parts are POSTed as `application/octet-stream` to
+    `ton.x.com/i/ton/data/xchat_media/<conversation>/<media_hash_key>?concurrent=true&resumeId=<id>&partNumber=<n>`
+    from 0; `FinalizeXChatMediaUploadMutation` (`3O4jPQ2hwW9LbqCc-wFmqA`) closes
+    it; and `SendMessageCreateMutation` (`TWRPP7gnKwV_R8-tE-Dd3Q`) sends chat-xdk's
+    `encrypt_message` (its `encrypted_content` and `encoded_event_signature`)
+    with one attachment, media type AUDIO (4) and `duration_millis`. This is in
+    `vendor/twikit` (`xchat_latest_key`, `upload_xchat_media`,
+    `send_xchat_message`, `send_xchat_voice`; the operations in
+    `client/gql.py`), so twikit can now send in X Chat. `log twitter voice
+    --account <a> --with <handle|id> --text "…"` (MCP `twitterVoice`,
+    `twitterVoiceLive`) is the voice note command on X, the same as on Discord,
+    Instagram and Slack (rules 142 to 149): made in matt's cloned voice, AAC in
+    .m4a, gated, claimed, a dry run unless `--live` with `--approvedBy`, and
+    sent by the engine action `xchatVoice` through the account's one session,
+    X Chat opened with the saved PIN (rule 88; `xchatPinMissing` when there is
+    none). The engine sends only a voice note log made under
+    `~/.logCli/voiceNotes`. chat-xdk mints the message's own id, so the upload
+    carries an id of its own, as X's official upload takes none. This
+    replaces rule 142's "X isn't built". Spec: `docs/specs/voiceClone.md`
+    (REQ-VOICE-CLONE-09), `docs/specs/xChat.md` (REQ-XCHAT-11).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
