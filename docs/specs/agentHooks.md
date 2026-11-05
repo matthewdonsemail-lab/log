@@ -124,3 +124,9 @@ In `src/inbox/store/client.ts`, `appendEvent` takes the sender's id (`senderId`,
 
 Checked by: code and SubQ
 
+
+### REQ-HOOKS-20: A Discord, Slack or Instagram call names its chat, never its id
+
+The PreToolUse hook `scripts/hooks/chatNames.ts`, registered in `src/agentHooks/registry/index.ts` for the log MCP tools of discord, slack and instagram, runs `chatNameVerdict` from `src/agentHooks/chatNames/index.ts`: a `channel`, `chat` or `with` argument that `isBareId` calls an id is refused (exit 2) with how to name it instead (a person, a group, or a server channel as "<server> #<channel>"), and a name passes. Rule 155.
+
+Checked by: code and SubQ

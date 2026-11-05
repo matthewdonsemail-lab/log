@@ -1,4 +1,6 @@
 import { findDiscordAccount, discordGate } from "../../discord/account/session/index.ts";
+import { roomFromRead } from "../../voice/room/index.ts";
+import type { Room, RoomKind } from "../../voice/room/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import { PLATFORM_AUDIO, providerOf, readClone, renderVoiceNote, textOnlyProblem, VOICE_PROVIDERS, voiceProvider } from "../../extensions/voiceClone/index.ts";
@@ -14,7 +16,7 @@ import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 
-type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer } | { ok: false; result: CommandResult };
+type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; room?: () => Room | undefined; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer } | { ok: false; result: CommandResult };
 
 interface VoiceShape {
   platform: VoiceNotePlatform;
@@ -97,7 +99,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         if (mattsWords) context.err(`${resolved.account}: matt's own dictated words (--mattsWords): the voice gate's read of his typing is skipped, the AI artifact check passed`);
         else {
           if (translationOf) context.err(`${resolved.account}: a translation into ${language} (--translationOf): the voice gate grades the original words`);
-          const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text: translationOf || text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle, spoken: true });
+          const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text: translationOf || text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle, spoken: true, ...(resolved.room ? { readRoom: resolved.room } : {}) });
           if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
           context.err(voiced.line);
         }
@@ -141,6 +143,7 @@ export const discordVoiceCommand = voiceNoteCommandOf({
     const said = String(flags["channel"]).trim();
     let target = said;
     let shown = said;
+    let kind: RoomKind = "unknown";
     if (!/^\d{15,22}$/.test(said)) {
       const listed = direct(account, { action: "chats" });
       if (!listed.answer.ok) return { ok: false, result: { code: 1, stdout: `log ${label}: ${account.accountName}: reading its chats to find "${said}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` } };
@@ -148,8 +151,10 @@ export const discordVoiceCommand = voiceNoteCommandOf({
       if (!found.ok) return { ok: false, result: refuse(label, found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n")) };
       target = found.chat.id;
       shown = labelOf(found.chat);
+      kind = found.chat.kind === "dm" || found.chat.kind === "group" || found.chat.kind === "channel" ? found.chat.kind : "unknown";
     }
-    return { ok: true, account: account.accountName, chatId: target, label: shown, send: (note, approvedBy) => direct(account, { action: "voice", channel: target, path: note.path, seconds: note.seconds, waveform: note.waveform, live: true, approvedBy }).answer };
+    const room = () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer);
+    return { ok: true, account: account.accountName, chatId: target, label: shown, room, send: (note, approvedBy) => direct(account, { action: "voice", channel: target, path: note.path, seconds: note.seconds, waveform: note.waveform, live: true, approvedBy }).answer };
   },
 });
 

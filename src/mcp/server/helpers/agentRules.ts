@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 154;
+export const RULES_REVIEWED_THROUGH = 155;
 
 export const AGENTS_URI = "log://agents";
 
@@ -66,6 +66,7 @@ export const CORE_PRINCIPLES = [
   "59. A voice note is written at the length matt asks for (a 40 s note is about 100 to 110 words), from the whole conversation: take what they are talking about further, never re-explain what matt already told them, and don't make every note three short lines. Its gate grades it as spoken (`voice` with `spoken`, as every voice note send does), never on length, and refuses one that doesn't build on the chat (`buildsOn`). A note never opens with a breath, and its breaths and pace vary (rule 149).",
   "61. On X a voice note is `twitterVoiceLive` { account, with, text }: an X Chat voice message sent the way X Chat's own app sends one (encrypted m4a, uploaded to the conversation's media store, one AUDIO attachment), through the account's one session with X Chat opened by the saved PIN; with no PIN it is refused `xchatPinMissing` (rule 151).",
   "62. When matt says to send a dm the voice gate refused (\"send it anyway\"), `twitterDmLive` with `overGate` sends that one message: the gate's read is skipped and the AI artifact check still runs. Only on his word for that exact message, never on your own and never in a queue (rule 152).",
+  "65. Name the chat in every Discord, Slack or Instagram call (a person, a group, or a server channel as \"<server> #<channel>\"), never its id: a hook refuses an id. Every send and voice note is gated against the room it goes to, so a channel where nobody else has spoken lately is talked to as a whole (rule 155).",
   "64. Never show matt a person as an id, on any platform: name everyone by their username (and display name), looking an id up through the account's own session first; one that can't be named is said with why, never as the bare id (rule 154).",
   "63. To send text into an X Chat group, `twitterDmLive` takes the group's id (g and digits) as `userId`; X Chat is opened with the saved PIN, and with none it is refused `xchatPinMissing`. `twitterVoiceLive` takes the same id as `with` (rule 153).",
   "60. A catch-up refused on an account (`accountBehind`) stays refused until matt says to resume: then `inboxResume` { platform, account, by: \"matt\" } opens its gap again and the owner catches up within 30 s. Never resume on your own (rule 150).",

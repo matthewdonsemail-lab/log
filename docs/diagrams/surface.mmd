@@ -28,7 +28,8 @@ flowchart LR
   bin -->|cli:command lines| live
   mcp -->|tool lines| live
   live -.->|tail -f, under Monitor| agent
-  pre0{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
+  pre0{{"PreToolUse: chatNames.ts"}} -.->|before| shell
+  pre1{{"PreToolUse: liveLogs.ts"}} -.->|before| shell
   post0{{"PostToolUse: inbox.ts"}} -.->|after| agent
   post1{{"PostToolUse: queue.ts"}} -.->|after| agent
   post2{{"PostToolUse: xLive.ts"}} -.->|after| agent

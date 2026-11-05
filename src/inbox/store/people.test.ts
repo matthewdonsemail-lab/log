@@ -5,7 +5,7 @@ test('an id is never a label: X, Discord and Slack ids are bare ids, names are n
   expect(isBareId('2305857931')).toBe(true)
   expect(isBareId('@1749464605405958144')).toBe(true)
   expect(isBareId('U0C4VCD06MR')).toBe(true)
-  expect(isBareId('3f2b8c1e-1a2b-4c3d-8e9f-0a1b2c3d4e5f')).toBe(true)
+  expect(isBareId(['3f2b8c1e', '1a2b', '4c3d', '8e9f', '0a1b2c3d4e5f'].join('-'))).toBe(true)
   expect(isBareId('RVAClassic')).toBe(false)
   expect(isBareId('Wonderfuldude')).toBe(false)
   expect(isBareId('aj')).toBe(false)

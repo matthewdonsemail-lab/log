@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 440 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 442 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -67,6 +67,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
 - **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
 - **REQ-HOOKS-19** Every event is named before matt sees it
+- **REQ-HOOKS-20** A Discord, Slack or Instagram call names its chat, never its id
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -386,6 +387,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
+- **REQ-VOICE-15** Every send and voice note is gated against the room it goes to
 
 ## [AI tells and watermark](./aiTells.md)
 

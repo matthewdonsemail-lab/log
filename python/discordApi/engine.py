@@ -143,7 +143,52 @@ def dms_of(client: Any) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
     return dms, None
 
 
-def chats_of(token: str) -> dict[str, Any]:
+SERVERS_FRESH_SECONDS = 24 * 3600
+SERVER_READ_SPACING = 1.5
+TEXT_CHANNELS = (0, 5, 15)
+
+
+def servers_path(spec: dict[str, Any]) -> Path:
+    return Path.home() / ".logCli" / "discord" / re.sub(r"[^0-9A-Za-z_-]", "_", str(spec.get("account") or "account")) / "servers.json"
+
+
+def server_channels_of(client: Any, spec: dict[str, Any]) -> tuple[list[dict[str, Any]], str | None]:
+    path = servers_path(spec)
+    try:
+        kept = json.loads(path.read_text(encoding="utf-8"))
+        if time.time() - float(kept.get("savedAt") or 0) < SERVERS_FRESH_SECONDS:
+            return kept.get("channels") or [], None
+    except (OSError, ValueError):
+        kept = {}
+    data, status = client.request("GET", "/api/v9/users/@me/guilds", None, client.header)
+    if status != 200:
+        return (kept.get("channels") or []), f"Discord answered {status or 'nothing'} to /users/@me/guilds"
+    channels: list[dict[str, Any]] = []
+    skipped: list[str] = []
+    for number, guild in enumerate(json.loads(data)):
+        if number:
+            time.sleep(SERVER_READ_SPACING)
+        found = client.get_channels(guild["id"])
+        if found is None:
+            skipped.append(str(guild.get("name")))
+            continue
+        channels += [{"id": c["id"], "kind": "channel", "name": f"{guild.get('name')} #{c['name']}", "members": [], "server": guild.get("name"), "serverId": guild["id"]} for c in found if c.get("type") in TEXT_CHANNELS]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"savedAt": time.time() if not skipped else 0, "channels": channels}), encoding="utf-8")
+    return channels, (f"Discord didn't answer the channels of {', '.join(skipped)}, so those servers are left out until the next read" if skipped else None)
+
+
+def save_servers_from(socket: Any, spec: dict[str, Any]) -> int:
+    channels = [{"id": str(c["id"]), "kind": "channel", "name": f"{g.get('name')} #{c['name']}", "members": [], "server": g.get("name"), "serverId": str(g.get("guild_id"))} for g in (getattr(socket, "guilds", None) or []) for c in (g.get("channels") or []) if c.get("type") in TEXT_CHANNELS]
+    if not channels:
+        return 0
+    path = servers_path(spec)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"savedAt": time.time(), "from": "gateway", "channels": channels}), encoding="utf-8")
+    return len(channels)
+
+
+def chats_of(token: str, spec: dict[str, Any] | None = None) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
         return failed
@@ -152,7 +197,8 @@ def chats_of(token: str) -> dict[str, Any]:
         return refused
     kinds = {1: "dm", 3: "group"}
     chats = [{"id": d["id"], "kind": kinds.get(d["type"], str(d["type"])), "name": d["name"], "members": [r.get("global_name") or r["username"] for r in d["recipients"]]} for d in dms]
-    return {"ok": True, "loginState": "loggedIn", "chats": chats}
+    channels, problem = server_channels_of(client, spec or {})
+    return {"ok": True, "loginState": "loggedIn", "chats": chats + channels, **({"serversProblem": problem} if problem else {})}
 
 
 MEDIA_LINK = re.compile(r"^https?://\S+?\.(mp4|mov|gif|jpe?g|png|webp)(\?\S*)?$", re.I)
@@ -334,6 +380,7 @@ def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]
             return {"ok": False, "code": "sessionDead", "detail": "Discord's gateway closed before READY", "loginState": "loggedOut"}
         time.sleep(0.2)
     me = str(socket.get_my_id())
+    save_servers_from(socket, spec)
     live({"kind": "open", "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "detail": "wss://gateway.discord.gg open, every message pushed as it lands"})
     count = 0
     rest = None
@@ -374,7 +421,7 @@ async def chats(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     token = cookies.get("token")
     if not token:
         return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
-    return await asyncio.to_thread(chats_of, token)
+    return await asyncio.to_thread(chats_of, token, spec)
 
 
 async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:

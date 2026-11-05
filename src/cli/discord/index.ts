@@ -1,4 +1,5 @@
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
+import { roomFromRead } from "../../voice/room/index.ts";
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
@@ -463,6 +464,8 @@ export const discordSendCommand: Command = {
       if (!gate.ok) return refuse("discord send", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       let target = channel;
       let label = channel;
+      let shown = channel;
+      let kind = "unknown";
       if (!/^\d{15,22}$/.test(channel)) {
         if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
         const listed = context.directDiscord(account, { action: "chats" });
@@ -471,6 +474,8 @@ export const discordSendCommand: Command = {
         if (!found.ok) return refuse("discord send", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
         target = found.chat.id;
         label = `${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`;
+        shown = labelOf(found.chat);
+        kind = found.chat.kind;
         context.err(`"${channel}" is ${label}`);
       }
       const profiles = discordDeps.profiles();
@@ -484,7 +489,8 @@ export const discordSendCommand: Command = {
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const caught = await waitCaughtUp("discord", account.accountName);
       if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
-      const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: label, text, conversationId: target });
+      const direct = context.directDiscord;
+      const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer) });
       if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
       context.err(voiced.line);
       const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });

@@ -173,6 +173,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "mcp__log__(discord|slack|instagram).*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/chatNames.ts\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
         "matcher": "Bash|PowerShell|Monitor",
         "hooks": [
           {

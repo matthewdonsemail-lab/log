@@ -59,7 +59,7 @@ try {
       }
     }
   }
-  const liveLogs = AGENT_HOOKS.find((h) => h.event === "PreToolUse");
+  const liveLogs = AGENT_HOOKS.find((h) => h.event === "PreToolUse" && (h.matcher ?? "").includes("Bash"));
   if (liveLogs) {
     const run = spawnSync("bun", [join(root, liveLogs.script)], { input: JSON.stringify(samples.PreToolUse), encoding: "utf8" });
     if (run.status !== 2) problems.push(`${liveLogs.script} let a log run piped through tail through (exit ${run.status}): it must refuse it (rule 26)`);

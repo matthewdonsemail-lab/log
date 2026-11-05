@@ -99,3 +99,9 @@ Checked by: code and SubQ
 `log twitter dm` takes `--overGate` (`OVER_GATE` in `src/cli/twitter/helpers/send.ts`). With it, the send skips `gateDeps.gate` and says so on its error stream; without it the gate runs and a refusal is `voiceGateFailed`. The copy's AI artifact check (`planSend`, `aiArtifacts`) runs either way, before the gate. Rule 152.
 
 Checked by: code and SubQ
+
+### REQ-VOICE-15: Every send and voice note is gated against the room it goes to
+
+`gateSend` in `src/cli/twitter/helpers/voice.ts` passes a room to `gateReading`: the one given (`room`), the one its `readRoom` reads, or one built with `roomOf` from the chat in the .db. `roomOf` in `src/voice/room/index.ts` gives the chat's kind, who else spoke in the last 24 hours, the last of them and how many days ago, how many of matt's messages end the chat, whether nobody else has spoken lately, and `addressTo`, which for a channel or group with nobody else lately says to talk to it as a whole. `readVoice` in `src/twitter/copy/voice/client.ts` gives it to SubQ as `theRoom` and asks `fitsTheRoom`, and a draft scoring under `CONTEXT_PASS` fails. The Discord send and voice note pass a `readRoom` that reads the chat's last 20 messages through the engine with `roomFromRead`. Rule 155.
+
+Checked by: code and SubQ

@@ -2249,6 +2249,36 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     yet reads "someone not named yet". Spec: `docs/specs/xChat.md`
     (REQ-XCHAT-13), `docs/specs/agentHooks.md` (REQ-HOOKS-19).
 
+155. 2026-11-05 · matt: "who the fuck is it reading to ... we need a context
+    for the voice notes as well, like we do for the sends, across all of the
+    voice notes, a unified system", after a voice note for the #general
+    channel of paulchrisluke's server was written to Paul ("you just got back
+    on X") when nobody but matt had typed there since 11 October; and "it
+    hasn't got any context, it doesn't show what channel it's in". Three
+    things:
+    - **The room.** Every send and voice note gives the voice gate the same
+      picture of where it goes (`roomOf`, `src/voice/room`): the chat's kind
+      (a DM, a group, a server channel), who else has spoken in the last 24
+      hours, when the last of them did, how many of matt's messages end the
+      chat, and who it must be addressed to (`addressTo`). Discord reads the
+      chat's last 20 messages through the engine for it (`roomFromRead`,
+      inside the gate, `readRoom`); every other platform builds it from the
+      chat in the .db. SubQ reads it as `theRoom` and answers `fitsTheRoom`
+      (0.7 to pass): a channel or group where nobody else has spoken lately
+      is talked to as a whole, never one person as if they were mid-talk.
+    - **Chats by name.** A Discord, Slack or Instagram tool call that names
+      its chat by a bare id is refused by a PreToolUse hook
+      (`scripts/hooks/chatNames.ts`, `chatNameVerdict`) and told to pass the
+      name, so matt sees where every call goes: a person, a group, or a server
+      channel as "<server> #<channel>".
+    - **Servers are found, never asked for.** The Discord watcher saves every
+      server and text channel the account is in from the gateway's READY
+      (`save_servers_from`), and the chat list includes them, so "paulchrisluke
+      #general" is matched like a DM. A cold read of the list reads each server
+      1.5 s apart and skips one that doesn't answer.
+    Spec: `docs/specs/voiceGate.md` (REQ-VOICE-15), `docs/specs/agentHooks.md`
+    (REQ-HOOKS-20).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
