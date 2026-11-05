@@ -43,3 +43,12 @@ Every voice command takes `--text` only: a path or an audio file name as the tex
 The engines take only a file log made under `~/.logCli/voiceNotes` with the platform's suffix (`voice_note_path`). Instagram's upload goes on instagrapi's curl adapter under the one-call lock (rules 128, 129); Slack's on gabriel's curl_cffi transport (rule 125). Any refusal stops, and nothing is retried (rule 94).
 
 Spec: [docs/specs/voiceClone.md](../specs/voiceClone.md). Use case: [Sending a voice note](../useCases/inbox/voiceNote.md).
+
+## Sounding like his own voice notes, and saying what was written (rule 147)
+
+Every spoken file goes through two steps in `speakToFile` before anything uses it:
+
+1. **Shaped** by `processLikeMatt` (`helpers/realism.ts`). The settings in `REALISM` were measured from five of matt's own Discord voice notes against the clone: phone squash and his top end, his slow mic drift (about 1.9 dB), the tone swaying as the phone moves, phone-mic saturation on loud words, and his own room tone, cut from the quiet gaps in his own voice notes (`quietPieces`; a recording with a floor under -60 dB, like a generated one, gives none) and laid under the voice where his sits (30 to 33 dB under it). The same text gives the same file (`seeded`).
+2. **Listened back** with AssemblyAI's word timings (`listenTo`, kept by the file's hash) and checked by `readSpoken` (`helpers/spoken.ts`). Words in `SPOKEN_LEXICON` are written the way the clone says them right before it speaks (`speakableText`: `op` goes as `OP`) and must come back as themselves, as one word under 400 ms. A lexicon word heard as something else or spelled out, or more than a quarter of the words different, is refused `spokenMismatch`. An acronym not in the lexicon is refused `pronunciationUnknown` before anything is spoken, and a note that can't be listened back is never sent (`spokenCheckFailed`).
+
+A lexicon entry is added only when matt says how he says the word.

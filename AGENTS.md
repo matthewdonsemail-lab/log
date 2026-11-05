@@ -2055,7 +2055,55 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     clone's language; on `inworld-tts-2` the text starts with `[say it in a
     <accent> accent]`, an instruction Inworld removes before synthesis, and
     `inworld-tts-2-flash`, which ignores steering, gets none. Spec:
-    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-11).
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-11). (Its accent steer was
+    replaced by rule 147, matt 2026-11-05.)
+
+146. 2026-11-05 · matt: "the second one but why does it speak so slowly" and
+    "use the discord audio for the samples". The clone speaks at
+    `LOG_VOICE_SPEED` (`.env.local`, default 1.15, kept between 0.8 and 1.5),
+    sent as Inworld's `speakingRate`, and a clone made on Inworld speaks with
+    `inworld-tts-2` (the provider's `preferred` model, which takes emotion
+    tags), not the cheapest. `log clone voice --from <file>[,<file>]` clones
+    from recordings of matt's own that he names instead of his voice notes,
+    each one's words read from a `.txt` of the same name beside it. Spec:
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-12).
+
+147. 2026-11-05 · matt: "ITS IRISH", none of the accent-steered clips
+    sounded like him, "11_script_long272_b ... was pretty good", then "go
+    through my voice notes ... analyse it", "it still doesn't have that
+    distortion", and "op is real like op not o p ... make it the gate for the
+    voice ... or it won't pass". A voice note sounds like his own voice notes
+    and says what was written, measured both times:
+    - **The clone** is Inworld instant cloning from one continuous 30 s of
+      his own Discord voice note (`matt-long272_b`, 2:30 into his 4.5 minute
+      note), the accent `Irish` (`LOG_VOICE_ACCENT`). No accent instruction
+      is sent with the text: the clone carries the accent. On
+      `inworld-tts-2` breaths are put in (`[breathe]` at the start and once
+      at least 8 words have gone by, `withBreaths`).
+    - **Shaped like his notes** (`processLikeMatt`,
+      `src/extensions/voiceClone/helpers/realism.ts`), every number measured
+      from five of his real Discord voice notes against the clone: phone
+      squash (`dynaudnorm`), the phone mic's own tone curve measured from
+      his notes (`REALISM.phoneCurve`: its low cut under 160 Hz, its dip
+      around 2 to 3 kHz and its dull top over 5 kHz), his slow mic
+      drift (1.9 dB), tone sway as the phone moves, phone-mic saturation on
+      loud words, and his own room tone taken from the gaps in his own voice
+      notes (never a sound effect), laid 22 dB under the voice so it lands
+      where his do (30 to 33 dB). Seeded by the text, so the same words come
+      out the same.
+    - **Listened back** (`readSpoken`, `spoken.ts`): the shaped note is
+      transcribed with AssemblyAI's word timings and lined up with the text.
+      A word in the spoken lexicon (`SPOKEN_LEXICON`: `op` said as a word,
+      written `OP` for the clone, since a lower-case `op` came out as "up")
+      must be heard as itself, as one word under 400 ms; spelled out, heard
+      as something else, or more than a quarter of the words different, and
+      it is refused with `spokenMismatch`, naming what was heard. An acronym
+      the lexicon doesn't have is refused before anything is spoken
+      (`pronunciationUnknown`): how matt says it is never guessed. A note
+      that can't be listened back is never sent (`spokenCheckFailed`).
+    It runs in `log clone speak` and every `log discord|instagram|slack
+    voice`. This replaces rule 145's accent steer. Spec:
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-13, 14).
 
 ## Checks
 

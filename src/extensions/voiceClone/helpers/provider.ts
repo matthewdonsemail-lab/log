@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { ACCENT_ENV, DEFAULT_ACCENT, DEFAULT_LANGUAGE, DEFAULT_PROVIDER, FALLBACK_LANGUAGE, LANGUAGE_ENV, PROVIDER_ENV, VOICE_PROVIDERS } from '../types'
+import { ACCENT_ENV, DEFAULT_ACCENT, DEFAULT_LANGUAGE, DEFAULT_PROVIDER, DEFAULT_SPEED, FALLBACK_LANGUAGE, LANGUAGE_ENV, PROVIDER_ENV, SPEED_ENV, SPEED_RANGE, VOICE_PROVIDERS } from '../types'
 import type { VoiceProvider, VoiceSettings } from '../types'
 
 export function envValue(name: string, env: Record<string, string | undefined> = process.env, home = homedir()): string | null {
@@ -31,7 +31,13 @@ export function providerOf(said: unknown, env: Record<string, string | undefined
 
 export function voiceSettingsOf(env: Record<string, string | undefined> = process.env): VoiceSettings {
   const language = envValue(LANGUAGE_ENV, env) ?? DEFAULT_LANGUAGE
-  return { accent: envValue(ACCENT_ENV, env) ?? DEFAULT_ACCENT, language, fallback: language === FALLBACK_LANGUAGE ? language : FALLBACK_LANGUAGE }
+  return { accent: envValue(ACCENT_ENV, env) ?? DEFAULT_ACCENT, language, fallback: language === FALLBACK_LANGUAGE ? language : FALLBACK_LANGUAGE, speed: speedOf(envValue(SPEED_ENV, env)) }
+}
+
+export function speedOf(said: string | null): number {
+  const value = said === null ? NaN : Number(said)
+  if (!Number.isFinite(value)) return DEFAULT_SPEED
+  return Math.min(SPEED_RANGE.most, Math.max(SPEED_RANGE.least, value))
 }
 
 export function accentDescriptionOf(accent: string): string {

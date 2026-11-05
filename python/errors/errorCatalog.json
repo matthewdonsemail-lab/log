@@ -2483,6 +2483,50 @@
     ],
     "action": "Check ffmpeg is installed with libopus and aac (ffmpeg -encoders), then send it again."
   },
+  "pronunciationUnknown": {
+    "layer": "runtime",
+    "meaning": "The voice note's text has an acronym that isn't in the spoken lexicon (SPOKEN_LEXICON), so whether matt says it as a word or as letters isn't known. Nothing was spoken or sent.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/voiceNote",
+      "cli/clone",
+      "extensions/voiceClone"
+    ],
+    "action": "Write the word out the way matt says it, or add it to SPOKEN_LEXICON with how he says it (a word or letters) once he has said, then send it again."
+  },
+  "spokenMismatch": {
+    "layer": "runtime",
+    "meaning": "The voice note was spoken, transcribed back with AssemblyAI and didn't say what was written: a lexicon word heard as something else or spelled out as letters, or too many words different. Nothing was sent.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/voiceNote",
+      "cli/clone",
+      "extensions/voiceClone"
+    ],
+    "action": "Read what was heard in the detail, then rewrite the word the clone got wrong (or fix its lexicon entry) and send it again."
+  },
+  "spokenCheckFailed": {
+    "layer": "runtime",
+    "meaning": "The voice note was spoken but couldn't be transcribed back to check its words (AssemblyAI's key missing, a refusal or no word timings). Nothing was sent: an unchecked voice note never goes out.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/voiceNote",
+      "cli/clone",
+      "extensions/voiceClone"
+    ],
+    "action": "Check ASSEMBLYAI_API_KEY (or ASSEMBLY_AI_KEY) in .env.local and the AssemblyAI answer in the detail, then send it again."
+  },
+  "voiceProcessingFailed": {
+    "layer": "runtime",
+    "meaning": "ffmpeg couldn't read or write the spoken audio while shaping it like matt's own voice notes (his room tone, phone squash, mic drift and saturation). Nothing was sent.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/voiceNote",
+      "cli/clone",
+      "extensions/voiceClone"
+    ],
+    "action": "Check ffmpeg runs (ffmpeg -version) and the detail, then send it again."
+  },
   "voiceNoteRefused": {
     "layer": "runtime",
     "meaning": "The platform refused the voice note's upload or its message (its answer is in the detail). Nothing was retried.",

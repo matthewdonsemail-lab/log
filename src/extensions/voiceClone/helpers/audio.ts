@@ -21,6 +21,11 @@ export function convertFor(platform: VoiceNotePlatform, from: string, to: string
   return { ok: false, detail: `ffmpeg couldn't make ${PLATFORM_AUDIO[platform].container}: ${String(run.stderr || run.error?.message || `exit ${run.status}`).trim().slice(0, 300)}` }
 }
 
+export function encodeTo(from: string, to: string, tools: AudioTools = AUDIO_TOOLS): { ok: true } | { ok: false; detail: string } {
+  const run = spawnSync(tools.ffmpeg, ['-v', 'error', '-y', '-i', from, '-vn', ...(to.endsWith('.mp3') ? ['-c:a', 'libmp3lame', '-q:a', '2'] : []), to], { encoding: 'utf8', windowsHide: true })
+  return run.status === 0 ? { ok: true } : { ok: false, detail: `ffmpeg couldn't make ${to}: ${String(run.stderr || run.error?.message || `exit ${run.status}`).trim().slice(0, 300)}` }
+}
+
 export function wavOf(path: string, tools: AudioTools = AUDIO_TOOLS): Uint8Array | null {
   const run = spawnSync(tools.ffmpeg, ['-v', 'error', '-i', path, '-vn', '-ac', '1', '-ar', '24000', '-c:a', 'pcm_s16le', '-f', 'wav', 'pipe:1'], { windowsHide: true, maxBuffer: 64 * 1024 * 1024 })
   return run.status === 0 && run.stdout?.length ? new Uint8Array(run.stdout) : null

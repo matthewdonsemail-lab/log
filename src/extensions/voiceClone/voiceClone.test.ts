@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, rmsLevels, sentByMatt, textOnlyProblem, voiceNotesDir } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
@@ -54,3 +54,44 @@ describe('fishAudio helpers', () => {
     expect(Math.max(...levels)).toBe(1)
   })
 })
+
+describe("spoken words and realism (rule 147)", () => {
+  const timed = (words: string[], ms = 200) => words.map((text, i) => ({ text, start: i * 300, end: i * 300 + ms, confidence: 0.99 }));
+
+  test("readSpoken passes what was written, catches a lexicon word heard wrong, spelled out or drawn out", () => {
+    expect(readSpoken("its actually so op when it works", timed(["It's", "actually", "so", "OP", "when", "it", "works."])).ok).toBe(true);
+    const up = readSpoken("its actually so op when it works", timed(["It's", "actually", "so", "up", "when", "it", "works."]));
+    expect(up.ok).toBe(false);
+    expect(up.problems).toEqual(['"op" was heard as "up"']);
+    const letters = readSpoken("so op", timed(["so", "O", "P"]));
+    expect(letters.ok).toBe(false);
+    expect(letters.problems.join(" ")).toContain("op");
+    const slow = readSpoken("so op", [{ text: "so", start: 0, end: 200, confidence: 1 }, { text: "OP", start: 300, end: 900, confidence: 1 }]);
+    expect(slow.problems[0]).toContain("as letters would");
+    expect(readSpoken("one two three four", timed(["nine", "ten", "eleven", "four"])).ok).toBe(false);
+  });
+
+  test("unknownAcronyms names acronyms the lexicon doesn't have, and speakableText writes lexicon words the way they're said", () => {
+    expect(unknownAcronyms("we got into YC and the A.I. is OP [excited] lol")).toEqual(["YC", "A.I"]);
+    expect(unknownAcronyms("its so op")).toEqual([]);
+    expect(speakableText("[excited] its so op, op as anything")).toBe("[excited] its so OP, OP as anything");
+  });
+
+  test("withBreaths opens with a breath and adds one once enough words have gone by, never twice", () => {
+    expect(withBreaths("yo. ye im good bro been locked in building it. call me later.")).toBe("[breathe] yo. ye im good bro been locked in building it. [breathe] call me later.");
+    expect(withBreaths("[breathe] yo")).toBe("[breathe] yo");
+  });
+
+  test("shapeLikeMatt lays matt's own room tone under the voice at the measured level, and is the same for the same seed", () => {
+    const rate = REALISM.rate;
+    const voice = new Float32Array(rate).map((_, i) => (i % 9600 < 4800 ? 0.3 * Math.sin((2 * Math.PI * 220 * i) / rate) : 0));
+    const room = [new Float32Array(rate / 2).map((_, i) => 0.001 * Math.sin(i))]
+    const a = shapeLikeMatt(voice, room, seeded(5))
+    const b = shapeLikeMatt(voice, room, seeded(5))
+    expect(Array.from(a.slice(0, 50))).toEqual(Array.from(b.slice(0, 50)));
+    const quiet = a.slice(6000, 9000).reduce((s, v) => s + Math.abs(v), 0);
+    expect(quiet).toBeGreaterThan(0);
+    expect(Math.max(...Array.from(a, Math.abs))).toBeCloseTo(10 ** (REALISM.peakDb / 20), 3);
+    expect(quietPieces(new Float32Array(rate))).toEqual([]);
+  });
+});

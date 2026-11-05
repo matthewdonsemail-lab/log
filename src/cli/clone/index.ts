@@ -1,15 +1,15 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
-import { CLONE_TITLE, clonePath, mattsRecordings, pickReferences, providerOf, readClone, replacedClone, SPEAK_FORMATS, speakToFile, VOICE_PROVIDERS, voiceProvider, voiceSettingsOf, wavOf, writeClone } from "../../extensions/voiceClone/index.ts";
+import { CLONE_TITLE, clonePath, mattsRecordings, pickReferences, providerOf, readClone, replacedClone, secondsOf, SPEAK_FORMATS, speakToFile, VOICE_PROVIDERS, voiceProvider, voiceSettingsOf, wavOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../media/voiceNotes/index.ts";
 import type { ReferenceAudio, Recording, SpeakFormat, VoiceProvider, VoiceProviderClient } from "../../extensions/voiceClone/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
 
 export const CLONE_USAGE = [
-  "Usage: log clone voice [--provider inworld|fishAudio] [--apply] [--replace] [--json]   (matt's voice, cloned once per provider from his own voice notes; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)",
+  "Usage: log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply] [--replace] [--json]   (matt's voice, cloned once per provider from his own voice notes, or from recordings of his own he names with --from, each one's words read from a .txt beside it; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)",
   '       log clone speak --text "<words>" [--provider inworld|fishAudio] [--model <model>] [--format mp3|wav] [--json]   (the words in his cloned voice, to a file under ~/.logCli/voiceNotes; nothing is played or sent)',
-  "Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. Speech uses the provider's cheapest model unless --model says otherwise. The clone is made in matt's accent: LOG_VOICE_ACCENT (default Northern Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one. Speech is said in the clone's language, and on inworld-tts-2 it is steered with an inline accent instruction that Inworld strips before synthesis (inworld-tts-2-flash ignores it). A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145).",
+  "Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).",
 ].join("\n");
 
 const PROVIDER: FlagSpec = { name: "provider", kind: "enum", values: VOICE_PROVIDERS, description: "Which voice provider: inworld or fishAudio (default: LOG_VOICE_PROVIDER, else inworld)" };
@@ -20,7 +20,7 @@ export const CLONE_INPUT: CommandInput = {
       words: ["voice"],
       summary: "matt's voice cloned once on the voice provider from his own voice notes; without --apply it lists the recordings it would use",
       positionals: [],
-      flags: [PROVIDER, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
+      flags: [PROVIDER, { name: "from", kind: "string", description: "matt's own recordings to clone from instead of his voice notes (his voiceovers, comma separated), each one's exact words in a .txt of the same name beside it when there is one (rule 146)" }, { name: "apply", kind: "boolean", description: "Make the clone on the provider from the recordings listed" }, { name: "replace", kind: "boolean", description: "Make the clone again though one exists; the old voice id is kept in the clone file under previous, never deleted (rule 145)" }, JSON_FLAG],
     },
     {
       words: ["speak"],
@@ -37,17 +37,33 @@ export const CLONE_INPUT: CommandInput = {
   ],
 };
 
-export const cloneDeps: { provider: (provider: VoiceProvider) => VoiceProviderClient; recordings: () => Recording[]; read: (path: string) => Uint8Array; wav: (path: string) => Uint8Array | null; transcript: (bytes: Uint8Array) => string | null } = {
+export const cloneDeps: { provider: (provider: VoiceProvider) => VoiceProviderClient; recordings: () => Recording[]; read: (path: string) => Uint8Array; wav: (path: string) => Uint8Array | null; transcript: (bytes: Uint8Array) => string | null; sidecar: (path: string) => string | null; seconds: (path: string) => number | null } = {
   provider: (provider) => voiceProvider(provider),
   recordings: () => mattsRecordings(),
   read: (path) => readFileSync(path),
   wav: (path) => wavOf(path),
   transcript: (bytes) => readTranscript(hashOf(bytes))?.text?.trim() || null,
+  sidecar: (path) => {
+    const txt = path.replace(/\.[^.\/]+$/, ".txt");
+    return existsSync(txt) ? readFileSync(txt, "utf8").trim() || null : null;
+  },
+  seconds: (path) => secondsOf(path),
 };
+
+export function namedRecordings(paths: readonly string[], seconds: (path: string) => number | null): Recording[] | string {
+  const out: Recording[] = [];
+  for (const path of paths) {
+    const length = seconds(path);
+    if (length === null) return `${path} isn't an audio file ffprobe can read`;
+    out.push({ path, platform: "file", account: "matt", conversationId: "", messageId: basename(path), seconds: length });
+  }
+  return out;
+}
 
 const SUBS = ["voice", "speak"] as const;
 
 function recordingLine(r: Recording): string {
+  if (r.platform === "file") return `  ${r.path}: ${r.seconds.toFixed(1)} s`;
   return `  ${r.platform} ${r.account} chat ${r.conversationId} message ${r.messageId}: ${r.seconds.toFixed(1)} s, ${r.path}`;
 }
 
@@ -55,7 +71,7 @@ function referencesFor(client: VoiceProviderClient, picked: Recording[]): Refere
   const refs: ReferenceAudio[] = [];
   for (const r of picked) {
     const original = cloneDeps.read(r.path);
-    const transcription = cloneDeps.transcript(original);
+    const transcription = cloneDeps.sidecar(r.path) ?? cloneDeps.transcript(original);
     const said = transcription ? { transcription } : {};
     if (client.referenceFormat === "asIs") {
       refs.push({ name: basename(r.path), bytes: original, type: r.path.endsWith(".ogg") ? "audio/ogg" : "audio/mp4", ...said });
@@ -97,8 +113,11 @@ export const cloneCommand: Command = {
         if (json) return { code: 0, stdout: JSON.stringify({ exists: true, clonePath: clonePath(), ...existing }, null, 2) };
         return { code: 0, stdout: [`log clone voice: matt's voice is already cloned on ${provider} (its voice id kept in ${clonePath()}, made ${existing.createdAt}, speaking with ${existing.model}), from:`, ...existing.references.map(recordingLine), `It is made once per provider; nothing was sent to ${provider}.`].join("\n") };
       }
-      context.err(`clone: ${provider} (${chosen.from}): finding the voice notes matt sent himself`);
-      const mine = cloneDeps.recordings();
+      const named = typeof parsed.flags["from"] === "string" ? String(parsed.flags["from"]).split(",").map((p) => p.trim()).filter(Boolean) : [];
+      context.err(`clone: ${provider} (${chosen.from}): ${named.length ? `${named.length} recording(s) of matt's own named with --from` : "finding the voice notes matt sent himself"}`);
+      const fromFiles = named.length ? namedRecordings(named, cloneDeps.seconds) : null;
+      if (typeof fromFiles === "string") return refuse(label, "voiceRecordingsMissing", fromFiles);
+      const mine = fromFiles ?? cloneDeps.recordings();
       const picked = pickReferences(mine, client.limits);
       const total = picked.reduce((s, r) => s + r.seconds, 0);
       context.err(`clone: ${mine.length} of his own voice notes found, ${picked.length} picked, ${total.toFixed(1)} s (${provider} takes ${client.limits.least} to ${client.limits.most} s)`);
@@ -112,7 +131,7 @@ export const cloneCommand: Command = {
       context.err(`clone: cloning matt's voice on ${provider} from ${refs.length} recordings (${refs.filter((r) => r.transcription).length} with transcripts), ${settings.accent} accent, language ${settings.language}`);
       const made = await client.clone(CLONE_TITLE, refs, settings);
       if (!made.ok || !made.data) return refuse(label, made.code === "voiceKeyMissing" ? "voiceKeyMissing" : "voiceProviderRefused", `${provider} answered ${made.status || "nothing"}${made.code ? ` (${made.code})` : ""}${made.error ? `: ${made.error}` : ""}; no clone was made`);
-      const clone = replacedClone({ provider, voiceId: made.data.voiceId, title: CLONE_TITLE, model: client.cheapest, createdAt: new Date().toISOString(), state: made.data.state, references: picked, accent: settings.accent, ...(made.data.language ? { language: made.data.language } : {}) }, existing);
+      const clone = replacedClone({ provider, voiceId: made.data.voiceId, title: CLONE_TITLE, model: client.preferred ?? client.cheapest, createdAt: new Date().toISOString(), state: made.data.state, references: picked, accent: settings.accent, ...(made.data.language ? { language: made.data.language } : {}) }, existing);
       writeClone(clone);
       if (json) return { code: 0, stdout: JSON.stringify({ clonePath: clonePath(), ...clone }, null, 2) };
       return { code: 0, stdout: [`log clone voice: matt's voice cloned on ${provider} (state ${clone.state ?? "unknown"}, ${settings.accent} accent, language ${clone.language ?? "not said"}), its voice id ${clone.voiceId} kept in ${clonePath()}${existing ? `, the old one ${existing.voiceId} under previous` : ""}, from:`, ...picked.map(recordingLine)].join("\n") };

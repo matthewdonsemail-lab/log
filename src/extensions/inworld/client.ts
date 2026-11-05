@@ -1,5 +1,6 @@
 import { accentDescriptionOf, envValue, voiceSettingsOf } from '../voiceClone/helpers/provider'
 import type { ReferenceAudio, SpeakRequest, VoiceAnswer, VoiceFetch, VoiceProviderClient, VoiceResponse, VoiceSettings } from '../voiceClone/types'
+import { withBreaths } from '../voiceClone/helpers/spoken'
 import { INWORLD_API, INWORLD_ENCODINGS, INWORLD_ENDPOINTS, INWORLD_KEY_NAME, INWORLD_LANGUAGE_REFUSED, INWORLD_LIMITS, INWORLD_MODELS, INWORLD_STEERING_MODELS } from './types'
 import type { InworldModel } from './types'
 
@@ -15,8 +16,8 @@ async function refusalOf(answer: VoiceResponse): Promise<{ code: string; error: 
 
 const base64 = (bytes: Uint8Array) => Buffer.from(bytes).toString('base64')
 
-export function accentSteerOf(model: string, accent: string | undefined): string {
-  return accent && (INWORLD_STEERING_MODELS as readonly string[]).includes(model as InworldModel) ? `[say it in a ${accent} accent] ` : ''
+export function steeredText(model: string, text: string): string {
+  return (INWORLD_STEERING_MODELS as readonly string[]).includes(model as InworldModel) ? withBreaths(text) : text
 }
 
 export function cloneBodyOf(displayName: string, samples: readonly ReferenceAudio[], language: string, accent: string): string {
@@ -50,7 +51,7 @@ export function createInworldClient(key: string | null = inworldKey(), fetcher: 
     },
     async synthesize(request: SpeakRequest): Promise<VoiceAnswer<Uint8Array>> {
       if (!key) return missing()
-      const body = JSON.stringify({ text: `${accentSteerOf(request.model, request.accent)}${request.text}`, voiceId: request.voiceId, modelId: request.model, ...(request.language ? { language: request.language } : {}), audioConfig: { audioEncoding: INWORLD_ENCODINGS[request.format] } })
+      const body = JSON.stringify({ text: steeredText(request.model, request.text), voiceId: request.voiceId, modelId: request.model, ...(request.language ? { language: request.language } : {}), audioConfig: { audioEncoding: INWORLD_ENCODINGS[request.format], ...(request.speed ? { speakingRate: request.speed } : {}) } })
       const answer = await fetcher(`${INWORLD_API}${INWORLD_ENDPOINTS.speak}`, { method: 'POST', headers: headers(), body })
       if (answer.status !== 200) return { ok: false, status: answer.status, ...(await refusalOf(answer)), data: null }
       const read = (await answer.json().catch(() => null)) as { audioContent?: unknown } | null
@@ -70,6 +71,7 @@ export function inworldProvider(key: string | null = inworldKey(), fetcher?: Voi
     keyName: INWORLD_KEY_NAME,
     models: INWORLD_MODELS,
     cheapest: INWORLD_MODELS[0],
+    preferred: 'inworld-tts-2',
     limits: INWORLD_LIMITS,
     referenceFormat: 'wav',
     async clone(title, references, settings) {
