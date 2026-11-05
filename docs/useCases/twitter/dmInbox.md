@@ -52,6 +52,8 @@ Who wrote last is already in context at the start of a session: the SessionStart
 - A DM send counts as a write against the account's 240 a day.
 - **Missed openings** ("look on my twitter for missed opportunities"). The waiting list only shows who wrote last right now. It misses a thread where someone explained their model, said they're hiring, said "lets do it" or offered an intro, and the talk then stopped. Go through the saved conversations instead (`~/.logCli/conversations/twitter/<account>/*.json`, merged by `with`, since the old DM and X Chat files of one person are two files). Keep the threads from the last two weeks where they wrote last, or where their last few messages carry a deal signal (hiring, retainer, price, collab, intro, a question). Then read each one in full with `twitterDms` { with } before saying anything. The saved copy can be behind: on 2026-11-03 it showed @shaw_gtm unanswered when the owner had already replied. Group banter, spam and cold pitches at the owner aren't openings. What to send to the openings is [collabMaxxing.md](collabMaxxing.md).
 - The waiting list can show people the owner already answered in the old DM inbox (seen 2026-11-03: Mario, Sam, Johanes). Check the thread before treating one as waiting.
+- Everyone is told to the owner by @username, never as a number (rule 154). The list names each person before it is shown; if one still comes back as an id, that is a bug to fix in the same turn, not something to pass on. On 2026-11-05 six of seventeen came back as ids until `name_people` named them.
+- Tell the owner what each conversation is about in one line, newest first, grouped: people waiting on him, people who reacted (a follow-up), automated notices. Nothing is sent until he says which.
 
 ## Next
 

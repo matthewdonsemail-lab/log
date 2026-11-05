@@ -2229,6 +2229,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     working client). Building the URL ourselves was refused 401 every time. Spec:
     `docs/specs/xChat.md` (REQ-XCHAT-12).
 
+154. 2026-11-05 · matt: "no ever showing me UUIDs". Nobody is ever shown to
+    matt as an id, on any platform: every person in a list, a thread, a hook
+    line or a write-up is named by their username (and display name where the
+    platform has one). An id with no name is looked up through the account's
+    own session before anything is shown (X's user lookup, Discord's, Slack's
+    and Instagram's own), the name is kept so it is never looked up twice, and
+    one that still can't be named is listed with why, never shown as the bare
+    id. On X, `name_people` names every person in the inbox list from any
+    conversation that already knows them or from X's lookup, and
+    `remember_handles` keeps them; twikit reads a user's name from X's newer
+    `core` block. A platform isn't done until its lists name everyone. Spec:
+    `docs/specs/xChat.md` (REQ-XCHAT-13).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

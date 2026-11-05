@@ -13,8 +13,11 @@ const TWIKIT = 'vendor/twikit/twikit/client/client.py'
 export const xChat = {
   description: 'X Chat: the prior-conversation drop, reading it with the saved PIN, and reactions and read receipts as follow-ups',
   specPath: 'docs/specs/xChat.md',
-  codePaths: [QUEUE, DMS, CHAT, PERSON, SESSION, ENGINE, SYNC, TWIKIT, 'vendor/twikit/twikit/client/gql.py', 'src/twitter/post/send/client.ts', 'src/cli/twitter/helpers/send.ts'],
+  codePaths: [QUEUE, DMS, CHAT, PERSON, SESSION, ENGINE, SYNC, TWIKIT, 'vendor/twikit/twikit/client/gql.py', 'src/twitter/post/send/client.ts', 'src/cli/twitter/helpers/send.ts', 'vendor/twikit/twikit/user.py'],
   anchors: {
+    'REQ-XCHAT-13': [
+      { kind: 'symbol', file: ENGINE, name: 'name_people' },
+    ],
     'REQ-XCHAT-12': [
       { kind: 'symbol', file: ENGINE, name: 'xchat_group_text' },
     ],
@@ -70,6 +73,7 @@ export const xChat = {
     'REQ-XCHAT-08': noul('Does reactedOnly return true when the thread last message is not from the account and its lastText is a (reacted ...) marker, and does waitingOnYou return false for such a thread?'),
     'REQ-XCHAT-09': noul('Is openedByThem true only when the account sent last and the other person last_read_event_id in thread_of, or their read-marker event time in inboxSync, is at or past that last message, and does followUpDue return true for a thread where openedNoReply is true?'),
     'REQ-XCHAT-10': noul('With --waiting, does the dms command keep only the threads where waitingOnYou is true, list the followUpDue threads apart as follow-ups, and put them in followUps with --json?'),
+    'REQ-XCHAT-13': noul('In python/twitterApi/engine.py, do synced_inbox and inbox both call name_people on the threads they return, does name_people give every person with a numeric id and no handle a handle from stored conversation handles, the legacy users or handle_of, and keep what it finds with remember_handles, and does handle_of leave a failed lookup uncached; and in vendor/twikit/twikit/user.py does User fall back to core.name and core.screen_name when legacy has none?'),
     'REQ-XCHAT-12': noul('Does planSend in src/twitter/post/send/client.ts accept a g-and-digits target only for the dm action and refuse other non-digit targets with userIdInvalid; does the dm command in src/cli/twitter/helpers/send.ts read messengerPin for a group target, refuse xchatPinMissing without it and pass chatPin; in python/twitterApi/engine.py does a dm with a group userId go to xchat_group_text, which unlocks with xchat_read_keys when client._xchat is None and calls client.send_xchat_message; and in vendor/twikit/twikit/client/client.py does send_xchat_voice use one message id for upload_xchat_media and send_xchat_message (which passes it to encrypt_message and refuses a payload under another id), and does upload_xchat_media post each part as application/octet-stream to the resume_upload_url Initialize answered when it is on ton.x.com, with the bearer, an auth_token and ct0 Cookie and the CSRF token, while initialize_xchat_media_upload in gql.py sends no content_type?'),
     'REQ-XCHAT-11': noul('In vendor/twikit/twikit/client/client.py, does xchat_latest_key open the newest key from extract_conversation_keys over the conversation key change events of get_xchat_conversation_data; does upload_xchat_media encrypt with encrypt_stream, call initialize_xchat_media_upload, POST each part to XCHAT_MEDIA_URL with concurrent=true, resumeId and partNumber counting from 0 and Content-Type application/octet-stream, raise when a part answers 400 or more, and call finalize_xchat_media_upload with the number of parts; does send_xchat_message call encrypt_message with the conversation key and version and send_xchat_message_create with payload.message_id, payload.encrypted_content and payload.encoded_event_signature, raising without an encoded_message_event; and does send_xchat_voice send one attachment with media_type XCHAT_MEDIA_AUDIO and duration_millis?'),
     unspecifiedBehavior: noul('Is there a path where X Chat is read through a browser, the PIN is printed or passed as a flag, or a pending dm skips the prior-conversation check without --skipXChatCheck, that the specification does not describe?'),
@@ -87,6 +91,7 @@ export const xChat = {
     'REQ-XCHAT-10': MET,
     'REQ-XCHAT-11': MET,
     'REQ-XCHAT-12': MET,
+    'REQ-XCHAT-13': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

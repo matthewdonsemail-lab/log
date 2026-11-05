@@ -838,6 +838,7 @@ async def synced_inbox(client: Any, cookies: dict[str, str], spec: dict[str, Any
     threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
     everything = threads
     threads = threads[:limit]
+    sync["named"] = await name_people(client, spec, state, threads)
     sync["seconds"] = round(time.perf_counter() - started, 2)
     sync["maxSequenceId"] = state["maxSequenceId"]
     out = {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (legacy["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None), "sync": sync}
@@ -845,6 +846,30 @@ async def synced_inbox(client: Any, cookies: dict[str, str], spec: dict[str, Any
         kept = [t for t in everything if touched is None or t["conversationId"] in touched]
         out["conversations"] = conversations_of(kept, legacy, inboxSync.opened_of(state), me)
     return out
+
+
+async def name_people(client: Any, spec: dict[str, Any], state: dict[str, Any] | None, threads: list[dict[str, Any]]) -> int:
+    known: dict[str, str | None] = {}
+    for conv in ((state or {}).get("xchat") or {}).values():
+        known.update({u: h for u, h in (conv.get("handles") or {}).items() if h})
+    for uid, user in (((state or {}).get("legacy") or {}).get("users") or {}).items():
+        if (user or {}).get("screen_name"):
+            known[str(uid)] = user["screen_name"]
+    named = 0
+    for thread in threads:
+        found: dict[str, str | None] = {}
+        for person in thread.get("with") or []:
+            uid = str(person.get("userId") or "")
+            if person.get("handle") or not uid.isdigit():
+                continue
+            handle = known.get(uid) or await handle_of(client, uid, known)
+            if handle:
+                person["handle"] = handle
+                found[uid] = handle
+                named += 1
+        if found:
+            remember_handles(spec, str(thread.get("conversationId")), found)
+    return named
 
 
 async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[str, list[dict[str, Any]]] | None = None, export: bool = False) -> dict[str, Any]:
@@ -857,6 +882,7 @@ async def inbox(client: Any, cookies: dict[str, str], limit: int, opened: dict[s
         pass
     threads.sort(key=lambda t: t["lastAt"] or "", reverse=True)
     threads = threads[:limit]
+    await name_people(client, {}, {"legacy": {"users": pool["users"]}}, threads)
     out = {"ok": True, "loginState": "loggedIn", "userId": me, "screenName": (pool["users"].get(me) or {}).get("screen_name"), "pages": pages, "limits": limits_of(response), "threads": threads, "waitingOnYou": sum(1 for t in threads if not t["lastFromMe"] and t["lastText"] is not None)}
     if export:
         out["conversations"] = conversations_of(threads, pool, opened, me)
