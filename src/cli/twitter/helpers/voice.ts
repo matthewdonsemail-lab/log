@@ -353,8 +353,8 @@ export async function chatEvidence(context: CommandContext, said: string, send: 
 
 export function momentAnswered(messages: readonly { fromMe: boolean; text: string; time: string }[]): string {
   const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
-  const newest = sorted[sorted.length - 1];
-  return newest && !newest.fromMe ? newest.text : "";
+  const lastOfMine = sorted.map((m) => m.fromMe).lastIndexOf(true);
+  return sorted.slice(lastOfMine + 1).map((m) => m.text).join("\n");
 }
 
 export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
@@ -365,7 +365,7 @@ export async function gateSend(context: CommandContext, send: { platform: string
   const held = chatContextOf(send.platform, send.account, who).messages;
   const said = send.said ?? momentAnswered(held);
   const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
-  const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
+  const ranked = await rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n")).catch(() => []);
   const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
   const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };

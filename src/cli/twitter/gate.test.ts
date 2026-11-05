@@ -65,5 +65,6 @@ describe("the gate inside a send only grades an answer when there is something t
   test("when matt's own message is the newest, the send is new news, not a reply", () => {
     expect(momentAnswered([{ fromMe: false, text: "Not me", time: "2026-11-05T00:26:44Z" }, { fromMe: true, text: "(voice note: look at my screen)", time: "2026-11-05T06:27:57Z" }])).toBe("");
     expect(momentAnswered([])).toBe("");
+    expect(momentAnswered([{ fromMe: true, text: "how you gonna get people on it", time: "2026-11-05T17:47:00Z" }, { fromMe: false, text: "just put on earning sites", time: "2026-11-05T17:47:30Z" }, { fromMe: false, text: "will take a while", time: "2026-11-05T17:49:06Z" }])).toBe("just put on earning sites\nwill take a while");
   });
 });
