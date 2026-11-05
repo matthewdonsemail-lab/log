@@ -101,7 +101,7 @@ describe("log twitter list (rule 141)", () => {
     const dry = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "Builders"], lists);
     expect(dry.out).toContain('would make the public list "Builders"');
     expect(dry.calls).toEqual(["xTwo:lists"]);
-    const again = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "go-getters"], lists);
+    const again = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "GO-GETTERS"], lists);
     expect(again.out).toContain('already has the list "Go-Getters"');
     const unapproved = await run(["twitter", "list", "create", "--account", "xTwo", "--name", "Builders", "--live"], lists);
     expect(unapproved.code).toBe(1);
@@ -109,7 +109,7 @@ describe("log twitter list (rule 141)", () => {
   });
 
   test("add finds the list by name and refuses one the account doesn't have", async () => {
-    const dry = await run(["twitter", "list", "add", "--account", "xTwo", "--list", "go-getters", "--handle", "shaw_gtm"], lists);
+    const dry = await run(["twitter", "list", "add", "--account", "xTwo", "--list", "GO-GETTERS", "--handle", "shaw_gtm"], lists);
     expect(dry.out).toContain('would put @shaw_gtm on "Go-Getters" (77)');
     const missing = await run(["twitter", "list", "add", "--account", "xTwo", "--list", "nope", "--handle", "shaw_gtm"], lists);
     expect(missing.err + missing.out).toContain("listInvalid");
