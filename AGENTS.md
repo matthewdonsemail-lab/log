@@ -2219,10 +2219,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`xchat_group_text`), the way X Chat's own app sends (rule 151). With no PIN
     it is refused `xchatPinMissing`. A person's id must still be digits, and
     only a dm takes a group id. `log twitter voice --with g<digits>` sends a
-    voice note into the group the same way. Each X Chat media part is posted
-    through twikit's own request, with the session's cookies, its CSRF token and
-    one content type, `application/octet-stream`. Spec: `docs/specs/xChat.md`
-    (REQ-XCHAT-12).
+    voice note into the group the same way, and it was sent there live on
+    2026-11-05. X Chat ties a media upload to the message that carries it: the
+    upload and the message share one message id (chat-xdk's `encrypt_message`
+    takes `message_id`, rebuilt into `vendor/chatXdk/wheels`), Initialize is sent
+    without a content type, and each part is posted to the `resume_upload_url`
+    Initialize answers, as raw `application/octet-stream` with the bearer, the
+    `auth_token` and `ct0` cookies and the CSRF token (stephancill/stupid-social's
+    working client). Building the URL ourselves was refused 401 every time. Spec:
+    `docs/specs/xChat.md` (REQ-XCHAT-12).
 
 ## Checks
 

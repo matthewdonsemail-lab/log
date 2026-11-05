@@ -24,3 +24,6 @@ skills/adspower-browser
 skills-lock.json
 # Playwright MCP console logs
 .playwright-mcp/
+
+vendor/chatXdk/target/
+vendor/juicebox-sdk/

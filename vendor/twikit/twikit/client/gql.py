@@ -193,7 +193,7 @@ class GQLClient:
         return await self.gql_post(Endpoint.XCHAT_SEND_MESSAGE_CREATE, variables)
 
     async def initialize_xchat_media_upload(self, conversation_id: str, message_id: str, total_bytes: int, content_type: str):
-        variables = {'conversation_id': conversation_id, 'message_id': message_id, 'total_bytes': str(total_bytes), 'is_public': False, 'content_type': content_type}
+        variables = {'conversation_id': conversation_id, 'message_id': message_id, 'total_bytes': str(total_bytes), 'is_public': False}
         return await self.gql_post(Endpoint.XCHAT_INITIALIZE_MEDIA_UPLOAD, variables)
 
     async def finalize_xchat_media_upload(self, conversation_id: str, message_id: str, media_hash_key: str, resume_id: str, num_parts: int):

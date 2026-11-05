@@ -65,6 +65,9 @@ pub struct EncryptMessageParams {
     pub should_notify: Option<bool>,
     /// Optional TTL in milliseconds for disappearing messages.
     pub ttl_msec: Option<i64>,
+    /// The message id to sign under; generated when unset. X Chat's media
+    /// upload is keyed to the id the message then carries.
+    pub message_id: Option<String>,
 }
 
 impl EncryptMessageParams {
@@ -82,6 +85,7 @@ impl EncryptMessageParams {
             quick_reply: None,
             should_notify: None,
             ttl_msec: None,
+            message_id: None,
         }
     }
 
@@ -135,6 +139,7 @@ impl std::fmt::Debug for EncryptMessageParams {
             .field("quick_reply", &self.quick_reply)
             .field("should_notify", &self.should_notify)
             .field("ttl_msec", &self.ttl_msec)
+            .field("message_id", &self.message_id)
             .finish()
     }
 }
@@ -818,6 +823,7 @@ mod tests {
             quick_reply: None,
             should_notify: Some(false),
             ttl_msec: Some(30_000),
+            message_id: None,
         };
         assert_message_params_eq(&via_new, &full);
 
