@@ -22,7 +22,7 @@ from platformKit import reactions
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
-WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd")
+WRITES = ("reply", "quote", "like", "repost", "dm", "follow", "post", "react", "listCreate", "listAdd", "xchatVoice")
 ACTIONS = READS + WRITES
 
 
@@ -232,6 +232,93 @@ def chunk_urls_of(home_html: str) -> dict[str, str]:
     names = dict(re.findall(r'(\d+):"([^"]+)"', maps[0]))
     hashes = dict(re.findall(r'(\d+):"([^"]+)"', maps[1]))
     return {names.get(k, k): f"https://abs.twimg.com/responsive-web/client-web/{names.get(k, k)}.{h}a.js" for k, h in hashes.items()}
+
+
+XCHAT_EMBED_MANIFEST = "https://chat.x.com/embed-v1.json"
+XCHAT_BUILD = re.compile(r"^https://abs\.twimg\.com/x-web/xchat/embed/[0-9a-f]{40}/$")
+
+
+def xchat_build_of(manifest: Any) -> str | None:
+    meta = (manifest or {}).get("metaData") or {}
+    entry = str((meta.get("remoteEntry") or {}).get("name") or "")
+    public = str(meta.get("publicPath") or "")
+    found = re.match(r"([0-9a-f]{40})/", entry)
+    build = f"{public}{found.group(1)}/" if found else None
+    return build if build and XCHAT_BUILD.match(build) else None
+
+
+XCHAT_LOCALE = re.compile(r"^assets/(ar|ar-x-fm|bg|bn|ca|cs|cy|da|de|el|en-gb|en-ss|en-xx|es|eu|fa|fi|fil|fr|ga|gl|gu|ha|he|hi|hr|hu|id|ig|it|ja|kk|kn|ko|mr|ms|msa|nb|nl|no|pl|pt|ro|ru|sk|sl|sq|sr|sv|sw|ta|te|th|tr|uk|ur|vi|yo|zh|zh-cn|zh-hk|zh-tw)-[A-Za-z0-9_-]{8}\.js$")
+
+
+def xchat_scripts_of(build: str, manifest: Any) -> list[str]:
+    names: set[str] = set()
+    entry = str((((manifest or {}).get("metaData") or {}).get("remoteEntry") or {}).get("name") or "")
+    if entry:
+        names.add(entry)
+
+    def walk(value: Any) -> None:
+        if isinstance(value, str) and value.endswith(".js") and not value.startswith("http"):
+            names.add(value.lstrip("./"))
+        elif isinstance(value, dict):
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk((manifest or {}).get("exposes") or [])
+    keep = [name for name in names if not XCHAT_LOCALE.match(name)]
+    public = build.rstrip("/").rsplit("/", 1)[0] + "/"
+    return sorted(public + name for name in keep)
+
+
+XCHAT_MOST_FILES = 400
+
+
+def xchat_imports_of(code: str, url: str) -> list[str]:
+    base = url.rsplit("/", 1)[0] + "/"
+    found = []
+    for name in sorted(set(re.findall(r"[`'\"]\./([A-Za-z0-9_~.-]+-[A-Za-z0-9_-]{8}\.(?:js|wasm))[`'\"]", code))):
+        if XCHAT_LOCALE.match("assets/" + name):
+            continue
+        found.append(base + name)
+    return found
+
+
+async def save_xchat_build(client: Any, folder: Path, spacing: tuple[float, float]) -> dict[str, Any]:
+    import random
+
+    headers = {"Referer": "https://x.com/", "Origin": "https://x.com", "User-Agent": client._user_agent}
+    out = folder / "xchat"
+    out.mkdir(parents=True, exist_ok=True)
+    answer = await client.http.request("GET", XCHAT_EMBED_MANIFEST, headers=headers)
+    if answer.status_code != 200:
+        return {"ok": False, "status": answer.status_code, "detail": f"{XCHAT_EMBED_MANIFEST} answered {answer.status_code}"}
+    (out / "embed-v1.json").write_bytes(answer.content)
+    manifest = json.loads(answer.text)
+    build = xchat_build_of(manifest)
+    if not build:
+        return {"ok": False, "status": 200, "detail": "embed-v1.json names no X Chat build"}
+    public = build.rstrip("/").rsplit("/", 1)[0] + "/"
+    saved = []
+    wanted = list(xchat_scripts_of(build, manifest))
+    seen = set(wanted)
+    while wanted and len(seen) <= XCHAT_MOST_FILES:
+        url = wanted.pop(0)
+        await asyncio.sleep(random.uniform(*spacing))
+        got = await client.http.request("GET", url, headers=headers)
+        if got.status_code != 200:
+            continue
+        target = out / url[len(public):]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(got.content)
+        saved.append({"url": url, "file": str(target.relative_to(folder)), "bytes": len(got.content)})
+        if url.endswith(".js"):
+            for found in xchat_imports_of(got.text, url):
+                if found not in seen:
+                    seen.add(found)
+                    wanted.append(found)
+    return {"ok": True, "build": build, "saved": saved}
 
 
 def load_live_operations() -> None:
@@ -809,8 +896,11 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     reopen = list(dict.fromkeys(unopened + unfetched + asked))
     page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=reopen)
     handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
-    for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
-        await handle_of(client, user_id, handles)
+    senders = [str(m.get("sender_id") or "") for m in page["messages"] + stored]
+    for user_id in dict.fromkeys([p for p in conversation_id.split(":") if p.isdigit()] + [u for u in senders if u.isdigit()]):
+        if user_id != me:
+            await handle_of(client, user_id, handles)
+    remember_handles(spec, conversation_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
     await save_xchat_media(client, spec, conversation_id, page["messages"], set(asked))
     keep_opened(spec, conversation_id, page["messages"])
@@ -823,7 +913,8 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     from twitterApi import inboxSync
 
     messages = [xchat_message(m, me, handles) for m in merged if inboxSync.shown(m)][-limit:]
-    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages}
+    unnamed = {u: HANDLE_ERRORS.get(u, "no screen_name in X's answer") for u in dict.fromkeys(m["senderId"] for m in messages) if u and u != me and not handles.get(u)}
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages, **({"unnamed": unnamed} if unnamed else {})}
 
 
 MEDIA_PER_READ = 8
@@ -893,6 +984,14 @@ def stored_handles(spec: dict[str, Any], conversation_id: str) -> dict[str, str]
         return {}
     state = inboxSync.read_state(sync_path(spec))
     return dict(((state or {}).get("xchat", {}).get(conversation_id) or {}).get("handles") or {})
+
+
+def remember_handles(spec: dict[str, Any], conversation_id: str, handles: dict[str, str | None]) -> None:
+    from twitterApi import inboxSync
+
+    named = {u: h for u, h in handles.items() if h}
+    if spec.get("account") and named:
+        inboxSync.remember_handles(sync_path(spec), conversation_id, named)
 
 
 def stored_xchat(spec: dict[str, Any], conversation_id: str) -> list[dict[str, Any]]:
@@ -1062,12 +1161,18 @@ def live_line(event: dict[str, Any]) -> None:
     print(line, flush=True)
 
 
+HANDLE_ERRORS: dict[str, str] = {}
+
+
 async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -> str | None:
-    if user_id and user_id not in handles:
+    if user_id and not handles.get(user_id):
         try:
-            handles[user_id] = getattr(await client.get_user_by_id(user_id), "screen_name", None)
-        except Exception:
-            handles[user_id] = None
+            found = getattr(await client.get_user_by_id(user_id), "screen_name", None)
+            if found:
+                handles[user_id] = found
+                HANDLE_ERRORS.pop(user_id, None)
+        except Exception as e:
+            HANDLE_ERRORS[user_id] = f"{type(e).__name__}: {str(e)[:160]}"
     return handles.get(user_id)
 
 
@@ -1100,7 +1205,8 @@ async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         live["from"] = main.name
         operations_path().write_text(json.dumps(live, indent=1), encoding="utf-8")
         load_live_operations()
-    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "chunks": chunks, "saved": saved, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
+    xchat = await save_xchat_build(client, folder, READ_SPACING_SECONDS)
+    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "chunks": chunks, "saved": saved, "xchat": {"ok": xchat["ok"], "build": xchat.get("build"), "files": len(xchat.get("saved", [])), **({"detail": xchat["detail"]} if not xchat["ok"] else {})}, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
 
 
 VIEWER_BADGE_COUNTS = "https://x.com/i/api/graphql/q4Npr1-FYRWyXsRzPckwEA/ViewerBadgeCounts"
@@ -1233,7 +1339,11 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
             continue
         sender = str(event.get("sender_id") or "")
         messages += 1
-        handle = await handle_of(client, sender, handles)
+        if sender and not handles.get(sender):
+            handles.update({u: h for u, h in stored_handles(spec, str(event.get("conversation_id"))).items() if h})
+        handle = await handle_of(client, sender, handles) if sender != me else None
+        if handle:
+            remember_handles(spec, str(event.get("conversation_id")), {sender: handle})
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
         live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
@@ -1263,6 +1373,8 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         return {"ok": True, "event": "sent", "reposted": True, "tweetId": tweet_id}
     if action == "react":
         return await react(client, spec)
+    if action == "xchatVoice":
+        return await xchat_voice(client, spec)
     if action == "listCreate":
         return await list_create(client, spec)
     if action == "listAdd":
@@ -1279,6 +1391,8 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     if action in ("dm", "post", "reply"):
         text, media = media_links_out(spec)
         spec = {**spec, "text": text, "media": media}
+    if action == "dm" and re.fullmatch(r"g\d+", str(spec.get("userId") or "")):
+        return await xchat_group_text(client, spec)
     if action == "dm":
         media = list(spec.get("media") or [])
         dm_media_id = await upload_dm_media(client, str(media[0])) if media else None
@@ -1426,6 +1540,51 @@ async def follow_author_first(client: Any, spec: dict[str, Any]) -> dict[str, An
     return {"userId": user_id, "handle": handle, "already": False}
 
 
+XCHAT_VOICE_FILENAME = "voice-note-{stamp}.m4a"
+
+
+async def xchat_group_text(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    conversation_id = str(spec["userId"])
+    if getattr(client, "_xchat", None) is None:
+        if not spec.get("pinPath"):
+            return {"ok": False, "event": "dropped", "code": "xchatPinMissing", "detail": "X Chat has to be opened with the account's saved PIN to send in a group"}
+        try:
+            await xchat_read_keys(client, spec)
+        except Exception as e:
+            return {"ok": False, "event": "dropped", "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {str(e)[:200]}"}
+    sent = await client.send_xchat_message(conversation_id, str(spec["text"]))
+    return {"ok": True, "event": "sent", "mode": "xchatGroup", "messageId": sent["message_id"], "conversationId": conversation_id, "keyVersion": sent["key_version"]}
+
+
+async def xchat_voice(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    path = media_kit.voice_note_path(spec.get("path"), ".m4a")
+    if not path:
+        return {"ok": False, "event": "dropped", "code": "voiceNoteInvalid", "detail": "xchatVoice sends only a voice note log made itself (an .m4a under ~/.logCli/voiceNotes): no other audio is sent"}
+    if getattr(client, "_xchat", None) is None:
+        if not spec.get("pinPath"):
+            return {"ok": False, "event": "dropped", "code": "xchatPinMissing", "detail": "X Chat has to be opened with the account's saved PIN to send"}
+        try:
+            await xchat_read_keys(client, spec)
+        except Exception as e:
+            return {"ok": False, "event": "dropped", "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {str(e)[:200]}"}
+    named = str(spec.get("screenName") or spec.get("userId") or "")
+    if re.fullmatch(r"g\d+", named):
+        user_id, conversation_id = "", named
+    else:
+        user_id = str(spec.get("userId") or "")
+        if not user_id and spec.get("screenName"):
+            user = await client.get_user_by_screen_name(str(spec["screenName"]))
+            user_id = str(getattr(user, "id", "") or "")
+        if not user_id.isdigit():
+            return {"ok": False, "event": "dropped", "code": "targetMissing", "detail": f"no X user found for {spec.get('screenName') or spec.get('userId')}"}
+        me = str(await client.user_id())
+        conversation_id = ":".join(sorted([me, user_id], key=int))
+    seconds = float(spec.get("seconds") or 0)
+    stamp = int(time.time() * 1000)
+    sent = await client.send_xchat_voice(conversation_id, path.read_bytes(), int(round(seconds * 1000)), XCHAT_VOICE_FILENAME.format(stamp=stamp))
+    return {"ok": True, "event": "sent", "mode": "xchatVoice", "messageId": sent["message_id"], "conversationId": conversation_id, "userId": user_id, "seconds": seconds, "keyVersion": sent["key_version"], "mediaHashKey": sent["media"]["media_hash_key"], "parts": sent["media"]["parts"]}
+
+
 def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
     action = spec["action"]
     if action in WRITES and spec.get("live") is not True:
@@ -1440,6 +1599,10 @@ def refusal_of(spec: dict[str, Any]) -> dict[str, Any] | None:
         return {"ok": False, "code": "listInvalid", "detail": "listCreate needs the list's name"}
     if action == "listAdd" and not (str(spec.get("listId") or "").strip() and (spec.get("userId") or spec.get("screenName"))):
         return {"ok": False, "code": "listInvalid", "detail": "listAdd needs the list's id and the person's user id or handle"}
+    if action == "xchatVoice" and not (spec.get("userId") or spec.get("screenName")):
+        return {"ok": False, "code": "targetMissing", "detail": "xchatVoice needs the person's user id or handle"}
+    if action == "xchatVoice" and not spec.get("path"):
+        return {"ok": False, "code": "voiceNoteInvalid", "detail": "xchatVoice needs the voice note log made"}
     if action in ("dm", "follow") and not spec.get("userId"):
         return {"ok": False, "code": "targetMissing", "detail": f"{action} needs the person's user id"}
     if action == "post" and any(not Path(str(m)).is_file() for m in (spec.get("media") or [])):

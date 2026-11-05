@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 147.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 151.
 
 ## The providers
 
@@ -60,9 +60,9 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
-### REQ-VOICE-CLONE-09: X has no voice note
+### REQ-VOICE-CLONE-09: An X voice note is an X Chat voice message
 
-`COMMAND_INDEX` (`src/cli/runner/helpers/commandIndex.ts`) has a `voice` entry for discord, slack and instagram, each from `src/cli/voiceNote/index.ts`, and none for twitter: twikit has no audio send and no vendored code shows X's DM voice upload, so nothing is guessed. (The `voice` entry for any platform is the voice gate, `log voice`, not a voice note.)
+`COMMAND_INDEX` (`src/cli/runner/helpers/commandIndex.ts`) has a `voice` entry for discord, slack, instagram and twitter, each from `src/cli/voiceNote/index.ts` (the `voice` entry for any platform is the voice gate, `log voice`, not a voice note). `twitterVoiceCommand` opens the X account, refuses with `xchatPinMissing` when its X Chat PIN isn't saved, and sends through `context.directTwitter` the engine action `xchatVoice` with the person's handle (`screenName`) or `userId`, the note's `path` and `seconds`, `live`, `approvedBy` and the saved `chatPin`. `PLATFORM_AUDIO.twitter` is AAC in .m4a. In `python/twitterApi/engine.py`, `xchatVoice` is in `WRITES`, `xchat_voice` takes only a voice note under the voice notes folder (`media_kit.voice_note_path`), opens X Chat with the PIN when it isn't open, finds the user, makes the conversation id from the two ids in ascending order, and calls `send_xchat_voice` with the file, its milliseconds and a `voice-note-<time>.m4a` name. Rule 151 (it replaces rule 142's "X isn't built").
 
 Checked by: code and SubQ
 
@@ -80,7 +80,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-12: The clone speaks at matt's speed on the preferred model, and can be made from recordings he names
 
-`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed`, and Inworld sends it as `audioConfig.speakingRate`. A clone is made with the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
+`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed` through `paceOf`, which drifts it a little per text (REQ-VOICE-CLONE-16), and Inworld sends it as `audioConfig.speakingRate`. A clone is made with the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
 
 Checked by: code and SubQ
 
@@ -93,6 +93,18 @@ Checked by: code and SubQ
 ### REQ-VOICE-CLONE-14: A voice note says what was written, checked by listening back
 
 Before speaking, `speakToFile` refuses with `pronunciationUnknown` any acronym `unknownAcronyms` finds that `SPOKEN_LEXICON` (`src/extensions/voiceClone/types.ts`) doesn't hold, and sends the provider `speakableText(text)`, which writes each lexicon word as its `write` form (`op` as `OP`) outside bracket tags. After shaping it calls `voiceSteps.listen` (by default `listenTo`, which transcribes the file with AssemblyAI keeping word timings, `src/media/voiceNotes/client.ts`, and keeps the transcript by the file's hash) and refuses `spokenCheckFailed` when it can't. `readSpoken` lines the written words up with the heard ones (`aligned`) and fails when a lexicon word is not heard as one of its `heard` forms, is spelled out as letters, takes more than `WORD_MOST_MS` when it is said as a word, or when more than `SPOKEN_MOST_ERROR` of the words differ; `speakToFile` then deletes the file and refuses `spokenMismatch` with what was heard. `renderVoiceNote` uses `speakToFile`, so every `log discord|instagram|slack voice` is checked before it is converted, claimed or sent, and `log clone speak` too. Rule 147.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-15: A translation is gated on its original and spoken in its own language
+
+`voiceNoteCommandOf` in `src/cli/voiceNote/index.ts` takes `--translationOf "<original>"` and `--language <code>`. With `--translationOf` the voice gate (`gateDeps.gate`) grades the original words instead of the text, since it compares a draft with matt's own writing; `watermarkReadingOf` reads the text and the original together and refuses `aiArtifacts`. `--translationOf` without `--language`, `--translationOf` with `--mattsWords`, and a `--language` that isn't a code like `zh-CN` are refused `voiceNoteInvalid` before anything is gated or made. The language goes through `voiceNoteDeps.render` and `renderVoiceNote` to `speakToFile`, which speaks in it instead of the clone's own `language`. `wordsOf` in `src/extensions/voiceClone/helpers/spoken.ts` reads Han, Hiragana, Katakana and Hangul one character at a time beside Latin words, so `readSpoken` checks a translated note as it checks an English one. Rule 148.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-16: No breath at the start, and breaths and pace that vary
+
+`withBreaths` in `src/extensions/voiceClone/helpers/spoken.ts` never puts `[breathe]` before the first sentence. It splits on `.!?` and `。！？`, and puts a breath before a later sentence only once the spoken length since the last one (a Chinese, Japanese or Korean character counting half) reaches a gap drawn from `seeded(seed)` between `BREATH_WORDS.least` and `BREATH_WORDS.most`; text that already has a `[breathe]` is left as it is. `steeredText` in `src/extensions/inworld/client.ts` seeds it from the text on `inworld-tts-2` only. `speakToFile` sends the speed through `paceOf` in `src/extensions/voiceClone/helpers/voiceNote.ts`, which moves `LOG_VOICE_SPEED` by at most `PACE_JITTER` from a seed of the text, kept within `SPEED_RANGE`. The voice note command gates with `spoken: true` (REQ-VOICE-13 in `voiceGate.md`). Rule 149.
 
 Checked by: code and SubQ
 

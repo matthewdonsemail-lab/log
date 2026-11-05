@@ -1,10 +1,13 @@
-import { BREATH_EVERY_WORDS, SPOKEN_LEXICON, SPOKEN_MOST_ERROR, WORD_MOST_MS } from '../types'
+import { BREATH_WORDS, SPOKEN_LEXICON, SPOKEN_MOST_ERROR, WORD_MOST_MS } from '../types'
+import { seeded } from './realism'
 import type { SpokenEntry, SpokenReading, SpokenWord } from '../types'
 
 const TAGS = /\[[^\]]*\]/g
 
+const ONE_SOUND = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu
+
 export function wordsOf(text: string): string[] {
-  return text.replace(TAGS, ' ').toLowerCase().replace(/['’]/g, '').split(/[^a-z0-9]+/).filter(Boolean)
+  return text.replace(TAGS, ' ').toLowerCase().replace(/['’]/g, '').replace(ONE_SOUND, ' $& ').match(/[\p{L}\p{N}]+/gu) ?? []
 }
 
 const keyOf = (token: string) => token.toLowerCase().replace(/\./g, '')
@@ -22,20 +25,28 @@ export function speakableText(text: string, lexicon: Readonly<Record<string, Spo
   return text.split(/(\[[^\]]*\])/).map((part) => (part.startsWith('[') ? part : part.replace(pattern, (word) => lexicon[word.toLowerCase()]?.write ?? word))).join('')
 }
 
-export function withBreaths(text: string): string {
+const ONE_SOUND_TEST = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u
+
+const spokenLength = (sentence: string) => wordsOf(sentence).reduce((n, unit) => n + (ONE_SOUND_TEST.test(unit) ? 0.5 : 1), 0)
+
+export function withBreaths(text: string, seed = 1): string {
   if (/\[breathe\]/i.test(text)) return text
+  const rand = seeded(seed)
+  const nextAt = () => BREATH_WORDS.least + Math.floor(rand() * (BREATH_WORDS.most - BREATH_WORDS.least + 1))
   let since = 0
+  let at = nextAt()
   return text
     .trim()
-    .split(/(?<=[.!?])\s+/)
+    .split(/(?<=[.!?。！？])\s*/)
+    .filter(Boolean)
     .map((sentence, i) => {
-      const count = wordsOf(sentence).length
-      if (i === 0 || since >= BREATH_EVERY_WORDS) {
-        since = count
-        return `[breathe] ${sentence}`
+      const breathe = i > 0 && since >= at
+      if (breathe) {
+        since = 0
+        at = nextAt()
       }
-      since += count
-      return sentence
+      since += spokenLength(sentence)
+      return breathe ? `[breathe] ${sentence}` : sentence
     })
     .join(' ')
 }

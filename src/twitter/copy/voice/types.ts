@@ -16,6 +16,8 @@ export interface VoiceDraft {
   phrasesNewToMatt?: string[]
   scrambler?: { suspicious: number; kinds: string[] }
   conversation?: { from: string; text: string; at: string }[]
+  spoken?: boolean
+  howMattTalks?: string[]
 }
 
 export interface VoiceReading {
@@ -25,6 +27,7 @@ export interface VoiceReading {
   friendLike: number
   openerOnly: number
   toThem: number | null
+  buildsOn: number | null
   neverSays: string[]
   watermark: WatermarkReading
   pass: boolean

@@ -71,3 +71,15 @@ Checked by: code and SubQ
 `log twitter dms --waiting` lists the people waiting on a reply, and lists the follow-ups apart from them; with `--json` they are in `followUps`. Rule 100.
 
 Checked by: code and SubQ
+
+### REQ-XCHAT-11: twikit sends in X Chat the way X Chat's own app does
+
+`vendor/twikit` sends an X Chat message as X Chat's engine (`dm-core`) does, read from its own code (rule 151). `xchat_latest_key` reads the conversation's key change events with `GetInboxPageConversationDataQuery` and opens its newest key with chat-xdk's `extract_conversation_keys`. `upload_xchat_media` encrypts the file with `encrypt_stream`, starts the upload with `InitializeXChatMediaUploadMutation`, POSTs the parts as `application/octet-stream` to the conversation's `xchat_media` path on ton.x.com with `concurrent=true`, the `resumeId` and a `partNumber` from 0, and closes it with `FinalizeXChatMediaUploadMutation`; an error in either answer, or a part answered 400 or more, raises. `send_xchat_message` encrypts with `encrypt_message` under that key and sends `SendMessageCreateMutation` with the payload's `message_id`, `encrypted_content` and `encoded_event_signature`, raising when X answers no `encoded_message_event`. `send_xchat_voice` uploads the audio and sends it as the one attachment, media type `XCHAT_MEDIA_AUDIO` (4) with `duration_millis`. The operations are in `client/gql.py` (`XCHAT_SEND_MESSAGE_CREATE`, `XCHAT_INITIALIZE_MEDIA_UPLOAD`, `XCHAT_FINALIZE_MEDIA_UPLOAD`). Rule 151.
+
+Checked by: code and SubQ
+
+### REQ-XCHAT-12: A dm can go to an X Chat group
+
+`planSend` in `src/twitter/post/send/client.ts` accepts, for a dm only, a target that is an X Chat group id (`g` and digits); any other action, and any other non-digit target, is refused `userIdInvalid`. The dm command in `src/cli/twitter/helpers/send.ts` reads the account's saved PIN for a group target, refuses `xchatPinMissing` without one, and passes it to the engine as `chatPin`. In `python/twitterApi/engine.py` a dm whose `userId` is a group id goes to `xchat_group_text`, which opens X Chat with `xchat_read_keys` when it isn't open and sends the text with `client.send_xchat_message`. `xchat_voice` takes a group id as the conversation. `send_xchat_voice` in twikit makes one message id and passes it to both `upload_xchat_media` (as Initialize's `message_id`) and `send_xchat_message`, which signs the message under it through chat-xdk's `encrypt_message(message_id=...)` and refuses a payload signed under any other id. `initialize_xchat_media_upload` sends no content type. `upload_xchat_media` posts each part as `application/octet-stream` to the `resume_upload_url` Initialize answered (with `partNumber`) when it is on ton.x.com, else to the media URL with `concurrent`, `resumeId` and `partNumber`, carrying the bearer, a Cookie of `auth_token` and `ct0` and the CSRF token. Rule 153.
+
+Checked by: code and SubQ

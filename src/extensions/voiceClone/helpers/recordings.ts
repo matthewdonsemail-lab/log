@@ -5,7 +5,7 @@ import { conversationsRoot } from '../../../search/conversations/index'
 import { SHORTEST_CLIP } from '../types'
 import type { CloneLimits, Recording } from '../types'
 import { secondsOf } from './audio'
-import { platformStateRoot } from './store'
+import { platformStateRoot, readClones } from './store'
 
 export const OWN_RECORDING_NAMES: Readonly<Record<string, RegExp>> = {
   discord: /^(\d+)_voice-message\.ogg$/,
@@ -70,3 +70,29 @@ export function mattsRecordings(deps: { files?: () => Omit<Recording, 'seconds'>
   }
   return kept
 }
+
+const DISCORD_EPOCH = 1420070400000
+
+export function recordedAt(recording: Pick<Recording, 'platform' | 'messageId'>): number | null {
+  if (recording.platform !== 'discord' || !/^\d{15,}$/.test(recording.messageId)) return null
+  return Number(BigInt(recording.messageId) >> 22n) + DISCORD_EPOCH
+}
+
+export function firstClonedAt(store = readClones()): number | null {
+  const times: number[] = []
+  for (const clone of Object.values(store.clones)) {
+    for (const made of [clone, ...(clone?.previous ?? [])]) {
+      const at = Date.parse(made?.createdAt ?? '')
+      if (Number.isFinite(at)) times.push(at)
+    }
+  }
+  return times.length ? Math.min(...times) : null
+}
+
+export function mattsOwnVoiceNotes(recordings: readonly Recording[], clonedAt: number | null): Recording[] {
+  return recordings.filter((r) => {
+    const at = recordedAt(r)
+    return clonedAt === null || at === null || at < clonedAt
+  })
+}
+

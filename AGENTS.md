@@ -2105,6 +2105,130 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     voice`. This replaces rule 145's accent steer. Spec:
     `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-13, 14).
 
+148. 2026-11-05 · matt: "send it in chinese aswell", then "ADD A BYPASS
+    PERMISSION FOR IT BECAUSE OFC IT WONT MATCH UP", after the voice gate
+    scored the Chinese translation of a voice note it had passed in English
+    at 0.13: it compares a draft with matt's own writing, which is English.
+    `--translationOf "<the original>"` on `log discord|instagram|slack voice`
+    (MCP `translationOf`) says the text is a translation matt asked for: the
+    voice gate grades the original words instead of the translation, both are
+    read for AI artifacts, and it needs `--language <code>` (zh-CN, es-ES
+    ...), the language the clone speaks it in instead of the clone's own
+    (Inworld's `language`). With en-IE the clone said the Chinese with two
+    words wrong; with zh-CN it said them right. It is only for a translation
+    matt asked for, never paired with `--mattsWords`. The listen-back check
+    (rule 147) reads Chinese, Japanese and Korean one character at a time
+    (`wordsOf`), so a translated note is checked too. Spec:
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-15).
+
+149. 2026-11-05 · matt: "it keeps doing this weird exhale at the beginning
+    ... the lengths of the things are always like 5 seconds", then "READ THE
+    CONVERSATION ... I'M ASKING YOU TO RESPOND AT LENGTH ... BUILDING ON
+    WHAT HE'S SAYING AS A 40 SECOND VOICE NOTE IN ENGLISH, YET YOU'RE JUST
+    RE-EXPLAINING SOMETHING I ALREADY SAID". Three things:
+    - **No breath at the start.** `withBreaths` never opens a note with
+      `[breathe]` (that was the exhale). A breath goes in only between
+      sentences (`.!?` and the Chinese `。！？`), after a gap of 8 to 18
+      spoken words drawn from the text's own seed (`BREATH_WORDS`; a
+      Chinese character counts half), so no two notes breathe alike.
+    - **The pace drifts.** Each note is spoken at `LOG_VOICE_SPEED` moved by
+      up to 7% from its text's seed (`paceOf`, `PACE_JITTER`), within the
+      speed range.
+    - **A voice note is written at the length matt asks for and builds on
+      the whole conversation.** Read the whole chat first, then write to
+      the length asked (a 40 s note is about 100 to 110 words), taking what
+      they are talking about further and adding to it, never re-explaining
+      what matt already told them. Note lengths vary: not every note is
+      three short lines. The voice gate grades a voice note as spoken
+      (`spoken`, set by every `log discord|instagram|slack voice` and by
+      `log voice --spoken`): its length and punctuation never count against
+      it, `offProfile` (his typed habits in the chat) isn't applied, and a
+      new question, `buildsOn` (0.7 to pass), refuses a note that repeats
+      what matt already said or ignores what they are talking about. Its
+      voice question reads how matt actually talks first: the transcripts of
+      his own voice notes from before the clone existed (`howMattTalks`,
+      `mattsOwnVoiceNotes`), never his typing alone and never a note the
+      clone made.
+    Spec: `docs/specs/voiceGate.md` (REQ-VOICE-13),
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-16).
+
+150. 2026-11-05 · matt: "Yes, resume both", after the catch-up on
+    matthewsoldit (X Chat's PIN unlock, Juicebox "Transient error") and on
+    Discord was refused and every send was held with `accountBehind`. Rule 94
+    said nothing resumes until matt says so, but nothing could take his word.
+    `log inbox resume --platform <p> --account <a> --by matt` (MCP
+    `inboxResume`) is that word: a refused gap opens again with who resumed
+    it and what was refused before (`resumeGap`, alert `gapResumed`), and the
+    owner, which now looks at its gap every 30 s (`RECHECK_GAP_MS`), catches
+    up again through its own session. Only when matt says so, never on the
+    agent's own; a second refusal stops it again. And so the X voice note can
+    be read from X's own client (rule 113), `log twitter session webClient`
+    also saves X Chat's own app, which x.com only frames: it reads
+    `chat.x.com/embed-v1.json`, the build's `remoteEntry.js` and every script
+    the manifest lists (English only), spaced as reads through the one
+    session, into the save's `xchat/` folder (`save_xchat_build`). Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-18), `docs/specs/xSession.md`
+    (REQ-XSESSION-15).
+
+151. 2026-11-05 · matt: "build the voice nots on X from X's own client so
+    we'll figure out how it's done via the bundle itself ... and then we'll
+    add it into the vendor itself", then "Yes, build it". An X voice note is
+    an X Chat voice message, sent the way X Chat's own app sends one, read
+    from its own code: `log twitter session webClient` now saves X Chat's
+    whole app, following each script's imports (rule 150), so its engine,
+    `dm-core` (Kotlin compiled to JS), is saved too. In it: the recorder makes
+    `audio/mp4`; the file is encrypted with the conversation key
+    (chat-xdk `encrypt_stream`); `InitializeXChatMediaUploadMutation`
+    (`6M543IPabOfZm7-yyIczdw`) answers a `media_hash_key` and `resume_id`; the
+    parts are POSTed as `application/octet-stream` to
+    `ton.x.com/i/ton/data/xchat_media/<conversation>/<media_hash_key>?concurrent=true&resumeId=<id>&partNumber=<n>`
+    from 0; `FinalizeXChatMediaUploadMutation` (`3O4jPQ2hwW9LbqCc-wFmqA`) closes
+    it; and `SendMessageCreateMutation` (`TWRPP7gnKwV_R8-tE-Dd3Q`) sends chat-xdk's
+    `encrypt_message` (its `encrypted_content` and `encoded_event_signature`)
+    with one attachment, media type AUDIO (4) and `duration_millis`. This is in
+    `vendor/twikit` (`xchat_latest_key`, `upload_xchat_media`,
+    `send_xchat_message`, `send_xchat_voice`; the operations in
+    `client/gql.py`), so twikit can now send in X Chat. `log twitter voice
+    --account <a> --with <handle|id> --text "…"` (MCP `twitterVoice`,
+    `twitterVoiceLive`) is the voice note command on X, the same as on Discord,
+    Instagram and Slack (rules 142 to 149): made in matt's cloned voice, AAC in
+    .m4a, gated, claimed, a dry run unless `--live` with `--approvedBy`, and
+    sent by the engine action `xchatVoice` through the account's one session,
+    X Chat opened with the saved PIN (rule 88; `xchatPinMissing` when there is
+    none). The engine sends only a voice note log made under
+    `~/.logCli/voiceNotes`. chat-xdk mints the message's own id, so the upload
+    carries an id of its own, as X's official upload takes none. This
+    replaces rule 142's "X isn't built". Spec: `docs/specs/voiceClone.md`
+    (REQ-VOICE-CLONE-09), `docs/specs/xChat.md` (REQ-XCHAT-11).
+
+152. 2026-11-05 · matt: "Send it anyway", after the voice gate inside `log
+    twitter dm` refused a short dm to @AjeetVermai that he had asked for. The
+    gate inside every send (rule 137) had no way to take his word over it.
+    `--overGate` on `log twitter dm` (MCP `overGate`) is that word: the gate's
+    SubQ read is skipped for that dm, and the AI artifact check still runs and
+    refuses `aiArtifacts` (rule 111). Only when matt said to send that exact
+    message over the gate's refusal, never on the agent's own, and never for a
+    queue. The send says it went over the gate. The same day the gate found a
+    person named only by user id by their handle (`handleOfUserId`), so it reads
+    their chat. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-14).
+
+153. 2026-11-05 · matt: "say idk to matt in the groupchat", then "Yes, wire
+    it". log sends text into an X Chat group: `log twitter dm --userId
+    g<digits>` (the group's id) goes to the engine, which opens X Chat with the
+    account's saved PIN and sends it with twikit's `send_xchat_message`
+    (`xchat_group_text`), the way X Chat's own app sends (rule 151). With no PIN
+    it is refused `xchatPinMissing`. A person's id must still be digits, and
+    only a dm takes a group id. `log twitter voice --with g<digits>` sends a
+    voice note into the group the same way, and it was sent there live on
+    2026-11-05. X Chat ties a media upload to the message that carries it: the
+    upload and the message share one message id (chat-xdk's `encrypt_message`
+    takes `message_id`, rebuilt into `vendor/chatXdk/wheels`), Initialize is sent
+    without a content type, and each part is posted to the `resume_upload_url`
+    Initialize answers, as raw `application/octet-stream` with the bearer, the
+    `auth_token` and `ct0` cookies and the CSRF token (stephancill/stupid-social's
+    working client). Building the URL ourselves was refused 401 every time. Spec:
+    `docs/specs/xChat.md` (REQ-XCHAT-12).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

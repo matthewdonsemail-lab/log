@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { copyFileSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { fishAudioProvider } from "../../extensions/fishAudio/index.ts";
 import { inworldProvider } from "../../extensions/inworld/index.ts";
-import { clonePath, readClone, readClones, speedOf, voiceSettingsOf, voiceSteps, wordsOf, writeClone } from "../../extensions/voiceClone/index.ts";
+import { clonePath, paceOf, readClone, readClones, speedOf, voiceSettingsOf, voiceSteps, wordsOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import type { Recording, VoiceFetch, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { runCli } from "../runner/index.ts";
 import { cloneDeps, namedRecordings } from "./index.ts";
@@ -107,7 +107,7 @@ describe("log clone (rules 142, 143)", () => {
     const r = await run(["clone", "speak", "--text", "yo whats good"]);
     expect(r.code).toBe(0);
     expect(calls[0].url).toBe("https://api.inworld.ai/tts/v1/voice");
-    expect(JSON.parse(String(calls[0].body))).toEqual({ text: "yo whats good", voiceId: "ws__matt", modelId: "inworld-tts-2-flash", audioConfig: { audioEncoding: "WAV", speakingRate: 1.15 } });
+    expect(JSON.parse(String(calls[0].body))).toEqual({ text: "yo whats good", voiceId: "ws__matt", modelId: "inworld-tts-2-flash", audioConfig: { audioEncoding: "WAV", speakingRate: paceOf(1.15, "yo whats good") } });
     const path = /log clone speak: (\S+)/.exec(r.out)?.[1] ?? "";
     expect(existsSync(path)).toBe(true);
     expect(readFileSync(path, "utf8")).toBe("abcd");
@@ -167,15 +167,19 @@ describe("log clone (rules 142, 143)", () => {
     expect(kept?.previous?.map((c) => c.voiceId)).toEqual(["ws__matt"]);
   });
 
-  test("speak says it in the clone's language with no accent steer; inworld-tts-2 gets breaths between phrases, flash nothing (rule 147)", async () => {
+  test("speak says it in the clone's language with no accent steer; inworld-tts-2 gets breaths between phrases but never at the start, flash nothing (rules 147, 149)", async () => {
     writeClone({ provider: "inworld", voiceId: "ws__matt", title: "matt", model: "inworld-tts-2-flash", createdAt: "2026-11-05T00:00:00.000Z", state: "ready", references: [], language: "en-IE", accent: "Irish" });
     const audio = { status: 200, body: { audioContent: Buffer.from("abcd").toString("base64") } };
     const calls = withProvider([audio, audio]);
-    await run(["clone", "speak", "--text", "yo whats the craic. ye im good bro, been locked in building the whole thing. call me later."]);
-    await run(["clone", "speak", "--text", "yo whats the craic. ye im good bro, been locked in building the whole thing. call me later.", "--model", "inworld-tts-2"]);
+    const said = "yo whats the craic. ye im good bro, been locked in building the whole thing all week long. it posts and replies on its own on every platform now. call me later.";
+    await run(["clone", "speak", "--text", said]);
+    await run(["clone", "speak", "--text", said, "--model", "inworld-tts-2"]);
     const [flash, full] = calls.map((c) => JSON.parse(String(c.body)));
-    expect(flash).toMatchObject({ text: "yo whats the craic. ye im good bro, been locked in building the whole thing. call me later.", language: "en-IE", modelId: "inworld-tts-2-flash" });
-    expect(full).toMatchObject({ text: "[breathe] yo whats the craic. ye im good bro, been locked in building the whole thing. [breathe] call me later.", language: "en-IE", modelId: "inworld-tts-2" });
+    expect(flash).toMatchObject({ text: said, language: "en-IE", modelId: "inworld-tts-2-flash" });
+    expect(full).toMatchObject({ language: "en-IE", modelId: "inworld-tts-2" });
+    expect(full.text.startsWith("[breathe]")).toBe(false);
+    expect(full.text).toContain("[breathe]");
+    expect(full.text.replace(/\[breathe\] /g, "")).toBe(said);
   });
 
   test("a lexicon word is written the way the clone says it right, and a note that says it wrong is refused (rule 147)", async () => {

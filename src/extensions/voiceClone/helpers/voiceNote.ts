@@ -2,12 +2,12 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { basename, join, resolve, sep } from 'node:path'
 import { assemblyAiKey, createAssemblyAiClient, hashOf, readTranscript, writeTranscript } from '../../../media/voiceNotes/index.ts'
-import { AUDIO_SUFFIX, MAX_SPEAK_CHARACTERS, PLATFORM_AUDIO } from '../types'
+import { AUDIO_SUFFIX, MAX_SPEAK_CHARACTERS, PACE_JITTER, PLATFORM_AUDIO, SPEED_RANGE } from '../types'
 import type { ProviderClone, SpeakFormat, SpokenReading, SpokenWord, VoiceNote, VoiceNoteCode, VoiceNotePlatform, VoiceProviderClient } from '../types'
 import { AUDIO_TOOLS, convertFor, discordWaveform, encodeTo, instagramLevels, samplesOf } from './audio'
 import type { AudioTools } from './audio'
 import { voiceSettingsOf } from './provider'
-import { processLikeMatt } from './realism'
+import { processLikeMatt, seeded } from './realism'
 import type { Done } from './realism'
 import { mattsRecordings } from './recordings'
 import { readSpoken, speakableText, unknownAcronyms } from './spoken'
@@ -42,6 +42,11 @@ export const voiceSteps: VoiceSteps = {
 
 const seedOf = (text: string) => Number.parseInt(createHash('sha1').update(text).digest('hex').slice(0, 8), 16)
 
+export function paceOf(speed: number, text: string): number {
+  const drift = (seeded(seedOf(`${text}:pace`))() * 2 - 1) * PACE_JITTER
+  return Math.round(Math.min(SPEED_RANGE.most, Math.max(SPEED_RANGE.least, speed * (1 + drift))) * 1000) / 1000
+}
+
 export function textOnlyProblem(text: string): string | null {
   const said = text.trim()
   if (!said) return 'the voice note needs --text: the words to say'
@@ -55,14 +60,14 @@ export function insideVoiceNotes(path: string, root = voiceNotesDir()): boolean 
   return resolve(path).startsWith(resolve(root) + sep)
 }
 
-export async function speakToFile(client: VoiceProviderClient, text: string, format: SpeakFormat, model: string | null = null, clone: ProviderClone | null = readClone(client.provider), now: Date = new Date(), steps: VoiceSteps = voiceSteps): Promise<Spoken> {
+export async function speakToFile(client: VoiceProviderClient, text: string, format: SpeakFormat, model: string | null = null, clone: ProviderClone | null = readClone(client.provider), now: Date = new Date(), steps: VoiceSteps = voiceSteps, language?: string): Promise<Spoken> {
   if (!clone) return { ok: false, code: 'voiceCloneMissing', detail: `there is no clone of matt's voice on ${client.provider} yet: log clone voice --provider ${client.provider} --apply makes it once from his own voice notes` }
   const problem = textOnlyProblem(text)
   if (problem) return { ok: false, code: 'voiceNoteInvalid', detail: problem }
   const unknown = unknownAcronyms(text)
   if (unknown.length) return { ok: false, code: 'pronunciationUnknown', detail: `${unknown.map((u) => `"${u}"`).join(', ')} ${unknown.length > 1 ? 'are' : 'is'} not in the spoken lexicon (SPOKEN_LEXICON), so whether matt says ${unknown.length > 1 ? 'them' : 'it'} as a word or as letters isn't known: write ${unknown.length > 1 ? 'them' : 'it'} out the way it is said, or add ${unknown.length > 1 ? 'them' : 'it'} to the lexicon` }
   const used = model ?? clone.model
-  const answer = await client.speak({ text: speakableText(text.trim()), voiceId: clone.voiceId, model: used, format: 'wav', ...(clone.language ? { language: clone.language } : {}), accent: clone.accent ?? voiceSettingsOf().accent, speed: voiceSettingsOf().speed })
+  const answer = await client.speak({ text: speakableText(text.trim()), voiceId: clone.voiceId, model: used, format: 'wav', ...(language ?? clone.language ? { language: language ?? clone.language } : {}), accent: clone.accent ?? voiceSettingsOf().accent, speed: paceOf(voiceSettingsOf().speed, text.trim()) })
   if (!answer.ok || !answer.data) return { ok: false, code: answer.code === 'voiceKeyMissing' ? 'voiceKeyMissing' : 'voiceProviderRefused', detail: `${client.provider} answered ${answer.status || 'nothing'}${answer.code ? ` (${answer.code})` : ''}${answer.error ? `: ${answer.error}` : ''} to text to speech with ${used}` }
   mkdirSync(voiceNotesDir(), { recursive: true })
   const stem = join(voiceNotesDir(), `${stampOf(now)}_${client.provider}_${createHash('sha1').update(text.trim()).digest('hex').slice(0, 10)}`)
@@ -92,8 +97,8 @@ export async function speakToFile(client: VoiceProviderClient, text: string, for
 
 export type Rendered = { ok: true; note: VoiceNote } | { ok: false; code: VoiceNoteCode; detail: string }
 
-export async function renderVoiceNote(client: VoiceProviderClient, platform: VoiceNotePlatform, text: string, tools: AudioTools = AUDIO_TOOLS, now: Date = new Date(), steps: VoiceSteps = voiceSteps): Promise<Rendered> {
-  const spoken = await speakToFile(client, text, 'wav', null, readClone(client.provider), now, steps)
+export async function renderVoiceNote(client: VoiceProviderClient, platform: VoiceNotePlatform, text: string, tools: AudioTools = AUDIO_TOOLS, now: Date = new Date(), steps: VoiceSteps = voiceSteps, language?: string): Promise<Rendered> {
+  const spoken = await speakToFile(client, text, 'wav', null, readClone(client.provider), now, steps, language)
   if (!spoken.ok) return { ok: false, code: spoken.code, detail: spoken.detail }
   const out = spoken.path.replace(/\.wav$/, PLATFORM_AUDIO[platform].suffix)
   const converted = convertFor(platform, spoken.path, out, tools)

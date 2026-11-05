@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 432 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 438 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -65,6 +65,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-15** Only the session that claims a chat acts on it
 - **REQ-HOOKS-16** The inbox is one database, read from cursors
 - **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
+- **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -311,6 +312,7 @@ How log-cli talks to X: directly, with no proxy, through one curl_cffi client pe
 - **REQ-XSESSION-12** A closing session drops its connections and exits at once
 - **REQ-XSESSION-13** webClient writes X's live operation table
 - **REQ-XSESSION-14** Every GraphQL call uses X's live id and exactly X's switches
+- **REQ-XSESSION-15** webClient also saves X Chat's own app
 
 ## [Write budgets](./writeBudgets.md)
 
@@ -381,6 +383,8 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-10** The chat's context is ranked for the moment and given in full
 - **REQ-VOICE-11** Only embeddings are stored, each once, in the .db
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
+- **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
+- **REQ-VOICE-14** matt can send one dm over the gate's refusal
 
 ## [AI tells and watermark](./aiTells.md)
 
@@ -427,6 +431,8 @@ X Chat is X's encrypted DM inbox, separate from the old DM API. log reads it onl
 - **REQ-XCHAT-08** A reaction as their last event is a follow-up
 - **REQ-XCHAT-09** A read receipt past matt's last message is a follow-up
 - **REQ-XCHAT-10** --waiting lists the follow-ups apart
+- **REQ-XCHAT-11** twikit sends in X Chat the way X Chat's own app does
+- **REQ-XCHAT-12** A dm can go to an X Chat group
 
 ## [X live](./xLive.md)
 
@@ -563,7 +569,7 @@ An X account's own lists, shown, made and added to through its one session on ve
 
 ## [Voice clone and voice notes](./voiceClone.md)
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 147.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 151.
 
 
 ## [Instagram](./instagram.md)

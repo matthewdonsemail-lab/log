@@ -1751,7 +1751,10 @@ impl ChatCore {
             thrift_quick_reply,
         )?;
 
-        let message_id = Self::generate_message_id();
+        let message_id = params
+            .message_id
+            .clone()
+            .unwrap_or_else(Self::generate_message_id);
         let mut api_params = crate::pipeline::EncryptAndSignParams::new(
             &ckey,
             &signing_kp.private,

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf, paceOf, mattsOwnVoiceNotes, recordedAt, firstClonedAt } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
@@ -71,16 +71,43 @@ describe("spoken words and realism (rule 147)", () => {
     expect(readSpoken("one two three four", timed(["nine", "ten", "eleven", "four"])).ok).toBe(false);
   });
 
+  test("wordsOf reads Chinese one character at a time beside Latin words, so a Chinese note is checked too (rule 148)", () => {
+    expect(wordsOf("[excited] so OP 兄弟，这就是abc")).toEqual(["so", "op", "兄", "弟", "这", "就", "是", "abc"]);
+    const said = "兄弟，这就是我说的那个。这条语音是工具做的，不是我本人。每个平台都能用。";
+    const heard = (text: string) => wordsOf(text).map((t, i) => ({ text: t, start: i * 200, end: i * 200 + 150, confidence: 0.99 }));
+    expect(readSpoken(said, heard("兄弟，这就是我说的那个这套语言是工具做的，不是我本人，每一个平台都能用。")).ok).toBe(true);
+    expect(readSpoken(said, heard("今天天气很好我们去公园玩吧")).ok).toBe(false);
+  });
+
   test("unknownAcronyms names acronyms the lexicon doesn't have, and speakableText writes lexicon words the way they're said", () => {
     expect(unknownAcronyms("we got into YC and the A.I. is OP [excited] lol")).toEqual(["YC", "A.I"]);
     expect(unknownAcronyms("its so op")).toEqual([]);
     expect(speakableText("[excited] its so op, op as anything")).toBe("[excited] its so OP, OP as anything");
   });
 
-  test("withBreaths opens with a breath and adds one once enough words have gone by, never twice", () => {
-    expect(withBreaths("yo. ye im good bro been locked in building it. call me later.")).toBe("[breathe] yo. ye im good bro been locked in building it. [breathe] call me later.");
-    expect(withBreaths("[breathe] yo")).toBe("[breathe] yo");
-  });
+  test("withBreaths never opens with a breath, puts one in only after 8 to 18 words, at a gap drawn from the seed, and reads Chinese full stops (rule 149)", () => {
+    const said = "yo whats the craic. ye im good bro been locked in building it all week. it posts and replies on its own on every platform. call me later bro."
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const out = withBreaths(said, seed)
+      expect(out.startsWith("[breathe]")).toBe(false)
+      expect(out.replace(/\[breathe\] /g, "")).toBe(said)
+      expect(withBreaths(said, seed)).toBe(out)
+    }
+    expect(new Set([1, 2, 3, 4, 5, 6, 7, 8].map((seed) => withBreaths(said, seed))).size).toBeGreaterThan(1)
+    expect(withBreaths("yo bro.", 3)).toBe("yo bro.")
+    const chinese = withBreaths("我想用这个帮别人运营他们的社交账号，让他们变成创作者。它帮他们回消息，他们做别的事的时候也能靠这个赚钱。", 9)
+    expect(chinese.startsWith("[breathe]")).toBe(false)
+    expect(chinese).toContain("[breathe] 它")
+    expect(withBreaths("[breathe] yo", 1)).toBe("[breathe] yo")
+  })
+
+  test("paceOf drifts the speed by at most 7% from the text, the same each time, within the speed range (rule 149)", () => {
+    const paces = ["yo", "ye im good bro", "call me later", "its actually so op"].map((t) => paceOf(1.15, t))
+    for (const p of paces) expect(Math.abs(p - 1.15)).toBeLessThanOrEqual(1.15 * 0.07 + 0.001)
+    expect(new Set(paces).size).toBeGreaterThan(1)
+    expect(paceOf(1.15, "yo")).toBe(paces[0])
+    expect(paceOf(1.5, "yo")).toBeLessThanOrEqual(1.5)
+  })
 
   test("shapeLikeMatt lays matt's own room tone under the voice at the measured level, and is the same for the same seed", () => {
     const rate = REALISM.rate;
@@ -95,3 +122,16 @@ describe("spoken words and realism (rule 147)", () => {
     expect(quietPieces(new Float32Array(rate))).toEqual([]);
   });
 });
+
+describe("how matt talks, for the spoken gate (rule 149)", () => {
+  test("only matt's own voice notes from before the first clone are kept, never ones the clone made", () => {
+    const at = (iso: string) => String((BigInt(Date.parse(iso) - 1420070400000) << 22n))
+    const before = { path: "/a", platform: "discord", account: "a", conversationId: "1", messageId: at("2026-11-01T08:04:01Z"), seconds: 34 }
+    const after = { ...before, path: "/b", messageId: at("2026-11-05T10:40:55Z") }
+    const other = { ...before, path: "/c", platform: "instagram", messageId: "voice_1" }
+    const clonedAt = Date.parse("2026-11-05T07:37:20Z")
+    expect(mattsOwnVoiceNotes([before, after, other], clonedAt).map((r) => r.path)).toEqual(["/a", "/c"])
+    expect(recordedAt(before)).toBe(Date.parse("2026-11-01T08:04:01Z"))
+    expect(firstClonedAt({ clones: { inworld: { provider: "inworld", voiceId: "v2", title: "m", model: "x", createdAt: "2026-11-05T09:05:00Z", state: null, references: [], previous: [{ provider: "inworld", voiceId: "v1", title: "m", model: "x", createdAt: "2026-11-05T07:37:20Z", state: null, references: [] }] } } })).toBe(clonedAt)
+  })
+})

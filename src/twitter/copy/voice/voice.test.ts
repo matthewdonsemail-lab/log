@@ -22,6 +22,28 @@ describe('the voice gate', () => {
     expect((state.dmsMattWroteHimself as string[]).length).toBeGreaterThan(0)
   })
 
+  test('a voice note is graded as spoken, never on length, and must build on the conversation instead of repeating it (rule 149)', async () => {
+    const asked: DecisionRequest[] = []
+    const decideWith = (buildsOn: number) => async (request: DecisionRequest) => {
+      asked.push(request)
+      return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: 0.9 }, inContext: { type: 'noul' as const, noul: 0.9 }, friendLike: { type: 'noul' as const, noul: 0.9 }, openerOnly: { type: 'noul' as const, noul: 1 }, buildsOn: { type: 'noul' as const, noul: buildsOn } }, usage: { input_tokens: 1, output_tokens: 1 } }
+    }
+    const said = 'ye the trending niches bit is a good shout and it ties into what you said about the api'
+    const builds = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true, howMattTalks: ['I think so, to be honest, mate'] }, 'GUIDE', decideWith(0.9))
+    expect((asked[0].state as Record<string, unknown>).howMattTalksInHisOwnVoiceNotes).toEqual(['I think so, to be honest, mate'])
+    expect(builds.pass).toBe(true)
+    expect(builds.buildsOn).toBe(0.9)
+    const questions = asked[0].questions as Record<string, { instructions: string }>
+    expect(questions.voice.instructions).toContain('howMattTalksInHisOwnVoiceNotes')
+    expect(questions.voice.instructions).toContain('never count against it')
+    expect(questions.buildsOn.instructions).toContain('rather than repeating')
+    const repeats = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true }, 'GUIDE', decideWith(0.3))
+    expect(repeats.pass).toBe(false)
+    const typed = await readVoice({ to: 'beining', text: said, context: 'x' }, 'GUIDE', decideWith(0.1))
+    expect(typed.buildsOn).toBe(null)
+    expect((asked[2].questions as Record<string, unknown>).buildsOn).toBeUndefined()
+  })
+
   test('a first message that goes in with an ask fails, however good the opener', async () => {
     const { asked, decide } = answering(0.95, 0.95, 0.95, 0.2)
     const reading = await readVoice({ to: 'someone', text: 'saw this the cascade pattern makes so much sense\nyou using treg yet', context: 'matt and they follow each other, never chatted' }, 'GUIDE', decide)

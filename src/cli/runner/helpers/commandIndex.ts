@@ -97,4 +97,5 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "watch", platform: "instagram", module: "src/cli/instagram/index.ts", exportName: "instagramWatchCommand" },
   { name: "react", platform: "instagram", module: "src/cli/react/index.ts", exportName: "instagramReactCommand" },
   { name: "voice", platform: "instagram", module: "src/cli/voiceNote/index.ts", exportName: "instagramVoiceCommand" },
+  { name: "voice", platform: "twitter", module: "src/cli/voiceNote/index.ts", exportName: "twitterVoiceCommand" },
 ]

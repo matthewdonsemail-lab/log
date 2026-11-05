@@ -46,7 +46,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-06: A draft passes only when every answer passes
 
-A draft passes only when the voice answer reaches its threshold, the context, friend-like and opener answers reach theirs, the chat answer reaches its threshold when there is a chat, no never-said phrase is found and the watermark finds no artifacts.
+A draft passes only when the voice answer reaches its threshold, the context, friend-like and opener answers reach theirs, the chat answer reaches its threshold when there is a chat, the builds-on answer reaches its threshold when the draft is spoken (REQ-VOICE-13), no never-said phrase is found and the watermark finds no artifacts.
 
 Checked by: code and SubQ
 
@@ -85,5 +85,17 @@ Checked by: code and SubQ
 ### REQ-VOICE-12: The gate inside a send reads matt's real replies in that chat
 
 The gate inside a send finds the chat in matt's saved conversations by what the send knows (`chatIdFor`): its conversation id on that platform, or, on X, the conversation whose pair holds the person's user id, or their handle on that platform only. It gives SubQ his real replies there, the same evidence `log voice --with` gives. When the chat isn't there, the gate still reads his writing everywhere. On 2026-11-04 drafts that `voice` passed at 0.99 were refused inside the send at 0.36, because the send gave SubQ none of them. The opener rule (rule 98) only reads a first message: a chat with matt's own messages in its history, or his replies from that chat or that person, is already talking (`alreadyTalkedIn`), and openerOnly is not asked. What the send answers (`momentAnswered`) is their newest message only when it is the newest in the chat; when matt's own message is the newest, the send is news of his own, so nothing is passed as what they said and the gate asks whether it picks up on something specific about them. Rules 98 and 137.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-13: A voice note is graded as spoken and must build on the conversation
+
+`readVoice` in `src/twitter/copy/voice/client.ts` takes `spoken`. With it the `voice` question asks whether matt would say it himself in a voice note, its length and punctuation never counting against it; `toThem` asks the same of how he talks in this chat; and a `buildsOn` question asks whether it takes what they are talking about further, across the whole conversation, rather than repeating what matt already told them, which must reach `CONTEXT_PASS` to pass. Without `spoken` there is no `buildsOn` (it is `null`). `gateReading` in `src/cli/twitter/helpers/voice.ts` passes `spoken` on and skips `offProfile` for it, `gateSend` takes `spoken`, `failedParts` names a low `buildsOn`, and `log voice --spoken` gates a voice note the same way. With `spoken`, `gateReading` also hands `readVoice` `howMattTalks()`: the AssemblyAI transcripts of matt's own voice notes (`mattsOwnVoiceNotes` in `src/extensions/voiceClone/helpers/recordings.ts`, only the ones recorded before `firstClonedAt`, so none the clone made), given to SubQ as `howMattTalksInHisOwnVoiceNotes`, which the spoken voice question reads first. Rule 149.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-14: matt can send one dm over the gate's refusal
+
+`log twitter dm` takes `--overGate` (`OVER_GATE` in `src/cli/twitter/helpers/send.ts`). With it, the send skips `gateDeps.gate` and says so on its error stream; without it the gate runs and a refusal is `voiceGateFailed`. The copy's AI artifact check (`planSend`, `aiArtifacts`) runs either way, before the gate. Rule 152.
 
 Checked by: code and SubQ

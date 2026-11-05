@@ -794,7 +794,7 @@ impl Chat {
     ///     should_notify: Whether to send a push notification (default: True).
     ///     ttl_msec: Optional TTL in milliseconds for disappearing messages.
     #[allow(clippy::too_many_arguments)]
-    #[pyo3(signature = (conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, quick_reply=None, should_notify=None, ttl_msec=None))]
+    #[pyo3(signature = (conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, quick_reply=None, should_notify=None, ttl_msec=None, message_id=None))]
     fn encrypt_message(
         &self,
         conversation_id: &str,
@@ -808,8 +808,10 @@ impl Chat {
         quick_reply: Option<Py<PyAny>>,
         should_notify: Option<bool>,
         ttl_msec: Option<i64>,
+        message_id: Option<String>,
     ) -> PyResult<SendPayload> {
         let mut params = EncryptMessageParams::new(conversation_id, text);
+        params.message_id = message_id;
         params.sender_id = sender_id;
         params.signing_key_version = signing_key_version;
         params.conversation_key = conversation_key;

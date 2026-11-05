@@ -1,6 +1,8 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { storedEmbedder } from "../../../inbox/store/index.ts";
+import { storedEmbedder, handleOfUserId } from "../../../inbox/store/index.ts";
+import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
+import { hashOf, readTranscript } from "../../../media/voiceNotes/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
 import { watermarkLine } from "../../../twitter/copy/watermark/index.ts";
 import { aiIndexDir, aiTellsLine, buildAiIndex, JINA_EMBED_MODEL, jinaEmbedder, openAiIndex, readAiTells } from "../../../voice/aiTells/index.ts";
@@ -25,11 +27,12 @@ import type { Command, CommandContext, CommandInput, CommandResult } from "../..
 
 
 export const VOICE_USAGE = [
-  "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--json]",
+  "Usage: log voice --to <handle> [--text \"<draft>\"] [--context \"<what they said>\"] [--with <person or chat>] [--spoken] [--json]",
   "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; the gate builds it itself when it is missing or older than the voice index; rule 112)",
   "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
   "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
   "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Every gate also reads his nearest real replies, closest wording and style across all his conversations, every platform, beside the chat's own, never the writing guide alone.",
+  "--spoken gates a voice note: it is graded as said out loud, so its length and punctuation never count against it, and it must build on what they are talking about across the whole chat, adding to it, never repeating what matt already told them (buildsOn, 0.7 to pass, rule 149). Every voice note send is gated this way.",
   "Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.",
 ].join("\n");
 
@@ -44,6 +47,7 @@ export const VOICE_INPUT: CommandInput = {
         { name: "text", kind: "string", description: "The draft (leave it out with --with to see matt's real replies there first)" },
         { name: "context", kind: "string", description: "What they said, that the draft answers" },
         { name: "with", kind: "string", description: "The chat or person as matt says it, to write and gate it the way he writes there" },
+        { name: "spoken", kind: "boolean", description: "The draft is a voice note: graded as said out loud, its length never counted against it, and it must build on what they are talking about across the whole chat instead of repeating what matt already said (rule 149)" },
         JSON_FLAG,
       ],
     },
@@ -64,10 +68,10 @@ export const VOICE_INPUT: CommandInput = {
 
 let warmEmbedder: Embedder | null = null;
 
-export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder; scrambler: (text: string) => ScramblerReading } = { decisions: () => createDecisionsClient(), embedder: () => (warmEmbedder ??= storedEmbedder(localEmbedder(), "voice")), aiEmbedder: () => jinaEmbedder(), scrambler: (text) => scramblerReadingOf(text) };
+export const voiceDeps: { decisions: () => DecisionsClient; embedder: () => Embedder; aiEmbedder: () => AiEmbedder; scrambler: (text: string) => ScramblerReading; howMattTalks: () => string[] } = { decisions: () => createDecisionsClient(), embedder: () => (warmEmbedder ??= storedEmbedder(localEmbedder(), "voice")), aiEmbedder: () => jinaEmbedder(), scrambler: (text) => scramblerReadingOf(text), howMattTalks: () => howMattTalks() };
 
 export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler?: ScramblerReading }): string {
-  const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}`;
+  const scores = `voice ${reading.voice.toFixed(2)} · answers them ${reading.inContext.toFixed(2)} · reads like a mate ${reading.friendLike.toFixed(2)} · opener only ${reading.openerOnly.toFixed(2)}${reading.toThem === null ? "" : ` · like his replies there ${reading.toThem.toFixed(2)}`}${reading.buildsOn === null || reading.buildsOn === undefined ? "" : ` · builds on the chat ${reading.buildsOn.toFixed(2)}`}`;
   const never = reading.neverSays.length ? ` · matt never says: ${reading.neverSays.join(", ")}` : "";
   const notHere = reading.notHere?.length ? `\n  he never writes it here: ${reading.notHere.join("; ")}` : "";
   const watermark = reading.watermark ? `\n  ${watermarkLine(reading.watermark)}` : "";
@@ -244,7 +248,7 @@ export const voiceCommand: Command = {
           return { code: 0, stdout: [`log voice: how matt writes in ${found.label}`, `  ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, `his latest messages here:`, ...found.recent.map((p) => `    matt: ${p.reply.replace(/\n/g, " / ").slice(0, 240)}`), `his real replies to things like this, nearest first (same chat, same person, same platform, anywhere):`, ...nearLines(found.near), "Draft from these, then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
         }
       }
-      const reading = await gateReading(context, { to, text, said, guide, ...(evidence ? { evidence } : {}) });
+      const reading = await gateReading(context, { to, text, said, guide, ...(evidence ? { evidence } : {}), ...(parsed.flags["spoken"] === true ? { spoken: true } : {}) });
       if (parsed.flags["json"]) return { code: reading.pass ? 0 : 1, stdout: JSON.stringify(reading, null, 2) };
       return { code: reading.pass ? 0 : 1, stdout: renderVoice(reading) };
     } catch (error) {
@@ -284,7 +288,7 @@ function cosineOf(a: ArrayLike<number>, b: ArrayLike<number>): number {
   return na && nb ? dot / Math.sqrt(na * nb) : 0;
 }
 
-export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[] }): Promise<GateReading> {
+export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[]; spoken?: boolean }): Promise<GateReading> {
   const { to, text, said, guide, evidence } = draft;
   const ranked = draft.ranked ?? [];
   const everywhere = await evidenceAnywhere(context, said, to, text);
@@ -293,8 +297,8 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
   const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
   const scrambler = voiceDeps.scrambler(text);
-  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
-  const notHere = evidence ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
+  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
+  const notHere = evidence && !draft.spoken ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
   await ensureAiIndex(context);
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
   if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
@@ -302,11 +306,20 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   return { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, ranked, pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
 }
 
+export function howMattTalks(): string[] {
+  return mattsOwnVoiceNotes(mattsRecordings(), firstClonedAt()).flatMap((r) => {
+    if (!existsSync(r.path)) return [];
+    const text = readTranscript(hashOf(new Uint8Array(readFileSync(r.path))))?.text?.trim();
+    return text ? [text.slice(0, 1500)] : [];
+  });
+}
+
 export function failedParts(reading: GateReading): string[] {
   const out: string[] = [];
   if (reading.neverSays.length) out.push(`phrases matt never says: ${reading.neverSays.join(", ")}`);
   if (reading.watermark.level === "artifacts") out.push(`AI artifacts in the text: ${watermarkLine(reading.watermark)}`);
-  if (reading.voice < VOICE_PASS) out.push(`doesn't sound like matt typed it (voice ${reading.voice.toFixed(2)}, needs ${VOICE_PASS})`);
+  if (reading.voice < VOICE_PASS) out.push(`doesn't sound like matt ${reading.buildsOn === null ? "typed" : "said"} it (voice ${reading.voice.toFixed(2)}, needs ${VOICE_PASS})`);
+  if (reading.buildsOn !== null && reading.buildsOn < CONTEXT_PASS) out.push(`repeats what matt already said instead of building on what they're talking about (buildsOn ${reading.buildsOn.toFixed(2)})`);
   if (reading.inContext < CONTEXT_PASS) out.push(`doesn't answer what they said (inContext ${reading.inContext.toFixed(2)})`);
   if (reading.friendLike < CONTEXT_PASS) out.push(`reads like a template or a pitch (friendLike ${reading.friendLike.toFixed(2)})`);
   if (reading.openerOnly < CONTEXT_PASS) out.push(`a first message with an ask in it (openerOnly ${reading.openerOnly.toFixed(2)})`);
@@ -341,14 +354,15 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
   return newest && !newest.fromMe ? newest.text : "";
 }
 
-export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
+export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
-  const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
+  const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
+  const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
   const said = send.said ?? momentAnswered(chatContextOf(send.platform, send.account, who).messages);
   const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
-  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle: send.handle }, send.text);
-  const reading = await gateReading(context, { to: send.handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}) });
+  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
+  const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}) });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
   return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }

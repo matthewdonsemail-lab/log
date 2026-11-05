@@ -44,6 +44,7 @@ from ..geo import Place, _places_from_response
 from ..group import Group, GroupMessage
 from ..list import List
 from ..message import Message
+from ..xchat import XCHAT_MEDIA_AUDIO, XCHAT_MEDIA_PART_BYTES
 from ..notification import Notification, parse_notifications_page
 from ..streaming import Payload, StreamingSession, _payload_from_data
 from ..trend import Location, PlaceTrend, PlaceTrends, Trend
@@ -3614,6 +3615,75 @@ class Client:
         if not hasattr(self, '_xchat_conversation_keys'):
             self._xchat_conversation_keys = {}
         self._xchat_conversation_keys.update({str(v): bytes(k) for v, k in keys.items()})
+
+    async def xchat_latest_key(self, conversation_id: str) -> tuple[str, bytes]:
+        chat = getattr(self, '_xchat', None)
+        if chat is None:
+            raise ValueError('call unlock_xchat(pin) first')
+        response, _ = await self.gql.get_xchat_conversation_data([conversation_id])
+        box = ((response or {}).get('data') or {}).get('get_inbox_page_conversation_data') or {}
+        events = []
+        for item in box.get('items') or []:
+            events += item.get('latest_conversation_key_change_events') or []
+        keys = chat.extract_conversation_keys(events).get('keys') or {} if events else {}
+        if not keys:
+            raise TwitterException(f'no X Chat conversation key opens for {conversation_id}: X sent {len(events)} key change event(s)')
+        version = max(keys, key=lambda v: int(v) if str(v).isdigit() else -1)
+        return str(version), bytes(keys[version])
+
+    async def upload_xchat_media(self, conversation_id: str, data: bytes, content_type: str, key: bytes, message_id: str, part_bytes: int = XCHAT_MEDIA_PART_BYTES) -> dict:
+        from ..xchat import XCHAT_MEDIA_URL
+
+        ciphertext = bytes(self._xchat.encrypt_stream(data, key))
+        upload_id = message_id
+        response, _ = await self.gql.initialize_xchat_media_upload(conversation_id, upload_id, len(ciphertext), content_type)
+        started = ((response or {}).get('data') or {}).get('xchat_initialize_media_upload') or {}
+        if not started.get('media_hash_key') or not started.get('resume_id'):
+            raise TwitterException(f"InitializeXChatMediaUploadMutation answered {json.dumps(started.get('upload_error') or (response or {}).get('errors') or started)[:300]}")
+        media_hash_key, resume_id = started['media_hash_key'], str(started['resume_id'])
+        base = XCHAT_MEDIA_URL.format(conversation_id=conversation_id, media_hash_key=media_hash_key)
+        jar = self.get_cookies()
+        csrf = self._get_csrf_token() or jar.get('ct0', '')
+        headers = {'Authorization': f'Bearer {self._token}', 'Cookie': f"auth_token={jar.get('auth_token', '')}; ct0={csrf}", 'X-Csrf-Token': csrf, 'User-Agent': self._user_agent, 'Content-Type': 'application/octet-stream', 'Origin': 'https://chat.x.com', 'Referer': 'https://chat.x.com/', 'x-twitter-auth-type': 'OAuth2Session', 'x-twitter-active-user': 'yes'}
+        parts = [ciphertext[i:i + part_bytes] for i in range(0, len(ciphertext), part_bytes)] or [b'']
+        for number, part in enumerate(parts):
+            given = started.get('resume_upload_url') or ''
+            url = f"{given}{'&' if '?' in given else '?'}partNumber={number}" if given.startswith('https://ton.x.com/') else f'{base}?concurrent=true&resumeId={resume_id}&partNumber={number}'
+            sent = await self.http.request('POST', url, headers=headers, data=part)
+            answer = sent.text
+            if sent.status_code >= 400:
+                shape = re.sub(r'[A-Za-z0-9_-]{6,}', lambda m: f'<{len(m.group(0))}>', url)
+                raise TwitterException(f"status: {sent.status_code}, X Chat media part {number} of {len(parts)} refused: {str(answer)[:200]}; posted to {shape}")
+        response, _ = await self.gql.finalize_xchat_media_upload(conversation_id, upload_id, media_hash_key, resume_id, len(parts))
+        finished = ((response or {}).get('data') or {}).get('xchat_finalize_media_upload')
+        if finished is None or (finished or {}).get('upload_error'):
+            raise TwitterException(f"FinalizeXChatMediaUploadMutation answered {json.dumps((finished or {}).get('upload_error') or (response or {}).get('errors'))[:300]}")
+        return {'media_hash_key': media_hash_key, 'resume_id': resume_id, 'parts': len(parts), 'encrypted_bytes': len(ciphertext), 'bytes': len(data)}
+
+    async def send_xchat_message(self, conversation_id: str, text: str = '', attachments: list[dict] | None = None, key: tuple[str, bytes] | None = None, message_id: str | None = None) -> dict:
+        chat = getattr(self, '_xchat', None)
+        if chat is None:
+            raise ValueError('call unlock_xchat(pin) first')
+        version, raw = key or await self.xchat_latest_key(conversation_id)
+        extra = {'message_id': message_id} if message_id else {}
+        payload = chat.encrypt_message(conversation_id, text, conversation_key=raw, conversation_key_version=version, attachments=attachments, **extra)
+        if message_id and payload.message_id != message_id:
+            raise TwitterException('chat-xdk signed the message under its own id, not the one its media was uploaded under: install vendor/chatXdk built with message_id')
+        response, _ = await self.gql.send_xchat_message_create(conversation_id, payload.message_id, payload.encrypted_content, payload.encoded_event_signature)
+        answer = ((response or {}).get('data') or {}).get('xchat_send_create_message_event')
+        if not answer or not answer.get('encoded_message_event'):
+            raise TwitterException(f"SendMessageCreateMutation answered {json.dumps((response or {}).get('errors') or answer)[:300]}")
+        return {'message_id': payload.message_id, 'conversation_id': conversation_id, 'key_version': version, 'encoded_message_event': answer['encoded_message_event']}
+
+    async def send_xchat_voice(self, conversation_id: str, audio: bytes, duration_ms: int, filename: str, content_type: str = 'audio/mp4') -> dict:
+        from uuid import uuid4
+
+        key = await self.xchat_latest_key(conversation_id)
+        message_id = str(uuid4())
+        uploaded = await self.upload_xchat_media(conversation_id, audio, content_type, key[1], message_id)
+        attachment = {'attachment_type': 'media', 'media_hash_key': uploaded['media_hash_key'], 'width': 0, 'height': 0, 'filesize_bytes': len(audio), 'filename': filename, 'media_type': XCHAT_MEDIA_AUDIO, 'duration_millis': int(duration_ms)}
+        sent = await self.send_xchat_message(conversation_id, '', [attachment], key, message_id)
+        return {**sent, 'media': uploaded, 'duration_ms': int(duration_ms), 'filename': filename}
 
     async def get_xchat_media(self, conversation_id: str, media_hash_key: str, key_version: str) -> bytes:
         """

@@ -6,7 +6,7 @@ import { appendEvent } from "../../inbox/store/index.ts";
 import { chatIdFor, momentAnswered, failedParts, rankedContext, voiceDeps } from "./helpers/voice.ts";
 import type { GateReading } from "./helpers/voice.ts";
 
-const passing: GateReading = { to: "@x", voice: 0.95, inContext: 0.9, friendLike: 0.9, openerOnly: 1, toThem: null, neverSays: [], watermark: { level: "clean", findings: [] } as unknown as GateReading["watermark"], pass: true, model: "m", notHere: [], scrambler: { ran: true, suspicious: 0, hits: [] } as unknown as GateReading["scrambler"], ranked: [] };
+const passing: GateReading = { to: "@x", voice: 0.95, inContext: 0.9, friendLike: 0.9, openerOnly: 1, toThem: null, buildsOn: null, neverSays: [], watermark: { level: "clean", findings: [] } as unknown as GateReading["watermark"], pass: true, model: "m", notHere: [], scrambler: { ran: true, suspicious: 0, hits: [] } as unknown as GateReading["scrambler"], ranked: [] };
 
 describe("the voice gate inside every send (rule 137)", () => {
   test("a pass names nothing, and a fail names only what failed", () => {
@@ -16,6 +16,12 @@ describe("the voice gate inside every send (rule 137)", () => {
     expect(parts).toHaveLength(2);
     expect(parts[0]).toContain("spot on");
     expect(parts[1]).toContain("voice 0.40");
+  });
+
+  test("a voice note that repeats what matt already said names it (rule 149)", () => {
+    const parts = failedParts({ ...passing, buildsOn: 0.3, pass: false });
+    expect(parts).toHaveLength(1);
+    expect(parts[0]).toContain("buildsOn 0.30");
   });
 
   test("the chat's context is ranked against the moment being answered, from the .db, in full", async () => {

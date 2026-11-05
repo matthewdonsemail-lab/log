@@ -123,6 +123,8 @@ export function attachRelay(session: RelaySession, onEvent: (event: Record<strin
   })
 }
 
+export const RECHECK_GAP_MS = 30_000
+
 export type OwnOrAttach<R> = { owner: true; result: R } | { owner: false; attached: AttachResult } | { owner: false; refused: string }
 
 export async function ownOrAttach<R>(platform: string, account: string, options: { inbox: boolean; seconds?: number; run: (emit: (event: Record<string, unknown>) => void) => Promise<R>; onAttached: (event: Record<string, unknown>) => void; catchUp?: CatchUp; log?: (line: string) => void }): Promise<OwnOrAttach<R>> {
@@ -136,6 +138,7 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
   const relay = await openRelay(platform, account)
   const catching = catchUpRunner(platform, account, options.catchUp, options.log)
   void catching.run()
+  const recheck = setInterval(() => void catching.run(), RECHECK_GAP_MS)
   try {
     const result = await options.run((event) => {
       relay.setStatus('streaming')
@@ -149,6 +152,7 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
     })
     return { owner: true, result }
   } finally {
+    clearInterval(recheck)
     await catching.settled()
     await relay.close()
     releaseWatcher(platform, account)

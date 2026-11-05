@@ -25,7 +25,7 @@ The provider is `--provider`, else `LOG_VOICE_PROVIDER` in `.env.local`, else `i
 | `instagramVoice`, `instagramVoiceLive` | `log instagram voice --account <a> --with <handle> --text "<words>" [--provider <p>]` | An Instagram voice clip through instagrapi's `direct_send_voice` |
 | `slackVoice`, `slackVoiceLive` | `log slack voice --account <a> --chat <chat> --text "<words>" [--provider <p>]` | An audio file shared into the chat through Slack's own upload, which Slack plays inline |
 
-`log fish clone|speak` became `log clone voice|speak` and is refused with that form. X has no voice note command: twikit has no audio send, and no vendored code or doc shows X's DM voice upload.
+`log fish clone|speak` became `log clone voice|speak` and is refused with that form. On X, `log twitter voice` sends it as an X Chat voice message through vendor/twikit, the way X Chat's own app does (rule 151).
 
 ## The clone
 
@@ -52,3 +52,8 @@ Every spoken file goes through two steps in `speakToFile` before anything uses i
 2. **Listened back** with AssemblyAI's word timings (`listenTo`, kept by the file's hash) and checked by `readSpoken` (`helpers/spoken.ts`). Words in `SPOKEN_LEXICON` are written the way the clone says them right before it speaks (`speakableText`: `op` goes as `OP`) and must come back as themselves, as one word under 400 ms. A lexicon word heard as something else or spelled out, or more than a quarter of the words different, is refused `spokenMismatch`. An acronym not in the lexicon is refused `pronunciationUnknown` before anything is spoken, and a note that can't be listened back is never sent (`spokenCheckFailed`).
 
 A lexicon entry is added only when matt says how he says the word.
+
+## In another language (rule 148)
+
+When matt asks for a voice note in another language, the translation goes out with `--translationOf "<the original>"` and `--language <code>` (zh-CN, es-ES ...). The voice gate grades the original, because it compares a draft with matt's own writing and can't match a translation to it. The clone speaks in that language instead of its own, and the listen-back check reads Chinese, Japanese and Korean one character at a time.
+
