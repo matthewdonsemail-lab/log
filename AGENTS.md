@@ -2212,6 +2212,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     person named only by user id by their handle (`handleOfUserId`), so it reads
     their chat. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-14).
 
+153. 2026-11-05 · matt: "say idk to matt in the groupchat", then "Yes, wire
+    it". log sends text into an X Chat group: `log twitter dm --userId
+    g<digits>` (the group's id) goes to the engine, which opens X Chat with the
+    account's saved PIN and sends it with twikit's `send_xchat_message`
+    (`xchat_group_text`), the way X Chat's own app sends (rule 151). With no PIN
+    it is refused `xchatPinMissing`. A person's id must still be digits, and
+    only a dm takes a group id. `log twitter voice --with g<digits>` sends a
+    voice note into the group the same way. Each X Chat media part is posted
+    through twikit's own request, with the session's cookies, its CSRF token and
+    one content type, `application/octet-stream`. Spec: `docs/specs/xChat.md`
+    (REQ-XCHAT-12).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

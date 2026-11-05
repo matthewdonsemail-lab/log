@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 437 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 438 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -432,6 +432,7 @@ X Chat is X's encrypted DM inbox, separate from the old DM API. log reads it onl
 - **REQ-XCHAT-09** A read receipt past matt's last message is a follow-up
 - **REQ-XCHAT-10** --waiting lists the follow-ups apart
 - **REQ-XCHAT-11** twikit sends in X Chat the way X Chat's own app does
+- **REQ-XCHAT-12** A dm can go to an X Chat group
 
 ## [X live](./xLive.md)
 

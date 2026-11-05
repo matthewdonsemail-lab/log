@@ -53,7 +53,7 @@ export function planSend(request: SendRequest, sizeOf: SizeOf = fileSize): SendP
   const target = targetOf(request)?.trim()
   if (!target) return { ok: false, problem: { code: 'targetMissing', detail: BY_USER.includes(request.action) ? `${request.action} needs --userId, the person from treg research` : `${request.action} needs --tweet, the post's url` } }
   if (request.action !== 'post' && !BY_USER.includes(request.action) && !TWEET_URL.test(target)) return { ok: false, problem: { code: 'tweetUrlInvalid', detail: `${target} isn't an x.com post url (https://x.com/<handle>/status/<id>)` } }
-  if (BY_USER.includes(request.action) && !/^\d+$/.test(target)) return { ok: false, problem: { code: 'userIdInvalid', detail: `${target} isn't an X user id (digits only)` } }
+  if (BY_USER.includes(request.action) && !(/^\d+$/.test(target) || (request.action === 'dm' && /^g\d+$/.test(target)))) return { ok: false, problem: { code: 'userIdInvalid', detail: `${target} isn't an X user id (digits only), nor for a dm an X Chat group id (g and digits)` } }
   const text = request.text?.trim()
   if (WITH_TEXT.includes(request.action) && !text) return { ok: false, problem: { code: 'textMissing', detail: `${request.action} needs --text` } }
   if (text && !request.skipStyleCheck) {

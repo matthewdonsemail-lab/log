@@ -3644,10 +3644,12 @@ class Client:
             raise TwitterException(f"InitializeXChatMediaUploadMutation answered {json.dumps(started.get('upload_error') or (response or {}).get('errors') or started)[:300]}")
         media_hash_key, resume_id = started['media_hash_key'], str(started['resume_id'])
         base = XCHAT_MEDIA_URL.format(conversation_id=conversation_id, media_hash_key=quote(media_hash_key, safe=''))
-        headers = {**self._base_headers, 'Content-Type': 'application/octet-stream', 'Referer': f'https://{DOMAIN}/'}
+        headers = {'content-type': 'application/octet-stream', 'Origin': f'https://{DOMAIN}', 'Referer': f'https://{DOMAIN}/', 'User-Agent': self._user_agent}
+        if self._get_csrf_token() is not None:
+            headers['x-csrf-token'] = self._get_csrf_token()
         parts = [ciphertext[i:i + part_bytes] for i in range(0, len(ciphertext), part_bytes)] or [b'']
         for number, part in enumerate(parts):
-            sent = await self.http.request('POST', f'{base}?concurrent=true&resumeId={resume_id}&partNumber={number}', headers=headers, data=part)
+            _, sent = await self.request('POST', f'{base}?concurrent=true&resumeId={resume_id}&partNumber={number}', raise_exception=False, headers=headers, data=part)
             if sent.status_code >= 400:
                 raise TwitterException(f'status: {sent.status_code}, X Chat media part {number} of {len(parts)} refused')
         response, _ = await self.gql.finalize_xchat_media_upload(conversation_id, upload_id, media_hash_key, resume_id, len(parts))

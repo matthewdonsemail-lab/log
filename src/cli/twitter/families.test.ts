@@ -225,6 +225,16 @@ describe("log twitter reply, quote, like, dm", () => {
     expect(partial.out).toContain("1 of 3 sent");
   });
 
+  test("a dm to an X Chat group id needs the saved PIN, and a person's id still must be digits", async () => {
+    twitterSendDeps.profiles = () => ({});
+    const h = harness(() => ({ ok: true, event: "sent", mode: "xchatGroup", messageId: "m1", conversationId: "g2116557730857284053" }));
+    const noPin = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "g2116557730857284053", "--text", "idk", "--overGate", "--approvedBy", "matt", "--live"]);
+    expect(noPin.code).not.toBe(0);
+    expect(noPin.err + noPin.out).toContain("xchatPinMissing");
+    expect(h.calls).toEqual([]);
+    expect((await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "x2116557730857284053", "--text", "idk", "--approvedBy", "matt", "--live"])).err).toContain("userIdInvalid");
+  });
+
   test("--overGate sends a dm the voice gate refused, only when given, and still refuses AI artifacts (rule 152)", async () => {
     twitterSendDeps.profiles = () => ({});
     const original = gateDeps.gate;

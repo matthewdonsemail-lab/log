@@ -1369,6 +1369,8 @@ async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     if action in ("dm", "post", "reply"):
         text, media = media_links_out(spec)
         spec = {**spec, "text": text, "media": media}
+    if action == "dm" and re.fullmatch(r"g\d+", str(spec.get("userId") or "")):
+        return await xchat_group_text(client, spec)
     if action == "dm":
         media = list(spec.get("media") or [])
         dm_media_id = await upload_dm_media(client, str(media[0])) if media else None
@@ -1519,6 +1521,19 @@ async def follow_author_first(client: Any, spec: dict[str, Any]) -> dict[str, An
 XCHAT_VOICE_FILENAME = "voice-note-{stamp}.m4a"
 
 
+async def xchat_group_text(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
+    conversation_id = str(spec["userId"])
+    if getattr(client, "_xchat", None) is None:
+        if not spec.get("pinPath"):
+            return {"ok": False, "event": "dropped", "code": "xchatPinMissing", "detail": "X Chat has to be opened with the account's saved PIN to send in a group"}
+        try:
+            await xchat_read_keys(client, spec)
+        except Exception as e:
+            return {"ok": False, "event": "dropped", "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {str(e)[:200]}"}
+    sent = await client.send_xchat_message(conversation_id, str(spec["text"]))
+    return {"ok": True, "event": "sent", "mode": "xchatGroup", "messageId": sent["message_id"], "conversationId": conversation_id, "keyVersion": sent["key_version"]}
+
+
 async def xchat_voice(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
     path = media_kit.voice_note_path(spec.get("path"), ".m4a")
     if not path:
@@ -1530,14 +1545,18 @@ async def xchat_voice(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
             await xchat_read_keys(client, spec)
         except Exception as e:
             return {"ok": False, "event": "dropped", "code": "xchatLocked", "detail": f"X Chat didn't unlock with the saved PIN: {str(e)[:200]}"}
-    user_id = str(spec.get("userId") or "")
-    if not user_id and spec.get("screenName"):
-        user = await client.get_user_by_screen_name(str(spec["screenName"]))
-        user_id = str(getattr(user, "id", "") or "")
-    if not user_id.isdigit():
-        return {"ok": False, "event": "dropped", "code": "targetMissing", "detail": f"no X user found for {spec.get('screenName') or spec.get('userId')}"}
-    me = str(await client.user_id())
-    conversation_id = ":".join(sorted([me, user_id], key=int))
+    named = str(spec.get("screenName") or spec.get("userId") or "")
+    if re.fullmatch(r"g\d+", named):
+        user_id, conversation_id = "", named
+    else:
+        user_id = str(spec.get("userId") or "")
+        if not user_id and spec.get("screenName"):
+            user = await client.get_user_by_screen_name(str(spec["screenName"]))
+            user_id = str(getattr(user, "id", "") or "")
+        if not user_id.isdigit():
+            return {"ok": False, "event": "dropped", "code": "targetMissing", "detail": f"no X user found for {spec.get('screenName') or spec.get('userId')}"}
+        me = str(await client.user_id())
+        conversation_id = ":".join(sorted([me, user_id], key=int))
     seconds = float(spec.get("seconds") or 0)
     stamp = int(time.time() * 1000)
     sent = await client.send_xchat_voice(conversation_id, path.read_bytes(), int(round(seconds * 1000)), XCHAT_VOICE_FILENAME.format(stamp=stamp))

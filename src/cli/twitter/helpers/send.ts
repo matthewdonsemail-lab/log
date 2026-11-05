@@ -197,7 +197,10 @@ function sendCommand(shape: SendShape): Command {
         if (plan.spec.media?.length) context.err(`${account.accountName}: uploading ${plan.spec.media.length} file${plan.spec.media.length === 1 ? "" : "s"} to X first (${plan.spec.media.map((m) => mediaKindOf(m)).join(", ")}), then the ${shape.action === "dm" ? "dm" : shape.action === "reply" ? "reply" : "post"}`);
         context.err(`${account.accountName}: ${shape.action === "post" ? "new post" : `${shape.action} ${plan.target}`}${split ? ` ${splitLine(split)}` : ""} on the direct-API engine, X called directly, approved by ${plan.spec.approvedBy}`);
         if (split) {
-          const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
+          const group = /^g\d+$/.test(plan.target);
+          const groupPin = group ? String((await context.twenty.loginSecrets(account.id).catch(() => null))?.messengerPin ?? "") : "";
+          if (group && !groupPin) return refuse(label, "xchatPinMissing", `${account.accountName} has no X Chat PIN saved, so the X Chat group ${plan.target} can't be opened to send: matt saves it once with log twitter chat pin --account ${account.accountName}`);
+          const spec = { ...(parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec), ...(groupPin ? { chatPin: groupPin } : {}) };
           const caught = await waitCaughtUp("twitter", account.accountName);
           if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
           if (parsed.flags["overGate"] === true) {
