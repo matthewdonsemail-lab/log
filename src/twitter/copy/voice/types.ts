@@ -17,6 +17,7 @@ export interface VoiceDraft {
   scrambler?: { suspicious: number; kinds: string[] }
   conversation?: { from: string; text: string; at: string }[]
   spoken?: boolean
+  howMattTalks?: string[]
 }
 
 export interface VoiceReading {

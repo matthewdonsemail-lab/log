@@ -29,11 +29,12 @@ describe('the voice gate', () => {
       return { model: 'subq-snap-1.1', answers: { voice: { type: 'noul' as const, noul: 0.9 }, inContext: { type: 'noul' as const, noul: 0.9 }, friendLike: { type: 'noul' as const, noul: 0.9 }, openerOnly: { type: 'noul' as const, noul: 1 }, buildsOn: { type: 'noul' as const, noul: buildsOn } }, usage: { input_tokens: 1, output_tokens: 1 } }
     }
     const said = 'ye the trending niches bit is a good shout and it ties into what you said about the api'
-    const builds = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true }, 'GUIDE', decideWith(0.9))
+    const builds = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true, howMattTalks: ['I think so, to be honest, mate'] }, 'GUIDE', decideWith(0.9))
+    expect((asked[0].state as Record<string, unknown>).howMattTalksInHisOwnVoiceNotes).toEqual(['I think so, to be honest, mate'])
     expect(builds.pass).toBe(true)
     expect(builds.buildsOn).toBe(0.9)
     const questions = asked[0].questions as Record<string, { instructions: string }>
-    expect(questions.voice.instructions).toContain('voice note')
+    expect(questions.voice.instructions).toContain('howMattTalksInHisOwnVoiceNotes')
     expect(questions.voice.instructions).toContain('never count against it')
     expect(questions.buildsOn.instructions).toContain('rather than repeating')
     const repeats = await readVoice({ to: 'beining', text: said, context: 'it auto posts in trending niches', spoken: true }, 'GUIDE', decideWith(0.3))

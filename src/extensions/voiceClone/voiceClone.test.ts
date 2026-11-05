@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf, paceOf } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf, paceOf, mattsOwnVoiceNotes, recordedAt, firstClonedAt } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
@@ -122,3 +122,16 @@ describe("spoken words and realism (rule 147)", () => {
     expect(quietPieces(new Float32Array(rate))).toEqual([]);
   });
 });
+
+describe("how matt talks, for the spoken gate (rule 149)", () => {
+  test("only matt's own voice notes from before the first clone are kept, never ones the clone made", () => {
+    const at = (iso: string) => String((BigInt(Date.parse(iso) - 1420070400000) << 22n))
+    const before = { path: "/a", platform: "discord", account: "a", conversationId: "1", messageId: at("2026-11-01T08:04:01Z"), seconds: 34 }
+    const after = { ...before, path: "/b", messageId: at("2026-11-05T10:40:55Z") }
+    const other = { ...before, path: "/c", platform: "instagram", messageId: "voice_1" }
+    const clonedAt = Date.parse("2026-11-05T07:37:20Z")
+    expect(mattsOwnVoiceNotes([before, after, other], clonedAt).map((r) => r.path)).toEqual(["/a", "/c"])
+    expect(recordedAt(before)).toBe(Date.parse("2026-11-01T08:04:01Z"))
+    expect(firstClonedAt({ clones: { inworld: { provider: "inworld", voiceId: "v2", title: "m", model: "x", createdAt: "2026-11-05T09:05:00Z", state: null, references: [], previous: [{ provider: "inworld", voiceId: "v1", title: "m", model: "x", createdAt: "2026-11-05T07:37:20Z", state: null, references: [] }] } } })).toBe(clonedAt)
+  })
+})

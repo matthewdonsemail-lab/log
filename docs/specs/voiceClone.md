@@ -80,7 +80,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-12: The clone speaks at matt's speed on the preferred model, and can be made from recordings he names
 
-`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed`, and Inworld sends it as `audioConfig.speakingRate`. A clone is made with the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
+`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed` through `paceOf`, which drifts it a little per text (REQ-VOICE-CLONE-16), and Inworld sends it as `audioConfig.speakingRate`. A clone is made with the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
 
 Checked by: code and SubQ
 

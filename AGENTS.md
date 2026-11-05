@@ -2144,7 +2144,11 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       `log voice --spoken`): its length and punctuation never count against
       it, `offProfile` (his typed habits in the chat) isn't applied, and a
       new question, `buildsOn` (0.7 to pass), refuses a note that repeats
-      what matt already said or ignores what they are talking about.
+      what matt already said or ignores what they are talking about. Its
+      voice question reads how matt actually talks first: the transcripts of
+      his own voice notes from before the clone existed (`howMattTalks`,
+      `mattsOwnVoiceNotes`), never his typing alone and never a note the
+      clone made.
     Spec: `docs/specs/voiceGate.md` (REQ-VOICE-13),
     `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-16).
 
