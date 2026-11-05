@@ -1,14 +1,14 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import type { VoiceClone } from '../types'
+import type { CloneStore, ProviderClone, VoiceProvider } from '../types'
 
 export function voiceDir(): string {
   return process.env.LOG_VOICE_CLONE_DIR || join(homedir(), '.logCli', 'voice')
 }
 
 export function clonePath(): string {
-  return join(voiceDir(), 'fishClone.json')
+  return join(voiceDir(), 'clone.json')
 }
 
 export function voiceNotesDir(): string {
@@ -19,19 +19,26 @@ export function platformStateRoot(platform: string): string {
   return process.env.LOG_PLATFORM_STATE ? join(process.env.LOG_PLATFORM_STATE, platform) : join(homedir(), '.logCli', platform)
 }
 
-export function readClone(path = clonePath()): VoiceClone | null {
-  if (!existsSync(path)) return null
+export function readClones(path = clonePath()): CloneStore {
+  if (!existsSync(path)) return { clones: {} }
   try {
-    const clone = JSON.parse(readFileSync(path, 'utf8')) as VoiceClone
-    return clone.modelId ? clone : null
+    const stored = JSON.parse(readFileSync(path, 'utf8')) as CloneStore
+    return { clones: stored.clones ?? {} }
   } catch {
-    return null
+    return { clones: {} }
   }
 }
 
-export function writeClone(clone: VoiceClone, path = clonePath()): void {
+export function readClone(provider: VoiceProvider, path = clonePath()): ProviderClone | null {
+  const clone = readClones(path).clones[provider]
+  return clone?.voiceId ? clone : null
+}
+
+export function writeClone(clone: ProviderClone, path = clonePath()): void {
+  const store = readClones(path)
+  store.clones[clone.provider] = clone
   mkdirSync(voiceDir(), { recursive: true })
-  writeFileSync(path, JSON.stringify(clone, null, 2))
+  writeFileSync(path, JSON.stringify(store, null, 2))
 }
 
 export function stampOf(now: Date = new Date()): string {

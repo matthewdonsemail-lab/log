@@ -2,14 +2,15 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, rmsLevels, sentByMatt, textOnlyProblem, voiceNotesDir } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, rmsLevels, sentByMatt, textOnlyProblem, voiceNotesDir } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
 
 describe('fishAudio helpers', () => {
-  test('pickReferences takes the shortest first, 5 to 60 s each, at most 60 s in all', () => {
-    expect(pickReferences([rec('a', 271.9), rec('b', 34.1), rec('c', 8.5), rec('d', 15.9), rec('e', 4), rec('f', 46.2)]).map((r) => r.messageId)).toEqual(['c', 'd', 'b'])
+  test('pickReferences takes the shortest first, each at least 5 s, within the provider limit', () => {
+    expect(pickReferences([rec('a', 271.9), rec('b', 34.1), rec('c', 8.5), rec('d', 15.9), rec('e', 4), rec('f', 46.2)], { least: 10, most: 60 }).map((r) => r.messageId)).toEqual(['c', 'd', 'b'])
+    expect(pickReferences([rec('b', 34.1), rec('c', 8.5), rec('d', 15.9)], { least: 3, most: 30 }).map((r) => r.messageId)).toEqual(['c', 'd'])
   })
 
   test('only recordings matt sent are kept', () => {
@@ -22,6 +23,12 @@ describe('fishAudio helpers', () => {
     expect(sentByMatt({ ...base, messageId: '3' })).toBe(false)
     const kept = mattsRecordings({ files: () => [{ ...base, messageId: '1', path: '/one' }, { ...base, messageId: '2', path: '/two' }], seconds: () => 12.345 })
     expect(kept).toEqual([{ ...base, messageId: '1', path: '/one', seconds: 12.35 }])
+  })
+
+  test('the provider is --provider, then LOG_VOICE_PROVIDER, then inworld', () => {
+    expect(providerOf('fishAudio', {})).toMatchObject({ ok: true, provider: 'fishAudio', from: '--provider' })
+    expect(providerOf(undefined, { LOG_VOICE_PROVIDER: 'fishAudio' })).toMatchObject({ ok: true, provider: 'fishAudio', from: 'LOG_VOICE_PROVIDER' })
+    expect(providerOf('nope', {}).ok).toBe(false)
   })
 
   test('a voice note takes text only', () => {

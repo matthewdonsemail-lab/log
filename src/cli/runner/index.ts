@@ -22,7 +22,7 @@ import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
-import { fishCommand } from "../fish/index.ts";
+import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
@@ -102,7 +102,7 @@ export const COMMANDS: Command[] = [
   searchCommand,
   kbCommand,
   memelordCommand,
-  fishCommand,
+  cloneCommand,
   transcribeCommand,
   followersCommand,
   notificationsCommand,

@@ -2006,7 +2006,25 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     engine sends only a file log made under `~/.logCli/voiceNotes`. X isn't
     built: twikit has no audio send and no vendored code or doc shows X's
     DM voice upload, so nothing is guessed. `src/cli/voiceNote`. Spec:
-    `docs/specs/fishVoice.md`.
+    `docs/specs/voiceClone.md` (was `fishVoice.md`).
+
+143. 2026-11-05 · matt: "the voice cloning and the voice note stuff will be
+    agnostic", after Fish Audio refused the clone without API credit (403,
+    model creation limit 0/0) and he had none to put in. The voice layer is
+    provider-agnostic, the way proxies are (rule 52): `src/extensions/
+    voiceClone` holds one interface (its models, cheapest model, clone
+    limits, the reference format it takes, clone and speak), and each
+    provider is an extension of its own: `src/extensions/inworld` (the
+    default: instant cloning free, about 70 free speech minutes, wav
+    references 3 to 30 s, `inworld-tts-2-flash`, `INWORLD_API_KEY`) and
+    `src/extensions/fishAudio`. The provider is `--provider`, else
+    `LOG_VOICE_PROVIDER` in `.env.local`, else inworld. `log fish clone|speak`
+    became `log clone voice|speak` (MCP `cloneVoice`, `cloneSpeak`); `log fish`
+    is refused with the form it became (rule 63's pattern). Each provider's
+    clone is kept in `~/.logCli/voice/clone.json`, keyed by provider, made
+    once. `log discord|instagram|slack voice` take `--provider` and call only
+    the shared layer, never a provider. Everything else in rule 142 holds.
+    Spec: `docs/specs/voiceClone.md`.
 
 ## Checks
 

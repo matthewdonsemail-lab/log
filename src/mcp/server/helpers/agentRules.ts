@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 142;
+export const RULES_REVIEWED_THROUGH = 143;
 
 export const AGENTS_URI = "log://agents";
 
@@ -58,7 +58,7 @@ export const CORE_PRINCIPLES = [
   "51. The voice gate runs inside every send (discord, slack, twitter dm, the queue, instagram), whether or not voice ran first: SubQ's read, the AI tells index with its reranker, matt's own phrasing, the watermark checker and the scrambler, against this chat's context from the .db ranked for the moment. A failing draft is refused with `voiceGateFailed` (held in the queue): rewrite it from what failed. Only embeddings are stored; results are fresh each send (rule 137).",
   "52. Media is read before anyone replies: one local vision model (LFM2.5-VL-450M, kept warm in one describer per machine) describes every image, meme and video into the .db, and anything not described yet is shown so in the context; never answer a message whose media says not described yet as if you had seen it (rule 138).",
   "53. Reacting to a message is a write like a send: `twitterReactLive`, `discordReactLive`, `slackReactLive` or `instagramReactLive` with the chat and the message's id from the platform's read, the emoji (or its name) and `remove` to take one off; it claims the chat first, the platform's answer decides, and a refusal stops (rule 140).",
-  "54. A voice note goes out only when matt asks for one, in his cloned voice, as the platform's own voice note: `discordVoiceLive`, `instagramVoiceLive` or `slackVoiceLive` with the chat and `text` in his words (never an audio file). It is gated like any send, made with Fish Audio from his clone (`fish` clone once, speak to test), converted with ffmpeg, claimed, and the platform's answer decides; X has no voice note path (rule 142).",
+  "54. A voice note goes out only when matt asks for one, in his cloned voice, as the platform's own voice note: `discordVoiceLive`, `instagramVoiceLive` or `slackVoiceLive` with the chat and `text` in his words (never an audio file). It is gated like any send, said by the voice provider from his clone (`cloneVoice` once per provider, `cloneSpeak` to test), converted with ffmpeg, claimed, and the platform's answer decides; X has no voice note path (rule 142). The voice layer is provider-agnostic: `provider` (inworld or fishAudio), else LOG_VOICE_PROVIDER, else inworld (rule 143).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -118,7 +118,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
-  fish: [39, 41, 94, 106, 119, 142],
+  clone: [39, 41, 94, 106, 119, 142, 143],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
   media: [26, 41, 126, 131, 137, 138, 139],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
@@ -154,9 +154,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
   instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
-  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142],
-  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142],
-  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142],
+  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143],
+  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143],
+  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143],
   twitterList: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141],
   twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],

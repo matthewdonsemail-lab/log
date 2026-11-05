@@ -1,4 +1,5 @@
 export * from './audio'
+export * from './provider'
 export * from './recordings'
 export * from './store'
 export * from './voiceNote'

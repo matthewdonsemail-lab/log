@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { clonePath, voiceNotesDir, writeClone } from "../../extensions/fishAudio/index.ts";
-import type { Rendered, VoiceNotePlatform } from "../../extensions/fishAudio/index.ts";
+import { clonePath, voiceNotesDir, writeClone } from "../../extensions/voiceClone/index.ts";
+import type { Rendered, VoiceNotePlatform, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import type { PlatformEngineRun, PlatformEngineSpec } from "../../platformKit/session/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
@@ -35,11 +35,11 @@ async function run(argv: string[], answer: PlatformEngineRun["answer"] = { ok: f
 
 beforeEach(() => {
   rendered = [];
-  voiceNoteDeps.render = async (platform: VoiceNotePlatform, text: string): Promise<Rendered> => {
-    rendered.push(`${platform}:${text}`);
-    return { ok: true, note: { path: join(voiceNotesDir(), `note${platform === "discord" ? ".ogg" : ".m4a"}`), platform, seconds: 2.5, waveform: "AAAA", levels: [0.5, 1], model: "s2.1-pro-free" } };
+  voiceNoteDeps.render = async (provider: VoiceProvider, platform: VoiceNotePlatform, text: string): Promise<Rendered> => {
+    rendered.push(`${provider}:${platform}:${text}`);
+    return { ok: true, note: { path: join(voiceNotesDir(), `note${platform === "discord" ? ".ogg" : ".m4a"}`), platform, seconds: 2.5, waveform: "AAAA", levels: [0.5, 1], provider, model: "inworld-tts-2-flash" } };
   };
-  writeClone({ modelId: "modelOne", title: "matt", model: "s2.1-pro-free", createdAt: "2026-11-05T00:00:00.000Z", state: "trained", references: [] });
+  writeClone({ provider: "inworld", voiceId: "ws__matt", title: "matt", model: "inworld-tts-2-flash", createdAt: "2026-11-05T00:00:00.000Z", state: "ready", references: [] });
 });
 
 afterEach(() => {
@@ -91,13 +91,19 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
   test("--live makes it from the text and hands the engine its own file, waveform and duration", async () => {
     const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", "yo how was the gym", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn", messageId: "99" });
     expect(r.code).toBe(0);
-    expect(rendered).toEqual(["discord:yo how was the gym"]);
+    expect(rendered).toEqual(["inworld:discord:yo how was the gym"]);
     expect(r.specs).toEqual([{ action: "voice", channel: CHANNEL, path: join(voiceNotesDir(), "note.ogg"), seconds: 2.5, waveform: "AAAA", live: true, approvedBy: "matt" }]);
     expect(r.out).toContain("voice note in matt's voice (message 99)");
     const ig = await run(["instagram", "voice", "--account", "instagramOne", "--with", "someone", "--text", "yo", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
     expect(ig.specs[0]).toMatchObject({ action: "voice", with: "someone", levels: [0.5, 1] });
     const slack = await run(["slack", "voice", "--account", "slackOne", "--chat", "D0123456789", "--text", "yo", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
     expect(slack.specs[0]).toMatchObject({ action: "voice", chat: "D0123456789" });
+  });
+
+  test("--provider picks who says it, and the clone must be on that provider", async () => {
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", "yo", "--provider", "fishAudio", "--approvedBy", "matt", "--live"]);
+    expect(r.err + r.out).toContain("voiceCloneMissing");
+    expect(rendered).toEqual([]);
   });
 
   test("a refusal is said with its code and nothing is retried", async () => {

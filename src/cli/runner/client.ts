@@ -8,7 +8,7 @@ import { listListings } from "../../marketplace/listing/index.ts";
 import { createTwentyClient, withLocalAccounts } from "../../twenty/graphql/index.ts";
 import { runRedditEngine } from "../../reddit/account/session/index.ts";
 import { runDiscordEngine, runDiscordEngineLive } from "../../discord/account/session/index.ts";
-import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts";
+import { isPlatform, renderUsage, resolvePlatformForm, RETIRED_COMMANDS } from "./helpers/index.ts";
 import { COMMAND_INDEX } from "./helpers/commandIndex.ts";
 import type { CommandIndexEntry } from "./helpers/commandIndex.ts";
 import type { Command, CommandContext } from "./types.ts";
@@ -104,6 +104,7 @@ export async function dispatchWith(ctx: CommandContext, argv: string[], commands
     ctx.out(renderUsage([...commands]));
     return 0;
   }
+  if (RETIRED_COMMANDS[requested]) { ctx.err(RETIRED_COMMANDS[requested](rest)); return 1; }
   const form = resolvePlatformForm([requested, ...rest], findIn(commands));
   if (!form.ok) {
     ctx.err(form.error);

@@ -21,6 +21,11 @@ export function convertFor(platform: VoiceNotePlatform, from: string, to: string
   return { ok: false, detail: `ffmpeg couldn't make ${PLATFORM_AUDIO[platform].container}: ${String(run.stderr || run.error?.message || `exit ${run.status}`).trim().slice(0, 300)}` }
 }
 
+export function wavOf(path: string, tools: AudioTools = AUDIO_TOOLS): Uint8Array | null {
+  const run = spawnSync(tools.ffmpeg, ['-v', 'error', '-i', path, '-vn', '-ac', '1', '-ar', '24000', '-c:a', 'pcm_s16le', '-f', 'wav', 'pipe:1'], { windowsHide: true, maxBuffer: 64 * 1024 * 1024 })
+  return run.status === 0 && run.stdout?.length ? new Uint8Array(run.stdout) : null
+}
+
 export function samplesOf(path: string, rate = 8000, tools: AudioTools = AUDIO_TOOLS): Int16Array {
   const run = spawnSync(tools.ffmpeg, ['-v', 'error', '-i', path, '-f', 's16le', '-ac', '1', '-ar', String(rate), 'pipe:1'], { windowsHide: true, maxBuffer: 256 * 1024 * 1024 })
   const bytes = run.status === 0 && run.stdout ? Buffer.from(run.stdout) : Buffer.alloc(0)

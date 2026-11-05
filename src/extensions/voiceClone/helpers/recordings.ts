@@ -2,8 +2,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { db } from '../../../inbox/store/index'
 import { conversationsRoot } from '../../../search/conversations/index'
-import { CLONE_SECONDS } from '../types'
-import type { Recording } from '../types'
+import { SHORTEST_CLIP } from '../types'
+import type { CloneLimits, Recording } from '../types'
 import { secondsOf } from './audio'
 import { platformStateRoot } from './store'
 
@@ -45,8 +45,9 @@ export function sentByMatt(recording: Pick<Recording, 'platform' | 'account' | '
   return !!row
 }
 
-export function pickReferences(recordings: readonly Recording[], most: number = CLONE_SECONDS.most): Recording[] {
-  const usable = recordings.filter((r) => r.seconds >= CLONE_SECONDS.shortest && r.seconds <= most).sort((a, b) => a.seconds - b.seconds || a.path.localeCompare(b.path))
+export function pickReferences(recordings: readonly Recording[], limits: CloneLimits): Recording[] {
+  const most = limits.most
+  const usable = recordings.filter((r) => r.seconds >= SHORTEST_CLIP && r.seconds <= most).sort((a, b) => a.seconds - b.seconds || a.path.localeCompare(b.path))
   const picked: Recording[] = []
   let total = 0
   for (const r of usable) {

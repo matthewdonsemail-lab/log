@@ -1,6 +1,6 @@
 # extensions
 
-Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for.
+Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -24,8 +24,8 @@ When the owner asks for one of these, follow its page step by step.
 | `memelordTrending` | Memelord's trending templates right now, each with its cultural… |
 | `memelordTools` | Memelord's catalog of one-shot image tools |
 | `memelordTaste` | matt's meme taste |
-| `fishClone` | matt's voice model on Fish Audio, made once from his own voice notes |
-| `fishSpeak` | Say words in matt's cloned voice, to a local audio file under… |
+| `cloneVoice` | matt's voice cloned once on the voice provider from his own voice… |
+| `cloneSpeak` | Say words in matt's cloned voice, to a local audio file under… |
 
 ## The work, step by step: memelord
 
@@ -95,15 +95,15 @@ posted a run of new memes.
 - Docs: `docs/extensions/memelord.md`; the use case
   `docs/useCases/discord/memeReply.md`; the spec `docs/specs/memelord.md`.
 
-## The work, step by step: fishAudio
+## The work, step by step: voiceClone
 
-From `skills/fishAudio/SKILL.md`.
+From `skills/voiceClone/SKILL.md`.
 
-## fishAudio
+## voiceClone
 
-Fish Audio holds one voice: matt's, cloned from the voice notes he sent
-himself. log uses it to send voice notes he asks for, as each platform's own
-voice note.
+log holds one voice: matt's, cloned from the voice notes he sent himself,
+on a voice provider (Inworld by default, Fish Audio as the other). log uses
+it to send voice notes he asks for, as each platform's own voice note.
 
 ### Hard boundaries
 
@@ -112,22 +112,26 @@ voice note.
 - **Only his voice, only from text.** The clone is made from his own voice
   notes (fromMe), never anyone else's. Every send takes text and makes the
   audio itself; an audio file is never accepted.
-- **Free model first.** Speech uses `s2.1-pro-free`. `s2.1-pro` costs money,
-  and only matt decides to spend (rule 41).
+- **Free first.** Inworld clones for free with about 70 free speech minutes;
+  each provider's cheapest model is the default. Anything that costs money
+  is matt's call (rule 41).
+- **His words.** If the voice gate refuses what matt asked to say, tell him;
+  never rewrite his words yourself.
 - **Like any send.** Gated (rule 137), claimed (rule 133), counted as a write,
   and a refusal stops with nothing retried (rule 94).
 
 ### The routine
 
-1. No clone yet: `fishClone` lists the recordings it would use; `fishClone`
-   with apply makes it once. `fishSpeak` says a test line to a file.
-2. Read the chat, draft what he says in his words, gate it with `voice`.
+1. No clone yet on the provider: `cloneVoice` lists the recordings it would
+   use; `cloneVoice` with apply makes it once. `cloneSpeak` says a test line.
+2. Read the chat, take what matt asked to say, gate it with `voice`.
 3. Dry run with `discordVoice`, `instagramVoice` or `slackVoice`.
 4. Send with the `…Live` tool, approvedBy matt.
 5. Tell matt the words, the length and where it went.
 
-X has no voice note path. Docs: `docs/extensions/fishAudio.md`,
-`docs/useCases/inbox/voiceNote.md`, spec `docs/specs/fishVoice.md`.
+The provider is `provider`, else `LOG_VOICE_PROVIDER`, else inworld. X has no
+voice note path. Docs: `docs/extensions/voiceClone.md`,
+`docs/useCases/inbox/voiceNote.md`, spec `docs/specs/voiceClone.md`.
 
 ## Every tool, in full
 
@@ -140,7 +144,7 @@ Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads 
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "instagram/dmReply" }), getGuide({ useCase: "twitter/getTheAction" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTemplate`
@@ -151,7 +155,7 @@ log memelord template <id> [--json]   (one template: its name, media url, text s
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTrending`
@@ -163,7 +167,7 @@ Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads 
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTools`
@@ -174,7 +178,7 @@ log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--jso
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTaste`
@@ -185,29 +189,30 @@ log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: 
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `fishClone`
+### `cloneVoice`
 
-matt's voice model on Fish Audio, made once from his own voice notes; without --apply it lists the recordings it would use.
-The Fish Audio extension: matt's voice cloned once from his own voice notes, and words said in it to a local file
-log fish clone [--apply] [--json]   (matt's voice model, made once on Fish Audio from his own voice notes; without --apply it lists the recordings it would use)
-Fish Audio is an extension (docs/extensions/fishAudio.md). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db): Discord voice messages and Instagram voice clips the engines kept, the shortest first, 10 to 60 s in all. Its model id is kept in ~/.logCli/voice/fishClone.json. Speech uses the free s2.1-pro-free model unless --model says otherwise. The key is FISH_API_KEY in .env.local. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rule 142).
+matt's voice cloned once on the voice provider from his own voice notes; without --apply it lists the recordings it would use.
+matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voice notes, and words said in it to a local file
+log clone voice [--provider inworld|fishAudio] [--apply] [--json]   (matt's voice, cloned once per provider from his own voice notes; without --apply it lists the recordings it would use)
+Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. Speech uses the provider's cheapest model unless --model says otherwise. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143).
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
-AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 143, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `fishSpeak`
+### `cloneSpeak`
 
 Say words in matt's cloned voice, to a local audio file under ~/.logCli/voiceNotes; plays and sends nothing.
-The Fish Audio extension: matt's voice cloned once from his own voice notes, and words said in it to a local file
-log fish speak --text "<words>" [--model s2.1-pro-free|s2.1-pro] [--format mp3|wav] [--json]   (the words in his cloned voice, to a file under ~/.logCli/voiceNotes; nothing is played or sent)
-Fish Audio is an extension (docs/extensions/fishAudio.md). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db): Discord voice messages and Instagram voice clips the engines kept, the shortest first, 10 to 60 s in all. Its model id is kept in ~/.logCli/voice/fishClone.json. Speech uses the free s2.1-pro-free model unless --model says otherwise. The key is FISH_API_KEY in .env.local. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rule 142).
+matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voice notes, and words said in it to a local file
+log clone speak --text "<words>" [--provider inworld|fishAudio] [--model <model>] [--format mp3|wav] [--json]   (the words in his cloned voice, to a file under ~/.logCli/voiceNotes; nothing is played or sent)
+Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. Speech uses the provider's cheapest model unless --model says otherwise. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143).
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and Fish Audio's clone of matt's voice for the voice notes he asks for).
-AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 143, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
@@ -231,4 +236,6 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 
 **Rule 120.** 2026-11-02 · matt: "start creating meme taste ... injecting into the context the kind of memes that we need": deep fried memes, memes about larping, streamer reaction clips like FlightReacts, Zias and Bloo, and shitposts, "those are the type of memes that I think are bangers", and "a meme index for taste ... over the type of memes we've done before". His taste lives in `~/.logCli/memes/taste.json` (`src/extensions/memeTaste`): `log memelord taste --build --from <posts.json>` reads every picture in his X media posts (treg `tikhub.x.twitter-web-fetch-user-media`, which matt said to spend on) and asks SubQ, from the picture, whether it is a meme and which of his styles it is (`TASTE_STYLES`, or other), keeping the memes. `log memelord search` scores each template's picture against his taste with SubQ (`tasteFit`) and ranks by it, `--noTaste` keeping Memelord's order, and every answer leads with his taste (`tasteSummary`), so the agent picking a meme has it in context. `log memelord taste` (MCP `memelordTaste`) shows it. Spec: `docs/specs/memelord.md` (REQ-MEME-09, REQ-MEME-10).
 
-**Rule 142.** 2026-11-05 · matt: "make it so that we can send audio, like upload natively into the platform, voice notes ... directly into the actual clients themselves ... we need to voice clone ourselves from audio ... it will then be an extension, like we have for the meme board stuff", with Fish Audio (hosted) his pick. A voice note only ever goes out when matt asks for one, in his cloned voice, as the platform's own voice note: never on the agent's own initiative and never any other audio. Fish Audio is an extension (`src/extensions/fishAudio`, `docs/extensions/fishAudio.md`): `log fish clone` makes his voice model once from the voice notes he sent himself (fromMe in the conversation store or his `ownMessage` in the .db; Discord voice messages and Instagram voice clips the engines kept, 10 to 60 s in all; nobody else's voice), a dry run listing them unless `--apply`, its id kept in `~/.logCli/voice/fishClone.json`; `log fish speak --text` says words in it to a file under `~/.logCli/voiceNotes` and sends nothing, on the free `s2.1-pro-free` model unless `--model`. `log discord voice`, `log instagram voice` and `log slack voice` take text only (an audio file is refused with `voiceNoteInvalid`), are dry runs unless `--live` with `--approvedBy` (rule 8), wait for the account to catch up (rule 135), run the text through the voice gate (rule 137), make it with the clone, convert it with ffmpeg (Discord ogg/opus, sent as a voice message with flags 8192, its waveform and duration; Instagram AAC in .m4a through instagrapi's `direct_send_voice`, its upload on curl_cffi under the one-call lock, rule 129; Slack AAC in .m4a through `files.getUploadURLExternal`, the upload on gabriel's curl_cffi transport and `files.completeUploadExternal`, rule 125), claim the chat (rule 133), count as a write, and stop on any refusal (rule 94). An engine sends only a file log made under `~/.logCli/voiceNotes`. X isn't built: twikit has no audio send and no vendored code or doc shows X's DM voice upload, so nothing is guessed. `src/cli/voiceNote`. Spec: `docs/specs/fishVoice.md`.
+**Rule 142.** 2026-11-05 · matt: "make it so that we can send audio, like upload natively into the platform, voice notes ... directly into the actual clients themselves ... we need to voice clone ourselves from audio ... it will then be an extension, like we have for the meme board stuff", with Fish Audio (hosted) his pick. A voice note only ever goes out when matt asks for one, in his cloned voice, as the platform's own voice note: never on the agent's own initiative and never any other audio. Fish Audio is an extension (`src/extensions/fishAudio`, `docs/extensions/fishAudio.md`): `log fish clone` makes his voice model once from the voice notes he sent himself (fromMe in the conversation store or his `ownMessage` in the .db; Discord voice messages and Instagram voice clips the engines kept, 10 to 60 s in all; nobody else's voice), a dry run listing them unless `--apply`, its id kept in `~/.logCli/voice/fishClone.json`; `log fish speak --text` says words in it to a file under `~/.logCli/voiceNotes` and sends nothing, on the free `s2.1-pro-free` model unless `--model`. `log discord voice`, `log instagram voice` and `log slack voice` take text only (an audio file is refused with `voiceNoteInvalid`), are dry runs unless `--live` with `--approvedBy` (rule 8), wait for the account to catch up (rule 135), run the text through the voice gate (rule 137), make it with the clone, convert it with ffmpeg (Discord ogg/opus, sent as a voice message with flags 8192, its waveform and duration; Instagram AAC in .m4a through instagrapi's `direct_send_voice`, its upload on curl_cffi under the one-call lock, rule 129; Slack AAC in .m4a through `files.getUploadURLExternal`, the upload on gabriel's curl_cffi transport and `files.completeUploadExternal`, rule 125), claim the chat (rule 133), count as a write, and stop on any refusal (rule 94). An engine sends only a file log made under `~/.logCli/voiceNotes`. X isn't built: twikit has no audio send and no vendored code or doc shows X's DM voice upload, so nothing is guessed. `src/cli/voiceNote`. Spec: `docs/specs/voiceClone.md` (was `fishVoice.md`).
+
+**Rule 143.** 2026-11-05 · matt: "the voice cloning and the voice note stuff will be agnostic", after Fish Audio refused the clone without API credit (403, model creation limit 0/0) and he had none to put in. The voice layer is provider-agnostic, the way proxies are (rule 52): `src/extensions/ voiceClone` holds one interface (its models, cheapest model, clone limits, the reference format it takes, clone and speak), and each provider is an extension of its own: `src/extensions/inworld` (the default: instant cloning free, about 70 free speech minutes, wav references 3 to 30 s, `inworld-tts-2-flash`, `INWORLD_API_KEY`) and `src/extensions/fishAudio`. The provider is `--provider`, else `LOG_VOICE_PROVIDER` in `.env.local`, else inworld. `log fish clone|speak` became `log clone voice|speak` (MCP `cloneVoice`, `cloneSpeak`); `log fish` is refused with the form it became (rule 63's pattern). Each provider's clone is kept in `~/.logCli/voice/clone.json`, keyed by provider, made once. `log discord|instagram|slack voice` take `--provider` and call only the shared layer, never a provider. Everything else in rule 142 holds. Spec: `docs/specs/voiceClone.md`.

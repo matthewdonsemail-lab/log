@@ -1,8 +1,8 @@
 import { findDiscordAccount, discordGate } from "../../discord/account/session/index.ts";
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
-import { createFishClient, PLATFORM_AUDIO, readClone, renderVoiceNote, textOnlyProblem } from "../../extensions/fishAudio/index.ts";
-import type { FishClient, Rendered, VoiceNote, VoiceNotePlatform } from "../../extensions/fishAudio/index.ts";
+import { PLATFORM_AUDIO, providerOf, readClone, renderVoiceNote, textOnlyProblem, VOICE_PROVIDERS, voiceProvider } from "../../extensions/voiceClone/index.ts";
+import type { Rendered, VoiceNote, VoiceNotePlatform, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import { findInstagramAccount, instagramGate } from "../../instagram/account/session/index.ts";
@@ -24,25 +24,25 @@ interface VoiceShape {
   resolve: (context: CommandContext, label: string, flags: Record<string, unknown>) => Promise<Resolved>;
 }
 
-export const voiceNoteDeps: { client: () => FishClient; render: (platform: VoiceNotePlatform, text: string) => Promise<Rendered> } = {
-  client: () => createFishClient(),
-  render: (platform, text) => renderVoiceNote(voiceNoteDeps.client(), platform, text),
+export const voiceNoteDeps: { render: (provider: VoiceProvider, platform: VoiceNotePlatform, text: string) => Promise<Rendered> } = {
+  render: (provider, platform, text) => renderVoiceNote(voiceProvider(provider), platform, text),
 };
 
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What matt says in the voice note, as text in his words; never an audio file" };
+const PROVIDER: FlagSpec = { name: "provider", kind: "enum", values: VOICE_PROVIDERS, description: "Which voice provider says it: inworld or fishAudio (default: LOG_VOICE_PROVIDER, else inworld)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
 
 function usageOf(shape: VoiceShape): string {
   return [
-    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--approvedBy <who>] [--live] [--json]`,
-    `Sends a voice note in matt's cloned voice (Fish Audio, log fish clone) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
-    "A voice note goes out only when matt asks for one (rule 142). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It waits for the account to catch up (rule 135), runs the text through the voice gate every send runs (rule 137), generates and converts it, claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
+    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--approvedBy <who>] [--live] [--json]`,
+    `Sends a voice note in matt's cloned voice (the voice provider, log clone voice) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
+    "A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It waits for the account to catch up (rule 135), runs the text through the voice gate every send runs (rule 137), generates and converts it, claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
   ].join("\n");
 }
 
 function inputOf(shape: VoiceShape): CommandInput {
   const summary = `Send a voice note in matt's cloned voice as ${shape.platform[0].toUpperCase() + shape.platform.slice(1)}'s own voice note, from text; a dry run unless --live`;
-  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
+  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
 }
 
 export function voiceNoteCommandOf(shape: VoiceShape): Command {
@@ -56,7 +56,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
     effect: "write",
     input,
     summary: input.forms[0].summary,
-    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>" [--approvedBy <who>] [--live] [--json]`,
+    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>" [--provider <p>] [--approvedBy <who>] [--live] [--json]`,
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
@@ -69,24 +69,27 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
       if (live && !approvedBy) return refuse(label, "notApproved", "--live needs --approvedBy <who> (rule 8)");
       const watermark = watermarkReadingOf(text);
       if (watermark.level === "artifacts") return refuse(label, "aiArtifacts", `the text carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
+      const chosen = providerOf(parsed.flags["provider"]);
+      if (!chosen.ok) return refuse(label, "voiceProviderUnknown", chosen.detail);
+      const provider = chosen.provider;
       try {
         const resolved = await shape.resolve(context, label, parsed.flags);
         if (!resolved.ok) return resolved.result;
-        const clone = readClone();
-        const where = { platform: shape.platform, account: resolved.account, chat: resolved.chatId, text: text.trim(), container: PLATFORM_AUDIO[shape.platform].container };
+        const clone = readClone(provider);
+        const where = { platform: shape.platform, account: resolved.account, chat: resolved.chatId, text: text.trim(), provider, container: PLATFORM_AUDIO[shape.platform].container };
         if (!live) {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", ok: true, dryRun: true, cloned: !!clone, ...where }, null, 2) };
-          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in matt's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone is ready (made ${clone.createdAt}).` : "There is no clone yet: log fish clone --apply makes it first.", "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
+          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in matt's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
         }
-        if (!clone) return refuse(label, "voiceCloneMissing", "log fish clone --apply makes it once from matt's own voice notes");
+        if (!clone) return refuse(label, "voiceCloneMissing", `log clone voice --provider ${provider} --apply makes it once from matt's own voice notes`);
         context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
         const caught = await waitCaughtUp(shape.platform, resolved.account);
         if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
         const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle });
         if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
-        context.err(`${resolved.account}: saying it in matt's cloned voice and converting it to ${PLATFORM_AUDIO[shape.platform].container}`);
-        const rendered = await voiceNoteDeps.render(shape.platform, text);
+        context.err(`${resolved.account}: saying it in matt's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}`);
+        const rendered = await voiceNoteDeps.render(provider, shape.platform, text);
         if (!rendered.ok) return refuse(label, rendered.code, rendered.detail);
         context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
         const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
