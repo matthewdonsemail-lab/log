@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 37 domains, 431 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 438 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -559,6 +559,18 @@ The account reacts to a message with an emoji on X, Discord, Slack and Instagram
 An X account's own lists, shown, made and added to through its one session on vendor/twikit. Rule 141.
 
 - **REQ-XLISTS-01** Lists are read, made once and added to through the engine
+
+## [Fish voice and voice notes](./fishVoice.md)
+
+matt's voice is cloned once on Fish Audio from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. Rule 142.
+
+- **REQ-FISH-01** The client knows only the three Fish calls it needs
+- **REQ-FISH-02** The clone is made once, only from matt's own voice notes
+- **REQ-FISH-03** Speech is made from text only, on the cheapest model
+- **REQ-FISH-04** One voice command per platform, text only, a dry run unless --live
+- **REQ-FISH-05** A live voice note is gated, made, converted and claimed like a send
+- **REQ-FISH-06** Each engine sends the platform's own voice note, as a write
+- **REQ-FISH-07** X has no voice note
 
 ## [Instagram](./instagram.md)
 

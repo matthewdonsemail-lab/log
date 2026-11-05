@@ -94,7 +94,7 @@ export async function runWith(argv: string[], context: Partial<CommandContext> |
 }
 
 function findIn<C extends { name: string; platform: string }>(all: readonly C[]) {
-  return (name: string, platform?: string) => all.find((c) => c.name === (ALIASES[name] ?? name) && (!platform || c.platform === platform || !isPlatform(c.platform))) ?? all.find((c) => c.name === (ALIASES[name] ?? name));
+  return (name: string, platform?: string) => (platform ? all.find((c) => c.name === (ALIASES[name] ?? name) && c.platform === platform) : undefined) ?? all.find((c) => c.name === (ALIASES[name] ?? name) && !isPlatform(c.platform)) ?? all.find((c) => c.name === (ALIASES[name] ?? name));
 }
 
 export async function dispatchWith(ctx: CommandContext, argv: string[], commands: readonly Command[]): Promise<number> {

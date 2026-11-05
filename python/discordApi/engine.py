@@ -21,7 +21,7 @@ from platformKit import reactions
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
-WRITES: tuple[str, ...] = ("send", "delete", "react")
+WRITES: tuple[str, ...] = ("send", "delete", "react", "voice")
 SEARCH_PAGE = 25
 
 
@@ -443,6 +443,41 @@ async def react(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     return await asyncio.to_thread(react_of, token, channel, message, emoji, spec.get("remove") is True)
 
 
+def voice_of(token: str, channel: str, path: Path, seconds: float, waveform: str) -> dict[str, Any]:
+    from endcord.discord import generate_nonce
+
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    slot, code = client.request_attachment_url(channel, str(path), custom_name="voice-message.ogg")
+    if code or not slot:
+        return {"ok": False, "code": "voiceNoteRefused", "detail": f"Discord gave no upload slot for the voice note (code {code}): nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+    if not client.upload_attachment(slot["upload_url"], str(path)):
+        return {"ok": False, "code": "voiceNoteRefused", "detail": "the upload of the voice note to Discord failed: nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+    body = json.dumps({"channel_id": channel, "content": "", "attachments": [{"id": "0", "filename": "voice-message.ogg", "uploaded_filename": slot["upload_filename"], "duration_secs": seconds, "waveform": waveform}], "message_reference": None, "flags": media.DISCORD_VOICE_FLAG, "type": 0, "sticker_ids": [], "nonce": generate_nonce()})
+    data, status = client.request("POST", f"/api/v9/channels/{channel}/messages", body, client.header)
+    if not status:
+        return {"ok": False, "code": "voiceNoteFailed", "detail": f"Discord didn't answer the voice note in channel {channel}: whether it landed is unknown", "loginState": "unknown", "event": "dropped", "channelId": channel}
+    if status != 200:
+        refusal = refusal_of(status, data, f"the voice note in channel {channel}")
+        return {**refusal, "code": refusal["code"] if refusal["code"] in ("rateLimited", "sessionDead") else "voiceNoteRefused", "event": "throttled"}
+    sent = json.loads(data)
+    return {"ok": True, "loginState": "loggedIn", "event": "sent", "mode": "voice", "channelId": sent.get("channel_id") or channel, "messageId": sent.get("id"), "timestamp": sent.get("timestamp"), "seconds": seconds, "flags": sent.get("flags")}
+
+
+async def voice(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    token = cookies.get("token")
+    if not token:
+        return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+    channel = str(spec.get("channel") or "").strip()
+    path = media.voice_note_path(spec.get("path"), ".ogg")
+    seconds = float(spec.get("seconds") or 0)
+    waveform = str(spec.get("waveform") or "")
+    if not channel.isdigit() or not path or seconds <= 0 or not waveform:
+        return {"ok": False, "code": "voiceNoteInvalid", "detail": "voice needs a channel id and a voice note log made itself (an .ogg under ~/.logCli/voiceNotes, with its seconds and waveform): no other audio is sent"}
+    return await asyncio.to_thread(voice_of, token, channel, path, seconds, waveform)
+
+
 def sound_search_of(client: Any, channel_id: str, pause: float) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
     from endcord.message import prepare_messages
 
@@ -507,7 +542,7 @@ async def voice_notes(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str
     return await asyncio.to_thread(voice_notes_of, token, spec)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "watch": watch, "voiceNotes": voice_notes}
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes}
 
 
 if __name__ == "__main__":

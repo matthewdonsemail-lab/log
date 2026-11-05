@@ -1976,6 +1976,38 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     stops (rule 94). `src/cli/twitter/helpers/list.ts`. Spec:
     `docs/specs/xLists.md`.
 
+142. 2026-11-05 · matt: "make it so that we can send audio, like upload
+    natively into the platform, voice notes ... directly into the actual
+    clients themselves ... we need to voice clone ourselves from audio ...
+    it will then be an extension, like we have for the meme board stuff",
+    with Fish Audio (hosted) his pick. A voice note only ever goes out when
+    matt asks for one, in his cloned voice, as the platform's own voice
+    note: never on the agent's own initiative and never any other audio.
+    Fish Audio is an extension (`src/extensions/fishAudio`,
+    `docs/extensions/fishAudio.md`): `log fish clone` makes his voice model
+    once from the voice notes he sent himself (fromMe in the conversation
+    store or his `ownMessage` in the .db; Discord voice messages and
+    Instagram voice clips the engines kept, 10 to 60 s in all; nobody
+    else's voice), a dry run listing them unless `--apply`, its id kept in
+    `~/.logCli/voice/fishClone.json`; `log fish speak --text` says words in
+    it to a file under `~/.logCli/voiceNotes` and sends nothing, on the free
+    `s2.1-pro-free` model unless `--model`. `log discord voice`, `log
+    instagram voice` and `log slack voice` take text only (an audio file is
+    refused with `voiceNoteInvalid`), are dry runs unless `--live` with
+    `--approvedBy` (rule 8), wait for the account to catch up (rule 135),
+    run the text through the voice gate (rule 137), make it with the clone,
+    convert it with ffmpeg (Discord ogg/opus, sent as a voice message with
+    flags 8192, its waveform and duration; Instagram AAC in .m4a through
+    instagrapi's `direct_send_voice`, its upload on curl_cffi under the
+    one-call lock, rule 129; Slack AAC in .m4a through
+    `files.getUploadURLExternal`, the upload on gabriel's curl_cffi
+    transport and `files.completeUploadExternal`, rule 125), claim the chat
+    (rule 133), count as a write, and stop on any refusal (rule 94). An
+    engine sends only a file log made under `~/.logCli/voiceNotes`. X isn't
+    built: twikit has no audio send and no vendored code or doc shows X's
+    DM voice upload, so nothing is guessed. `src/cli/voiceNote`. Spec:
+    `docs/specs/fishVoice.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

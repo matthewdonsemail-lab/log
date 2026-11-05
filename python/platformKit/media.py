@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 from typing import Any
@@ -49,3 +50,16 @@ def is_visual(attachment: dict[str, Any]) -> bool:
     kind = str(attachment.get("type") or "").lower()
     name = str(attachment.get("name") or "").lower()
     return any(kind.startswith(t) for t in VISUAL_TYPES) or name.endswith(VISUAL_SUFFIXES)
+
+
+def voice_notes_root() -> Path:
+    return Path(os.environ.get("LOG_VOICE_NOTES_DIR") or Path.home() / ".logCli" / "voiceNotes").resolve()
+
+
+def voice_note_path(given: Any, suffix: str) -> Path | None:
+    if not isinstance(given, str) or not given.strip():
+        return None
+    path = Path(given).resolve()
+    if path.suffix.lower() != suffix or not path.is_file() or not path.stat().st_size:
+        return None
+    return path if voice_notes_root() in path.parents else None

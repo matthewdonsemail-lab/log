@@ -1894,6 +1894,62 @@ export const ERROR_CATALOG = {
     raisedIn: ['python/discordApi'],
     action: 'Read the chat again to see whether the reaction is there before anything else; never react again blind (rule 94).'
   },
+  fishKeyMissing: {
+    layer: 'runtime',
+    meaning: 'FISH_API_KEY is not set, so Fish Audio was not called. Nothing was cloned or generated.',
+    retryable: false,
+    raisedIn: ['cli/fish', 'cli/voiceNote', 'extensions/fishAudio'],
+    action: 'Put FISH_API_KEY in .env.local (or ~/.buzz/.env.local); its name is in .env.example. Never print it.'
+  },
+  fishRefused: {
+    layer: 'runtime',
+    meaning: "Fish Audio answered a clone or a text to speech with a refusal (its status and message are in the detail). Nothing was retried.",
+    retryable: false,
+    raisedIn: ['cli/fish', 'cli/voiceNote', 'extensions/fishAudio'],
+    action: "Read Fish's answer in the detail. A 402, or a 403 saying the API model creation limit is reached, means the Fish account needs API credit: only matt decides whether to spend (rule 41). `log fish speak --model` names the speech model."
+  },
+  voiceCloneMissing: {
+    layer: 'runtime',
+    meaning: "There is no clone of matt's voice yet (~/.logCli/voice/fishClone.json), so no voice note can be made.",
+    retryable: false,
+    raisedIn: ['cli/fish', 'cli/voiceNote', 'extensions/fishAudio'],
+    action: 'Run `log fish clone` to see the recordings it would use, then `log fish clone --apply` once.'
+  },
+  voiceRecordingsMissing: {
+    layer: 'runtime',
+    meaning: "Too few of matt's own voice notes (fromMe, 5 to 60 s each) were found to clone his voice: Fish needs about 10 s. Nothing was sent to Fish.",
+    retryable: false,
+    raisedIn: ['cli/fish', 'extensions/fishAudio'],
+    action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log fish clone again. Never clone anyone else\'s voice.'
+  },
+  voiceNoteInvalid: {
+    layer: 'runtime',
+    meaning: "A voice note was given no text, too much text, or an audio file instead of text; or an engine was handed audio log didn't make itself. A voice note is only ever made from words, in matt's cloned voice.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'extensions/fishAudio', 'python/discordApi', 'python/instagramApi', 'python/slackApi'],
+    action: 'Give --text with what matt says, in his words. Never pass an audio file: log makes the voice note itself.'
+  },
+  voiceNoteConvertFailed: {
+    layer: 'runtime',
+    meaning: "ffmpeg couldn't turn the generated speech into the platform's voice note format (ogg/opus for Discord, AAC in .m4a for Instagram and Slack). Nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/voiceNote', 'extensions/fishAudio'],
+    action: 'Check ffmpeg is installed with libopus and aac (ffmpeg -encoders), then send it again.'
+  },
+  voiceNoteRefused: {
+    layer: 'runtime',
+    meaning: "The platform refused the voice note's upload or its message (its answer is in the detail). Nothing was retried.",
+    retryable: false,
+    raisedIn: ['python/discordApi', 'python/instagramApi', 'python/slackApi'],
+    action: "Read the platform's answer in the detail. Nothing more goes out on that account until matt says so (rule 94)."
+  },
+  voiceNoteFailed: {
+    layer: 'runtime',
+    meaning: "Discord didn't answer the voice note's message at all (no status). Whether it landed is unknown.",
+    retryable: false,
+    raisedIn: ['python/discordApi'],
+    action: 'Read the chat again to see whether the voice note is there before anything else; never send it again blind (rule 94).'
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG

@@ -22,6 +22,8 @@ import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
+import { fishCommand } from "../fish/index.ts";
+import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
 import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
@@ -100,6 +102,7 @@ export const COMMANDS: Command[] = [
   searchCommand,
   kbCommand,
   memelordCommand,
+  fishCommand,
   transcribeCommand,
   followersCommand,
   notificationsCommand,
@@ -122,6 +125,7 @@ export const COMMANDS: Command[] = [
   discordSendCommand,
   discordDeleteCommand,
   discordReactCommand,
+  discordVoiceCommand,
   linkedinSessionCommand,
   linkedinCookiesCommand,
   slackSessionCommand,
@@ -132,11 +136,13 @@ export const COMMANDS: Command[] = [
   slackSendCommand,
   slackCookiesCommand,
   slackReactCommand,
+  slackVoiceCommand,
   instagramSessionCommand,
   instagramDmsCommand,
   instagramSendCommand,
   instagramWatchCommand,
   instagramReactCommand,
+  instagramVoiceCommand,
 ];
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {

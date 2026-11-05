@@ -19,7 +19,8 @@ from platformKit import reactions
 
 PLATFORM = "slack"
 LIBRARY = "vendor/gabrielSlack"
-WRITES: tuple[str, ...] = ("send", "react")
+WRITES: tuple[str, ...] = ("send", "react", "voice")
+VOICE_NOTE_NAME = "voice-note.m4a"
 SESSION_COOKIES = ("d",)
 SEND_GAP_SECONDS = (1.5, 3.5)
 WATCHED = ("message", "user_typing", "im_marked", "channel_marked", "reaction_added", "reaction_removed", "presence_change", "draft_create", "draft_send", "draft_delete", "badge_counts_updated", "reconnect_url", "hello")
@@ -288,6 +289,28 @@ async def react(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]
     return await with_workspace(spec, cookies, work)
 
 
+async def voice(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    chat = str(spec.get("chat") or "").strip()
+    path = media.voice_note_path(spec.get("path"), ".m4a")
+    if not chat or not path:
+        return {"ok": False, "code": "voiceNoteInvalid", "detail": "voice needs the chat's id and a voice note log made itself (an .m4a under ~/.logCli/voiceNotes): no other audio is sent"}
+    audio = path.read_bytes()
+
+    async def work(core: Any, session: Any) -> dict[str, Any]:
+        slot = await core.call_web_api("files.getUploadURLExternal", {"filename": VOICE_NOTE_NAME, "length": str(len(audio))})
+        if not slot.get("ok") or not slot.get("upload_url") or not slot.get("file_id"):
+            return {"ok": False, "code": "voiceNoteRefused", "detail": f"files.getUploadURLExternal answered {slot.get('error')}: nothing was sent", "loginState": "loggedIn"}
+        uploaded = await core.http.fetch_authenticated(str(slot["upload_url"]), method="POST", headers={"Content-Type": "application/octet-stream"}, content=audio, timeout=120)
+        if not uploaded.is_success:
+            return {"ok": False, "code": "voiceNoteRefused", "detail": f"Slack answered {uploaded.status_code} to the voice note's upload: nothing was sent", "loginState": "loggedIn"}
+        done = await core.call_web_api("files.completeUploadExternal", {"files": json.dumps([{"id": slot["file_id"], "title": "voice note"}]), "channel_id": chat})
+        if not done.get("ok"):
+            return {"ok": False, "code": "voiceNoteRefused", "detail": f"files.completeUploadExternal answered {done.get('error')}", "loginState": "loggedIn"}
+        return {"ok": True, "loginState": "loggedIn", "event": "sent", "mode": "voice", "chat": chat, "fileId": slot["file_id"], "seconds": spec.get("seconds")}
+
+    return await with_workspace(spec, cookies, work)
+
+
 def live(event: dict[str, Any]) -> None:
     print(json.dumps({"liveEvent": event}, default=str), flush=True)
 
@@ -379,7 +402,7 @@ async def name_then_live(core: Any, names: dict[str, str], user: str, row: dict[
     live(row)
 
 
-ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "react": react, "watch": watch}
+ACTIONS = {"ping": ping, "workspaces": workspaces, "chats": chats, "read": read, "send": send, "react": react, "voice": voice, "watch": watch}
 
 
 if __name__ == "__main__":

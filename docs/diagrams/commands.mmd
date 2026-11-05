@@ -27,6 +27,7 @@ flowchart TB
     c_search["search"]
     c_kb["kb"]
     c_memelord["memelord"]
+    c_fish["fish"]
     c_transcribe["transcribe"]
     c_new["new"]
   end
@@ -88,6 +89,7 @@ flowchart TB
     c_discordSend["send"]
     c_discordDelete["delete"]
     c_discordReact["react"]
+    c_discordVoice["voice"]
   end
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
@@ -102,6 +104,7 @@ flowchart TB
     c_slackSend["send"]
     c_slackCookies["cookies"]
     c_slackReact["react"]
+    c_slackVoice["voice"]
   end
   subgraph g_instagram["Instagram"]
     c_instagramSession["session"]
@@ -109,6 +112,7 @@ flowchart TB
     c_instagramSend["send"]
     c_instagramWatch["watch"]
     c_instagramReact["react"]
+    c_instagramVoice["voice"]
   end
   cli --> c_launch
   c_launch -.- terminal
@@ -227,6 +231,8 @@ flowchart TB
   mcp --> c_kb
   cli --> c_memelord
   mcp --> c_memelord
+  cli --> c_fish
+  mcp --> c_fish
   cli --> c_transcribe
   mcp --> c_transcribe
   cli --> c_twitterFollowers
@@ -274,6 +280,8 @@ flowchart TB
   mcp --> c_discordDelete
   cli --> c_discordReact
   mcp --> c_discordReact
+  cli --> c_discordVoice
+  mcp --> c_discordVoice
   cli --> c_linkedinSession
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
@@ -296,6 +304,8 @@ flowchart TB
   c_slackCookies -.- terminal
   cli --> c_slackReact
   mcp --> c_slackReact
+  cli --> c_slackVoice
+  mcp --> c_slackVoice
   cli --> c_instagramSession
   mcp --> c_instagramSession
   cli --> c_instagramDms
@@ -307,6 +317,8 @@ flowchart TB
   c_instagramWatch --> live
   cli --> c_instagramReact
   mcp --> c_instagramReact
+  cli --> c_instagramVoice
+  mcp --> c_instagramVoice
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
