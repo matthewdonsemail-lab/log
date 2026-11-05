@@ -17,8 +17,10 @@ async function refusalOf(answer: VoiceResponse): Promise<{ code: string; error: 
 const base64 = (bytes: Uint8Array) => Buffer.from(bytes).toString('base64')
 
 export function steeredText(model: string, text: string): string {
-  return (INWORLD_STEERING_MODELS as readonly string[]).includes(model as InworldModel) ? withBreaths(text) : text
+  return (INWORLD_STEERING_MODELS as readonly string[]).includes(model as InworldModel) ? withBreaths(text, seedOfText(text)) : text
 }
+
+const seedOfText = (text: string) => [...text].reduce((h, c) => (Math.imul(h, 31) + c.codePointAt(0)!) >>> 0, 7)
 
 export function cloneBodyOf(displayName: string, samples: readonly ReferenceAudio[], language: string, accent: string): string {
   return JSON.stringify({ displayName, languageCode: language, description: accentDescriptionOf(accent), voiceSamples: samples.map((s) => ({ audioData: base64(s.bytes), ...(s.transcription ? { transcription: s.transcription } : {}) })) })

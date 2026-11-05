@@ -74,7 +74,8 @@ export const SPOKEN_LEXICON: Readonly<Record<string, SpokenEntry>> = {
 
 export const WORD_MOST_MS = 400
 export const SPOKEN_MOST_ERROR = 0.25
-export const BREATH_EVERY_WORDS = 8
+export const BREATH_WORDS = { least: 8, most: 18 } as const
+export const PACE_JITTER = 0.07
 
 export interface SpokenWord {
   text: string

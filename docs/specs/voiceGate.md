@@ -87,3 +87,10 @@ Checked by: code and SubQ
 The gate inside a send finds the chat in matt's saved conversations by what the send knows (`chatIdFor`): its conversation id on that platform, or, on X, the conversation whose pair holds the person's user id, or their handle on that platform only. It gives SubQ his real replies there, the same evidence `log voice --with` gives. When the chat isn't there, the gate still reads his writing everywhere. On 2026-11-04 drafts that `voice` passed at 0.99 were refused inside the send at 0.36, because the send gave SubQ none of them. The opener rule (rule 98) only reads a first message: a chat with matt's own messages in its history, or his replies from that chat or that person, is already talking (`alreadyTalkedIn`), and openerOnly is not asked. What the send answers (`momentAnswered`) is their newest message only when it is the newest in the chat; when matt's own message is the newest, the send is news of his own, so nothing is passed as what they said and the gate asks whether it picks up on something specific about them. Rules 98 and 137.
 
 Checked by: code and SubQ
+
+### REQ-VOICE-13: A voice note is graded as spoken and must build on the conversation
+
+`readVoice` in `src/twitter/copy/voice/client.ts` takes `spoken`. With it the `voice` question asks whether matt would say it himself in a voice note, its length and punctuation never counting against it; `toThem` asks the same of how he talks in this chat; and a `buildsOn` question asks whether it takes what they are talking about further, across the whole conversation, rather than repeating what matt already told them, which must reach `CONTEXT_PASS` to pass. Without `spoken` there is no `buildsOn` (it is `null`). `gateReading` in `src/cli/twitter/helpers/voice.ts` passes `spoken` on and skips `offProfile` for it, `gateSend` takes `spoken`, `failedParts` names a low `buildsOn`, and `log voice --spoken` gates a voice note the same way. Rule 149.
+
+Checked by: code and SubQ
+

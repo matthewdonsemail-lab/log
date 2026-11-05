@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 148.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 149.
 
 ## The providers
 
@@ -99,6 +99,12 @@ Checked by: code and SubQ
 ### REQ-VOICE-CLONE-15: A translation is gated on its original and spoken in its own language
 
 `voiceNoteCommandOf` in `src/cli/voiceNote/index.ts` takes `--translationOf "<original>"` and `--language <code>`. With `--translationOf` the voice gate (`gateDeps.gate`) grades the original words instead of the text, since it compares a draft with matt's own writing; `watermarkReadingOf` reads the text and the original together and refuses `aiArtifacts`. `--translationOf` without `--language`, `--translationOf` with `--mattsWords`, and a `--language` that isn't a code like `zh-CN` are refused `voiceNoteInvalid` before anything is gated or made. The language goes through `voiceNoteDeps.render` and `renderVoiceNote` to `speakToFile`, which speaks in it instead of the clone's own `language`. `wordsOf` in `src/extensions/voiceClone/helpers/spoken.ts` reads Han, Hiragana, Katakana and Hangul one character at a time beside Latin words, so `readSpoken` checks a translated note as it checks an English one. Rule 148.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-16: No breath at the start, and breaths and pace that vary
+
+`withBreaths` in `src/extensions/voiceClone/helpers/spoken.ts` never puts `[breathe]` before the first sentence. It splits on `.!?` and `。！？`, and puts a breath before a later sentence only once the spoken length since the last one (a Chinese, Japanese or Korean character counting half) reaches a gap drawn from `seeded(seed)` between `BREATH_WORDS.least` and `BREATH_WORDS.most`; text that already has a `[breathe]` is left as it is. `steeredText` in `src/extensions/inworld/client.ts` seeds it from the text on `inworld-tts-2` only. `speakToFile` sends the speed through `paceOf` in `src/extensions/voiceClone/helpers/voiceNote.ts`, which moves `LOG_VOICE_SPEED` by at most `PACE_JITTER` from a seed of the text, kept within `SPEED_RANGE`. The voice note command gates with `spoken: true` (REQ-VOICE-13 in `voiceGate.md`). Rule 149.
 
 Checked by: code and SubQ
 

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf, paceOf } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
@@ -85,10 +85,29 @@ describe("spoken words and realism (rule 147)", () => {
     expect(speakableText("[excited] its so op, op as anything")).toBe("[excited] its so OP, OP as anything");
   });
 
-  test("withBreaths opens with a breath and adds one once enough words have gone by, never twice", () => {
-    expect(withBreaths("yo. ye im good bro been locked in building it. call me later.")).toBe("[breathe] yo. ye im good bro been locked in building it. [breathe] call me later.");
-    expect(withBreaths("[breathe] yo")).toBe("[breathe] yo");
-  });
+  test("withBreaths never opens with a breath, puts one in only after 8 to 18 words, at a gap drawn from the seed, and reads Chinese full stops (rule 149)", () => {
+    const said = "yo whats the craic. ye im good bro been locked in building it all week. it posts and replies on its own on every platform. call me later bro."
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const out = withBreaths(said, seed)
+      expect(out.startsWith("[breathe]")).toBe(false)
+      expect(out.replace(/\[breathe\] /g, "")).toBe(said)
+      expect(withBreaths(said, seed)).toBe(out)
+    }
+    expect(new Set([1, 2, 3, 4, 5, 6, 7, 8].map((seed) => withBreaths(said, seed))).size).toBeGreaterThan(1)
+    expect(withBreaths("yo bro.", 3)).toBe("yo bro.")
+    const chinese = withBreaths("我想用这个帮别人运营他们的社交账号，让他们变成创作者。它帮他们回消息，他们做别的事的时候也能靠这个赚钱。", 9)
+    expect(chinese.startsWith("[breathe]")).toBe(false)
+    expect(chinese).toContain("[breathe] 它")
+    expect(withBreaths("[breathe] yo", 1)).toBe("[breathe] yo")
+  })
+
+  test("paceOf drifts the speed by at most 7% from the text, the same each time, within the speed range (rule 149)", () => {
+    const paces = ["yo", "ye im good bro", "call me later", "its actually so op"].map((t) => paceOf(1.15, t))
+    for (const p of paces) expect(Math.abs(p - 1.15)).toBeLessThanOrEqual(1.15 * 0.07 + 0.001)
+    expect(new Set(paces).size).toBeGreaterThan(1)
+    expect(paceOf(1.15, "yo")).toBe(paces[0])
+    expect(paceOf(1.5, "yo")).toBeLessThanOrEqual(1.5)
+  })
 
   test("shapeLikeMatt lays matt's own room tone under the voice at the measured level, and is the same for the same seed", () => {
     const rate = REALISM.rate;

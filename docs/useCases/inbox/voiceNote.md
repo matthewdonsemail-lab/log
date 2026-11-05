@@ -14,8 +14,8 @@ Say: **"go on docs/useCases/inbox/voiceNote.md for <person or chat>"**. The agen
 ```mermaid
 flowchart TD
   s0["1. Read the chat the voice note goes to<br/><i>discordRead, instagramDms, slackRead</i>"]
-  s1["2. Take what he asked to say, in his words, only cleaned for spell…<br/><i>the agent, from his message and the chat</i>"]
-  s2["3. Gate it, unless matt dictated the exact words<br/><i>voice</i>"]
+  s1["2. Take what he asked to say, in his words, only cleaned for spell…<br/><i>the agent, from his message and the who…</i>"]
+  s2["3. Gate it as a voice note, unless matt dictated the exact words<br/><i>voice</i>"]
   s3["4. Dry run it<br/><i>discordVoice, instagramVoice, slackVoice</i>"]
   s4["5. Send it<br/><i>discordVoiceLive, instagramVoiceLive, slackVoiceLive</i>"]
   s5["6. Tell the owner what went out<br/><i>the reply to the owner</i>"]
@@ -30,8 +30,8 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Read the chat the voice note goes to | `discordRead` { channel }, `instagramDms` { with } or `slackRead` { chat }, with json | the last messages both ways are known, and nothing new is waiting on matt that the note would talk over |
-| 2 | Take what he asked to say, in his words, only cleaned for spelling | the agent, from his message and the chat | one short spoken line or two, as text |
-| 3 | Gate it, unless matt dictated the exact words | `voice` { text, to } | the gate passes; if it refuses words the agent drafted, rewrite them; when matt dictated the exact words, skip this step and use `mattsWords` in steps 4 and 5 (rule 144) |
+| 2 | Take what he asked to say, in his words, only cleaned for spelling; when he asks you to write it, read the whole chat and write it at the length he asks (a 40 s note is about 100 to 110 words), building on what they are talking about and never re-explaining what he already told them (rule 149) | the agent, from his message and the whole chat | the words to say, as text, at the length asked; not every note three short lines |
+| 3 | Gate it as a voice note, unless matt dictated the exact words | `voice` { text, to, with, context, spoken: true } | the gate passes; if it refuses words the agent drafted, rewrite them; when matt dictated the exact words, skip this step and use `mattsWords` in steps 4 and 5 (rule 144) |
 | 4 | Dry run it | `discordVoice`, `instagramVoice` or `slackVoice` { account, chat, text, mattsWords when they are his dictated words } | the dry run names the chat, the words and that the clone is ready |
 | 5 | Send it | `discordVoiceLive`, `instagramVoiceLive` or `slackVoiceLive` { account, chat, text, mattsWords when they are his dictated words, approvedBy: "matt", confirmLive: true } | the platform answers `sent` with the message or file id |
 | 6 | Tell the owner what went out | the reply to the owner | the words said, how long it ran, and where |

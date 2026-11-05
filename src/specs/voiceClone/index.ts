@@ -100,6 +100,11 @@ export const voiceClone = {
       { kind: 'symbol', file: VOICE_NOTE, name: 'listenTo' },
       { kind: 'symbol', file: TYPES, name: 'SPOKEN_LEXICON' },
     ],
+    'REQ-VOICE-CLONE-16': [
+      { kind: 'symbol', file: SPOKEN, name: 'withBreaths' },
+      { kind: 'symbol', file: VOICE_NOTE, name: 'paceOf' },
+      { kind: 'symbol', file: SENDS, name: 'voiceNoteCommandOf' },
+    ],
     'REQ-VOICE-CLONE-15': [
       { kind: 'string', file: SENDS, includes: 'translationOf' },
       { kind: 'symbol', file: SPOKEN, name: 'wordsOf' },
@@ -126,6 +131,7 @@ export const voiceClone = {
     'REQ-VOICE-CLONE-12': noul('In src/extensions/voiceClone/helpers/provider.ts, does speedOf default to DEFAULT_SPEED and clamp to SPEED_RANGE, and does voiceSettingsOf read it from LOG_VOICE_SPEED; does createInworldClient in src/extensions/inworld/client.ts send the request speed as audioConfig.speakingRate; and does cloneCommand in src/cli/clone/index.ts take a from flag whose files namedRecordings turns into recordings, read each one words through cloneDeps.sidecar, and make the clone with client.preferred before client.cheapest?'),
     'REQ-VOICE-CLONE-13': noul('In src/extensions/voiceClone/helpers/voiceNote.ts, does speakToFile always ask the provider for wav and run voiceSteps.process on it (processLikeMatt with the paths of mattsRecordings by default) before listening, refusing voiceProcessingFailed when it fails; and in src/extensions/voiceClone/helpers/realism.ts does processLikeMatt decode with REALISM.shape followed by phoneCurveFilter (a firequalizer of REALISM.phoneCurve, the tone curve measured between his own voice notes and the clone) and does shapeLikeMatt apply a smooth gain drift of REALISM.movementDb, a swaying low-pass, tanh saturation at REALISM.drive, room tone built by roomTone from quietPieces of the recordings (none from a recording whose floor is under REALISM.silentFloorDb) at REALISM.snrDb under the voice level, and a peak of REALISM.peakDb, deterministic for the same seed?'),
     'REQ-VOICE-CLONE-14': noul('In src/extensions/voiceClone/helpers/voiceNote.ts, does speakToFile refuse pronunciationUnknown when unknownAcronyms finds an acronym not in SPOKEN_LEXICON before calling the provider, send speakableText(text) to the provider, call voiceSteps.listen after shaping and refuse spokenCheckFailed when it fails, and refuse spokenMismatch, deleting the file, when readSpoken in src/extensions/voiceClone/helpers/spoken.ts says a lexicon word was heard as something else, spelled out, took longer than WORD_MOST_MS, or more than SPOKEN_MOST_ERROR of the words differ; and does renderVoiceNote go through speakToFile so nothing is converted or sent before that check?'),
+    'REQ-VOICE-CLONE-16': noul('In src/extensions/voiceClone/helpers/spoken.ts, does withBreaths never put a breath before the first sentence, split on . ! ? and the Chinese 。！？, put a breath before a later sentence only once the spoken length since the last breath (Han, Hiragana, Katakana and Hangul characters counting half) reaches a gap drawn from seeded(seed) between BREATH_WORDS.least and BREATH_WORDS.most, and leave text that already has a [breathe] unchanged; does steeredText in src/extensions/inworld/client.ts seed it from the text only for INWORLD_STEERING_MODELS; does paceOf in src/extensions/voiceClone/helpers/voiceNote.ts move the speed by at most PACE_JITTER from a seed of the text within SPEED_RANGE, with speakToFile sending paceOf as the speed; and does voiceNoteCommandOf in src/cli/voiceNote/index.ts call gateDeps.gate with spoken: true?'),
     'REQ-VOICE-CLONE-15': noul('In src/cli/voiceNote/index.ts, does voiceNoteCommandOf take translationOf and language flags, refuse voiceNoteInvalid before gating or rendering when translationOf is given without language, when translationOf is given with mattsWords, or when language is not a code like zh-CN, pass translationOf (not the text) as the text gateDeps.gate grades, read the text and translationOf together with watermarkReadingOf, and pass the language to voiceNoteDeps.render; does renderVoiceNote in src/extensions/voiceClone/helpers/voiceNote.ts pass it to speakToFile, which speaks in that language instead of clone.language; and does wordsOf in src/extensions/voiceClone/helpers/spoken.ts split Han, Hiragana, Katakana and Hangul characters into one token each beside Latin words?'),
     unspecifiedBehavior: noul('Does any clone or voice command send an audio file the caller gave, send a voice note without live and approvedBy, retry a refused voice note, clone a voice from recordings matt did not send, call a provider directly from a command, or send through a browser, by a route the specification does not describe?'),
   },
@@ -145,6 +151,7 @@ export const voiceClone = {
     'REQ-VOICE-CLONE-13': MET,
     'REQ-VOICE-CLONE-14': MET,
     'REQ-VOICE-CLONE-15': MET,
+    'REQ-VOICE-CLONE-16': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

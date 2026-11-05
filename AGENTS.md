@@ -2121,6 +2121,33 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`wordsOf`), so a translated note is checked too. Spec:
     `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-15).
 
+149. 2026-11-05 · matt: "it keeps doing this weird exhale at the beginning
+    ... the lengths of the things are always like 5 seconds", then "READ THE
+    CONVERSATION ... I'M ASKING YOU TO RESPOND AT LENGTH ... BUILDING ON
+    WHAT HE'S SAYING AS A 40 SECOND VOICE NOTE IN ENGLISH, YET YOU'RE JUST
+    RE-EXPLAINING SOMETHING I ALREADY SAID". Three things:
+    - **No breath at the start.** `withBreaths` never opens a note with
+      `[breathe]` (that was the exhale). A breath goes in only between
+      sentences (`.!?` and the Chinese `。！？`), after a gap of 8 to 18
+      spoken words drawn from the text's own seed (`BREATH_WORDS`; a
+      Chinese character counts half), so no two notes breathe alike.
+    - **The pace drifts.** Each note is spoken at `LOG_VOICE_SPEED` moved by
+      up to 7% from its text's seed (`paceOf`, `PACE_JITTER`), within the
+      speed range.
+    - **A voice note is written at the length matt asks for and builds on
+      the whole conversation.** Read the whole chat first, then write to
+      the length asked (a 40 s note is about 100 to 110 words), taking what
+      they are talking about further and adding to it, never re-explaining
+      what matt already told them. Note lengths vary: not every note is
+      three short lines. The voice gate grades a voice note as spoken
+      (`spoken`, set by every `log discord|instagram|slack voice` and by
+      `log voice --spoken`): its length and punctuation never count against
+      it, `offProfile` (his typed habits in the chat) isn't applied, and a
+      new question, `buildsOn` (0.7 to pass), refuses a note that repeats
+      what matt already said or ignores what they are talking about.
+    Spec: `docs/specs/voiceGate.md` (REQ-VOICE-13),
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-16).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 148;
+export const RULES_REVIEWED_THROUGH = 149;
 
 export const AGENTS_URI = "log://agents";
 
@@ -63,6 +63,7 @@ export const CORE_PRINCIPLES = [
   "56. matt's voice is cloned in his Irish accent from his own Discord voice note (LOG_VOICE_ACCENT, LOG_VOICE_LANGUAGE en-IE, en-GB if Inworld refuses it), spoken on inworld-tts-2 at LOG_VOICE_SPEED (1.15); `cloneVoice` with `apply` and `replace` makes it again and keeps the old voice id under previous, `from` clones from recordings of his he names (rules 145, 146).",
   "57. Every voice note is shaped like matt's own voice notes (his room tone from his own notes, phone squash, mic drift, saturation, breaths) and listened back with AssemblyAI before it goes: a lexicon word said wrong or spelled out is refused `spokenMismatch`, an acronym the lexicon doesn't have is refused `pronunciationUnknown` before it is spoken, and one that can't be checked is never sent (`spokenCheckFailed`). Rewrite the word the way he says it; never add a lexicon entry he hasn't said (rule 147).",
   "58. When matt asks for a voice note in another language, send the translation with `translationOf` (the original words, which the voice gate grades, since it can't match a translation to his writing) and `language` (zh-CN, es-ES ...), the language the clone speaks it in. Only for a translation he asked for, never with `mattsWords` (rule 148).",
+  "59. A voice note is written at the length matt asks for (a 40 s note is about 100 to 110 words), from the whole conversation: take what they are talking about further, never re-explain what matt already told them, and don't make every note three short lines. Its gate grades it as spoken (`voice` with `spoken`, as every voice note send does), never on length, and refuses one that doesn't build on the chat (`buildsOn`). A note never opens with a breath, and its breaths and pace vary (rule 149).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -118,7 +119,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105, 131, 132],
   twitterCookies: [13, 21, 63, 64, 73, 80, 81, 104, 105],
-  voice: [30, 39, 41, 63, 64, 98, 112, 127],
+  voice: [30, 39, 41, 63, 64, 98, 112, 127, 149],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
@@ -158,9 +159,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
   instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
-  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
-  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
-  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
+  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148, 149],
+  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148, 149],
+  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148, 149],
   twitterList: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141],
   twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],

@@ -2,12 +2,12 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { basename, join, resolve, sep } from 'node:path'
 import { assemblyAiKey, createAssemblyAiClient, hashOf, readTranscript, writeTranscript } from '../../../media/voiceNotes/index.ts'
-import { AUDIO_SUFFIX, MAX_SPEAK_CHARACTERS, PLATFORM_AUDIO } from '../types'
+import { AUDIO_SUFFIX, MAX_SPEAK_CHARACTERS, PACE_JITTER, PLATFORM_AUDIO, SPEED_RANGE } from '../types'
 import type { ProviderClone, SpeakFormat, SpokenReading, SpokenWord, VoiceNote, VoiceNoteCode, VoiceNotePlatform, VoiceProviderClient } from '../types'
 import { AUDIO_TOOLS, convertFor, discordWaveform, encodeTo, instagramLevels, samplesOf } from './audio'
 import type { AudioTools } from './audio'
 import { voiceSettingsOf } from './provider'
-import { processLikeMatt } from './realism'
+import { processLikeMatt, seeded } from './realism'
 import type { Done } from './realism'
 import { mattsRecordings } from './recordings'
 import { readSpoken, speakableText, unknownAcronyms } from './spoken'
@@ -42,6 +42,11 @@ export const voiceSteps: VoiceSteps = {
 
 const seedOf = (text: string) => Number.parseInt(createHash('sha1').update(text).digest('hex').slice(0, 8), 16)
 
+export function paceOf(speed: number, text: string): number {
+  const drift = (seeded(seedOf(`${text}:pace`))() * 2 - 1) * PACE_JITTER
+  return Math.round(Math.min(SPEED_RANGE.most, Math.max(SPEED_RANGE.least, speed * (1 + drift))) * 1000) / 1000
+}
+
 export function textOnlyProblem(text: string): string | null {
   const said = text.trim()
   if (!said) return 'the voice note needs --text: the words to say'
@@ -62,7 +67,7 @@ export async function speakToFile(client: VoiceProviderClient, text: string, for
   const unknown = unknownAcronyms(text)
   if (unknown.length) return { ok: false, code: 'pronunciationUnknown', detail: `${unknown.map((u) => `"${u}"`).join(', ')} ${unknown.length > 1 ? 'are' : 'is'} not in the spoken lexicon (SPOKEN_LEXICON), so whether matt says ${unknown.length > 1 ? 'them' : 'it'} as a word or as letters isn't known: write ${unknown.length > 1 ? 'them' : 'it'} out the way it is said, or add ${unknown.length > 1 ? 'them' : 'it'} to the lexicon` }
   const used = model ?? clone.model
-  const answer = await client.speak({ text: speakableText(text.trim()), voiceId: clone.voiceId, model: used, format: 'wav', ...(language ?? clone.language ? { language: language ?? clone.language } : {}), accent: clone.accent ?? voiceSettingsOf().accent, speed: voiceSettingsOf().speed })
+  const answer = await client.speak({ text: speakableText(text.trim()), voiceId: clone.voiceId, model: used, format: 'wav', ...(language ?? clone.language ? { language: language ?? clone.language } : {}), accent: clone.accent ?? voiceSettingsOf().accent, speed: paceOf(voiceSettingsOf().speed, text.trim()) })
   if (!answer.ok || !answer.data) return { ok: false, code: answer.code === 'voiceKeyMissing' ? 'voiceKeyMissing' : 'voiceProviderRefused', detail: `${client.provider} answered ${answer.status || 'nothing'}${answer.code ? ` (${answer.code})` : ''}${answer.error ? `: ${answer.error}` : ''} to text to speech with ${used}` }
   mkdirSync(voiceNotesDir(), { recursive: true })
   const stem = join(voiceNotesDir(), `${stampOf(now)}_${client.provider}_${createHash('sha1').update(text.trim()).digest('hex').slice(0, 10)}`)
