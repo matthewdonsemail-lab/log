@@ -45,8 +45,8 @@ beforeEach(() => {
     gated.push(send.text);
     return gateRefuses ? { ok: false, refused: "the gate graded it as typed text" } : { ok: true, line: "voice gate passed" };
   };
-  voiceNoteDeps.render = async (provider: VoiceProvider, platform: VoiceNotePlatform, text: string): Promise<Rendered> => {
-    rendered.push(`${provider}:${platform}:${text}`);
+  voiceNoteDeps.render = async (provider: VoiceProvider, platform: VoiceNotePlatform, text: string, language?: string): Promise<Rendered> => {
+    rendered.push(`${provider}:${platform}:${text}${language ? `:${language}` : ""}`);
     return { ok: true, note: { path: join(voiceNotesDir(), `note${platform === "discord" ? ".ogg" : ".m4a"}`), platform, seconds: 2.5, waveform: "AAAA", levels: [0.5, 1], provider, model: "inworld-tts-2-flash" } };
   };
   writeClone({ provider: "inworld", voiceId: "ws__matt", title: "matt", model: "inworld-tts-2-flash", createdAt: "2026-11-05T00:00:00.000Z", state: "ready", references: [] });
@@ -159,6 +159,26 @@ describe("--mattsWords: matt's own dictated words (rule 144)", () => {
     expect(gated).toEqual([MATTS_WORDS]);
     expect(rendered).toEqual([]);
     expect(r.specs).toEqual([]);
+  });
+
+  test("--translationOf gates the original words and speaks the translation in --language (rule 148)", async () => {
+    const original = "this is what im on about bro";
+    const chinese = "兄弟，这就是我说的那个";
+    const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", chinese, "--translationOf", original, "--language", "zh-CN", "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn", messageId: "1" });
+    expect(r.code).toBe(0);
+    expect(gated).toEqual([original]);
+    expect(rendered).toEqual([`inworld:discord:${chinese}:zh-CN`]);
+  });
+
+  test("--translationOf needs --language, can't be paired with --mattsWords, and refuses a bad code, calling nothing", async () => {
+    const base = ["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", "兄弟", "--approvedBy", "matt", "--live"];
+    for (const extra of [["--translationOf", "bro"], ["--translationOf", "bro", "--language", "zh-CN", "--mattsWords"], ["--language", "chinese"]]) {
+      const r = await run([...base, ...extra], { ok: true, event: "sent", loginState: "loggedIn" });
+      expect(r.code).not.toBe(0);
+      expect(r.err + r.out).toContain("voiceNoteInvalid");
+    }
+    expect(gated).toEqual([]);
+    expect(rendered).toEqual([]);
   });
 
   test("AI artifacts are still refused with --mattsWords", async () => {

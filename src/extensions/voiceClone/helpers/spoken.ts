@@ -3,8 +3,10 @@ import type { SpokenEntry, SpokenReading, SpokenWord } from '../types'
 
 const TAGS = /\[[^\]]*\]/g
 
+const ONE_SOUND = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu
+
 export function wordsOf(text: string): string[] {
-  return text.replace(TAGS, ' ').toLowerCase().replace(/['’]/g, '').split(/[^a-z0-9]+/).filter(Boolean)
+  return text.replace(TAGS, ' ').toLowerCase().replace(/['’]/g, '').replace(ONE_SOUND, ' $& ').match(/[\p{L}\p{N}]+/gu) ?? []
 }
 
 const keyOf = (token: string) => token.toLowerCase().replace(/\./g, '')

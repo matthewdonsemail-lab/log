@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { conversationsRoot } from '../../search/conversations/index'
-import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths } from './index'
+import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf } from './index'
 import type { Recording } from './index'
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `/x/${messageId}`, platform: 'discord', account: 'a', conversationId: '1', messageId, seconds })
@@ -69,6 +69,14 @@ describe("spoken words and realism (rule 147)", () => {
     const slow = readSpoken("so op", [{ text: "so", start: 0, end: 200, confidence: 1 }, { text: "OP", start: 300, end: 900, confidence: 1 }]);
     expect(slow.problems[0]).toContain("as letters would");
     expect(readSpoken("one two three four", timed(["nine", "ten", "eleven", "four"])).ok).toBe(false);
+  });
+
+  test("wordsOf reads Chinese one character at a time beside Latin words, so a Chinese note is checked too (rule 148)", () => {
+    expect(wordsOf("[excited] so OP 兄弟，这就是abc")).toEqual(["so", "op", "兄", "弟", "这", "就", "是", "abc"]);
+    const said = "兄弟，这就是我说的那个。这条语音是工具做的，不是我本人。每个平台都能用。";
+    const heard = (text: string) => wordsOf(text).map((t, i) => ({ text: t, start: i * 200, end: i * 200 + 150, confidence: 0.99 }));
+    expect(readSpoken(said, heard("兄弟，这就是我说的那个这套语言是工具做的，不是我本人，每一个平台都能用。")).ok).toBe(true);
+    expect(readSpoken(said, heard("今天天气很好我们去公园玩吧")).ok).toBe(false);
   });
 
   test("unknownAcronyms names acronyms the lexicon doesn't have, and speakableText writes lexicon words the way they're said", () => {

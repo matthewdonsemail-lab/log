@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 147;
+export const RULES_REVIEWED_THROUGH = 148;
 
 export const AGENTS_URI = "log://agents";
 
@@ -62,6 +62,7 @@ export const CORE_PRINCIPLES = [
   "55. When matt dictates the exact words of a voice note, send them with `mattsWords`: the voice gate's read, which grades speech as typed text, is skipped, and the AI artifact check still runs. Words the agent drafted are always gated (rule 144).",
   "56. matt's voice is cloned in his Irish accent from his own Discord voice note (LOG_VOICE_ACCENT, LOG_VOICE_LANGUAGE en-IE, en-GB if Inworld refuses it), spoken on inworld-tts-2 at LOG_VOICE_SPEED (1.15); `cloneVoice` with `apply` and `replace` makes it again and keeps the old voice id under previous, `from` clones from recordings of his he names (rules 145, 146).",
   "57. Every voice note is shaped like matt's own voice notes (his room tone from his own notes, phone squash, mic drift, saturation, breaths) and listened back with AssemblyAI before it goes: a lexicon word said wrong or spelled out is refused `spokenMismatch`, an acronym the lexicon doesn't have is refused `pronunciationUnknown` before it is spoken, and one that can't be checked is never sent (`spokenCheckFailed`). Rewrite the word the way he says it; never add a lexicon entry he hasn't said (rule 147).",
+  "58. When matt asks for a voice note in another language, send the translation with `translationOf` (the original words, which the voice gate grades, since it can't match a translation to his writing) and `language` (zh-CN, es-ES ...), the language the clone speaks it in. Only for a translation he asked for, never with `mattsWords` (rule 148).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -157,9 +158,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],
   instagramReact: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 140],
-  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143, 144, 145, 146, 147],
-  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143, 144, 145, 146, 147],
-  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143, 144, 145, 146, 147],
+  discordVoice: [8, 13, 63, 64, 73, 83, 94, 122, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
+  slackVoice: [8, 13, 63, 64, 73, 83, 94, 125, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
+  instagramVoice: [8, 13, 63, 64, 73, 83, 94, 128, 129, 133, 135, 137, 142, 143, 144, 145, 146, 147, 148],
   twitterList: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 141],
   twitterReact: [8, 13, 63, 64, 73, 80, 81, 94, 104, 105, 133, 140],
   slackSession: [13, 63, 64, 73, 83, 125],

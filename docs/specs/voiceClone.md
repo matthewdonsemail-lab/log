@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 147.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 148.
 
 ## The providers
 
@@ -93,6 +93,12 @@ Checked by: code and SubQ
 ### REQ-VOICE-CLONE-14: A voice note says what was written, checked by listening back
 
 Before speaking, `speakToFile` refuses with `pronunciationUnknown` any acronym `unknownAcronyms` finds that `SPOKEN_LEXICON` (`src/extensions/voiceClone/types.ts`) doesn't hold, and sends the provider `speakableText(text)`, which writes each lexicon word as its `write` form (`op` as `OP`) outside bracket tags. After shaping it calls `voiceSteps.listen` (by default `listenTo`, which transcribes the file with AssemblyAI keeping word timings, `src/media/voiceNotes/client.ts`, and keeps the transcript by the file's hash) and refuses `spokenCheckFailed` when it can't. `readSpoken` lines the written words up with the heard ones (`aligned`) and fails when a lexicon word is not heard as one of its `heard` forms, is spelled out as letters, takes more than `WORD_MOST_MS` when it is said as a word, or when more than `SPOKEN_MOST_ERROR` of the words differ; `speakToFile` then deletes the file and refuses `spokenMismatch` with what was heard. `renderVoiceNote` uses `speakToFile`, so every `log discord|instagram|slack voice` is checked before it is converted, claimed or sent, and `log clone speak` too. Rule 147.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-15: A translation is gated on its original and spoken in its own language
+
+`voiceNoteCommandOf` in `src/cli/voiceNote/index.ts` takes `--translationOf "<original>"` and `--language <code>`. With `--translationOf` the voice gate (`gateDeps.gate`) grades the original words instead of the text, since it compares a draft with matt's own writing; `watermarkReadingOf` reads the text and the original together and refuses `aiArtifacts`. `--translationOf` without `--language`, `--translationOf` with `--mattsWords`, and a `--language` that isn't a code like `zh-CN` are refused `voiceNoteInvalid` before anything is gated or made. The language goes through `voiceNoteDeps.render` and `renderVoiceNote` to `speakToFile`, which speaks in it instead of the clone's own `language`. `wordsOf` in `src/extensions/voiceClone/helpers/spoken.ts` reads Han, Hiragana, Katakana and Hangul one character at a time beside Latin words, so `readSpoken` checks a translated note as it checks an English one. Rule 148.
 
 Checked by: code and SubQ
 

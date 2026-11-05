@@ -2105,6 +2105,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     voice`. This replaces rule 145's accent steer. Spec:
     `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-13, 14).
 
+148. 2026-11-05 · matt: "send it in chinese aswell", then "ADD A BYPASS
+    PERMISSION FOR IT BECAUSE OFC IT WONT MATCH UP", after the voice gate
+    scored the Chinese translation of a voice note it had passed in English
+    at 0.13: it compares a draft with matt's own writing, which is English.
+    `--translationOf "<the original>"` on `log discord|instagram|slack voice`
+    (MCP `translationOf`) says the text is a translation matt asked for: the
+    voice gate grades the original words instead of the translation, both are
+    read for AI artifacts, and it needs `--language <code>` (zh-CN, es-ES
+    ...), the language the clone speaks it in instead of the clone's own
+    (Inworld's `language`). With en-IE the clone said the Chinese with two
+    words wrong; with zh-CN it said them right. It is only for a translation
+    matt asked for, never paired with `--mattsWords`. The listen-back check
+    (rule 147) reads Chinese, Japanese and Korean one character at a time
+    (`wordsOf`), so a translated note is checked too. Spec:
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-15).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

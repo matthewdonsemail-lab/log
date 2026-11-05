@@ -24,8 +24,8 @@ interface VoiceShape {
   resolve: (context: CommandContext, label: string, flags: Record<string, unknown>) => Promise<Resolved>;
 }
 
-export const voiceNoteDeps: { render: (provider: VoiceProvider, platform: VoiceNotePlatform, text: string) => Promise<Rendered> } = {
-  render: (provider, platform, text) => renderVoiceNote(voiceProvider(provider), platform, text),
+export const voiceNoteDeps: { render: (provider: VoiceProvider, platform: VoiceNotePlatform, text: string, language?: string) => Promise<Rendered> } = {
+  render: (provider, platform, text, language) => renderVoiceNote(voiceProvider(provider), platform, text, undefined, undefined, undefined, language),
 };
 
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What matt says in the voice note, as text in his words; never an audio file" };
@@ -34,16 +34,17 @@ const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description:
 
 function usageOf(shape: VoiceShape): string {
   return [
-    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--mattsWords] [--approvedBy <who>] [--live] [--json]`,
+    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--mattsWords] [--translationOf "<what it translates>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
     `Sends a voice note in matt's cloned voice (the voice provider, log clone voice) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
     "A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It waits for the account to catch up (rule 135), runs the text through the voice gate every send runs (rule 137), generates and converts it, claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
     "--mattsWords says the text is matt's own words, dictated by him for this voice note: the voice gate's read is skipped, since it grades speech as typed text and as a reply, while the AI artifact check still runs and refuses aiArtifacts (rule 144).",
+    "--translationOf \"<what it translates>\" says the text is a translation, only when matt asked for one: the voice gate grades those original words (his own language, which the gate reads) instead of the translation, which it can't match to his writing; both are read for AI artifacts. --language <code> (zh-CN, es-ES ...) is the language the clone speaks it in, instead of the clone's own, and it is needed with --translationOf (rule 148).",
   ].join("\n");
 }
 
 function inputOf(shape: VoiceShape): CommandInput {
   const summary = `Send a voice note in matt's cloned voice as ${shape.platform[0].toUpperCase() + shape.platform.slice(1)}'s own voice note, from text; a dry run unless --live`;
-  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is matt's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
+  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is matt's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, { name: "translationOf", kind: "string", description: "The text is a translation matt asked for, of these original words: the voice gate grades the original instead of the translation; needs --language (rule 148)" }, { name: "language", kind: "string", description: "The language the clone speaks it in (zh-CN, es-ES ...), instead of the clone's own (rule 148)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
 }
 
 export function voiceNoteCommandOf(shape: VoiceShape): Command {
@@ -57,7 +58,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
     effect: "write",
     input,
     summary: input.forms[0].summary,
-    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>" [--provider <p>] [--mattsWords] [--approvedBy <who>] [--live] [--json]`,
+    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>" [--provider <p>] [--mattsWords] [--translationOf "<original>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
@@ -66,10 +67,15 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
       const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
       const live = parsed.flags["live"] === true;
       const mattsWords = parsed.flags["mattsWords"] === true;
+      const translationOf = typeof parsed.flags["translationOf"] === "string" ? parsed.flags["translationOf"].trim() : "";
+      const language = typeof parsed.flags["language"] === "string" ? parsed.flags["language"].trim() : "";
+      if (translationOf && !language) return refuse(label, "voiceNoteInvalid", "--translationOf needs --language: the language the clone speaks the translation in (rule 148)");
+      if (translationOf && mattsWords) return refuse(label, "voiceNoteInvalid", "--translationOf and --mattsWords are two different things: a translation is gated on its original (rule 148), matt's dictated words skip the gate's read (rule 144)");
+      if (language && !/^[a-z]{2,3}(-[A-Z]{2})?$/.test(language)) return refuse(label, "voiceNoteInvalid", `--language ${language} isn't a language code like zh-CN or es-ES`);
       const problem = textOnlyProblem(text);
       if (problem) return refuse(label, "voiceNoteInvalid", problem);
       if (live && !approvedBy) return refuse(label, "notApproved", "--live needs --approvedBy <who> (rule 8)");
-      const watermark = watermarkReadingOf(text);
+      const watermark = watermarkReadingOf(translationOf ? `${text}\n${translationOf}` : text);
       if (watermark.level === "artifacts") return refuse(label, "aiArtifacts", `the text carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
       const chosen = providerOf(parsed.flags["provider"]);
       if (!chosen.ok) return refuse(label, "voiceProviderUnknown", chosen.detail);
@@ -78,10 +84,10 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         const resolved = await shape.resolve(context, label, parsed.flags);
         if (!resolved.ok) return resolved.result;
         const clone = readClone(provider);
-        const where = { platform: shape.platform, account: resolved.account, chat: resolved.chatId, text: text.trim(), provider, container: PLATFORM_AUDIO[shape.platform].container };
+        const where = { platform: shape.platform, account: resolved.account, chat: resolved.chatId, text: text.trim(), provider, container: PLATFORM_AUDIO[shape.platform].container, ...(translationOf ? { translationOf, language } : language ? { language } : {}) };
         if (!live) {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", ok: true, dryRun: true, cloned: !!clone, mattsWords, ...where }, null, 2) };
-          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in matt's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, ...(mattsWords ? ["These are matt's own dictated words (--mattsWords): the voice gate's read is skipped, the AI artifact check passed (rule 144)."] : []), "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
+          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in matt's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, ...(mattsWords ? ["These are matt's own dictated words (--mattsWords): the voice gate's read is skipped, the AI artifact check passed (rule 144)."] : []), ...(translationOf ? [`It is a translation into ${language} of: ${translationOf} (--translationOf): the voice gate grades that original (rule 148).`] : language ? [`Spoken in ${language}.`] : []), "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
         }
         if (!clone) return refuse(label, "voiceCloneMissing", `log clone voice --provider ${provider} --apply makes it once from matt's own voice notes`);
         context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
@@ -89,12 +95,13 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
         if (mattsWords) context.err(`${resolved.account}: matt's own dictated words (--mattsWords): the voice gate's read of his typing is skipped, the AI artifact check passed`);
         else {
-          const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle });
+          if (translationOf) context.err(`${resolved.account}: a translation into ${language} (--translationOf): the voice gate grades the original words`);
+          const voiced = await gateDeps.gate(context, { platform: shape.platform, account: resolved.account, to: resolved.label, text: translationOf || text, conversationId: resolved.gateHandle ? undefined : resolved.chatId, handle: resolved.gateHandle });
           if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
           context.err(voiced.line);
         }
         context.err(`${resolved.account}: saying it in matt's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}`);
-        const rendered = await voiceNoteDeps.render(provider, shape.platform, text);
+        const rendered = await voiceNoteDeps.render(provider, shape.platform, text, language || undefined);
         if (!rendered.ok) return refuse(label, rendered.code, rendered.detail);
         context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
         const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
