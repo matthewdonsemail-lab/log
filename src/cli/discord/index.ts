@@ -413,9 +413,9 @@ export const discordDeleteCommand: Command = {
 };
 
 export const DISCORD_SEND_USAGE = [
-  'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
+  'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
   "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).",
-  "A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json.",
+  "A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json. --overGate sends it over the voice gate's refusal when matt said to send that exact message: the gate's SubQ read is skipped and the AI artifact check still runs (rule 152).",
 ].join("\n");
 
 export const DISCORD_SEND_INPUT: CommandInput = {
@@ -431,6 +431,7 @@ export const DISCORD_SEND_INPUT: CommandInput = {
         { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
         { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
+        { name: "overGate", kind: "boolean", description: "matt said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
         { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
@@ -445,7 +446,7 @@ export const discordSendCommand: Command = {
   effect: "write",
   input: DISCORD_SEND_INPUT,
   summary: "Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live",
-  args: '--account <a> --channel <id|name> --text "<message>" [--asOne] [--approvedBy <who>] [--live] [--json]',
+  args: '--account <a> --channel <id|name> --text "<message>" [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEND_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord send: ${parsed.error}\n${DISCORD_SEND_USAGE}` };
@@ -490,9 +491,13 @@ export const discordSendCommand: Command = {
       const caught = await waitCaughtUp("discord", account.accountName);
       if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
       const direct = context.directDiscord;
-      const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer) });
-      if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
-      context.err(voiced.line);
+      if (parsed.flags["overGate"] === true) {
+        context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
+      } else {
+        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer) });
+        if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
+        context.err(voiced.line);
+      }
       const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });
       if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
       const sent: PlatformAnswer[] = [];
@@ -524,7 +529,7 @@ export const discordSendCommand: Command = {
       const code = done.length === plan.parts.length ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, approvedBy, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark, sent, interrupted }, null, 2) };
       if (interrupted.length) return { code, stdout: interruptedLines(account.accountName, interrupted, plan.parts.slice(done.length), done.length, plan.parts.length).join("\n") };
-      if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent ${done.length === 1 ? `message ${last.messageId}` : `${done.length} messages (${done.map((a) => a.messageId).join(", ")})`} to channel ${last.channelId}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}, the last at ${last.timestamp}.` };
+      if (code === 0) return { code, stdout: `log discord send: ${account.accountName} sent ${done.length === 1 ? `message ${last.messageId}` : `${done.length} messages (${done.map((a) => a.messageId).join(", ")})`} to ${shown}${done.length > 1 ? `, ${plan.gapSeconds} s apart` : ""}, the last at ${last.timestamp}.` };
       return { code, stdout: `log discord send: ${account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried.` };
     } catch (error) {
       return refuseError("discord send", error);

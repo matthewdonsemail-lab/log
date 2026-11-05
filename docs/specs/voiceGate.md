@@ -96,7 +96,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-14: matt can send one dm over the gate's refusal
 
-`log twitter dm` takes `--overGate` (`OVER_GATE` in `src/cli/twitter/helpers/send.ts`). With it, the send skips `gateDeps.gate` and says so on its error stream; without it the gate runs and a refusal is `voiceGateFailed`. The copy's AI artifact check (`planSend`, `aiArtifacts`) runs either way, before the gate. Rule 152.
+`log twitter dm` takes `--overGate` (`OVER_GATE` in `src/cli/twitter/helpers/send.ts`). With it, the send skips `gateDeps.gate` and says so on its error stream; without it the gate runs and a refusal is `voiceGateFailed`. The copy's AI artifact check (`planSend`, `aiArtifacts`) runs either way, before the gate. `log discord send` takes `--overGate` the same way (its flag in `DISCORD_SEND_INPUT`, `src/cli/discord/index.ts`): with it the send skips `gateDeps.gate` and says so, without it a refusal is `voiceGateFailed`, and its AI artifact check still runs first. matt, 2026-11-05: a message to kewlkid in his own words, and even his GitHub username on its own, were refused by the gate. Rule 152.
 
 Checked by: code and SubQ
 
