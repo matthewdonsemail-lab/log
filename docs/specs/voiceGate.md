@@ -46,7 +46,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-06: A draft passes only when every answer passes
 
-A draft passes only when the voice answer reaches its threshold, the context, friend-like and opener answers reach theirs, the chat answer reaches its threshold when there is a chat, no never-said phrase is found and the watermark finds no artifacts.
+A draft passes only when the voice answer reaches its threshold, the context, friend-like and opener answers reach theirs, the chat answer reaches its threshold when there is a chat, the builds-on answer reaches its threshold when the draft is spoken (REQ-VOICE-13), no never-said phrase is found and the watermark finds no artifacts.
 
 Checked by: code and SubQ
 

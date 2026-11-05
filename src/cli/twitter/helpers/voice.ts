@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { storedEmbedder } from "../../../inbox/store/index.ts";
+import { storedEmbedder, handleOfUserId } from "../../../inbox/store/index.ts";
 import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../../media/voiceNotes/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
@@ -357,11 +357,12 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
 export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
-  const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
+  const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
+  const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
   const said = send.said ?? momentAnswered(chatContextOf(send.platform, send.account, who).messages);
   const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
-  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle: send.handle }, send.text);
-  const reading = await gateReading(context, { to: send.handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}) });
+  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
+  const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}) });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
   return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }

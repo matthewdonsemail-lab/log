@@ -3,7 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { catchUpRunner, socketChange } from "../relay/index.ts";
-import { appendEvent, behindOf, db, openGap, positionsOf, recordPosition, resumeGap } from "../store/index.ts";
+import { appendEvent, behindOf, db, handleOfUserId, openGap, positionsOf, recordPosition, resumeGap } from "../store/index.ts";
 import { claimWatcher, releaseWatcher } from "../watch/index.ts";
 import { discordCatchUp, instagramCatchUp, waitCaughtUp } from "./index.ts";
 import type { PlatformRead } from "./index.ts";
@@ -57,6 +57,13 @@ describe("catching up after a gap (rule 135)", () => {
     expect(calls).toBe(1);
     expect(behindOf("twitter", "acct")).toBeNull();
     expect(resumeGap("twitter", "acct", "matt")).toBeNull();
+  });
+
+  test("an X user id finds its handle from the notifications the owner stored, so the voice gate reads the right chat", () => {
+    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBeNull();
+    appendEvent({ platform: "twitter", account: "acct", conversationId: "", type: "notification", with: "AjeetVermai", payload: { userId: "1987816842371743744", handle: "AjeetVermai" }, receivedAt: "2026-11-05T11:41:11Z" });
+    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBe("AjeetVermai");
+    expect(handleOfUserId("twitter", "other", "1987816842371743744")).toBeNull();
   });
 
   test("only one catch-up runs at a time", async () => {

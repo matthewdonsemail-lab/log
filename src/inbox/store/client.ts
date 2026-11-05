@@ -204,6 +204,11 @@ export function resumeGap(platform: string, account: string, by: string, now: Da
   })
 }
 
+export function handleOfUserId(platform: string, account: string, userId: string): string | null {
+  const row = db().prepare("SELECT withWho FROM events WHERE platform = ? AND account = ? AND type = 'notification' AND withWho != '' AND json_extract(payload, '$.userId') = ? ORDER BY seq DESC LIMIT 1").get(platform, account, String(userId)) as { withWho: string } | null
+  return row?.withWho ? row.withWho.replace(/^@/, '') : null
+}
+
 export function behindOf(platform: string, account: string): GapRow | null {
   return openGapOf(platform, account)
 }
