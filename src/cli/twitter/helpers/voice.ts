@@ -15,7 +15,7 @@ import { loadConversations, localEmbedder } from "../../../search/conversations/
 import type { Conversation, Embedder } from "../../../search/conversations/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
-import { CONTEXT_PASS, guidePath, RANKED_CONTEXT, RANKED_SHORTLIST, readGuide, readVoice, VOICE_PASS } from "../../../twitter/copy/voice/index.ts";
+import { CONTEXT_PASS, guidePath, nobodyToAnswer, RANKED_CONTEXT, RANKED_SHORTLIST, readGuide, readVoice, VOICE_PASS } from "../../../twitter/copy/voice/index.ts";
 import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/index.ts";
 import { buildVoiceIndex, closestWording, nearestPairs, offProfile, openVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
 import type { VoicePair } from "../../../voice/pairs/index.ts";
@@ -259,7 +259,7 @@ export const voiceCommand: Command = {
   },
 };
 
-export type GateReading = VoiceReading & { notHere: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[] };
+export type GateReading = VoiceReading & { notHere: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[]; room?: Room };
 
 export interface RankedMoment {
   from: string;
@@ -305,7 +305,7 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
   if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
   const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;
-  return { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, ranked, pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
+  return { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, ranked, ...(draft.room ? { room: draft.room } : {}), pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
 }
 
 export function howMattTalks(): string[] {
@@ -323,7 +323,7 @@ export function failedParts(reading: GateReading): string[] {
   if (reading.voice < VOICE_PASS) out.push(`doesn't sound like matt ${reading.buildsOn === null ? "typed" : "said"} it (voice ${reading.voice.toFixed(2)}, needs ${VOICE_PASS})`);
   if (reading.fitsTheRoom !== null && reading.fitsTheRoom !== undefined && reading.fitsTheRoom < CONTEXT_PASS) out.push(`talks to someone who isn't there, or as if the chat were live when it isn't (fitsTheRoom ${reading.fitsTheRoom.toFixed(2)})`);
   if (reading.buildsOn !== null && reading.buildsOn < CONTEXT_PASS) out.push(`repeats what matt already said instead of building on what they're talking about (buildsOn ${reading.buildsOn.toFixed(2)})`);
-  if (reading.inContext < CONTEXT_PASS) out.push(`doesn't answer what they said (inContext ${reading.inContext.toFixed(2)})`);
+  if (reading.inContext < CONTEXT_PASS && !nobodyToAnswer({ room: reading.room })) out.push(`doesn't answer what they said (inContext ${reading.inContext.toFixed(2)})`);
   if (reading.friendLike < CONTEXT_PASS) out.push(`reads like a template or a pitch (friendLike ${reading.friendLike.toFixed(2)})`);
   if (reading.openerOnly < CONTEXT_PASS) out.push(`a first message with an ask in it (openerOnly ${reading.openerOnly.toFixed(2)})`);
   if (reading.toThem !== null && reading.toThem < CONTEXT_PASS) out.push(`not how matt writes in this chat (toThem ${reading.toThem.toFixed(2)})`);

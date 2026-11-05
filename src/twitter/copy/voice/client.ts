@@ -27,6 +27,10 @@ export function alreadyTalkedIn(draft: Pick<VoiceDraft, 'evidence' | 'conversati
   return (draft.evidence?.replies ?? []).some((r) => r.tier === 'sameChat' || r.tier === 'samePerson')
 }
 
+export function nobodyToAnswer(draft: Pick<VoiceDraft, 'room'>): boolean {
+  return !!draft.room?.nobodyElseLately && draft.room.kind !== 'dm'
+}
+
 export async function readVoice(draft: VoiceDraft, guide: string, decide: DecisionsClient): Promise<VoiceReading> {
   const neverSays = neverSaysIn(draft.text)
   const alreadyTalked = alreadyTalkedIn(draft)
@@ -67,5 +71,5 @@ export async function readVoice(draft: VoiceDraft, guide: string, decide: Decisi
   const buildsOn = draft.spoken ? answers.buildsOn?.noul ?? 0 : null
   const fitsTheRoom = draft.room ? answers.fitsTheRoom?.noul ?? 0 : null
   const watermark = watermarkReadingOf(draft.text)
-  return { to: draft.to, voice, inContext, friendLike, openerOnly, toThem, buildsOn, fitsTheRoom, neverSays, watermark, pass: !neverSays.length && watermark.level !== 'artifacts' && voice >= VOICE_PASS && inContext >= CONTEXT_PASS && friendLike >= CONTEXT_PASS && openerOnly >= CONTEXT_PASS && (toThem === null || toThem >= CONTEXT_PASS) && (buildsOn === null || buildsOn >= CONTEXT_PASS) && (fitsTheRoom === null || fitsTheRoom >= CONTEXT_PASS), model: response.model ?? null }
+  return { to: draft.to, voice, inContext, friendLike, openerOnly, toThem, buildsOn, fitsTheRoom, neverSays, watermark, pass: !neverSays.length && watermark.level !== 'artifacts' && voice >= VOICE_PASS && (nobodyToAnswer(draft) || inContext >= CONTEXT_PASS) && friendLike >= CONTEXT_PASS && openerOnly >= CONTEXT_PASS && (toThem === null || toThem >= CONTEXT_PASS) && (buildsOn === null || buildsOn >= CONTEXT_PASS) && (fitsTheRoom === null || fitsTheRoom >= CONTEXT_PASS), model: response.model ?? null }
 }
