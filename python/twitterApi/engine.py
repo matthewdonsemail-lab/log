@@ -896,8 +896,11 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     reopen = list(dict.fromkeys(unopened + unfetched + asked))
     page = await client.get_xchat_conversation(conversation_id, older_pages=max(0, min(int(spec.get("olderPages") if spec.get("olderPages") is not None else 5), 10)), reopen=reopen)
     handles: dict[str, str | None] = dict(stored_handles(spec, conversation_id))
-    for user_id in [p for p in conversation_id.split(":") if p.isdigit() and p != me]:
-        await handle_of(client, user_id, handles)
+    senders = [str(m.get("sender_id") or "") for m in page["messages"] + stored]
+    for user_id in dict.fromkeys([p for p in conversation_id.split(":") if p.isdigit()] + [u for u in senders if u.isdigit()]):
+        if user_id != me:
+            await handle_of(client, user_id, handles)
+    remember_handles(spec, conversation_id, handles)
     fetched = {str(m.get("event_id") or ""): m for m in page["messages"]}
     await save_xchat_media(client, spec, conversation_id, page["messages"], set(asked))
     keep_opened(spec, conversation_id, page["messages"])
@@ -910,7 +913,8 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     from twitterApi import inboxSync
 
     messages = [xchat_message(m, me, handles) for m in merged if inboxSync.shown(m)][-limit:]
-    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages}
+    unnamed = {u: HANDLE_ERRORS.get(u, "no screen_name in X's answer") for u in dict.fromkeys(m["senderId"] for m in messages) if u and u != me and not handles.get(u)}
+    return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages, **({"unnamed": unnamed} if unnamed else {})}
 
 
 MEDIA_PER_READ = 8
@@ -980,6 +984,14 @@ def stored_handles(spec: dict[str, Any], conversation_id: str) -> dict[str, str]
         return {}
     state = inboxSync.read_state(sync_path(spec))
     return dict(((state or {}).get("xchat", {}).get(conversation_id) or {}).get("handles") or {})
+
+
+def remember_handles(spec: dict[str, Any], conversation_id: str, handles: dict[str, str | None]) -> None:
+    from twitterApi import inboxSync
+
+    named = {u: h for u, h in handles.items() if h}
+    if spec.get("account") and named:
+        inboxSync.remember_handles(sync_path(spec), conversation_id, named)
 
 
 def stored_xchat(spec: dict[str, Any], conversation_id: str) -> list[dict[str, Any]]:
@@ -1149,12 +1161,18 @@ def live_line(event: dict[str, Any]) -> None:
     print(line, flush=True)
 
 
+HANDLE_ERRORS: dict[str, str] = {}
+
+
 async def handle_of(client: Any, user_id: str, handles: dict[str, str | None]) -> str | None:
-    if user_id and user_id not in handles:
+    if user_id and not handles.get(user_id):
         try:
-            handles[user_id] = getattr(await client.get_user_by_id(user_id), "screen_name", None)
-        except Exception:
-            handles[user_id] = None
+            found = getattr(await client.get_user_by_id(user_id), "screen_name", None)
+            if found:
+                handles[user_id] = found
+                HANDLE_ERRORS.pop(user_id, None)
+        except Exception as e:
+            HANDLE_ERRORS[user_id] = f"{type(e).__name__}: {str(e)[:160]}"
     return handles.get(user_id)
 
 
@@ -1321,7 +1339,11 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
             continue
         sender = str(event.get("sender_id") or "")
         messages += 1
-        handle = await handle_of(client, sender, handles)
+        if sender and not handles.get(sender):
+            handles.update({u: h for u, h in stored_handles(spec, str(event.get("conversation_id"))).items() if h})
+        handle = await handle_of(client, sender, handles) if sender != me else None
+        if handle:
+            remember_handles(spec, str(event.get("conversation_id")), {sender: handle})
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
         live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})

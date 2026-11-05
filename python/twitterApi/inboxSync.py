@@ -195,6 +195,18 @@ def xchat_threads(state: dict[str, Any], me: str, decrypted: bool) -> list[dict[
     return out
 
 
+def remember_handles(path: Path | None, conversation_id: str, handles: dict[str, str]) -> None:
+    state = read_state(path)
+    if state is None or not handles:
+        return
+    conv = state.setdefault("xchat", {}).setdefault(conversation_id, {"participants": [], "handles": {}, "lastMs": None, "lastSender": None, "messages": []})
+    known = conv.setdefault("handles", {})
+    if all(known.get(u) == h for u, h in handles.items()):
+        return
+    known.update(handles)
+    write_state(path, state)
+
+
 def push_message(path: Path | None, me: str, event: dict[str, Any], handle: str | None) -> bool:
     state = read_state(path)
     cid = str(event.get("conversation_id") or "")
