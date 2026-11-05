@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 433 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 435 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -65,6 +65,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-15** Only the session that claims a chat acts on it
 - **REQ-HOOKS-16** The inbox is one database, read from cursors
 - **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
+- **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -311,6 +312,7 @@ How log-cli talks to X: directly, with no proxy, through one curl_cffi client pe
 - **REQ-XSESSION-12** A closing session drops its connections and exits at once
 - **REQ-XSESSION-13** webClient writes X's live operation table
 - **REQ-XSESSION-14** Every GraphQL call uses X's live id and exactly X's switches
+- **REQ-XSESSION-15** webClient also saves X Chat's own app
 
 ## [Write budgets](./writeBudgets.md)
 

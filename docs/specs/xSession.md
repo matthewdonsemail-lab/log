@@ -97,3 +97,9 @@ Checked by: code and SubQ
 Every session loads `xOperations.json`, and each GraphQL call to x.com takes X's live query id for its operation and sends exactly the feature switches X's client sends for it, with X's values. Rule 113.
 
 Checked by: code and SubQ
+
+### REQ-XSESSION-15: webClient also saves X Chat's own app
+
+`web_client` in `python/twitterApi/engine.py` calls `save_xchat_build` after saving x.com's scripts. It reads `XCHAT_EMBED_MANIFEST` (`https://chat.x.com/embed-v1.json`) through the account's one session, takes the build from the manifest's `remoteEntry` name and `publicPath` (`xchat_build_of`, matching `XCHAT_BUILD`), lists `remoteEntry.js` and every script the manifest's exposes name except other languages' locale files (`xchat_scripts_of`, `XCHAT_LOCALE`), and saves each into the save's `xchat` folder at its path under the public path, sleeping a read's spacing before each. Its answer's `xchat` says whether it worked, the build and how many files. Rule 150.
+
+Checked by: code and SubQ

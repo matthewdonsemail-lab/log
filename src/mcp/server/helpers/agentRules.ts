@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 149;
+export const RULES_REVIEWED_THROUGH = 150;
 
 export const AGENTS_URI = "log://agents";
 
@@ -64,6 +64,7 @@ export const CORE_PRINCIPLES = [
   "57. Every voice note is shaped like matt's own voice notes (his room tone from his own notes, phone squash, mic drift, saturation, breaths) and listened back with AssemblyAI before it goes: a lexicon word said wrong or spelled out is refused `spokenMismatch`, an acronym the lexicon doesn't have is refused `pronunciationUnknown` before it is spoken, and one that can't be checked is never sent (`spokenCheckFailed`). Rewrite the word the way he says it; never add a lexicon entry he hasn't said (rule 147).",
   "58. When matt asks for a voice note in another language, send the translation with `translationOf` (the original words, which the voice gate grades, since it can't match a translation to his writing) and `language` (zh-CN, es-ES ...), the language the clone speaks it in. Only for a translation he asked for, never with `mattsWords` (rule 148).",
   "59. A voice note is written at the length matt asks for (a 40 s note is about 100 to 110 words), from the whole conversation: take what they are talking about further, never re-explain what matt already told them, and don't make every note three short lines. Its gate grades it as spoken (`voice` with `spoken`, as every voice note send does), never on length, and refuses one that doesn't build on the chat (`buildsOn`). A note never opens with a breath, and its breaths and pace vary (rule 149).",
+  "60. A catch-up refused on an account (`accountBehind`) stays refused until matt says to resume: then `inboxResume` { platform, account, by: \"matt\" } opens its gap again and the owner catches up within 30 s. Never resume on your own (rule 150).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -114,7 +115,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69, 73],
-  twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113],
+  twitterSession: [13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113, 150],
   twitterFollows: [13, 53, 63, 64, 73, 80, 81, 104, 105],
   twitterDms: [13, 63, 64, 73, 80, 81, 88, 94, 100, 104, 105, 108, 109, 110, 113, 126],
   twitterChat: [13, 21, 26, 63, 64, 73, 80, 81, 88, 94, 104, 105, 131, 132],
@@ -137,7 +138,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138],
   twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138],
   runs: [19, 22, 25, 27, 66, 73],
-  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139],
+  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
   mcp: [21, 47],

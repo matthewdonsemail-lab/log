@@ -73,6 +73,12 @@ export const xSession = {
       { kind: 'symbol', file: ENGINE, name: 'web_client' },
       { kind: 'symbol', file: ENGINE, name: 'live_operations_of' },
     ],
+    'REQ-XSESSION-15': [
+      { kind: 'symbol', file: ENGINE, name: 'save_xchat_build' },
+      { kind: 'symbol', file: ENGINE, name: 'xchat_build_of' },
+      { kind: 'symbol', file: ENGINE, name: 'xchat_scripts_of' },
+      { kind: 'string', file: ENGINE, includes: 'https://chat.x.com/embed-v1.json' },
+    ],
     'REQ-XSESSION-14': [
       { kind: 'symbol', file: GQL, name: 'live_call' },
       { kind: 'symbol', file: GQL, name: 'set_live_operations' },
@@ -93,6 +99,7 @@ export const xSession = {
     'REQ-XSESSION-11': noul('When socket.create_connection to the host port raises OSError on the first attempt, does connect_host wait while pid_alive is true for that host pid, up to START_WAIT_SECONDS, and then make a second attempt that calls ensure_host, which starts a new host once the old one is gone?'),
     'REQ-XSESSION-12': noul('In the finally block of Host.serve, does it remove host.json when it is its own, close the server, close every writer in self.writers and release the host.lock?'),
     'REQ-XSESSION-13': noul('Does web_client load the x.com home page with the session client, save the page and its scripts, and write the result of live_operations_of to operations_path when it found operations?'),
+    'REQ-XSESSION-15': noul('In python/twitterApi/engine.py, does web_client call save_xchat_build with READ_SPACING_SECONDS after saving the x.com scripts and include its ok, build and file count in its answer; does save_xchat_build request XCHAT_EMBED_MANIFEST through client.http, take the build with xchat_build_of from the metaData remoteEntry name and publicPath, and for each url from xchat_scripts_of sleep a random spacing before requesting it through client.http and write it into the xchat folder; and does xchat_scripts_of add the remoteEntry name and every .js name in exposes, skip locale files matching XCHAT_LOCALE other than en, and prefix them with the public path?'),
     'REQ-XSESSION-14': noul('Do gql_get and gql_post call live_call, which replaces the query id with the live queryId for the operation and sets features to exactly the live operation feature list with the values from featureValues, and does client_for call load_live_operations before making a client?'),
     unspecifiedBehavior: noul('Is there a path where an X call is sent with a proxy, without the account lock, without spacing, or through a second session the specification does not describe?'),
   },
@@ -111,6 +118,7 @@ export const xSession = {
     'REQ-XSESSION-12': MET,
     'REQ-XSESSION-13': MET,
     'REQ-XSESSION-14': MET,
+    'REQ-XSESSION-15': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

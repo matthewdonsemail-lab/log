@@ -1,4 +1,5 @@
 import { claimChat, liveClaims, readActions, releaseChat } from "../../inbox/claims/index.ts";
+import { behindOf, resumeGap } from "../../inbox/store/index.ts";
 import type { ActionRecord, ChatClaim } from "../../inbox/claims/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
@@ -7,8 +8,9 @@ export const INBOX_USAGE = [
   "Usage: log inbox claim --platform <twitter|discord|slack|instagram> --account <a> --chat <conversationId|handle> [--event <eventId>] [--json]",
   "       log inbox release --platform <p> --account <a> --chat <conversationId|handle> [--json]",
   "       log inbox claims [--json]",
+  "       log inbox resume --platform <p> --account <a> --by matt [--json]",
   "       log inbox actions [--platform <p>] [--account <a>] [--chat <conversationId|handle>] [--limit <n>] [--json]",
-  "Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.",
+  "Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when matt says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.",
 ].join("\n");
 
 const PLATFORM: FlagSpec = { name: "platform", kind: "string", required: true, description: "The platform: twitter, discord, slack or instagram" };
@@ -19,6 +21,7 @@ export const INBOX_INPUT: CommandInput = {
   forms: [
     { words: ["claim"], effect: "write", summary: "Claim a chat for this session before drafting or sending in it, so no other session acts on it", positionals: [], flags: [PLATFORM, ACCOUNT, CHAT, { name: "event", kind: "string", description: "The event id from >>> NEW MESSAGE that this claim answers" }, JSON_FLAG] },
     { words: ["release"], effect: "write", summary: "Release this session's claim on a chat when it is done with it", positionals: [], flags: [PLATFORM, ACCOUNT, CHAT, JSON_FLAG] },
+    { words: ["resume"], effect: "write", summary: "matt's go-ahead after a refused catch-up: the account catches up again through its own session (rule 94), only when matt says so", positionals: [], flags: [PLATFORM, ACCOUNT, { name: "by", kind: "string", required: true, description: "Who said to resume: matt" }, JSON_FLAG] },
     { words: ["claims"], summary: "Every live claim: which session holds which chat, and until when", positionals: [], flags: [JSON_FLAG] },
     {
       words: ["actions"], summary: "The log of every claim, refusal, send and release, oldest first, to see what was already done in a chat",
@@ -51,7 +54,7 @@ export const inboxCommand: Command = {
   effect: "write",
   input: INBOX_INPUT,
   summary: "Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat",
-  args: "claim|release|claims|actions [--platform <p>] [--account <a>] [--chat <id|handle>] [--event <id>] [--limit <n>]",
+  args: "claim|release|claims|actions|resume [--by <who>] [--platform <p>] [--account <a>] [--chat <id|handle>] [--event <id>] [--limit <n>]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(INBOX_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log inbox: ${parsed.error}\n${INBOX_USAGE}` };
@@ -70,6 +73,18 @@ export const inboxCommand: Command = {
       const rows = readActions({ platform: str("platform") || undefined, account: str("account") || undefined, chat: str("chat") || undefined, limit });
       if (json) return { code: 0, stdout: JSON.stringify({ actions: rows }, null, 2) };
       return { code: 0, stdout: rows.length ? [`log inbox actions: the ${rows.length} newest, oldest first:`, ...rows.map(actionLine)].join("\n") : "log inbox actions: nothing has been done in that chat yet." };
+    }
+    if (sub === "resume") {
+      const platform = str("platform");
+      const account = str("account");
+      const by = str("by");
+      if (!PLATFORMS.includes(platform) || !account || !by) return { code: 1, stderr: `log inbox resume: --platform (${PLATFORMS.join(", ")}), --account and --by are needed
+${INBOX_USAGE}` };
+      const gap = behindOf(platform, account);
+      const resumed = resumeGap(platform, account, by);
+      if (json) return { code: 0, stdout: JSON.stringify({ resumed, gap }, null, 2) };
+      if (resumed) return { code: 0, stdout: `log inbox resume: ${platform} ${account} catches up again from ${resumed.fromAt} (refused before: ${gap?.detail ?? "refused"}); its owner retries through its own session within 30 s, and sends wait for it.` };
+      return { code: 0, stdout: gap ? `log inbox resume: ${platform} ${account} isn't refused: its gap is ${gap.status} from ${gap.fromAt}, so its owner is already on it.` : `log inbox resume: ${platform} ${account} isn't behind.` };
     }
     if (sub !== "claim" && sub !== "release") return { code: 1, stderr: `log inbox: unknown subcommand "${sub}"\n${INBOX_USAGE}` };
     const platform = str("platform");

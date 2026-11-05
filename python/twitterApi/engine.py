@@ -234,6 +234,70 @@ def chunk_urls_of(home_html: str) -> dict[str, str]:
     return {names.get(k, k): f"https://abs.twimg.com/responsive-web/client-web/{names.get(k, k)}.{h}a.js" for k, h in hashes.items()}
 
 
+XCHAT_EMBED_MANIFEST = "https://chat.x.com/embed-v1.json"
+XCHAT_BUILD = re.compile(r"^https://abs\.twimg\.com/x-web/xchat/embed/[0-9a-f]{40}/$")
+
+
+def xchat_build_of(manifest: Any) -> str | None:
+    meta = (manifest or {}).get("metaData") or {}
+    entry = str((meta.get("remoteEntry") or {}).get("name") or "")
+    public = str(meta.get("publicPath") or "")
+    found = re.match(r"([0-9a-f]{40})/", entry)
+    build = f"{public}{found.group(1)}/" if found else None
+    return build if build and XCHAT_BUILD.match(build) else None
+
+
+XCHAT_LOCALE = re.compile(r"^assets/[a-z]{2,3}(-[a-z]{2,4})*-[A-Za-z0-9_-]{8}\.js$")
+
+
+def xchat_scripts_of(build: str, manifest: Any) -> list[str]:
+    names: set[str] = set()
+    entry = str((((manifest or {}).get("metaData") or {}).get("remoteEntry") or {}).get("name") or "")
+    if entry:
+        names.add(entry)
+
+    def walk(value: Any) -> None:
+        if isinstance(value, str) and value.endswith(".js") and not value.startswith("http"):
+            names.add(value.lstrip("./"))
+        elif isinstance(value, dict):
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk((manifest or {}).get("exposes") or [])
+    keep = [name for name in names if not XCHAT_LOCALE.match(name) or re.match(r"^assets/en-[A-Za-z0-9_-]{8}\.js$", name)]
+    public = build.rstrip("/").rsplit("/", 1)[0] + "/"
+    return sorted(public + name for name in keep)
+
+
+async def save_xchat_build(client: Any, folder: Path, spacing: tuple[float, float]) -> dict[str, Any]:
+    import random
+
+    headers = {"Referer": "https://x.com/", "Origin": "https://x.com", "User-Agent": client._user_agent}
+    out = folder / "xchat"
+    out.mkdir(parents=True, exist_ok=True)
+    answer = await client.http.request("GET", XCHAT_EMBED_MANIFEST, headers=headers)
+    if answer.status_code != 200:
+        return {"ok": False, "status": answer.status_code, "detail": f"{XCHAT_EMBED_MANIFEST} answered {answer.status_code}"}
+    (out / "embed-v1.json").write_bytes(answer.content)
+    manifest = json.loads(answer.text)
+    build = xchat_build_of(manifest)
+    if not build:
+        return {"ok": False, "status": 200, "detail": "embed-v1.json names no X Chat build"}
+    saved = []
+    for url in xchat_scripts_of(build, manifest):
+        await asyncio.sleep(random.uniform(*spacing))
+        got = await client.http.request("GET", url, headers=headers)
+        if got.status_code == 200:
+            target = out / url[len(build.rstrip("/").rsplit("/", 1)[0]) + 1:]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(got.content)
+            saved.append({"url": url, "file": str(target.relative_to(folder)), "bytes": len(got.content)})
+    return {"ok": True, "build": build, "saved": saved}
+
+
 def load_live_operations() -> None:
     from twikit.client import gql
 
@@ -1100,7 +1164,8 @@ async def web_client(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
         live["from"] = main.name
         operations_path().write_text(json.dumps(live, indent=1), encoding="utf-8")
         load_live_operations()
-    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "chunks": chunks, "saved": saved, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
+    xchat = await save_xchat_build(client, folder, READ_SPACING_SECONDS)
+    return {"ok": True, "loginState": "loggedIn", "folder": str(folder), "homeStatus": home.status_code, "scripts": scripts, "chunks": chunks, "saved": saved, "xchat": {"ok": xchat["ok"], "build": xchat.get("build"), "files": len(xchat.get("saved", [])), **({"detail": xchat["detail"]} if not xchat["ok"] else {})}, "operations": len(live["operations"]) if live else 0, "featureValues": len(live["featureValues"]) if live else 0}
 
 
 VIEWER_BADGE_COUNTS = "https://x.com/i/api/graphql/q4Npr1-FYRWyXsRzPckwEA/ViewerBadgeCounts"

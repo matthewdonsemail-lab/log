@@ -2152,6 +2152,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Spec: `docs/specs/voiceGate.md` (REQ-VOICE-13),
     `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-16).
 
+150. 2026-11-05 · matt: "Yes, resume both", after the catch-up on
+    matthewsoldit (X Chat's PIN unlock, Juicebox "Transient error") and on
+    Discord was refused and every send was held with `accountBehind`. Rule 94
+    said nothing resumes until matt says so, but nothing could take his word.
+    `log inbox resume --platform <p> --account <a> --by matt` (MCP
+    `inboxResume`) is that word: a refused gap opens again with who resumed
+    it and what was refused before (`resumeGap`, alert `gapResumed`), and the
+    owner, which now looks at its gap every 30 s (`RECHECK_GAP_MS`), catches
+    up again through its own session. Only when matt says so, never on the
+    agent's own; a second refusal stops it again. And so the X voice note can
+    be read from X's own client (rule 113), `log twitter session webClient`
+    also saves X Chat's own app, which x.com only frames: it reads
+    `chat.x.com/embed-v1.json`, the build's `remoteEntry.js` and every script
+    the manifest lists (English only), spaced as reads through the one
+    session, into the save's `xchat/` folder (`save_xchat_build`). Spec:
+    `docs/specs/agentHooks.md` (REQ-HOOKS-18), `docs/specs/xSession.md`
+    (REQ-XSESSION-15).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

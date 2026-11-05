@@ -111,3 +111,9 @@ The inbox's state is one SQLite database (`~/.logCli/log.db`, WAL, each write in
 ### REQ-HOOKS-17: An account behind is caught up by its owner, and sends wait for it
 
 Each owner records the platform's own last position (X's sequence id, each Discord DM's last message id, each Slack chat's last ts, Instagram's last activity). A gap opens when an owner takes over from a stopped or dead one (from its last heartbeat), when a first owner starts on an account with events (from the newest), or when the push channel drops. One catch-up job in the owner, never two at once, pulls only what came after the saved positions through the account's own session, paced 0.8 to 2.5 s between reads, appends it as `source: catchUp`, and closes the gap. A refusal stops it, keeps the account behind and alerts `catchUpRefused`. Every send waits up to 90 s for an open gap to close and is refused with `accountBehind` if it doesn't, or at once if the catch-up was refused. Rule 135.
+
+### REQ-HOOKS-18: A refused catch-up resumes only on matt's word
+
+`log inbox resume --platform <p> --account <a> --by <who>` calls `resumeGap` in `src/inbox/store/client.ts`, which, in one immediate transaction, opens a refused gap again (status `open`), writes who resumed it and what was refused before into its detail, and adds a `gapResumed` alert; a gap that isn't refused, or no gap, is left as it is. `ownOrAttach` in `src/inbox/relay/client.ts` runs its `catchUpRunner` every `RECHECK_GAP_MS` (30 s) as well as at start and when the socket opens, so a resumed gap is caught up through the owner's own session without a restart, and the runner still skips a refused gap. Rule 150.
+
+Checked by: code and SubQ
