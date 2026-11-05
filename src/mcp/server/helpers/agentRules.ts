@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 151;
+export const RULES_REVIEWED_THROUGH = 152;
 
 export const AGENTS_URI = "log://agents";
 
@@ -65,6 +65,7 @@ export const CORE_PRINCIPLES = [
   "58. When matt asks for a voice note in another language, send the translation with `translationOf` (the original words, which the voice gate grades, since it can't match a translation to his writing) and `language` (zh-CN, es-ES ...), the language the clone speaks it in. Only for a translation he asked for, never with `mattsWords` (rule 148).",
   "59. A voice note is written at the length matt asks for (a 40 s note is about 100 to 110 words), from the whole conversation: take what they are talking about further, never re-explain what matt already told them, and don't make every note three short lines. Its gate grades it as spoken (`voice` with `spoken`, as every voice note send does), never on length, and refuses one that doesn't build on the chat (`buildsOn`). A note never opens with a breath, and its breaths and pace vary (rule 149).",
   "61. On X a voice note is `twitterVoiceLive` { account, with, text }: an X Chat voice message sent the way X Chat's own app sends one (encrypted m4a, uploaded to the conversation's media store, one AUDIO attachment), through the account's one session with X Chat opened by the saved PIN; with no PIN it is refused `xchatPinMissing` (rule 151).",
+  "62. When matt says to send a dm the voice gate refused (\"send it anyway\"), `twitterDmLive` with `overGate` sends that one message: the gate's read is skipped and the AI artifact check still runs. Only on his word for that exact message, never on your own and never in a queue (rule 152).",
   "60. A catch-up refused on an account (`accountBehind`) stays refused until matt says to resume: then `inboxResume` { platform, account, by: \"matt\" } opens its gap again and the owner catches up within 30 s. Never resume on your own (rule 150).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
@@ -136,7 +137,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterLike: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterRepost: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
   twitterFollow: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105],
-  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138, 152],
   twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138],
   runs: [19, 22, 25, 27, 66, 73],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],

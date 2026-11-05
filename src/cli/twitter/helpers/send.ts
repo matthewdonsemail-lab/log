@@ -49,6 +49,7 @@ const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", description:
 const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
 export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when matt asked (rule 86)" };
 const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when matt asked (rule 90)" };
+const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "matt said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
 const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when matt asked (rule 8); without it a dry run checks it and contacts nothing" };
 
 interface SendShape {
@@ -73,7 +74,7 @@ const SHAPES: Record<SendAction, SendShape> = {
 function usageOf(shape: SendShape): string {
   const target = shape.target === "tweet" ? "--tweet <postUrl>" : shape.target === "userId" ? "--userId <id>" : "";
   const text = shape.text ? ` --text "<copy>"${shape.action === "post" || shape.action === "reply" ? " [--media <file>[,<file>]]" : shape.action === "dm" ? " [--media <file|url>]" : ""}` : "";
-  const skip = shape.text ? ` [--skipStyleCheck]${shape.action === "dm" ? " [--asOne]" : ""}` : "";
+  const skip = shape.text ? ` [--skipStyleCheck]${shape.action === "dm" ? " [--asOne] [--overGate]" : ""}` : "";
   return [
     `Usage: log twitter ${shape.action} --account <accountName>${target ? ` ${target}` : ""}${text} [--approvedBy <who>]${skip} [--force] [--live] [--json]`,
     `${shape.summary.replace(", on the direct-API engine; a dry run unless --live", "")}, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80).`,
@@ -83,7 +84,7 @@ function usageOf(shape: SendShape): string {
 }
 
 function inputOf(shape: SendShape): CommandInput {
-  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
+  const flags: FlagSpec[] = [ACCOUNT, ...(shape.target === "tweet" ? [TWEET] : shape.target === "userId" ? [USER_ID] : []), ...(shape.text ? [TEXT, SKIP_STYLE] : []), ...(shape.action === "post" || shape.action === "reply" || shape.action === "dm" ? [MEDIA] : []), ...(shape.action === "dm" ? [AS_ONE, OVER_GATE] : []), APPROVED_BY, FORCE, LIVE, JSON_FLAG];
   return { forms: [{ words: [], effect: "write", summary: shape.summary, positionals: [], flags }] };
 }
 
@@ -199,9 +200,13 @@ function sendCommand(shape: SendShape): Command {
           const spec = parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec;
           const caught = await waitCaughtUp("twitter", account.accountName);
           if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
-          const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
-          if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
-          context.err(voiced.line);
+          if (parsed.flags["overGate"] === true) {
+            context.err(`${account.accountName}: --overGate: matt said to send this dm over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
+          } else {
+            const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
+            if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
+            context.err(voiced.line);
+          }
           const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
           if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
           let parts: Awaited<ReturnType<typeof sendDmParts>>;

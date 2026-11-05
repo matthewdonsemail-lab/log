@@ -24,6 +24,9 @@ export const voiceGate = {
       { kind: 'value', file: 'src/twitter/copy/voice/types.ts', name: 'RANKED_CONTEXT', equals: 12 },
       { kind: 'value', file: 'src/twitter/copy/voice/types.ts', name: 'RANKED_SHORTLIST', equals: 40 },
     ],
+    'REQ-VOICE-14': [
+      { kind: 'symbol', file: 'src/cli/twitter/helpers/send.ts', name: 'OVER_GATE' },
+    ],
     'REQ-VOICE-13': [
       { kind: 'symbol', file: VOICE, name: 'readVoice' },
       { kind: 'string', file: COMMAND, includes: 'spoken' },
@@ -75,6 +78,7 @@ export const voiceGate = {
     'REQ-VOICE-10': noul('Does rankedContext take the chat messages from chatContextOf, embed the moment and the messages with voiceDeps.aiEmbedder, keep the RANKED_SHORTLIST closest by cosine, rerank them, return the top RANKED_CONTEXT in time order with their full text, and does readVoice put them in its state as thisConversationRankedForThisMoment and ask inContext against them?'),
     'REQ-VOICE-12': noul('Does gateSend call chatEvidence with the send platform, conversation id, user id and handle, and pass its evidence to gateReading; does chatIdFor match a saved conversation of the same platform by its conversation id, then on twitter by the user id being one of the conversation id parties, then by handle on that platform only, and return null when none matches; and does chatEvidence then read that chat with evidenceFor? Does alreadyTalkedIn return true when the evidence has recent messages, when the ranked conversation has a message from matt, or when a real reply is from the same chat or the same person, and does readVoice then set openerOnly to 1 without using the SubQ answer? Does gateSend take what is being answered from momentAnswered, which returns the newest message text only when that newest message is not from matt, and an empty string otherwise?'),
     'REQ-VOICE-11': noul('Does storedEmbedder look up every text with vectorsFor by its hash, model and dimensions, embed only the missing ones and store them with saveVectors, does jinaEmbedder do the same, do buildAiIndex and openAiIndex keep the phrase vectors and the index meta in the .db (saveVectors, saveAiIndex, aiIndexOf), and is no reading, score or verdict written anywhere?'),
+    'REQ-VOICE-14': noul('In src/cli/twitter/helpers/send.ts, does the dm command declare an overGate flag (OVER_GATE) only on dm, skip gateDeps.gate only when overGate is true while still refusing voiceGateFailed when it is not, and does the planSend aiArtifacts refusal still apply before it?'),
     'REQ-VOICE-13': noul('In src/twitter/copy/voice/client.ts, when the draft has spoken set, does readVoice ask a voice question that says it is a voice note whose length and punctuation never count against it, ask a buildsOn question about building on the whole conversation rather than repeating what matt already said, and fail the draft when buildsOn is under CONTEXT_PASS, while without spoken there is no buildsOn question and buildsOn is null; and in src/cli/twitter/helpers/voice.ts does gateReading pass spoken to readVoice and skip offProfile for it, does gateSend take spoken and pass it on, does failedParts name a low buildsOn, and does the voice command take a spoken flag; and with spoken does gateReading pass howMattTalks from voiceDeps (transcripts of mattsOwnVoiceNotes, which keeps only recordings made before firstClonedAt) so that readVoice puts them in its state as howMattTalksInHisOwnVoiceNotes and its spoken voice question reads them first?'),
     unspecifiedBehavior: noul('Does readVoice let a draft pass by a route the specification does not describe, such as skipping SubQ or passing when an answer is missing?'),
   },
@@ -92,6 +96,7 @@ export const voiceGate = {
     'REQ-VOICE-11': MET,
     'REQ-VOICE-12': MET,
     'REQ-VOICE-13': MET,
+    'REQ-VOICE-14': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

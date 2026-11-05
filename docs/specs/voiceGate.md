@@ -94,3 +94,8 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-14: matt can send one dm over the gate's refusal
+
+`log twitter dm` takes `--overGate` (`OVER_GATE` in `src/cli/twitter/helpers/send.ts`). With it, the send skips `gateDeps.gate` and says so on its error stream; without it the gate runs and a refusal is `voiceGateFailed`. The copy's AI artifact check (`planSend`, `aiArtifacts`) runs either way, before the gate. Rule 152.
+
+Checked by: code and SubQ

@@ -2201,6 +2201,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     replaces rule 142's "X isn't built". Spec: `docs/specs/voiceClone.md`
     (REQ-VOICE-CLONE-09), `docs/specs/xChat.md` (REQ-XCHAT-11).
 
+152. 2026-11-05 · matt: "Send it anyway", after the voice gate inside `log
+    twitter dm` refused a short dm to @AjeetVermai that he had asked for. The
+    gate inside every send (rule 137) had no way to take his word over it.
+    `--overGate` on `log twitter dm` (MCP `overGate`) is that word: the gate's
+    SubQ read is skipped for that dm, and the AI artifact check still runs and
+    refuses `aiArtifacts` (rule 111). Only when matt said to send that exact
+    message over the gate's refusal, never on the agent's own, and never for a
+    queue. The send says it went over the gate. The same day the gate found a
+    person named only by user id by their handle (`handleOfUserId`), so it reads
+    their chat. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-14).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

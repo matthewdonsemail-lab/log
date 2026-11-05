@@ -9,6 +9,7 @@ import { fingerprint, loadQueue } from "../../twitter/queue/plan/index.ts";
 import type { Queue } from "../../twitter/queue/plan/index.ts";
 import { runCli } from "../runner/index.ts";
 import { twitterSendDeps } from "./helpers/send.ts";
+import { gateDeps } from "./helpers/voice.ts";
 import { twitterDmsDeps } from "./helpers/dms.ts";
 import { loadConversations } from "../../search/conversations/index.ts";
 import { appendEvent, markGap, openGap } from "../../inbox/store/index.ts";
@@ -222,6 +223,30 @@ describe("log twitter reply, quote, like, dm", () => {
     expect(partial.code).toBe(1);
     expect(dropped.calls.map((c) => c.text)).toEqual(["one", "two"]);
     expect(partial.out).toContain("1 of 3 sent");
+  });
+
+  test("--overGate sends a dm the voice gate refused, only when given, and still refuses AI artifacts (rule 152)", async () => {
+    twitterSendDeps.profiles = () => ({});
+    const original = gateDeps.gate;
+    let gated = 0;
+    gateDeps.gate = async () => (gated++, { ok: false, refused: ">>> VOICE GATE FAILED for 42" });
+    try {
+      const h = harness(() => ({ ok: true, event: "sent", conversationId: "42-1" }));
+      const refused = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "sick", "--approvedBy", "matt", "--live"]);
+      expect(refused.code).toBe(1);
+      expect(refused.err).toContain("voiceGateFailed");
+      expect(h.calls).toEqual([]);
+      const over = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "sick", "--overGate", "--approvedBy", "matt", "--live"]);
+      expect(over.code).toBe(0);
+      expect(over.err).toContain("--overGate");
+      expect(h.calls.map((c) => c.text)).toEqual(["sick"]);
+      expect(gated).toBe(1);
+      const hidden = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "sick​", "--overGate", "--approvedBy", "matt", "--live"]);
+      expect(hidden.code).toBe(1);
+      expect(hidden.err).toContain("aiArtifacts");
+    } finally {
+      gateDeps.gate = original;
+    }
   });
 
   test("--force asks the engine to go past the governor, only when given, and says what it went past", async () => {
