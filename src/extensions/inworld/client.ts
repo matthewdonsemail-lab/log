@@ -1,6 +1,7 @@
-import { envValue } from '../voiceClone/helpers/provider'
-import type { ReferenceAudio, SpeakRequest, VoiceAnswer, VoiceFetch, VoiceProviderClient, VoiceResponse } from '../voiceClone/types'
-import { INWORLD_API, INWORLD_ENCODINGS, INWORLD_ENDPOINTS, INWORLD_KEY_NAME, INWORLD_LANGUAGE, INWORLD_LIMITS, INWORLD_MODELS } from './types'
+import { accentDescriptionOf, envValue, voiceSettingsOf } from '../voiceClone/helpers/provider'
+import type { ReferenceAudio, SpeakRequest, VoiceAnswer, VoiceFetch, VoiceProviderClient, VoiceResponse, VoiceSettings } from '../voiceClone/types'
+import { INWORLD_API, INWORLD_ENCODINGS, INWORLD_ENDPOINTS, INWORLD_KEY_NAME, INWORLD_LANGUAGE_REFUSED, INWORLD_LIMITS, INWORLD_MODELS, INWORLD_STEERING_MODELS } from './types'
+import type { InworldModel } from './types'
 
 export function inworldKey(env: Record<string, string | undefined> = process.env): string | null {
   return envValue(INWORLD_KEY_NAME, env)
@@ -14,23 +15,42 @@ async function refusalOf(answer: VoiceResponse): Promise<{ code: string; error: 
 
 const base64 = (bytes: Uint8Array) => Buffer.from(bytes).toString('base64')
 
+export function accentSteerOf(model: string, accent: string | undefined): string {
+  return accent && (INWORLD_STEERING_MODELS as readonly string[]).includes(model as InworldModel) ? `[say it in a ${accent} accent] ` : ''
+}
+
+export function cloneBodyOf(displayName: string, samples: readonly ReferenceAudio[], language: string, accent: string): string {
+  return JSON.stringify({ displayName, languageCode: language, description: accentDescriptionOf(accent), voiceSamples: samples.map((s) => ({ audioData: base64(s.bytes), ...(s.transcription ? { transcription: s.transcription } : {}) })) })
+}
+
 export function createInworldClient(key: string | null = inworldKey(), fetcher: VoiceFetch = fetch as unknown as VoiceFetch) {
   const missing = <T>(): VoiceAnswer<T> => ({ ok: false, status: 0, code: 'voiceKeyMissing', error: `${INWORLD_KEY_NAME} is not set (the environment, .env.local in the repo, or ~/.buzz/.env.local)`, data: null })
   const headers = () => ({ Authorization: `Basic ${key}`, 'Content-Type': 'application/json' })
   return {
-    async cloneVoice(displayName: string, samples: readonly ReferenceAudio[]): Promise<VoiceAnswer<{ voiceId: string; warnings: unknown }>> {
+    async cloneVoice(displayName: string, samples: readonly ReferenceAudio[], settings: VoiceSettings = voiceSettingsOf()): Promise<VoiceAnswer<{ voiceId: string; warnings: unknown; language: string; refused: string[] }>> {
       if (!key) return missing()
-      const body = JSON.stringify({ displayName, languageCode: INWORLD_LANGUAGE, voiceSamples: samples.map((s) => ({ audioData: base64(s.bytes) })) })
-      const answer = await fetcher(`${INWORLD_API}${INWORLD_ENDPOINTS.clone}`, { method: 'POST', headers: headers(), body })
-      if (answer.status !== 200) return { ok: false, status: answer.status, ...(await refusalOf(answer)), data: null }
-      const read = (await answer.json().catch(() => null)) as { voice?: { voiceId?: unknown }; audioSamplesValidated?: unknown } | null
-      const voiceId = typeof read?.voice?.voiceId === 'string' ? read.voice.voiceId : ''
-      if (!voiceId) return { ok: false, status: 200, code: 'inworldNoVoiceId', error: 'Inworld answered without a voice id', data: null }
-      return { ok: true, status: 200, code: null, error: null, data: { voiceId, warnings: read?.audioSamplesValidated ?? null } }
+      const refused: string[] = []
+      for (const language of [...new Set([settings.language, settings.fallback])]) {
+        const answer = await fetcher(`${INWORLD_API}${INWORLD_ENDPOINTS.clone}`, { method: 'POST', headers: headers(), body: cloneBodyOf(displayName, samples, language, settings.accent) })
+        if (answer.status !== 200) {
+          const refusal = await refusalOf(answer)
+          if (answer.status === 400 && language !== settings.fallback && INWORLD_LANGUAGE_REFUSED.test(refusal.error ?? 'INVALID_ARGUMENT')) {
+            refused.push(`${language}: ${refusal.error ?? 'INVALID_ARGUMENT'}`)
+            continue
+          }
+          return { ok: false, status: answer.status, code: refusal.code, error: [...refused, `${language}: ${refusal.error ?? ''}`].join('; '), data: null }
+        }
+        const read = (await answer.json().catch(() => null)) as { voice?: { voiceId?: unknown; languageCode?: unknown }; audioSamplesValidated?: unknown } | null
+        const voiceId = typeof read?.voice?.voiceId === 'string' ? read.voice.voiceId : ''
+        if (!voiceId) return { ok: false, status: 200, code: 'inworldNoVoiceId', error: 'Inworld answered without a voice id', data: null }
+        const accepted = typeof read?.voice?.languageCode === 'string' && read.voice.languageCode ? read.voice.languageCode : language
+        return { ok: true, status: 200, code: null, error: null, data: { voiceId, warnings: read?.audioSamplesValidated ?? null, language: accepted, refused } }
+      }
+      return { ok: false, status: 400, code: 'inworldHttp400', error: refused.join('; '), data: null }
     },
     async synthesize(request: SpeakRequest): Promise<VoiceAnswer<Uint8Array>> {
       if (!key) return missing()
-      const body = JSON.stringify({ text: request.text, voiceId: request.voiceId, modelId: request.model, audioConfig: { audioEncoding: INWORLD_ENCODINGS[request.format] } })
+      const body = JSON.stringify({ text: `${accentSteerOf(request.model, request.accent)}${request.text}`, voiceId: request.voiceId, modelId: request.model, ...(request.language ? { language: request.language } : {}), audioConfig: { audioEncoding: INWORLD_ENCODINGS[request.format] } })
       const answer = await fetcher(`${INWORLD_API}${INWORLD_ENDPOINTS.speak}`, { method: 'POST', headers: headers(), body })
       if (answer.status !== 200) return { ok: false, status: answer.status, ...(await refusalOf(answer)), data: null }
       const read = (await answer.json().catch(() => null)) as { audioContent?: unknown } | null
@@ -52,10 +72,10 @@ export function inworldProvider(key: string | null = inworldKey(), fetcher?: Voi
     cheapest: INWORLD_MODELS[0],
     limits: INWORLD_LIMITS,
     referenceFormat: 'wav',
-    async clone(title, references) {
-      const made = await client.cloneVoice(title, references)
+    async clone(title, references, settings) {
+      const made = await client.cloneVoice(title, references, settings)
       if (!made.ok || !made.data) return { ...made, data: null }
-      return { ok: true, status: made.status, code: null, error: null, data: { voiceId: made.data.voiceId, state: 'ready' } }
+      return { ok: true, status: made.status, code: null, error: null, data: { voiceId: made.data.voiceId, state: 'ready', language: made.data.language } }
     },
     speak: (request) => client.synthesize(request),
   }

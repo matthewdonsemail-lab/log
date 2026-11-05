@@ -4,7 +4,7 @@ title: "Voice clone and voice notes"
 
 # Voice clone and voice notes
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142, 143 and 144.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142 to 145.
 
 ## The providers
 
@@ -16,7 +16,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-02: Inworld clones and speaks through its own two calls
 
-`createInworldClient` in `src/extensions/inworld/client.ts` calls only `POST https://api.inworld.ai/voices/v1/voices:clone` (JSON `displayName`, `languageCode` en-US, `voiceSamples` with base64 `audioData`; the answer's `voice.voiceId`) and `POST https://api.inworld.ai/tts/v1/voice` (JSON `text`, `voiceId`, `modelId`, `audioConfig.audioEncoding`; the answer's base64 `audioContent`), with `Authorization: Basic` and `INWORLD_API_KEY`. Its references go as wav, 3 to 30 s in all, and its cheapest model is `inworld-tts-2-flash`. Without a key it answers `voiceKeyMissing` and sends nothing.
+`createInworldClient` in `src/extensions/inworld/client.ts` calls only `POST https://api.inworld.ai/voices/v1/voices:clone` (JSON `displayName`, `languageCode`, `description`, `voiceSamples` with base64 `audioData` and an optional `transcription`; the answer's `voice.voiceId`) and `POST https://api.inworld.ai/tts/v1/voice` (JSON `text`, `voiceId`, `modelId`, an optional `language`, `audioConfig.audioEncoding`; the answer's base64 `audioContent`), with `Authorization: Basic` and `INWORLD_API_KEY`. Its references go as wav, 3 to 30 s in all, and its cheapest model is `inworld-tts-2-flash`. Without a key it answers `voiceKeyMissing` and sends nothing.
 
 Checked by: code and SubQ
 
@@ -30,7 +30,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-04: The clone is made once per provider, only from matt's own voice notes
 
-`mattsRecordings` in `src/extensions/voiceClone/helpers/recordings.ts` keeps only the kept voice notes `sentByMatt` says he sent (`fromMe` in the conversation store, or his `ownMessage` in the .db). `pickReferences` takes them shortest first, each at least 5 s, within the provider's most. `log clone voice` (`cloneCommand`, `src/cli/clone/index.ts`) lists them as a dry run, refuses under the provider's least with `voiceRecordingsMissing`, converts them to wav with `wavOf` when the provider wants wav, clones only with `--apply`, and never clones twice on a provider that `~/.logCli/voice/clone.json` already holds (`readClone`, `writeClone`, keyed by provider). `log fish` is refused with the `log clone` form it became.
+`mattsRecordings` in `src/extensions/voiceClone/helpers/recordings.ts` keeps only the kept voice notes `sentByMatt` says he sent (`fromMe` in the conversation store, or his `ownMessage` in the .db). `pickReferences` takes them shortest first, each at least 5 s, within the provider's most. `log clone voice` (`cloneCommand`, `src/cli/clone/index.ts`) lists them as a dry run, refuses under the provider's least with `voiceRecordingsMissing`, converts them to wav with `wavOf` when the provider wants wav, clones only with `--apply`, and never clones twice on a provider that `~/.logCli/voice/clone.json` already holds (`readClone`, `writeClone`, keyed by provider) unless `--replace` says to (REQ-VOICE-CLONE-11). `log fish` is refused with the `log clone` form it became.
 
 Checked by: code and SubQ
 
@@ -69,5 +69,11 @@ Checked by: code and SubQ
 ### REQ-VOICE-CLONE-10: matt's own dictated words skip the gate's read, never the artifact check
 
 `voiceNoteCommandOf` in `src/cli/voiceNote/index.ts` takes `--mattsWords`: the text is matt's own words, dictated by him for this voice note. The voice gate grades speech as typed text and as a reply, so with `--mattsWords` a live send never calls `gateDeps.gate` and says on its progress line that the gate's read was skipped; the dry run says so too. `watermarkReadingOf` still reads the text before anything else, with or without the flag, and refuses `aiArtifacts`. Without `--mattsWords` the gate runs as REQ-VOICE-CLONE-07 says. Everything else (approval, clone, catch-up, render, claim, engine) is the same. Rule 144.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-CLONE-11: The clone is made in matt's accent, and can be made again keeping the old one
+
+`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the accent from `LOG_VOICE_ACCENT` (default `Northern Irish`) and the language from `LOG_VOICE_LANGUAGE` (default `en-IE`), with `en-GB` as the fallback. Inworld's `cloneVoice` (`cloneBodyOf`, `src/extensions/inworld/client.ts`) sends that `languageCode`, a `description` naming the accent (`accentDescriptionOf`), and each sample's `transcription` when `cloneDeps.transcript` finds matt's AssemblyAI transcript by the file's hash (`readTranscript(hashOf(bytes))`); when Inworld answers 400 with `INVALID_ARGUMENT` or a language error it sends the same clone once more in the fallback language, and keeps the language Inworld accepted on the clone (`language`, with `accent`). `log clone voice --apply --replace` (`cloneCommand`, `src/cli/clone/index.ts`) clones again over an existing clone, and `replacedClone` (`src/extensions/voiceClone/helpers/store.ts`) keeps the old one, voice id included, under `previous`, never deleting it; without `--replace` an existing clone is answered as it is. `speakToFile` sends the clone's `language` and the accent, and `accentSteerOf` puts `[say it in a <accent> accent] ` before the text only on a model in `INWORLD_STEERING_MODELS` (`inworld-tts-2`): Inworld removes an instruction tag before synthesis and supports steering only there, while `inworld-tts-2-flash` gets none. Rule 145.
 
 Checked by: code and SubQ

@@ -5,6 +5,7 @@ import { AUDIO_SUFFIX, MAX_SPEAK_CHARACTERS, PLATFORM_AUDIO } from '../types'
 import type { ProviderClone, SpeakFormat, VoiceNote, VoiceNoteCode, VoiceNotePlatform, VoiceProviderClient } from '../types'
 import { AUDIO_TOOLS, convertFor, discordWaveform, instagramLevels, samplesOf } from './audio'
 import type { AudioTools } from './audio'
+import { voiceSettingsOf } from './provider'
 import { readClone, stampOf, voiceNotesDir } from './store'
 
 export type Spoken = { ok: true; path: string; bytes: number; model: string; clone: ProviderClone } | { ok: false; code: VoiceNoteCode; detail: string }
@@ -26,7 +27,7 @@ export async function speakToFile(client: VoiceProviderClient, text: string, for
   const problem = textOnlyProblem(text)
   if (problem) return { ok: false, code: 'voiceNoteInvalid', detail: problem }
   const used = model ?? clone.model
-  const answer = await client.speak({ text: text.trim(), voiceId: clone.voiceId, model: used, format })
+  const answer = await client.speak({ text: text.trim(), voiceId: clone.voiceId, model: used, format, ...(clone.language ? { language: clone.language } : {}), accent: clone.accent ?? voiceSettingsOf().accent })
   if (!answer.ok || !answer.data) return { ok: false, code: answer.code === 'voiceKeyMissing' ? 'voiceKeyMissing' : 'voiceProviderRefused', detail: `${client.provider} answered ${answer.status || 'nothing'}${answer.code ? ` (${answer.code})` : ''}${answer.error ? `: ${answer.error}` : ''} to text to speech with ${used}` }
   mkdirSync(voiceNotesDir(), { recursive: true })
   const path = join(voiceNotesDir(), `${stampOf(now)}_${client.provider}_${createHash('sha1').update(text.trim()).digest('hex').slice(0, 10)}.${format}`)

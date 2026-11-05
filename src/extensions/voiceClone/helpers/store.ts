@@ -44,3 +44,9 @@ export function writeClone(clone: ProviderClone, path = clonePath()): void {
 export function stampOf(now: Date = new Date()): string {
   return now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')
 }
+
+export function replacedClone(made: ProviderClone, existing: ProviderClone | null): ProviderClone {
+  if (!existing) return made
+  const { previous, ...older } = existing
+  return { ...made, previous: [older, ...(previous ?? [])] }
+}

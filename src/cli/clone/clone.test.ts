@@ -2,7 +2,8 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { fishAudioProvider } from "../../extensions/fishAudio/index.ts";
 import { inworldProvider } from "../../extensions/inworld/index.ts";
-import { clonePath, readClone, writeClone } from "../../extensions/voiceClone/index.ts";
+import { accentSteerOf } from "../../extensions/inworld/index.ts";
+import { clonePath, readClone, readClones, voiceSettingsOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import type { Recording, VoiceFetch, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { runCli } from "../runner/index.ts";
 import { cloneDeps } from "./index.ts";
@@ -12,6 +13,8 @@ afterEach(() => {
   Object.assign(cloneDeps, original);
   rmSync(clonePath(), { force: true });
   delete process.env.LOG_VOICE_PROVIDER;
+  delete process.env.LOG_VOICE_ACCENT;
+  delete process.env.LOG_VOICE_LANGUAGE;
 });
 
 const rec = (messageId: string, seconds: number): Recording => ({ path: `C:/x/${messageId}_voice-message.ogg`, platform: "discord", account: "mattDiscord", conversationId: "1", messageId, seconds });
@@ -28,6 +31,7 @@ function withProvider(answers: { status: number; body?: unknown; bytes?: number 
   cloneDeps.read = () => new Uint8Array([1, 2, 3]);
   cloneDeps.wav = () => new Uint8Array([4, 5, 6]);
   cloneDeps.recordings = () => MINE;
+  cloneDeps.transcript = () => null;
   return calls;
 }
 
@@ -109,6 +113,61 @@ describe("log clone (rules 142, 143)", () => {
     clone("inworld", "ws__matt", "inworld-tts-2-flash");
     expect((await run(["clone", "speak", "--text", "yo"])).err).toContain("voiceKeyMissing");
     expect(calls).toEqual([]);
+  });
+
+  test("the accent and language come from LOG_VOICE_ACCENT and LOG_VOICE_LANGUAGE, Northern Irish and en-IE by default, en-GB the fallback (rule 145)", () => {
+    expect(voiceSettingsOf({ LOG_VOICE_ACCENT: "Scottish", LOG_VOICE_LANGUAGE: "en-GB" })).toEqual({ accent: "Scottish", language: "en-GB", fallback: "en-GB" });
+    expect(voiceSettingsOf({ LOG_VOICE_ACCENT: "Northern Irish", LOG_VOICE_LANGUAGE: "en-IE" })).toEqual({ accent: "Northern Irish", language: "en-IE", fallback: "en-GB" });
+  });
+
+  test("clone voice --apply sends the language, a description naming the accent and each sample's transcript", async () => {
+    process.env.LOG_VOICE_ACCENT = "Northern Irish";
+    process.env.LOG_VOICE_LANGUAGE = "en-IE";
+    const calls = withProvider([{ status: 200, body: { voice: { voiceId: "ws__matt2", languageCode: "en-IE" } } }]);
+    cloneDeps.transcript = () => "brother answer your phone";
+    const r = await run(["clone", "voice", "--apply"]);
+    expect(r.code).toBe(0);
+    const body = JSON.parse(String(calls[0].body));
+    expect(body.languageCode).toBe("en-IE");
+    expect(body.description).toContain("Northern Irish accent");
+    expect(body.voiceSamples).toEqual([{ audioData: "BAUG", transcription: "brother answer your phone" }, { audioData: "BAUG", transcription: "brother answer your phone" }]);
+    expect(readClone("inworld")).toMatchObject({ voiceId: "ws__matt2", language: "en-IE", accent: "Northern Irish" });
+  });
+
+  test("when Inworld refuses en-IE as INVALID_ARGUMENT the clone is made in en-GB", async () => {
+    process.env.LOG_VOICE_ACCENT = "Northern Irish";
+    process.env.LOG_VOICE_LANGUAGE = "en-IE";
+    const calls = withProvider([{ status: 400, body: { code: 3, message: "INVALID_ARGUMENT: unsupported language en-IE" } }, { status: 200, body: { voice: { voiceId: "ws__mattGb" } } }]);
+    const r = await run(["clone", "voice", "--apply"]);
+    expect(r.code).toBe(0);
+    expect(calls.map((c) => JSON.parse(String(c.body)).languageCode)).toEqual(["en-IE", "en-GB"]);
+    expect(readClone("inworld")).toMatchObject({ voiceId: "ws__mattGb", language: "en-GB" });
+  });
+
+  test("--replace makes the clone again and keeps the old voice id under previous", async () => {
+    process.env.LOG_VOICE_LANGUAGE = "en-IE";
+    clone("inworld", "ws__matt", "inworld-tts-2-flash");
+    const calls = withProvider([{ status: 200, body: { voice: { voiceId: "ws__mattNew", languageCode: "en-IE" } } }]);
+    const dry = await run(["clone", "voice", "--replace"]);
+    expect(dry.out).toContain("would replace ws__matt");
+    expect(calls).toEqual([]);
+    const r = await run(["clone", "voice", "--apply", "--replace"]);
+    expect(r.code).toBe(0);
+    const kept = readClones().clones.inworld;
+    expect(kept?.voiceId).toBe("ws__mattNew");
+    expect(kept?.previous?.map((c) => c.voiceId)).toEqual(["ws__matt"]);
+  });
+
+  test("speak says it in the clone's language; only inworld-tts-2 gets the accent steer, which flash would ignore", async () => {
+    writeClone({ provider: "inworld", voiceId: "ws__matt", title: "matt", model: "inworld-tts-2-flash", createdAt: "2026-11-05T00:00:00.000Z", state: "ready", references: [], language: "en-IE", accent: "Northern Irish" });
+    const audio = { status: 200, body: { audioContent: Buffer.from("abcd").toString("base64") } };
+    const calls = withProvider([audio, audio]);
+    await run(["clone", "speak", "--text", "yo"]);
+    await run(["clone", "speak", "--text", "yo", "--model", "inworld-tts-2"]);
+    const [flash, full] = calls.map((c) => JSON.parse(String(c.body)));
+    expect(flash).toMatchObject({ text: "yo", language: "en-IE", modelId: "inworld-tts-2-flash" });
+    expect(full).toMatchObject({ text: "[say it in a Northern Irish accent] yo", language: "en-IE", modelId: "inworld-tts-2" });
+    expect(accentSteerOf("inworld-tts-2-flash", "Northern Irish")).toBe("");
   });
 
   test("log fish is refused with the form it became", async () => {

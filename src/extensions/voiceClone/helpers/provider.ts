@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { DEFAULT_PROVIDER, PROVIDER_ENV, VOICE_PROVIDERS } from '../types'
-import type { VoiceProvider } from '../types'
+import { ACCENT_ENV, DEFAULT_ACCENT, DEFAULT_LANGUAGE, DEFAULT_PROVIDER, FALLBACK_LANGUAGE, LANGUAGE_ENV, PROVIDER_ENV, VOICE_PROVIDERS } from '../types'
+import type { VoiceProvider, VoiceSettings } from '../types'
 
 export function envValue(name: string, env: Record<string, string | undefined> = process.env, home = homedir()): string | null {
   if (env[name]?.trim()) return env[name]!.trim()
@@ -27,4 +27,13 @@ export function providerOf(said: unknown, env: Record<string, string | undefined
   const chosen = configured ?? { value: DEFAULT_PROVIDER, from: 'the default' }
   if (!(VOICE_PROVIDERS as readonly string[]).includes(chosen.value)) return { ok: false, detail: `${chosen.from} names ${chosen.value}: the voice providers are ${VOICE_PROVIDERS.join(', ')}` }
   return { ok: true, provider: chosen.value as VoiceProvider, from: chosen.from }
+}
+
+export function voiceSettingsOf(env: Record<string, string | undefined> = process.env): VoiceSettings {
+  const language = envValue(LANGUAGE_ENV, env) ?? DEFAULT_LANGUAGE
+  return { accent: envValue(ACCENT_ENV, env) ?? DEFAULT_ACCENT, language, fallback: language === FALLBACK_LANGUAGE ? language : FALLBACK_LANGUAGE }
+}
+
+export function accentDescriptionOf(accent: string): string {
+  return `matt's own voice, a ${accent} accent`
 }

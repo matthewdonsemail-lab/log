@@ -563,7 +563,7 @@ An X account's own lists, shown, made and added to through its one session on ve
 
 ## [Voice clone and voice notes](./voiceClone.md)
 
-matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142, 143 and 144.
+matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Rules 142 to 145.
 
 
 ## [Instagram](./instagram.md)

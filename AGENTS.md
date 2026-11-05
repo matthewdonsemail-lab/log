@@ -2041,6 +2041,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Discord message 1567811929500811294. Spec: `docs/specs/voiceClone.md`
     (REQ-VOICE-CLONE-10).
 
+145. 2026-11-05 · matt: "Yes, re-clone it", because the Inworld clone was made
+    with `languageCode` en-US, which pulled his voice towards an American
+    accent, and he is Northern Irish. The voice is cloned and spoken in his
+    accent: `LOG_VOICE_ACCENT` (`.env.local`, default Northern Irish) and
+    `LOG_VOICE_LANGUAGE` (default en-IE, sent again as en-GB when Inworld
+    answers `INVALID_ARGUMENT`). The clone sends that language, a
+    description naming the accent and each sample's AssemblyAI transcript
+    from `~/.logCli/transcripts` when there is one (none is paid for: TTS-2
+    makes its own), and keeps the language Inworld accepted. `log clone voice
+    --apply --replace` (MCP `replace`) makes it again over the old one, which
+    stays in the clone file under `previous`, never deleted. Speech sends the
+    clone's language; on `inworld-tts-2` the text starts with `[say it in a
+    <accent> accent]`, an instruction Inworld removes before synthesis, and
+    `inworld-tts-2-flash`, which ignores steering, gets none. Spec:
+    `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-11).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -3,6 +3,18 @@ export type VoiceProvider = (typeof VOICE_PROVIDERS)[number]
 export const DEFAULT_PROVIDER: VoiceProvider = 'inworld'
 export const PROVIDER_ENV = 'LOG_VOICE_PROVIDER'
 
+export const ACCENT_ENV = 'LOG_VOICE_ACCENT'
+export const DEFAULT_ACCENT = 'Northern Irish'
+export const LANGUAGE_ENV = 'LOG_VOICE_LANGUAGE'
+export const DEFAULT_LANGUAGE = 'en-IE'
+export const FALLBACK_LANGUAGE = 'en-GB'
+
+export interface VoiceSettings {
+  accent: string
+  language: string
+  fallback: string
+}
+
 export const SPEAK_FORMATS = ['mp3', 'wav'] as const
 export type SpeakFormat = (typeof SPEAK_FORMATS)[number]
 
@@ -51,6 +63,7 @@ export interface ReferenceAudio {
   name: string
   bytes: Uint8Array
   type: string
+  transcription?: string
 }
 
 export interface SpeakRequest {
@@ -58,6 +71,8 @@ export interface SpeakRequest {
   voiceId: string
   model: string
   format: SpeakFormat
+  language?: string
+  accent?: string
 }
 
 export interface VoiceResponse {
@@ -75,7 +90,7 @@ export interface VoiceProviderClient {
   cheapest: string
   limits: CloneLimits
   referenceFormat: 'asIs' | 'wav'
-  clone: (title: string, references: readonly ReferenceAudio[]) => Promise<VoiceAnswer<{ voiceId: string; state: string | null }>>
+  clone: (title: string, references: readonly ReferenceAudio[], settings?: VoiceSettings) => Promise<VoiceAnswer<{ voiceId: string; state: string | null; language?: string }>>
   speak: (request: SpeakRequest) => Promise<VoiceAnswer<Uint8Array>>
 }
 
@@ -87,6 +102,9 @@ export interface ProviderClone {
   createdAt: string
   state: string | null
   references: Recording[]
+  language?: string
+  accent?: string
+  previous?: ProviderClone[]
 }
 
 export interface CloneStore {
