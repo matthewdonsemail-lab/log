@@ -298,13 +298,19 @@ export function addToQueue(queue: Queue, addition: QueueAddition, rng: Rng, now:
   return events
 }
 
+export function keptLink(before: string, after: string): string {
+  const first = before.split(/\r?\n/)[0]?.trim() ?? ''
+  if (!/^https:\/\/(x|twitter)\.com\/[^\s]+\/status\/\d+$/.test(first)) return after
+  return after.includes(first) ? after : `${first}\n${after}`
+}
+
 export function editItem(queue: Queue, n: number, text: string, by: string, rng: Rng, now: Date, window = '30m'): PlanEvent | null {
   const item = queue.items.find((i) => i.n === n)
   if (!item) throw new Error(`#${n} isn't in this queue`)
   if (item.status !== 'pending' && item.status !== 'held') throw new Error(`#${n} is ${item.status}: only a pending or held item can be edited`)
   if (!text.trim()) throw new Error('the new text is empty')
   const wasHeld = item.status === 'held'
-  item.text = text.trim()
+  item.text = keptLink(item.text, text.trim())
   item.draftedAt = now.toISOString()
   item.status = 'pending'
   delete item.heldFor
