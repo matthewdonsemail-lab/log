@@ -321,7 +321,7 @@ def unopened_of(encoded: str | None, error: Exception | str) -> dict:
     text = str(error)
     if (encoded and event_kind_of(encoded) in RECEIPT_KINDS) or 'ReadReceipt' in text:
         return {**head, 'type': 'Message', 'kind': 'MarkRead', 'text': None}
-    return {**head, 'type': 'Message', 'text': None, 'error': text[:200]}
+    return {**head, 'type': 'Message', 'text': None, 'error': text[:200], 'original_b64': encoded}
 
 
 def is_marker(message: dict) -> bool:

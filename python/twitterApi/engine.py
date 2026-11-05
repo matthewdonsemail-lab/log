@@ -912,7 +912,8 @@ async def xchat_conversation(client: Any, cookies: dict[str, str], spec: dict[st
     merged = sorted(fetched.values(), key=lambda m: int(m.get("time_ms") or 0))
     from twitterApi import inboxSync
 
-    messages = [xchat_message(m, me, handles) for m in merged if inboxSync.shown(m)][-limit:]
+    shown = [m for m in merged if inboxSync.shown(m)]
+    messages = [xchat_message(m, me, handles) for m in shown if m.get("text") is not None or m.get("media")][-limit:]
     unnamed = {u: HANDLE_ERRORS.get(u, "no screen_name in X's answer") for u in dict.fromkeys(m["senderId"] for m in messages) if u and u != me and not handles.get(u)}
     return {"ok": True, "loginState": "loggedIn", "userId": me, "conversationId": conversation_id, "box": "xchat", "hasMore": page.get("has_more"), "olderPages": page.get("older_pages") or [], "fromStore": len(held), "messages": messages, **({"unnamed": unnamed} if unnamed else {})}
 
@@ -1331,12 +1332,10 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
     seconds = spec.get("seconds")
     handles: dict[str, str | None] = {}
     messages = 0
-    async for event in client.watch_xchat(seconds=float(seconds) if seconds else None):
-        if event.get("type") == "socket":
-            live_line({**event, "error": redact(event["error"], cookies)[:200]} if event.get("error") else event)
-            continue
-        if event.get("type") not in ("Message", None) or (event.get("kind") == "MarkRead" and event.get("text") is None) or not event.get("conversation_id"):
-            continue
+    unopened: dict[str, dict[str, Any]] = {}
+
+    async def deliver(event: dict[str, Any]) -> None:
+        nonlocal messages
         sender = str(event.get("sender_id") or "")
         messages += 1
         if sender and not handles.get(sender):
@@ -1347,7 +1346,62 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
         live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
+
+    async def reopen_due() -> None:
+        while True:
+            await asyncio.sleep(XCHAT_REOPEN_TICK)
+            now = time.time()
+            for key, held in list(unopened.items()):
+                if held["due"] > now:
+                    continue
+                opened = await reopened(client, held["event"])
+                if opened is not None:
+                    unopened.pop(key, None)
+                    live_line({"type": "unopened", "state": "opened", "eventId": key, "tries": held["tries"] + 1})
+                    await deliver(opened)
+                    continue
+                held["tries"] += 1
+                if held["tries"] >= len(XCHAT_REOPEN_AFTER) + XCHAT_REOPEN_LATE_TRIES:
+                    unopened.pop(key, None)
+                    live_line({"type": "unopened", "state": "gaveUp", "eventId": key, "conversationId": held["event"].get("conversation_id"), "error": str(held["event"].get("error") or "")[:160]})
+                    continue
+                held["due"] = now + (XCHAT_REOPEN_AFTER[held["tries"]] if held["tries"] < len(XCHAT_REOPEN_AFTER) else XCHAT_REOPEN_LATE)
+
+    reopener = asyncio.create_task(reopen_due()) if unlocked else None
+    try:
+        async for event in client.watch_xchat(seconds=float(seconds) if seconds else None):
+            if event.get("type") == "socket":
+                live_line({**event, "error": redact(event["error"], cookies)[:200]} if event.get("error") else event)
+                continue
+            if event.get("type") not in ("Message", None) or (event.get("text") is None and event.get("kind") in XCHAT_SILENT_KINDS) or not event.get("conversation_id"):
+                continue
+            if unlocked and event.get("text") is None and event.get("original_b64"):
+                key = str(event.get("event_id") or event["original_b64"][:40])
+                unopened.setdefault(key, {"event": event, "tries": 0, "due": time.time() + XCHAT_REOPEN_AFTER[0]})
+                live_line({"type": "unopened", "state": "waitingForKey", "eventId": key, "conversationId": event.get("conversation_id")})
+                continue
+            await deliver(event)
+    finally:
+        if reopener:
+            reopener.cancel()
     return {"ok": True, "loginState": "loggedIn", "userId": me, "messages": messages, "unlocked": unlocked}
+
+
+XCHAT_REOPEN_AFTER = (5, 30, 120, 600, 1800)
+XCHAT_REOPEN_LATE = 1800
+XCHAT_REOPEN_LATE_TRIES = 48
+XCHAT_REOPEN_TICK = 5
+XCHAT_SILENT_KINDS = ("MarkRead", "ReactionRemoved")
+
+
+async def reopened(client: Any, event: dict[str, Any]) -> dict[str, Any] | None:
+    try:
+        opened = await client._xchat_open(event["original_b64"])
+    except Exception:
+        return None
+    if opened.get("text") is None and not opened.get("media"):
+        return None
+    return opened
 
 
 async def send(client: Any, spec: dict[str, Any]) -> dict[str, Any]:
