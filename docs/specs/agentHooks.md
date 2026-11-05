@@ -117,3 +117,10 @@ Each owner records the platform's own last position (X's sequence id, each Disco
 `log inbox resume --platform <p> --account <a> --by <who>` calls `resumeGap` in `src/inbox/store/client.ts`, which, in one immediate transaction, opens a refused gap again (status `open`), writes who resumed it and what was refused before into its detail, and adds a `gapResumed` alert; a gap that isn't refused, or no gap, is left as it is. `ownOrAttach` in `src/inbox/relay/client.ts` runs its `catchUpRunner` every `RECHECK_GAP_MS` (30 s) as well as at start and when the socket opens, so a resumed gap is caught up through the owner's own session without a restart, and the runner still skips a refused gap. Rule 150.
 
 Checked by: code and SubQ
+
+### REQ-HOOKS-19: Every event is named before matt sees it
+
+In `src/inbox/store/client.ts`, `appendEvent` takes the sender's id (`senderId`, `userId`, `authorId`, or a bare id given as `with`) and a handle (`with`, `from`, `handle`, `username`, `screenName`) from the event. A handle that is a real name is kept in the `people` table with `rememberPerson`, and an event that arrives with only an id is named from `people` (or a stored notification, `handleOfUserId`) through `personOf` before it is stored, then marked with the `named` stage. `isBareId` treats numeric ids, UUIDs and Slack member ids as ids and never a username. `namedLabel` never returns an id: it gives the name or "someone not named yet". `messageOf` and `twitterThreads` in `src/inbox/watch/client.ts` label every person through `namedLabel`. Rule 154.
+
+Checked by: code and SubQ
+

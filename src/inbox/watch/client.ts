@@ -6,7 +6,7 @@ import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
 import { mediaLine, mediaOf } from '../../media/describer/index'
-import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, openGap, readCursor, writeCursor } from '../store/index'
+import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
@@ -59,7 +59,7 @@ function messageOf(row: StoredEvent): InboxMessage {
       return {}
     }
   })()
-  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: row.withWho, text: [row.text, ...media].filter(Boolean).join(" "), at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
+  return { platform: row.platform, account: row.account, conversationId: row.conversationId, with: namedLabel(row.platform, row.account, row.withWho, String(payload.senderId ?? payload.userId ?? payload.authorId ?? '')), text: [row.text, ...media].filter(Boolean).join(" "), at: row.sourceAt || row.receivedAt, box: row.box, seenAt: row.receivedAt, ...(typeof payload.workspace === 'string' && payload.workspace ? { workspace: payload.workspace } : {}) }
 }
 
 function migrated(): void {
@@ -505,7 +505,7 @@ export function twitterThreads(account: string, repo: string): InboxThread[] | n
   try {
     const answer = JSON.parse(run.stdout) as { ok?: boolean; threads?: { conversationId: string; with: { handle?: string | null; userId: string }[]; lastAt?: string | null; lastFromMe: boolean; lastText?: string | null; box?: string }[] }
     if (!answer.ok || !answer.threads) return null
-    return answer.threads.map((t) => ({ conversationId: t.conversationId, with: t.with.map((p) => p.handle ?? p.userId).join(', ') || '?', lastAt: t.lastAt ?? null, lastFromMe: t.lastFromMe, lastText: t.lastText ?? null, box: t.box ?? 'inbox' }))
+    return answer.threads.map((t) => ({ conversationId: t.conversationId, with: t.with.map((p) => namedLabel('twitter', account, p.handle ?? p.userId, p.userId)).join(', ') || 'someone not named yet', lastAt: t.lastAt ?? null, lastFromMe: t.lastFromMe, lastText: t.lastText ?? null, box: t.box ?? 'inbox' }))
   } catch {
     return null
   }

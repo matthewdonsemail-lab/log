@@ -45,9 +45,9 @@ export interface ClaimRow {
   expiresAt: string
 }
 
-export type Stage = 'received' | 'appended' | 'relayed' | 'shown' | 'claimed' | 'actionStart' | 'confirmed' | 'indexed'
+export type Stage = 'received' | 'appended' | 'named' | 'relayed' | 'shown' | 'claimed' | 'actionStart' | 'confirmed' | 'indexed'
 
-export const STAGES: readonly Stage[] = ['received', 'appended', 'relayed', 'shown', 'claimed', 'actionStart', 'confirmed', 'indexed']
+export const STAGES: readonly Stage[] = ['received', 'appended', 'named', 'relayed', 'shown', 'claimed', 'actionStart', 'confirmed', 'indexed']
 
 export const KNOWN_TYPES: Record<string, readonly string[]> = {
   twitter: ['message', 'ownMessage', 'watching', 'socket', 'badge', 'notification', 'pollRefused', 'notificationsRefused', 'unopened'],

@@ -2239,8 +2239,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     id. On X, `name_people` names every person in the inbox list from any
     conversation that already knows them or from X's lookup, and
     `remember_handles` keeps them; twikit reads a user's name from X's newer
-    `core` block. A platform isn't done until its lists name everyone. Spec:
-    `docs/specs/xChat.md` (REQ-XCHAT-13).
+    `core` block. A platform isn't done until its lists name everyone. matt
+    then: "make it as part of the state machine". Naming is a stage of every
+    event's life in the inbox (`named`, between appended and relayed): an
+    event that names its sender teaches the .db's `people` table who that id
+    is (`rememberPerson`), an event that arrives with only an id is named from
+    it (`personOf`) before it is stored, and every label read back for matt
+    goes through `namedLabel`, which never returns an id: one nobody has named
+    yet reads "someone not named yet". Spec: `docs/specs/xChat.md`
+    (REQ-XCHAT-13), `docs/specs/agentHooks.md` (REQ-HOOKS-19).
 
 ## Checks
 
