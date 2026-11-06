@@ -172,13 +172,13 @@ describe("--mattsWords: matt's own dictated words (rule 144)", () => {
     expect(r.specs[0]).toMatchObject({ action: "voice", channel: CHANNEL });
   });
 
-  test("without --mattsWords the voice gate still runs and its refusal stops the send", async () => {
+  test("without --mattsWords the voice gate still runs while the note is said, and its refusal stops the send", async () => {
     gateRefuses = true;
     const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", MATTS_WORDS, "--approvedBy", "matt", "--live"], { ok: true, event: "sent", loginState: "loggedIn" });
     expect(r.code).toBe(1);
     expect(r.err + r.out).toContain("voiceGateFailed");
     expect(gated).toEqual([MATTS_WORDS]);
-    expect(rendered).toEqual([]);
+    expect(rendered).toEqual([`inworld:discord:${MATTS_WORDS}`]);
     expect(r.specs).toEqual([]);
   });
 

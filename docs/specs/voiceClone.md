@@ -50,7 +50,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-07: A live voice note is gated, made, converted and claimed like a send
 
-With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, waits for the account with `waitCaughtUp` (`accountBehind`), runs the text through `gateDeps.gate` (`voiceGateFailed`) unless `--mattsWords` says they are matt's own dictated words (REQ-VOICE-CLONE-10), then `renderVoiceNote` speaks it with that provider and converts it with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), measures its duration and waveform, and only then claims the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
+With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, starts `renderVoiceNote` at once, so the note is spoken with that provider and converted with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), its duration and waveform measured, while the account catches up (`waitCaughtUp`, `accountBehind`) and the text goes through `gateDeps.gate` (`voiceGateFailed`) unless `--mattsWords` says they are matt's own dictated words (REQ-VOICE-CLONE-10). A refusal from either stops the send and the note made in the meantime is never sent; a render that throws is `voiceProcessingFailed`. Only once both have passed and the note is made does it claim the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
 
 Checked by: code and SubQ
 

@@ -39,7 +39,7 @@ function usageOf(shape: VoiceShape): string {
   return [
     `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--mattsWords] [--translationOf "<what it translates>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
     `Sends a voice note in matt's cloned voice (the voice provider, log clone voice) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
-    "A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It waits for the account to catch up (rule 135), runs the text through the voice gate every send runs (rule 137), generates and converts it, claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
+    "A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It says and converts the note while the account catches up (rule 135) and the text goes through the voice gate every send runs (rule 137), so a note that passes goes out without waiting for it to be made; one the gate refuses is never sent. It then claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
     "--mattsWords says the text is matt's own words, dictated by him for this voice note: the voice gate's read is skipped, since it grades speech as typed text and as a reply, while the AI artifact check still runs and refuses aiArtifacts (rule 144).",
     "--translationOf \"<what it translates>\" says the text is a translation, only when matt asked for one: the voice gate grades those original words (his own language, which the gate reads) instead of the translation, which it can't match to his writing; both are read for AI artifacts. --language <code> (zh-CN, es-ES ...) is the language the clone speaks it in, instead of the clone's own, and it is needed with --translationOf (rule 148).",
   ].join("\n");
@@ -94,6 +94,8 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         }
         if (!clone) return refuse(label, "voiceCloneMissing", `log clone voice --provider ${provider} --apply makes it once from matt's own voice notes`);
         context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
+        context.err(`${resolved.account}: saying it in matt's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}, while the account catches up and the gate reads it`);
+        const rendering = voiceNoteDeps.render(provider, shape.platform, text, language || undefined).catch((error): Rendered => ({ ok: false, code: "voiceProcessingFailed", detail: error instanceof Error ? error.message : String(error) }) as Rendered);
         const caught = await waitCaughtUp(shape.platform, resolved.account);
         if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
         if (mattsWords) context.err(`${resolved.account}: matt's own dictated words (--mattsWords): the voice gate's read of his typing is skipped, the AI artifact check passed`);
@@ -103,8 +105,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
           if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
           context.err(voiced.line);
         }
-        context.err(`${resolved.account}: saying it in matt's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}`);
-        const rendered = await voiceNoteDeps.render(provider, shape.platform, text, language || undefined);
+        const rendered = await rendering;
         if (!rendered.ok) return refuse(label, rendered.code, rendered.detail);
         context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
         const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
