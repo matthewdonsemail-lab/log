@@ -143,7 +143,8 @@ export function personOf(platform: string, account: string, userId: string, on: 
   if (!userId) return null
   const id = userId.replace(/^@/, '')
   const row = on.prepare('SELECT handle FROM people WHERE platform = ? AND account = ? AND userId = ?').get(platform, account, id) as { handle: string } | null
-  return row?.handle ?? handleOfUserId(platform, account, id)
+  const handle = row?.handle ?? handleOfUserId(platform, account, id)
+  return handle && !isBareId(handle) ? handle : null
 }
 
 export function namedLabel(platform: string, account: string, label: string | null | undefined, userId = ''): string {
@@ -250,7 +251,8 @@ export function resumeGap(platform: string, account: string, by: string, now: Da
 
 export function handleOfUserId(platform: string, account: string, userId: string): string | null {
   const row = db().prepare("SELECT withWho FROM events WHERE platform = ? AND account = ? AND type = 'notification' AND withWho != '' AND json_extract(payload, '$.userId') = ? ORDER BY seq DESC LIMIT 1").get(platform, account, String(userId)) as { withWho: string } | null
-  return row?.withWho ? row.withWho.replace(/^@/, '') : null
+  const handle = row?.withWho ? row.withWho.replace(/^@/, '') : ''
+  return handle && !isBareId(handle) ? handle : null
 }
 
 export function behindOf(platform: string, account: string): GapRow | null {
