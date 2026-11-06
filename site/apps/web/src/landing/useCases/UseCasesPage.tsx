@@ -13,7 +13,6 @@ import { AreaChart } from '@/components/dither-kit/area-chart'
 import { Area } from '@/components/dither-kit/area'
 import { useChart } from '@/components/dither-kit/chart-context'
 import { Header } from '../Header'
-import { PLATFORM_DEMOS } from '../PlatformDemos'
 import { ClayClouds } from '../ClayClouds'
 import { DitherFade } from './DitherFade'
 import { HowItWorks } from './HowItWorks'
@@ -352,7 +351,7 @@ function Hero({ platform }: { platform: Platform | null }) {
       const top = section.getBoundingClientRect().top
       const frameBox = frame.getBoundingClientRect()
       const height = Math.round(frameBox.top + frameBox.height / 2 - top)
-      const fade = Math.max(96, Math.round(height - (copy.getBoundingClientRect().bottom - top + 24)))
+      const fade = Math.max(96, Math.round(height - (copy.getBoundingClientRect().bottom - top + 8)))
       setBand({ height, fade })
     }
     measure()
@@ -365,7 +364,6 @@ function Hero({ platform }: { platform: Platform | null }) {
   const lede = HERO_LEDES[platform ? platform.id : 'all'] ?? HERO_LEDES.all
   const howPlatform = platform ?? platformOf('x')
   const howPage = pageForPlatform(howPlatform.id) ?? PLATFORM_PAGES[0]
-  const Demo = PLATFORM_DEMOS[platform ? platform.id : 'slack']
   return (
     <section ref={sectionRef} aria-label="Hero" className="relative isolate w-full overflow-hidden text-left">
       <div
@@ -441,12 +439,8 @@ function Hero({ platform }: { platform: Platform | null }) {
             </div>
           </div>
         </div>
-        <div ref={frameRef} className="mt-12 rounded-[1.75rem] bg-white p-2 shadow-[0_30px_60px_-30px_rgba(13,42,76,0.45)] md:mt-16 md:rounded-[2.25rem] md:p-3">
-          <div className="grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-[1.25rem] bg-[#F3F6FA] px-4 sm:aspect-video md:rounded-[1.75rem]">
-            <div className="w-full max-w-2xl">{Demo ? <Demo /> : null}</div>
-          </div>
-        </div>
-        <div className="lk-repo relative mt-12 text-[#0D2A4C]" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
+        <div ref={frameRef} aria-hidden className="h-40 md:h-48" />
+        <div className="lk-repo relative mt-2 text-[#0D2A4C]" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
           <p className="lk-hand mx-auto mb-5 max-w-6xl text-left text-2xl leading-[2.4rem] text-[#0D2A4C]">
             log&apos;s being <span className="lk-bluekey text-3xl">used</span> by leaders in{' '}
             {USED_BY.map(({ name, Icon }) => (
@@ -1156,13 +1150,6 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
         logoLabel="ListeningKit"
         githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
         className="z-[70]"
-        navItems={[
-          { href: '/', label: 'Home', variant: 'ghost' },
-          { href: page ? '/useCases' : '#showcase', label: 'Use cases', variant: 'ghost' },
-          { href: '#play', label: 'The play', variant: 'ghost' },
-          { href: page ? '#why-free' : '#prompt', label: page ? 'Watch it work' : 'The prompt', variant: 'ghost' },
-        ]}
-        navMenuItems={{}}
         accountItems={[{ href: SETUP_HREF, label: 'Set up log', variant: 'cta' }]}
       />
       <Hero platform={platform} />

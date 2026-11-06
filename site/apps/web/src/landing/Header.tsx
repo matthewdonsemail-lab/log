@@ -616,6 +616,9 @@ function handleNavAnchorClick(
       } else if (typeof window !== "undefined") {
         window.location.hash = href
       }
+    } else if (typeof window !== "undefined" && window.location.pathname !== "/") {
+      event.preventDefault()
+      window.location.assign(`/${href}`)
     }
   }
 }
