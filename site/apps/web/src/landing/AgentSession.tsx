@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -8,56 +8,62 @@ import {
   faCircleNotch,
   faCodeBranch,
   faFolder,
+  faForward,
   faPenToSquare,
   faPlug,
   faPlus,
   faTerminal,
 } from '@fortawesome/free-solid-svg-icons'
+import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { BrandMark } from './BrandMark'
-import { SESSION } from './agentSessionScript'
+import { SESSION, type SessionEvent } from './agentSessionScript'
 import { DownArrow } from './VideoCarousel'
 
 const STEP_MS = { user: 2400, tool: 1700, assistant: 3400 }
 const END_PAUSE_MS = 5000
 
-function useSessionClock(running: boolean) {
+const HOLD_SPEED = 2
+const SpeedContext = createContext(1)
+
+function useSessionClock(running: boolean, events: SessionEvent[], speed: number) {
   const [step, setStep] = useState(0)
   const [settled, setSettled] = useState(0)
   const [round, setRound] = useState(0)
   useEffect(() => {
     if (!running) return
-    if (step >= SESSION.length) {
+    if (step >= events.length) {
       const id = window.setTimeout(() => {
         setSettled(0)
         setStep(0)
         setRound((value) => value + 1)
-      }, END_PAUSE_MS)
+      }, END_PAUSE_MS / speed)
       return () => window.clearTimeout(id)
     }
-    const kind = SESSION[step].kind
-    const settle = window.setTimeout(() => setSettled(step + 1), STEP_MS[kind] * 0.6)
-    const next = window.setTimeout(() => setStep(step + 1), STEP_MS[kind])
+    const kind = events[step].kind
+    const settle = window.setTimeout(() => setSettled(step + 1), (STEP_MS[kind] * 0.6) / speed)
+    const next = window.setTimeout(() => setStep(step + 1), STEP_MS[kind] / speed)
     return () => {
       window.clearTimeout(settle)
       window.clearTimeout(next)
     }
-  }, [running, step])
-  const visible = running || step > 0 ? Math.min(step + 1, SESSION.length) : 0
+  }, [running, step, events, speed])
+  const visible = running || step > 0 ? Math.min(step + 1, events.length) : 0
   return { visible, settled, round }
 }
 
 function Typed({ text, done, perWord = false }: { text: string; done: boolean; perWord?: boolean }) {
   const parts = perWord ? text.split(/(\s+)/) : Array.from(text)
   const [count, setCount] = useState(done ? parts.length : 0)
+  const speed = useContext(SpeedContext)
   useEffect(() => {
     if (done) {
       setCount(parts.length)
       return
     }
     if (count >= parts.length) return
-    const id = window.setTimeout(() => setCount((value) => value + 1), perWord ? 30 : 20)
+    const id = window.setTimeout(() => setCount((value) => Math.min(parts.length, value + speed)), perWord ? 30 : 20)
     return () => window.clearTimeout(id)
-  }, [count, done, parts.length, perWord])
+  }, [count, done, parts.length, perWord, speed])
   return <>{parts.slice(0, count).join('')}</>
 }
 
@@ -78,7 +84,9 @@ function Feed({ children }: { children: ReactNode }) {
   )
 }
 
-function ClaudeWindow({ visible, settled, round }: { visible: number; settled: number; round: number }) {
+type WindowProps = { visible: number; settled: number; round: number; events: SessionEvent[]; recents: string[]; thread: string }
+
+function ClaudeWindow({ visible, settled, round, events, recents }: WindowProps) {
   return (
     <div className="flex h-[520px] w-full overflow-hidden rounded-xl border border-[#DCD4C2] bg-[#F0ECE0] text-left text-[#1a1a18]" style={{ ['--feed-bg' as string]: '#F0ECE0' }}>
       <aside className="hidden w-52 shrink-0 flex-col gap-1 border-r border-[#DCD4C2] bg-[#EAE4D3] p-3 font-sans text-sm sm:flex">
@@ -93,9 +101,11 @@ function ClaudeWindow({ visible, settled, round }: { visible: number; settled: n
         <span className="rounded-md px-2 py-1.5 text-[#5b5950]">Chats</span>
         <span className="rounded-md bg-[#1a1a18]/5 px-2 py-1.5 font-medium text-[#1a1a18]">Code</span>
         <div className="mt-4 px-2 text-xs text-[#8a8780]">Recents</div>
-        <span className="truncate rounded-md px-2 py-1.5 text-[#3d3a35]">X inbox follow-ups</span>
-        <span className="truncate rounded-md px-2 py-1.5 text-[#5b5950]">Marketplace listings</span>
-        <span className="truncate rounded-md px-2 py-1.5 text-[#5b5950]">Group listening</span>
+        {recents.map((label, index) => (
+          <span key={label} className={`truncate rounded-md px-2 py-1.5 ${index === 0 ? 'text-[#3d3a35]' : 'text-[#5b5950]'}`}>
+            {label}
+          </span>
+        ))}
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-2 border-b border-[#DCD4C2] px-5 py-2.5 font-sans text-sm text-[#5b5950]">
@@ -105,7 +115,7 @@ function ClaudeWindow({ visible, settled, round }: { visible: number; settled: n
           main
         </div>
         <Feed>
-          {SESSION.slice(0, visible).map((event, index) => {
+          {events.slice(0, visible).map((event, index) => {
             const done = settled > index
             if (event.kind === 'user') {
               return (
@@ -172,7 +182,7 @@ function ClaudeWindow({ visible, settled, round }: { visible: number; settled: n
   )
 }
 
-function CodexWindow({ visible, settled, round }: { visible: number; settled: number; round: number }) {
+function CodexWindow({ visible, settled, round, events, recents, thread }: WindowProps) {
   return (
     <div
       className="flex h-[520px] w-full overflow-hidden rounded-xl border border-[#e5e5e5] bg-white text-left font-sans text-[#0d0d0d]"
@@ -188,20 +198,22 @@ function CodexWindow({ visible, settled, round }: { visible: number; settled: nu
           New thread
         </span>
         <div className="mt-4 px-2 text-xs text-[#8f8f8f]">your-marketing</div>
-        <span className="truncate rounded-lg bg-[#ececec] px-2 py-1.5">Answer my X DMs</span>
-        <span className="truncate rounded-lg px-2 py-1.5 text-[#5d5d5d]">Post the listings</span>
-        <span className="truncate rounded-lg px-2 py-1.5 text-[#5d5d5d]">Read the groups</span>
+        {recents.map((label, index) => (
+          <span key={label} className={`truncate rounded-lg px-2 py-1.5 ${index === 0 ? 'bg-[#ececec]' : 'text-[#5d5d5d]'}`}>
+            {label}
+          </span>
+        ))}
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-[#ececec] px-5 py-2.5 text-sm">
-          <span className="font-medium">Answer my X DMs</span>
+          <span className="font-medium">{thread}</span>
           <span className="flex items-center gap-1.5 text-[#8f8f8f]">
             <FontAwesomeIcon icon={faCodeBranch} className="text-xs" />
             main
           </span>
         </div>
         <Feed>
-          {SESSION.slice(0, visible).map((event, index) => {
+          {events.slice(0, visible).map((event, index) => {
             const done = settled > index
             if (event.kind === 'user') {
               return (
@@ -265,7 +277,19 @@ const APPS = [
   { id: 'codex', label: 'Watch it work in Codex', mark: 'chatgpt' as const },
 ]
 
-export function AgentSession() {
+const HOME_RECENTS = { claude: ['X inbox follow-ups', 'Marketplace listings', 'Group listening'], codex: ['Answer my X DMs', 'Post the listings', 'Read the groups'] }
+
+export function AgentSession({
+  events = SESSION,
+  recents,
+  thread = 'Answer my X DMs',
+  platformLabel,
+}: {
+  events?: SessionEvent[]
+  recents?: string[]
+  thread?: string
+  platformLabel?: string
+}) {
   const [app, setApp] = useState(0)
   const [inView, setInView] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -276,7 +300,10 @@ export function AgentSession() {
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
-  const { visible, settled, round } = useSessionClock(inView)
+  const [fast, setFast] = useState(false)
+  const speed = fast ? HOLD_SPEED : 1
+  const { visible, settled, round } = useSessionClock(inView, events, speed)
+  const shared = { visible, settled, round, events, thread }
   return (
     <div ref={ref} className="mx-auto mt-12 flex w-full max-w-4xl flex-col items-center gap-5">
       <div role="tablist" aria-label="Agent" className="flex flex-wrap justify-center gap-2">
@@ -298,7 +325,32 @@ export function AgentSession() {
           </button>
         ))}
       </div>
-      <div className="w-full rounded-[22px] p-1.5" style={{ background: 'rgba(42, 140, 255, 0.22)' }}>
+      <motion.div
+        className="relative w-full cursor-pointer touch-pan-y select-none rounded-[22px] p-1.5 [-webkit-touch-callout:none]"
+        style={{ background: 'rgba(42, 140, 255, 0.22)' }}
+        animate={{ scale: fast ? 0.97 : 1 }}
+        transition={{ type: 'spring', stiffness: 520, damping: 15 }}
+        onPointerDown={() => setFast(true)}
+        onPointerUp={() => setFast(false)}
+        onPointerLeave={() => setFast(false)}
+        onPointerCancel={() => setFast(false)}
+        onContextMenu={(event) => event.preventDefault()}
+      >
+        <AnimatePresence>
+          {fast ? (
+            <motion.span
+              key="fast"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              transition={{ type: 'spring', stiffness: 520, damping: 15 }}
+              className="absolute right-4 top-4 z-50 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-[13px] font-bold text-white"
+            >
+              2× <FontAwesomeIcon icon={faForward} className="text-[11px]" />
+            </motion.span>
+          ) : null}
+        </AnimatePresence>
+        <SpeedContext.Provider value={speed}>
         <AnimatePresence mode="wait">
           <motion.div
             key={APPS[app].id}
@@ -307,19 +359,24 @@ export function AgentSession() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
           >
-            {app === 0 ? <ClaudeWindow visible={visible} settled={settled} round={round} /> : <CodexWindow visible={visible} settled={settled} round={round} />}
+            {app === 0 ? (
+              <ClaudeWindow {...shared} recents={recents ?? HOME_RECENTS.claude} />
+            ) : (
+              <CodexWindow {...shared} recents={recents ?? HOME_RECENTS.codex} />
+            )}
           </motion.div>
         </AnimatePresence>
-      </div>
+        </SpeedContext.Provider>
+      </motion.div>
       <div className="flex w-full items-center gap-3 px-1">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#2A8CFF]/15">
           <div
             className="h-full rounded-full bg-[#2A8CFF] transition-[width] duration-500 ease-out"
-            style={{ width: `${(settled / SESSION.length) * 100}%` }}
+            style={{ width: `${(settled / events.length) * 100}%` }}
           />
         </div>
         <span className="shrink-0 font-mono text-xs text-[#0D2A4C]/60">
-          step {Math.max(visible, 1)} of {SESSION.length}
+          step {Math.max(visible, 1)} of {events.length}
         </span>
       </div>
       <div className="mt-2 flex flex-col items-center gap-3">
@@ -327,18 +384,27 @@ export function AgentSession() {
           connect it <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">once</span>
           <DownArrow />
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="flex w-full flex-col gap-4">
           {[
-            { mark: 'claude' as const, command: 'claude mcp add log -- logMcp' },
-            { mark: 'chatgpt' as const, command: 'codex mcp add log -- logMcp' },
+            { mark: 'claude' as const, agent: 'Claude Code', command: 'claude mcp add log -- logMcp' },
+            { mark: 'chatgpt' as const, agent: 'Codex', command: 'codex mcp add log -- logMcp' },
           ].map((item) => (
-            <code
+            <RepoLink
               key={item.command}
-              className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 font-mono text-[14px] font-bold text-[#2A8CFF] shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]"
+              href={LOG_REPO_URL}
+              className="mx-auto flex w-full max-w-3xl items-center gap-4 overflow-hidden rounded-3xl px-6 py-6 text-left text-white shadow-xl outline outline-1 outline-neutral-300 transition-all hover:scale-[1.01] hover:brightness-105 sm:gap-6 sm:px-8 sm:py-7 md:gap-8 md:rounded-[40px] md:px-10 md:py-8"
+              style={{ backgroundImage: 'linear-gradient(180deg, #117EFF -12.71%, #1E88FF 44.69%, #5EA7FF 102.1%)', boxShadow: 'inset 0 2px 30px #5EA7FF' }}
             >
-              <BrandMark id={item.mark} className="size-4" />
-              {item.command}
-            </code>
+              <span className="pointer-events-none grid size-14 shrink-0 place-items-center opacity-95 sm:size-16 md:size-24">
+                <BrandMark id={item.mark} className="!size-full text-white" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-bold leading-snug text-white/90 sm:text-base md:text-xl">Get log for {item.agent}</span>
+                <span className="mt-1.5 block text-xl font-black leading-tight sm:mt-2 sm:text-2xl md:text-3xl">
+                  Run your {platformLabel ?? 'social media'} marketing from {item.agent}
+                </span>
+              </span>
+            </RepoLink>
           ))}
         </div>
       </div>

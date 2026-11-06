@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 import { motion } from 'motion/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDiscord, faFacebook, faLinkedin, faReddit, faXTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faComment, faFaceSmile, faThumbsUp } from '@fortawesome/free-regular-svg-icons'
+import { faDiscord, faFacebook, faInstagram, faLinkedin, faReddit, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
+import { faComment, faFaceSmile, faHeart, faImage, faThumbsUp } from '@fortawesome/free-regular-svg-icons'
 import {
   faArrowDown,
   faArrowUp,
@@ -14,6 +14,7 @@ import {
   faGift,
   faHashtag,
   faLocationDot,
+  faMicrophone,
   faMagnifyingGlass,
   faPaperPlane,
   faRetweet,
@@ -315,10 +316,120 @@ function LinkedinDemo() {
   )
 }
 
+const SL_FONT = { fontFamily: 'Lato, "Slack-Lato", "Helvetica Neue", Helvetica, Arial, sans-serif' }
+
+function SlackDemo() {
+  const chats = [
+    { name: 'Priya', color: '#E01E5A', active: true },
+    { name: 'Tom, Jay', color: '#2EB67D', active: false },
+    { name: 'Sam', color: '#ECB22E', active: false },
+  ]
+  const messages = [
+    { name: 'Priya', color: '#E01E5A', time: '4:12 PM', text: 'did the outreach sheet work for you?' },
+    { name: 'Priya', color: '#E01E5A', time: '4:12 PM', text: 'we got 9 calls booked off it this week' },
+  ]
+  return (
+    <div className="flex w-full rounded-lg border border-[#DDDDDD] bg-white text-left text-[15px] text-[#1D1C1D]" style={SL_FONT}>
+      <div className="hidden w-[150px] shrink-0 flex-col gap-1 rounded-l-lg bg-[#4A154B] px-2 py-3 text-[14px] text-[#CFC3CF] sm:flex">
+        <div className="mb-2 flex items-center gap-2 px-2 font-bold text-white">
+          <Icon icon={faSlack} className="text-lg" />
+          growth-co
+        </div>
+        <div className="px-2 text-[12px] font-semibold uppercase tracking-wide text-[#CFC3CF]/80">Direct messages</div>
+        {chats.map((chat) => (
+          <div key={chat.name} className={`flex items-center gap-2 rounded-md px-2 py-1 ${chat.active ? 'bg-[#1164A3] text-white' : ''}`}>
+            <Avatar name={chat.name} color={chat.color} size="size-5" rounded="rounded" />
+            <span className="truncate">{chat.name}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center gap-2 border-b border-[#DDDDDD] px-4 py-3 font-bold">
+          <Avatar name="Priya" color="#E01E5A" size="size-6" rounded="rounded" />
+          Priya
+          <Step index={0} className="ml-auto rounded-full">
+            <LogTag>watching live</LogTag>
+          </Step>
+        </div>
+        <div className="flex flex-col gap-3 px-4 py-4">
+          {messages.map((message, index) => (
+            <Step key={index} index={index + 1} className="flex items-start gap-3 rounded-md bg-white p-1">
+              <Avatar name={message.name} color={message.color} size="size-9" rounded="rounded-lg" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-bold">{message.name}</span>
+                  <span className="text-xs text-[#616061]">{message.time}</span>
+                </div>
+                <div>{message.text}</div>
+              </div>
+            </Step>
+          ))}
+        </div>
+        <Step index={3} className="mx-4 mb-4 rounded-lg bg-white">
+          <div className="flex items-center gap-3 rounded-lg border border-[#BBBBBB] px-3 py-2.5">
+            <span className="min-w-0 flex-1 truncate">that&apos;s brilliant, what changed?</span>
+            <LogTag className="bg-[#4A154B]">dry run</LogTag>
+            <Icon icon={faPaperPlane} className="text-lg text-[#007A5A]" />
+          </div>
+        </Step>
+      </div>
+    </div>
+  )
+}
+
+const IG_FONT = { fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }
+const IG_GRADIENT = 'linear-gradient(45deg, #FEDA75 0%, #FA7E1E 25%, #D62976 50%, #962FBF 75%, #4F5BD5 100%)'
+
+function InstagramDemo() {
+  return (
+    <div className="w-full rounded-2xl border border-[#DBDBDB] bg-white text-left text-[15px] text-[#000000]" style={IG_FONT}>
+      <div className="flex items-center gap-3 rounded-t-2xl border-b border-[#DBDBDB] bg-white px-4 py-3">
+        <span className="rounded-full p-[2px]" style={{ background: IG_GRADIENT }}>
+          <span className="block rounded-full border-2 border-white">
+            <Avatar name="maya" color="#962FBF" size="size-9" />
+          </span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold">maya.makes</div>
+          <div className="text-xs text-[#737373]">Active now</div>
+        </div>
+        <Icon icon={faInstagram} className="text-2xl" />
+        <Step index={0} className="rounded-full">
+          <LogTag>watching live</LogTag>
+        </Step>
+      </div>
+      <div className="flex flex-col gap-2 px-4 py-4">
+        <Step index={1} className="flex items-end gap-2 self-start rounded-3xl bg-white">
+          <Avatar name="maya" color="#962FBF" size="size-7" />
+          <span className="rounded-3xl bg-[#EFEFEF] px-4 py-2">finally launched the shop</span>
+        </Step>
+        <Step index={2} className="flex flex-col items-end gap-1.5 self-end rounded-3xl bg-white">
+          <div className="flex w-40 flex-col items-center justify-center gap-1 rounded-3xl bg-[#1D1C1D] px-3 py-6 text-center text-white">
+            <Icon icon={faImage} className="text-2xl text-white/70" />
+            <span className="text-[13px] font-bold uppercase leading-tight">a meme that fits the moment</span>
+          </div>
+          <LogTag className="bg-[#0F1419]">sent with --photo</LogTag>
+        </Step>
+      </div>
+      <Step index={3} className="mx-3 mb-3 rounded-full bg-white">
+        <div className="flex items-center gap-3 rounded-full border border-[#DBDBDB] px-4 py-2.5">
+          <Icon icon={faFaceSmile} className="text-lg" />
+          <span className="min-w-0 flex-1 truncate">massive, what are you selling first?</span>
+          <LogTag className="bg-[#0F1419]">dry run</LogTag>
+          <Icon icon={faMicrophone} className="text-lg" />
+          <Icon icon={faHeart} className="text-lg" />
+        </div>
+      </Step>
+    </div>
+  )
+}
+
 export const PLATFORM_DEMOS: Record<string, () => ReactNode> = {
   x: XDemo,
   facebook: FacebookDemo,
   discord: DiscordDemo,
+  slack: SlackDemo,
+  instagram: InstagramDemo,
   reddit: RedditDemo,
   linkedin: LinkedinDemo,
 }

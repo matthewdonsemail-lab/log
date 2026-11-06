@@ -2,10 +2,11 @@ import { motion } from 'motion/react'
 import Dither from '@/components/Dither'
 import type { ReactNode } from 'react'
 import { AgentSession } from './AgentSession'
+import type { SessionEvent } from './agentSessionScript'
 import { BigGithubButton } from './BigGithubButton'
 import { DownArrow } from './VideoCarousel'
 
-function Dashed({ children }: { children: ReactNode }) {
+export function Dashed({ children }: { children: ReactNode }) {
   return <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">{children}</span>
 }
 
@@ -62,7 +63,9 @@ const EAR_JITTER = [true, false, false, false, true, false, false, false]
  * Closing statement beneath the social-listening reveal.
  * The message is intentionally direct: ownership and control are the point.
  */
-export function Control() {
+export type ControlSession = { events: SessionEvent[]; recents: string[]; thread: string }
+
+export function Control({ title, lede, session, platformLabel }: { title?: ReactNode; lede?: ReactNode; session?: ControlSession; platformLabel?: string } = {}) {
   return (
     <section id="why-free" className="relative overflow-clip bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36">
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block" style={{ maskImage: 'linear-gradient(to right, black 45%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 45%, transparent 100%)' }}>
@@ -137,16 +140,24 @@ export function Control() {
         </div>
         <div className="relative z-20">
         <h2 className="text-title mx-auto max-w-4xl text-[#0D2A4C]">
-          The best tool for
-          <br className="hidden sm:block" />{' '}
-          <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">social media marketing.</span>
+          {title ?? (
+            <>
+              The best tool for
+              <br className="hidden sm:block" />{' '}
+              <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">social media marketing.</span>
+            </>
+          )}
         </h2>
         <p className="text-lede mx-auto mt-5 max-w-2xl font-semibold text-[#0D2A4C]/85">
-          Not another <Dashed>social listening tool</Dashed>. A <Dashed>full suite</Dashed> for any marketer working{' '}
-          <Dashed>at scale</Dashed>: every account, every platform, from your terminal or{' '}
-          <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">your AI agent.</span>
+          {lede ?? (
+            <>
+              Not another <Dashed>social listening tool</Dashed>. A <Dashed>full suite</Dashed> for any marketer working{' '}
+              <Dashed>at scale</Dashed>: every account, every platform, from your terminal or{' '}
+              <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">your AI agent.</span>
+            </>
+          )}
         </p>
-        <AgentSession />
+        <AgentSession events={session?.events} recents={session?.recents} thread={session?.thread} platformLabel={platformLabel} />
         <p
           className="mx-auto mt-14 flex max-w-4xl flex-wrap items-center justify-center gap-x-1.5 text-center text-2xl text-[#0D2A4C] md:text-3xl"
           style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}

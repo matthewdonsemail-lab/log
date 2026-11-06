@@ -2,13 +2,14 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as R
 import { motion } from 'motion/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDiscord, faFacebook, faLinkedin, faReddit, faXTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faClockRotateLeft, faCodeFork, faStar } from '@fortawesome/free-solid-svg-icons'
+import { faDiscord, faFacebook, faInstagram, faLinkedin, faReddit, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
+import { faArrowRight, faClockRotateLeft, faCodeFork, faStar } from '@fortawesome/free-solid-svg-icons'
 import { BrandMark, type BrandMarkId } from './BrandMark'
 import { PLATFORM_DEMOS } from './PlatformDemos'
+import { pageForPlatform } from './useCases/platformPages'
 import { TILT_QUERY, useMediaQuery } from './useMediaQuery'
 
-type Platform = {
+export type Platform = {
   id: string
   icon: IconDefinition
   label: string
@@ -18,7 +19,7 @@ type Platform = {
   does: string[]
 }
 
-const PLATFORMS: Platform[] = [
+export const PLATFORMS: Platform[] = [
   {
     id: 'x',
     icon: faXTwitter,
@@ -62,6 +63,36 @@ const PLATFORMS: Platform[] = [
       'log discord watch: every new message the moment it arrives',
       'log discord send: one message to a DM, a group or a channel, a dry run until --live',
       'log search: finds old conversations by words and by meaning',
+    ],
+  },
+  {
+    id: 'slack',
+    icon: faSlack,
+    label: 'Slack',
+    body: 'log reads your **DMs and group DMs** in every workspace, **watches live** and sends your replies one line at a time.',
+    example: 'log slack read --account you --chat <who>',
+    docsHref: '/docs/platforms/slack',
+    does: [
+      'log slack workspaces and chats: every workspace your session is signed in to, and your DMs and group DMs in each',
+      'log slack read: the latest messages in a chat, found by who it is with',
+      "log slack watch: every new message the moment Slack's own websocket sends it",
+      'log slack send: one message per line to a DM or a group, a dry run until --live',
+      'log slack react and voice: an emoji on a message, or a voice note in your own cloned voice, only when you ask',
+    ],
+  },
+  {
+    id: 'instagram',
+    icon: faInstagram,
+    label: 'Instagram',
+    body: 'log reads your **DMs**, **watches live** and sends text and memes straight through Instagram, with **no browser**.',
+    example: 'log instagram dms --account you --with <who>',
+    docsHref: '/docs/useCases/instagram/dmReply',
+    does: [
+      'log instagram dms: your DM threads, newest first, or one thread with --with',
+      "log instagram watch: Instagram's own realtime connection, every new DM the moment it lands",
+      'log instagram send: text one message per line, or a meme with --photo, a dry run until --live',
+      'log instagram react and voice: an emoji on a message, or a voice note in your own cloned voice, only when you ask',
+      'log instagram session check: checks Instagram still accepts the saved session',
     ],
   },
   {
@@ -111,7 +142,7 @@ function Stickered({ text }: { text: string }) {
 
 const SITE = 'https://log.listeningkit.com'
 
-function askAiPrompt(platform: Platform) {
+export function askAiPrompt(platform: Platform) {
   return [
     `I'm a marketer looking at log by ListeningKit (${SITE}, code at https://github.com/matthewdonsemail-lab/log). Read what it is below, then tell me how I'd use it on ${platform.label}.`,
     '',
@@ -121,7 +152,7 @@ function askAiPrompt(platform: Platform) {
     '- One command, `log`, and one MCP server, `logMcp`, so Claude Code, Codex or Cursor can run every command as a tool.',
     '- Nothing acts until I say so: anything that sends, posts or likes is a dry run until `--live`.',
     '- Each account keeps its own daily limits, pacing between actions and waking hours in its home timezone.',
-    '- Platforms: X, Facebook (Marketplace and groups), Discord, Reddit and LinkedIn.',
+    '- Platforms: X, Facebook (Marketplace and groups), Discord, Slack, Instagram, Reddit and LinkedIn.',
     '- Install: curl -fsSL https://log.listeningkit.com/install.sh | sh, then `claude mcp add log -- logMcp`.',
     '',
     `What log does on ${platform.label}:`,
@@ -189,6 +220,7 @@ function PlatformCard({
 }) {
   const tilt = useMediaQuery(TILT_QUERY)
   const Demo = PLATFORM_DEMOS[platform.id]
+  const page = pageForPlatform(platform.id)
   return (
     <div
       className="w-full rounded-[30px] p-1.5 [background:var(--ring-y)] md:[background:var(--ring-x)]"
@@ -236,6 +268,15 @@ function PlatformCard({
                 <FontAwesomeIcon icon={platform.icon} className="text-[15px]" />
                 Everything log does on {platform.label}
               </a>
+              {page ? (
+                <a
+                  href={page.path}
+                  className={`inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-[14px] font-bold text-[#2A8CFF] transition-transform hover:-translate-y-px ${LIP}`}
+                >
+                  Its use cases
+                  <FontAwesomeIcon icon={faArrowRight} className="text-[12px]" />
+                </a>
+              ) : null}
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-bold text-white" title="How can log help my marketing?">Ask AI</span>
                 {askAiLinks(platform).map((link) => (
@@ -387,6 +428,13 @@ export function PlatformSuite() {
             <Mark>replies and DMs</Mark>, <Mark>posts and lists</Mark> and keeps{' '}
             <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">every account</span> moving.
           </p>
+          <a
+            href="/useCases"
+            className={`inline-flex items-center gap-2 rounded-md bg-white px-3.5 py-2 text-[15px] font-bold text-[#2A8CFF] transition-transform hover:-translate-y-px ${LIP}`}
+          >
+            Every use case, platform by platform
+            <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
+          </a>
         </div>
 
         <div role="tablist" aria-label="Platforms" className="flex flex-wrap justify-center gap-2">
