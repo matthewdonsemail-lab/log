@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { BigGithubButton } from './BigGithubButton'
+import { SiteFooter } from './SiteFooter'
 import { ClayClouds } from './ClayClouds'
 import { Control } from './Control'
 import { GoGettersCta } from './GoGettersCta'
@@ -157,6 +158,7 @@ export function LandingPage() {
       <OtherCases />
       <Unemployed />
       <Rasputin />
+      <SiteFooter />
     </div>
   )
 }

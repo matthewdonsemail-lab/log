@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
 import { motion } from 'motion/react'
+import { autoUpdate, flip, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faReddit, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faArrowRight, faClockRotateLeft, faCodeFork, faStar } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { BrandMark, type BrandMarkId } from './BrandMark'
 import { PLATFORM_DEMOS } from './PlatformDemos'
 import { pageForPlatform } from './useCases/platformPages'
@@ -126,20 +127,6 @@ export const PLATFORMS: Platform[] = [
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
 
-function Stickered({ text }: { text: string }) {
-  return (
-    <>
-      {text.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
-        part.startsWith('**') ? (
-          <span key={index} className={STICKER}>{part.slice(2, -2)}</span>
-        ) : (
-          <span key={index}>{part}</span>
-        ),
-      )}
-    </>
-  )
-}
-
 const SITE = 'https://log.listeningkit.com'
 
 export function askAiPrompt(platform: Platform) {
@@ -164,41 +151,31 @@ export function askAiPrompt(platform: Platform) {
   ].join('\n')
 }
 
-function askAiLinks(platform: Platform): { id: BrandMarkId; label: string; href: string }[] {
-  const question = encodeURIComponent(askAiPrompt(platform))
+export function askAiGeneralPrompt() {
+  return [
+    `I'm a marketer looking at log by ListeningKit (${SITE}, code at https://github.com/matthewdonsemail-lab/log). Read what it is below, then tell me how I'd use it for my social media marketing.`,
+    '',
+    'What log is:',
+    '- A free, open-source (MIT) social media tool that does the whole job, not only listening: it reads inboxes, groups and posts, then replies, DMs, posts and runs listings.',
+    '- It runs on my own machine with my own accounts. Sessions and settings stay in ~/.logCli. Many accounts are kept in Twenty, an open-source CRM.',
+    '- One command, `log`, and one MCP server, `logMcp`, so Claude Code, Codex or Cursor can run every command as a tool.',
+    '- Nothing acts until I say so: anything that sends, posts or likes is a dry run until `--live`.',
+    '- Platforms: X, Facebook (Marketplace and groups), Discord, Slack, Instagram, Reddit and LinkedIn.',
+    '- Install: curl -fsSL https://log.listeningkit.com/install.sh | sh, then `claude mcp add log -- logMcp`.',
+    '',
+    `Docs: ${SITE}/docs and the step-by-step use cases at ${SITE}/docs/useCases.`,
+    '',
+    'Answer for log specifically, not other tools. Give me: 1) which platforms I should start with and why, 2) the three best ways a marketer like me would use log, 3) what I would ask my agent in plain words to run each, and 4) what I need to set up first.',
+  ].join('\n')
+}
+
+function askAiLinks(prompt: string): { id: BrandMarkId; label: string; href: string }[] {
+  const question = encodeURIComponent(prompt)
   return [
     { id: 'chatgpt', label: 'ChatGPT', href: `https://chatgpt.com/?q=${question}` },
     { id: 'perplexity', label: 'Perplexity', href: `https://www.perplexity.ai/search?q=${question}` },
     { id: 'claude', label: 'Claude', href: `https://claude.ai/new?q=${question}` },
   ]
-}
-
-type RepoStats = { stars: number; forks: number; pushedAt: string }
-
-function useLogRepoStats() {
-  const [stats, setStats] = useState<RepoStats | null>(null)
-  useEffect(() => {
-    let cancelled = false
-    fetch('https://api.github.com/repos/matthewdonsemail-lab/log')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { stargazers_count: number; forks_count: number; pushed_at: string } | null) => {
-        if (!cancelled && data) setStats({ stars: data.stargazers_count, forks: data.forks_count, pushedAt: data.pushed_at })
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
-  return stats
-}
-
-function sinceLabel(iso: string) {
-  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
-  if (days <= 0) return 'today'
-  if (days === 1) return 'yesterday'
-  if (days < 14) return `${days} days ago`
-  if (days < 60) return `${Math.round(days / 7)} weeks ago`
-  return `${Math.round(days / 30)} months ago`
 }
 
 function Mark({ children }: { children: string }) {
@@ -207,16 +184,82 @@ function Mark({ children }: { children: string }) {
 
 const SLIDE_GAP_REM = 3
 
+function Plain({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
+        part.startsWith('**') ? (
+          <span key={index} className="font-black underline decoration-white/70 decoration-dashed underline-offset-4">
+            {part.slice(2, -2)}
+          </span>
+        ) : (
+          <span key={index}>{part}</span>
+        ),
+      )}
+    </>
+  )
+}
+
+export function AskAi({ prompt, about, placement = 'bottom-start' }: { prompt: string; about: string; placement?: 'bottom-start' | 'top-start' }) {
+  const [open, setOpen] = useState(false)
+  const links = askAiLinks(prompt)
+  const { refs, floatingStyles, context } = useFloating({
+    open,
+    onOpenChange: setOpen,
+    placement,
+    middleware: [offset(10), flip(), shift({ padding: 12 })],
+    whileElementsMounted: autoUpdate,
+  })
+  const { getReferenceProps, getFloatingProps } = useInteractions([useClick(context), useDismiss(context), useRole(context, { role: 'menu' })])
+  return (
+    <>
+      <button
+        ref={refs.setReference}
+        type="button"
+        {...getReferenceProps()}
+        className="inline-flex items-center gap-2.5 rounded-xl bg-white/15 py-1.5 pl-1.5 pr-3.5 text-[15px] font-bold text-white ring-1 ring-white/40 transition-colors hover:bg-white/25"
+      >
+        <span className="flex -space-x-2.5">
+          {links.map((link) => (
+            <span key={link.id} className="grid size-8 place-items-center rounded-full bg-white text-[#0D2A4C] ring-2 ring-[#5DAEFF]">
+              <BrandMark id={link.id} className="size-4" />
+            </span>
+          ))}
+        </span>
+        Ask AI about log
+      </button>
+      {open ? (
+        <FloatingPortal>
+          <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()} className="z-[80] w-64 rounded-2xl bg-white p-2 text-left shadow-[0_4px_0_#1A5FC8,0_18px_40px_-12px_rgba(13,42,76,0.45)] ring-1 ring-[#0D2A4C]/10">
+            <p className="px-2.5 pb-1.5 pt-1 text-[12px] font-bold text-[#0D2A4C]/55">Ask how log helps {about}</p>
+            {links.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-xl px-2.5 py-2 text-[15px] font-bold text-[#0D2A4C] transition-colors hover:bg-[#EAF3FF]"
+              >
+                <span className="grid size-8 place-items-center rounded-full bg-[#EAF3FF] text-[#2A8CFF]">
+                  <BrandMark id={link.id} className="size-4" />
+                </span>
+                Ask {link.label}
+                <FontAwesomeIcon icon={faArrowRight} className="ml-auto text-[12px] text-[#0D2A4C]/40" />
+              </a>
+            ))}
+          </div>
+        </FloatingPortal>
+      ) : null}
+    </>
+  )
+}
+
 function PlatformCard({
   platform,
-  active,
-  go,
-  stats,
 }: {
   platform: Platform
-  active: number
-  go: (index: number) => void
-  stats: RepoStats | null
 }) {
   const tilt = useMediaQuery(TILT_QUERY)
   const Demo = PLATFORM_DEMOS[platform.id]
@@ -260,82 +303,19 @@ function PlatformCard({
               </span>
               <span className="text-2xl font-black tracking-[-0.02em] text-white/90 md:text-3xl">with log</span>
             </p>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-              <a
-                href={platform.docsHref}
-                className={`inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-[14px] font-bold text-[#2A8CFF] transition-transform hover:-translate-y-px ${LIP}`}
-              >
-                <FontAwesomeIcon icon={platform.icon} className="text-[15px]" />
-                Everything log does on {platform.label}
-              </a>
-              {page ? (
-                <a
-                  href={page.path}
-                  className={`inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-[14px] font-bold text-[#2A8CFF] transition-transform hover:-translate-y-px ${LIP}`}
-                >
-                  Its use cases
-                  <FontAwesomeIcon icon={faArrowRight} className="text-[12px]" />
-                </a>
-              ) : null}
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] font-bold text-white" title="How can log help my marketing?">Ask AI</span>
-                {askAiLinks(platform).map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Ask ${link.label} how log can help my marketing on ${platform.label}`}
-                    title={`Ask ${link.label}`}
-                    className="button-glow grid size-8 place-items-center rounded-md text-white shadow-[0_3px_0_#1A5FC8] transition-[filter,transform] hover:brightness-110 active:translate-y-[3px] active:shadow-none"
-                  >
-                    <BrandMark id={link.id} className="size-4" />
-                  </a>
-                ))}
-              </div>
-            </div>
-            <p className="text-xl leading-snug text-white md:text-2xl" style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}>
-              <Stickered text={platform.body} />
+            <p className="max-w-xl text-lg font-semibold leading-snug text-white md:text-xl">
+              <Plain text={platform.body} />
             </p>
-            <code className="block max-w-full whitespace-pre-wrap [overflow-wrap:anywhere] rounded-md bg-[#0D2A4C] px-3 py-2 font-mono text-[13px] text-white shadow-[0_3px_0_#061a33]">
-              <span className="text-[#5CA7FF]">$ </span>
-              {platform.example}
-            </code>
-            <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <div className="flex items-center gap-2" role="group" aria-label="Choose a platform">
-                {PLATFORMS.map((item, index) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-label={item.label}
-                    aria-current={index === active}
-                    onClick={() => go(index)}
-                    className={`h-2.5 rounded-full transition-[width,background-color] duration-300 ${index === active ? 'w-10 bg-white' : 'w-2.5 bg-white/60 hover:bg-white/80'}`}
-                  />
-                ))}
-              </div>
-              {stats ? (
-                <a
-                  href="https://github.com/matthewdonsemail-lab/log"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-wrap items-center gap-2 text-[13px] font-bold"
-                  aria-label={`log on GitHub: ${stats.stars} stars, ${stats.forks} forks`}
-                >
-                  <span className={`inline-flex items-center gap-1.5 rounded-md bg-white px-2.5 py-1 text-[#2A8CFF] ${LIP}`}>
-                    <FontAwesomeIcon icon={faStar} className="text-[11px]" />
-                    {stats.stars} {stats.stars === 1 ? 'star' : 'stars'}
-                  </span>
-                  <span className={`inline-flex items-center gap-1.5 rounded-md bg-white px-2.5 py-1 text-[#2A8CFF] ${LIP}`}>
-                    <FontAwesomeIcon icon={faCodeFork} className="text-[11px]" />
-                    {stats.forks} {stats.forks === 1 ? 'fork' : 'forks'}
-                  </span>
-                  <span className={`inline-flex items-center gap-1.5 rounded-md bg-white px-2.5 py-1 text-[#2A8CFF] ${LIP}`}>
-                    <FontAwesomeIcon icon={faClockRotateLeft} className="text-[11px]" />
-                    Updated {sinceLabel(stats.pushedAt)}
-                  </span>
-                </a>
-              ) : null}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <a
+                href={page ? page.path : platform.docsHref}
+                className="inline-flex items-center gap-2.5 rounded-xl bg-white px-5 py-3 text-[16px] font-bold text-[#2A8CFF] shadow-[0_3px_0_#1A5FC8] transition-transform hover:-translate-y-px"
+              >
+                <FontAwesomeIcon icon={platform.icon} className="text-[16px]" />
+                {page ? `See what log does on ${platform.label}` : `Read how log works on ${platform.label}`}
+                <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
+              </a>
+              <AskAi prompt={askAiPrompt(platform)} about={`your ${platform.label} marketing`} />
             </div>
           </div>
           <div className="mx-auto w-full min-w-0 max-w-md py-6 md:[perspective:1400px] [zoom:0.85]">
@@ -356,7 +336,6 @@ function PlatformCard({
 export function PlatformSuite() {
   const [active, setActive] = useState(0)
   const [drag, setDrag] = useState(0)
-  const stats = useLogRepoStats()
   const viewportRef = useRef<HTMLDivElement>(null)
   const dragStart = useRef<{ x: number; y: number; id: number; horizontal: boolean | null } | null>(null)
   const dragRef = useRef(0)
@@ -483,10 +462,22 @@ export function PlatformSuite() {
                 aria-hidden={index !== active}
                 className={`w-full shrink-0 transition-opacity duration-500 ${index === active ? 'opacity-100' : 'opacity-35'}`}
               >
-                <PlatformCard platform={item} active={active} go={go} stats={stats} />
+                <PlatformCard platform={item} />
               </div>
             ))}
           </div>
+        </div>
+        <div className="mt-2 flex items-center justify-center gap-2" role="group" aria-label="Choose a platform">
+          {PLATFORMS.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-label={item.label}
+              aria-current={index === active}
+              onClick={() => go(index)}
+              className={`h-2.5 rounded-full transition-[width,background-color] duration-300 ${index === active ? 'w-10 bg-[#2A8CFF]' : 'w-2.5 bg-[#2A8CFF]/30 hover:bg-[#2A8CFF]/55'}`}
+            />
+          ))}
         </div>
       </div>
     </section>

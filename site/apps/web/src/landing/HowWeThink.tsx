@@ -1,11 +1,9 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
-import { AnimatePresence, animate, motion, useMotionValue, useTime, useTransform, type MotionValue } from 'motion/react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { AnimatePresence, animate, motion, useInView, useMotionValue, useTime, useTransform, type MotionValue } from 'motion/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBriefcase, faCheck, faCircleNotch, faGift, faPlug, faRobot } from '@fortawesome/free-solid-svg-icons'
 import { faFacebook, faXTwitter } from '@fortawesome/free-brands-svg-icons'
-import { useDragCarousel } from './useDragCarousel'
-import { TILT_QUERY, useMediaQuery } from './useMediaQuery'
 
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 
@@ -275,70 +273,38 @@ const BELIEFS: { icon: IconDefinition; title: string; body: string; Example: (pr
   },
 ]
 
-function BeliefCard({ belief, running, active, go }: { belief: (typeof BELIEFS)[number]; running: boolean; active: number; go: (index: number) => void }) {
-  const tilt = useMediaQuery(TILT_QUERY)
+function BeliefCard({ belief, index }: { belief: (typeof BELIEFS)[number]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const running = useInView(ref, { amount: 0.35 })
   const Example = belief.Example
   return (
     <div
-      className="w-full rounded-[30px] p-1.5 [background:var(--ring-y)] md:[background:var(--ring-x)]"
-      style={
-        {
-          '--ring-x': 'linear-gradient(to right, rgb(42 140 255 / 0.24) 0%, rgb(42 140 255 / 0.14) 55%, transparent 94%)',
-          '--ring-y': 'linear-gradient(to bottom, rgb(42 140 255 / 0.28) 0%, rgb(42 140 255 / 0.16) 60%, rgb(42 140 255 / 0.08) 100%)',
-        } as CSSProperties
-      }
+      ref={ref}
+      className="flex h-full flex-col gap-6 rounded-3xl px-6 pb-7 pt-8 text-white shadow-[0_6px_0_#1A5FC8]"
+      style={{ background: 'radial-gradient(ellipse at 50% 0%, #4FA6FF 0%, #2A8CFF 55%, #1F78F0 100%)' }}
     >
-      <div
-        className="relative w-full rounded-3xl px-7 py-7 text-left [background:var(--card-y)] md:px-10 md:py-9 md:[background:var(--card-x)]"
-        style={
-          {
-            '--card-x': 'linear-gradient(to right, #4FA6FF 0%, #78BBFF 38%, #C2E0FF 64%, #EEF6FF 82%, #FFFFFF 96%)',
-            '--card-y': 'linear-gradient(to bottom, #4FA6FF 0%, #5DAEFF 50%, #78BBFF 80%, #A9D4FF 100%)',
-          } as CSSProperties
-        }
-      >
-        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-2 md:items-center md:gap-12">
-          <div className="flex min-w-0 flex-col items-start gap-4 text-white">
-            <span className="grid size-11 place-items-center rounded-xl bg-white text-[#2A8CFF] shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]">
-              <FontAwesomeIcon icon={belief.icon} className="text-lg" />
-            </span>
-            <h3 className="m-0 text-3xl font-black leading-tight tracking-[-0.02em] md:text-4xl">
-              <Marked text={belief.title} />
-            </h3>
-            <p className="m-0 text-xl leading-snug md:text-2xl" style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}>
-              <Marked text={belief.body} />
-            </p>
-            <div className="mt-1 flex items-center gap-2" role="group" aria-label="Choose a belief">
-              {BELIEFS.map((item, index) => (
-                <button
-                  key={item.title}
-                  type="button"
-                  aria-label={item.title.replace(/\*/g, '')}
-                  aria-current={index === active}
-                  onClick={() => go(index)}
-                  className={`h-2.5 rounded-full transition-[width,background-color] duration-300 ${index === active ? 'w-10 bg-white' : 'w-2.5 bg-white/60 hover:bg-white/80'}`}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="mx-auto w-full max-w-md md:[perspective:1400px]">
-            <motion.div
-              key={running ? 'on' : 'off'}
-              className="demo-3d no-frame"
-              animate={tilt ? { rotateY: [-16, -8, -16], rotateX: [8, 3, 8] } : { rotateY: 0, rotateX: 0 }}
-              transition={tilt ? { duration: 9, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }}
-            >
-              <Example running={running} />
-            </motion.div>
-          </div>
-        </div>
+      <div className="relative z-10 -mx-2 flex items-center justify-center md:-mx-4">
+        <Example running={running} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="flex items-center gap-3 text-5xl font-black leading-none tracking-[-0.045em]">
+          {index + 1}
+          <span className="grid size-10 place-items-center rounded-xl bg-white text-[#2A8CFF] shadow-[0_3px_0_#1A5FC8]">
+            <FontAwesomeIcon icon={belief.icon} className="text-base" />
+          </span>
+        </p>
+        <h3 className="m-0 mt-1 text-2xl font-black leading-tight tracking-[-0.02em] md:text-3xl">
+          <Marked text={belief.title} />
+        </h3>
+        <p className="m-0 text-[16px] font-semibold leading-snug text-white/90 md:text-[17px]">
+          <Marked text={belief.body} />
+        </p>
       </div>
     </div>
   )
 }
 
 export function HowWeThink() {
-  const { active, go, viewportProps, trackProps } = useDragCarousel(BELIEFS.length)
   return (
     <section id="how-we-think" className="w-full overflow-x-clip bg-white px-4 py-20 md:px-6 md:py-28">
       <div className="mx-auto flex w-full max-w-[86rem] flex-col items-center gap-10">
@@ -354,37 +320,10 @@ export function HowWeThink() {
             <span className={STICKER}>your agent.</span>
           </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label="How we think">
+        <div className="mt-2 grid w-full max-w-6xl grid-cols-1 gap-x-10 gap-y-10 md:grid-cols-2">
           {BELIEFS.map((belief, index) => (
-            <button
-              key={belief.title}
-              type="button"
-              role="tab"
-              aria-selected={index === active}
-              onClick={() => go(index)}
-              className={
-                index === active
-                  ? 'button-glow inline-flex items-center gap-2 rounded-xl border border-white/35 px-4 py-2 text-[15px] font-bold text-white'
-                  : 'inline-flex items-center gap-2 rounded-xl bg-[#F3F6FA] px-4 py-2 text-[15px] font-medium text-[#0D2A4C]/70 transition-colors hover:bg-[#E7EDF5] hover:text-[#0D2A4C]'
-              }
-            >
-              <FontAwesomeIcon icon={belief.icon} className="text-[15px]" />
-              {belief.title.replace(/\*/g, '')}
-            </button>
+            <BeliefCard key={belief.title} belief={belief} index={index} />
           ))}
-        </div>
-        <div {...viewportProps} className={`${viewportProps.className} max-w-5xl`}>
-          <div {...trackProps}>
-            {BELIEFS.map((belief, index) => (
-              <div
-                key={belief.title}
-                aria-hidden={index !== active}
-                className={`w-full shrink-0 transition-opacity duration-500 ${index === active ? 'opacity-100' : 'opacity-35'}`}
-              >
-                <BeliefCard belief={belief} running={index === active} active={active} go={go} />
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </section>

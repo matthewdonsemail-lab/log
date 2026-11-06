@@ -13,6 +13,7 @@ import { AreaChart } from '@/components/dither-kit/area-chart'
 import { Area } from '@/components/dither-kit/area'
 import { useChart } from '@/components/dither-kit/chart-context'
 import { Header } from '../Header'
+import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { DitherFade } from './DitherFade'
 import { HowItWorks } from './HowItWorks'
@@ -596,7 +597,7 @@ function MoreUseCases({ current }: { current: PlatformPage | null }) {
         <br />
         <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">More plays to run.</span>
       </h2>
-      <ul className="mx-auto mt-12 grid w-full max-w-6xl grid-cols-1 gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mx-auto mt-12 grid w-full max-w-[96rem] grid-cols-1 gap-4 text-left sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
         {others.map((item, index) => {
           const shown = platformOf(item.platformId)
           return (
@@ -631,13 +632,6 @@ function MoreUseCases({ current }: { current: PlatformPage | null }) {
           )
         })}
       </ul>
-      <RepoLink
-        href={SETUP_HREF}
-        className="mt-12 inline-flex items-center gap-2 rounded-xl bg-[#2A8CFF] px-6 py-3.5 text-[17px] font-bold text-white shadow-[0_4px_0_#1A5FC8] transition-transform hover:-translate-y-px"
-      >
-        Set up log
-        <FontAwesomeIcon icon={faArrowRight} className="text-[14px]" />
-      </RepoLink>
     </section>
   )
 }
@@ -1186,6 +1180,7 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
           <PromptCta title="Run any use case with your agent" ask={prompt} isCommand={isCommand} />
         </>
       )}
+      <SiteFooter />
     </div>
   )
 }

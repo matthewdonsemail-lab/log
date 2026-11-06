@@ -1,0 +1,29 @@
+# log by ListeningKit
+
+> log runs your social media marketing from the terminal or from your AI agent (Claude Code, Codex). It reads and answers your DMs, groups and channels on X, Instagram, Slack, Discord and Reddit, in your own voice and from your own accounts. It is open source and installs as the npm package `@listeningkit/log`, which gives you the `log` command and the `logMcp` server.
+
+## Get started
+
+- [Install](https://log.listeningkit.com/docs/getStarted/install): install log and sign in your accounts
+- [Connect your agent](https://log.listeningkit.com/docs/getStarted/mcp): add `logMcp` to Claude Code or Codex
+- [Using log](https://log.listeningkit.com/docs/getStarted/usingLog): how you ask for work and what log does with it
+- [Source on GitHub](https://github.com/matthewdonsemail-lab/log)
+
+## Platforms
+
+- [X](https://log.listeningkit.com/twitter): both inboxes as one, who is waiting on you, replies, posts and DMs in your voice
+- [Instagram](https://log.listeningkit.com/instagram): answer every DM as it lands, with text or a meme that fits
+- [Slack](https://log.listeningkit.com/slack): DMs and group DMs in every workspace, replies one line at a time
+- [Discord](https://log.listeningkit.com/discord): DMs, groups and channels, watched live
+- [Reddit](https://log.listeningkit.com/reddit): keeps the account signed in and runs recorded steps
+
+## Docs
+
+- [Docs home](https://log.listeningkit.com/docs)
+- [Use cases](https://log.listeningkit.com/docs/useCases): the jobs log does, step by step, and how to ask for each
+- [Reference](https://log.listeningkit.com/docs/reference/reference): every command, MCP tool and hook
+
+## Optional
+
+- [All use cases](https://log.listeningkit.com/useCases)
+- [Sitemap](https://log.listeningkit.com/sitemap.xml)
