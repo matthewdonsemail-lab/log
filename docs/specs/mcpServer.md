@@ -60,7 +60,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-09: The pre-commit review asks SubQ whether the use cases are stale
 
-On pre-commit, `check:useCases` reads the latest Claude Code session for the repo (matt's asks and the tools called) and asks SubQ, for every use case page, whether it is still current, stale or should move, and whether the session did repeatable work no page covers. A stale or misplaced page, or uncovered work, stops the commit unless that page, or a new page, is staged.
+On pre-commit, `check:useCases` reads the latest Claude Code session for the repo (matt's asks and the tools called) and asks SubQ, for every use case page, whether it is still current, stale or should move, and whether the session did repeatable work no page covers. A stale or misplaced page, or uncovered work, stops the commit unless that page, or a new page, is staged. A commit that stages only the landing site (`site/`) and the commit log (`log.md`, `log/<date>.md`) isn't reviewed (`siteOnly`): site work is never a use case (matt, 2026-11-06).
 
 Checked by: code and SubQ
 

@@ -4,13 +4,17 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { listUseCases } from "../../src/mcp/server/helpers/guides.ts";
 import { createDecisionsClient } from "../../src/subq/decisions/index.ts";
-import { latestSession, projectSessionsDir, readReview, REVIEW_MODEL, reviewLines, reviewQuestions, sessionDigest } from "../../src/useCases/review/index.ts";
+import { latestSession, projectSessionsDir, readReview, REVIEW_MODEL, reviewLines, reviewQuestions, sessionDigest, siteOnly } from "../../src/useCases/review/index.ts";
 import type { DecisionAnswer } from "../../src/subq/decisions/index.ts";
 
 const root = join(import.meta.dir, "..", "..");
 const say = (line: string) => console.log(`useCases: ${line}`);
 const git = (args: string) => execSync(`git ${args}`, { cwd: root }).toString().split(/\r?\n/).filter(Boolean);
 
+if (siteOnly(git("diff --cached --name-only"))) {
+  say("only the landing site (site/) and the commit log are staged: site work isn't a use case, so the pages aren't reviewed");
+  process.exit(0);
+}
 const session = process.env.LOG_SESSION_FILE || latestSession(projectSessionsDir(root));
 if (!session || !existsSync(session)) {
   say("no Claude Code session for this repo, nothing to compare the use cases with");
