@@ -1,5 +1,6 @@
 import type { PlatformAccount, PlatformEngineRun, PlatformEngineSpec } from '../../platformKit/session/index'
 import { appendEvent, behindOf, eventIdOf, positionsOf, recordPosition } from '../store/index'
+import { BACKFILL_SCOPE } from '../dbRead/types'
 import type { GapRow } from '../store/index'
 import { BEHIND_WAIT_MS, READ_GAP_MS } from './types'
 import type { CatchUpResult, PlatformRead, ReadMessage } from './types'
@@ -23,7 +24,7 @@ async function readChats(platform: string, account: PlatformAccount, gap: GapRow
   let appended = 0
   for (const [i, c] of chats.entries()) {
     if (i) await wait()
-    const run = read(account, c.spec)
+    const run = read(account, { ...c.spec, catchUp: true } as PlatformEngineSpec)
     const refused = refusedOf(run)
     if (refused) return { appended, refused: `reading ${c.chat}: ${refused}` }
     const messages = ((run.answer.messages as ReadMessage[] | undefined) ?? []).filter((m) => !m.at || m.at > gap.fromAt)
@@ -38,12 +39,12 @@ async function readChats(platform: string, account: PlatformAccount, gap: GapRow
 }
 
 export function discordCatchUp(account: PlatformAccount, gap: GapRow, read: PlatformRead, now: Date = new Date(), wait: () => Promise<void> = pacedWait): Promise<CatchUpResult> {
-  const chats = Object.entries(positionsOf('discord', account.accountName)).filter(([chat]) => chat)
+  const chats = Object.entries(positionsOf('discord', account.accountName)).filter(([chat]) => chat && !chat.startsWith(BACKFILL_SCOPE))
   return readChats('discord', account, gap, read, chats.map(([chat, after]) => ({ chat, box: 'dm', spec: { action: 'read', channel: chat, limit: 100, after }, position: (m) => m.id ?? null })), now, wait)
 }
 
 export function slackCatchUp(account: PlatformAccount, gap: GapRow, read: PlatformRead, now: Date = new Date(), wait: () => Promise<void> = pacedWait, workspace: Record<string, unknown> = {}): Promise<CatchUpResult> {
-  const chats = Object.entries(positionsOf('slack', account.accountName)).filter(([chat]) => chat)
+  const chats = Object.entries(positionsOf('slack', account.accountName)).filter(([chat]) => chat && !chat.startsWith(BACKFILL_SCOPE))
   return readChats('slack', account, gap, read, chats.map(([chat, oldest]) => ({ chat, box: chat.startsWith('D') ? 'dm' : chat.startsWith('G') ? 'group' : 'mention', spec: { action: 'read', chat, limit: 200, oldest, saveAudio: false, ...workspace }, position: (m) => m.ts ?? null })), now, wait)
 }
 

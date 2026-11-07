@@ -2470,6 +2470,30 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Spec: `docs/specs/messageSplit.md` (REQ-SPLIT-09),
     `docs/specs/voiceGate.md` (REQ-VOICE-18).
 
+162. 2026-11-07 · matt: "sometimes what you're doing is giving out a task.
+    It's not the same thing as like casually talking with someone ... those
+    way of doing it is rude. It's not clear. It's not informative", then
+    "make a document, send the documents over ... We need to maybe make
+    that". Two things:
+    - **A task is a brief.** A message that hands someone work goes with
+      `--brief` (MCP `brief`) on `log discord send`, and the gate reads it as
+      a brief instead of matt's chat voice (`gateBrief`, `readBrief`,
+      `src/voice/brief`). SubQ answers five questions, each 0.7 to pass:
+      `clear` (what to do, in order, any term explained), `why` (what the
+      work is for), `doneWhen` (what they hand back and by when), `kind`
+      (warm and informative in matt's register, never curt, bossy or a bare
+      order) and `steerable` (how to ask or say they're stuck), plus
+      `fitsTheRoom`. It reads the chat's ranked moments and the attached
+      files beside the draft. The sameness check and the scrambler still run.
+    - **Files go with it.** `--file <path>[,<path>]` (MCP `file`) attaches
+      files to the last message, uploaded through the account's own session
+      (endcord's attachment upload, `attached_files`,
+      `python/discordApi/engine.py`): only files under OUTBOX or ~/.logCli,
+      at most 10 MB each, else `fileRefused` before anything is sent.
+    The same day, the Discord and Slack catch-up stopped reading the .db's
+    backfill markers (`backfill:<chat>`) as chats to catch up.
+    Spec: `docs/specs/voiceGate.md` (REQ-VOICE-19).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

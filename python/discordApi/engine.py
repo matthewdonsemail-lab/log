@@ -5,6 +5,7 @@ import json
 import re
 import threading
 import time
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -231,7 +232,39 @@ def attached_media(client: Any, channel: str, text: str) -> tuple[list[dict[str,
     return [{"upload_url": slot["upload_url"], "upload_filename": slot["upload_filename"], "name": f"meme{path.suffix}"}], None
 
 
-def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
+FILE_ROOTS = [Path(os.environ.get("LOG_OUTBOX") or Path.home() / ".buzz" / "OUTBOX"), Path.home() / ".logCli"]
+FILE_MAX_BYTES = 10 * 1024 * 1024
+
+
+def file_allowed(path: Path) -> str | None:
+    resolved = path.resolve()
+    if not any(resolved.is_relative_to(root.resolve()) for root in FILE_ROOTS):
+        return f"{path} isn't in OUTBOX or ~/.logCli, so it isn't sent"
+    if not resolved.is_file():
+        return f"{path} isn't a file"
+    if resolved.stat().st_size > FILE_MAX_BYTES:
+        return f"{path.name} is over Discord's {FILE_MAX_BYTES // 1024 // 1024} MB upload limit"
+    return None
+
+
+def attached_files(client: Any, channel: str, paths: list[str]) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    out: list[dict[str, Any]] = []
+    for raw in paths:
+        path = Path(raw)
+        problem = file_allowed(path)
+        if problem:
+            return [], {"ok": False, "code": "fileRefused", "detail": f"{problem}: nothing was sent", "loginState": "loggedIn", "channelId": channel}
+        slot, code = client.request_attachment_url(channel, str(path), path.name)
+        if code or not slot:
+            return [], {"ok": False, "code": "sendFailed", "detail": f"Discord gave no upload slot for {path.name} (code {code}): nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+        if not client.upload_attachment(slot["upload_url"], str(path)):
+            return [], {"ok": False, "code": "sendFailed", "detail": f"the upload of {path.name} to Discord failed: nothing was sent", "loginState": "loggedIn", "event": "dropped", "channelId": channel}
+        print(f"file {path.name} uploaded ({path.stat().st_size} bytes)", file=sys.stderr, flush=True)
+        out.append({"upload_url": slot["upload_url"], "upload_filename": slot["upload_filename"], "name": path.name})
+    return out, None
+
+
+def send_of(token: str, channel: str, text: str, paths: list[str] | None = None) -> dict[str, Any]:
     client, failed = open_client(token)
     if failed:
         return failed
@@ -247,7 +280,10 @@ def send_of(token: str, channel: str, text: str) -> dict[str, Any]:
     files, failed = attached_media(client, target, text)
     if failed:
         return failed
-    sent = client.send_message(target, "" if files else text, attachments=files or None)
+    documents, failed = attached_files(client, target, paths or [])
+    if failed:
+        return failed
+    sent = client.send_message(target, "" if files and not documents else text, attachments=(files + documents) or None)
     if not sent:
         return {"ok": False, "code": "sendFailed", "detail": f"Discord didn't take the message in channel {target}", "loginState": "loggedIn", "event": "dropped", "channelId": target}
     return {"ok": True, "loginState": "loggedIn", "event": "sent", "channelId": sent["channel_id"], "messageId": sent["id"], "timestamp": sent["timestamp"], "content": sent["content"]}
@@ -431,7 +467,8 @@ async def send(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     channel, text = str(spec.get("channel") or "").strip(), str(spec.get("text") or "")
     if not channel or not text.strip():
         return {"ok": False, "code": "sendInvalid", "detail": "send needs a channel and text"}
-    return await asyncio.to_thread(send_of, token, channel, text)
+    paths = [str(p) for p in spec.get("files") or []]
+    return await asyncio.to_thread(send_of, token, channel, text, paths)
 
 
 def delete_of(token: str, channel: str, message: str) -> dict[str, Any]:

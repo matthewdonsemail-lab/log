@@ -54,7 +54,11 @@ def redact(text: Any, cookies: dict[str, str]) -> str:
     return out
 
 
-def governor_for(state_root: str, account: str, writes_per_day: int | None = None, continues_send: bool = False) -> Any:
+CATCH_UP_MIN_GAP_S = 0.8
+CATCH_UP_MEAN_GAP_S = 1.6
+
+
+def governor_for(state_root: str, account: str, writes_per_day: int | None = None, continues_send: bool = False, catch_up: bool = False) -> Any:
     from dataclasses import replace
 
     from governor import GovernorConfig, RequestGovernor
@@ -66,6 +70,8 @@ def governor_for(state_root: str, account: str, writes_per_day: int | None = Non
         config = replace(config, mutation_daily_cap=int(writes_per_day))
     if continues_send:
         config = replace(config, mean_gap_s=config.min_gap_s)
+    if catch_up:
+        config = replace(config, min_gap_s=CATCH_UP_MIN_GAP_S, mean_gap_s=CATCH_UP_MEAN_GAP_S)
     return RequestGovernor(config=config, state_path=folder / "governor_state.json")
 
 
@@ -86,7 +92,7 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
     cookies = normalize_cookies(json.loads(Path(spec["cookiesPath"]).read_text(encoding="utf-8")))
     if spec.get("storagePath"):
         cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
-    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True)
+    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True, catch_up=action not in writes and spec.get("catchUp") is True)
     try:
         governor.before_request(is_mutation=action in writes, quiet=True)
     except GovernorBlockedError as e:

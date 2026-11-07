@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 161;
+export const RULES_REVIEWED_THROUGH = 162;
 
 export const AGENTS_URI = "log://agents";
 
@@ -75,6 +75,7 @@ export const CORE_PRINCIPLES = [
   "68. When a `>>> PLAY MATCH` names a use case for matt's message, load it with `getGuide({ useCase })` before anything else; every use case is also a skill `log-<platform>-<page>`. When a draft is refused, rewrite it from evidence, never memory: `voice` with no text for that person's thread and matt's real replies, `search` for what he said on it before, then a draft unlike anything sent today (rule 158).",
   "69. A `>>> MAYBE A PLAY` lists the 3 plays closest to matt's message: before any tool, say in one line which one he is asking for, or none (building, fixing or talking about the system is none). A `>>> ACTIVE PLAY` after compaction is the play this session was in, with its steps done and to do: load it again and carry on from the next step (rule 159).",
   "70. A read for one chat or person (`discordRead`, `twitterDms` { with }) answers from the .db when its owner is live and the chat is backfilled; the platform is read only to fill the .db once, for a server channel, or when no owner is live. Never re-read a whole inbox to find one person, and never read around a refused catch-up (rule 160).",
+  "71. A message that hands someone a task is a brief, never a curt order: send it with `brief` so the gate asks whether it says what to do in order, why it matters, what done looks like and by when, kindly, and how to ask when stuck. Files (a guide, a sheet) go with it through `file`, from OUTBOX or ~/.logCli (rule 162).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -165,7 +166,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   discordChats: [13, 63, 64, 73, 83, 94],
   discordRead: [13, 63, 64, 73, 83, 94, 126],
   discordWatch: [13, 26, 63, 64, 73, 83, 94, 126, 131, 132],
-  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138],
+  discordSend: [8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138, 162],
   discordDelete: [8, 13, 63, 64, 73, 83, 94, 122],
   discordReact: [8, 13, 63, 64, 73, 83, 94, 122, 133, 140],
   slackReact: [8, 13, 63, 64, 73, 83, 94, 125, 133, 140],

@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 451 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 452 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -392,6 +392,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
+- **REQ-VOICE-19** A task is gated as a brief, and its files go with it
 - **REQ-VOICE-18** A draft that just passed is not sent to SubQ again
 - **REQ-VOICE-17** A refused draft says where to look before it is rewritten
 - **REQ-VOICE-16** No two messages read alike

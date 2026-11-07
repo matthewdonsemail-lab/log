@@ -306,6 +306,7 @@ stateDiagram-v2
 | `voiceProcessingFailed` | no | `cli/voiceNote`, `cli/clone`, `extensions/voiceClone` | command exits | ffmpeg couldn't read or write the spoken audio while shaping it like matt's own voice notes (his room tone, phone squash, mic drift and saturation). Nothing was sent. | Check ffmpeg runs (ffmpeg -version) and the detail, then send it again. |
 | `voiceNoteRefused` | no | `python/discordApi`, `python/instagramApi`, `python/slackApi` | command exits | The platform refused the voice note's upload or its message (its answer is in the detail). Nothing was retried. | Read the platform's answer in the detail. Nothing more goes out on that account until matt says so (rule 94). |
 | `voiceNoteFailed` | no | `python/discordApi` | command exits | Discord didn't answer the voice note's message at all (no status). Whether it landed is unknown. | Read the chat again to see whether the voice note is there before anything else; never send it again blind (rule 94). |
+| `fileRefused` | no | `src/cli/discord`, `python/discordApi` | command exits | A file to attach isn't under OUTBOX or ~/.logCli, isn't a file, or is over Discord's 10 MB upload limit. Nothing was sent. | Put the file in OUTBOX (or ~/.logCli), keep it under 10 MB, and send again. |
 
 ## twenty
 
