@@ -241,9 +241,14 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
-const CODE_DIRS = ['python', join('vendor', 'twikit', 'twikit'), join('vendor', 'instagrapi', 'instagrapi')]
+export const WATCHER_CODE: Record<string, readonly string[]> = {
+  twitter: [join('python', 'twitterApi'), join('python', 'platformKit'), join('vendor', 'twikit', 'twikit')],
+  discord: [join('python', 'discordApi'), join('python', 'platformKit'), join('vendor', 'endcord', 'endcord')],
+  slack: [join('python', 'slackApi'), join('python', 'platformKit'), join('vendor', 'gabrielSlack', 'gabriel')],
+  instagram: [join('python', 'instagramApi'), join('python', 'platformKit'), join('vendor', 'instagrapi', 'instagrapi')],
+}
 const CODE_FILE = /\.(ts|py)$/
-const stampPath = () => join(inboxRoot(), 'codeStamp.json')
+const stampPath = (platform: string) => join(inboxRoot(), platform, 'codeStamp.json')
 
 function newestIn(dir: string): number {
   let newest = 0
@@ -256,11 +261,12 @@ function newestIn(dir: string): number {
   return newest
 }
 
-export function codeStamp(repo: string, now: Date = new Date(), everyMs = 60_000): number {
-  const kept = readJson<{ stamp: number; checkedAt: number } | null>(stampPath(), null)
+export function codeStamp(repo: string, platform: string, now: Date = new Date(), everyMs = 60_000): number {
+  const kept = readJson<{ stamp: number; checkedAt: number } | null>(stampPath(platform), null)
   if (kept && now.getTime() - kept.checkedAt < everyMs) return kept.stamp
-  const stamp = Math.max(0, ...CODE_DIRS.map((d) => join(repo, d)).filter((d) => existsSync(d)).map(newestIn))
-  writeJson(stampPath(), { stamp, checkedAt: now.getTime() })
+  const stamp = Math.max(0, ...(WATCHER_CODE[platform] ?? []).map((d) => join(repo, d)).filter((d) => existsSync(d)).map(newestIn))
+  mkdirSync(join(inboxRoot(), platform), { recursive: true })
+  writeJson(stampPath(platform), { stamp, checkedAt: now.getTime() })
   return stamp
 }
 
