@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isChatMessage, liveLine } from "./helpers/chat.ts";
+import { inboxMessageOf, isChatMessage, liveLine } from "./helpers/chat.ts";
 import { pushedTypeOf } from "../../inbox/relay/index.ts";
 
 describe("X Chat live lines", () => {
@@ -28,5 +28,10 @@ describe("X Chat live lines", () => {
     expect(pushedTypeOf({ type: "unopened", state: "opened", eventId: "1" })).toBe("unopened");
     expect(pushedTypeOf({ kind: "like" })).toBe("like");
     expect(pushedTypeOf({ something: 1 })).toBe("unknown");
+  });
+
+  test("a message opened late keeps how long it waited and why", () => {
+    const late = { tries: 5, waitedSeconds: 2600, firstError: "no matching key" };
+    expect(inboxMessageOf("matthewsoldit", { ...message, openedLate: late }, new Date("2026-11-07T16:09:13Z")).openedLate).toEqual(late);
   });
 });

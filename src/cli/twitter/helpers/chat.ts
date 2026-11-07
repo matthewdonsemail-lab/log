@@ -125,7 +125,7 @@ export function liveLine(event: XChatLiveEvent): string {
 }
 
 export function inboxMessageOf(account: string, event: XChatLiveEvent, now: Date) {
-  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString() };
+  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString(), ...(event.openedLate ? { openedLate: event.openedLate } : {}) };
 }
 
 async function watchChat(context: CommandContext, argv: string[]): Promise<CommandResult> {
