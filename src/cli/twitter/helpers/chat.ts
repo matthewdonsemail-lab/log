@@ -114,7 +114,7 @@ export const chatCommand: Command = {
 };
 
 export function isChatMessage(event: XChatLiveEvent): boolean {
-  return event.type !== "socket" && Boolean(event.conversationId);
+  return (event.type === "message" || event.type === undefined) && Boolean(event.conversationId) && typeof event.text === "string" && event.text.trim() !== "";
 }
 
 export function liveLine(event: XChatLiveEvent): string {
