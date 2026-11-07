@@ -1,5 +1,5 @@
 import type { PlatformAccount, PlatformEngineRun, PlatformEngineSpec } from '../../platformKit/session/index'
-import { appendEvent, behindOf, eventIdOf, positionsOf, recordPosition } from '../store/index'
+import { addToPayload, appendEvent, behindOf, eventIdOf, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE } from '../dbRead/types'
 import type { GapRow } from '../store/index'
 import { BEHIND_WAIT_MS, READ_GAP_MS } from './types'
@@ -13,7 +13,10 @@ export function pacedWait(random: () => number = Math.random): Promise<void> {
 export function storeRead(platform: string, account: string, chat: string, box: string, m: ReadMessage, now: Date, source: 'live' | 'catchUp' | 'backfill' = 'catchUp'): boolean {
   if (m.text == null || !m.at) return false
   const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString() }
-  return !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id: m.id ?? m.ts ?? null }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })
+  const attachments = m.attachments ? { attachments: m.attachments } : {}
+  const added = !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id: m.id ?? m.ts ?? null, ...attachments }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })
+  if (!added && m.attachments) addToPayload(eventIdOf(row), { id: m.id ?? m.ts ?? null, ...attachments })
+  return added
 }
 
 function refusedOf(run: PlatformEngineRun): string | null {

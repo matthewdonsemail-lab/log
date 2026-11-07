@@ -1,3 +1,5 @@
+import type { MessageAttachment } from '../catchUp/types'
+
 export interface InboxThread {
   conversationId: string
   with: string
@@ -23,6 +25,7 @@ export interface InboxMessage {
   box: string
   seenAt: string
   workspace?: string
+  attachments?: MessageAttachment[]
 }
 
 export type SeenThreads = Record<string, string>

@@ -381,7 +381,13 @@ def read_message(client: Any, spec: dict[str, Any], channel: str, m: dict[str, A
     out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": text_of(m["content"], attachments), "embeds": plain_embeds(m.get("embeds")), "attachments": attachments}
     if spec.get("saveAudio") is not False and any(is_audio(a) for a in attachments):
         out["audio"] = saved_audio(client, spec, channel, str(m["id"]), attachments)
+    if spec.get("saveImages") is not False and any(media.is_visual(a) for a in attachments):
+        out["images"] = saved_images(client, spec, channel, str(m["id"]), attachments)
     return out
+
+
+def saved_images(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in kept.items() if k != "url"} for kept in with_visuals(client, spec, channel_id, message_id, attachments) if media.is_visual(kept)]
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:

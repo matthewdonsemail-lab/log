@@ -12,7 +12,9 @@ import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
-import { cachedChatList, chatMessageCount, chatMessages, findInChatList, markBackfilled, readSourceFor, sourceLine } from "../../inbox/dbRead/index.ts";
+import { cachedChatList, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceFor, sourceLine } from "../../inbox/dbRead/index.ts";
+import type { ReadSource } from "../../inbox/dbRead/index.ts";
+import type { MessageAttachment } from "../../inbox/catchUp/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
@@ -158,8 +160,23 @@ interface DiscordRead {
   replyTo: string | null;
   text: string;
   embeds: { title?: string; description?: string; url?: string }[];
-  attachments?: { name: string; type?: string; url?: string; duration?: number }[];
+  attachments?: { name: string; type?: string; url?: string; duration?: number; path?: string; error?: string }[];
   audio?: AudioOf[];
+  images?: MessageAttachment[];
+}
+
+export function attachmentLines(m: { attachments?: { name: string; type?: string; path?: string; error?: string }[]; audio?: AudioOf[]; images?: MessageAttachment[] }): string[] {
+  const images = m.images ?? (m.attachments ?? []).filter((a) => isVisualAttachment(a));
+  const shown = new Set([...(m.audio ?? []).map((v) => v.name), ...images.map((a) => a.name)]);
+  return [
+    ...images.map((a) => `    [image] ${a.name}${a.path ? `: ${a.path}` : a.error ? ` (not saved: ${a.error})` : " (not saved)"}`),
+    ...(m.attachments ?? []).filter((a) => !shown.has(a.name)).map((a) => `    [attachment] ${a.name}`),
+  ];
+}
+
+export function storedAttachmentsOf(m: DiscordRead): MessageAttachment[] {
+  const images = new Map((m.images ?? []).map((a) => [a.name, a]));
+  return (m.attachments ?? []).map((a) => images.get(a.name) ?? { name: a.name, ...(a.type ? { type: a.type } : {}) });
 }
 
 export const discordReadCommand: Command = {
@@ -199,29 +216,30 @@ export const discordReadCommand: Command = {
         kind = found.chat.kind;
         context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})${looked.from === "cache" ? ", from the kept chat list" : ""}`);
       }
-      const source = kind === "channel" ? ({ from: "platform", reason: "serverChannel" } as const) : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), limit);
+      let source: ReadSource = kind === "channel" ? { from: "platform", reason: "serverChannel" } : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), limit);
       if (source.from === "refused") return refuse("discord read", "accountBehind", source.refused);
+      const afterId = after ? BigInt(after) : null;
+      const stored = source.from === "db" ? chatMessages("discord", account.accountName, target, after ? 1000 : limit).filter((m) => afterId === null || (/^\d+$/.test(m.id) && BigInt(m.id) > afterId)).slice(-limit) : [];
+      if (source.from === "db" && mediaNotSaved(stored)) source = { from: "platform", reason: "mediaNotSaved" };
       if (source.from === "db") {
-        const afterId = after ? BigInt(after) : null;
-        const stored = chatMessages("discord", account.accountName, target, after ? 1000 : limit).filter((m) => afterId === null || (/^\d+$/.test(m.id) && BigInt(m.id) > afterId)).slice(-limit);
-        const messages: DiscordRead[] = stored.map((m) => ({ id: m.id, at: m.at, from: m.from, bot: false, fromMe: m.fromMe, replyTo: null, text: m.text, embeds: [] }));
+        const messages: DiscordRead[] = stored.map((m) => ({ id: m.id, at: m.at, from: m.from, bot: false, fromMe: m.fromMe, replyTo: null, text: m.text, embeds: [], ...(m.attachments?.length ? { attachments: m.attachments, images: m.attachments.filter((a) => isVisualAttachment(a)) } : {}) }));
         context.err(sourceLine(source, "Discord", account.accountName, performance.now() - started));
         if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "db", platform: "discord", account: account.accountName, ok: true, source, messages }, null, 2) };
-        return { code: 0, stdout: [`log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}, from the .db`, ...messages.map((m) => [`  ${m.at} ${m.from}${m.fromMe ? " (me)" : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : [])].join("\n"))].join("\n") };
+        return { code: 0, stdout: [`log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}, from the .db`, ...messages.map((m) => [`  ${m.at} ${m.from}${m.fromMe ? " (me)" : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...attachmentLines(m)].join("\n"))].join("\n") };
       }
       context.err(sourceLine(source, "Discord", account.accountName, 0));
       const run = direct(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
       if (run.answer.ok && kind !== "channel") markBackfilled("discord", account.accountName, target, context.now?.() ?? new Date());
       const code = run.answer.ok ? 0 : 1;
       const messages = await withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: target }, (run.answer.messages as DiscordRead[] | undefined) ?? [], (m) => m.audio ?? [], context.err);
-      if (run.answer.ok) for (const m of messages) storeRead("discord", account.accountName, target, "dm", { id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text }, context.now?.() ?? new Date(), "backfill");
+      if (run.answer.ok) for (const m of messages) storeRead("discord", account.accountName, target, "dm", { id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text, attachments: storedAttachmentsOf(m) }, context.now?.() ?? new Date(), "backfill");
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ...run.answer, ...(run.answer.messages ? { messages } : {}) }, null, 2) };
       if (!run.answer.ok) return { code, stdout: `log discord read: ${account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
       return {
         code,
         stdout: [
           `log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}`,
-          ...messages.map((m) => [`  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.embeds.map((e) => `    [embed] ${[e.title, e.description, e.url].filter(Boolean).join(" · ")}`), ...(m.attachments ?? []).filter((a) => !(m.audio ?? []).some((v) => v.name === a.name)).map((a) => `    [attachment] ${a.name}`)].join("\n")),
+          ...messages.map((m) => [`  ${m.at} ${m.from}${m.bot ? " [bot]" : ""}${m.fromMe ? " (me)" : ""}${m.replyTo ? ` replying to ${m.replyTo}` : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.embeds.map((e) => `    [embed] ${[e.title, e.description, e.url].filter(Boolean).join(" · ")}`), ...attachmentLines(m)].join("\n")),
         ].join("\n"),
       };
     } catch (error) {
@@ -265,7 +283,8 @@ export function toInboxOf(event: Record<string, unknown>): boolean {
 }
 
 export function discordInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
-  return { platform: "discord", account, conversationId: String(event.channelId ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: event.guildId ? (event.mentionsMe ? "mention" : "reply") : "dm", seenAt: now.toISOString() };
+  const attachments = ((event.attachments as { name?: string; filename?: string; type?: string; content_type?: string; path?: string; error?: string }[] | undefined) ?? []).filter((a) => a.name ?? a.filename).map((a) => ({ name: String(a.name ?? a.filename), ...((a.type ?? a.content_type) ? { type: String(a.type ?? a.content_type) } : {}), ...(a.path ? { path: a.path } : {}), ...(a.error ? { error: a.error } : {}) }));
+  return { platform: "discord", account, conversationId: String(event.channelId ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: event.guildId ? (event.mentionsMe ? "mention" : "reply") : "dm", seenAt: now.toISOString(), ...(event.id ? { id: String(event.id) } : {}), ...(attachments.length ? { attachments } : {}) };
 }
 
 export const discordWatchCommand: Command = {
@@ -550,7 +569,7 @@ export const discordSendCommand: Command = {
         context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
       } else {
         const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
-        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer)) });
+        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer)) });
         if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }

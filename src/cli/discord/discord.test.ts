@@ -7,7 +7,7 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
-import { discordDeps, toInboxOf } from "./index.ts";
+import { attachmentLines, discordDeps, discordInboxMessageOf, storedAttachmentsOf, toInboxOf } from "./index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { chatEvents } from "../../inbox/store/index.ts";
 import { takePending } from "../../inbox/watch/index.ts";
@@ -413,5 +413,24 @@ describe("reads keep the chat's history in the .db as backfill, for the gate ins
     expect(backfillThread("matthewsoldit", messages, new Date())).toBe(2);
     expect(backfillThread("matthewsoldit", messages, new Date())).toBe(0);
     expect(chatEvents("twitter", "matthewsoldit", (id) => id === conversation).map((e) => [e.type, e.withWho])).toEqual([["message", "2084617266310909952"], ["ownMessage", "me"]]);
+  });
+});
+
+describe("a Discord image is shown with where it was saved", () => {
+  test("a read prints each image with its local path, and other files as attachments", () => {
+    const lines = attachmentLines({ attachments: [{ name: "shot.png", type: "image/png" }, { name: "deck.pdf" }], images: [{ name: "shot.png", type: "image/png", path: "C:/media/1_shot.png" }] });
+    expect(lines).toEqual(["    [image] shot.png: C:/media/1_shot.png", "    [attachment] deck.pdf"]);
+    expect(attachmentLines({ attachments: [{ name: "a.jpg", type: "image/jpeg" }], images: [{ name: "a.jpg", error: "Discord's CDN didn't send the file" }] })).toEqual(["    [image] a.jpg (not saved: Discord's CDN didn't send the file)"]);
+  });
+
+  test("what a read stores keeps the saved path of each image", () => {
+    const stored = storedAttachmentsOf({ id: "1", at: "t", from: "k", bot: false, fromMe: false, replyTo: null, text: "", embeds: [], attachments: [{ name: "shot.png", type: "image/png", url: "https://cdn" }, { name: "deck.pdf", url: "https://cdn2" }], images: [{ name: "shot.png", type: "image/png", path: "C:/media/1_shot.png" }] });
+    expect(stored).toEqual([{ name: "shot.png", type: "image/png", path: "C:/media/1_shot.png" }, { name: "deck.pdf" }]);
+  });
+
+  test("the inbox keeps the watch's saved image path and the message id", () => {
+    const m = discordInboxMessageOf("acct", { kind: "message", channelId: "c", id: "77", from: "Kennedy", text: "", at: "2026-11-07T11:00:00Z", attachments: [{ name: "shot.png", type: "image/png", url: "https://cdn", path: "C:/media/77_shot.png" }] }, new Date("2026-11-07T11:00:01Z"));
+    expect(m.id).toBe("77");
+    expect(m.attachments).toEqual([{ name: "shot.png", type: "image/png", path: "C:/media/77_shot.png" }]);
   });
 });

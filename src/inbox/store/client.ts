@@ -152,6 +152,10 @@ export function namedLabel(platform: string, account: string, label: string | nu
   return personOf(platform, account, userId || String(label ?? '')) ?? UNNAMED
 }
 
+export function addToPayload(eventId: string, extra: Record<string, unknown>): boolean {
+  return immediate((handle) => handle.prepare('UPDATE events SET payload = json_patch(payload, ?) WHERE eventId = ?').run(JSON.stringify(extra), eventId).changes > 0)
+}
+
 export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: number; eventId: string; known: boolean } | null {
   const receivedAt = input.receivedAt ?? now.toISOString()
   const senderId = senderIdOf(input)

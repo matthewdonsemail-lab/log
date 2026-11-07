@@ -6,6 +6,7 @@ import { readSession, sessionLive } from '../relay/index'
 import { db, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS, READ_CATCH_UP_MS } from './types'
 import type { DbMessage, ReadSource, ReadSourceDeps } from './types'
+import type { MessageAttachment } from '../catchUp/types'
 
 export const readSourceDeps: ReadSourceDeps = {
   live: (platform, account) => sessionLive(readSession(platform, account)),
@@ -26,20 +27,39 @@ export function markBackfilled(platform: string, account: string, chatKey: strin
   recordPosition(platform, account, now.toISOString(), `${BACKFILL_SCOPE}${chatKey}`, now)
 }
 
-function payloadId(payload: string): string | null {
+function payloadOf(payload: string): { id?: unknown; attachments?: unknown } {
   try {
-    const parsed = JSON.parse(payload) as { id?: unknown }
-    return parsed.id == null ? null : String(parsed.id)
+    const parsed = JSON.parse(payload) as unknown
+    return parsed && typeof parsed === 'object' ? (parsed as { id?: unknown; attachments?: unknown }) : {}
   } catch {
-    return null
+    return {}
   }
+}
+
+function attachmentsOf(value: unknown): MessageAttachment[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  return value.filter((a): a is MessageAttachment => !!a && typeof a === 'object' && typeof (a as { name?: unknown }).name === 'string').map((a) => ({ name: a.name, ...(a.type ? { type: a.type } : {}), ...(a.path ? { path: a.path } : {}), ...(a.error ? { error: a.error } : {}) }))
+}
+
+export function mediaNotSaved(messages: readonly DbMessage[]): boolean {
+  return messages.some((m) => (!m.text && m.attachments === undefined) || (m.attachments ?? []).some((a) => isVisualAttachment(a) && !a.path && !a.error))
+}
+
+export function isVisualAttachment(a: MessageAttachment): boolean {
+  const type = (a.type ?? '').toLowerCase()
+  if (type.startsWith('image/') || type.startsWith('video/')) return true
+  return /\.(png|jpe?g|webp|gif|bmp|mp4|mov|m4v|mkv)$/i.test(a.name)
 }
 
 export function chatMessages(platform: string, account: string, conversationId: string, limit: number): DbMessage[] {
   const rows = db()
     .prepare("SELECT eventId, conversationId, type, withWho, text, payload, sourceAt, receivedAt FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type IN ('message', 'ownMessage') ORDER BY COALESCE(NULLIF(sourceAt, ''), receivedAt) DESC, seq DESC LIMIT ?")
     .all(platform, account, conversationId, limit) as { eventId: string; conversationId: string; type: string; withWho: string; text: string; payload: string; sourceAt: string; receivedAt: string }[]
-  return rows.reverse().map((r) => ({ id: payloadId(r.payload) ?? r.eventId, conversationId: r.conversationId, at: r.sourceAt || r.receivedAt, from: r.type === 'ownMessage' ? 'me' : r.withWho, fromMe: r.type === 'ownMessage', text: r.text }))
+  return rows.reverse().map((r) => {
+    const payload = payloadOf(r.payload)
+    const attachments = attachmentsOf(payload.attachments)
+    return { id: payload.id == null ? r.eventId : String(payload.id), conversationId: r.conversationId, at: r.sourceAt || r.receivedAt, from: r.type === 'ownMessage' ? 'me' : r.withWho, fromMe: r.type === 'ownMessage', text: r.text, ...(attachments ? { attachments } : {}) }
+  })
 }
 
 export function chatMessageCount(platform: string, account: string, conversationId: string): number {
@@ -54,7 +74,7 @@ export function userIdOfHandle(platform: string, account: string, handle: string
 
 export function sourceLine(source: ReadSource, platform: string, account: string, ms: number): string {
   if (source.from === 'db') return `${account}: answered from the .db in ${Math.round(ms)} ms (${source.reason === 'backfilled' ? 'this chat was backfilled once and its owner keeps it current' : 'the .db already holds enough of it'}), nothing read from ${platform}`
-  if (source.from === 'platform') return `${account}: read from ${platform} (${{ noLiveOwner: `no live ${platform} owner is keeping the .db current`, notBackfilled: 'this chat is read once to backfill the .db; after this it answers from the .db', serverChannel: 'a server channel, which the watcher only keeps mentions and replies from', askedFull: 'a full read was asked for' }[source.reason]})`
+  if (source.from === 'platform') return `${account}: read from ${platform} (${{ noLiveOwner: `no live ${platform} owner is keeping the .db current`, notBackfilled: 'this chat is read once to backfill the .db; after this it answers from the .db', serverChannel: 'a server channel, which the watcher only keeps mentions and replies from', askedFull: 'a full read was asked for', mediaNotSaved: 'it holds an image or file the .db has no saved copy of' }[source.reason]})`
   return source.refused
 }
 

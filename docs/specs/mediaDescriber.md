@@ -45,3 +45,9 @@ Checked by: code and SubQ
 Slack's watch fetches every image, gif and video someone sends through the account's own authenticated session, Discord's watch through its REST session for the DMs, mentions and replies to the account only, Instagram's realtime watch through instagrapi's private session (never its plain-requests downloads, and under the engine's one-call lock), and X Chat's are the files its one session already decrypts. Each is kept in the account's media folder, at most 50 MB, and its path goes with the attachment to the describer's queue. A fetch that fails is listed with why. Rule 139.
 
 Checked by: code and SubQ
+
+### REQ-MEDIA-07: A Discord read shows every image with where it was saved
+
+`log discord read` keeps a local copy of each image, gif and video in the messages it reads, through the account's own REST session, in its media folder at most 50 MB, and shows each as `[image] <name>: <path>` (or why it wasn't saved), so an agent can open the picture itself. The watch puts the same saved paths, and the message id, into the inbox, and the read keeps them in the .db. A read the .db would answer still goes to Discord once when a message there has an image with no saved copy, or is empty with nothing recorded, and the paths it saves are added to the stored message. The voice gate's read of the room saves nothing. matt, 2026-11-07: "Make it so you can read images".
+
+Checked by: code and SubQ
