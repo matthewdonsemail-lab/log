@@ -30,6 +30,7 @@ skill in the same commit.
 | [`surfaceDocs`](skills/surfaceDocs/SKILL.md) | Keep the README command table (flags, MCP tool, hooks) and the Mermaid `.mmd` diagrams generated from the code (rule 56) |
 | [`reaLooksmaxxing`](skills/reaLooksmaxxing/SKILL.md) | The /rea-looksmaxxing video beat by beat (the 11-step moneymaxx play, its tempo, sounds and copy rules) and its page on the site |
 | [`published/reaLooksmaxxing`](skills/published/reaLooksmaxxing/SKILL.md) | The installable /rea-looksmaxxing play (treg web-access for the social data, log for the accounts), published to `/.well-known/skills/` by `bun run skills:build` and installed with `install.sh --skills` or `npx skills add log.listeningkit.com` |
+| [`marketingPage`](skills/marketingPage/SKILL.md) | Make a marketing page on the site for one play, the way /rea-looksmaxxing was made: the platform pages' sections, a phone stepper with real clips, an agent session, an embed, logo chips, a use case and an installable skill |
 | [`layout`](skills/layout/SKILL.md) | Where a new file goes: every file in a domain folder, never loose in `python/` or `scripts/` (rule 58) |
 | [`xPosting`](skills/xPosting/SKILL.md) | Set up an X account in Twenty (`log twitter cookies save`), its copy style, original posts by the social posting playbook, and replies, dms and queues with `log twitter` |
 | [`knowledgeBase`](skills/knowledgeBase/SKILL.md) | Search the knowledge base before guessing, save what a session learned, and refresh it from every source (rule 93) |
