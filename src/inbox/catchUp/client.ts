@@ -64,6 +64,16 @@ export async function instagramCatchUp(account: PlatformAccount, gap: GapRow, re
   return { ...got, detail: `${threads.length} thread(s) active since ${since}` }
 }
 
+export function catchUpOneChat(platform: string, account: string, conversationId: string, read: () => { ok: boolean; messages?: ReadMessage[]; code?: string; detail?: string }, now: Date = new Date()): { ok: true; how: 'current' | 'chatRead'; stored: number } | { ok: false; refused: string } {
+  const gap = behindOf(platform, account)
+  if (!gap) return { ok: true, how: 'current', stored: 0 }
+  if (gap.status === 'refused') return { ok: false, refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so nothing was sent; nothing resumes on it until matt says so (rule 94)` }
+  const answer = read()
+  if (!answer.ok) return { ok: false, refused: `>>> BEHIND: ${platform} ${account} is still catching up, and reading this one chat to catch it up was refused (${answer.code ?? 'refused'}: ${answer.detail ?? ''}), so nothing was sent (rule 94)` }
+  const stored = (answer.messages ?? []).filter((m) => storeRead(platform, account, conversationId, 'dm', m, now, 'catchUp')).length
+  return { ok: true, how: 'chatRead', stored }
+}
+
 export async function waitCaughtUp(platform: string, account: string, options: { timeoutMs?: number; sleep?: (ms: number) => Promise<void>; now?: () => number } = {}): Promise<{ ok: true; waitedMs: number } | { ok: false; refused: string }> {
   const sleep = options.sleep ?? ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)))
   const now = options.now ?? Date.now

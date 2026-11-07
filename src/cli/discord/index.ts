@@ -10,7 +10,8 @@ import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
-import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
+import { catchUpOneChat, discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
+import type { ReadMessage } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import { cachedChatList, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceFor, sourceLine } from "../../inbox/dbRead/index.ts";
 import type { ReadSource } from "../../inbox/dbRead/index.ts";
@@ -587,16 +588,18 @@ export const discordSendCommand: Command = {
       if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), ...files.paths.map((f) => `  attached to the last message: ${basename(f)}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
-      const caught = await waitCaughtUp("discord", account.accountName);
-      if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
       const direct = context.directDiscord;
+      const caught = kind === "channel" ? await waitCaughtUp("discord", account.accountName) : catchUpOneChat("discord", account.accountName, target, () => direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer as { ok: boolean; messages?: ReadMessage[] }, context.now?.() ?? new Date());
+      if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
+      if ("how" in caught && caught.how === "chatRead") context.err(`${account.accountName}: still catching up, so this one chat was read from Discord first (${caught.stored} new message(s) stored) instead of waiting for the whole account`);
+      const chatCurrent = "how" in caught && caught.how === "chatRead";
       if (parsed.flags["overGate"] === true) {
         const same = gateDeps.same({ platform: "discord", account: account.accountName, to: shown, text });
         if (!same.ok) return refuse("discord send", "sameAsSent", same.refused);
         context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
       } else {
         const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
-        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer)) });
+        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" || chatCurrent ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false, saveImages: false } as never).answer)) });
         if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }

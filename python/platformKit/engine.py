@@ -54,11 +54,11 @@ def redact(text: Any, cookies: dict[str, str]) -> str:
     return out
 
 
-CATCH_UP_MIN_GAP_S = 0.8
-CATCH_UP_MEAN_GAP_S = 1.6
+READ_MIN_GAP_S = 0.8
+READ_MEAN_GAP_S = 1.6
 
 
-def governor_for(state_root: str, account: str, writes_per_day: int | None = None, continues_send: bool = False, catch_up: bool = False) -> Any:
+def governor_for(state_root: str, account: str, writes_per_day: int | None = None, continues_send: bool = False, read: bool = False) -> Any:
     from dataclasses import replace
 
     from governor import GovernorConfig, RequestGovernor
@@ -68,10 +68,11 @@ def governor_for(state_root: str, account: str, writes_per_day: int | None = Non
     config = GovernorConfig.from_env()
     if writes_per_day and "FBK_GOVERNOR_MUTATION_DAILY" not in os.environ:
         config = replace(config, mutation_daily_cap=int(writes_per_day))
+    config = replace(config, write_gap_from_writes=True)
     if continues_send:
         config = replace(config, mean_gap_s=config.min_gap_s)
-    if catch_up:
-        config = replace(config, min_gap_s=CATCH_UP_MIN_GAP_S, mean_gap_s=CATCH_UP_MEAN_GAP_S)
+    if read:
+        config = replace(config, min_gap_s=READ_MIN_GAP_S, mean_gap_s=READ_MEAN_GAP_S, warmup_requests=0)
     return RequestGovernor(config=config, state_path=folder / "governor_state.json")
 
 
@@ -92,7 +93,7 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
     cookies = normalize_cookies(json.loads(Path(spec["cookiesPath"]).read_text(encoding="utf-8")))
     if spec.get("storagePath"):
         cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
-    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True, catch_up=action not in writes and spec.get("catchUp") is True)
+    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True, read=action not in writes)
     try:
         governor.before_request(is_mutation=action in writes, quiet=True)
     except GovernorBlockedError as e:
