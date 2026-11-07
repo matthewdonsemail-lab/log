@@ -48,7 +48,7 @@ Settings live in `~/.logCli/.env`. Two are set for you:
 
 Everything else is optional: captcha solvers, proxies, AdsPower (for platforms that run in a browser) and [Twenty](twenty.md) (for many accounts). Every key is listed in [`.env.example`](../.env.example). A `.env.local` in the folder you run from wins over `~/.logCli/.env`.
 
-Next: [add your accounts](accounts.md).
+Next: run `log launch` to add your first account and sign it in, or read [add your accounts](accounts.md). There's no log account to sign in to.
 
 ## From source
 

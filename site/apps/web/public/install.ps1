@@ -92,6 +92,6 @@ if (-not ($Current -match '^LOG_PYTHON=')) { Add-Content $EnvFile "LOG_PYTHON=$P
 if (-not ($Current -match '^LOG_ACCOUNTS=')) { Add-Content $EnvFile "LOG_ACCOUNTS=local" }
 
 Say "done. Your settings are in $EnvFile and your accounts will live in $LogHome."
-Say "next: log localAccount add --platform twitter --account <name>"
+Say "next: run log launch to add your first account and sign it in"
 if (Get-Command log -ErrorAction SilentlyContinue) { Say "log is on your PATH" } else { Say "open a new terminal so 'log' is on your PATH" }
 InstallSkills

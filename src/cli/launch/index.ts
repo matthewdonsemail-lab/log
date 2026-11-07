@@ -9,15 +9,18 @@ import { warmupCommand as warmupCmd } from "../warmup/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand } from "../live/index.ts";
 import { watchCommand } from "../watch/index.ts";
+import { COMMAND_INDEX } from "../runner/helpers/commandIndex.ts";
+import { PLATFORM_LABELS } from "../runner/helpers/platforms.ts";
+import type { Platform } from "../runner/helpers/platforms.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { parseLaunchArgs, shouldPrompt } from "./helpers/index.ts";
+import { agentSetupText, browserSignInSteps, parseLaunchArgs, platformOfTwenty, platformOption, shouldPrompt, signInRouteOf, START_ACTIONS, START_PLATFORMS, twentyReady } from "./helpers/index.ts";
 import type { LaunchTTY } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const LAUNCH_USAGE = "Usage: log launch [--json]";
 
-const ACTIONS = ["browse", "status", "account", "accounts", "scan", "watch", "connect", "join", "answer", "fill", "reels", "doctor"] as const;
+const MARKETPLACE_ACTIONS = ["browse", "status", "account", "accounts", "scan", "watch", "connect", "join", "answer", "fill", "reels", "doctor"] as const;
 
 type PromptSelectOptions = Parameters<typeof select>[0];
 
@@ -33,11 +36,20 @@ export const launchDeps: {
   prompts: LaunchPrompts;
   tty: () => LaunchTTY;
   run: (command: Command, context: CommandContext, argv: string[]) => Promise<CommandResult> | CommandResult;
+  twentyReady: () => boolean;
 } = {
   prompts: { intro, outro, cancel, select: select as LaunchPrompts["select"], text: text as LaunchPrompts["text"] },
   tty: () => ({ stdinTTY: process.stdin?.isTTY, stdoutTTY: process.stdout?.isTTY }),
   run: (command, context, argv) => command.run(context, argv),
+  twentyReady: () => twentyReady(),
 };
+
+async function commandFor(name: string, platform: string): Promise<Command> {
+  const entry = COMMAND_INDEX.find((e) => e.name === name && e.platform === platform);
+  if (!entry) throw new Error(`no ${platform} ${name} command`);
+  const loaded = (await import(`../../../${entry.module}`)) as Record<string, unknown>;
+  return loaded[entry.exportName] as Command;
+}
 
 async function delegate(command: Command, context: CommandContext, argv: string[]): Promise<{ code: number }> {
   const result = await launchDeps.run(command, context, argv);
@@ -55,6 +67,103 @@ async function pick(options: PromptSelectOptions): Promise<string | null> {
   return value;
 }
 
+async function ask(message: string, placeholder?: string, optional = false): Promise<string | null> {
+  const value = await launchDeps.prompts.text({ message, ...(placeholder ? { placeholder } : {}) });
+  if (isCancel(value) || typeof value !== "string" || (!optional && !value.trim())) {
+    launchDeps.prompts.cancel("Launch cancelled.");
+    return null;
+  }
+  return value.trim();
+}
+
+interface PickedAccount {
+  platform: Platform;
+  accountName: string;
+  hasProfile: boolean;
+}
+
+async function pickAccount(context: CommandContext, message: string, keep: (account: PickedAccount) => boolean): Promise<PickedAccount | null | string> {
+  const rows = (await context.twenty.list("socialAccounts")) as unknown as Record<string, unknown>[];
+  const accounts = rows
+    .flatMap((row): PickedAccount[] => {
+      const platform = platformOfTwenty(row.platform);
+      const accountName = String(row.accountName || row.name || "");
+      return platform && accountName ? [{ platform, accountName, hasProfile: Boolean(row.adsPowerProfileId) }] : [];
+    })
+    .filter(keep);
+  if (!accounts.length) return "no account yet: pick Add an account first.";
+  const picked = await pick({ message, options: accounts.map((a, i) => ({ value: String(i), label: a.accountName, hint: PLATFORM_LABELS[a.platform] })) });
+  return picked === null ? null : accounts[Number(picked)];
+}
+
+async function signIn(context: CommandContext, account: PickedAccount): Promise<{ code: number }> {
+  const route = signInRouteOf(account.platform);
+  if (route.kind === "cookies") {
+    context.out(`Sign in ${account.accountName}: ${route.hint}. The prompt hides what you paste.`);
+    return delegate(await commandFor("cookies", account.platform), context, ["save", "--account", account.accountName]);
+  }
+  if (route.kind === "connect") {
+    const now = await pick({
+      message: `Connect ${account.accountName} now? It opens the account's browser through its proxy and signs in.`,
+      options: [
+        { value: "yes", label: "Connect now", hint: `log facebook connect --account ${account.accountName}` },
+        { value: "no", label: "Later" },
+      ],
+    });
+    if (now === null) return { code: 1 };
+    if (now === "no") {
+      context.out(`Later: log facebook connect --account ${account.accountName}`);
+      return { code: 0 };
+    }
+    return delegate(connectCommand, context, ["--account", account.accountName]);
+  }
+  context.out(browserSignInSteps(account.platform, account.accountName, account.hasProfile));
+  return { code: 0 };
+}
+
+async function addAccount(context: CommandContext): Promise<{ code: number }> {
+  const platform = (await pick({ message: "Which platform?", options: START_PLATFORMS.map(platformOption) })) as Platform | null;
+  if (platform === null) return { code: 1 };
+  const placeholder = platform === "linkedin" ? "the part after linkedin.com/in/" : platform === "twitter" ? "the handle, without @" : "a name you'll know it by";
+  const name = await ask(`The account's name on ${PLATFORM_LABELS[platform]}`, placeholder);
+  if (name === null) return { code: 1 };
+  const accountName = name.replace(/^@/, "");
+  if (signInRouteOf(platform).kind === "cookies") return signIn(context, { platform, accountName, hasProfile: false });
+  const argv = ["add", "--platform", platform, "--account", accountName];
+  const profile = await ask("Its AdsPower browser profile id (leave empty if it has none yet)", undefined, true);
+  if (profile === null) return { code: 1 };
+  if (profile) argv.push("--adsPower", profile);
+  if (platform === "facebook") {
+    const proxy = await ask("Its proxy (scheme://user:pass@host:port, in the account's country)");
+    if (proxy === null) return { code: 1 };
+    const home = await ask("Its home country code", "US");
+    if (home === null) return { code: 1 };
+    const city = await ask("Its home city", "Bethlehem");
+    if (city === null) return { code: 1 };
+    argv.push("--proxy", proxy, "--home", home.toUpperCase(), "--city", city);
+  }
+  const added = await delegate(await commandFor("localAccount", "any"), context, argv);
+  if (added.code !== 0) return added;
+  return signIn(context, { platform, accountName, hasProfile: Boolean(profile) });
+}
+
+async function runStart(context: CommandContext, action: string): Promise<CommandResult> {
+  if (action === "add") return addAccount(context);
+  if (action === "agent") {
+    context.out(agentSetupText());
+    return { code: 0 };
+  }
+  if (action === "signIn") {
+    const account = await pickAccount(context, "Which account to sign in?", () => true);
+    if (typeof account === "string") return { code: 1, stderr: `log launch: ${account}` };
+    return account === null ? { code: 1 } : signIn(context, account);
+  }
+  const account = await pickAccount(context, "Which account to check?", (a) => a.platform !== "facebook");
+  if (typeof account === "string") return { code: 1, stderr: `log launch: ${account} Facebook accounts are checked when they connect.` };
+  if (account === null) return { code: 1 };
+  return delegate(await commandFor("session", account.platform), context, ["check", "--account", account.accountName]);
+}
+
 export async function runLaunch(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const parsed = parseLaunchArgs(argv);
   if (!parsed.ok) return { code: 1, stderr: `log launch: ${parsed.error}\n${LAUNCH_USAGE}` };
@@ -66,7 +175,8 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
         {
           ok: true,
           interactive: false,
-          actions: [...ACTIONS],
+          start: [...START_ACTIONS],
+          actions: [...MARKETPLACE_ACTIONS],
           hint: "Run `log launch` in an interactive terminal (no --json) for guided mode.",
         },
         null,
@@ -80,14 +190,37 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       code: 2,
       stderr:
         `log launch: guided mode needs an interactive terminal.\n` +
-        `Use the scriptable commands instead: log facebook listings, log facebook listing <id>, log facebook accounts.\n` +
+        `Use the scriptable commands instead: log localAccount add, log twitter cookies save, log <platform> session check.\n` +
         LAUNCH_USAGE,
     };
   }
 
   const prompts = launchDeps.prompts;
   try {
-    prompts.intro("log launch — Facebook Marketplace");
+    prompts.intro("log launch");
+    const start = await pick({
+      message: "What do you want to do?",
+      options: [
+        { value: "add", label: "Add an account and sign it in", hint: "log localAccount add" },
+        { value: "signIn", label: "Sign in an account you added", hint: "log <platform> cookies save" },
+        { value: "check", label: "Check an account is still signed in", hint: "log <platform> session check" },
+        { value: "agent", label: "Connect your agent (Claude Code, Codex)", hint: "logMcp" },
+        ...(launchDeps.twentyReady() ? [{ value: "marketplace", label: "Facebook Marketplace (listings in Twenty)", hint: "log facebook listings" }] : []),
+      ],
+    });
+    if (start === null) return { code: 1 };
+    const result = start === "marketplace" ? await runMarketplace(context) : await runStart(context, start);
+    if (result.code === 0) prompts.outro("Done.");
+    return result;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { code: 2, stderr: `log launch failed: ${message}` };
+  }
+}
+
+async function runMarketplace(context: CommandContext): Promise<CommandResult> {
+  const prompts = launchDeps.prompts;
+  {
     const [accounts, listings] = await Promise.all([listFacebookAccounts(context.twenty), listListingsWhere(context.twenty)]);
 
     const action = await pick({
@@ -254,11 +387,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       result = await delegate(accountsCommand, context, []);
     }
 
-    if (result.code === 0) prompts.outro("Done.");
     return result;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return { code: 2, stderr: `log launch failed: ${message}` };
   }
 }
 
@@ -267,7 +396,7 @@ export const launchCommand: Command = {
   platform: "any",
   name: "launch",
   effect: "write",
-  summary: "Guided Clack menu over the listings, accounts and live commands",
+  summary: "Start here: a guided menu to add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up)",
   args: "[--json]",
   run: runLaunch,
 };

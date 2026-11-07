@@ -51,7 +51,7 @@ install_one() {
 install_skills() {
   [ -n "$SKILLS" ] || return 0
   if [ "$SKILLS" = "all" ]; then
-    SKILLS=$(curl -fsSL "$LOG_SITE/.well-known/skills/index.json" | sed -n 's/^ *"name": *"\([a-z0-9-]*\)".*//p' | tr '
+    SKILLS=$(curl -fsSL "$LOG_SITE/.well-known/skills/index.json" | sed -n 's/^ *"name": *"\([a-z0-9-]*\)".*/\1/p' | tr '
 ' ',')
   fi
   for name in $(printf '%s' "$SKILLS" | tr ',' ' '); do install_one "$LOG_SITE" "$name"; done
@@ -96,6 +96,7 @@ say "setting up Python 3.12 for the engines in $LOG_HOME/python"
 uv python install 3.12
 [ -d "$LOG_HOME/python" ] || uv venv --python 3.12 "$LOG_HOME/python"
 PYTHON="$LOG_HOME/python/bin/python"
+[ -x "$PYTHON" ] || PYTHON="$LOG_HOME/python/Scripts/python.exe"
 uv pip install --python "$PYTHON" -r "$ROOT/vendor/twikit/requirements.txt" "$ROOT/vendor/fbk" "$ROOT/vendor/endcord"
 
 ENV_FILE="$LOG_HOME/.env"
@@ -104,6 +105,6 @@ grep -q '^LOG_PYTHON=' "$ENV_FILE" || printf 'LOG_PYTHON=%s\n' "$PYTHON" >> "$EN
 grep -q '^LOG_ACCOUNTS=' "$ENV_FILE" || printf 'LOG_ACCOUNTS=local\n' >> "$ENV_FILE"
 
 say "done. Your settings are in $ENV_FILE and your accounts will live in $LOG_HOME."
-say "next: log localAccount add --platform twitter --account <name>"
+say "next: run log launch to add your first account and sign it in"
 log --help >/dev/null 2>&1 && say "log is on your PATH" || say "open a new terminal so 'log' is on your PATH"
 install_skills

@@ -19,6 +19,7 @@ import {
   validateSessionToken,
 } from "../../auth/session/index.ts";
 import type { SessionRecord } from "../../auth/session/index.ts";
+import { twentyReady } from "../launch/helpers/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 
@@ -31,6 +32,7 @@ export const authDeps: {
   openBrowser: (url: string) => boolean;
   startExchange: (options: { state: string; challenge: string }) => ExchangeServer;
   dir: string | undefined;
+  twentyReady: () => boolean;
 } = {
   fetch: ((...args: Parameters<typeof fetch>) => fetch(...args)) as typeof fetch,
   openBrowser(url) {
@@ -45,7 +47,17 @@ export const authDeps: {
   },
   startExchange: (options) => runExchangeServer(options),
   dir: undefined,
+  twentyReady: () => twentyReady(),
 };
+
+export const LOCAL_SIGN_IN_TEXT = [
+  "log login: you don't need to sign in to use log.",
+  "Your accounts live on this machine, in ~/.logCli/localAccounts.json. Each account signs in on its own platform:",
+  "  log launch                                       (a guided menu: add an account, sign it in, check it)",
+  "  log twitter cookies save --account <handle>      (X: paste its cookies)",
+  "  log <platform> session check --account <name>",
+  "log login is only for a team that keeps its accounts in a Twenty workspace with a sign-in app (--webUrl, --apiUrl), or a pasted Twenty token (--token).",
+].join("\n");
 
 async function checkHandoff(webUrl: string): Promise<string | null> {
   try {
@@ -86,7 +98,7 @@ export const loginCommand: Command = {
   platform: "any",
   name: "login",
   effect: "write",
-  summary: "Sign in with Twenty through blaster's web app (OAuth), like `blaster login`",
+  summary: "Only for a team on Twenty: sign in to its Twenty through its sign-in app (OAuth). Local accounts need no sign-in, and without Twenty set up it says so",
   args: "[--webUrl <url>] [--apiUrl <url>] [--token <t>] [--json]",
   async run(context, argv): Promise<CommandResult> {
     const parsed = parseArgs(argv, { boolean: ["json"], valued: ["webUrl", "apiUrl", "token"] });
@@ -95,6 +107,11 @@ export const loginCommand: Command = {
       const value = parsed.flags[name];
       const issue = typeof value === "string" ? validateHttpUrl(value) : undefined;
       if (issue) return { code: 1, stderr: `log login: --${name} ${issue.toLowerCase()}\n${LOGIN_USAGE}` };
+    }
+    const chosen = ["webUrl", "apiUrl", "token"].some((name) => typeof parsed.flags[name] === "string");
+    if (!chosen && !authDeps.twentyReady()) {
+      if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ ok: true, signedIn: false, needed: false, accounts: "local" }, null, 2) };
+      return { code: 0, stdout: LOCAL_SIGN_IN_TEXT };
     }
     const apiUrl = resolveApiUrl(parsed.flags["apiUrl"] as string | undefined, authDeps.dir);
     const pasted = parsed.flags["token"] as string | undefined;
