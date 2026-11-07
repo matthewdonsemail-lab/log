@@ -21,6 +21,7 @@ import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
 import { playRefusal, setActivePlay, withPlayFooter } from "./helpers/index.ts";
+import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
@@ -182,6 +183,16 @@ export async function runToolCall(
     if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
     return { content: [{ type: "text", text }] };
   }
+  if (isCatalogTool(name)) {
+    const entries = catalog(COMMANDS);
+    if (name === CALL_TOOL) {
+      const target = resolveCall(entries, input);
+      if (!target.ok) return refused(target.message, readBrowsers);
+      return runToolCall(target.tool, target.input, context, onLine, readBrowsers);
+    }
+    const answer = name === SEARCH_TOOL ? searchAnswer(entries, input) : getAnswer(entries, input);
+    return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
+  }
   const { waitMs, ...fields } = input ?? {};
   const flowCall = flowOfTool(savedFlows(), name);
   if (flowCall) {
@@ -241,7 +252,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
     const tools = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
-    const listed = [guideTool(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
+    const listed = [guideTool(), ...catalogTools(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
     return { tools: listed.map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
@@ -253,7 +264,9 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   });
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews);
-    return request.params.name === GUIDE_TOOL ? result : withPlayFooter(request.params.name, result);
+    if (request.params.name === GUIDE_TOOL) return result;
+    const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
+    return withPlayFooter(target?.ok ? target.tool : request.params.name, result);
   });
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;
