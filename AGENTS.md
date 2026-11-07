@@ -2297,6 +2297,36 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     under 1500 followers with a recent original post, not already talked to
     (rules 99, 121, 87). Spec: `docs/specs/xQueue.md` (REQ-QUEUE-16).
 
+157. 2026-11-07 · matt: "a lot of the time I notice this whenever you make a
+    queue, all of the things and the messages in the thing are exactly the
+    same ... if you put a haha and you say that and then it reads like me",
+    and "the guides are not being consistently called for actions ... it's
+    meant to re-inject the context into it so then it guides it in the right
+    way". On 2026-11-07, 32 share-asks went out from @matthewsoldit: the 18
+    to people he talks to each ended "just put this out <link> / could you
+    share it its open sourced haha" with only the first line changed, and 14
+    new followers got one line word for word, while the play he meant (reply
+    to their post with a meme, forward that post as the opener, wait, build on
+    what they say, then the ask) was never loaded. Two things:
+    - **No two messages read alike.** A send is refused with `sameAsSent` when
+      half or more of its word pairs (links left out) are already in a message
+      the account sent anyone in the last 24 hours, read from the .db
+      (`sameAsSent`, `src/voice/sameness`), and `queue check` refuses a queue
+      item that repeats an earlier item the same way. The voice gate reads
+      each message alone, so a "lad" and a "haha" passed a run of near-copies;
+      this runs before the gate, so `overGate` doesn't skip it.
+    - **The play stays in context.** Loading a use case with `getGuide({
+      useCase })` makes it the MCP session's play: every log tool's answer
+      ends with the step it is and the step that comes next, from the page's
+      own steps table, and one the play doesn't use says so
+      (`src/mcp/server/helpers/activePlay.ts`). A send as matt
+      (`twitterDmLive`, `twitterReplyLive`, `twitterQuoteLive`,
+      `twitterQueueRunLive`, `twitterVoiceLive`, `discordSendLive`,
+      `slackSendLive`, `instagramSendLive`) is refused with `playMissing`
+      while no play is loaded, naming the use cases that call it.
+    Specs: `docs/specs/voiceGate.md` (REQ-VOICE-16), `docs/specs/mcpServer.md`
+    (REQ-MCP-15).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

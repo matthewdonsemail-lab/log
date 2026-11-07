@@ -20,6 +20,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
+import { playRefusal, setActivePlay, withPlayFooter } from "./helpers/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
@@ -173,7 +174,8 @@ export async function runToolCall(
     if (typeof asked.useCase === "string" && asked.useCase) {
       const page = readUseCase(asked.useCase);
       if (page === null) return { isError: true, content: [{ type: "text", text: `No use case "${asked.useCase}". Use cases: ${listUseCases().map((u) => u.id).join(", ")}.` }] };
-      return { content: [{ type: "text", text: page }] };
+      const play = setActivePlay(asked.useCase, page);
+      return { content: [{ type: "text", text: `${page}\n\n>>> PLAY ${play.id} is now this session's play: every log tool's answer ends with the step it is and the step that comes next, and a send that isn't one of its steps says so (rule 157).` }] };
     }
     const topic = String(asked.topic ?? CORE_GUIDE);
     const text = readGuide(topic);
@@ -189,6 +191,8 @@ export async function runToolCall(
   }
   const guard = guardCall(name, input === undefined ? undefined : fields, COMMANDS);
   if (!guard.ok) return refused(guard.message, readBrowsers);
+  const noPlay = playRefusal(name, listUseCases([name]).filter((u) => u.tools.includes(name)).map((u) => u.id));
+  if (noPlay) return refused(noPlay, readBrowsers);
   const entry = commandOfTool(name);
   const progress: ProgressLine[] = [];
   if (!entry || !LONG_RUNNING.has(entry.command.name)) {
@@ -247,9 +251,10 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the one resource is ${AGENTS_URI})`);
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
-  server.setRequestHandler(CallToolRequestSchema, async (request) =>
-    runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews),
-  );
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews);
+    return request.params.name === GUIDE_TOOL ? result : withPlayFooter(request.params.name, result);
+  });
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;
     try {

@@ -2,7 +2,8 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { roomOf } from "../../../voice/room/index.ts";
 import type { Room } from "../../../voice/room/index.ts";
 import { join } from "node:path";
-import { storedEmbedder, handleOfUserId } from "../../../inbox/store/index.ts";
+import { storedEmbedder, handleOfUserId, ownTextsSince } from "../../../inbox/store/index.ts";
+import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
 import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../../media/voiceNotes/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
@@ -358,6 +359,8 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
 }
 
 export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
+  const same = gateDeps.same({ platform: send.platform, account: send.account, to: send.to, text: send.text });
+  if (!same.ok) return { ok: false, refused: same.refused };
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
@@ -372,4 +375,11 @@ export async function gateSend(context: CommandContext, send: { platform: string
   return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }
 
-export const gateDeps: { gate: typeof gateSend } = { gate: (context, send) => gateSend(context, send) };
+export function sameAsSent(send: { platform: string; account: string; to: string; text: string }, now: Date = new Date()): { ok: true } | { ok: false; refused: string } {
+  const since = new Date(now.getTime() - SAMENESS_WINDOW_HOURS * 3600_000).toISOString();
+  const reading = samenessOf(send.text, ownTextsSince(send.platform, send.account, since).map((s) => ({ to: s.to, text: s.text })));
+  if (reading.pass) return { ok: true };
+  return { ok: false, refused: `>>> SAME AS ANOTHER SEND, nothing was sent to ${send.to}: ${samenessLine(reading)}` };
+}
+
+export const gateDeps: { gate: typeof gateSend; same: typeof sameAsSent } = { gate: (context, send) => gateSend(context, send), same: (send) => sameAsSent(send) };

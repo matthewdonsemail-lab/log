@@ -492,6 +492,8 @@ export const discordSendCommand: Command = {
       if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
       const direct = context.directDiscord;
       if (parsed.flags["overGate"] === true) {
+        const same = gateDeps.same({ platform: "discord", account: account.accountName, to: shown, text });
+        if (!same.ok) return refuse("discord send", "sameAsSent", same.refused);
         context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
       } else {
         const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer) });

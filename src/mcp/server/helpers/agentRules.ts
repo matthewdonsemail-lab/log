@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 156;
+export const RULES_REVIEWED_THROUGH = 157;
 
 export const AGENTS_URI = "log://agents";
 
@@ -71,6 +71,7 @@ export const CORE_PRINCIPLES = [
   "64. Never show matt a person as an id, on any platform: name everyone by their username (and display name), looking an id up through the account's own session first; one that can't be named is said with why, never as the bare id (rule 154).",
   "63. To send text into an X Chat group, `twitterDmLive` takes the group's id (g and digits) as `userId`; X Chat is opened with the saved PIN, and with none it is refused `xchatPinMissing`. `twitterVoiceLive` takes the same id as `with` (rule 153).",
   "60. A catch-up refused on an account (`accountBehind`) stays refused until matt says to resume: then `inboxResume` { platform, account, by: \"matt\" } opens its gap again and the owner catches up within 30 s. Never resume on your own (rule 150).",
+  "67. Load the use case for the work before any send: `getGuide({ useCase })` makes it this session's play, and every answer after ends with the step you are on and the next one; a send as matt with no play loaded is refused with `playMissing`. No two messages read alike: a send half made of word pairs already sent to someone else in the last 24 hours, or a queue item that repeats another, is refused with `sameAsSent`, even with `overGate`. Write each one from that person's own thread (rule 157).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 

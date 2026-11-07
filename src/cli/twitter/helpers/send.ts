@@ -204,6 +204,8 @@ function sendCommand(shape: SendShape): Command {
           const caught = await waitCaughtUp("twitter", account.accountName);
           if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
           if (parsed.flags["overGate"] === true) {
+            const same = gateDeps.same({ platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "" });
+            if (!same.ok) return refuse(label, "sameAsSent", same.refused);
             context.err(`${account.accountName}: --overGate: matt said to send this dm over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
           } else {
             const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });

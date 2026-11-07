@@ -10,3 +10,5 @@ export type { LogStream } from "./formatLogLine.ts";
 export { AGENTS_URI, citedRules, COMMAND_RULES, CORE_PRINCIPLES, EVERY_TOOL_RULES, rulesLine, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS } from "./agentRules.ts";
 export { agentsRules, agentsSection, CORE_GUIDE, FLOWS_GUIDE, GUIDE_TOOL, GUIDE_TOPICS, guideKey, guideLine, guideOfCommand, guidePath, GUIDES_DIR, guideTool, listUseCases, readGuide, readUseCase, renderGuide, skillBody, USE_CASES_DIR, useCaseLine, withUseCases } from "./guides.ts";
 export type { GuideTopic, GuideInput, UseCase } from "./guides.ts";
+export { activePlay, clearActivePlay, PLAY_REQUIRED, playFooter, playRefusal, setActivePlay, stepsOf, withPlayFooter } from "./activePlay.ts";
+export type { ActivePlay, PlayStep } from "./activePlay.ts";

@@ -16,6 +16,7 @@ export const mcpServer = {
   codePaths: [
     'src/mcp/server/helpers/agentRules.ts',
     'src/mcp/server/helpers/guides.ts',
+    'src/mcp/server/helpers/activePlay.ts',
     'src/mcp/server/helpers/toolsFromCommands.ts',
     'src/mcp/server/helpers/toolsFromFlows.ts',
     'src/mcp/server/index.ts',
@@ -91,6 +92,11 @@ export const mcpServer = {
       { kind: 'value', file: FRESHNESS, name: 'LOCAL_PATHS', equals: ['src', 'python', 'vendor', 'bin', 'scripts', 'package.json'] },
       { kind: 'string', file: FRESHNESS, includes: '--porcelain' },
     ],
+    'REQ-MCP-15': [
+      { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playRefusal' },
+      { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playFooter' },
+      { kind: 'string', file: SERVER, includes: 'setActivePlay' },
+    ],
     'REQ-MCP-14': [
       { kind: 'string', file: ENGINES, includes: '.lastHook' },
       { kind: 'string', file: ENGINES, includes: 'SessionStart' },
@@ -109,6 +115,7 @@ export const mcpServer = {
     'REQ-MCP-11': noul('Does handRunDenial return null, so nothing is refused, for a command name that is a key of TERMINAL_ONLY, and a denial for every other name?'),
     'REQ-MCP-12': noul('Is staleServerLine(repo) one of the parts the engines hook joins into its text, and does staleServerLine return a line telling matt to restart and never to work around it with a hand-run command when the recorded server pid is alive and codeStamp of the checkout is newer than the recorded stamp, and null otherwise?'),
     'REQ-MCP-13': noul('Does localChangesLine return null when there are no files, and otherwise a line starting with >>> UNCOMMITTED LOCAL CHANGES that lists the files and says to read each diff and never overwrite, revert, stage, publish or ship them without matt?'),
+    'REQ-MCP-15': noul('Does runToolCall call setActivePlay when getGuide is given a useCase, does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
     'REQ-MCP-14': noul('Does the engines hook write its text when the event is SessionStart, and on any other event only when the text differs from the one saved in its last hook file?'),
     unspecifiedBehavior: noul('Does the server list a tool without its rules line or result size limit, or let a hand-run log command through, by a route the specification does not describe?'),
   },
@@ -126,6 +133,7 @@ export const mcpServer = {
     'REQ-MCP-12': MET,
     'REQ-MCP-13': MET,
     'REQ-MCP-14': MET,
+    'REQ-MCP-15': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

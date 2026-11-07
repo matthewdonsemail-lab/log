@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { appendFileSync, existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { planSend } from '../../post/send/index'
+import { batchSameness, samenessLine } from '../../../voice/sameness/index'
 import type { BuildTarget, EventKind, PlanEvent, PlanOptions, Queue, QueueAction, QueueItem, Rng } from './types'
 import { ITEM_STATUSES, QUEUE_ACTIONS, toAPerson } from './types'
 
@@ -179,6 +180,8 @@ export function itemProblems(queue: Queue, style?: string | null): { n: number; 
     const plan = planSend({ action: it.action, tweetUrl: it.tweetUrl, userId: it.userId, text: it.text, style, live: false })
     if (!plan.ok) out.push({ n: it.n, detail: `${plan.problem.code}: ${plan.problem.detail}` })
   }
+  const worded = queue.items.filter((i) => i.status === 'pending' && i.text?.trim()).map((i) => ({ n: i.n, to: `#${i.n}${i.handle ? ` @${i.handle}` : ''}`, text: i.text ?? '' }))
+  for (const found of batchSameness(worded)) out.push({ n: found.n, detail: `sameAsSent: ${samenessLine(found.reading)}` })
   return out
 }
 
