@@ -24,7 +24,7 @@ async function readChats(platform: string, account: PlatformAccount, gap: GapRow
   let appended = 0
   for (const [i, c] of chats.entries()) {
     if (i) await wait()
-    const run = read(account, c.spec)
+    const run = read(account, { ...c.spec, catchUp: true } as PlatformEngineSpec)
     const refused = refusedOf(run)
     if (refused) return { appended, refused: `reading ${c.chat}: ${refused}` }
     const messages = ((run.answer.messages as ReadMessage[] | undefined) ?? []).filter((m) => !m.at || m.at > gap.fromAt)

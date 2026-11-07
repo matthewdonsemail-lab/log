@@ -97,7 +97,7 @@ describe("catching up after a gap (rule 135)", () => {
       return { answer: { ok: false, code: "rateLimited", detail: "429" } } as unknown as ReturnType<PlatformRead>;
     };
     const got = await discordCatchUp(account, openGap("discord", "acct", "2026-11-04T01:00:00Z", "socketDropped"), read, new Date(), noWait);
-    expect(specs).toEqual([{ action: "read", channel: "D1", limit: 100, after: "100" }, { action: "read", channel: "D2", limit: 100, after: "500" }]);
+    expect(specs).toEqual([{ action: "read", channel: "D1", limit: 100, after: "100", catchUp: true }, { action: "read", channel: "D2", limit: 100, after: "500", catchUp: true }]);
     expect(got).toMatchObject({ appended: 2, refused: "reading D2: rateLimited: 429" });
     expect(positionsOf("discord", "acct").D1).toBe("102");
     expect(db().prepare("SELECT type, source FROM events ORDER BY seq").all()).toEqual([{ type: "message", source: "catchUp" }, { type: "ownMessage", source: "catchUp" }]);
