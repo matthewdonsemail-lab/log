@@ -1,7 +1,7 @@
 import { PLATFORM_LABELS, PLATFORM_SITES, PLATFORMS } from "../../runner/helpers/platforms.ts";
 import type { Platform } from "../../runner/helpers/platforms.ts";
 
-export const START_ACTIONS = ["add", "signIn", "check", "agent"] as const;
+export const START_ACTIONS = ["setup", "add", "signIn", "check", "agent"] as const;
 export type StartAction = (typeof START_ACTIONS)[number];
 
 export const START_PLATFORMS: readonly Platform[] = ["twitter", "linkedin", "slack", "reddit", "discord", "instagram", "facebook"];

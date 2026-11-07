@@ -246,7 +246,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 | Command | What it does | Platform | Flags | Engine | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [`log launch`](#log-launch) | Start here: a guided menu to add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up) | any (none) | `--json` | none | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log launch`](#log-launch) | Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up) | any (none) | `--setup` `--json` | none | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
 | [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` `--apply` `--live` `--bypass` `--now` | none | none | `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingSweep`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
@@ -928,10 +928,10 @@ Source: [`docs/diagrams/pageStates.mmd`](diagrams/pageStates.mmd).
 
 #### log launch
 
-Start here: a guided menu to add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up) Terminal only: prompts in a terminal (Clack). Call the commands it wraps directly.
+Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up) Terminal only: prompts in a terminal (Clack). Call the commands it wraps directly.
 
 ```text
-log launch [--json]
+log launch [--setup] [--json]
 ```
 
 #### log facebook listings

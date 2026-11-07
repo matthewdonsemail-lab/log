@@ -105,6 +105,13 @@ grep -q '^LOG_PYTHON=' "$ENV_FILE" || printf 'LOG_PYTHON=%s\n' "$PYTHON" >> "$EN
 grep -q '^LOG_ACCOUNTS=' "$ENV_FILE" || printf 'LOG_ACCOUNTS=local\n' >> "$ENV_FILE"
 
 say "done. Your settings are in $ENV_FILE and your accounts will live in $LOG_HOME."
-say "next: run log launch to add your first account and sign it in"
 log --help >/dev/null 2>&1 && say "log is on your PATH" || say "open a new terminal so 'log' is on your PATH"
 install_skills
+
+LOG_BIN=$(command -v log 2>/dev/null || printf '%s' "${BUN_INSTALL:-$HOME/.bun}/bin/log")
+if [ "${LOG_SETUP:-1}" != 0 ] && [ -x "$LOG_BIN" ] && [ -r /dev/tty ] && [ -w /dev/tty ]; then
+  say "setting log up: pick your platforms, sign them in, and add extensions"
+  "$LOG_BIN" launch --setup </dev/tty >/dev/tty 2>&1 || say "setup stopped. Run log launch --setup any time to finish it"
+else
+  say "next: run log launch --setup to pick your platforms, sign them in and add extensions"
+fi

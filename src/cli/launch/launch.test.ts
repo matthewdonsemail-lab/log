@@ -3,9 +3,9 @@ import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { CommandContext } from "../runner/types.ts";
-import { launchDeps, parseLaunchArgs, runLaunch, shouldPrompt } from "./index.ts";
+import { launchDeps, parseLaunchArgs, runLaunch, setEnvValue, setupSummary, shouldPrompt } from "./index.ts";
 
-const real = { prompts: launchDeps.prompts, tty: launchDeps.tty, run: launchDeps.run, twentyReady: launchDeps.twentyReady };
+const real = { ...launchDeps };
 afterEach(() => Object.assign(launchDeps, real));
 
 function capture() {
@@ -54,14 +54,27 @@ function stubPrompts(answers: unknown[]) {
       if (answers.length === 0) throw new Error("prompt-stub: unexpected text");
       return answers.shift();
     },
+    multiselect: async (options) => {
+      calls.push("multiselect");
+      offered.push(((options as { options?: { value: string }[] }).options ?? []).map((o) => o.value));
+      if (answers.length === 0) throw new Error("prompt-stub: unexpected multiselect");
+      return answers.shift();
+    },
+    password: async () => {
+      calls.push("password");
+      if (answers.length === 0) throw new Error("prompt-stub: unexpected password");
+      return answers.shift();
+    },
   };
   return { calls, offered };
 }
 
 describe("parseLaunchArgs / shouldPrompt", () => {
   test("accepts empty and --json, rejects the rest", () => {
-    expect(parseLaunchArgs([])).toEqual({ ok: true, json: false });
-    expect(parseLaunchArgs(["--json"])).toEqual({ ok: true, json: true });
+    expect(parseLaunchArgs([])).toEqual({ ok: true, json: false, setup: false });
+    expect(parseLaunchArgs(["--json"])).toEqual({ ok: true, json: true, setup: false });
+    expect(parseLaunchArgs(["--setup"])).toEqual({ ok: true, json: false, setup: true });
+    expect(parseLaunchArgs(["--setup=1"]).ok).toBe(false);
     expect(parseLaunchArgs(["--json=1"]).ok).toBe(false);
     expect(parseLaunchArgs(["listings"]).ok).toBe(false);
   });
@@ -78,7 +91,7 @@ describe("runLaunch", () => {
     const { calls } = stubPrompts([]);
     const result = await runLaunch(capture().context, ["--json"]);
     expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout!).start).toEqual(["add", "signIn", "check", "agent"]);
+    expect(JSON.parse(result.stdout!).start).toEqual(["setup", "add", "signIn", "check", "agent"]);
     expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "watch", "connect", "join", "answer", "fill", "reels", "doctor"]);
     expect(calls).toEqual([]);
   });
@@ -174,14 +187,14 @@ describe("runLaunch: start here, no Twenty", () => {
     launchDeps.twentyReady = () => false;
     const { context, out } = capture();
     expect((await runLaunch(context, [])).code).toBe(0);
-    expect(offered[0]).toEqual(["add", "signIn", "check", "agent"]);
+    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent"]);
     expect(out.join("\n")).toContain("claude mcp add log -- logMcp");
   });
 
   test("Twenty set up adds the Facebook Marketplace menu", async () => {
     const { offered } = stubPrompts(["agent"]);
     await runLaunch(capture().context, []);
-    expect(offered[0]).toEqual(["add", "signIn", "check", "agent", "marketplace"]);
+    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent", "marketplace"]);
   });
 
   test("add an X account goes straight to the masked cookie prompt", async () => {
@@ -239,5 +252,88 @@ describe("runLaunch: start here, no Twenty", () => {
     const { context } = capture();
     expect((await runLaunch(context, [])).code).toBe(0);
     expect(delegated[0][0]).toBe("connect");
+  });
+});
+
+describe("log launch --setup", () => {
+  function recordRuns() {
+    const delegated: string[][] = [];
+    launchDeps.run = (command, _context, argv) => {
+      delegated.push([command.name, ...argv]);
+      return { code: 0, stdout: "ok" };
+    };
+    return delegated;
+  }
+
+  function setupRig(adsPowerUp = true, tregFound = true) {
+    const opened: string[] = [];
+    const ran: string[] = [];
+    const files: Record<string, string> = { "/home/.logCli/.env": "LOG_ACCOUNTS=local\n" };
+    launchDeps.openUrl = (url) => (opened.push(url), true);
+    launchDeps.runInTerminal = (command, args) => (ran.push([command, ...args].join(" ")), { found: tregFound, code: 0 });
+    launchDeps.adsPowerUp = async () => adsPowerUp;
+    launchDeps.envFile = () => "/home/.logCli/.env";
+    launchDeps.readEnv = (file) => files[file] ?? "";
+    launchDeps.writeEnv = (file, text) => void (files[file] = text);
+    return { opened, ran, files };
+  }
+
+  test("picks platforms, signs each in, then sets up the extensions it was asked for, opening each sign-up page", async () => {
+    const before = process.env.MEMELORD_API_KEY;
+    const { calls, offered } = stubPrompts([["twitter"], "@someHandle", ["treg", "memelord"], "signUp", "signUp", "memeKey123"]);
+    const { opened, ran, files } = setupRig();
+    const delegated = recordRuns();
+    const { context, out } = capture();
+    expect((await runLaunch(context, ["--setup"])).code).toBe(0);
+    expect(offered[0]).toEqual(["twitter", "linkedin", "slack", "reddit", "discord", "instagram", "facebook"]);
+    expect(offered[1]).toEqual(["treg", "memelord", "inworld", "fishAudio"]);
+    expect(delegated).toEqual([["cookies", "save", "--account", "someHandle"]]);
+    expect(opened).toEqual(["https://treg.to/?ref=matthewdonse-aebsh", "https://www.memelord.com/sign-up?ref=kfwut9wc", "https://www.memelord.com/settings/developer"]);
+    expect(ran).toEqual(["treg login"]);
+    expect(files["/home/.logCli/.env"]).toBe("LOG_ACCOUNTS=local\nMEMELORD_API_KEY=memeKey123\n");
+    expect(out.join("\n")).toContain("✓ treg: signed in");
+    expect(out.join("\n")).toContain("✓ Memelord: MEMELORD_API_KEY saved");
+    expect(out.join("\n")).not.toContain("memeKey123");
+    expect(calls[0]).toBe("intro");
+    if (before === undefined) delete process.env.MEMELORD_API_KEY;
+    else process.env.MEMELORD_API_KEY = before;
+  });
+
+  test("a browser platform asks for AdsPower first, on its referral link, and checks its Local API", async () => {
+    const { offered } = stubPrompts([["discord"], "signUp", "", "dcName", "", []]);
+    const { opened } = setupRig(false);
+    recordRuns();
+    const { context, out } = capture();
+    expect((await runLaunch(context, ["--setup"])).code).toBe(0);
+    expect(offered[1]).toEqual(["signUp", "have", "skip"]);
+    expect(opened).toEqual(["https://www.adspower.com/share/pD25Iu"]);
+    expect(out.join("\n")).toContain("AdsPower: its Local API didn't answer");
+  });
+
+  test("Inworld says what its referral gives, and a skipped key is listed, never saved", async () => {
+    stubPrompts([[], ["inworld", "fishAudio"], "signUp", "", "skip"]);
+    const { opened, files } = setupRig();
+    const { context, out } = capture();
+    expect((await runLaunch(context, ["--setup"])).code).toBe(0);
+    expect(opened).toEqual(["https://inworld.ai/signup?ref=FSNLMJ2H", "https://platform.inworld.ai"]);
+    expect(out.join("\n")).toContain("$10 in credits");
+    expect(out.join("\n")).toContain("· Inworld: no key");
+    expect(out.join("\n")).toContain("· Fish Audio: skipped");
+    expect(files["/home/.logCli/.env"]).toBe("LOG_ACCOUNTS=local\n");
+  });
+
+  test("treg not installed says where to get it", async () => {
+    stubPrompts([[], ["treg"], "have"]);
+    setupRig(true, false);
+    const { context, out } = capture();
+    expect((await runLaunch(context, ["--setup"])).code).toBe(0);
+    expect(out.join("\n")).toContain("treg isn't installed: install it from https://treg.to/?ref=matthewdonse-aebsh");
+  });
+
+  test("setEnvValue replaces a key in place or adds it at the end", () => {
+    expect(setEnvValue("A=1\nB=2\n", "A", "9")).toBe("A=9\nB=2\n");
+    expect(setEnvValue("A=1", "C", "3")).toBe("A=1\nC=3\n");
+    expect(setEnvValue("", "C", "3")).toBe("C=3\n");
+    expect(setupSummary([], "/x/.env")).toContain("nothing was set up this time");
   });
 });
