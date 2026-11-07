@@ -2494,6 +2494,34 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     backfill markers (`backfill:<chat>`) as chats to catch up.
     Spec: `docs/specs/voiceGate.md` (REQ-VOICE-19).
 
+163. 2026-11-07 · matt: "the agents can call the treg stuff very easily
+    whereas with ours it's a little bit more finicky", after a look at how
+    treg's catalog works (search by the job, read one entry, call it) beside
+    log's 172 command tools (about 74,000 tokens of descriptions). Any log
+    command is found and run with three MCP tools, the way treg's catalog is:
+    - **`logSearch` { query }:** the job in plain words. Answers a verdict
+      (`strong`, `closest`, `none` with its near misses) and each command's
+      id, summary and whether it acts. A platform named in the query keeps
+      the others out. Terminal-only commands are listed too, marked
+      `terminal`, so the agent can tell matt to run them.
+    - **`logGet` { id }:** the command's inputs, required first, then a
+      ready `logCall` line, the same command in the CLI, its guide and its
+      rules. A wrong id gets `didYouMean`.
+    - **`logCall` { id, inputs, live?, confirmLive?, confirmBypass?, waitMs? }:**
+      runs the command through its own tool, so every guard still applies
+      (`guardCall`, the play, claims, jobs). An unknown input is refused by
+      name, with the inputs it takes, and nothing runs. `live: true` is the
+      command's `…Live` tool and still needs `confirmLive: true` (rules 8,
+      10).
+
+    Ids are `<platform>.<command>.<form words>` (`twitter.dm`,
+    `twitter.queue.build`, `facebook.read.members`), from the commands
+    themselves (`src/mcp/catalog`). Every answer ends with `help` lines
+    naming the next call. Every command has an example built from its inputs
+    that passes the same checks as a real call, and a test fails on one that
+    doesn't. The command tools stay as they are for now. Spec:
+    `docs/specs/mcpServer.md` (REQ-MCP-18).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
