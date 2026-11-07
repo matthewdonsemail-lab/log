@@ -100,6 +100,12 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-16: No two messages read alike
+
+`sameAsSent` in `src/cli/twitter/helpers/voice.ts` reads what the account sent in the last `SAMENESS_WINDOW_HOURS` (24) from the .db (`ownTextsSince` in `src/inbox/store/client.ts`, one text per conversation) and refuses the draft when `samenessOf` in `src/voice/sameness/client.ts` finds half or more of its word pairs (`SAMENESS_LIMIT`, 0.5), with links left out, already in one of them; a draft with fewer than `SAMENESS_MIN_PAIRS` (3) word pairs is never refused. `gateSend` runs it through `gateDeps.same` before the voice gate's reading, and the twitter dm and Discord sends run it before their `overGate` skip, refusing `sameAsSent`. `itemProblems` in `src/twitter/queue/plan/client.ts` adds a `sameAsSent` problem for every pending item that `batchSameness` finds repeating an earlier item of the same queue. matt, 2026-11-07: the share-asks that day differed only in their first line. Rule 157.
+
+Checked by: code and SubQ
+
 ### REQ-VOICE-15: Every send and voice note is gated against the room it goes to
 
 `gateSend` in `src/cli/twitter/helpers/voice.ts` passes a room to `gateReading`: the one given (`room`), the one its `readRoom` reads, or one built with `roomOf` from the chat in the .db. `roomOf` in `src/voice/room/index.ts` gives the chat's kind, who else spoke in the last 24 hours, the last of them and how many days ago, how many of matt's messages end the chat, whether nobody else has spoken lately, and `addressTo`, which for a channel or group with nobody else lately says to talk to it as a whole. `readVoice` in `src/twitter/copy/voice/client.ts` gives it to SubQ as `theRoom` and asks `fitsTheRoom`, and a draft scoring under `CONTEXT_PASS` fails. The Discord send and voice note pass a `readRoom` that reads the chat's last 20 messages through the engine with `roomFromRead`. When nobody else has spoken lately in a channel or group (`nobodyToAnswer`), there is nothing to answer, so `inContext` doesn't count towards the pass and isn't named in a refusal; `fitsTheRoom`, `buildsOn` and the voice still do. In a direct message where matt sent the latest messages and they haven't answered yet, `fitsTheRoom` counts a follow-up that carries on from what matt just sent them (a question about their own post he just shared) as addressed to them as the chat really is, and fails it only when it acts as if they had replied. Rules 155, 156.

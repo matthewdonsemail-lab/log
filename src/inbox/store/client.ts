@@ -269,6 +269,17 @@ export function chatEvents(platform: string, account: string, match: (conversati
   return rows.filter((r) => match(r.conversationId, r.withWho))
 }
 
+export function ownTextsSince(platform: string, account: string, since: string): { conversationId: string; to: string; text: string }[] {
+  const rows = db().prepare("SELECT conversationId, withWho, text FROM events WHERE platform = ? AND account = ? AND type = 'ownMessage' AND receivedAt > ? ORDER BY seq").all(platform, account, since) as { conversationId: string; withWho: string; text: string }[]
+  const byChat = new Map<string, { conversationId: string; to: string; lines: string[] }>()
+  for (const row of rows) {
+    const chat = byChat.get(row.conversationId) ?? { conversationId: row.conversationId, to: row.withWho || row.conversationId, lines: [] }
+    if (row.text) chat.lines.push(row.text)
+    byChat.set(row.conversationId, chat)
+  }
+  return [...byChat.values()].map((c) => ({ conversationId: c.conversationId, to: c.to, text: c.lines.join('\n') }))
+}
+
 export function textHash(text: string): string {
   return createHash('sha256').update(text).digest('hex').slice(0, 32)
 }

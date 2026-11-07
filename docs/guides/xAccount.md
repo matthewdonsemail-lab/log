@@ -20,6 +20,7 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "twitter/nicheMapRegion" })` | A new region of the niche map, then outbound to it | "for getting accepted into YC ... make a new area of the niche map through the systems we've already made ... the YC world and the funds' world, based on the 26 batch", "the YC stuff in and around the boat.dev people and the people involved in GTM tools", "pull all of my new followers ... set a budget of like 60$", "start with the 43", "not just treg but the actual index that we did already". |
 | `getGuide({ useCase: "twitter/notifications" })` | Seeing who engaged with your posts | see the page |
 | `getGuide({ useCase: "twitter/recruiting" })` | Recruiting on X with a reply queue | see the page |
+| `getGuide({ useCase: "twitter/replyGuyFunnel" })` | Reply guy, then the DM, then the ask | "reply guy them first and foremost", "send a meme to the tweet then forward the tweet to them as an opener", "message the people who are new to following me", "get it in front of them", "funnel them into doing an action". |
 | `getGuide({ useCase: "twitter/topicReplies" })` | Replying to everyone posting about one topic | see the page |
 
 ## The tools in this guide
@@ -90,7 +91,7 @@ Reads the account's X notifications on the direct-API engine through its one X s
 Without --full it reads only what is new: the newest page, then older pages until it meets rows already kept (the first run reads up to 5 pages). --full then pages back through the history from where the last --full stopped, as far as X gives, at most --pages pages a run (default 25). The read is one engine call (rule 104: one call per account at a time); its pages are 40 notifications, 4 to 11 s apart, each through the account's governor; a 429 or a governor stop ends the read and keeps what came.
 --stored answers from what is kept, calling nothing. --type, --since, --post and --limit (default 50 shown, at most 5000) narrow what is shown; --json gives the rows, counts by kind and the people who engaged most.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/managerMaxxing" }), getGuide({ useCase: "twitter/notifications" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/managerMaxxing" }), getGuide({ useCase: "twitter/notifications" }), getGuide({ useCase: "twitter/replyGuyFunnel" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, who follows whom, and its notifications (who liked, reposted, replied to, quoted or followed it)).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 80, 81, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

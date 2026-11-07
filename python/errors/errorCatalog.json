@@ -2557,5 +2557,16 @@
       "python/discordApi"
     ],
     "action": "Read the chat again to see whether the voice note is there before anything else; never send it again blind (rule 94)."
+  },
+  "sameAsSent": {
+    "layer": "account",
+    "meaning": "The message repeats another one the account sent: half or more of its word pairs (links left out) are already in a message sent to someone else in the last 24 hours, or in another item of the same queue (rule 157). The voice gate reads each message alone, so a run of near-copies with a different first line passed it. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "voice/sameness"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Write this one from the person's own thread: answer what they said in their words, then the ask in a way that fits them. Every message in a batch reads differently. In the X queue, put the rewrite back with `twitterQueueEdit`."
   }
 }

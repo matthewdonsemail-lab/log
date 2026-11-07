@@ -97,3 +97,9 @@ Checked by: code and SubQ
 The engines hook writes its text at every session start, and on a prompt only when the text differs from the last one it wrote.
 
 Checked by: code and SubQ
+
+### REQ-MCP-15: The loaded use case is the session's play, and sends need one
+
+When `getGuide` is called with a `useCase`, `runToolCall` in `src/mcp/server/index.ts` makes it the active play with `setActivePlay` (`src/mcp/server/helpers/activePlay.ts`), which reads the page's steps table (`stepsOf`: each row's number, step, tools named in backticks, and done when). Every other tool's answer then ends with `playFooter`: the play's id and title, the step this tool is and what counts as done, and the next step with its tools, or that the tool isn't one of the play's steps. A tool in `PLAY_REQUIRED` (the live sends as matt) is refused by `playRefusal` with `playMissing` while no play is loaded, naming the use cases whose pages name that tool. matt, 2026-11-07: the guides were not being called for actions. Rule 157.
+
+Checked by: code and SubQ

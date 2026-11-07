@@ -35,3 +35,4 @@ delete process.env.LOG_VOICE_PROVIDER
 
 const { gateDeps } = await import('../../src/cli/twitter/helpers/voice.ts')
 gateDeps.gate = async (_context, send) => ({ ok: true, line: `voice gate: passed for ${send.to} (test)` })
+gateDeps.same = () => ({ ok: true })

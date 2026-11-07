@@ -38,6 +38,8 @@ Who wrote last is already in context at the start of a session: the SessionStart
 
 ## What to know
 
+- **The threads are already local.** `~/.logCli/conversations/twitter/<account>` holds every saved thread and `~/.logCli/log.db` every event since (messages, the account's own, notifications): read who is waiting and what they said from there first, and read X only for one person right before a send (rule 136).
+- **Gate one draft at a time.** Running several `voice` gates at once crashed them on 2026-11-07 (EPERM renaming `search/voice/vectors/manifest.json`); nothing was sent, and run one after another they pass.
 - **Past the daily cap only when the owner says.** At its request cap the governor refuses every read; `twitterDms` { force: true } reads past it for that call, and the governor still counts it (rule 86). On 2026-11-02 matthewsoldit read its inbox at 501-506 of 500 this way, with matt's go-ahead.
 - **A nudge can be a meme.** Where someone owes a reply or promised something, `twitterDmLive` { media: "<meme url>" } sends the meme as an image on the first message, with the nudge after it (docs/extensions/memelord.md). A chat where the owner's last messages are still unanswered gets nothing stacked on top.
 

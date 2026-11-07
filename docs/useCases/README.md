@@ -18,6 +18,7 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | X | [Network maxing: grow the network, the niche map](twitter/networkMaxing.md) | gets to know everyone who messaged and new people from the niche map, each conversation about them and what they're doing, never a pitch |
 | X | [Collab maxxing: turn open conversations into collabs](twitter/collabMaxxing.md) | turns the people already talking to the owner, and the missed openings, into collabs: scope, position the open-source collab, then the small ask, with money always the owner's call |
 | X | [A new region of the niche map, then outbound to it](twitter/nicheMapRegion.md) | adds a new world to the niche map, runs it through the pipeline, then opens on the warmest of it |
+| X | [Reply guy, then the DM, then the ask](twitter/replyGuyFunnel.md) | replies to each new person's post with a meme, opens a DM on that post, builds on what they say, then the ask, no two messages alike |
 | X | [Getting people to do the thing](twitter/getTheAction.md) | explains each conversation in a line, then a reply that answers them and asks for the one action (retweet, like, try it) |
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |

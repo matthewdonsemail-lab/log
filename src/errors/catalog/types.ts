@@ -725,6 +725,15 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: "Rewrite the draft in matt's words from what the refusal names, then send it again. In the X queue the item is held: put the rewrite back with `twitterQueueEdit`."
   },
+  sameAsSent: {
+    layer: 'account',
+    meaning: "The message repeats another one the account sent: half or more of its word pairs (links left out) are already in a message sent to someone else in the last 24 hours, or in another item of the same queue (rule 157). The voice gate reads each message alone, so a run of near-copies with a different first line passed it. Nothing was sent.",
+    retryable: true,
+    raisedIn: ['voice/sameness'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Write this one from the person's own thread: answer what they said in their words, then the ask in a way that fits them. Every message in a batch reads differently. In the X queue, put the rewrite back with `twitterQueueEdit`."
+  },
   accountBehind: {
     layer: 'account',
     meaning: "The account's owner is catching up on a gap (rule 135): the push channel dropped, the owner restarted or no owner was running, so the context in the .db is incomplete. A send waits up to 90 s for the catch-up to close the gap, and this one didn't, or the catch-up was refused. Nothing was sent.",
