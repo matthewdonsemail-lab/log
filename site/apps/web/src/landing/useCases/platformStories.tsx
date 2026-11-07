@@ -84,7 +84,7 @@ type Item =
     }
   | { id: string; kind: 'meme'; src: string; you?: boolean }
   | { id: string; kind: 'voice'; seconds: number; you?: boolean }
-  | { id: string; kind: 'post'; who: string; handle: string; text: string }
+  | { id: string; kind: 'post'; who: string; handle: string; text: string; video?: string; image?: string }
   | { id: string; kind: 'reply'; who: string; text: string; you?: boolean }
   | { id: string; kind: 'redditPost'; sub: string; title: string; text: string }
   | { id: string; kind: 'signedIn'; name: string }
@@ -390,6 +390,11 @@ function Post({ item }: { item: Extract<Item, { kind: 'post' }> }) {
           <span className="font-bold text-[#E7E9EA]">{item.who}</span> <span className="text-[#71767B]">{item.handle} · 2h</span>
         </p>
         <p className="mt-0.5 text-[15px] leading-snug text-[#E7E9EA]">{item.text}</p>
+        {item.video ? (
+          <video src={item.video} className="mt-2 block max-h-[15rem] w-full rounded-2xl border border-[#2F3336] bg-black object-cover" autoPlay muted loop playsInline preload="metadata" />
+        ) : item.image ? (
+          <img src={item.image} alt="" className="mt-2 block max-h-[15rem] w-full rounded-2xl border border-[#2F3336] object-cover" />
+        ) : null}
         <div className="mt-2 flex justify-between pr-6 text-[12px] text-[#71767B]">
           <span className="flex items-center gap-1.5">
             <FontAwesomeIcon icon={faComment} /> 18
@@ -1493,7 +1498,7 @@ const REA_SLIDES: Slide[] = [
           screen: 'post',
           title: 'Post',
           items: [
-            { id: 'p1', kind: 'post', who: 'Clip farm', handle: '@bestclavicularclips', text: 'Clavicular revealed why you should NEVER DRINK 🥃😳 (578K views)' },
+            { id: 'p1', kind: 'post', who: 'Clip farm', handle: '@bestclavicularclips', text: 'Clavicular revealed why you should NEVER DRINK 🥃😳 (578K views)', video: '/video/reaLooksmaxxing/clipFarm.mp4' },
             { id: 'r1', kind: 'reply', who: 'gymcel_99', text: 'what is his skincare routine??' },
           ],
         },
@@ -1519,7 +1524,7 @@ const REA_SLIDES: Slide[] = [
           screen: 'post',
           title: 'Post',
           items: [
-            { id: 'p1', kind: 'post', who: 'You', handle: '@you', text: 'NEVER sleep on your back if you want a jawline. here is why' },
+            { id: 'p1', kind: 'post', who: 'You', handle: '@you', text: 'NEVER sleep on your back if you want a jawline. here is why', video: '/video/reaLooksmaxxing/yourClip.mp4' },
             { id: 'r1', kind: 'reply', who: 'mogger_420', text: 'bro this is actually insane' },
           ],
         },
@@ -1556,6 +1561,7 @@ const REA_SLIDES: Slide[] = [
           items: [
             { id: 'd1', kind: 'msg', who: 'mogger_420', text: 'how do i look like that' },
             { id: 'd2', kind: 'msg', who: 'You', you: true, text: 'start with the morning routine, its all in the discord' },
+            { id: 'd2b', kind: 'meme', src: '/images/reaLooksmaxxing/club.webp', you: true },
             { id: 'd3', kind: 'msg', who: 'mogger_420', text: 'joining rn', react: { emoji: '🔥', phase: 1 } },
           ],
         },
