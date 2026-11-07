@@ -1,3 +1,5 @@
+import type { MessageAttachment } from '../catchUp/types'
+
 export const BACKFILL_SCOPE = 'backfill:'
 
 export const READ_CATCH_UP_MS = 30_000
@@ -6,7 +8,7 @@ export const CHAT_LIST_FRESH_MS = 6 * 60 * 60 * 1000
 
 export type ReadSource =
   | { from: 'db'; reason: 'backfilled' | 'enoughInDb' }
-  | { from: 'platform'; reason: 'noLiveOwner' | 'notBackfilled' | 'serverChannel' | 'askedFull' }
+  | { from: 'platform'; reason: 'noLiveOwner' | 'notBackfilled' | 'serverChannel' | 'askedFull' | 'mediaNotSaved' }
   | { from: 'refused'; refused: string }
 
 export interface ReadSourceDeps {
@@ -22,4 +24,5 @@ export interface DbMessage {
   from: string
   fromMe: boolean
   text: string
+  attachments?: MessageAttachment[]
 }

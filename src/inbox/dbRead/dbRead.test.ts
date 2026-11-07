@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { rmSync } from 'node:fs'
 import { storeRead } from '../catchUp/index'
-import { cachedChatList, chatListPath, chatMessageCount, chatMessages, findInChatList, markBackfilled, readSourceDeps, readSourceFor } from './index'
+import { cachedChatList, chatListPath, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceDeps, readSourceFor } from './index'
 import type { ReadSourceDeps } from './index'
 
 const deps = (over: Partial<ReadSourceDeps> = {}): ReadSourceDeps => ({ live: () => true, waitCaughtUp: async () => ({ ok: true, waitedMs: 0 }), backfilledAt: () => null, ...over })
@@ -63,5 +63,34 @@ describe('a chat is found by name from the kept list, and the platform only when
     expect(cachedChatList('discord', 'lister')).toHaveLength(1)
     findInChatList('discord', 'lister', 'someone new', match, list)
     expect(calls).toBe(2)
+  })
+})
+
+describe('a Discord image is read with where it was saved', () => {
+  test('a stored image keeps its saved path, and the .db answers it', () => {
+    const now = new Date('2026-11-07T11:00:00Z')
+    storeRead('discord', 'imgAcct', 'imgChat', 'dm', { id: '9001', at: '2026-11-07T10:59:00Z', from: 'Kennedy', fromMe: false, text: '', attachments: [{ name: 'shot.png', type: 'image/png', path: '/tmp/shot.png' }] }, now, 'backfill')
+    const [m] = chatMessages('discord', 'imgAcct', 'imgChat', 5)
+    expect(m.id).toBe('9001')
+    expect(m.attachments).toEqual([{ name: 'shot.png', type: 'image/png', path: '/tmp/shot.png' }])
+    expect(mediaNotSaved([m])).toBe(false)
+  })
+
+  test('a message stored before its image was saved gets the path added on the next read', () => {
+    const now = new Date('2026-11-07T11:00:00Z')
+    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { at: '2026-11-07T10:58:00Z', from: 'Kennedy', fromMe: false, text: '' }, now, 'live')
+    expect(mediaNotSaved(chatMessages('discord', 'imgAcct', 'imgChat2', 5))).toBe(true)
+    storeRead('discord', 'imgAcct', 'imgChat2', 'dm', { id: '9002', at: '2026-11-07T10:58:00Z', from: 'Kennedy', fromMe: false, text: '', attachments: [{ name: 'a.jpg', type: 'image/jpeg', path: '/tmp/a.jpg' }] }, now, 'backfill')
+    const [m] = chatMessages('discord', 'imgAcct', 'imgChat2', 5)
+    expect(m.id).toBe('9002')
+    expect(m.attachments?.[0]?.path).toBe('/tmp/a.jpg')
+    expect(mediaNotSaved([m])).toBe(false)
+  })
+
+  test('an image with neither a path nor a reason sends the read back to Discord', () => {
+    expect(mediaNotSaved([{ id: '1', conversationId: 'c', at: 'x', from: 'k', fromMe: false, text: 'look', attachments: [{ name: 'b.webp' }] }])).toBe(true)
+    expect(mediaNotSaved([{ id: '1', conversationId: 'c', at: 'x', from: 'k', fromMe: false, text: 'look', attachments: [{ name: 'notes.pdf' }] }])).toBe(false)
+    expect(isVisualAttachment({ name: 'clip.MP4' })).toBe(true)
+    expect(isVisualAttachment({ name: 'x', type: 'image/gif' })).toBe(true)
   })
 })

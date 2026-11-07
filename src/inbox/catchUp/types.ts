@@ -9,6 +9,14 @@ export interface ReadMessage {
   from?: string | null
   fromMe?: boolean
   text?: string | null
+  attachments?: MessageAttachment[]
+}
+
+export interface MessageAttachment {
+  name: string
+  type?: string
+  path?: string
+  error?: string
 }
 
 export interface CatchUpResult {
