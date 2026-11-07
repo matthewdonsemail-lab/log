@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 39 domains, 460 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 40 domains, 464 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -598,6 +598,15 @@ Every paid provider log calls, with what is left, so a failing voice note, gate 
 - **REQ-BALANCE-03** Without a balance API, the last real answer decides
 - **REQ-BALANCE-04** Each paid call's answer is kept
 - **REQ-BALANCE-05** Out of credit is said in the failure itself
+
+## [MCP reload](./mcpReload.md)
+
+The log MCP server picks up new code without restarting Claude Code: a reload proxy that never exits owns the client's pipe and swaps the real server underneath it when it's safe. Rule 167.
+
+- **REQ-RELOAD-01** logMcp is a proxy that never exits, with the server as its child
+- **REQ-RELOAD-02** A reload waits until nothing is running, then replays initialize
+- **REQ-RELOAD-03** A crash or a failed start never leaves the client hanging
+- **REQ-RELOAD-04** Its state is recorded and the hook reads it
 
 ## [Instagram](./instagram.md)
 

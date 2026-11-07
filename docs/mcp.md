@@ -8,6 +8,11 @@
 claude mcp add log -- logMcp
 ```
 
+You add it once. `logMcp` reloads its own code whenever log changes, so you never restart Claude Code for new code (rule 167):
+- It waits until no call or job is running, swaps the server underneath, and tells Claude Code the tools changed.
+- A tool added since the session started is always reachable through `logCall`.
+- `LOG_MCP_RELOAD=off` turns this off.
+
 ## Codex
 
 ```bash

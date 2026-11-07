@@ -1945,6 +1945,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/clone', 'extensions/voiceClone'],
     action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
   },
+  logMcpRestarted: {
+    layer: 'runtime',
+    meaning: "The log MCP server restarted while this call ran (it crashed, or its new code was swapped in), so the call's answer was lost. The proxy Claude Code talks to stayed up.",
+    retryable: true,
+    raisedIn: ['mcp/reload'],
+    action: 'Call the tool again. If it keeps happening, read the live log (~/.logCli/mcp/<day>.log) for why the server exited.'
+  },
   xchatPinMissing: {
     layer: 'runtime',
     meaning: "X Chat couldn't be opened to send, because the X account has no X Chat PIN saved. Sending in X Chat needs the conversation key, which only the PIN unlocks. Nothing was sent.",

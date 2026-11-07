@@ -6,6 +6,20 @@ import { dirname, join } from "node:path";
 const WATCHED = ["src", "python", join("vendor", "fbk", "src")];
 const CODE = /\.(ts|py)$/;
 
+export interface ProxyState {
+  proxyPid: number;
+  waitingOn: string | null;
+  lastError: string | null;
+}
+
+export function readProxyState(file = process.env.LOG_MCP_RELOAD_FILE || join(homedir(), ".logCli", "mcp", "reload.json")): ProxyState | null {
+  try {
+    return JSON.parse(readFileSync(file, "utf8")) as ProxyState;
+  } catch {
+    return null;
+  }
+}
+
 export function serverStampFile(): string {
   return process.env.LOG_MCP_STAMP_FILE || join(homedir(), ".logCli", "mcp", "server.json");
 }
@@ -49,6 +63,12 @@ export function staleServerLine(root: string, file = serverStampFile()): string 
   if (!alive(started.pid)) return null;
   const now = codeStamp(root);
   if (now <= started.stamp) return null;
+  const proxy = readProxyState();
+  if (proxy && alive(proxy.proxyPid)) {
+    if (proxy.lastError) return `>>> The log MCP server's new code didn't start: ${proxy.lastError}. It keeps running the code from ${new Date(started.stamp).toISOString().slice(0, 16)}Z and reloads by itself on the next change, with no restart of Claude Code (rule 167). Fix what failed.`;
+    if (proxy.waitingOn) return `>>> The log MCP server has newer code waiting and reloads by itself the moment ${proxy.waitingOn} finishes, with no restart of Claude Code (rule 167).`;
+    return null;
+  }
   return `>>> The log MCP server (pid ${started.pid}, started ${started.startedAt.slice(0, 16)}Z) is running older code than the checkout: log-cli changed at ${new Date(now).toISOString().slice(0, 16)}Z. Its tool descriptions and rules are stale until it restarts: tell matt to restart the Claude app or start a new chat (in a terminal claude, reconnect the log server with /mcp). Its calls still run the checkout's engine. Never work around it with a hand-run \`log …\` command (rule 106).`;
 }
 

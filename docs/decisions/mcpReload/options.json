@@ -1,0 +1,7 @@
+[
+  { "id": "reloaderoo", "name": "Vendor cameroncooke/reloaderoo", "description": "Wrap logMcp in reloaderoo's proxy mode. It adds a restart_server tool the agent calls to swap the child while the client stays connected, with crash limits. Restart is by tool, not automatic." },
+  { "id": "mcpmon", "name": "Vendor neilopet/mcpmon", "description": "Wrap logMcp in mcpmon, which restarts the server on every file change while the client stays connected. New tools still need a toggle in the client." },
+  { "id": "mcpReloader", "name": "Vendor mizchi/mcp-reloader", "description": "Wrap logMcp in mcp-reloader, which re-imports files in a tools/ folder and sends list_changed, and restarts the whole process for other files matched by --include." },
+  { "id": "ownProxy", "name": "log's own reload proxy", "description": "logMcp becomes a small stable proxy in src/mcp/reload that owns the stdio pipe and runs the real server as a child. When codeStamp is newer and no call or job is running in the child, it starts a new child, replays the client's initialize, waits for it to answer, then sends tools/list_changed. It answers an error for any call caught mid-swap and kills the old child's process tree. logCall reaches tools added since." },
+  { "id": "inProcess", "name": "In-process re-import", "description": "The server re-imports changed modules with cache-busting, with no process restart." }
+]

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 164;
+export const RULES_REVIEWED_THROUGH = 167;
 
 export const AGENTS_URI = "log://agents";
 
@@ -76,6 +76,7 @@ export const CORE_PRINCIPLES = [
   "69. A `>>> MAYBE A PLAY` lists the 3 plays closest to matt's message: before any tool, say in one line which one he is asking for, or none (building, fixing or talking about the system is none). A `>>> ACTIVE PLAY` after compaction is the play this session was in, with its steps done and to do: load it again and carry on from the next step (rule 159).",
   "70. A read for one chat or person (`discordRead`, `twitterDms` { with }) answers from the .db when its owner is live and the chat is backfilled; the platform is read only to fill the .db once, for a server channel, or when no owner is live. Never re-read a whole inbox to find one person, and never read around a refused catch-up (rule 160).",
   "71. A message that hands someone a task is a brief, never a curt order: send it with `brief` so the gate asks whether it says what to do in order, why it matters, what done looks like and by when, kindly, and how to ask when stuck. Files (a guide, a sheet) go with it through `file`, from OUTBOX or ~/.logCli (rule 162).",
+  "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -157,7 +158,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
-  mcp: [21, 47],
+  mcp: [21, 47, 167],
   conversations: [34],
   errors: [25],
   graph: [6, 25],
