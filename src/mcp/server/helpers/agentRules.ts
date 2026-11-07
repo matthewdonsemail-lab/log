@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 166;
+export const RULES_REVIEWED_THROUGH = 167;
 
 export const AGENTS_URI = "log://agents";
 
@@ -78,6 +78,7 @@ export const CORE_PRINCIPLES = [
   "71. A message that hands someone a task is a brief, never a curt order: send it with `brief` so the gate asks whether it says what to do in order, why it matters, what done looks like and by when, kindly, and how to ask when stuck. Files (a guide, a sheet) go with it through `file`, from OUTBOX or ~/.logCli (rule 162).",
   "72. Every call is timed, never guessed: each tool call gets a call id (on its ▶ and ■ lines in the live log, with how long it took), and every stage inside it is stored in log.db (guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request). Before saying something is slow or fast, or changing code to speed it up, read `timing` (p50, p95 and p99 per tool and per stage) or `timing` { call } for one call's waterfall, and measure again after the change (rule 165).",
   "73. treg is an extension: find an endpoint by the job with `tregSearch`, read its price and params with `tregGet`, and call it with `tregCall` (params as a JSON object), the key injected server-side by treg. A free endpoint runs; a priced one is a dry run that says its price, and runs only with `tregCallLive` { approvedBy, confirmLive } when matt asked for that spend. Every lookup comes from it, never memory (rules 41, 53, 166).",
+  "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -161,7 +162,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
-  mcp: [21, 47],
+  mcp: [21, 47, 167],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

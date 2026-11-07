@@ -1370,6 +1370,8 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
         handle = await handle_of(client, sender, handles) if sender != me else None
         if handle:
             remember_handles(spec, str(event.get("conversation_id")), {sender: handle})
+        if unlocked and event.get("media"):
+            await save_xchat_media(client, spec, str(event.get("conversation_id")), [event])
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
         live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
