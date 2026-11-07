@@ -390,13 +390,14 @@ def read_of(token: str, channel: str, limit: int, after: str | None, spec: dict[
 
 def read_message(client: Any, spec: dict[str, Any], channel: str, m: dict[str, Any], me: str) -> dict[str, Any]:
     attachments = attachments_of(m.get("embeds"))
-    out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": text_of(m["content"], attachments), "embeds": plain_embeds(m.get("embeds")), "attachments": attachments}
-    if spec.get("saveAudio") is not False and any(is_audio(a) for a in attachments):
-        out["audio"] = saved_audio(client, spec, channel, str(m["id"]), attachments)
+    flags = m.get("flags")
+    out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": text_of(m["content"], attachments, flags), "embeds": plain_embeds(m.get("embeds")), "attachments": attachments}
+    if spec.get("saveAudio") is not False and any(is_audio(a, flags) for a in attachments):
+        out["audio"] = saved_audio(client, spec, channel, str(m["id"]), attachments, flags)
     if spec.get("saveImages") is not False and any(media.is_visual(a) for a in attachments):
         out["images"] = saved_images(client, spec, channel, str(m["id"]), attachments)
-    if spec.get("saveImages") is not False and any(not is_audio(a) and not media.is_visual(a) for a in attachments):
-        out["files"] = saved_files(client, spec, channel, str(m["id"]), attachments)
+    if spec.get("saveImages") is not False and any(not is_audio(a, flags) and not media.is_visual(a) for a in attachments):
+        out["files"] = saved_files(client, spec, channel, str(m["id"]), attachments, flags)
     return out
 
 
