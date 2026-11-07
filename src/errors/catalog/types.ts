@@ -309,6 +309,97 @@ export const ERROR_CATALOG = {
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
     action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
   },
+  appleNotBuilt: {
+    layer: 'runtime',
+    meaning: 'log mobile apple is not built yet: iPhones need Appium XCUITest on a Mac worker (issue #81).',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Use log mobile android for now, or build the Apple worker on issue #81.'
+  },
+  phoneNotBound: {
+    layer: 'runtime',
+    meaning: 'The account has no phone bound for log mobile.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Bind one: log mobile android <platform> bind --account <a> --device <serial> | --geelark <phoneId>.'
+  },
+  accountBound: {
+    layer: 'runtime',
+    meaning: 'The account already has its phone; one account keeps one phone for good.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Use the phone it has. Unbind only when that phone is gone, then bind the new one.'
+  },
+  deviceTaken: {
+    layer: 'runtime',
+    meaning: 'That phone is already bound to another account; one phone holds one account.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Pick a free phone from log mobile android devices.'
+  },
+  phoneOffline: {
+    layer: 'runtime',
+    meaning: "The account's USB phone isn't online in adb devices.",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Plug it in, unlock it and allow USB debugging for this computer, then run it again.'
+  },
+  adbMissing: {
+    layer: 'runtime',
+    meaning: "adb didn't answer: Android platform-tools isn't installed or isn't on PATH.",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Install Android platform-tools, or set LOG_ADB to adb.exe in .env.local.'
+  },
+  uiautomator2Missing: {
+    layer: 'runtime',
+    meaning: "The uiautomator2 Python package isn't installed for LOG_PYTHON.",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Tell matt: pip install uiautomator2 for the Python in LOG_PYTHON.'
+  },
+  geelarkKeyMissing: {
+    layer: 'runtime',
+    meaning: 'GEELARK_API_TOKEN is not set, so GeeLark cloud phones are not reached.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Tell matt: make an API token in GeeLark (a plan with API and ADB) and put GEELARK_API_TOKEN in .env.local.'
+  },
+  phoneNotStarted: {
+    layer: 'runtime',
+    meaning: "The GeeLark cloud phone didn't reach started (missing, expired, or still starting after two minutes).",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Check the phone in GeeLark: it may be expired or deleted.'
+  },
+  adbNotReady: {
+    layer: 'runtime',
+    meaning: 'GeeLark gave no ADB address for the phone after ADB was turned on.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Run it again in a minute; check the phone runs Android 11 to 16 and the plan includes ADB.'
+  },
+  adbConnectFailed: {
+    layer: 'runtime',
+    meaning: "adb connect to the GeeLark phone's address failed.",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Run it again; check the network from this machine to GeeLark.'
+  },
+  adbLoginFailed: {
+    layer: 'runtime',
+    meaning: 'glogin with the GeeLark connection code failed on the phone.',
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: 'Run it again; the code changes each start.'
+  },
+  inspectFailed: {
+    layer: 'runtime',
+    meaning: "The Android driver couldn't read the phone's screen.",
+    retryable: false,
+    raisedIn: ['mobile/android'],
+    action: "Read the error: the phone may be locked, or uiautomator2's agent not installed yet (its first run installs it)."
+  },
   providerOutOfCredit: {
     layer: 'runtime',
     meaning: 'A paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI) answered that it is out of credit (402, or words like insufficient credit). The call failed for want of money, not a bug.',

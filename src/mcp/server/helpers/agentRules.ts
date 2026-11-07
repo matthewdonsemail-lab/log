@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 164;
+export const RULES_REVIEWED_THROUGH = 167;
 
 export const AGENTS_URI = "log://agents";
 
@@ -139,6 +139,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
+  mobile: [8, 12, 29, 35, 41, 94, 105, 167],
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],

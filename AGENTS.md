@@ -2538,6 +2538,27 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     spends nothing, and topping up is matt's (rule 41). Spec:
     `docs/specs/balance.md`.
 
+167. 2026-11-07 · matt: "it will be log mobile android <platform>, log mobile
+    apple <platform> ... I will buy a bunch of phones to put into one of them
+    things", then "find out the information of all the providers ... begin
+    to start implementing it". Real phones are a device layer of their own,
+    the OS first because each one is reached differently, then the platform
+    the phone runs. `log mobile android devices` lists every Android phone
+    this machine reaches: USB phones over adb (`LOG_ADB`), and GeeLark cloud
+    phones when `GEELARK_API_TOKEN` is set. `log mobile android <platform>
+    bind --account <a> --device <serial> | --geelark <phoneId>` gives an
+    account its phone for good: one phone per account, one account per phone
+    (`accountBound`, `deviceTaken`), kept in `~/.logCli/mobile/bindings.json`
+    (`LOG_MOBILE_DIR`). `inspect` connects the account's phone (a GeeLark
+    phone is started, ADB turned on, `adb connect` and `glogin`, the way
+    GeeLark's own docs do it) and records its screen, the UI tree and a
+    screenshot, through uiautomator2 (`python/mobile/androidDriver.py`) into
+    the run folder, tapping nothing (rules 8, 29). `log mobile apple` is
+    refused (`appleNotBuilt`) until the Mac worker with Appium XCUITest is
+    built. Provider docs: `RESEARCH/LOG_MOBILE_DEVICES_2026_11_07/` in the
+    buzz workspace; the plan: github.com/matthewdonsemail-lab/log/issues/81.
+    `src/mobile`, `src/cli/mobile`. Spec: `docs/specs/mobile.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

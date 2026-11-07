@@ -26,6 +26,7 @@ process.env.LOG_PLATFORM_STATE ??= join(scratch, "platformState")
 process.env.LOG_CONVERSATIONS_DIR ??= join(scratch, "conversations")
 process.env.LOG_SEARCH_DIR ??= join(scratch, "search")
 process.env.LOG_TRANSCRIPTS_DIR ??= join(scratch, "transcripts")
+process.env.LOG_MOBILE_DIR ??= join(scratch, "mobile")
 process.env.LOG_BILLING_ANSWERS ??= join(scratch, "billing", "answers.jsonl")
 delete process.env.ASSEMBLYAI_API_KEY
 process.env.LOG_VOICE_CLONE_DIR ??= join(scratch, "voice")
