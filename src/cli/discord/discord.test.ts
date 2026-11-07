@@ -447,3 +447,42 @@ describe("a file someone sends is shown only when it was safe to keep", () => {
     expect(storedAttachmentsOf({ id: "1", at: "t", from: "k", bot: false, fromMe: false, replyTo: null, text: "", embeds: [], attachments: [{ name: "leads.tsv", url: "https://cdn" }], files: [{ name: "leads.tsv", path: "C:/media/9_leads.tsv", preview: "row1" }] })).toEqual([{ name: "leads.tsv", path: "C:/media/9_leads.tsv" }]);
   });
 });
+
+describe("reads and sends are paced on their own clocks (matt: we're not achieving p99)", () => {
+  const python = process.env.LOG_PYTHON || "python";
+  const script = `import sys, json, tempfile
+sys.path.insert(0, "python"); sys.path.insert(0, "vendor/fbk/src")
+from platformKit import engine
+from dataclasses import replace
+from governor import RequestGovernor
+t = [1000.0]
+slept = []
+def gov(**kw):
+    g = engine.governor_for(tempfile.mkdtemp(), "acct", 120, **kw)
+    return RequestGovernor(config=replace(g.config, quiet_hours="0-24", warmup_requests=0), sleeper=lambda s: (slept.append(round(s, 2)), t.__setitem__(0, t[0] + s)), clock=lambda: t[0])
+read = gov(read=True)
+read.before_request(is_mutation=False, quiet=True)
+read.before_request(is_mutation=False, quiet=True)
+reads = list(slept); slept.clear()
+send = gov()
+send.state.last_mutation_ts = 1000.0 - 600
+send.state.last_request_ts = t[0]
+send.before_request(is_mutation=True, quiet=True)
+first_send = list(slept); slept.clear()
+send.before_request(is_mutation=True, quiet=True)
+print(json.dumps({"read": read.config.mean_gap_s, "readFloor": read.config.min_gap_s, "reads": reads, "firstSend": first_send, "secondSend": slept}))`;
+  const run = spawnSync(python, ["-c", script], { encoding: "utf8" });
+  test("a read waits about 1.6 s at most on average, never the send's 12 s", () => {
+    if (run.error || run.status !== 0) throw new Error(run.stderr);
+    const got = JSON.parse(run.stdout.trim().split("\n").pop()!);
+    expect(got.read).toBe(1.6);
+    expect(got.readFloor).toBe(0.8);
+    expect(got.reads.every((s: number) => s < 8)).toBe(true);
+  });
+  test("a send right after a read or a catch-up call doesn't wait when the last send was minutes ago, and two sends are still spaced", () => {
+    const got = JSON.parse(run.stdout.trim().split("\n").pop()!);
+    expect(got.firstSend).toEqual([]);
+    expect(got.secondSend.length).toBe(1);
+    expect(got.secondSend[0]).toBeGreaterThanOrEqual(4);
+  });
+});

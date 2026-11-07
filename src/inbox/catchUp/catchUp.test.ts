@@ -3,9 +3,9 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { catchUpRunner, socketChange } from "../relay/index.ts";
-import { appendEvent, behindOf, db, handleOfUserId, openGap, positionsOf, recordPosition, resumeGap } from "../store/index.ts";
+import { appendEvent, behindOf, db, handleOfUserId, markGap, openGap, positionsOf, recordPosition, resumeGap } from "../store/index.ts";
 import { claimWatcher, releaseWatcher } from "../watch/index.ts";
-import { discordCatchUp, instagramCatchUp, waitCaughtUp } from "./index.ts";
+import { catchUpOneChat, discordCatchUp, instagramCatchUp, waitCaughtUp } from "./index.ts";
 import type { PlatformRead } from "./index.ts";
 
 beforeEach(() => {
@@ -124,5 +124,28 @@ describe("catching up after a gap (rule 135)", () => {
     expect(socketChange({ type: "message", state: "closed" })).toBeNull();
     expect(socketChange({ kind: "closed", detail: "the gateway closed" })).toBe("dropped");
     expect(socketChange({ kind: "open" })).toBe("open");
+  });
+});
+
+describe("a send catches up only its own chat, never waiting for the whole account", () => {
+  test("an account that's current reads nothing", () => {
+    let reads = 0;
+    expect(catchUpOneChat("discord", "oneChatA", "c1", () => (reads++, { ok: true, messages: [] }))).toEqual({ ok: true, how: "current", stored: 0 });
+    expect(reads).toBe(0);
+  });
+
+  test("while catching up, this one chat is read and stored at once", () => {
+    openGap("discord", "oneChatB", "2026-11-07T11:00:00Z", "ownerRestarted");
+    const got = catchUpOneChat("discord", "oneChatB", "c2", () => ({ ok: true, messages: [{ id: "1", at: "2026-11-07T11:01:00Z", from: "Kennedy", fromMe: false, text: "we gotta plan" }] }), new Date("2026-11-07T11:02:00Z"));
+    expect(got).toEqual({ ok: true, how: "chatRead", stored: 1 });
+  });
+
+  test("a refused catch-up refuses the send and reads nothing (rule 94)", () => {
+    const gap = openGap("discord", "oneChatC", "2026-11-07T11:00:00Z", "socketDropped");
+    markGap(gap.id, "refused", "429");
+    let reads = 0;
+    const got = catchUpOneChat("discord", "oneChatC", "c3", () => (reads++, { ok: true, messages: [] }));
+    expect(got.ok).toBe(false);
+    expect(reads).toBe(0);
   });
 });

@@ -111,6 +111,7 @@ class GovernorConfig:
                                       # activity pattern is the human baseline, so
                                       # the operator's own schedule is the
                                       # coherence-safe default (docs/11 §1)
+    write_gap_from_writes: bool = False
     warmup_requests: int = 8          # first N requests of the day get a
                                       # gentler gap (2x mean) — a session that
                                       # starts at full speed from silence is
@@ -182,6 +183,7 @@ class GovernorState:
     day_count: int = 0
     mutation_count: int = 0
     last_request_ts: float = 0.0      # epoch seconds; anchors inter-arrival gaps
+    last_mutation_ts: float = 0.0
     cooldown_until: float = 0.0       # epoch seconds; 0 = no cooldown active
     soft_blocks_seen: int = 0
 
@@ -392,7 +394,7 @@ class RequestGovernor:
             mu = math.log(mean_gap) - 0.5 * sigma ** 2
             raw = self._rng.lognormvariate(mu, sigma)
             gap = max(self.config.min_gap_s, raw)
-            elapsed = now - self.state.last_request_ts
+            elapsed = now - (self.state.last_mutation_ts if is_mutation and self.config.write_gap_from_writes else self.state.last_request_ts)
             if elapsed < gap:
                 slept = gap - elapsed
                 self._sleep(slept)
@@ -402,6 +404,7 @@ class RequestGovernor:
         self.state.day_count += 1
         if is_mutation:
             self.state.mutation_count += 1
+            self.state.last_mutation_ts = self.state.last_request_ts
         self._persist()
         return slept
 
