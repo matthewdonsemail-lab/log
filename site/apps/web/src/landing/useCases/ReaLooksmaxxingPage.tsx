@@ -22,6 +22,31 @@ const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X = PLATFORMS.find((platform) => platform.id === 'x')!
 const ICONS = { platform: faXTwitter, meme: faImage, voice: faMicrophone, react: faComments, voiceGate: faComments }
 
+const CHIP_LOGOS = {
+  treg: { src: '/logos/stack/treg.svg', mask: true },
+  SubQ: { src: '/logos/stack/subq.svg', mask: true },
+  log: { src: '/logo.svg', mask: false },
+  'Claude Code': { src: '/logos/tools/claude-desktop.svg', mask: true },
+}
+
+function LogoChip({ name }: { name: keyof typeof CHIP_LOGOS }) {
+  const logo = CHIP_LOGOS[name]
+  return (
+    <span className="mx-0.5 inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-white px-1.5 py-0.5 align-middle text-[0.9em] font-bold leading-none text-[#2A8CFF] shadow-[0_3px_0_#1A5FC8]">
+      {logo.mask ? (
+        <span
+          aria-hidden
+          className="inline-block size-[1.05em] shrink-0 bg-[#2A8CFF]"
+          style={{ maskImage: `url(${logo.src})`, WebkitMaskImage: `url(${logo.src})`, maskSize: 'contain', WebkitMaskSize: 'contain', maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat', maskPosition: 'center', WebkitMaskPosition: 'center' }}
+        />
+      ) : (
+        <img src={logo.src} alt="" className="size-[1.05em] shrink-0 rounded-[22%]" />
+      )}
+      {name}
+    </span>
+  )
+}
+
 function Hero() {
   const play = REA_LOOKSMAXXING
   return (
@@ -43,8 +68,9 @@ function Hero() {
               <span className="text-white/70">(yet)</span>
             </p>
             <p className="text-lede text-white/85">
-              The <span className="font-black text-white underline decoration-dashed underline-offset-4">/rea-looksmaxxing</span> play: treg finds what&apos;s going viral, SubQ picks
-              the winners, log runs the accounts and Claude Code funnels everyone into your offer. Your jawline is optional.
+              The <span className="font-black text-white underline decoration-dashed underline-offset-4">/rea-looksmaxxing</span> play: <LogoChip name="treg" /> finds what&apos;s
+              going viral, <LogoChip name="SubQ" /> picks the winners, <LogoChip name="log" /> runs the accounts and <LogoChip name="Claude Code" /> funnels everyone into
+              your offer. Your jawline is optional.
             </p>
             <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
               <RepoLink
