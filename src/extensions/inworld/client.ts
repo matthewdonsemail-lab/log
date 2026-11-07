@@ -1,3 +1,4 @@
+import { noteProviderAnswer, withCreditNote } from '../../billing/balance/helpers/answers'
 import { accentDescriptionOf, envValue, voiceSettingsOf } from '../voiceClone/helpers/provider'
 import type { ReferenceAudio, SpeakRequest, VoiceAnswer, VoiceFetch, VoiceProviderClient, VoiceResponse, VoiceSettings } from '../voiceClone/types'
 import { withBreaths } from '../voiceClone/helpers/spoken'
@@ -11,7 +12,7 @@ export function inworldKey(env: Record<string, string | undefined> = process.env
 async function refusalOf(answer: VoiceResponse): Promise<{ code: string; error: string | null }> {
   const body = (await answer.json().catch(() => null)) as Record<string, unknown> | null
   const said = [body?.message, (body?.error as Record<string, unknown> | undefined)?.message].filter((x) => typeof x === 'string' && x).join(': ')
-  return { code: `inworldHttp${answer.status}`, error: said || null }
+  return { code: `inworldHttp${answer.status}`, error: withCreditNote('inworld', answer.status, said) || null }
 }
 
 const base64 = (bytes: Uint8Array) => Buffer.from(bytes).toString('base64')
@@ -56,6 +57,7 @@ export function createInworldClient(key: string | null = inworldKey(), fetcher: 
       const body = JSON.stringify({ text: steeredText(request.model, request.text), voiceId: request.voiceId, modelId: request.model, ...(request.language ? { language: request.language } : {}), audioConfig: { audioEncoding: INWORLD_ENCODINGS[request.format], ...(request.speed ? { speakingRate: request.speed } : {}) } })
       const answer = await fetcher(`${INWORLD_API}${INWORLD_ENDPOINTS.speak}`, { method: 'POST', headers: headers(), body })
       if (answer.status !== 200) return { ok: false, status: answer.status, ...(await refusalOf(answer)), data: null }
+      noteProviderAnswer('inworld', answer.status)
       const read = (await answer.json().catch(() => null)) as { audioContent?: unknown } | null
       const bytes = typeof read?.audioContent === 'string' ? new Uint8Array(Buffer.from(read.audioContent, 'base64')) : new Uint8Array()
       if (!bytes.length) return { ok: false, status: 200, code: 'inworldNoAudio', error: 'Inworld answered 200 with no audioContent', data: null }

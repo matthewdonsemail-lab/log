@@ -1,3 +1,4 @@
+import { withCreditNote } from '../../billing/balance/helpers/answers'
 import { envValue } from '../voiceClone/helpers/provider'
 import type { ReferenceAudio, SpeakRequest, VoiceAnswer, VoiceFetch, VoiceProviderClient, VoiceResponse } from '../voiceClone/types'
 import { FISH_API, FISH_ENDPOINTS, FISH_KEY_NAME, FISH_LIMITS, FISH_MODELS } from './types'
@@ -16,7 +17,7 @@ export function modelInfoOf(body: unknown): FishModelInfo {
 async function refusalOf(answer: VoiceResponse): Promise<{ code: string; error: string | null }> {
   const body = (await answer.json().catch(() => null)) as Record<string, unknown> | null
   const said = [body?.message, body?.reason].filter((x) => typeof x === 'string' && x).join(': ')
-  return { code: `fishHttp${answer.status}`, error: said || null }
+  return { code: `fishHttp${answer.status}`, error: withCreditNote('fishAudio', answer.status, said) || null }
 }
 
 export function createFishClient(key: string | null = fishKey(), fetcher: VoiceFetch = fetch as unknown as VoiceFetch) {

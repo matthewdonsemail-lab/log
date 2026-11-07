@@ -2522,6 +2522,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     doesn't. The command tools stay as they are for now. Spec:
     `docs/specs/mcpServer.md` (REQ-MCP-18).
 
+164. 2026-11-07 · matt: "have a way inside of log to be able to view our
+    balance ... for the extensions as well ... if we have an issue with the
+    actual calls such as voice then it keeps causing issues but it may be
+    because the balance is low". `log balance` (MCP `balance`) shows every
+    paid provider log calls: SubQ, Jina, Inworld, Fish Audio, AssemblyAI,
+    Parallel, treg, 2Captcha and Byteful. Where the provider has a balance API
+    it is read (Jina's tokens, Fish Audio's credit, treg, 2Captcha, Byteful's
+    residential traffic); where it has none, its last answer to a real call
+    decides. The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients keep
+    every answer in `~/.logCli/billing/answers.jsonl`, and one that says it is
+    out of credit (a 402, insufficient credit, payment required) says so in
+    the failure itself, naming where to top up (`providerOutOfCredit`), so a
+    failing voice note or gate is seen as money, not a bug. Reading a balance
+    spends nothing, and topping up is matt's (rule 41). Spec:
+    `docs/specs/balance.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
