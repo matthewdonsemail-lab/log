@@ -30,6 +30,14 @@ export const mcpServer = {
     'src/useCases/router/types.ts',
     'scripts/hooks/useCases.ts',
     'scripts/docs/syncSiteSkills.mjs',
+    'src/useCases/router/helpers/semantic.ts',
+    'src/useCases/router/helpers/typos.ts',
+    'src/contextLayer/hook/client.ts',
+    'src/contextLayer/session/client.ts',
+    'src/contextLayer/service/client.ts',
+    'src/contextLayer/service/types.ts',
+    'scripts/contextLayer/service.ts',
+    'scripts/useCases/benchRouter.ts',
   ],
   anchors: {
     'REQ-MCP-01': [
@@ -96,6 +104,13 @@ export const mcpServer = {
       { kind: 'value', file: FRESHNESS, name: 'LOCAL_PATHS', equals: ['src', 'python', 'vendor', 'bin', 'scripts', 'package.json'] },
       { kind: 'string', file: FRESHNESS, includes: '--porcelain' },
     ],
+    'REQ-MCP-17': [
+      { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'routePrompt' },
+      { kind: 'symbol', file: 'src/useCases/router/helpers/typos.ts', name: 'correctTypos' },
+      { kind: 'symbol', file: 'src/contextLayer/session/client.ts', name: 'sessionPlayOf' },
+      { kind: 'symbol', file: 'src/contextLayer/service/client.ts', name: 'serviceHookCommand' },
+      { kind: 'string', file: 'src/agentHooks/registry/index.ts', includes: 'service: "/hook"' },
+    ],
     'REQ-MCP-16': [
       { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'matchPlays' },
       { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'playMatchText' },
@@ -125,6 +140,7 @@ export const mcpServer = {
     'REQ-MCP-11': noul('Does handRunDenial return null, so nothing is refused, for a command name that is a key of TERMINAL_ONLY, and a denial for every other name?'),
     'REQ-MCP-12': noul('Is staleServerLine(repo) one of the parts the engines hook joins into its text, and does staleServerLine return a line telling matt to restart and never to work around it with a hand-run command when the recorded server pid is alive and codeStamp of the checkout is newer than the recorded stamp, and null otherwise?'),
     'REQ-MCP-13': noul('Does localChangesLine return null when there are no files, and otherwise a line starting with >>> UNCOMMITTED LOCAL CHANGES that lists the files and says to read each diff and never overwrite, revert, stage, publish or ship them without matt?'),
+    'REQ-MCP-17': noul('Does the UserPromptSubmit useCases hook run as a curl to the context layer service with the bun script only after ||, does routePrompt skip text isPrompt refuses, correct typos, embed windows and combine denseScores and sparseScores at DENSE_WEIGHT, naming matches at or above the threshold and otherwise a menu at or above DEFAULT_MENU_FLOOR, and does hookAnswer on SessionStart return playReminder for the last play sessionPlayOf finds in the transcript?'),
     'REQ-MCP-16': noul('Does matchPlays score the prompt content words against each use case asks and title, keep only matches at or above MATCH_FLOOR best first and at most MATCHES_SHOWN, does playMatchText return a >>> PLAY MATCH line naming getGuide with the top use case id and nothing when there is no match, and does scripts/hooks/useCases.ts write it as additionalContext only when there is text?'),
     'REQ-MCP-15': noul('Does runToolCall call setActivePlay when getGuide is given a useCase, does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
     'REQ-MCP-14': noul('Does the engines hook write its text when the event is SessionStart, and on any other event only when the text differs from the one saved in its last hook file?'),
@@ -146,6 +162,7 @@ export const mcpServer = {
     'REQ-MCP-14': MET,
     'REQ-MCP-15': MET,
     'REQ-MCP-16': MET,
+    'REQ-MCP-17': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

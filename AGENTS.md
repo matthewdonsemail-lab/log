@@ -2362,6 +2362,53 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Specs: `docs/specs/mcpServer.md` (REQ-MCP-16), `docs/specs/voiceGate.md`
     (REQ-VOICE-17).
 
+159. 2026-11-07 · matt: "we've got naming conventions, yet we don't have
+    hook conventions ... someone's already made a router ... we need to be
+    able to benchmark the re-injection ... a lean, fast P99, P95 injection
+    layer ... I type very quickly with spelling mistakes". Before this, the
+    word router from rule 158 matched 8% of his real prompts, mostly wrongly.
+    It also fired on task notifications, and 8 `bun` hooks ran on every
+    prompt (210 to 520 ms each). Now the context layer has conventions
+    (`docs/contextLayer.md`) and runs as one service:
+    - **One warm service per machine.** `scripts/contextLayer/service.ts`
+      (`src/contextLayer/service`) keeps MiniLM and the route index loaded on
+      `127.0.0.1:47317` (`LOG_CONTEXT_PORT`). The per-prompt hook is one curl
+      to it (`service` on an `AgentHook`, `serviceHookCommand`), and the `bun`
+      script after `||` only starts the service.
+    - **The router hears typos.** It follows aurelio-labs/semantic-router's
+      method (`src/useCases/router`):
+      - each word is corrected against the playbooks' own vocabulary
+        (`correctTypos`, one edit from 4 letters, two from 8);
+      - a long prompt is read as overlapping 14-word windows;
+      - each play is scored on its 5 closest asks, his own labelled prompts
+        among them;
+      - 70% meaning, 30% words.
+
+      At 0.63 and above it names the play (`>>> PLAY MATCH`). From 0.4375 it
+      lists the 3 closest, and the agent says which it follows or "none"
+      before any tool (`>>> MAYBE A PLAY`). Below that it says nothing. Task
+      notifications and system text are never routed (`isPrompt`).
+    - **The play comes back after compaction.** SessionStart (`startup`,
+      `resume`, `clear`, `compact`) reads the session's own transcript for the
+      last play it loaded and the last step it ran (`sessionPlayOf`), then
+      puts it back with each step marked done or to do (`>>> ACTIVE PLAY`,
+      `playReminder`).
+    - **Benchmarked, never assumed.** `bun scripts/useCases/benchRouter.ts`
+      scores the router 5-fold on matt's 420 labelled prompts
+      (`~/.logCli/contextLayer/labelledPrompts.json`, kept on matt's machine and never committed because the repo is public: his words, typos
+      kept, 107 plays and 313 "none"). It reports plays caught, wrong fires on
+      "none", the right play in the top 3, and p50/p95/p99. On 2026-11-07:
+      - the old word matcher caught 21% of plays and fired wrongly on 7.3%;
+      - the router caught 23% at 2.9% wrong fires, and had the right play in
+        its top 3 for 64%;
+      - p50/p95/p99 were 12/36/47 ms in the service, and the hook took 26 to
+        43 ms end to end.
+
+      Every hook writes a timing line to
+      `~/.logCli/contextLayer/timings.jsonl`. A change that lowers plays
+      caught or breaks the budget doesn't ship.
+    Spec: `docs/specs/mcpServer.md` (REQ-MCP-17).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

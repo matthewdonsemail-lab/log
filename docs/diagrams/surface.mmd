@@ -44,9 +44,10 @@ flowchart LR
   turn7{{"SessionStart: inbox.ts"}} -.-> agent
   turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
   turn9{{"SessionStart: queue.ts"}} -.-> agent
-  turn10{{"UserPromptSubmit: useCases.ts"}} -.-> agent
-  turn11{{"UserPromptSubmit: queue.ts"}} -.-> agent
-  turn12{{"SessionStart: xLive.ts"}} -.-> agent
-  turn13{{"UserPromptSubmit: xLive.ts"}} -.-> agent
-  turn14{{"Stop: pageState.ts"}} -.-> agent
+  turn10{{"SessionStart: useCases.ts"}} -.-> agent
+  turn11{{"UserPromptSubmit: useCases.ts"}} -.-> agent
+  turn12{{"UserPromptSubmit: queue.ts"}} -.-> agent
+  turn13{{"SessionStart: xLive.ts"}} -.-> agent
+  turn14{{"UserPromptSubmit: xLive.ts"}} -.-> agent
+  turn15{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0

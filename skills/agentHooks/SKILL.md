@@ -83,3 +83,12 @@ spec, [Agent hooks](../../docs/specs/agentHooks.md). It also refuses a
 `.mcp.json` or a server name that differ from `MCP_SERVER_NAME`. Hook scripts
 run against a scratch memory (`LOG_HOOK_MEMORY`), so the check never changes
 what the real hook remembers.
+
+## The context layer (rule 159)
+
+The per-prompt routing hook is a curl to one warm service, not a `bun` start. The conventions are in `docs/contextLayer.md`.
+
+- **Is it up?** `curl -s http://127.0.0.1:47317/health`. If it isn't, the next prompt's fallback, or the next session start, starts it (`scripts/contextLayer/service.ts`, its log at `~/.logCli/contextLayer/service.log`).
+- **How fast is it, and what did it decide?** One line per hook run in `~/.logCli/contextLayer/timings.jsonl`: event, provider, ms, chars and outcome.
+- **Did a router change make it better or worse?** Run `bun scripts/useCases/benchRouter.ts`, add `--fit` to write the threshold, and compare plays caught, wrong fires and p95 with the numbers in rule 159.
+- **A new play or a new way matt asks** goes into the page's "How the owner asks for it", or as a labelled prompt in `~/.logCli/contextLayer/labelledPrompts.json`, kept on matt's machine and never committed because the repo is public. The service reloads by itself.

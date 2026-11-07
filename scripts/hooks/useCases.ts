@@ -1,12 +1,18 @@
 #!/usr/bin/env bun
-import { listUseCases } from '../../src/mcp/server/helpers/index.ts'
-import { matchPlays, playMatchText } from '../../src/useCases/router/index'
+import { join } from 'node:path'
+import { hookAnswer, hookOutput } from '../../src/contextLayer/hook/index'
+import type { HookInput } from '../../src/contextLayer/hook/index'
+import { askRoute, logTiming, readService, startService } from '../../src/contextLayer/service/index'
 
+const started = performance.now()
 const raw = await Bun.stdin.text().catch(() => '')
-let input: { hook_event_name?: string; prompt?: string } = {}
+let input: HookInput = {}
 try {
-  input = JSON.parse(raw || '{}')
+  input = JSON.parse(raw || '{}') as HookInput
 } catch {}
-
-const text = playMatchText(matchPlays(String(input.prompt ?? ''), listUseCases()))
-if (text) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: input.hook_event_name ?? 'UserPromptSubmit', additionalContext: text } }))
+const service = readService()
+if (!service) startService(join(import.meta.dir, '..', '..'))
+const result = raw.trim() ? await hookAnswer(input, (prompt) => askRoute(prompt, service)) : { event: 'UserPromptSubmit', text: '', outcome: 'serviceDown' }
+logTiming({ event: result.event, provider: 'useCasesFallback', ms: performance.now() - started, chars: result.text.length, outcome: service ? result.outcome : `serviceStarting ${result.outcome}` })
+const body = hookOutput(result)
+if (body) process.stdout.write(body)
