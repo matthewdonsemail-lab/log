@@ -1361,7 +1361,7 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
     messages = 0
     unopened: dict[str, dict[str, Any]] = {}
 
-    async def deliver(event: dict[str, Any]) -> None:
+    async def deliver(event: dict[str, Any], late: dict[str, Any] | None = None) -> None:
         nonlocal messages
         sender = str(event.get("sender_id") or "")
         messages += 1
@@ -1374,7 +1374,7 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
             await save_xchat_media(client, spec, str(event.get("conversation_id")), [event])
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
-        live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
+        live_line({"type": "message", **xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked, **({"openedLate": late} if late else {})})
 
     async def reopen_due() -> None:
         while True:
@@ -1386,8 +1386,9 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
                 opened = await reopened(client, held["event"])
                 if opened is not None:
                     unopened.pop(key, None)
-                    live_line({"type": "unopened", "state": "opened", "eventId": key, "tries": held["tries"] + 1})
-                    await deliver(opened)
+                    late = {"tries": held["tries"] + 1, "waitedSeconds": round(now - held["since"]), "firstError": held["error"]}
+                    live_line({"type": "unopened", "state": "opened", "eventId": key, "conversationId": held["event"].get("conversation_id"), **late})
+                    await deliver(opened, late)
                     continue
                 held["tries"] += 1
                 if held["tries"] >= len(XCHAT_REOPEN_AFTER) + XCHAT_REOPEN_LATE_TRIES:
@@ -1406,8 +1407,9 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
                 continue
             if unlocked and event.get("text") is None and event.get("original_b64"):
                 key = str(event.get("event_id") or event["original_b64"][:40])
-                unopened.setdefault(key, {"event": event, "tries": 0, "due": time.time() + XCHAT_REOPEN_AFTER[0]})
-                live_line({"type": "unopened", "state": "waitingForKey", "eventId": key, "conversationId": event.get("conversation_id")})
+                error = redact(str(event.get("error") or "no error given"), cookies)[:200]
+                unopened.setdefault(key, {"event": event, "tries": 0, "since": time.time(), "error": error, "due": time.time() + XCHAT_REOPEN_AFTER[0]})
+                live_line({"type": "unopened", "state": "waitingForKey", "eventId": key, "conversationId": event.get("conversation_id"), "error": error})
                 continue
             await deliver(event)
     finally:

@@ -440,7 +440,7 @@ export function inboxContext(messages: readonly InboxMessage[]): string | null {
 }
 
 function twitterContext(messages: readonly InboxMessage[]): string {
-  const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${localTime(m.at)}: "${(m.text || '(encrypted)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
+  const lines = messages.map((m) => `  @${m.with} on ${m.platform} ${m.account}${m.box === 'xchat' ? ' (X Chat)' : ''} at ${localTime(m.at)}: "${(m.text || '(no text)').replace(/\s+/g, ' ').slice(0, 240)}" (conversation ${m.conversationId})`)
   const { platform, account } = messages[0]
   return [
     `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each person:`,
