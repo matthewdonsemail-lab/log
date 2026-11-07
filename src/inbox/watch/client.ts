@@ -480,7 +480,7 @@ export function storedWaiting(account: string, root: string = twitterStateRoot()
     if (!c.lastMs || !c.lastSender || c.lastSender === state.userId) continue
     const said = (c.messages ?? []).filter((m) => m.text != null)
     const last = said[said.length - 1]
-    rows.push({ conversationId, with: (c.participants ?? []).map((id) => c.handles?.[id] ? `@${c.handles[id]}` : id).join(', ') || '?', at: new Date(c.lastMs).toISOString(), text: last && last.time_ms === c.lastMs ? String(last.text) : '(not loaded yet: twitterDms with their handle opens it)', ms: c.lastMs })
+    rows.push({ conversationId, with: (c.participants ?? []).map((id) => c.handles?.[id] ? `@${c.handles[id]}` : namedLabel('twitter', account, id, id)).join(', ') || namedLabel('twitter', account, null), at: new Date(c.lastMs).toISOString(), text: last && last.time_ms === c.lastMs ? String(last.text) : '(not loaded yet: twitterDms with their handle opens it)', ms: c.lastMs })
   }
   rows.sort((a, b) => b.ms - a.ms)
   return { syncedAt: state.syncedAt ?? null, waiting: rows.slice(0, limit).map(({ ms: _ms, ...r }) => r), total: rows.length }

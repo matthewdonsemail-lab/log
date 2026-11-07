@@ -25,3 +25,22 @@ test('someone nobody has named yet is never shown as their id', async () => {
   expect(namedLabel('twitter', 'matthewsoldit', '999999999999')).toBe('someone not named yet')
   expect(namedLabel('twitter', 'matthewsoldit', 'RVAClassic')).toBe('RVAClassic')
 })
+
+test('someone known only from the X inbox (no notification, no event) is named from its handle map, and kept', async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync } = await import('node:fs')
+  const { join } = await import('node:path')
+  const { tmpdir } = await import('node:os')
+  const { personOf, xInboxHandleOf } = await import('./client')
+  const root = mkdtempSync(join(tmpdir(), 'xInbox-'))
+  mkdirSync(join(root, 'matthewsoldit'), { recursive: true })
+  writeFileSync(join(root, 'matthewsoldit', 'inboxSync.json'), JSON.stringify({ xchat: { '1852784336640331777:1974596626342686720': { handles: { '1852784336640331777': 'alex_whedon' } } } }))
+  expect(xInboxHandleOf('matthewsoldit', '1852784336640331777', root)).toBe('alex_whedon')
+  expect(xInboxHandleOf('matthewsoldit', '111', root)).toBeNull()
+  const before = process.env.LOG_TWITTER_STATE
+  process.env.LOG_TWITTER_STATE = root
+  expect(personOf('twitter', 'matthewsoldit', '1852784336640331777')).toBe('alex_whedon')
+  process.env.LOG_TWITTER_STATE = join(root, 'gone')
+  expect(personOf('twitter', 'matthewsoldit', '1852784336640331777')).toBe('alex_whedon')
+  if (before === undefined) delete process.env.LOG_TWITTER_STATE
+  else process.env.LOG_TWITTER_STATE = before
+})

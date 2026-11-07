@@ -146,8 +146,11 @@ export function personOf(platform: string, account: string, userId: string, on: 
   if (!userId) return null
   const id = userId.replace(/^@/, '')
   const row = on.prepare('SELECT handle FROM people WHERE platform = ? AND account = ? AND userId = ?').get(platform, account, id) as { handle: string } | null
-  const handle = row?.handle ?? handleOfUserId(platform, account, id)
-  return handle && !isBareId(handle) ? handle : null
+  if (row?.handle && !isBareId(row.handle)) return row.handle
+  const handle = handleOfUserId(platform, account, id)
+  if (!handle || isBareId(handle)) return null
+  rememberPerson(platform, account, id, handle, null, new Date(), on)
+  return handle
 }
 
 export function namedLabel(platform: string, account: string, label: string | null | undefined, userId = ''): string {
@@ -259,7 +262,23 @@ export function resumeGap(platform: string, account: string, by: string, now: Da
 export function handleOfUserId(platform: string, account: string, userId: string): string | null {
   const row = db().prepare("SELECT withWho FROM events WHERE platform = ? AND account = ? AND type = 'notification' AND withWho != '' AND json_extract(payload, '$.userId') = ? ORDER BY seq DESC LIMIT 1").get(platform, account, String(userId)) as { withWho: string } | null
   const handle = row?.withWho ? row.withWho.replace(/^@/, '') : ''
-  return handle && !isBareId(handle) ? handle : null
+  if (handle && !isBareId(handle)) return handle
+  return platform === 'twitter' ? xInboxHandleOf(account, String(userId)) : null
+}
+
+export function xInboxHandleOf(account: string, userId: string, root: string = process.env.LOG_TWITTER_STATE || join(homedir(), '.logCli', 'twitter')): string | null {
+  const file = join(root, account, 'inboxSync.json')
+  if (!userId || !existsSync(file)) return null
+  try {
+    const state = JSON.parse(readFileSync(file, 'utf8')) as { xchat?: Record<string, { handles?: Record<string, string> }> }
+    for (const conversation of Object.values(state.xchat ?? {})) {
+      const handle = conversation.handles?.[userId]?.replace(/^@/, '')
+      if (handle && !isBareId(handle)) return handle
+    }
+  } catch {
+    return null
+  }
+  return null
 }
 
 export function behindOf(platform: string, account: string): GapRow | null {
