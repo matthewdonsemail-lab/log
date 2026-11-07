@@ -69,7 +69,7 @@ export const launchDeps: {
     return !spawnSync(command, args, { stdio: "ignore", windowsHide: true }).error;
   },
   runInTerminal: (command, args) => {
-    const run = spawnSync(command, [...args], { stdio: "inherit", shell: process.platform === "win32" });
+    const run = spawnSync(command, [...args], { stdio: "inherit", shell: process.platform === "win32", windowsHide: true });
     return { found: !run.error && run.status !== 9009 && run.status !== 127, code: run.status ?? 1 };
   },
   adsPowerUp: async () => {
