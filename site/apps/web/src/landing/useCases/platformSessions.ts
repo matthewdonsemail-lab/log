@@ -62,10 +62,28 @@ const REDDIT: SessionEvent[] = [
   { kind: 'assistant', text: 'The account’s browser is on r/smallbusiness and the page is recorded. Nothing was clicked: clicks and typing only happen with --live.' },
 ]
 
+const REA_LOOKSMAXXING: SessionEvent[] = [
+  { kind: 'user', text: '/rea-looksmaxxing how clavicular gets paid' },
+  { kind: 'tool', name: 'getGuide', args: '{ useCase: "inbox/reaLooksmaxxing" }', result: ['rea-looksmaxxing: clips → formula → accounts → post → replies → funnel'] },
+  { kind: 'tool', name: 'catalog_search', args: '{ query: "tiktok search videos" }', result: ['treg.tiktok.search.videos · priced per call', 'routed: TikHub, ScrapeCreators'], server: 'treg' },
+  { kind: 'tool', name: 'call', args: '{ id: "treg.tiktok.search.videos", data: { keyword: "clavicular" } }', result: ['40 clips, top one 8.44M views', '@bestclavicularclips "NEVER DRINK" 578K'], server: 'treg' },
+  { kind: 'assistant', text: 'His formula: comedy skits 3.7M, mog edits 1.75M, morning routines 1.5M, "NEVER do X" takes 579K. He sells a $1,000 looksmaxxing program. Posting the top format from your account.' },
+  { kind: 'tool', name: 'twitterSessionCheck', args: '{ account: "you" }', result: ['X says loggedIn'] },
+  { kind: 'user', text: 'yeah post it' },
+  { kind: 'tool', name: 'twitterPostLive', args: '{ account: "you", text: "NEVER sleep on your back if you want a jawline…", approvedBy: "you", confirmLive: true }', result: ['posted, X answered with its id'] },
+  { kind: 'tool', name: 'twitterNotifications', args: '{ account: "you" }', result: ['31 replies, 212 likes', 'mogger_420: how do i look like that'] },
+  { kind: 'tool', name: 'twitterDms', args: '{ account: "you", with: "mogger_420" }', result: ['mogger_420 replied to your post', 'no DMs yet'] },
+  { kind: 'tool', name: 'voice', args: '{ to: "mogger_420", context: "how do i look like that", text: "start with the morning routine, its all in the discord" }', result: ['mogger_420 PASS: voice 0.95 · answers them 0.94'] },
+  { kind: 'tool', name: 'twitterDmLive', args: '{ account: "you", userId: "…", approvedBy: "you", confirmLive: true }', result: ['sent', 'X answered ok'] },
+  { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "camp #welcome", text: "welcome in mogger" }', result: ['sent, Discord shows it'] },
+  { kind: 'assistant', text: 'Posted the formula, answered mogger_420 in your voice and welcomed him in the Discord. 30 more replies are queued, minutes apart.' },
+]
+
 export const PLATFORM_SESSIONS: Record<string, PlatformSession> = {
   slack: { thread: 'Reply to Priya on Slack', recents: ['Reply to Priya on Slack', 'Read the team DMs', 'React to her answer'], events: SLACK },
   instagram: { thread: 'Answer my Instagram DMs', recents: ['Answer my Instagram DMs', 'Send Maya a meme', 'Voice note to Maya'], events: INSTAGRAM },
   discord: { thread: 'Catch up on #marketing', recents: ['Catch up on #marketing', 'Meme in the chat', 'Voice note to the group'], events: DISCORD },
   x: { thread: 'Answer my X DMs', recents: ['X inbox follow-ups', 'Network maxing', 'Reply to the comments'], events: SESSION },
+  reaLooksmaxxing: { thread: '/rea-looksmaxxing', recents: ['/rea-looksmaxxing', 'Answer the replies', 'Funnel to the Discord'], events: REA_LOOKSMAXXING },
   reddit: { thread: 'Check my Reddit', recents: ['Check my Reddit', 'Look at r/smallbusiness', 'Run the recorded steps'], events: REDDIT },
 }

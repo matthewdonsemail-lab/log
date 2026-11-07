@@ -10,6 +10,9 @@ import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
 import { DitherFade } from './DitherFade'
 import { HowItWorks } from './HowItWorks'
 import { PlatformScroll } from './platformStories'
+import { PlatformMoney } from './PlatformMoney'
+import { PLATFORM_SESSIONS } from './platformSessions'
+import { Control, Dashed } from '../Control'
 import { MoreUseCases, PromptCta, ThreeSteps } from './UseCasesPage'
 import { REA_LOOKSMAXXING } from './reaLooksmaxxing'
 
@@ -91,18 +94,11 @@ function ClavTweet() {
     document.body.appendChild(script)
   }, [])
   return (
-    <section aria-label="Clavicular's post" className="w-full bg-white px-4 pb-16 md:px-6">
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
-        <h2 className="text-title text-[#0D2A4C]">
-          Even Clavicular has <span className={STICKER}>Claude Code in his DMs.</span>
-        </h2>
-        <div ref={box} className="flex w-full justify-center">
-          <blockquote className="twitter-tweet" data-dnt="true" data-theme="light" data-align="center">
-            <a href={TWEET_URL}>A post from @clavicular on X</a>
-          </blockquote>
-        </div>
-      </div>
-    </section>
+    <div ref={box} className="flex w-full max-w-[550px] justify-center">
+      <blockquote className="twitter-tweet" data-dnt="true" data-theme="light" data-align="center">
+        <a href={TWEET_URL}>A post from @clavicular on X</a>
+      </blockquote>
+    </div>
   )
 }
 
@@ -126,7 +122,37 @@ export function ReaLooksmaxxingPage() {
       />
       <Hero />
       <PlatformScroll platformId="reaLooksmaxxing" ctaHref={LOG_REPO_URL} />
-      <ClavTweet />
+      <Control
+        title={
+          <>
+            The best tool for
+            <br className="hidden sm:block" /> <span className={STICKER}>moneymaxxing.</span>
+          </>
+        }
+        lede={
+          <>
+            treg finds the <Dashed>viral formula</Dashed>, log posts it through your accounts and answers <Dashed>every reply in your voice</Dashed>, right to the offer.
+          </>
+        }
+        session={PLATFORM_SESSIONS.reaLooksmaxxing}
+        platformLabel="social media"
+      />
+      <PlatformMoney
+        platformId="reaLooksmaxxing"
+        platformLabel="X"
+        ctaHref={LOG_REPO_URL}
+        embed={<ClavTweet />}
+        title={
+          <>
+            Even Clavicular has <span className={STICKER}>Claude Code</span> in his <span className={STICKER}>DMs</span>
+          </>
+        }
+        subline={
+          <>
+            His DMs are full of money. Set up log and just <span className={STICKER}>get after it</span>
+          </>
+        }
+      />
       <ThreeSteps play={REA_LOOKSMAXXING} platform={{ ...X, label: 'socials' }} icon={faXTwitter} />
       <PromptCta title="Run /rea-looksmaxxing with your agent" ask={REA_LOOKSMAXXING.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh -s -- --skills rea-looksmaxxing" />
       <MoreUseCases current={null} />

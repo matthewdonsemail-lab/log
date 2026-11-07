@@ -1,5 +1,5 @@
 import { RepoLink } from '../RepoLink'
-import { useRef, type CSSProperties } from 'react'
+import { useRef, type CSSProperties, type ReactNode } from 'react'
 import { useInView } from 'motion/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -113,6 +113,25 @@ const WALLS: Record<string, Wall> = {
       { who: 'jess_writes', text: 'need a ghostwriter, 3 posts a week, rates?' },
     ],
   },
+  reaLooksmaxxing: {
+    icon: faXTwitter,
+    where: 'X',
+    card: 'bg-white ring-1 ring-[#EFF3F4]',
+    name: 'text-[#0F1419]',
+    text: 'text-[#0F1419]',
+    muted: 'text-[#536471]',
+    threads: [
+      { who: 'mogger_420', text: 'how do i look like that' },
+      { who: 'gymcel_99', text: 'what does he eat in a day bro' },
+      { who: 'lookscope_ana', text: 'is this ai' },
+      { who: 'jawline_jay', text: 'where do i sign up for the program' },
+      { who: 'mewing_max', text: 'is the morning routine in the discord?' },
+      { who: 'chadlite_k', text: 'how much is the coaching' },
+      { who: 'ice_face_tom', text: 'facial icing actually works??' },
+      { who: 'softmaxx_li', text: 'link in bio is broken, where do i join' },
+      { who: 'ascend_eli', text: 'bro i need this, how do i start' },
+    ],
+  },
   reddit: {
     icon: faReddit,
     where: 'r/smallbusiness',
@@ -166,7 +185,21 @@ function ThreadCard({ thread, wall }: { thread: Thread; wall: Wall }) {
   )
 }
 
-export function PlatformMoney({ platformId, platformLabel, ctaHref }: { platformId: string; platformLabel: string; ctaHref: string }) {
+export function PlatformMoney({
+  platformId,
+  platformLabel,
+  ctaHref,
+  embed,
+  title,
+  subline,
+}: {
+  platformId: string
+  platformLabel: string
+  ctaHref: string
+  embed?: ReactNode
+  title?: ReactNode
+  subline?: ReactNode
+}) {
   const wall = WALLS[platformId] ?? WALLS.x
   const ref = useRef<HTMLElement>(null)
   const on = useInView(ref, { margin: '200px' })
@@ -195,13 +228,20 @@ export function PlatformMoney({ platformId, platformLabel, ctaHref }: { platform
             WebkitMaskImage: 'radial-gradient(ellipse at center, black 42%, rgba(0,0,0,0.9) 68%, transparent 100%)',
           }}
         />
-        <img src="/logo.svg" alt="ListeningKit logo" className="size-24 rounded-[22%] object-contain sm:size-32" />
+        {embed ?? <img src="/logo.svg" alt="ListeningKit logo" className="size-24 rounded-[22%] object-contain sm:size-32" />}
         <h2 className="mt-8 max-w-4xl text-5xl leading-[1.05] text-[#0D2A4C] sm:text-7xl" style={HAND}>
-          There&apos;s literally <span className={STICKER}>so much money</span> sitting on your{' '}
-          <span className={STICKER}>{platformLabel}</span>
+          {title ?? (
+            <>
+              There&apos;s literally <span className={STICKER}>so much money</span> sitting on your <span className={STICKER}>{platformLabel}</span>
+            </>
+          )}
         </h2>
         <p className="mx-auto mt-8 max-w-3xl text-2xl leading-snug text-[#0D2A4C]/80 sm:text-3xl" style={HAND}>
-          I&apos;m begging and crying you, set up log and just <span className={STICKER}>get after it</span>
+          {subline ?? (
+            <>
+              I&apos;m begging and crying you, set up log and just <span className={STICKER}>get after it</span>
+            </>
+          )}
         </p>
         <RepoLink
           href={ctaHref}

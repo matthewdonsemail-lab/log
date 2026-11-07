@@ -140,7 +140,7 @@ function ClaudeWindow({ visible, settled, round, events, recents }: WindowProps)
                 <div className="overflow-hidden rounded-lg border border-[#E5E0D6] bg-white/60 font-sans text-sm">
                   <div className="flex items-center gap-2 px-3 py-2">
                     <FontAwesomeIcon icon={faPlug} className="text-xs text-[#8a8780]" />
-                    <span className="font-medium">log</span>
+                    <span className="font-medium">{event.server ?? 'log'}</span>
                     <span className="text-[#8a8780]">·</span>
                     <span className="font-medium">{event.name}</span>
                     <span className="min-w-0 flex-1 truncate font-mono text-xs text-[#8a8780]">{event.args}</span>
@@ -243,7 +243,7 @@ function CodexWindow({ visible, settled, round, events, recents, thread }: Windo
                       <FontAwesomeIcon icon={faCircleNotch} spin className="text-[11px]" />
                     )}
                     <span>{done ? 'Called' : 'Calling'}</span>
-                    <span className="rounded bg-[#f3f3f3] px-1.5 py-0.5 font-mono text-xs text-[#0d0d0d]">log.{event.name}</span>
+                    <span className="rounded bg-[#f3f3f3] px-1.5 py-0.5 font-mono text-xs text-[#0d0d0d]">{event.server ?? 'log'}.{event.name}</span>
                   </div>
                   {done ? (
                     <div className="mt-2 rounded-xl bg-[#f9f9f9] px-3 py-2 font-mono text-xs leading-5 text-[#5d5d5d]">
