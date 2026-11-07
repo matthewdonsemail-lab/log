@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { clearDeadQueueLocks, coolingDown, inboxContext, localTime, stopStaleWatchers } from "./index.ts";
+import { WATCHER_CODE, clearDeadQueueLocks, coolingDown, inboxContext, localTime, stopStaleWatchers } from "./index.ts";
 import { clearDeadLock, liveLock } from "../../twitter/queue/plan/index.ts";
 
 beforeEach(() => {
@@ -69,5 +69,15 @@ describe("nothing runs stale (rule 108)", () => {
     expect(text).not.toContain("send only when he says");
     expect(text).toContain(localTime("2026-11-01T16:08:00Z"));
     expect(text).not.toContain(" UTC:");
+  });
+});
+
+describe("each platform's watcher restarts only on its own code", () => {
+  test("Reddit's engine never restarts the X, Discord, Slack or Instagram watcher", () => {
+    for (const dirs of Object.values(WATCHER_CODE)) {
+      expect(dirs.some((d) => d.includes("redditApi"))).toBe(false);
+      expect(dirs).not.toContain("python");
+    }
+    expect(Object.keys(WATCHER_CODE).sort()).toEqual(["discord", "instagram", "slack", "twitter"]);
   });
 });
