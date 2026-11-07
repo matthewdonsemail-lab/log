@@ -4,6 +4,7 @@ export type Anchor =
   | { kind: 'symbol'; file: string; name: string }
   | { kind: 'value'; file: string; name: string; path?: string[]; equals: AnchorValue }
   | { kind: 'string'; file: string; includes: string }
+  | { kind: 'uses'; file: string; name: string }
 
 export type RequirementAnchors = Record<string, Anchor[]>
 
@@ -34,4 +35,5 @@ export interface PythonSymbol {
 export interface PythonFile {
   symbols: Record<string, PythonSymbol>
   strings: string[]
+  names: string[]
 }

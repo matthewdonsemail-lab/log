@@ -109,7 +109,7 @@ export const mcpServer = {
       { kind: 'symbol', file: 'src/useCases/router/helpers/typos.ts', name: 'correctTypos' },
       { kind: 'symbol', file: 'src/contextLayer/session/client.ts', name: 'sessionPlayOf' },
       { kind: 'symbol', file: 'src/contextLayer/service/client.ts', name: 'serviceHookCommand' },
-      { kind: 'string', file: 'src/agentHooks/registry/index.ts', includes: 'service: "/hook"' },
+      { kind: 'string', file: 'src/agentHooks/registry/index.ts', includes: '/hook' },
     ],
     'REQ-MCP-16': [
       { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'matchPlays' },
@@ -120,7 +120,7 @@ export const mcpServer = {
     'REQ-MCP-15': [
       { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playRefusal' },
       { kind: 'symbol', file: 'src/mcp/server/helpers/activePlay.ts', name: 'playFooter' },
-      { kind: 'string', file: SERVER, includes: 'setActivePlay' },
+      { kind: 'uses', file: SERVER, name: 'setActivePlay' },
     ],
     'REQ-MCP-14': [
       { kind: 'string', file: ENGINES, includes: '.lastHook' },

@@ -61,6 +61,22 @@ describe('anchors: what a rule names is proved by the syntax tree (rule 117)', (
     expect(problems.some((f) => f.healable)).toBe(false)
   })
 
+  test('a name a file uses is proved by its identifiers, not its strings, in TypeScript and Python', () => {
+    const uses: RequirementAnchors = {
+      'REQ-SPLIT-09': [
+        { kind: 'uses', file: 'src/cli/discord/index.ts', name: 'continuesSend' },
+        { kind: 'uses', file: 'python/platformKit/engine.py', name: 'continues_send' },
+      ],
+    }
+    expect(checkAnchors(root, 'pilot', uses).findings).toEqual([])
+    const dir = copyOf(['src/cli/discord/index.ts', 'python/platformKit/engine.py'])
+    const ts = join(dir, 'src/cli/discord/index.ts')
+    const py = join(dir, 'python/platformKit/engine.py')
+    writeFileSync(ts, readFileSync(ts, 'utf8').replace(/continuesSend/g, 'gone'))
+    writeFileSync(py, readFileSync(py, 'utf8').replace(/continues_send/g, 'gone'))
+    expect(checkAnchors(dir, 'pilot', uses).findings.map((f) => f.problem)).toEqual(['continuesSend is not used in src/cli/discord/index.ts', 'continues_send is not used in python/platformKit/engine.py'])
+  })
+
   test('the slice holds only the declarations the requirement names', () => {
     const slice = sliceOf(root, anchors)
     expect(slice).toContain('WRITES_PER_DAY')

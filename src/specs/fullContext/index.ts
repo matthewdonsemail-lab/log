@@ -45,7 +45,7 @@ export const fullContext = {
       { kind: 'symbol', file: 'src/inbox/dbRead/client.ts', name: 'readSourceFor' },
       { kind: 'symbol', file: 'src/inbox/dbRead/client.ts', name: 'findInChatList' },
       { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'serverChannel' },
-      { kind: 'string', file: 'src/cli/twitter/helpers/dms.ts', includes: 'readSourceFor' },
+      { kind: 'uses', file: 'src/cli/twitter/helpers/dms.ts', name: 'readSourceFor' },
     ],
     'REQ-CONTEXT-10': [
       { kind: 'symbol', file: 'src/inbox/context/client.ts', name: 'chatContextOf' },

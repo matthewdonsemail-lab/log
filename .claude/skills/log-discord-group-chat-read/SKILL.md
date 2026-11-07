@@ -42,4 +42,5 @@ A busy group runs about 100 messages an hour, so a 5 hour window needs a limit n
 - **A chat is named, never passed by id.** A `discordRead` with a bare id is refused by the chat-names hook (rule 155): pass "A", "aeo" or "<server> #<channel>", and the tool finds the id in the kept chat list.
 - **The read comes from the .db when it is current.** Once the account has caught up and the chat was backfilled, `discordRead` answers from the .db in milliseconds and says so; Discord is read only to fill a chat the .db doesn't hold yet (rule 160).
 - **A message with no text is never answered blind.** An empty message with no attachment saved (a sticker, a call, an embed) is told to the owner as it is, and nothing is drafted until it can be placed.
+- **When the owner is live in the chat, leave it to him.** If his own message comes after theirs, he is already answering: release the claim and send nothing. A question only he can answer (when he's flying home, a date, a plan he hasn't said) waits for him, whoever is reading.
 - **Secrets posted in the chat** (keys, tokens) are never repeated in the summary; tell the owner to rotate them.

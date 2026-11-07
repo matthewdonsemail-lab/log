@@ -27,13 +27,13 @@ export const voiceGate = {
     'REQ-VOICE-19': [
       { kind: 'symbol', file: 'src/voice/brief/client.ts', name: 'readBrief' },
       { kind: 'value', file: 'src/voice/brief/types.ts', name: 'BRIEF_PASS', equals: 0.7 },
-      { kind: 'string', file: COMMAND, includes: 'gateBrief' },
-      { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'filesOf' },
+      { kind: 'symbol', file: COMMAND, name: 'gateBrief' },
+      { kind: 'symbol', file: 'src/cli/discord/index.ts', name: 'filesOf' },
     ],
     'REQ-VOICE-18': [
       { kind: 'symbol', file: 'src/voice/passes/client.ts', name: 'recentPass' },
       { kind: 'value', file: 'src/voice/passes/types.ts', name: 'PASS_REUSE_MS', equals: 600000 },
-      { kind: 'string', file: COMMAND, includes: 'recordPass' },
+      { kind: 'uses', file: COMMAND, name: 'recordPass' },
     ],
     'REQ-VOICE-17': [
       { kind: 'symbol', file: COMMAND, name: 'rewriteSteps' },

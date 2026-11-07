@@ -91,6 +91,11 @@ export function checkAnchors(root: string, domain: string, anchors: RequirementA
       if (!strings.some((s) => s.includes(anchor.includes))) miss(`no string "${anchor.includes}" in ${anchor.file}`)
       continue
     }
+    if (anchor.kind === 'uses') {
+      const names = anchor.file.endsWith('.py') ? py[anchor.file]!.names : project.addSourceFileAtPath(path).getDescendantsOfKind(SyntaxKind.Identifier).map((n) => n.getText())
+      if (!names.includes(anchor.name)) miss(`${anchor.name} is not used in ${anchor.file}`)
+      continue
+    }
     if (anchor.file.endsWith('.py')) {
       const symbol = py[anchor.file]!.symbols[anchor.name]
       if (!symbol) {
@@ -140,7 +145,7 @@ export function checkAnchors(root: string, domain: string, anchors: RequirementA
 
 export function sliceOf(root: string, anchors: RequirementAnchors): string {
   const project = new Project({ skipAddingFilesFromTsConfig: true, skipFileDependencyResolution: true })
-  const named = Object.values(anchors).flat().filter((a): a is Exclude<Anchor, { kind: 'string' }> => a.kind !== 'string' && existsSync(join(root, a.file)))
+  const named = Object.values(anchors).flat().filter((a): a is Extract<Anchor, { kind: 'symbol' | 'value' }> => (a.kind === 'symbol' || a.kind === 'value') && existsSync(join(root, a.file)))
   const py = pythonSymbols(root, [...new Set(named.map((a) => a.file).filter((f) => f.endsWith('.py')))])
   const seen = new Set<string>()
   const parts: string[] = []
