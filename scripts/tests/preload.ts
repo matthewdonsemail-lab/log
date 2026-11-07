@@ -21,6 +21,7 @@ process.env.LOG_INSTAGRAM_HOST ??= 'inline'
 delete process.env.LOG_ADSPOWER_HOMES
 process.env.LOG_FBK_STATE = mkdtempSync(join(tmpdir(), "logFbkState"));
 process.env.LOG_MCP_STAMP_FILE ??= join(scratch, 'mcpServer.json')
+process.env.LOG_MCP_RELOAD_FILE ??= join(scratch, 'mcpReload.json')
 process.env.LOG_TWITTER_STATE ??= join(scratch, "twitterState")
 process.env.LOG_PLATFORM_STATE ??= join(scratch, "platformState")
 process.env.LOG_CONVERSATIONS_DIR ??= join(scratch, "conversations")

@@ -2538,6 +2538,31 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     spends nothing, and topping up is matt's (rule 41). Spec:
     `docs/specs/balance.md`.
 
+167. 2026-11-07 · matt: "we need to make it so that we're not needing to
+    restart every time that we make a change ... it takes up at least 3
+    minutes of mine to close Claude Code and reopen it", then the options
+    put to a SubQ matrix (issue #85; `docs/decisions/mcpReload`, own proxy
+    0.97 against reloaderoo, mcpmon, mcp-reloader and in-process
+    re-import). `logMcp` is a small reload proxy that never exits
+    (`src/mcp/reload`). It owns Claude Code's stdio pipe and runs the real
+    server as a child (`logMcp --child`). When log's code stamp
+    (`codeStamp`) is newer than the child's, it reloads, but only while no
+    call is in flight and no job runs in the child (`listJobs`), so a queue
+    run or a watch is never killed:
+    - it starts a new child and replays the client's `initialize`;
+    - once the child answers, it sends `notifications/initialized`, stops
+      the old child and sends `notifications/tools/list_changed` up.
+    A call caught by a crash is answered with `logMcpRestarted` so the
+    client calls again. New code that doesn't start leaves the old child
+    running and says why, and the next change tries again. Its state is
+    `~/.logCli/mcp/reload.json` (`LOG_MCP_RELOAD_FILE`). The stale-server
+    hook line no longer tells matt to restart while the proxy runs. It
+    says only what the reload is waiting on, or why the new code failed.
+    A tool added since Claude Code started is reached at once through
+    `logCall` (rule 163), since Windows clients have been seen ignoring
+    `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
+    proxy. Spec: `docs/specs/mcpReload.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
