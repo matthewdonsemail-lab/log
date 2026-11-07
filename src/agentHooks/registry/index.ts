@@ -17,6 +17,7 @@ const KNOWLEDGE = "scripts/hooks/knowledge.ts";
 const QUEUE = "scripts/hooks/queue.ts";
 const X_LIVE = "scripts/hooks/xLive.ts";
 const CHAT_NAMES = "scripts/hooks/chatNames.ts";
+const USE_CASES = "scripts/hooks/useCases.ts";
 
 export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: PAGE_STATE, timeout: 20, why: "where every open browser is, the moment a session starts or comes back from compaction" },
@@ -30,6 +31,7 @@ export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "UserPromptSubmit", script: INBOX, timeout: 15, why: "the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: INBOX, timeout: 15, why: "the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once" },
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: QUEUE, timeout: 10, why: "what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)" },
+  { event: "UserPromptSubmit", script: USE_CASES, timeout: 10, why: "the play matt's prompt asks for, matched against every use case's own \"How the owner asks for it\" phrases and title, named with getGuide to load it before anything is done (rule 158)" },
   { event: "UserPromptSubmit", script: QUEUE, timeout: 10, why: "the same queue events with each of matt's prompts" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: QUEUE, timeout: 10, why: "the same queue events after a log tool or shell call, so a held item or a cool-off is acted on at once" },
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: X_LIVE, timeout: 10, why: "what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)" },

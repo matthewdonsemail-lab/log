@@ -113,6 +113,15 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/useCases.ts\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/queue.ts\"",
             "timeout": 10
           }

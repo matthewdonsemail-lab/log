@@ -229,10 +229,11 @@ flowchart LR
   turn7{{"SessionStart: inbox.ts"}} -.-> agent
   turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
   turn9{{"SessionStart: queue.ts"}} -.-> agent
-  turn10{{"UserPromptSubmit: queue.ts"}} -.-> agent
-  turn11{{"SessionStart: xLive.ts"}} -.-> agent
-  turn12{{"UserPromptSubmit: xLive.ts"}} -.-> agent
-  turn13{{"Stop: pageState.ts"}} -.-> agent
+  turn10{{"UserPromptSubmit: useCases.ts"}} -.-> agent
+  turn11{{"UserPromptSubmit: queue.ts"}} -.-> agent
+  turn12{{"SessionStart: xLive.ts"}} -.-> agent
+  turn13{{"UserPromptSubmit: xLive.ts"}} -.-> agent
+  turn14{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
 ```
 
@@ -766,6 +767,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114) |
+| UserPromptSubmit | every turn | [`scripts/hooks/useCases.ts`](../scripts/hooks/useCases.ts) | the play matt's prompt asks for, matched against every use case's own "How the owner asks for it" phrases and title, named with getGuide to load it before anything is done (rule 158) |
 | UserPromptSubmit | every turn | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | the same queue events with each of matt's prompts |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | the same queue events after a log tool or shell call, so a held item or a cool-off is acted on at once |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/xLive.ts`](../scripts/hooks/xLive.ts) | what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115) |
@@ -776,7 +778,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, knowledge.ts, inbox.ts, queue.ts, xLive.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts, queue.ts, xLive.ts), Stop (pageState.ts).
+Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, knowledge.ts, inbox.ts, queue.ts, xLive.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts, useCases.ts, queue.ts, xLive.ts), Stop (pageState.ts).
 
 ### The hooks in one turn
 
@@ -802,6 +804,7 @@ sequenceDiagram
   Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
   Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
+  Note over Hook: the play matt's prompt asks for, matched against every use case's own #quot;How the owner asks for it#quot; phrases and title, named with getGuide to load it before anything is done (rule 158)
   Note over Hook: the same queue events with each of matt's prompts
   Note over Hook: the same X live state with each of matt's prompts, only what is new for this session
   loop each tool call

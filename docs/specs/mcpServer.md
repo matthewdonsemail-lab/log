@@ -98,6 +98,12 @@ The engines hook writes its text at every session start, and on a prompt only wh
 
 Checked by: code and SubQ
 
+### REQ-MCP-16: The prompt is matched to a play, and every play is a skill
+
+`matchPlays` in `src/useCases/router/client.ts` scores a prompt against every use case from `listUseCases` by content words (`contentWords`, stop words and links left out) over each page's quoted "How the owner asks for it" phrases and its title (`phrasesOf`), keeps those at `MATCH_FLOOR` (0.6) or above, best first, at most `MATCHES_SHOWN` (2), and `playMatchText` turns them into a `>>> PLAY MATCH` line telling the agent to load the top one with `getGuide({ useCase })` before anything else; with no match it says nothing. The UserPromptSubmit hook `scripts/hooks/useCases.ts`, registered in `src/agentHooks/registry/index.ts`, writes that text as `additionalContext` only when there is one. `scripts/docs/syncSiteSkills.mjs` writes every `docs/useCases/<platform>/<page>.md` as the skill `log-<platform>-<page>` (its description the title and lead, its `when_to_use` the page's own asks or else its title, its body saying to load the play with `getGuide` first) into `.claude/skills/` and `/.well-known/skills/`, and `--check` refuses one out of step. matt, 2026-11-07: "how do the guides get CALLED when I say something". Rule 158.
+
+Checked by: code and SubQ
+
 ### REQ-MCP-15: The loaded use case is the session's play, and sends need one
 
 When `getGuide` is called with a `useCase`, `runToolCall` in `src/mcp/server/index.ts` makes it the active play with `setActivePlay` (`src/mcp/server/helpers/activePlay.ts`), which reads the page's steps table (`stepsOf`: each row's number, step, tools named in backticks, and done when). Every other tool's answer then ends with `playFooter`: the play's id and title, the step this tool is and what counts as done, and the next step with its tools, or that the tool isn't one of the play's steps. A tool in `PLAY_REQUIRED` (the live sends as matt) is refused by `playRefusal` with `playMissing` while no play is loaded, naming the use cases whose pages name that tool. matt, 2026-11-07: the guides were not being called for actions. Rule 157.

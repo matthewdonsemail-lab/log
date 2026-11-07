@@ -19,6 +19,7 @@ sequenceDiagram
   Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
   Note over Hook: the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent
+  Note over Hook: the play matt's prompt asks for, matched against every use case's own #quot;How the owner asks for it#quot; phrases and title, named with getGuide to load it before anything is done (rule 158)
   Note over Hook: the same queue events with each of matt's prompts
   Note over Hook: the same X live state with each of matt's prompts, only what is new for this session
   loop each tool call

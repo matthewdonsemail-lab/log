@@ -100,6 +100,12 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-17: A refused draft says where to look before it is rewritten
+
+When `gateSend` in `src/cli/twitter/helpers/voice.ts` refuses a draft with `voiceGateFailed`, or `sameAsSent` refuses it, the refusal ends with `rewriteSteps`: call `voice` with the person (and what they said) and no text, to read their thread and matt's real replies to things like it; call `search` for what matt has said on it before; then write from those, unlike anything sent today. matt, 2026-11-07: "you don't even try to look ... you don't try to search". Rule 158.
+
+Checked by: code and SubQ
+
 ### REQ-VOICE-16: No two messages read alike
 
 `sameAsSent` in `src/cli/twitter/helpers/voice.ts` reads what the account sent in the last `SAMENESS_WINDOW_HOURS` (24) from the .db (`ownTextsSince` in `src/inbox/store/client.ts`, one text per conversation) and refuses the draft when `samenessOf` in `src/voice/sameness/client.ts` finds half or more of its word pairs (`SAMENESS_LIMIT`, 0.5), with links left out, already in one of them; a draft with fewer than `SAMENESS_MIN_PAIRS` (3) word pairs is never refused. `gateSend` runs it through `gateDeps.same` before the voice gate's reading, and the twitter dm and Discord sends run it before their `overGate` skip, refusing `sameAsSent`. `itemProblems` in `src/twitter/queue/plan/client.ts` adds a `sameAsSent` problem for every pending item that `batchSameness` finds repeating an earlier item of the same queue. matt, 2026-11-07: the share-asks that day differed only in their first line. Rule 157.
