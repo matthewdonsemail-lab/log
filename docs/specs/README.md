@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 39 domains, 460 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 40 domains, 465 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -598,6 +598,16 @@ Every paid provider log calls, with what is left, so a failing voice note, gate 
 - **REQ-BALANCE-03** Without a balance API, the last real answer decides
 - **REQ-BALANCE-04** Each paid call's answer is kept
 - **REQ-BALANCE-05** Out of credit is said in the failure itself
+
+## [Mobile devices](./mobile.md)
+
+Real phones as a device layer: `log mobile android|apple <platform>`, one phone per account, USB phones over ADB and GeeLark cloud phones over the same ADB. Rules 8, 29, 105 and 167.
+
+- **REQ-MOBILE-01** Every reachable Android phone is listed
+- **REQ-MOBILE-02** One phone per account, one account per phone, kept for good
+- **REQ-MOBILE-03** A GeeLark phone is reached the way GeeLark documents
+- **REQ-MOBILE-04** Inspect records the screen and taps nothing
+- **REQ-MOBILE-05** Apple is refused until it is built
 
 ## [Instagram](./instagram.md)
 

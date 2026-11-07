@@ -195,7 +195,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it |
 | `extensions` | Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, and every paid provider's balance |
-| `newPlatform` | Making a new platform whole with one command, and where every new file goes |
+| `newPlatform` | Making a new platform whole with one command, where every new file goes, and real phones as a device layer (log mobile android|apple <platform>) |
 | `instagram` | An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch |
 
 ## How a run reports back

@@ -35,7 +35,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   runsAndEvidence: { about: "What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself", commands: ["any:runs", "facebook:capture", "any:errors", "any:graph", "any:job", "any:mcp"], skills: ["runs", "reaCapture"] },
   knowledgeAndSearch: { about: "Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it", commands: ["any:kb", "any:search", "any:transcribe", "any:media"], skills: ["knowledgeBase"] },
   extensions: { about: "Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, and every paid provider's balance", commands: ["any:memelord", "any:clone", "any:balance"], skills: ["memelord", "voiceClone"] },
-  newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
+  newPlatform: { about: "Making a new platform whole with one command, where every new file goes, and real phones as a device layer (log mobile android|apple <platform>)", commands: ["any:new", "any:mobile"], skills: ["layout"] },
   instagram: { about: "An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch", commands: ["instagram:session", "instagram:dms", "instagram:send", "instagram:react", "instagram:voice", "instagram:watch"], skills: ["instagram"] },
 };
 
