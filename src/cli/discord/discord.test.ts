@@ -8,6 +8,7 @@ import type { PlatformEngineRun } from "../../platformKit/session/index.ts";
 import { DISCORD_PLATFORM } from "../../discord/account/session/index.ts";
 import { runCli } from "../runner/index.ts";
 import { discordDeps, toInboxOf } from "./index.ts";
+import { gateDeps } from "../twitter/helpers/voice.ts";
 import { chatEvents } from "../../inbox/store/index.ts";
 import { takePending } from "../../inbox/watch/index.ts";
 import { backfillThread } from "../twitter/helpers/dms.ts";
@@ -194,6 +195,49 @@ describe("log discord session check", () => {
     expect(sends).toHaveLength(2);
     expect(sends[0].continuesSend).toBeUndefined();
     expect(sends[1].continuesSend).toBe(true);
+  });
+
+  test("--file goes on the last message only, and a file outside OUTBOX is refused before anything is sent", async () => {
+    const wait = discordDeps.wait;
+    const outbox = process.env.LOG_OUTBOX;
+    const dir = mkdtempSync(join(tmpdir(), "outbox"));
+    const guide = join(dir, "GUIDE.md");
+    writeFileSync(guide, "# guide");
+    const stray = join(mkdtempSync(join(tmpdir(), "stray")), "secret.md");
+    writeFileSync(stray, "no");
+    discordDeps.wait = async () => {};
+    process.env.LOG_OUTBOX = dir;
+    const sent: Record<string, unknown>[] = [];
+    const engine = (_account: unknown, spec: Record<string, unknown>) => {
+      sent.push(spec);
+      return { answer: { ok: true, event: "sent", messageId: String(sent.length), channelId: String(spec.channel), timestamp: "t" }, refreshed: null };
+    };
+    try {
+      const gated: Record<string, unknown>[] = [];
+      const gate = gateDeps.gate;
+      gateDeps.gate = async (_context, send) => {
+        gated.push(send as Record<string, unknown>);
+        return { ok: true, line: "brief gate: passed (test)" };
+      };
+      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "here is the guide\nhave a read", "--file", guide, "--brief", "--approvedBy", "matt", "--live"], { twenty: fixture(), out: () => {}, err: () => {}, directDiscord: engine as never }).finally(() => {
+        gateDeps.gate = gate;
+      });
+      expect(code).toBe(0);
+      expect(gated[0]).toMatchObject({ brief: true, files: [guide] });
+      const sends = sent.filter((s) => s.action === "send");
+      expect(sends[0].files).toBeUndefined();
+      expect(sends[1].files).toEqual([guide]);
+      sent.length = 0;
+      const out: string[] = [];
+      const refused = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "here", "--file", stray, "--approvedBy", "matt", "--live"], { twenty: fixture(), out: (l) => out.push(l), err: (l) => out.push(l), directDiscord: engine as never });
+      expect(refused).toBe(2);
+      expect(out.join("\n")).toContain("fileRefused");
+      expect(sent).toHaveLength(0);
+    } finally {
+      discordDeps.wait = wait;
+      if (outbox === undefined) delete process.env.LOG_OUTBOX;
+      else process.env.LOG_OUTBOX = outbox;
+    }
   });
 
   test("watch prints each message Discord pushes, only the chat asked for, and polls nothing", async () => {

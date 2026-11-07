@@ -89,6 +89,7 @@ describe("catching up after a gap (rule 135)", () => {
   test("Discord reads only after each chat's saved position, keeps going from the newest, and stops on a refusal", async () => {
     recordPosition("discord", "acct", "100", "D1");
     recordPosition("discord", "acct", "500", "D2");
+    recordPosition("discord", "acct", "2026-11-07T05:30:00Z", "backfill:D1");
     const specs: Record<string, unknown>[] = [];
     const read: PlatformRead = (_a, spec) => {
       specs.push(spec);

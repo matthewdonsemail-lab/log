@@ -100,6 +100,12 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-19: A task is gated as a brief, and its files go with it
+
+`log discord send --brief` passes `brief` and the attached files to `gateSend`, which, after the sameness check, hands the draft to `gateBrief` instead of the voice reading. `gateBrief` refuses a draft the scrambler finds suspicious, then asks SubQ (`readBrief`, `src/voice/brief/client.ts`) the five `BRIEF_CHECKS` (`clear`, `why`, `doneWhen`, `kind`, `steerable`) and `fitsTheRoom` when there is a room, with the chat's ranked moments, matt's writing guide and each attached file (`attachedOf`: its name, and the first `ATTACHED_TEXT_CHARS` characters of a text file). It passes only when every answer is at least `BRIEF_PASS` (0.7); a refusal names each failed check (`briefFailedParts`). `--file` attaches files to the last message only (`filesOf`): each must be under OUTBOX or ~/.logCli and at most 10 MB, else `fileRefused` before anything is sent. matt, 2026-11-07. Rule 162.
+
+Checked by: code and SubQ
+
 ### REQ-VOICE-18: A draft that just passed is not sent to SubQ again
 
 When `gateSend` or the `log voice` command passes a draft, it records the pass by the draft's text (`recordPass`, `src/voice/passes`). `gateSend` then answers a send of the same text as passed without asking SubQ (`recentPass`) when that pass is under `PASS_REUSE_MS` (10 minutes) old and nothing has come in on the chat since (`incomingSince`). The sameness check (REQ-VOICE-16) still runs first. On a Discord DM or group whose .db is current (`readSourceFor`), the room the gate reads comes from `chatMessages`, not a read from Discord. matt, 2026-11-07. Rule 161.

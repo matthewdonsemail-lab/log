@@ -1,3 +1,6 @@
+import { existsSync, statSync } from "node:fs";
+import { homedir } from "node:os";
+import { basename, isAbsolute, join, relative, resolve as resolvePath } from "node:path";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { roomFromRead } from "../../voice/room/index.ts";
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
@@ -435,9 +438,29 @@ export const discordDeleteCommand: Command = {
   },
 };
 
+export const FILE_MAX_BYTES = 10 * 1024 * 1024;
+
+export function fileRoots(env: Record<string, string | undefined> = process.env): string[] {
+  return [resolvePath(env.LOG_OUTBOX || join(homedir(), ".buzz", "OUTBOX")), resolvePath(join(homedir(), ".logCli"))];
+}
+
+export function filesOf(flag: unknown, roots = fileRoots()): { ok: true; paths: string[] } | { ok: false; refused: string } {
+  if (typeof flag !== "string" || !flag.trim()) return { ok: true, paths: [] };
+  const paths = flag.split(",").map((p) => p.trim()).filter(Boolean).map((p) => resolvePath(p));
+  for (const path of paths) {
+    const inside = roots.some((root) => { const rel = relative(root, path); return !!rel && !rel.startsWith("..") && !isAbsolute(rel); });
+    if (!inside) return { ok: false, refused: `${path} isn't under OUTBOX or ~/.logCli, so it isn't sent` };
+    if (!existsSync(path) || !statSync(path).isFile()) return { ok: false, refused: `${path} isn't a file` };
+    if (statSync(path).size > FILE_MAX_BYTES) return { ok: false, refused: `${basename(path)} is over Discord's 10 MB upload limit` };
+  }
+  return { ok: true, paths };
+}
+
 export const DISCORD_SEND_USAGE = [
   'Usage: log discord send --account <accountName> --channel <channelId|chat name> --text "<message>" [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
   "Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).",
+  "--brief says the message hands someone a task, not a casual reply: the gate reads it as a brief instead of matt's chat voice (rule 162), asking SubQ whether it says clearly what to do, why, what done looks like and by when, kindly, and how to ask when stuck, with the attached files read beside it. The sameness, AI artifact and scrambler checks still run.",
+  "--file attaches files (a guide, a spreadsheet) to the last message, uploaded through the account's own session: only files under OUTBOX or ~/.logCli, at most 10 MB each, refused before anything is sent otherwise (fileRefused).",
   "A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json. --overGate sends it over the voice gate's refusal when matt said to send that exact message: the gate's SubQ read is skipped and the AI artifact check still runs (rule 152).",
 ].join("\n");
 
@@ -453,6 +476,8 @@ export const DISCORD_SEND_INPUT: CommandInput = {
         { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"jilly\", \"listaro\"), matched to one DM or group; or a channel id" },
         { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
         { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
+        { name: "file", kind: "string", description: "Files to attach to the last message, comma-separated paths under OUTBOX or ~/.logCli, at most 10 MB each" },
+        { name: "brief", kind: "boolean", description: "The message hands someone a task: gated as a brief (clear, why, done when, kind, how to ask), not as casual chat (rule 162)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
         { name: "overGate", kind: "boolean", description: "matt said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
         { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
@@ -469,7 +494,7 @@ export const discordSendCommand: Command = {
   effect: "write",
   input: DISCORD_SEND_INPUT,
   summary: "Send one message to a Discord DM, group or channel, on the direct-API engine; a dry run unless --live",
-  args: '--account <a> --channel <id|name> --text "<message>" [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
+  args: '--account <a> --channel <id|name> --text "<message>" [--file <path>[,<path>]] [--brief] [--asOne] [--overGate] [--approvedBy <who>] [--live] [--json]',
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEND_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log discord send: ${parsed.error}\n${DISCORD_SEND_USAGE}` };
@@ -480,6 +505,8 @@ export const discordSendCommand: Command = {
     const live = parsed.flags["live"] === true;
     if (!channel || !text.trim()) return { code: 1, stderr: `log discord send: --channel and --text can't be empty\n${DISCORD_SEND_USAGE}` };
     if (live && !approvedBy) return refuse("discord send", "notApproved", "--live needs --approvedBy <who> (rule 8)");
+    const files = filesOf(parsed.flags["file"]);
+    if (!files.ok) return refuse("discord send", "fileRefused", files.refused);
     const watermark = watermarkReadingOf(text);
     if (watermark.level === "artifacts") return refuse("discord send", "aiArtifacts", `the copy carries what AI chat interfaces leave in text: ${watermark.findings.filter((f) => f.deterministic).map((f) => `${f.label} ×${f.count}`).join(", ")}`);
     try {
@@ -511,7 +538,7 @@ export const discordSendCommand: Command = {
       const planLine = `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
       context.err(`${account.accountName}: ${watermarkLine(watermark)}`);
       if (!live && parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: account.accountName, ok: true, dryRun: true, target, split: { parts: plan.parts, gapSeconds: plan.gapSeconds, why: plan.why }, watermark }, null, 2) };
-      if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
+      if (!live) return { code: 0, stdout: [`log discord send: dry run: ${account.accountName} would send to ${label} ${planLine}:`, ...plan.parts.map((p, i) => `  ${i + 1}. ${p}`), ...files.paths.map((f) => `  attached to the last message: ${basename(f)}`), watermarkLine(watermark), "Nothing was sent. --live --approvedBy <who> sends it (rule 8); --asOne sends it as one message."].join("\n") };
       if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: send to ${label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const caught = await waitCaughtUp("discord", account.accountName);
@@ -523,7 +550,7 @@ export const discordSendCommand: Command = {
         context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
       } else {
         const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
-        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer)) });
+        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, ...(parsed.flags["brief"] === true ? { brief: true, files: files.paths } : {}), readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer)) });
         if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }
@@ -544,7 +571,7 @@ export const discordSendCommand: Command = {
               break;
             }
           }
-          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}) });
+          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}), ...(files.paths.length && i === plan.parts.length - 1 ? { files: files.paths } : {}) });
           sent.push(run.answer);
           if (!run.answer.ok || run.answer.event !== "sent") break;
           context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);

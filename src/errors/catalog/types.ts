@@ -2001,6 +2001,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['python/discordApi'],
     action: 'Read the chat again to see whether the voice note is there before anything else; never send it again blind (rule 94).'
   },
+  fileRefused: {
+    layer: 'runtime',
+    meaning: "A file to attach isn't under OUTBOX or ~/.logCli, isn't a file, or is over Discord's 10 MB upload limit. Nothing was sent.",
+    retryable: false,
+    raisedIn: ['src/cli/discord', 'python/discordApi'],
+    action: 'Put the file in OUTBOX (or ~/.logCli), keep it under 10 MB, and send again.'
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG
