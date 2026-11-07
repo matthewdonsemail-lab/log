@@ -98,6 +98,20 @@ The engines hook writes its text at every session start, and on a prompt only wh
 
 Checked by: code and SubQ
 
+### REQ-MCP-17: One warm context layer routes matt's prompts and puts the play back after compaction
+
+`scripts/contextLayer/service.ts` keeps the route index and its embedder loaded on `127.0.0.1` at `CONTEXT_PORT` (`src/contextLayer/service/types.ts`), and answers `/hook` with `hookAnswer` (`src/contextLayer/hook/client.ts`). The UserPromptSubmit hook for `scripts/hooks/useCases.ts` carries `service: "/hook"` in `src/agentHooks/registry/index.ts`, so `hookCommand` writes `serviceHookCommand`: a curl to the service, with the bun script after `||`. `routePrompt` in `src/useCases/router/client.ts`:
+- returns nothing for a text `isPrompt` refuses (`NOT_A_PROMPT`);
+- corrects words with `correctTypos` against the index's vocabulary;
+- embeds `windowsOf` the prompt;
+- scores each route with `denseScores` (its utterances among the `TOP_K` closest) and `sparseScores`, at `DENSE_WEIGHT`;
+- names matches at or above the route's threshold (default `DEFAULT_THRESHOLD`);
+- otherwise gives a `menu` of the `MATCHES_SHOWN` closest at or above `DEFAULT_MENU_FLOOR`.
+
+`playMatchText` writes `>>> PLAY MATCH` for matches, `>>> MAYBE A PLAY` for a menu, and nothing for neither. On SessionStart, `hookAnswer` reads the session's transcript with `sessionPlayOf` and returns `playReminder` for the last play it loaded. `scripts/useCases/benchRouter.ts` scores the router 5-fold on `~/.logCli/contextLayer/labelledPrompts.json`, kept on matt's machine and never committed because the repo is public and reports plays caught, wrong fires on "none", the right play in the top 3 and p50/p95/p99; with `--fit` it writes the threshold that catches the most plays under `FALSE_FIRE_CAP`. matt, 2026-11-07. Rule 159.
+
+Checked by: code and SubQ
+
 ### REQ-MCP-16: The prompt is matched to a play, and every play is a skill
 
 `matchPlays` in `src/useCases/router/client.ts` scores a prompt against every use case from `listUseCases` by content words (`contentWords`, stop words and links left out) over each page's quoted "How the owner asks for it" phrases and its title (`phrasesOf`), keeps those at `MATCH_FLOOR` (0.6) or above, best first, at most `MATCHES_SHOWN` (2), and `playMatchText` turns them into a `>>> PLAY MATCH` line telling the agent to load the top one with `getGuide({ useCase })` before anything else; with no match it says nothing. The UserPromptSubmit hook `scripts/hooks/useCases.ts`, registered in `src/agentHooks/registry/index.ts`, writes that text as `additionalContext` only when there is one. `scripts/docs/syncSiteSkills.mjs` writes every `docs/useCases/<platform>/<page>.md` as the skill `log-<platform>-<page>` (its description the title and lead, its `when_to_use` the page's own asks or else its title, its body saying to load the play with `getGuide` first) into `.claude/skills/` and `/.well-known/skills/`, and `--check` refuses one out of step. matt, 2026-11-07: "how do the guides get CALLED when I say something". Rule 158.

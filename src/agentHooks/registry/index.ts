@@ -1,3 +1,4 @@
+import { serviceHookCommand } from "../../contextLayer/service/client.ts";
 import type { AgentHook, HookHost } from "./types.ts";
 
 export type { AgentHook, HookEvent, HookHost } from "./types.ts";
@@ -31,7 +32,8 @@ export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "UserPromptSubmit", script: INBOX, timeout: 15, why: "the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: INBOX, timeout: 15, why: "the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once" },
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: QUEUE, timeout: 10, why: "what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)" },
-  { event: "UserPromptSubmit", script: USE_CASES, timeout: 10, why: "the play matt's prompt asks for, matched against every use case's own \"How the owner asks for it\" phrases and title, named with getGuide to load it before anything is done (rule 158)" },
+  { event: "SessionStart", matcher: "startup|resume|clear|compact", script: USE_CASES, timeout: 10, why: "the play this session loaded, read from its own transcript, put back with the step it reached when the session comes back from compaction or resumes, and the context layer service started (rule 158)" },
+  { event: "UserPromptSubmit", script: USE_CASES, service: "/hook", timeout: 10, why: "the play matt's prompt asks for, matched against every use case's own \"How the owner asks for it\" phrases and title, named with getGuide to load it before anything is done (rule 158)" },
   { event: "UserPromptSubmit", script: QUEUE, timeout: 10, why: "the same queue events with each of matt's prompts" },
   { event: "PostToolUse", matcher: TOOL_MATCHER, script: QUEUE, timeout: 10, why: "the same queue events after a log tool or shell call, so a held item or a cool-off is acted on at once" },
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: X_LIVE, timeout: 10, why: "what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)" },
@@ -43,14 +45,15 @@ export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "Stop", script: PAGE_STATE, timeout: 20, why: "the turn does not end while a browser sits on a state log-cli can resolve (rule 54)" },
 ];
 
-export function hookCommand(host: HookHost, script: string): string {
-  return host === "claudeCode" ? `bun "$CLAUDE_PROJECT_DIR/${script}"` : `bun "$(git rev-parse --show-toplevel)/${script}"`;
+export function hookCommand(host: HookHost, script: string, service?: string): string {
+  const bun = host === "claudeCode" ? `bun "$CLAUDE_PROJECT_DIR/${script}"` : `bun "$(git rev-parse --show-toplevel)/${script}"`;
+  return service ? serviceHookCommand(service, bun) : bun;
 }
 
 export function hooksFor(host: HookHost, hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown[]> {
   const out: Record<string, unknown[]> = {};
   for (const hook of hooks) {
-    const group = { ...(hook.matcher ? { matcher: hook.matcher } : {}), hooks: [{ type: "command", command: hookCommand(host, hook.script), timeout: hook.timeout }] };
+    const group = { ...(hook.matcher ? { matcher: hook.matcher } : {}), hooks: [{ type: "command", command: hookCommand(host, hook.script, hook.service), timeout: hook.timeout }] };
     (out[hook.event] ??= []).push(group);
   }
   return out;

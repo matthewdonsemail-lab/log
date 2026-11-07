@@ -12,6 +12,7 @@ sequenceDiagram
   Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93)
   Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes, and what each account's live watcher pushed: X Chat's socket, Discord's gateway, Slack's websocket in every workspace, rule 123), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
   Note over Hook: what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)
+  Note over Hook: the play this session loaded, read from its own transcript, put back with the step it reached when the session comes back from compaction or resumes, and the context layer service started (rule 158)
   Note over Hook: what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit

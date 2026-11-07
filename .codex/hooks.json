@@ -67,6 +67,16 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
             "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/xLive.ts\"",
             "timeout": 10
           }
@@ -114,7 +124,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\"",
+            "command": "curl -sf --connect-timeout 0.2 --max-time 0.8 -X POST --data-binary @- http://127.0.0.1:47317/hook || bun \"$(git rev-parse --show-toplevel)/scripts/hooks/useCases.ts\"",
             "timeout": 10
           }
         ]

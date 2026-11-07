@@ -229,11 +229,12 @@ flowchart LR
   turn7{{"SessionStart: inbox.ts"}} -.-> agent
   turn8{{"UserPromptSubmit: inbox.ts"}} -.-> agent
   turn9{{"SessionStart: queue.ts"}} -.-> agent
-  turn10{{"UserPromptSubmit: useCases.ts"}} -.-> agent
-  turn11{{"UserPromptSubmit: queue.ts"}} -.-> agent
-  turn12{{"SessionStart: xLive.ts"}} -.-> agent
-  turn13{{"UserPromptSubmit: xLive.ts"}} -.-> agent
-  turn14{{"Stop: pageState.ts"}} -.-> agent
+  turn10{{"SessionStart: useCases.ts"}} -.-> agent
+  turn11{{"UserPromptSubmit: useCases.ts"}} -.-> agent
+  turn12{{"UserPromptSubmit: queue.ts"}} -.-> agent
+  turn13{{"SessionStart: xLive.ts"}} -.-> agent
+  turn14{{"UserPromptSubmit: xLive.ts"}} -.-> agent
+  turn15{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
 ```
 
@@ -767,6 +768,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | UserPromptSubmit | every turn | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check with each of matt's prompts: a poll starts when one is due, and new messages from the last poll are put in front of the agent |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/inbox.ts`](../scripts/hooks/inbox.ts) | the same inbox check after a log tool or shell call, so a reply that lands mid-task is said at once |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114) |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/useCases.ts`](../scripts/hooks/useCases.ts) | the play this session loaded, read from its own transcript, put back with the step it reached when the session comes back from compaction or resumes, and the context layer service started (rule 158) |
 | UserPromptSubmit | every turn | [`scripts/hooks/useCases.ts`](../scripts/hooks/useCases.ts) | the play matt's prompt asks for, matched against every use case's own "How the owner asks for it" phrases and title, named with getGuide to load it before anything is done (rule 158) |
 | UserPromptSubmit | every turn | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | the same queue events with each of matt's prompts |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/queue.ts`](../scripts/hooks/queue.ts) | the same queue events after a log tool or shell call, so a held item or a cool-off is acted on at once |
@@ -778,7 +780,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](../scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, knowledge.ts, inbox.ts, queue.ts, xLive.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts, useCases.ts, queue.ts, xLive.ts), Stop (pageState.ts).
+Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts, knowledge.ts, inbox.ts, queue.ts, useCases.ts, xLive.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts, inbox.ts, useCases.ts, queue.ts, xLive.ts), Stop (pageState.ts).
 
 ### The hooks in one turn
 
@@ -797,6 +799,7 @@ sequenceDiagram
   Note over Hook: the knowledge base is there and how to search it and save to it, with how many chunks Redis holds, so a session looks things up before it guesses (rule 93)
   Note over Hook: anyone who wrote to a signed-in account's inbox since the last look (every platform's inbox, incl. X Chat, read in the background every 4 to 8 minutes, and what each account's live watcher pushed: X Chat's socket, Discord's gateway, Slack's websocket in every workspace, rule 123), said loudly so a reply is never missed#59; and, from each X account's local inbox store with no network, who wrote last and is waiting on a reply
   Note over Hook: what every account's queue did since the last look (held, sent, cooling off, stopped), so a queue is never running out of the agent's sight (rule 114)
+  Note over Hook: the play this session loaded, read from its own transcript, put back with the step it reached when the session comes back from compaction or resumes, and the context layer service started (rule 158)
   Note over Hook: what X's own client shows on each X account right now (its unread notifications, DMs and X Chat, read through the account's one session the way x.com polls it), and every new like, retweet, reply, quote, mention or follow since this Claude session last looked (rule 115)
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
