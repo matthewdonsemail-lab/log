@@ -214,7 +214,7 @@
     },
     {
       "name": "log-twitter-reply-guy-funnel",
-      "description": "Reply guy, then the DM, then the ask. A log play (docs/useCases/twitter/replyGuyFunnel.md): The owner's way of getting new people to do something for him (share a post, try a tool): reply to them in public first, then open a DM on their own post, build on what they say, and only then the ask. In his words: \"you're meant to reply guy them first and foremost. You go on, like a tweet, send a meme to the tweet, and then we're gonna forward the tweet to them as an opener, talking and building on top of it, and then you wait for the reply, and then you say something that's in context that then build on top of the conversation that then funnel them into doing an action.\"",
+      "description": "Reply guy, then the DM, then the ask. A log play (docs/useCases/twitter/replyGuyFunnel.md): The owner's way of getting new people to do something for him (share a post, try a tool): like a run of their posts, reply to them in public, then open a DM on their own post, build on what they say, and only then the ask. In his words: \"you're meant to reply guy them first and foremost. You go on, like a tweet, send a meme to the tweet, and then we're gonna forward the tweet to them as an opener, talking and building on top of it, and then you wait for the reply, and then you say something that's in context that then build on top of the conversation that then funnel them into doing an action.\"",
       "files": [
         "SKILL.md"
       ],
