@@ -50,7 +50,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-07: A live voice note is gated, made, converted and claimed like a send
 
-With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, waits for the account with `waitCaughtUp` (`accountBehind`), runs the text through `gateDeps.gate` (`voiceGateFailed`) unless `--mattsWords` says they are matt's own dictated words (REQ-VOICE-CLONE-10), then `renderVoiceNote` speaks it with that provider and converts it with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), measures its duration and waveform, and only then claims the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
+With `--live`, `voiceNoteCommandOf` refuses with `voiceCloneMissing` without a clone on the chosen provider, starts `renderVoiceNote` at once, so the note is spoken with that provider and converted with ffmpeg (`convertFor`: Discord ogg/opus, Instagram and Slack AAC in .m4a; `voiceNoteConvertFailed`), its duration and waveform measured, while the account catches up (`waitCaughtUp`, `accountBehind`) and the text goes through `gateDeps.gate` (`voiceGateFailed`) unless `--mattsWords` says they are matt's own dictated words (REQ-VOICE-CLONE-10). A refusal from either stops the send and the note made in the meantime is never sent; a render that throws is `voiceProcessingFailed`. Only once both have passed and the note is made does it claim the chat with `guardSend` (`chatClaimedElsewhere`), calls the engine's `voice` action and releases the claim as sent or failed.
 
 Checked by: code and SubQ
 
@@ -80,7 +80,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-12: The clone speaks at matt's speed on the preferred model, and can be made from recordings he names
 
-`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed` through `paceOf`, which drifts it a little per text (REQ-VOICE-CLONE-16), and Inworld sends it as `audioConfig.speakingRate`. A clone is made with the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
+`voiceSettingsOf` in `src/extensions/voiceClone/helpers/provider.ts` reads the speed from `LOG_VOICE_SPEED` through `speedOf`, which defaults to `DEFAULT_SPEED` (1.15) and keeps it within `SPEED_RANGE` (0.8 to 1.5); `speakToFile` passes it as `speed` through `paceOf`, which drifts it a little per text (REQ-VOICE-CLONE-16), and Inworld sends it as `audioConfig.speakingRate`. A clone records the provider's `preferred` model (`inworldProvider`: `inworld-tts-2`), else its cheapest, as its `model`, and `speakToFile` speaks with that model unless a `--model` is passed. `log clone voice --from <file>[,<file>]` (`cloneCommand`, `namedRecordings`, `src/cli/clone/index.ts`) clones from those files instead of matt's voice notes, each one's words read from a `.txt` of the same name beside it (`cloneDeps.sidecar`). Rule 146.
 
 Checked by: code and SubQ
 

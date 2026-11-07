@@ -83,3 +83,9 @@ Checked by: code and SubQ
 `planSend` in `src/twitter/post/send/client.ts` accepts, for a dm only, a target that is an X Chat group id (`g` and digits); any other action, and any other non-digit target, is refused `userIdInvalid`. The dm command in `src/cli/twitter/helpers/send.ts` reads the account's saved PIN for a group target, refuses `xchatPinMissing` without one, and passes it to the engine as `chatPin`. In `python/twitterApi/engine.py` a dm whose `userId` is a group id goes to `xchat_group_text`, which opens X Chat with `xchat_read_keys` when it isn't open and sends the text with `client.send_xchat_message`. `xchat_voice` takes a group id as the conversation. `send_xchat_voice` in twikit makes one message id and passes it to both `upload_xchat_media` (as Initialize's `message_id`) and `send_xchat_message`, which signs the message under it through chat-xdk's `encrypt_message(message_id=...)` and refuses a payload signed under any other id. `initialize_xchat_media_upload` sends no content type. `upload_xchat_media` posts each part as `application/octet-stream` to the `resume_upload_url` Initialize answered (with `partNumber`) when it is on ton.x.com, else to the media URL with `concurrent`, `resumeId` and `partNumber`, carrying the bearer, a Cookie of `auth_token` and `ct0` and the CSRF token. Rule 153.
 
 Checked by: code and SubQ
+
+### REQ-XCHAT-13: Everyone in the inbox list is named
+
+`name_people` in `python/twitterApi/engine.py` runs on the threads the inbox shows, in `synced_inbox` and `inbox`: every person with a numeric id and no handle is named from a handle any stored conversation already has, the old DM users, or `handle_of` (X's user lookup through the account's one session), and the names it finds are kept with `remember_handles`. `handle_of` keeps no failed lookup, and twikit's `User` reads `name` and `screen_name` from the answer's `core` block when `legacy` has none. Rule 154.
+
+Checked by: code and SubQ

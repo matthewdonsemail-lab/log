@@ -107,3 +107,9 @@ Checked by: code and SubQ
 matt (2026-11-03): an account that is too large isn't worth it yet, and under 1500 followers is ideal. Before a reply likes, follows or sends anything, the engine reads the author's follower count (`author_too_big`, `MAX_AUTHOR_FOLLOWERS` 1500 in `python/twitterApi/engine.py`). An author over the cap gets nothing: the answer is `event: tooBig`, `code: authorTooBig`, with their count. The queue run treats it like a gone post. The item is marked skipped, the event is dropped with `tooBig`, a `TOO BIG` line says who and how many followers, and the run goes on to the next item. It is never a refusal that stops the run. A spec can lift the cap only when matt asks: with `maxAuthorFollowers`, or with `force` on a reply he named himself (rule 86). Rule 121.
 
 Checked by: code and SubQ
+
+### REQ-QUEUE-16: A queue sends voice notes, and a dm or voice item is judged against its tweet
+
+`QUEUE_ACTIONS` in `src/twitter/queue/plan/types.ts` includes `voice`, and `toAPerson` treats `dm` and `voice` alike: a voice item is built with the person's user id (`buildQueue`), aimed at that id (`targetOfItem`), planned as one send with no like, and checked for an id and words rather than through `planSend`. In `src/cli/twitter/helpers/queue.ts` a voice item waits for the account to catch up, reads the account's X Chat PIN (`xchatPinMissing` without one), says its text with the clone (`voiceNoteDeps.render`), claims the chat (`guardSend`) and sends it with the engine's `xchatVoice`, releasing the claim after. The send-time gate passes `spoken` for a voice item, and `said` from the item's `postText` whenever it has one, which a dm or voice item built from a target with `post_text` keeps. Rule 156.
+
+Checked by: code and SubQ

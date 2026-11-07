@@ -23,6 +23,7 @@ sequenceDiagram
   Note over Hook: the same X live state with each of matt's prompts, only what is new for this session
   loop each tool call
     Agent->>Hook: PreToolUse
+    Note over Hook: a Discord, Slack or Instagram call that names its chat by a bare id is refused and told to pass the name (a person, a group, or #quot;#lt;server#gt; ##lt;channel#gt;#quot;), so matt sees where every call goes (rule 154)
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)#59; any log action run by hand from a shell is refused and pointed at its MCP tool (rule 106)
     alt a log run piped through tail/head
       Hook-->>Agent: refused (exit 2), run it live

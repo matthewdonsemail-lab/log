@@ -1,9 +1,16 @@
 import { describe, expect, test } from "bun:test";
-import { readReview, reviewQuestions, sessionDigest } from "./index.ts";
+import { readReview, reviewQuestions, sessionDigest, siteOnly } from "./index.ts";
 
 const line = (entry: unknown) => JSON.stringify(entry);
 
 describe("the use cases are reviewed against what the session did", () => {
+  test("a commit of only the landing site and the commit log isn't reviewed, anything else is", () => {
+    expect(siteOnly(["site/apps/web/src/App.tsx", "log.md", "log/2026-11-06.md"])).toBe(true);
+    expect(siteOnly(["site/apps/web/src/App.tsx", "src/cli/inbox/index.ts", "log.md"])).toBe(false);
+    expect(siteOnly(["log.md", "log/2026-11-06.md"])).toBe(false);
+    expect(siteOnly([])).toBe(false);
+  });
+
   test("the digest keeps the owner's asks and the tools called, and drops reminders, tool results and notifications", () => {
     const digest = sessionDigest([
       line({ type: "user", message: { role: "user", content: "summarise my twitter <system-reminder>noise</system-reminder>" } }),

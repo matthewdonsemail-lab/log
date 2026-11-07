@@ -30,6 +30,8 @@ function namesOf(chat: DiscordChat): string[] {
 function scoreOf(said: string[], chat: DiscordChat): { score: number; how: 'exact' | 'words' | 'prefix' } | null {
   const names = namesOf(chat).map((n) => normalizedName(n)).filter(Boolean)
   const phrase = said.join(' ')
+  const own = chat.kind === 'dm' || chat.name?.trim() ? names : []
+  if (own.some((n) => n === phrase)) return { score: 4, how: 'exact' }
   if (names.some((n) => n === phrase)) return { score: 3, how: 'exact' }
   const pool = new Set(names.flatMap((n) => n.split(' ')))
   if (said.every((w) => pool.has(w))) return { score: 2, how: 'words' }

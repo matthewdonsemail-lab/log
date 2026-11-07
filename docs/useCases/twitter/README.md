@@ -18,6 +18,7 @@ Everything log-cli does on X, one page per job. Each page can be run from a fres
 | [networkMaxing.md](networkMaxing.md) | grow the network, the niche map: get to know everyone who messaged and new people from the niche map, each conversation about them | replies, follows, likes and openers, sent once the voice gate passes |
 | [collabMaxxing.md](collabMaxxing.md) | turn open conversations and missed openings into collabs: scope it, position the open-source collab, then the small ask | dms, one by one or through the queue, once the voice gate passes |
 | [nicheMapRegion.md](nicheMapRegion.md) | add a new world to the niche map (the YC 2026 batches, say), run it through the pipeline, then open on the warmest of it | follows, likes and openers, a few a day, once the voice gate passes |
+| [managerMaxxing.md](managerMaxxing.md) | the managers of the biggest Kick streamers, category by category: find them on X, reply guy them with memes, then DM the ones who engaged their tweet, a line and a voice note | replies, then dms and voice notes, through the account's one queue |
 
 DMs are their own pages. Recruiting is public replies only.
 

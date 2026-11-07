@@ -1,4 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { roomOf } from "../../../voice/room/index.ts";
+import type { Room } from "../../../voice/room/index.ts";
 import { join } from "node:path";
 import { storedEmbedder, handleOfUserId } from "../../../inbox/store/index.ts";
 import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
@@ -13,7 +15,7 @@ import { loadConversations, localEmbedder } from "../../../search/conversations/
 import type { Conversation, Embedder } from "../../../search/conversations/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
-import { CONTEXT_PASS, guidePath, RANKED_CONTEXT, RANKED_SHORTLIST, readGuide, readVoice, VOICE_PASS } from "../../../twitter/copy/voice/index.ts";
+import { CONTEXT_PASS, guidePath, nobodyToAnswer, RANKED_CONTEXT, RANKED_SHORTLIST, readGuide, readVoice, VOICE_PASS } from "../../../twitter/copy/voice/index.ts";
 import type { VoiceEvidence, VoiceReading } from "../../../twitter/copy/voice/index.ts";
 import { buildVoiceIndex, closestWording, nearestPairs, offProfile, openVoiceIndex, profileFor, recentInChat, voiceDir } from "../../../voice/pairs/index.ts";
 import type { VoicePair } from "../../../voice/pairs/index.ts";
@@ -257,7 +259,7 @@ export const voiceCommand: Command = {
   },
 };
 
-export type GateReading = VoiceReading & { notHere: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[] };
+export type GateReading = VoiceReading & { notHere: string[]; aiTells?: AiReading; phrases?: PhraseReading; scrambler: ScramblerReading; ranked: RankedMoment[]; room?: Room };
 
 export interface RankedMoment {
   from: string;
@@ -288,7 +290,7 @@ function cosineOf(a: ArrayLike<number>, b: ArrayLike<number>): number {
   return na && nb ? dot / Math.sqrt(na * nb) : 0;
 }
 
-export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[]; spoken?: boolean }): Promise<GateReading> {
+export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[]; spoken?: boolean; room?: Room }): Promise<GateReading> {
   const { to, text, said, guide, evidence } = draft;
   const ranked = draft.ranked ?? [];
   const everywhere = await evidenceAnywhere(context, said, to, text);
@@ -297,13 +299,13 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
   const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
   const scrambler = voiceDeps.scrambler(text);
-  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
+  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
   const notHere = evidence && !draft.spoken ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
   await ensureAiIndex(context);
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
   if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
   const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;
-  return { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, ranked, pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
+  return { ...scored, notHere, ...(aiTells ? { aiTells } : {}), ...(phrases ? { phrases } : {}), scrambler, ranked, ...(draft.room ? { room: draft.room } : {}), pass: scored.pass && !notHere.length && (aiTells?.pass ?? true) && (phrases?.pass ?? true) && scrambler.suspicious === 0 };
 }
 
 export function howMattTalks(): string[] {
@@ -319,8 +321,9 @@ export function failedParts(reading: GateReading): string[] {
   if (reading.neverSays.length) out.push(`phrases matt never says: ${reading.neverSays.join(", ")}`);
   if (reading.watermark.level === "artifacts") out.push(`AI artifacts in the text: ${watermarkLine(reading.watermark)}`);
   if (reading.voice < VOICE_PASS) out.push(`doesn't sound like matt ${reading.buildsOn === null ? "typed" : "said"} it (voice ${reading.voice.toFixed(2)}, needs ${VOICE_PASS})`);
+  if (reading.fitsTheRoom !== null && reading.fitsTheRoom !== undefined && reading.fitsTheRoom < CONTEXT_PASS) out.push(`talks to someone who isn't there, or as if the chat were live when it isn't (fitsTheRoom ${reading.fitsTheRoom.toFixed(2)})`);
   if (reading.buildsOn !== null && reading.buildsOn < CONTEXT_PASS) out.push(`repeats what matt already said instead of building on what they're talking about (buildsOn ${reading.buildsOn.toFixed(2)})`);
-  if (reading.inContext < CONTEXT_PASS) out.push(`doesn't answer what they said (inContext ${reading.inContext.toFixed(2)})`);
+  if (reading.inContext < CONTEXT_PASS && !nobodyToAnswer({ room: reading.room })) out.push(`doesn't answer what they said (inContext ${reading.inContext.toFixed(2)})`);
   if (reading.friendLike < CONTEXT_PASS) out.push(`reads like a template or a pitch (friendLike ${reading.friendLike.toFixed(2)})`);
   if (reading.openerOnly < CONTEXT_PASS) out.push(`a first message with an ask in it (openerOnly ${reading.openerOnly.toFixed(2)})`);
   if (reading.toThem !== null && reading.toThem < CONTEXT_PASS) out.push(`not how matt writes in this chat (toThem ${reading.toThem.toFixed(2)})`);
@@ -350,19 +353,21 @@ export async function chatEvidence(context: CommandContext, said: string, send: 
 
 export function momentAnswered(messages: readonly { fromMe: boolean; text: string; time: string }[]): string {
   const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
-  const newest = sorted[sorted.length - 1];
-  return newest && !newest.fromMe ? newest.text : "";
+  const lastOfMine = sorted.map((m) => m.fromMe).lastIndexOf(true);
+  return sorted.slice(lastOfMine + 1).map((m) => m.text).join("\n");
 }
 
-export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
+export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
   const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
-  const said = send.said ?? momentAnswered(chatContextOf(send.platform, send.account, who).messages);
-  const ranked = await rankedContext(send.platform, send.account, who, said || send.text).catch(() => []);
+  const held = chatContextOf(send.platform, send.account, who).messages;
+  const said = send.said ?? momentAnswered(held);
+  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const ranked = await rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n")).catch(() => []);
   const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
-  const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}) });
+  const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
   return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }

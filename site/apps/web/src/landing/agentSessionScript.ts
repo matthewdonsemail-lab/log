@@ -1,7 +1,7 @@
 export type SessionEvent =
   | { kind: 'user'; text: string }
   | { kind: 'assistant'; text: string }
-  | { kind: 'tool'; name: string; args: string; result: string[] }
+  | { kind: 'tool'; name: string; args: string; result: string[]; server?: string }
 
 export const SESSION: SessionEvent[] = [
   { kind: 'user', text: 'check my twitter whos waiting on me' },

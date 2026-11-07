@@ -26,6 +26,7 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt TEXT NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT NULL, describedAt TEXT, UNIQUE (eventId, name))`,
   `CREATE INDEX IF NOT EXISTS mediaByStatus ON media (status, id)`,
+  `CREATE TABLE IF NOT EXISTS people (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, handle TEXT NOT NULL, name TEXT, seenAt TEXT NOT NULL, PRIMARY KEY (platform, account, userId))`,
 ]
 
 const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]
@@ -112,8 +113,50 @@ export interface AppendInput {
   source?: 'live' | 'catchUp' | 'backfill'
 }
 
+const BARE_ID = /^@?(?:\d{4,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i
+const SLACK_ID = /^[UWB](?=[A-Z0-9]*\d)[A-Z0-9]{8,}$/
+
+export function isBareId(label: string | null | undefined): boolean {
+  return !label || BARE_ID.test(label.trim()) || SLACK_ID.test(label.trim())
+}
+
+const UNNAMED = 'someone not named yet'
+
+function senderIdOf(input: AppendInput): string {
+  const payload = (input.payload ?? {}) as Record<string, unknown>
+  const found = [payload.senderId, payload.userId, payload.authorId, payload.sender_id, payload.user, isBareId(input.with) ? input.with : null].find((v) => typeof v === 'string' && v.trim() !== '')
+  return found ? String(found).replace(/^@/, '') : ''
+}
+
+function handleIn(input: AppendInput): string {
+  const payload = (input.payload ?? {}) as Record<string, unknown>
+  const found = [input.with, payload.from, payload.handle, payload.username, payload.screenName].find((v) => typeof v === 'string' && v.trim() !== '' && !isBareId(v))
+  return found ? String(found).replace(/^@/, '') : ''
+}
+
+export function rememberPerson(platform: string, account: string, userId: string, handle: string, name: string | null = null, now: Date = new Date(), on: Database = db()): void {
+  if (!userId || !handle || isBareId(handle)) return
+  on.prepare('INSERT INTO people (platform, account, userId, handle, name, seenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, account, userId) DO UPDATE SET handle = excluded.handle, name = COALESCE(excluded.name, people.name), seenAt = excluded.seenAt').run(platform, account, userId, handle.replace(/^@/, ''), name, now.toISOString())
+}
+
+export function personOf(platform: string, account: string, userId: string, on: Database = db()): string | null {
+  if (!userId) return null
+  const id = userId.replace(/^@/, '')
+  const row = on.prepare('SELECT handle FROM people WHERE platform = ? AND account = ? AND userId = ?').get(platform, account, id) as { handle: string } | null
+  const handle = row?.handle ?? handleOfUserId(platform, account, id)
+  return handle && !isBareId(handle) ? handle : null
+}
+
+export function namedLabel(platform: string, account: string, label: string | null | undefined, userId = ''): string {
+  if (!isBareId(label)) return String(label).replace(/^@/, '')
+  return personOf(platform, account, userId || String(label ?? '')) ?? UNNAMED
+}
+
 export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: number; eventId: string; known: boolean } | null {
   const receivedAt = input.receivedAt ?? now.toISOString()
+  const senderId = senderIdOf(input)
+  const handleGiven = handleIn(input)
+  input = { ...input, with: handleGiven || (senderId ? personOf(input.platform, input.account, senderId) ?? input.with : input.with) }
   const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}) })
   return immediate((handle) => {
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
@@ -121,6 +164,8 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
     if (!result.changes) return null
     markStage(eventId, 'received', new Date(receivedAt), handle)
     markStage(eventId, 'appended', now, handle)
+    if (senderId && handleGiven) rememberPerson(input.platform, input.account, senderId, handleGiven, null, now, handle)
+    if (!isBareId(input.with)) markStage(eventId, 'named', now, handle)
     if (input.text) {
       handle.prepare('INSERT INTO searchIndex (source, ref, platform, account, conversationId, text) VALUES (?, ?, ?, ?, ?, ?)').run('event', eventId, input.platform, input.account, input.conversationId ?? '', `${input.with ?? ''} ${input.text}`)
       markStage(eventId, 'indexed', now, handle)
@@ -206,7 +251,8 @@ export function resumeGap(platform: string, account: string, by: string, now: Da
 
 export function handleOfUserId(platform: string, account: string, userId: string): string | null {
   const row = db().prepare("SELECT withWho FROM events WHERE platform = ? AND account = ? AND type = 'notification' AND withWho != '' AND json_extract(payload, '$.userId') = ? ORDER BY seq DESC LIMIT 1").get(platform, account, String(userId)) as { withWho: string } | null
-  return row?.withWho ? row.withWho.replace(/^@/, '') : null
+  const handle = row?.withWho ? row.withWho.replace(/^@/, '') : ''
+  return handle && !isBareId(handle) ? handle : null
 }
 
 export function behindOf(platform: string, account: string): GapRow | null {

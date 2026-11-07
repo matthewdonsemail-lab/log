@@ -30,6 +30,8 @@ export const agentHooks = {
     'src/inbox/relay/client.ts',
     'src/inbox/claims/client.ts',
     'src/inbox/store/client.ts',
+    'src/agentHooks/chatNames/index.ts',
+    'scripts/hooks/chatNames.ts',
     'src/inbox/catchUp/client.ts',
     'src/inbox/store/types.ts',
     'src/cli/inbox/index.ts',
@@ -49,6 +51,13 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_WATCH, name: 'startSlackWatch' },
       { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
       { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
+    ],
+    'REQ-HOOKS-20': [
+      { kind: 'symbol', file: 'src/agentHooks/chatNames/index.ts', name: 'chatNameVerdict' },
+    ],
+    'REQ-HOOKS-19': [
+      { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'namedLabel' },
+      { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'rememberPerson' },
     ],
     'REQ-HOOKS-18': [
       { kind: 'symbol', file: INBOX_STORE, name: 'resumeGap' },
@@ -154,8 +163,10 @@ export const agentHooks = {
     'REQ-HOOKS-14': noul('Does ownOrAttach make the watch that wins claimWatcher the one owner, opening a relay with openRelay that records its owners row (pid, hostname, startedAt, a lastHeartbeat refreshed every HEARTBEAT_MS, status, port, token, subscribers) and broadcasting every event to every subscriber that sent the token, while a watch that loses attaches through attachRelay to a live owner session or, when it is an inbox watch, is refused; and does replaceHungOwners stop an owner whose heartbeat is older than STALE_MS and write a hungOwner alert? Do the twitter chat, discord, slack and instagram watch commands all go through ownOrAttach?'),
     'REQ-HOOKS-13': noul('In src/inbox/watch/client.ts, does claimWatcher write the owners row with the watcher pid inside an immediate transaction, refuse a second watcher while the lock holder pid is alive by adding a duplicateWatcher alert row, and take over the row when the holder pid is dead; does ensureLiveWatchers skip starting a watcher while watchHolder returns a live holder; and does stopStaleWatchers stop a live lock holder as well as the pid file process? In scripts/hooks/inbox.ts, are the takeAlerts lines put first in the agent context under ONE PROCESS PER ACCOUNT?'),
     'REQ-HOOKS-16': noul('Does appendEvent insert each event once by its eventId into the events table with an autoincrement seq inside an immediate transaction, store an event whose type is not in eventTypes with known 0 and add an unknownEventType alert through typeStatus, and time its received, appended and indexed stages; does takePending read events after the reader cursor and start a new reader at latestSeq; does importPendingFile import pending.jsonl only while events is empty; does claimChat give each new claim the next chatGenerations generation and stillHeld compare the holder and generation; do the discord and slack sends call guard.held() before every part after the first and stop when it is false; does releaseChat write its actions in the same transaction as deleting the claim; and does the relay broadcast drop a subscriber whose writableLength passes MAX_BUFFERED_BYTES?'),
+    'REQ-HOOKS-20': noul('Is scripts/hooks/chatNames.ts registered in src/agentHooks/registry/index.ts as a PreToolUse hook for the log MCP discord, slack and instagram tools, and does chatNameVerdict in src/agentHooks/chatNames/index.ts refuse a channel, chat or with argument that isBareId calls an id with how to name it instead, while letting a name through?'),
+    'REQ-HOOKS-19': noul('In src/inbox/store/client.ts, does appendEvent take the sender id (senderId, userId, authorId, sender_id or user in the payload, or a bare id given as with) and a real handle from the event, keep the pair with rememberPerson in the people table, and name an event that arrives with only an id from personOf before storing it, with personOf and handleOfUserId returning null rather than a stored value that isBareId calls an id, marking the named stage; does isBareId treat numeric ids, UUIDs and Slack member ids as ids but not usernames; does namedLabel never return an id (a name, or someone not named yet); and in src/inbox/watch/client.ts do messageOf and twitterThreads label people through namedLabel?'),
     'REQ-HOOKS-18': noul('In src/inbox/store/client.ts, does resumeGap change only a gap whose status is refused back to open, write the resumer and the earlier refusal into its detail, add a gapResumed alert, and return null without changing anything when the account has no gap or its gap is not refused; does the inbox command in src/cli/inbox/index.ts have a resume subcommand that needs --platform, --account and --by and calls resumeGap; and does ownOrAttach in src/inbox/relay/client.ts call catching.run on a setInterval of RECHECK_GAP_MS and clear that interval in its finally, while catchUpRunner still returns at once for a refused gap?'),
-    'REQ-HOOKS-17': noul('Does claimWatcher open a gap through openGap from the previous owner heartbeat (ownerRestarted) or from lastEventAt when no owner row exists (noOwner); does ownOrAttach open a socketDropped gap when socketChange says dropped and start catchUpRunner on start and when it says open; does catchUpRunner run one catch-up at a time, mark the gap catchingUp, then closed with what was appended or refused with an alert; do twitterCatchUp, discordCatchUp, slackCatchUp and instagramCatchUp read only after the saved positions (the X delta sync, the Discord after id, the Slack oldest ts, the Instagram threads active since the position), pace their reads with pacedWait, append with source catchUp and stop at the first refusal; and does waitCaughtUp refuse at once for a refused gap and after BEHIND_WAIT_MS for an open one, so the discord, slack, instagram, twitter dm and queue sends return accountBehind instead of sending?'),
+    'REQ-HOOKS-17': noul('Does claimWatcher open a gap through openGap from the previous owner heartbeat (ownerRestarted) or from lastEventAt when no owner row exists (noOwner); does ownOrAttach open a socketDropped gap when socketChange says dropped and start catchUpRunner on start and when it says open; does catchUpRunner run one catch-up at a time, mark the gap catchingUp, then closed with what was appended or refused with an alert; do twitterCatchUp, discordCatchUp, slackCatchUp and instagramCatchUp read only after the saved positions (the X delta sync, the Discord after id, the Slack oldest ts, the Instagram threads active since the position), pace their reads with pacedWait, append with source catchUp and stop at the first refusal; and does waitCaughtUp refuse at once for a refused gap and after BEHIND_WAIT_MS for an open one, so the discord, slack, instagram and twitter dm sends return accountBehind instead of sending, and the X queue run in src/cli/twitter/helpers/queue.ts holds the item with the refusal from waitCaughtUp instead of sending it?'),
     unspecifiedBehavior: noul('Does the hook code hold the turn on a state only a person can clear, let a log run piped through tail or head through, or let the check pass drift between the hooks, the CLI and the MCP tools by a route the specification does not describe?'),
   },
   assertions: {
@@ -177,6 +188,8 @@ export const agentHooks = {
     'REQ-HOOKS-16': MET,
     'REQ-HOOKS-17': MET,
     'REQ-HOOKS-18': MET,
+    'REQ-HOOKS-19': MET,
+    'REQ-HOOKS-20': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

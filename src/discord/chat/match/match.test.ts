@@ -51,6 +51,15 @@ describe('a chat said the way matt says it', () => {
     expect(matchChat(CHATS, 'careless')).toMatchObject({ ok: true, chat: { id: '1481763504003354704' }, label: 'Tin, Careless' })
   })
 
+  test('a person named exactly is their DM, never an unnamed group they are in', () => {
+    const chats = [
+      { id: '1517088406520467456', kind: 'dm', name: null, members: ['Luke'] },
+      { id: '1538434988964577351', kind: 'group', name: null, members: ['beining', 'Luke', 'deepman', 'OMGPKR'] },
+    ] as never
+    expect(matchChat(chats, 'luke')).toMatchObject({ ok: true, chat: { id: '1517088406520467456' }, how: 'exact' })
+    expect(matchChat(chats, 'deepman')).toMatchObject({ ok: true, chat: { id: '1538434988964577351' } })
+  })
+
   test('an id is taken as it is, and nothing matching is said so', () => {
     expect(matchChat(CHATS, '1547936265436012645')).toMatchObject({ ok: true, how: 'id' })
     expect(matchChat(CHATS, 'nobody here')).toMatchObject({ ok: false, code: 'chatNotFound' })

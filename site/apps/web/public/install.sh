@@ -1,8 +1,70 @@
 #!/bin/sh
 set -eu
 
-say() { printf '\033[1mlog:\033[0m %s\n' "$1"; }
-fail() { printf '\033[31mlog:\033[0m %s\n' "$1" >&2; exit 1; }
+say() { printf '[1mlog:[0m %s
+' "$1"; }
+fail() { printf '[31mlog:[0m %s
+' "$1" >&2; exit 1; }
+
+SKILLS="${LOG_SKILLS:-}"
+SKILLS_ONLY=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --skills) SKILLS="${2:-}"; [ $# -gt 1 ] && shift; shift ;;
+    --skills=*) SKILLS="${1#--skills=}"; shift ;;
+    --skillsOnly) SKILLS_ONLY=1; shift ;;
+    *) shift ;;
+  esac
+done
+LOG_SITE="${LOG_SITE:-https://log.listeningkit.com}"
+
+skill_dirs() {
+  for pair in ".claude:.claude/skills" ".codex:.codex/skills" ".cursor:.cursor/skills" ".gemini:.gemini/skills"     ".copilot:.copilot/skills" ".config/opencode:.config/opencode/skills" ".codeium/windsurf:.codeium/windsurf/skills"     ".roo:.roo/skills" ".continue:.continue/skills" ".qwen:.qwen/skills" ".config/goose:.config/goose/skills"; do
+    [ -d "$HOME/${pair%%:*}" ] && printf '%s
+' "$HOME/${pair#*:}"
+  done
+  printf '%s
+' "$HOME/.agents/skills"
+}
+
+install_one() {
+  site="$1"; name="$2"
+  case "$name" in *[!a-z0-9-]*|"") fail "not a skill name: $name" ;; esac
+  body=$(curl -fsSL "$site/.well-known/skills/$name/SKILL.md") || fail "couldn't fetch the $name skill from $site"
+  printf '%s
+' "$body" | head -n 1 | grep -q '^---' || fail "$site sent something that isn't a skill for $name"
+  skill_dirs | while IFS= read -r dir; do
+    mkdir -p "$dir/$name"
+    printf '%s
+' "$body" > "$dir/$name/SKILL.md"
+  done
+  say "installed the $name skill (from $site)"
+  printf '%s
+' "$body" | sed -n 's/^ *dependsOn: *//p' | head -n 1 | tr ' ' '
+' | while IFS= read -r dep; do
+    [ -n "$dep" ] || continue
+    dep_host="${dep%/*}"; dep_name="${dep##*/}"
+    install_one "https://$dep_host" "$dep_name"
+  done
+}
+
+install_skills() {
+  [ -n "$SKILLS" ] || return 0
+  if [ "$SKILLS" = "all" ]; then
+    SKILLS=$(curl -fsSL "$LOG_SITE/.well-known/skills/index.json" | sed -n 's/^ *"name": *"\([a-z0-9-]*\)".*//p' | tr '
+' ',')
+  fi
+  for name in $(printf '%s' "$SKILLS" | tr ',' ' '); do install_one "$LOG_SITE" "$name"; done
+  say "skills are in $(skill_dirs | tr '
+' ' ')"
+  say "start a new agent session so it loads them"
+}
+
+if [ "$SKILLS_ONLY" = 1 ]; then
+  [ -n "$SKILLS" ] || fail "--skillsOnly needs --skills <names> (or --skills all)"
+  install_skills
+  exit 0
+fi
 
 LOG_HOME="${LOG_HOME:-$HOME/.logCli}"
 PACKAGE="${LOG_PACKAGE:-@listeningkit/log}"
@@ -44,3 +106,4 @@ grep -q '^LOG_ACCOUNTS=' "$ENV_FILE" || printf 'LOG_ACCOUNTS=local\n' >> "$ENV_F
 say "done. Your settings are in $ENV_FILE and your accounts will live in $LOG_HOME."
 say "next: log localAccount add --platform twitter --account <name>"
 log --help >/dev/null 2>&1 && say "log is on your PATH" || say "open a new terminal so 'log' is on your PATH"
+install_skills

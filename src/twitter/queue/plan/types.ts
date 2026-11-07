@@ -1,6 +1,10 @@
-export type QueueAction = 'reply' | 'quote' | 'dm'
+export type QueueAction = 'reply' | 'quote' | 'dm' | 'voice'
 
-export const QUEUE_ACTIONS: readonly QueueAction[] = ['reply', 'quote', 'dm']
+export const QUEUE_ACTIONS: readonly QueueAction[] = ['reply', 'quote', 'dm', 'voice']
+
+export function toAPerson(action: QueueAction): boolean {
+  return action === 'dm' || action === 'voice'
+}
 
 export type ItemStatus = 'pending' | 'sent' | 'blocked' | 'gone' | 'failed' | 'skipped' | 'held'
 

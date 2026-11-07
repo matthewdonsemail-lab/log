@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { approveQueue, buildQueue, editItem, seededRandom } from '../plan/index'
+import { approveQueue, buildQueue, editItem, keptLink, seededRandom } from '../plan/index'
 import type { Queue } from '../plan/index'
 import { runQueue } from './index'
 import type { RunDeps } from './types'
@@ -68,5 +68,12 @@ describe('full context before every send (rule 109)', () => {
     expect(changed[0]).toContain('you messaged them outside this draft: "sent from my phone"')
     expect(changed.join(' ')).toContain('they retweeted your post')
     expect(changed.join(' ')).toContain("they replied to your post (\"yc deadline is tomorrow\"): \"You're way too cool bro\"")
+  })
+
+  test('an edit keeps the opener tweet link when the new copy leaves it out', () => {
+    const link = 'https://x.com/BowTiedBiest/status/2116419830693924891'
+    expect(keptLink(`${link}\nsaw this`, 'saw this again')).toBe(`${link}\nsaw this again`)
+    expect(keptLink(`${link}\nsaw this`, `${link}\nnew`)).toBe(`${link}\nnew`)
+    expect(keptLink('cheers lad', 'cheers again')).toBe('cheers again')
   })
 })

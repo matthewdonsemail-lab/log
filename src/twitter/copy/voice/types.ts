@@ -18,6 +18,7 @@ export interface VoiceDraft {
   conversation?: { from: string; text: string; at: string }[]
   spoken?: boolean
   howMattTalks?: string[]
+  room?: import('../../../voice/room/index').Room
 }
 
 export interface VoiceReading {
@@ -28,6 +29,7 @@ export interface VoiceReading {
   openerOnly: number
   toThem: number | null
   buildsOn: number | null
+  fitsTheRoom?: number | null
   neverSays: string[]
   watermark: WatermarkReading
   pass: boolean

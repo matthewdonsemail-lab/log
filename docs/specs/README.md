@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 438 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 443 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -66,6 +66,8 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-16** The inbox is one database, read from cursors
 - **REQ-HOOKS-17** An account behind is caught up by its owner, and sends wait for it
 - **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
+- **REQ-HOOKS-19** Every event is named before matt sees it
+- **REQ-HOOKS-20** A Discord, Slack or Instagram call names its chat, never its id
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -351,6 +353,7 @@ An X account sends more than one thing only through its queue (`log twitter queu
 - **REQ-QUEUE-13** The hook says what to do
 - **REQ-QUEUE-14** A refusal from X stops the run, and only a network drop is tried again
 - **REQ-QUEUE-15** A reply goes only to an author with 1500 followers or fewer
+- **REQ-QUEUE-16** A queue sends voice notes, and a dm or voice item is judged against its tweet
 
 ## [Full context before a send](./fullContext.md)
 
@@ -385,6 +388,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
+- **REQ-VOICE-15** Every send and voice note is gated against the room it goes to
 
 ## [AI tells and watermark](./aiTells.md)
 
@@ -433,6 +437,7 @@ X Chat is X's encrypted DM inbox, separate from the old DM API. log reads it onl
 - **REQ-XCHAT-10** --waiting lists the follow-ups apart
 - **REQ-XCHAT-11** twikit sends in X Chat the way X Chat's own app does
 - **REQ-XCHAT-12** A dm can go to an X Chat group
+- **REQ-XCHAT-13** Everyone in the inbox list is named
 
 ## [X live](./xLive.md)
 

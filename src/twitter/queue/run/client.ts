@@ -1,4 +1,5 @@
 import { createActor } from 'xstate'
+import { toAPerson } from '../plan/types'
 import type { InspectionEvent } from 'xstate'
 import type { TwitterSessionAnswer } from '../../account/session/index'
 import type { PlanEvent, Queue, QueueItem, Rng } from '../plan/index'
@@ -70,7 +71,7 @@ async function waitUntil(deps: RunDeps, dueSeconds: number, todo?: PlanEvent[], 
 }
 
 export function sentUrlOf(queue: Queue, item: QueueItem, answer: TwitterSessionAnswer): string | null {
-  return item.action === 'dm' ? null : `https://x.com/${queue.account}/status/${answer.tweetId}`
+  return toAPerson(item.action) ? null : `https://x.com/${queue.account}/status/${answer.tweetId}`
 }
 
 export async function runQueue(queue: Queue, deps: RunDeps, trace?: (event: InspectionEvent) => void): Promise<RunResult> {

@@ -2229,6 +2229,74 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     working client). Building the URL ourselves was refused 401 every time. Spec:
     `docs/specs/xChat.md` (REQ-XCHAT-12).
 
+154. 2026-11-05 · matt: "no ever showing me UUIDs". Nobody is ever shown to
+    matt as an id, on any platform: every person in a list, a thread, a hook
+    line or a write-up is named by their username (and display name where the
+    platform has one). An id with no name is looked up through the account's
+    own session before anything is shown (X's user lookup, Discord's, Slack's
+    and Instagram's own), the name is kept so it is never looked up twice, and
+    one that still can't be named is listed with why, never shown as the bare
+    id. On X, `name_people` names every person in the inbox list from any
+    conversation that already knows them or from X's lookup, and
+    `remember_handles` keeps them; twikit reads a user's name from X's newer
+    `core` block. A platform isn't done until its lists name everyone. matt
+    then: "make it as part of the state machine". Naming is a stage of every
+    event's life in the inbox (`named`, between appended and relayed): an
+    event that names its sender teaches the .db's `people` table who that id
+    is (`rememberPerson`), an event that arrives with only an id is named from
+    it (`personOf`) before it is stored, and every label read back for matt
+    goes through `namedLabel`, which never returns an id: one nobody has named
+    yet reads "someone not named yet". Spec: `docs/specs/xChat.md`
+    (REQ-XCHAT-13), `docs/specs/agentHooks.md` (REQ-HOOKS-19).
+
+155. 2026-11-05 · matt: "who the fuck is it reading to ... we need a context
+    for the voice notes as well, like we do for the sends, across all of the
+    voice notes, a unified system", after a voice note for the #general
+    channel of paulchrisluke's server was written to Paul ("you just got back
+    on X") when nobody but matt had typed there since 11 October; and "it
+    hasn't got any context, it doesn't show what channel it's in". Three
+    things:
+    - **The room.** Every send and voice note gives the voice gate the same
+      picture of where it goes (`roomOf`, `src/voice/room`): the chat's kind
+      (a DM, a group, a server channel), who else has spoken in the last 24
+      hours, when the last of them did, how many of matt's messages end the
+      chat, and who it must be addressed to (`addressTo`). Discord reads the
+      chat's last 20 messages through the engine for it (`roomFromRead`,
+      inside the gate, `readRoom`); every other platform builds it from the
+      chat in the .db. SubQ reads it as `theRoom` and answers `fitsTheRoom`
+      (0.7 to pass): a channel or group where nobody else has spoken lately
+      is talked to as a whole, never one person as if they were mid-talk.
+    - **Chats by name.** A Discord, Slack or Instagram tool call that names
+      its chat by a bare id is refused by a PreToolUse hook
+      (`scripts/hooks/chatNames.ts`, `chatNameVerdict`) and told to pass the
+      name, so matt sees where every call goes: a person, a group, or a server
+      channel as "<server> #<channel>".
+    - **Servers are found, never asked for.** The Discord watcher saves every
+      server and text channel the account is in from the gateway's READY
+      (`save_servers_from`), and the chat list includes them, so "paulchrisluke
+      #general" is matched like a DM. A cold read of the list reads each server
+      1.5 s apart and skips one that doesn't answer.
+    Spec: `docs/specs/voiceGate.md` (REQ-VOICE-15), `docs/specs/agentHooks.md`
+    (REQ-HOOKS-20).
+
+156. 2026-11-05 · matt: "let's do some cold outbound sending them their
+    tweets then send a voice note after like a real brief one and then just
+    literally lock that in". Cold outbound on X is two touches through the
+    account's one queue (rules 104, 107): first the opener (their own recent
+    tweet forwarded, then one line about it, rule 98), then a brief voice
+    note in matt's cloned voice that goes one step further, a question about
+    what they posted, never the ask. The voice note is a queue action of its
+    own, `voice` (`QUEUE_ACTIONS`, `toAPerson`): its text is said with the
+    clone (`voiceNoteDeps.render`), gated as speech (`spoken`), and sent as an
+    X Chat voice message by the engine's `xchatVoice` with the saved PIN
+    (rules 151, 153), its chat claimed like a dm (rule 133). A dm or voice
+    item keeps the tweet it opens on (`postText`), and the send-time gate
+    judges it against that tweet (`said`), as it does a reply's. The voice
+    notes go into the same queue once the openers have gone out, so each
+    lands after its own opener. Targets come from the niche map: mutuals
+    under 1500 followers with a recent original post, not already talked to
+    (rules 99, 121, 87). Spec: `docs/specs/xQueue.md` (REQ-QUEUE-16).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

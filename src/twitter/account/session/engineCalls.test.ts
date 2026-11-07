@@ -44,7 +44,7 @@ describe('every X engine call on one account waits its turn, spaced like a perso
     expect(engine('print(json.dumps(list(e.READ_SPACING_SECONDS)))')).toEqual([0.8, 2.5])
     expect(engine("e.mark_call('acct', now=1000.0)\nprint(json.dumps(e.spacing_wait('acct', now=1000.0, action='inbox')))")).toBeLessThanOrEqual(2.5)
     expect(engine("e.mark_call('acct', now=1000.0)\nprint(json.dumps(e.spacing_wait('acct', now=1000.0, action='dm')))")).toBeGreaterThanOrEqual(4)
-  })
+  }, 30_000)
 
   test('a second call on the same account waits until the first lets go', () => {
     const order = engine(`

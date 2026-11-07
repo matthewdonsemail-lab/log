@@ -9,6 +9,13 @@ export function projectSessionsDir(repoRoot: string, home = homedir()): string {
   return join(home, ".claude", "projects", repoRoot.replace(/[:\\/.]/g, "-"));
 }
 
+const COMMIT_LOG = /^(log\.md|log\/[^/]+\.md)$/;
+
+export function siteOnly(staged: Iterable<string>): boolean {
+  const files = [...staged].filter((file) => !COMMIT_LOG.test(file));
+  return files.length > 0 && files.every((file) => file.startsWith("site/"));
+}
+
 export function latestSession(dir: string): string | null {
   if (!existsSync(dir)) return null;
   const files = readdirSync(dir).filter((f) => f.endsWith(".jsonl")).map((f) => join(dir, f));
