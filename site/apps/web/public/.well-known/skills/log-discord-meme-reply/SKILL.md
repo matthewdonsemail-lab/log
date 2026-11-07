@@ -12,7 +12,7 @@ This is the log play `discord/memeReply`. Before anything else, call the log MCP
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Answer a moment in a Discord group or DM the way people there already do: with a meme. The chat is read first, Memelord finds a template that fits what was just said, the meme is gated like any other send, and it goes out as its media url, which Discord shows inline. Only Memelord's free tools are used (rule 41). The extension itself is described in [docs/extensions/memelord.md](../../extensions/memelord.md).
+Answer a moment in a Discord group or DM the way people there already do: with a meme. The chat is read first, Memelord finds a template that fits what was just said, the meme is gated like any other send, and it goes out as its media url, which Discord shows inline. Only Memelord's free tools are used (rule 41). The extension itself is described in [docs/extensions/memelord.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/extensions/memelord.md).
 
 How the owner asks for it: "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it"
 

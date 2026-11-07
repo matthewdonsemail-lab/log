@@ -16,7 +16,7 @@ After a post goes out, people like it, repost it, reply, quote it and follow you
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who liked <post url>", or "who engaged since <date>". The agent then reads this page and [README.md](README.md) and runs the steps.
+Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who liked <post url>", or "who engaged since <date>". The agent then reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) and runs the steps.
 
 ## The steps
 
@@ -27,7 +27,7 @@ Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who l
 | 1 | Read what is new | `twitterNotifications` { account } | `notificationSync` says `caughtUp`, or a page cap |
 | 2 | The first time only, page back through the history | `twitterNotifications` { account, full: true } | `historyDone`, or run it again later for the rest |
 | 3 | Ask what you need from what is kept, calling nothing | `twitterNotifications` { account, stored: true, type, since, post } | the rows, `counts` by kind and `engagers` ranked by how much each person did |
-| 4 | Act on who engaged through the page for that job | [engagerDms.md](engagerDms.md), [engagementReplies.md](engagementReplies.md), [networkMaxing.md](networkMaxing.md) | that page's own done |
+| 4 | Act on who engaged through the page for that job | [engagerDms.md](../log-twitter-engager-dms/SKILL.md), [engagementReplies.md](../log-twitter-engagement-replies/SKILL.md), [networkMaxing.md](../log-twitter-network-maxing/SKILL.md) | that page's own done |
 
 Each row is one person doing one thing: `kind` (like, repost, reply, quote, follow, mention, other), `handle` and `userId`, `followsYou`, which of the account's posts (`postId`, `postUrl`, `postText`), when (`at`), and for a reply or quote their own tweet (`tweetUrl`, `text`). `type` is likes, reposts, replies, quotes, follows or all; `post` takes a post id or url.
 

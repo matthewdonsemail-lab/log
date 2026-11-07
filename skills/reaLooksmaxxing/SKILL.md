@@ -1,6 +1,6 @@
 ---
 name: reaLooksmaxxing
-description: The /rea-looksmaxxing video, beat by beat: the 11-step "moneymaxx like Clavicular" play, what each section shows and says, its music, tempo and sound effects, and the /rea-looksmaxxing page on the site that outlines the same play. Use when matt asks to recut, remake, extend or post the /rea-looksmaxxing video, write copy for it, or change its page.
+description: 'The /rea-looksmaxxing video, beat by beat: the 11-step "moneymaxx like Clavicular" play, what each section shows and says, its music, tempo and sound effects, and the /rea-looksmaxxing page on the site that outlines the same play. Use when matt asks to recut, remake, extend or post the /rea-looksmaxxing video, write copy for it, or change its page.'
 ---
 
 # reaLooksmaxxing

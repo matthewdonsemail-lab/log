@@ -14,13 +14,13 @@ Draft every message from that person's own thread and matt's real replies (`voic
 
 Find people who just posted that they want work, or who already do the job. Reply to each one publicly with one line in their own language, about their own post, ending with the job link. The owner approves the list, then the queue sends the replies slowly with likes mixed in. Applicants then come in through the job page.
 
-Recruiting is public replies only. DMs are a different job: [dmInbox.md](dmInbox.md) and [engagerDms.md](engagerDms.md).
+Recruiting is public replies only. DMs are a different job: [dmInbox.md](../log-twitter-dm-inbox/SKILL.md) and [engagerDms.md](../log-twitter-engager-dms/SKILL.md).
 
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/recruiting.md for the <role> role"**. The agent then:
 
-1. Reads this page, then [README.md](README.md) for the queue and the rules on every X page.
+1. Reads this page, then [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) for the queue and the rules on every X page.
 2. Gets the role from the owner: its job link, where to hire, the languages.
 3. Runs the steps below to the end. It keeps searching until it has qualified people, shows the table, and sends once the owner says yes. "Nobody qualified" means search wider, not stop.
 

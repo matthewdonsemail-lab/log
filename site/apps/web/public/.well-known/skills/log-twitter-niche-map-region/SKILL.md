@@ -12,13 +12,13 @@ This is the log play `twitter/nicheMapRegion`. Before anything else, call the lo
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-The niche map is the owner's network ([networkMaxing.md](networkMaxing.md)). A region is one world added to it, for example the YC 2026 batches (the founders, their companies and the partners around them). The region's people go through the same niche map pipeline as everyone else: three months of who talks to them, everyone scored, bands set, and each person's closeness to the owner (ring 1 engaged with him, ring 2 talks to his followers, ring 3 follows him, ring 4 new). The outbound then goes to ring 2 first, the warmest people who haven't talked to him yet.
+The niche map is the owner's network ([networkMaxing.md](../log-twitter-network-maxing/SKILL.md)). A region is one world added to it, for example the YC 2026 batches (the founders, their companies and the partners around them). The region's people go through the same niche map pipeline as everyone else: three months of who talks to them, everyone scored, bands set, and each person's closeness to the owner (ring 1 engaged with him, ring 2 talks to his followers, ring 3 follows him, ring 4 new). The outbound then goes to ring 2 first, the warmest people who haven't talked to him yet.
 
 How the owner asks for it: "for getting accepted into YC ... make a new area of the niche map through the systems we've already made ... the YC world and the funds' world, based on the 26 batch", "the YC stuff in and around the boat.dev people and the people involved in GTM tools", "pull all of my new followers ... set a budget of like 60$", "start with the 43", "not just treg but the actual index that we did already".
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/nicheMapRegion.md for <the world>, <the areas>"**. The agent reads this page and [README.md](README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
+Say: **"go on docs/useCases/twitter/nicheMapRegion.md for <the world>, <the areas>"**. The agent reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
 
 ## The steps
 
@@ -33,7 +33,7 @@ Say: **"go on docs/useCases/twitter/nicheMapRegion.md for <the world>, <the area
 | 6 | The outbound list: the region's go getters (gates passed; band member, collaborator, sponsor or affiliate) in ring 2 first, then ring 2 around them | `data/yc/goGetters.json` | the list, ranked |
 | 7 | One recent post of each person's own to open on: the index holds their posts, and one fresh search each confirms they posted this week. Nothing new: they wait | the index (`search_index.json`, `search_posts.jsonl`), treg's posts search | each with a user id and a post from the last few days |
 | 8 | Whether they follow the owner and he follows them | `twitterFollows` | the relationship, for the opener's wording |
-| 9 | Each opener the cold DM way ([engagerDms.md](engagerDms.md)): their tweet first, then one line about it, never an ask | the agent | one draft per person |
+| 9 | Each opener the cold DM way ([engagerDms.md](../log-twitter-engager-dms/SKILL.md)): their tweet first, then one line about it, never an ask | the agent | one draft per person |
 | 10 | Queue them as dms and check them: house style, and nobody he already talks to on X Chat | `twitterQueueBuild` { action: "dm" }, `twitterQueueCheck` | all pending, none dropped or failed |
 | 11 | Gate every opener with the voice gate (his writing across all his conversations), rewriting until it passes | `voice` { to, context, text } | every draft passes |
 | 12 | Follow, like the post, then the opener, a few people a day, minutes apart (rule 94) | `twitterFollowLive`, `twitterLikeLive`, the queue run | X's answer is `sent` for each |

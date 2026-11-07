@@ -19,7 +19,7 @@ When one of your posts gets comments, the people who commented are the warmest p
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/engagementReplies.md for <post url>"** and, if there is one, the follow-up link. The agent then reads this page and [README.md](README.md) and runs the steps.
+Say: **"go on docs/useCases/twitter/engagementReplies.md for <post url>"** and, if there is one, the follow-up link. The agent then reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) and runs the steps.
 
 ## The steps
 
@@ -51,4 +51,4 @@ Where the comment was a question (for example "what does the first message actua
 
 - [#36](https://github.com/matthewdonsemail-lab/log/issues/36) expands spintax in the queue.
 
-Likers and reposters aren't in a comments read: they have their own page, [engagerDms.md](engagerDms.md).
+Likers and reposters aren't in a comments read: they have their own page, [engagerDms.md](../log-twitter-engager-dms/SKILL.md).

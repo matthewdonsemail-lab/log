@@ -20,7 +20,7 @@ How the owner asks for it: "get me all them people who liked it ... yo cool to s
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/getTheAction.md"**, with the action and its link (for example: retweet https://x.com/matthewsoldit/status/2116868115028120050). The agent reads this page and [README.md](README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
+Say: **"go on docs/useCases/twitter/getTheAction.md"**, with the action and its link (for example: retweet https://x.com/matthewsoldit/status/2116868115028120050). The agent reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
 
 ## The steps
 
@@ -41,7 +41,7 @@ Say: **"go on docs/useCases/twitter/getTheAction.md"**, with the action and its 
 ## What to know
 
 - **No two asks read alike.** On 2026-11-07, 18 share-asks for /rea-looksmaxxing each ended "just put this out <link> / could you share it its open sourced haha" with only the first line changed: the voice gate reads each one alone, so a "lad" and a "haha" passed them all. A send now repeats nothing the account sent in the last 24 hours, and a queue no item of its own, or it is refused `sameAsSent` (rule 157). Write each ask from that person's thread, in a way that fits them.
-- **Load this page before the first send.** It becomes the session's play: every log tool's answer then names the step it is and the next one, and a send as the owner with no play loaded is refused `playMissing` (rule 157). New people who aren't talking to the owner yet aren't this page: they go to [replyGuyFunnel.md](replyGuyFunnel.md) (reply to their post first, then the opener, then the ask).
+- **Load this page before the first send.** It becomes the session's play: every log tool's answer then names the step it is and the next one, and a send as the owner with no play loaded is refused `playMissing` (rule 157). New people who aren't talking to the owner yet aren't this page: they go to [replyGuyFunnel.md](../log-twitter-reply-guy-funnel/SKILL.md) (reply to their post first, then the opener, then the ask).
 - **Read the threads from the .db,** never by fanning out reads to X: the conversation store and `~/.logCli/log.db` already hold every thread, and the inbox hook says how fresh it is (rule 136). On 2026-11-07 a helper read 22 threads from X one by one and added about 24 requests to the account for nothing.
 - **When the queue's send-time gate holds every short ask,** the owner's "send it" is `twitterDmLive` with `overGate` for each message, one at a time and a minute or two apart; `sameAsSent` still applies (rules 152, 157).
 - **A meme can carry the nudge.** For someone who said they'd do it and went quiet ("bet will do"), a Memelord meme that fits the moment goes on the first message as an image (`twitterDmLive` { media: "<meme url>" }), then the nudge in the owner's words: 2026-11-02, @gabesweats got Waiting Skeleton with "me waiting on your bug report / you break it yet lad". Find it with `memelordSearch`, gate the text with `voice` as always.
