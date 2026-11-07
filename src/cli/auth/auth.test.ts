@@ -13,6 +13,7 @@ let dir: string;
 beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), "logCliAuth"));
   authDeps.dir = dir;
+  authDeps.twentyReady = () => true;
 });
 afterEach(() => {
   Object.assign(authDeps, real);
@@ -130,6 +131,18 @@ describe("log login / whoami / logout", () => {
     saveSessionRecord(home.sessions["https://api.test"], {}, dir);
     expect((await run(["whoami"])).code).toBe(0);
     expect(loadSessionHome(dir).sessions["https://api.test"].accessToken).toBe("tokenRotated12345");
+  });
+
+  test("without Twenty set up, login opens nothing and says local accounts need no sign-in", async () => {
+    authDeps.twentyReady = () => false;
+    let opened = false;
+    authDeps.openBrowser = () => (opened = true);
+    const plain = await run(["login"]);
+    expect(plain.code).toBe(0);
+    expect(plain.out).toContain("you don't need to sign in");
+    expect(plain.out).toContain("log launch");
+    expect(JSON.parse((await run(["login", "--json"])).out)).toEqual({ ok: true, signedIn: false, needed: false, accounts: "local" });
+    expect(opened).toBe(false);
   });
 
   test("rejects bad tokens, bad URLs, and a web URL that isn't blaster", async () => {

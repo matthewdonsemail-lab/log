@@ -2,6 +2,16 @@
 
 Every account needs two things: a name log knows it by, and a signed-in session. You add the account once, sign it in, then check it.
 
+You don't sign in to log itself: your accounts live on your machine, and each one signs in on its own platform. `log login` is only for a team that keeps its accounts in [Twenty](twenty.md).
+
+## The quick way
+
+```bash
+log launch
+```
+
+Pick **Add an account and sign it in**, then the platform and the account's name. log walks you through the rest: the masked cookie prompt for X, LinkedIn and Slack, the steps for the account's browser on Reddit, Discord and Instagram, and connecting a Facebook account. **Check an account** and **Connect your agent** are in the same menu. The steps below are what it runs, if you'd rather type them.
+
 ## 1. Add the account
 
 Accounts live on your machine, in `~/.logCli/localAccounts.json`.
