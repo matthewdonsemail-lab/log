@@ -23,13 +23,12 @@ try {
   event = (JSON.parse(raw || '{}') as { hook_event_name?: string }).hook_event_name ?? event
 } catch {}
 
-const stamp = codeStamp(repo)
 replaceHungOwners('twitter', twitterAccounts())
 for (const platform of ['discord', 'slack', 'instagram']) replaceHungOwners(platform, twitterAccounts(platformStateRoot(platform)))
-stopStaleWatchers('twitter', twitterAccounts(), stamp)
-stopStaleWatchers('discord', twitterAccounts(platformStateRoot('discord')), stamp)
-stopStaleWatchers('slack', twitterAccounts(platformStateRoot('slack')), stamp)
-stopStaleWatchers('instagram', twitterAccounts(platformStateRoot('instagram')), stamp)
+stopStaleWatchers('twitter', twitterAccounts(), codeStamp(repo, 'twitter'))
+stopStaleWatchers('discord', twitterAccounts(platformStateRoot('discord')), codeStamp(repo, 'discord'))
+stopStaleWatchers('slack', twitterAccounts(platformStateRoot('slack')), codeStamp(repo, 'slack'))
+stopStaleWatchers('instagram', twitterAccounts(platformStateRoot('instagram')), codeStamp(repo, 'instagram'))
 clearDeadQueueLocks()
 ensureLiveWatchers('twitter', twitterAccounts().filter((a) => !coolingDown(twitterStateRoot(), a)), (account) => startTwitterWatch(account, repo))
 ensureLiveWatchers('discord', twitterAccounts(platformStateRoot('discord')).filter((a) => !coolingDown(platformStateRoot('discord'), a)), (account) => startDiscordWatch(account, repo))
