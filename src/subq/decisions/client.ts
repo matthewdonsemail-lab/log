@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { noteProviderAnswer, outOfCreditNote } from '../../billing/balance/helpers/answers'
 import type { DecisionRequest, DecisionResponse, DecisionsClient } from './types'
 import { SUBQ_DECISIONS_MODEL, SUBQ_DECISIONS_URL } from './types'
 
@@ -33,7 +34,10 @@ export function createDecisionsClient(key: string | null = subqKey()): Decisions
     for (const [attempt, wait] of [0, 1000, 3000].entries()) {
       if (wait) await new Promise((r) => setTimeout(r, wait))
       const response = await fetch(SUBQ_DECISIONS_URL, { method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }, body })
-      if (response.ok) return (await response.json()) as DecisionResponse
+      if (response.ok) {
+        noteProviderAnswer('subq', response.status)
+        return (await response.json()) as DecisionResponse
+      }
       const text = await response.text()
       const retryable = response.status === 429 || response.status >= 500
       if (!retryable || attempt === 2) {
@@ -42,6 +46,8 @@ export function createDecisionsClient(key: string | null = subqKey()): Decisions
           message = (JSON.parse(text) as { detail?: { message?: string } }).detail?.message ?? message
         } catch {
         }
+        const answer = noteProviderAnswer('subq', response.status, message)
+        if (answer.outOfCredit) throw Object.assign(new Error(`SubQ ${response.status}: ${message} (${outOfCreditNote('subq')})`), { code: 'providerOutOfCredit' })
         throw Object.assign(new Error(`SubQ ${response.status}: ${message}`), { code: 'subqRequestFailed' })
       }
     }

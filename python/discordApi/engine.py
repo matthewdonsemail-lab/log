@@ -80,7 +80,7 @@ def refusal_of(status: int, answer: Any, where: str) -> dict[str, Any]:
 
 
 def attachments_of(embeds: Any) -> list[dict[str, Any]]:
-    return [{k: e.get(k) for k in ("name", "type", "url", "duration") if e.get(k) is not None} for e in embeds or [] if isinstance(e, dict) and e.get("name") and e.get("url")]
+    return [{k: e.get(k) for k in ("name", "type", "url", "duration", "size") if e.get(k) is not None} for e in embeds or [] if isinstance(e, dict) and e.get("name") and e.get("url")]
 
 
 def raw_attachments_of(d: dict[str, Any]) -> list[dict[str, Any]]:
@@ -88,7 +88,7 @@ def raw_attachments_of(d: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def raw_fields(a: dict[str, Any]) -> tuple[tuple[str, Any], ...]:
-    return (("name", a.get("filename")), ("type", a.get("content_type")), ("url", a.get("url")), ("duration", round(a["duration_secs"]) if a.get("duration_secs") else None), ("waveform", True if a.get("waveform") else None))
+    return (("name", a.get("filename")), ("type", a.get("content_type")), ("url", a.get("url")), ("size", a.get("size")), ("duration", round(a["duration_secs"]) if a.get("duration_secs") else None), ("waveform", True if a.get("waveform") else None))
 
 
 def is_audio(attachment: dict[str, Any], flags: int | None = None) -> bool:
@@ -119,7 +119,19 @@ def visual_file_of(client: Any, spec: dict[str, Any], channel_id: str, message_i
     if kept.get("path") and path.is_file() and path.stat().st_size > media.VISUAL_MAX_BYTES:
         path.unlink()
         return {**attachment, "error": f"the file is over the {media.VISUAL_MAX_BYTES // 1024 // 1024} MB kept"}
-    return kept
+    return media.checked(kept, media.visual_problem)
+
+
+def text_file_of(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachment: dict[str, Any]) -> dict[str, Any]:
+    if attachment.get("size") and int(attachment["size"]) > media.TEXT_MAX_BYTES:
+        return media.not_opened(attachment) | {"error": f"the file is over the {media.TEXT_MAX_BYTES // 1024 // 1024} MB a text file may be"}
+    kept = media.checked(audio_file_of(client, spec, channel_id, message_id, attachment), media.text_problem)
+    out = {k: v for k, v in kept.items() if k != "url"}
+    return out | {"preview": media.text_preview(Path(kept["path"]))} if kept.get("path") else out
+
+
+def saved_files(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]], flags: int | None = None) -> list[dict[str, Any]]:
+    return [text_file_of(client, spec, channel_id, message_id, a) if media.is_text_file(a) else media.not_opened(a) for a in attachments if not is_audio(a, flags) and not media.is_visual(a)]
 
 
 def with_visuals(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -381,7 +393,15 @@ def read_message(client: Any, spec: dict[str, Any], channel: str, m: dict[str, A
     out = {"id": m["id"], "at": m["timestamp"], "from": m.get("global_name") or m["username"], "fromId": str(m["user_id"]), "bot": bool(m.get("bot")), "fromMe": str(m["user_id"]) == me, "replyTo": (m.get("referenced_message") or {}).get("id"), "text": text_of(m["content"], attachments), "embeds": plain_embeds(m.get("embeds")), "attachments": attachments}
     if spec.get("saveAudio") is not False and any(is_audio(a) for a in attachments):
         out["audio"] = saved_audio(client, spec, channel, str(m["id"]), attachments)
+    if spec.get("saveImages") is not False and any(media.is_visual(a) for a in attachments):
+        out["images"] = saved_images(client, spec, channel, str(m["id"]), attachments)
+    if spec.get("saveImages") is not False and any(not is_audio(a) and not media.is_visual(a) for a in attachments):
+        out["files"] = saved_files(client, spec, channel, str(m["id"]), attachments)
     return out
+
+
+def saved_images(client: Any, spec: dict[str, Any], channel_id: str, message_id: str, attachments: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{k: v for k, v in kept.items() if k != "url"} for kept in with_visuals(client, spec, channel_id, message_id, attachments) if media.is_visual(kept)]
 
 
 async def read(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:

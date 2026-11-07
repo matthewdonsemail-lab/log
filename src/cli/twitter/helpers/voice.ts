@@ -1,4 +1,5 @@
 import { recentPass, recordPass } from "../../../voice/passes/index.ts";
+import { timed, timedSync } from "../../../observability/timing/index.ts";
 import { incomingSince } from "../../../inbox/watch/index.ts";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { roomOf } from "../../../voice/room/index.ts";
@@ -362,8 +363,18 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
   return sorted.slice(lastOfMine + 1).map((m) => m.text).join("\n");
 }
 
-export async function gateSend(context: CommandContext, send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined; brief?: boolean; files?: readonly string[] }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
-  const same = gateDeps.same({ platform: send.platform, account: send.account, to: send.to, text: send.text });
+type GateSend = { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined; brief?: boolean; files?: readonly string[] };
+
+export function gateSend(context: CommandContext, send: GateSend): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
+  return timed("voice.gate", async (span) => {
+    const result = await gateSendNow(context, send);
+    span.attrs.passed = result.ok;
+    return result;
+  }, { platform: send.platform, brief: send.brief === true, spoken: send.spoken === true });
+}
+
+async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
+  const same = timedSync("voice.sameness", () => gateDeps.same({ platform: send.platform, account: send.account, to: send.to, text: send.text }));
   if (!same.ok) return { ok: false, refused: same.refused };
   if (send.brief) return gateBrief(send);
   const prior = recentPass(send.text);
@@ -372,12 +383,12 @@ export async function gateSend(context: CommandContext, send: { platform: string
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
   const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
-  const held = chatContextOf(send.platform, send.account, who).messages;
+  const held = timedSync("voice.chatContext", () => chatContextOf(send.platform, send.account, who).messages);
   const said = send.said ?? momentAnswered(held);
-  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
-  const ranked = await rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n")).catch(() => []);
-  const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
-  const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room });
+  const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const ranked = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
+  const evidence = await timed("voice.evidence", () => chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text));
+  const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
   if (reading.pass) {
     recordPass(send.text, send.to, reading.voice);
     return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
@@ -391,9 +402,9 @@ export async function gateBrief(send: { platform: string; account: string; to: s
   const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
   const held = chatContextOf(send.platform, send.account, who).messages;
   const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
-  const conversation = await rankedContext(send.platform, send.account, who, [momentAnswered(held), send.text].filter((t) => t.trim()).join("\n")).catch(() => []);
+  const conversation = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [momentAnswered(held), send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const guide = readGuide();
-  const reading = await readBrief({ to: send.to, text: send.text, conversation, ...(room ? { room } : {}), attached: attachedOf(send.files ?? []), ...(guide ? { howMattWrites: guide } : {}) }, voiceDeps.decisions());
+  const reading = await timed("voice.briefReading", () => readBrief({ to: send.to, text: send.text, conversation, ...(room ? { room } : {}), attached: attachedOf(send.files ?? []), ...(guide ? { howMattWrites: guide } : {}) }, voiceDeps.decisions()));
   if (reading.pass) return { ok: true, line: briefLine(reading) };
   return { ok: false, refused: [`>>> BRIEF GATE FAILED for ${send.to}, nothing was sent; a task has to say what to do, why, what done looks like and by when, kindly, and how to ask when stuck (rule 162):`, ...briefFailedParts(reading).map((p) => `  - ${p}`)].join("\n") };
 }

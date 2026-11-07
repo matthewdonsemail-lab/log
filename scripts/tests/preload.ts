@@ -21,11 +21,13 @@ process.env.LOG_INSTAGRAM_HOST ??= 'inline'
 delete process.env.LOG_ADSPOWER_HOMES
 process.env.LOG_FBK_STATE = mkdtempSync(join(tmpdir(), "logFbkState"));
 process.env.LOG_MCP_STAMP_FILE ??= join(scratch, 'mcpServer.json')
+process.env.LOG_MCP_RELOAD_FILE ??= join(scratch, 'mcpReload.json')
 process.env.LOG_TWITTER_STATE ??= join(scratch, "twitterState")
 process.env.LOG_PLATFORM_STATE ??= join(scratch, "platformState")
 process.env.LOG_CONVERSATIONS_DIR ??= join(scratch, "conversations")
 process.env.LOG_SEARCH_DIR ??= join(scratch, "search")
 process.env.LOG_TRANSCRIPTS_DIR ??= join(scratch, "transcripts")
+process.env.LOG_BILLING_ANSWERS ??= join(scratch, "billing", "answers.jsonl")
 delete process.env.ASSEMBLYAI_API_KEY
 process.env.LOG_VOICE_CLONE_DIR ??= join(scratch, "voice")
 process.env.LOG_VOICE_NOTES_DIR ??= join(scratch, "voiceNotes")

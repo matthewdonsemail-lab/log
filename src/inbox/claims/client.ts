@@ -5,6 +5,7 @@ import { processAlive } from '../watch/index'
 import type { InboxMessage } from '../watch/index'
 import { CLAIM_TTL_MS } from './types'
 import type { ActionRecord, ChatClaim, ChatRef } from './types'
+import { timedSync } from '../../observability/timing/index'
 
 export function eventIdOf(message: Pick<InboxMessage, 'platform' | 'account' | 'conversationId' | 'at' | 'text'>): string {
   return storeEventIdOf(message)
@@ -74,6 +75,10 @@ function lastAction(handle: Database, ref: ChatRef): string | null {
 }
 
 export function claimChat(ref: ChatRef, by: number = process.pid, now: Date = new Date(), alive: (pid: number) => boolean = processAlive, ttlMs: number = CLAIM_TTL_MS): { ok: true; claim: ChatClaim; renewed: boolean } | { ok: false; holder: ChatClaim } {
+  return timedSync('inbox.claim', () => claimChatNow(ref, by, now, alive, ttlMs), { platform: ref.platform })
+}
+
+function claimChatNow(ref: ChatRef, by: number, now: Date, alive: (pid: number) => boolean, ttlMs: number): { ok: true; claim: ChatClaim; renewed: boolean } | { ok: false; holder: ChatClaim } {
   return immediate((handle) => {
     const base = { platform: ref.platform, account: ref.account, conversationId: ref.conversationId, with: ref.with, eventId: ref.eventId, by }
     const matching = claimRows(handle, ref.platform, ref.account).filter((c) => sameChat(c, ref.platform, ref.account, ref.conversationId))

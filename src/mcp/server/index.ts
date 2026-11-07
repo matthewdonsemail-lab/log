@@ -11,16 +11,19 @@ import { COMMANDS, defaultSendInspect, runCli } from "../../cli/runner/index.ts"
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
+import type { ActiveCall } from "../../observability/timing/index.ts";
 import { FLOWS_DIR, listFlows, loadFlow } from "../../browser/flow/index.ts";
 import { browserViews } from "../../browser/inspect/index.ts";
 import type { BrowserView } from "../../browser/inspect/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
+import { msText, timeCall } from "../../observability/timing/index.ts";
 import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_MS, finishJob, MAX_WAIT_MS, startJob } from "../jobs/index.ts";
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
 import { playRefusal, setActivePlay, withPlayFooter } from "./helpers/index.ts";
+import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
@@ -94,7 +97,12 @@ interface Ran {
   cancelled: boolean;
 }
 
-async function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
+function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
+  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call), { account: accountOfArgv(argv) || undefined, job: job?.id });
+}
+
+async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall): Promise<Ran> {
+  const began = performance.now();
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
@@ -111,7 +119,7 @@ async function runGuarded(name: string, argv: string[], context: Partial<Command
   const send = context.sendInspect ?? defaultSendInspect;
   setLogSink((entry) => inFlight.forEach((listener) => listener(entry)));
   inFlight.add(fromProcess);
-  onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}`);
+  onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}  (call ${call.callId})`);
   let code: number;
   let cancelled = false;
   try {
@@ -146,7 +154,8 @@ async function runGuarded(name: string, argv: string[], context: Partial<Command
     if (inFlight.size === 0) setLogSink(null);
   }
   if (job && !cancelled && code !== 0 && cancelRequested(job.id)) cancelled = true;
-  onLine(name, "out", `■ exit ${code}`);
+  call.attrs.exit = code;
+  onLine(name, "out", `■ exit ${code} in ${msText(performance.now() - began)} (call ${call.callId}: timing { call: "${call.callId}" } shows where the time went)`);
   const text = [out.join("\n"), processLog.length ? `log:\n${processLog.join("\n")}` : "", err.length ? `stderr:\n${err.join("\n")}` : "", `exit ${code}`].filter(Boolean).join("\n\n");
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
@@ -181,6 +190,16 @@ export async function runToolCall(
     const text = readGuide(topic);
     if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
     return { content: [{ type: "text", text }] };
+  }
+  if (isCatalogTool(name)) {
+    const entries = catalog(COMMANDS);
+    if (name === CALL_TOOL) {
+      const target = resolveCall(entries, input);
+      if (!target.ok) return refused(target.message, readBrowsers);
+      return runToolCall(target.tool, target.input, context, onLine, readBrowsers);
+    }
+    const answer = name === SEARCH_TOOL ? searchAnswer(entries, input) : getAnswer(entries, input);
+    return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
   }
   const { waitMs, ...fields } = input ?? {};
   const flowCall = flowOfTool(savedFlows(), name);
@@ -241,7 +260,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     const shell = hasShell(server.getClientVersion()?.name);
     const tools = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
-    const listed = [guideTool(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
+    const listed = [guideTool(), ...catalogTools(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
     return { tools: listed.map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
@@ -253,7 +272,9 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   });
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews);
-    return request.params.name === GUIDE_TOOL ? result : withPlayFooter(request.params.name, result);
+    if (request.params.name === GUIDE_TOOL) return result;
+    const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
+    return withPlayFooter(target?.ok ? target.tool : request.params.name, result);
   });
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;

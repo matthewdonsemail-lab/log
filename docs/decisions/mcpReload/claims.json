@@ -1,0 +1,8 @@
+[
+  { "id": "stdioNotReconnected", "statement": "Claude Code does not reconnect a stdio MCP server that exited, so the process it talks to must stay up." },
+  { "id": "listChangedUnreliableWindows", "statement": "On Windows, Claude Code was reported ignoring tools/list_changed for new tools in versions up to at least 2.1.215." },
+  { "id": "reloaderooManual", "statement": "reloaderoo restarts the server when the agent calls its restart_server tool, not on its own when files change." },
+  { "id": "mcpmonEveryChange", "statement": "mcpmon restarts the server on every watched file change, with no check for running work." },
+  { "id": "logJobsInServer", "statement": "log runs long jobs (queue runs, watches) inside the MCP server process, so killing that process kills them." },
+  { "id": "logHasCatalog", "statement": "log already has catalog tools (logSearch, logGet, logCall) that reach any command by id, including ones added after the client started." }
+]

@@ -15,6 +15,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_timing["timing"]
     c_inbox["inbox"]
     c_media["media"]
     c_browsers["browsers"]
@@ -27,6 +28,8 @@ flowchart TB
     c_search["search"]
     c_kb["kb"]
     c_memelord["memelord"]
+    c_treg["treg"]
+    c_balance["balance"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -198,6 +201,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_timing
+  mcp --> c_timing
   cli --> c_inbox
   mcp --> c_inbox
   cli --> c_media
@@ -232,6 +237,10 @@ flowchart TB
   mcp --> c_kb
   cli --> c_memelord
   mcp --> c_memelord
+  cli --> c_treg
+  mcp --> c_treg
+  cli --> c_balance
+  mcp --> c_balance
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe

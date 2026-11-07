@@ -43,7 +43,7 @@ class Client:
     def get_file(self, url, folder, name):
         self.fetched.append(url)
         Path(folder).mkdir(parents=True, exist_ok=True)
-        (Path(folder) / name).write_bytes(b"x")
+        (Path(folder) / name).write_bytes(b"\\x89PNG\\r\\n\\x1a\\nxx")
         return str(Path(folder) / name)
 client = Client()
 spec = {"stateRoot": ${JSON.stringify(state)}, "account": "acct"}

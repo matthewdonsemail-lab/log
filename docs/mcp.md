@@ -8,6 +8,11 @@
 claude mcp add log -- logMcp
 ```
 
+You add it once. `logMcp` reloads its own code whenever log changes, so you never restart Claude Code for new code (rule 167):
+- It waits until no call or job is running, swaps the server underneath, and tells Claude Code the tools changed.
+- A tool added since the session started is always reachable through `logCall`.
+- `LOG_MCP_RELOAD=off` turns this off.
+
 ## Codex
 
 ```bash
@@ -44,6 +49,16 @@ claude mcp add --transport http log http://127.0.0.1:7337/mcp
 ## First call
 
 Your agent's first call is `getGuide({ topic: "logMcpInstructions" })`. It lists every use case and how to ask for it. `getGuide({ useCase: "<platform>/<page>" })` reads one [use case](useCases/README.md). Every tool's description names its guide, the use cases that call it and the AGENTS.md rules it falls under; AGENTS.md itself is the resource `log://agents` ([MCP server](specs/mcpServer.md)).
+
+## Find and run any command
+
+Three tools reach every command, so your agent doesn't have to know which tool to call:
+
+- `logSearch { "query": "send a dm on x" }` finds the commands for a job, in plain words.
+- `logGet { "id": "twitter.dm" }` gives the command's inputs and a call that works.
+- `logCall { "id": "twitter.dm", "inputs": { … } }` runs it, through the same checks as the command's own tool.
+
+A command that acts on a platform needs `live: true` and `confirmLive: true`. More: [the catalog guide](guides/logCatalog.md).
 
 ## Watch a long call
 

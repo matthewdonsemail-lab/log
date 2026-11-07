@@ -19,6 +19,7 @@ for p in (str(ROOT), str(VENDOR / "twikit"), str(VENDOR / "fbk" / "src")):
 
 from platformKit import media as media_kit
 from platformKit import reactions
+from platformKit import timing
 
 SECRET_KEYS = ("auth_token", "ct0", "twid", "kdt", "att", "password", "cookie")
 READS = ("ping", "follows", "inbox", "followers", "notifications", "webClient", "xchatContacts", "xchatUnlock", "xchatWatch", "lists")
@@ -1369,6 +1370,8 @@ async def xchat_stream(client: Any, cookies: dict[str, str], spec: dict[str, Any
         handle = await handle_of(client, sender, handles) if sender != me else None
         if handle:
             remember_handles(spec, str(event.get("conversation_id")), {sender: handle})
+        if unlocked and event.get("media"):
+            await save_xchat_media(client, spec, str(event.get("conversation_id")), [event])
         if unlocked and event.get("text") is not None:
             inboxSync.push_message(sync_path(spec), me, event, handle)
         live_line({**xchat_message(event, me, {sender: handle or ""}), "box": "xchat", "encrypted": not unlocked})
@@ -1762,17 +1765,23 @@ async def run(spec: dict[str, Any]) -> dict[str, Any]:
     account = spec["account"]
     if action in UNLOCKED:
         return await run_locked(spec, cookies, action, account)
+    lock = AccountLock(account)
     try:
-        async with AccountLock(account):
-            wait = spacing_wait(account, action=action)
-            if wait:
-                await asyncio.sleep(wait)
-            try:
-                return await run_locked(spec, cookies, action, account)
-            finally:
-                mark_call(account)
+        with timing.span("account.lock"):
+            await lock.__aenter__()
     except AccountBusy as e:
         return {"ok": False, "code": "accountBusy", "detail": str(e)}
+    try:
+        wait = spacing_wait(account, action=action)
+        if wait:
+            with timing.span("spacing", seconds=round(wait, 2)):
+                await asyncio.sleep(wait)
+        try:
+            return await run_locked(spec, cookies, action, account)
+        finally:
+            mark_call(account)
+    finally:
+        await lock.__aexit__()
 
 
 async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str, account: str) -> dict[str, Any]:
@@ -1783,15 +1792,18 @@ async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str,
     governor = governor_for(account, spec.get("writesPerDay"))
     forced_past = None
     try:
-        governor.before_request(is_mutation=action in WRITES, quiet=True)
+        with timing.span("governor", write=action in WRITES):
+            governor.before_request(is_mutation=action in WRITES, quiet=True)
     except GovernorBlockedError as e:
         if spec.get("force") is not True:
             return {"ok": False, "code": "governorBlocked", "detail": str(e)}
         forced_past = str(e)
         count_forced(governor, action in WRITES)
-    client = client_for(account, cookies, Client)
+    with timing.span("client", reused=SESSIONS.get(account) is not None):
+        client = client_for(account, cookies, Client)
     try:
-        out = await act(client, cookies, spec, governor)
+        with timing.span(f"action {action}"):
+            out = await act(client, cookies, spec, governor)
     except TooManyRequests as e:
         out = {"ok": False, "code": "rateLimited", "event": "throttled", "detail": redact(e, cookies), "rateLimitReset": getattr(e, "rate_limit_reset", None)}
     except Exception as e:
@@ -1806,10 +1818,11 @@ async def run_locked(spec: dict[str, Any], cookies: dict[str, str], action: str,
         out["event"] = "throttled"
     if out.get("event") in ("throttled", "dropped", "automated", "dailyLimit"):
         governor.observe_soft_block()
-    keep_transaction(client, account)
-    refreshed = client.get_cookies()
-    if spec.get("refreshedPath") and refreshed:
-        Path(spec["refreshedPath"]).write_text(json.dumps({k: v for k, v in refreshed.items() if k != "__cf_bm"}), encoding="utf-8")
+    with timing.span("session.keep"):
+        keep_transaction(client, account)
+        refreshed = client.get_cookies()
+        if spec.get("refreshedPath") and refreshed:
+            Path(spec["refreshedPath"]).write_text(json.dumps({k: v for k, v in refreshed.items() if k != "__cf_bm"}), encoding="utf-8")
     if forced_past:
         out["forcedPast"] = forced_past
     out["governor"] = governor.status()
@@ -1820,6 +1833,8 @@ def main() -> int:
     if os.name == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    timing.begin(spec.get("trace"))
+    timing.record_since("python.imports", timing.BOOT)
     if spec.get("governorStatus"):
         out = governor_status(spec["account"], spec.get("writesPerDay"))
     elif os.environ.get("LOG_TWITTER_HOST") == "inline":
@@ -1827,7 +1842,7 @@ def main() -> int:
     else:
         from twitterApi import host
         out = host.call(spec)
-    print(json.dumps(out, default=str))
+    print(json.dumps(timing.attach(out, boot=True), default=str))
     return 0 if out.get("ok") else 1
 
 

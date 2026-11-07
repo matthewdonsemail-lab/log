@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 
+from platformKit import timing
+
 ROOT = Path(__file__).resolve().parents[1]
 VENDOR = ROOT.parent / "vendor"
 for p in (str(ROOT), str(VENDOR / "fbk" / "src")):
@@ -94,11 +96,13 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
         cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
     governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True, catch_up=action not in writes and spec.get("catchUp") is True)
     try:
-        governor.before_request(is_mutation=action in writes, quiet=True)
+        with timing.span("governor", write=action in writes):
+            governor.before_request(is_mutation=action in writes, quiet=True)
     except GovernorBlockedError as e:
         return {"ok": False, "code": "governorBlocked", "detail": str(e)}
     try:
-        out = await actions[action](spec, cookies)
+        with timing.span(f"action {action}"):
+            out = await actions[action](spec, cookies)
     except Exception as e:
         out = {"ok": False, "code": type(e).__name__, "detail": redact(e, cookies)[:300]}
     refreshed = out.pop("refreshedCookies", None)
@@ -118,6 +122,8 @@ def main(actions: dict[str, Action], writes: tuple[str, ...] = (), library: str 
     if os.name == "nt":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    timing.begin(spec.get("trace"))
+    timing.record_since("python.imports", timing.BOOT)
     out = asyncio.run(run(spec, actions, writes))
-    print(json.dumps(out, default=str))
+    print(json.dumps(timing.attach(out, boot=True), default=str))
     return 0 if out.get("ok") else 1

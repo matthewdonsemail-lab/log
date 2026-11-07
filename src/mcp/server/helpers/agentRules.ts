@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 162;
+export const RULES_REVIEWED_THROUGH = 167;
 
 export const AGENTS_URI = "log://agents";
 
@@ -76,6 +76,9 @@ export const CORE_PRINCIPLES = [
   "69. A `>>> MAYBE A PLAY` lists the 3 plays closest to matt's message: before any tool, say in one line which one he is asking for, or none (building, fixing or talking about the system is none). A `>>> ACTIVE PLAY` after compaction is the play this session was in, with its steps done and to do: load it again and carry on from the next step (rule 159).",
   "70. A read for one chat or person (`discordRead`, `twitterDms` { with }) answers from the .db when its owner is live and the chat is backfilled; the platform is read only to fill the .db once, for a server channel, or when no owner is live. Never re-read a whole inbox to find one person, and never read around a refused catch-up (rule 160).",
   "71. A message that hands someone a task is a brief, never a curt order: send it with `brief` so the gate asks whether it says what to do in order, why it matters, what done looks like and by when, kindly, and how to ask when stuck. Files (a guide, a sheet) go with it through `file`, from OUTBOX or ~/.logCli (rule 162).",
+  "72. Every call is timed, never guessed: each tool call gets a call id (on its ▶ and ■ lines in the live log, with how long it took), and every stage inside it is stored in log.db (guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request). Before saying something is slow or fast, or changing code to speed it up, read `timing` (p50, p95 and p99 per tool and per stage) or `timing` { call } for one call's waterfall, and measure again after the change (rule 165).",
+  "73. treg is an extension: find an endpoint by the job with `tregSearch`, read its price and params with `tregGet`, and call it with `tregCall` (params as a JSON object), the key injected server-side by treg. A free endpoint runs; a priced one is a dry run that says its price, and runs only with `tregCallLive` { approvedBy, confirmLive } when matt asked for that spend. Every lookup comes from it, never memory (rules 41, 53, 166).",
+  "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -93,11 +96,15 @@ export const SERVER_INSTRUCTIONS = [
   "7. A refusal names its error code: the `errors` tool says what to do.",
   "8. If something isn't working, fix it; ask matt only for exactly what the fix needs from him. A reply that answers someone and fits the conversation goes straight out (rule 108).",
   "9. Before any message to someone, read their full context at that moment with `twitterDms` { with }: their thread and what they did on the account's posts (rule 109).",
+  "10. Any command: `logSearch` the job, `logGet` its id, `logCall` it (rule 163).",
   "",
   `Every rule is in AGENTS.md (${AGENTS_URI}), the newest at the bottom; each tool's description ends with the ones it falls under.`,
 ].join("\n");
 
 export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
+  logSearch: [106, 163],
+  logGet: [106, 163],
+  logCall: [8, 10, 20, 26, 106, 163],
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73],
@@ -135,6 +142,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
+  treg: [41, 53, 106, 119, 166],
+  balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
   media: [26, 41, 126, 131, 137, 138, 139],
@@ -149,10 +158,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138, 152, 153],
   twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138],
   runs: [19, 22, 25, 27, 66, 73],
+  timing: [26, 73, 165],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
-  mcp: [21, 47],
+  mcp: [21, 47, 167],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

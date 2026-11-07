@@ -1,0 +1,699 @@
+{
+  "model": "subq-snap-preview",
+  "stateChars": 53876,
+  "choices": {
+    "noClaudeRestart": {
+      "type": "choice",
+      "choice": "ownProxy",
+      "probabilities": {
+        "reloaderoo": 0.05305424705147743,
+        "mcpmon": 0.08829987049102783,
+        "mcpReloader": 0.006302255671471357,
+        "ownProxy": 0.8102902173995972,
+        "inProcess": 0.042053379118442535
+      },
+      "confidence": 0.7628627717494965
+    },
+    "jobsSurvive": {
+      "type": "choice",
+      "choice": "ownProxy",
+      "probabilities": {
+        "reloaderoo": 0.007050621788948774,
+        "mcpmon": 0.0025917598977684975,
+        "mcpReloader": 0.0019371892558410764,
+        "ownProxy": 0.9338708519935608,
+        "inProcess": 0.05454953387379646
+      },
+      "confidence": 0.917338564991951
+    },
+    "windows": {
+      "type": "choice",
+      "choice": "reloaderoo",
+      "probabilities": {
+        "reloaderoo": 0.505519688129425,
+        "mcpmon": 0.010272553190588951,
+        "mcpReloader": 0.004675644915550947,
+        "ownProxy": 0.37621745467185974,
+        "inProcess": 0.10331461578607559
+      },
+      "confidence": 0.38189961016178126
+    },
+    "staysUp": {
+      "type": "choice",
+      "choice": "ownProxy",
+      "probabilities": {
+        "reloaderoo": 0.19398123025894165,
+        "mcpmon": 0.010348152369260788,
+        "mcpReloader": 0.004554374609142542,
+        "ownProxy": 0.7581068277359009,
+        "inProcess": 0.03300939127802849
+      },
+      "confidence": 0.6976335346698761
+    },
+    "fitsLog": {
+      "type": "choice",
+      "choice": "ownProxy",
+      "probabilities": {
+        "reloaderoo": 0.009734234772622585,
+        "mcpmon": 0.0015834704972803593,
+        "mcpReloader": 0.0009172324207611382,
+        "ownProxy": 0.9759885668754578,
+        "inProcess": 0.011776475235819817
+      },
+      "confidence": 0.9699857085943222
+    },
+    "effort": {
+      "type": "choice",
+      "choice": "reloaderoo",
+      "probabilities": {
+        "reloaderoo": 0.5525330901145935,
+        "mcpmon": 0.05274530127644539,
+        "mcpReloader": 0.004680108278989792,
+        "ownProxy": 0.2786363959312439,
+        "inProcess": 0.11140508949756622
+      },
+      "confidence": 0.4406663626432418
+    },
+    "overall": {
+      "type": "choice",
+      "choice": "ownProxy",
+      "probabilities": {
+        "reloaderoo": 0.0162956640124321,
+        "mcpmon": 0.0015959891024976969,
+        "mcpReloader": 0.000606320274528116,
+        "ownProxy": 0.9783857464790344,
+        "inProcess": 0.003116364125162363
+      },
+      "confidence": 0.972982183098793
+    }
+  },
+  "scores": {
+    "reloaderoo": {
+      "noClaudeRestart": {
+        "type": "score",
+        "score": 2.0135558024048805,
+        "legend": {
+          "0": "Never",
+          "1": "Only after a manual step in the client",
+          "2": "Only when the agent remembers to call a restart tool",
+          "3": "Automatically for existing tools",
+          "4": "Automatically, and new tools reachable at once through logCall"
+        },
+        "probabilities": {
+          "0": 0.0007228061440400779,
+          "1": 0.013284287415444851,
+          "2": 0.9605708718299866,
+          "3": 0.022558514028787613,
+          "4": 0.0028635573107749224
+        },
+        "confidence": 0.9641537263717813
+      },
+      "jobsSurvive": {
+        "type": "score",
+        "score": 1.2616260722279549,
+        "legend": {
+          "0": "Every change kills running jobs",
+          "1": "Jobs die unless the agent waits",
+          "2": "Jobs survive only if nobody saves a file",
+          "3": "The reload waits for calls, not jobs",
+          "4": "The reload waits until no call or job is running"
+        },
+        "probabilities": {
+          "0": 0.017922841012477875,
+          "1": 0.8195242285728455,
+          "2": 0.05152370035648346,
+          "3": 0.10506287962198257,
+          "4": 0.005966451019048691
+        },
+        "confidence": 0.7521069552749395
+      },
+      "windows": {
+        "type": "score",
+        "score": 2.588816925883293,
+        "legend": {
+          "0": "Not on Windows",
+          "1": "Unknown on Windows",
+          "2": "Windows, but not with Bun",
+          "3": "Windows with Bun, child tree not handled",
+          "4": "Windows with Bun, child tree killed"
+        },
+        "probabilities": {
+          "0": 0.0032945405691862106,
+          "1": 0.1645100712776184,
+          "2": 0.1235118880867958,
+          "3": 0.6574506759643555,
+          "4": 0.05123276263475418
+        },
+        "confidence": 0.5719596541797121
+      },
+      "staysUp": {
+        "type": "score",
+        "score": 2.3854432217776775,
+        "legend": {
+          "0": "Exits with the server",
+          "1": "Exits after a crash",
+          "2": "Restarts with a crash limit, then exits",
+          "3": "Stays up and keeps the old child on a crash",
+          "4": "Stays up, keeps the old child, and says why"
+        },
+        "probabilities": {
+          "0": 0.002197095425799489,
+          "1": 0.006162714213132858,
+          "2": 0.6708480715751648,
+          "3": 0.24558418989181519,
+          "4": 0.07520794868469238
+        },
+        "confidence": 0.6612025063950568
+      },
+      "fitsLog": {
+        "type": "score",
+        "score": 1.615691652521491,
+        "legend": {
+          "0": "Breaks a rule",
+          "1": "Needs workarounds",
+          "2": "Fits with a new dependency",
+          "3": "Fits, small code to own",
+          "4": "Fits and reuses codeStamp, jobs and the hook"
+        },
+        "probabilities": {
+          "0": 0.004915446508675814,
+          "1": 0.4230227470397949,
+          "2": 0.5279883146286011,
+          "3": 0.039601635187864304,
+          "4": 0.004471842665225267
+        },
+        "confidence": 0.5988341995204488
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.375260252505541,
+        "legend": {
+          "0": "Large and fragile",
+          "1": "Large",
+          "2": "Medium",
+          "3": "Small",
+          "4": "Small and tested"
+        },
+        "probabilities": {
+          "0": 0.004106595646589994,
+          "1": 0.03369157388806343,
+          "2": 0.6113371253013611,
+          "3": 0.28456398844718933,
+          "4": 0.06630061566829681
+        },
+        "confidence": 0.6174416791958113
+      }
+    },
+    "mcpmon": {
+      "noClaudeRestart": {
+        "type": "score",
+        "score": 2.984708158299327,
+        "legend": {
+          "0": "Never",
+          "1": "Only after a manual step in the client",
+          "2": "Only when the agent remembers to call a restart tool",
+          "3": "Automatically for existing tools",
+          "4": "Automatically, and new tools reachable at once through logCall"
+        },
+        "probabilities": {
+          "0": 0.0005862184334546328,
+          "1": 0.02570388838648796,
+          "2": 0.005053200758993626,
+          "3": 0.9257292151451111,
+          "4": 0.04292755573987961
+        },
+        "confidence": 0.9157106761898225
+      },
+      "jobsSurvive": {
+        "type": "score",
+        "score": 0.13256102241575718,
+        "legend": {
+          "0": "Every change kills running jobs",
+          "1": "Jobs die unless the agent waits",
+          "2": "Jobs survive only if nobody saves a file",
+          "3": "The reload waits for calls, not jobs",
+          "4": "The reload waits until no call or job is running"
+        },
+        "probabilities": {
+          "0": 0.9366605281829834,
+          "1": 0.00919001642614603,
+          "2": 0.041471824049949646,
+          "3": 0.010283196344971657,
+          "4": 0.0023944422136992216
+        },
+        "confidence": 0.8895324813202024
+      },
+      "windows": {
+        "type": "score",
+        "score": 1.236859591677785,
+        "legend": {
+          "0": "Not on Windows",
+          "1": "Unknown on Windows",
+          "2": "Windows, but not with Bun",
+          "3": "Windows with Bun, child tree not handled",
+          "4": "Windows with Bun, child tree killed"
+        },
+        "probabilities": {
+          "0": 0.004688542801886797,
+          "1": 0.8604188561439514,
+          "2": 0.034408580511808395,
+          "3": 0.09431229531764984,
+          "4": 0.006171672139316797
+        },
+        "confidence": 0.7948027246942122
+      },
+      "staysUp": {
+        "type": "score",
+        "score": 1.878308191895485,
+        "legend": {
+          "0": "Exits with the server",
+          "1": "Exits after a crash",
+          "2": "Restarts with a crash limit, then exits",
+          "3": "Stays up and keeps the old child on a crash",
+          "4": "Stays up, keeps the old child, and says why"
+        },
+        "probabilities": {
+          "0": 0.06588870286941528,
+          "1": 0.3290466368198395,
+          "2": 0.3092711269855499,
+          "3": 0.25245535373687744,
+          "4": 0.04333830997347832
+        },
+        "confidence": 0.15826211062570406
+      },
+      "fitsLog": {
+        "type": "score",
+        "score": 1.5705309137701988,
+        "legend": {
+          "0": "Breaks a rule",
+          "1": "Needs workarounds",
+          "2": "Fits with a new dependency",
+          "3": "Fits, small code to own",
+          "4": "Fits and reuses codeStamp, jobs and the hook"
+        },
+        "probabilities": {
+          "0": 0.020193001255393028,
+          "1": 0.4380232095718384,
+          "2": 0.4985950291156769,
+          "3": 0.037437643855810165,
+          "4": 0.005751178599894047
+        },
+        "confidence": 0.5605423223848144
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.4557573311030865,
+        "legend": {
+          "0": "Large and fragile",
+          "1": "Large",
+          "2": "Medium",
+          "3": "Small",
+          "4": "Small and tested"
+        },
+        "probabilities": {
+          "0": 0.021876627579331398,
+          "1": 0.0585177056491375,
+          "2": 0.486891508102417,
+          "3": 0.30740004777908325,
+          "4": 0.1253141164779663
+        },
+        "confidence": 0.4497506320476532
+      }
+    },
+    "mcpReloader": {
+      "noClaudeRestart": {
+        "type": "score",
+        "score": 2.4943161755800247,
+        "legend": {
+          "0": "Never",
+          "1": "Only after a manual step in the client",
+          "2": "Only when the agent remembers to call a restart tool",
+          "3": "Automatically for existing tools",
+          "4": "Automatically, and new tools reachable at once through logCall"
+        },
+        "probabilities": {
+          "0": 0.005423917900770903,
+          "1": 0.22326472401618958,
+          "2": 0.0724344477057457,
+          "3": 0.6693251729011536,
+          "4": 0.029551759362220764
+        },
+        "confidence": 0.5293438259977847
+      },
+      "jobsSurvive": {
+        "type": "score",
+        "score": 0.42666122131049633,
+        "legend": {
+          "0": "Every change kills running jobs",
+          "1": "Jobs die unless the agent waits",
+          "2": "Jobs survive only if nobody saves a file",
+          "3": "The reload waits for calls, not jobs",
+          "4": "The reload waits until no call or job is running"
+        },
+        "probabilities": {
+          "0": 0.7939823269844055,
+          "1": 0.04484543576836586,
+          "2": 0.10574382543563843,
+          "3": 0.05138593539595604,
+          "4": 0.004042582120746374
+        },
+        "confidence": 0.644448982241253
+      },
+      "windows": {
+        "type": "score",
+        "score": 1.156359599903226,
+        "legend": {
+          "0": "Not on Windows",
+          "1": "Unknown on Windows",
+          "2": "Windows, but not with Bun",
+          "3": "Windows with Bun, child tree not handled",
+          "4": "Windows with Bun, child tree killed"
+        },
+        "probabilities": {
+          "0": 0.004102937877178192,
+          "1": 0.9049158692359924,
+          "2": 0.028447242453694344,
+          "3": 0.05558675527572632,
+          "4": 0.006947244983166456
+        },
+        "confidence": 0.8628621451401461
+      },
+      "staysUp": {
+        "type": "score",
+        "score": 1.2984435074031353,
+        "legend": {
+          "0": "Exits with the server",
+          "1": "Exits after a crash",
+          "2": "Restarts with a crash limit, then exits",
+          "3": "Stays up and keeps the old child on a crash",
+          "4": "Stays up, keeps the old child, and says why"
+        },
+        "probabilities": {
+          "0": 0.1626552790403366,
+          "1": 0.5404409170150757,
+          "2": 0.14392171800136566,
+          "3": 0.14176934957504272,
+          "4": 0.01121277641505003
+        },
+        "confidence": 0.48020497880255175
+      },
+      "fitsLog": {
+        "type": "score",
+        "score": 1.0975603759288788,
+        "legend": {
+          "0": "Breaks a rule",
+          "1": "Needs workarounds",
+          "2": "Fits with a new dependency",
+          "3": "Fits, small code to own",
+          "4": "Fits and reuses codeStamp, jobs and the hook"
+        },
+        "probabilities": {
+          "0": 0.08541955798864365,
+          "1": 0.7593454122543335,
+          "2": 0.1326490193605423,
+          "3": 0.01742689311504364,
+          "4": 0.005159061402082443
+        },
+        "confidence": 0.7763337101787329
+      },
+      "effort": {
+        "type": "score",
+        "score": 1.960055947303772,
+        "legend": {
+          "0": "Large and fragile",
+          "1": "Large",
+          "2": "Medium",
+          "3": "Small",
+          "4": "Small and tested"
+        },
+        "probabilities": {
+          "0": 0.04973197355866432,
+          "1": 0.16789095103740692,
+          "2": 0.5962017178535461,
+          "3": 0.14493948221206665,
+          "4": 0.041235778480768204
+        },
+        "confidence": 0.5876950522263844
+      }
+    },
+    "ownProxy": {
+      "noClaudeRestart": {
+        "type": "score",
+        "score": 3.986202816304285,
+        "legend": {
+          "0": "Never",
+          "1": "Only after a manual step in the client",
+          "2": "Only when the agent remembers to call a restart tool",
+          "3": "Automatically for existing tools",
+          "4": "Automatically, and new tools reachable at once through logCall"
+        },
+        "probabilities": {
+          "0": 0.00016293363296426833,
+          "1": 0.00025344936875626445,
+          "2": 0.00044966937275603414,
+          "3": 0.011485995724797249,
+          "4": 0.9876480102539062
+        },
+        "confidence": 0.9885021524096373
+      },
+      "jobsSurvive": {
+        "type": "score",
+        "score": 3.99770595136215,
+        "legend": {
+          "0": "Every change kills running jobs",
+          "1": "Jobs die unless the agent waits",
+          "2": "Jobs survive only if nobody saves a file",
+          "3": "The reload waits for calls, not jobs",
+          "4": "The reload waits until no call or job is running"
+        },
+        "probabilities": {
+          "0": 0.0001212113638757728,
+          "1": 0.00020203946041874588,
+          "2": 0.0002625573833938688,
+          "3": 0.0006778364768251777,
+          "4": 0.9987363219261169
+        },
+        "confidence": 0.9980884040996898
+      },
+      "windows": {
+        "type": "score",
+        "score": 3.861790548078716,
+        "legend": {
+          "0": "Not on Windows",
+          "1": "Unknown on Windows",
+          "2": "Windows, but not with Bun",
+          "3": "Windows with Bun, child tree not handled",
+          "4": "Windows with Bun, child tree killed"
+        },
+        "probabilities": {
+          "0": 0.0008683663327246904,
+          "1": 0.04018198326230049,
+          "2": 0.0019940584897994995,
+          "3": 0.01020174939185381,
+          "4": 0.9467537999153137
+        },
+        "confidence": 0.8848255987589558
+      },
+      "staysUp": {
+        "type": "score",
+        "score": 3.462834957521409,
+        "legend": {
+          "0": "Exits with the server",
+          "1": "Exits after a crash",
+          "2": "Restarts with a crash limit, then exits",
+          "3": "Stays up and keeps the old child on a crash",
+          "4": "Stays up, keeps the old child, and says why"
+        },
+        "probabilities": {
+          "0": 0.0025666099973022938,
+          "1": 0.004411719273775816,
+          "2": 0.01017015241086483,
+          "3": 0.49332284927368164,
+          "4": 0.4895285964012146
+        },
+        "confidence": 0.569814985540385
+      },
+      "fitsLog": {
+        "type": "score",
+        "score": 3.994920870522037,
+        "legend": {
+          "0": "Breaks a rule",
+          "1": "Needs workarounds",
+          "2": "Fits with a new dependency",
+          "3": "Fits, small code to own",
+          "4": "Fits and reuses codeStamp, jobs and the hook"
+        },
+        "probabilities": {
+          "0": 0.00023825382231734693,
+          "1": 0.00037798855919390917,
+          "2": 0.00039077590918168426,
+          "3": 0.002210706239566207,
+          "4": 0.9967823028564453
+        },
+        "confidence": 0.9957673008126827
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.2582543920725584,
+        "legend": {
+          "0": "Large and fragile",
+          "1": "Large",
+          "2": "Medium",
+          "3": "Small",
+          "4": "Small and tested"
+        },
+        "probabilities": {
+          "0": 0.0020709156524389982,
+          "1": 0.01875939778983593,
+          "2": 0.7633816599845886,
+          "3": 0.15042029321193695,
+          "4": 0.0653676986694336
+        },
+        "confidence": 0.746619233628735
+      }
+    },
+    "inProcess": {
+      "noClaudeRestart": {
+        "type": "score",
+        "score": 2.917016537860036,
+        "legend": {
+          "0": "Never",
+          "1": "Only after a manual step in the client",
+          "2": "Only when the agent remembers to call a restart tool",
+          "3": "Automatically for existing tools",
+          "4": "Automatically, and new tools reachable at once through logCall"
+        },
+        "probabilities": {
+          "0": 0.033625248819589615,
+          "1": 0.016949037089943886,
+          "2": 0.02998785302042961,
+          "3": 0.8376598358154297,
+          "4": 0.08177807182073593
+        },
+        "confidence": 0.7945502121001482
+      },
+      "jobsSurvive": {
+        "type": "score",
+        "score": 3.0440382286906242,
+        "legend": {
+          "0": "Every change kills running jobs",
+          "1": "Jobs die unless the agent waits",
+          "2": "Jobs survive only if nobody saves a file",
+          "3": "The reload waits for calls, not jobs",
+          "4": "The reload waits until no call or job is running"
+        },
+        "probabilities": {
+          "0": 0.13414303958415985,
+          "1": 0.05419328808784485,
+          "2": 0.07167030870914459,
+          "3": 0.11346916109323502,
+          "4": 0.6265242099761963
+        },
+        "confidence": 0.20336516574025154
+      },
+      "windows": {
+        "type": "score",
+        "score": 1.7191776167601347,
+        "legend": {
+          "0": "Not on Windows",
+          "1": "Unknown on Windows",
+          "2": "Windows, but not with Bun",
+          "3": "Windows with Bun, child tree not handled",
+          "4": "Windows with Bun, child tree killed"
+        },
+        "probabilities": {
+          "0": 0.014561528339982033,
+          "1": 0.6530566215515137,
+          "2": 0.010682380758225918,
+          "3": 0.24204126000404358,
+          "4": 0.07965811342000961
+        },
+        "confidence": 0.3764160255280633
+      },
+      "staysUp": {
+        "type": "score",
+        "score": 0.750733744353056,
+        "legend": {
+          "0": "Exits with the server",
+          "1": "Exits after a crash",
+          "2": "Restarts with a crash limit, then exits",
+          "3": "Stays up and keeps the old child on a crash",
+          "4": "Stays up, keeps the old child, and says why"
+        },
+        "probabilities": {
+          "0": 0.4137391448020935,
+          "1": 0.5067386627197266,
+          "2": 0.011922869831323624,
+          "3": 0.050247665494680405,
+          "4": 0.017351586371660233
+        },
+        "confidence": 0.5181565793852011
+      },
+      "fitsLog": {
+        "type": "score",
+        "score": 2.3551124408841133,
+        "legend": {
+          "0": "Breaks a rule",
+          "1": "Needs workarounds",
+          "2": "Fits with a new dependency",
+          "3": "Fits, small code to own",
+          "4": "Fits and reuses codeStamp, jobs and the hook"
+        },
+        "probabilities": {
+          "0": 0.04480418562889099,
+          "1": 0.3106124699115753,
+          "2": 0.048838917165994644,
+          "3": 0.4361554682254791,
+          "4": 0.15958893299102783
+        },
+        "confidence": 0.19661221094429493
+      },
+      "effort": {
+        "type": "score",
+        "score": 0.9758878611028194,
+        "legend": {
+          "0": "Large and fragile",
+          "1": "Large",
+          "2": "Medium",
+          "3": "Small",
+          "4": "Small and tested"
+        },
+        "probabilities": {
+          "0": 0.6091132164001465,
+          "1": 0.02445385977625847,
+          "2": 0.17328447103500366,
+          "3": 0.16772890090942383,
+          "4": 0.02541958913207054
+        },
+        "confidence": 0.1867601157476504
+      }
+    }
+  },
+  "claims": {
+    "stdioNotReconnected": {
+      "type": "noul",
+      "noul": 0.9992475509643555
+    },
+    "listChangedUnreliableWindows": {
+      "type": "noul",
+      "noul": 0.9928942322731018
+    },
+    "reloaderooManual": {
+      "type": "noul",
+      "noul": 0.9873237609863281
+    },
+    "mcpmonEveryChange": {
+      "type": "noul",
+      "noul": 0.9932624697685242
+    },
+    "logJobsInServer": {
+      "type": "noul",
+      "noul": 0.9991377592086792
+    },
+    "logHasCatalog": {
+      "type": "noul",
+      "noul": 0.9985558390617371
+    }
+  },
+  "inputTokens": 102798
+}

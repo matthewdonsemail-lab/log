@@ -1,17 +1,17 @@
-export const BACKFILL_SCOPE = 'backfill:'
+import type { MessageAttachment } from '../catchUp/types'
 
-export const READ_CATCH_UP_MS = 30_000
+export const BACKFILL_SCOPE = 'backfill:'
 
 export const CHAT_LIST_FRESH_MS = 6 * 60 * 60 * 1000
 
 export type ReadSource =
   | { from: 'db'; reason: 'backfilled' | 'enoughInDb' }
-  | { from: 'platform'; reason: 'noLiveOwner' | 'notBackfilled' | 'serverChannel' | 'askedFull' }
+  | { from: 'platform'; reason: 'noLiveOwner' | 'notBackfilled' | 'serverChannel' | 'askedFull' | 'mediaNotSaved' | 'catchingUp' }
   | { from: 'refused'; refused: string }
 
 export interface ReadSourceDeps {
   live: (platform: string, account: string) => boolean
-  waitCaughtUp: (platform: string, account: string, options: { timeoutMs: number }) => Promise<{ ok: true; waitedMs: number } | { ok: false; refused: string }>
+  behind: (platform: string, account: string) => { status: string; fromAt: string; detail?: string | null } | null
   backfilledAt: (platform: string, account: string, chatKey: string) => string | null
 }
 
@@ -22,4 +22,5 @@ export interface DbMessage {
   from: string
   fromMe: boolean
   text: string
+  attachments?: MessageAttachment[]
 }

@@ -38,6 +38,13 @@ export const mcpServer = {
     'src/contextLayer/service/types.ts',
     'scripts/contextLayer/service.ts',
     'scripts/useCases/benchRouter.ts',
+    'src/mcp/catalog/index.ts',
+    'src/mcp/catalog/types.ts',
+    'src/mcp/catalog/helpers/entries.ts',
+    'src/mcp/catalog/helpers/search.ts',
+    'src/mcp/catalog/helpers/examples.ts',
+    'src/mcp/catalog/helpers/view.ts',
+    'src/mcp/catalog/catalog.test.ts',
   ],
   anchors: {
     'REQ-MCP-01': [
@@ -104,6 +111,14 @@ export const mcpServer = {
       { kind: 'value', file: FRESHNESS, name: 'LOCAL_PATHS', equals: ['src', 'python', 'vendor', 'bin', 'scripts', 'package.json'] },
       { kind: 'string', file: FRESHNESS, includes: '--porcelain' },
     ],
+    'REQ-MCP-18': [
+      { kind: 'symbol', file: 'src/mcp/catalog/index.ts', name: 'catalogTools' },
+      { kind: 'symbol', file: 'src/mcp/catalog/index.ts', name: 'resolveCall' },
+      { kind: 'symbol', file: 'src/mcp/catalog/helpers/search.ts', name: 'searchCatalog' },
+      { kind: 'symbol', file: 'src/mcp/catalog/helpers/entries.ts', name: 'catalogIdOf' },
+      { kind: 'uses', file: SERVER, name: 'catalogTools' },
+      { kind: 'uses', file: SERVER, name: 'resolveCall' },
+    ],
     'REQ-MCP-17': [
       { kind: 'symbol', file: 'src/useCases/router/client.ts', name: 'routePrompt' },
       { kind: 'symbol', file: 'src/useCases/router/helpers/typos.ts', name: 'correctTypos' },
@@ -138,8 +153,9 @@ export const mcpServer = {
     'REQ-MCP-09': noul('Does checkUseCases ask SubQ reviewQuestions for every page from listUseCases against sessionDigest of the latest session, and exit 1 when readReview says it blocks, a page blocking only when it is not current, its confidence reaches blockAt and it is not staged, and uncovered work blocking only when no new page is staged; and does checkUseCases exit 0 without asking SubQ when siteOnly says every staged file other than log.md and log/<date>.md is under site/, siteOnly being false for an empty list or one with only the log?'),
     'REQ-MCP-10': noul('Does liveLogVerdict return the deny from handRunDenial for every command logCommandOf recognises as an installed log command or bun bin/log.ts, before it checks for tail or head?'),
     'REQ-MCP-11': noul('Does handRunDenial return null, so nothing is refused, for a command name that is a key of TERMINAL_ONLY, and a denial for every other name?'),
-    'REQ-MCP-12': noul('Is staleServerLine(repo) one of the parts the engines hook joins into its text, and does staleServerLine return a line telling matt to restart and never to work around it with a hand-run command when the recorded server pid is alive and codeStamp of the checkout is newer than the recorded stamp, and null otherwise?'),
+    'REQ-MCP-12': noul('Is staleServerLine(repo) one of the parts the engines hook joins into its text; when the recorded server pid is alive and codeStamp of the checkout is newer than the recorded stamp, does it return a line telling matt to restart and never to work around it with a hand-run command only when readProxyState shows no live reload proxy, and when a proxy is live, the proxy lastError or waitingOn line, or null; and null when the server is current?'),
     'REQ-MCP-13': noul('Does localChangesLine return null when there are no files, and otherwise a line starting with >>> UNCOMMITTED LOCAL CHANGES that lists the files and says to read each diff and never overwrite, revert, stage, publish or ship them without matt?'),
+    'REQ-MCP-18': noul('Does the ListTools handler list logSearch, logGet and logCall right after getGuide; does catalogOf make one entry per command tool with its Live twin as liveTool and every TERMINAL_ONLY command as an entry with terminalOnly and no tool; does searchCatalog keep only the named platform and any when a platform is named and answer strong, closest or none with up to 3 near misses; and does resolveCall refuse an unknown id, a terminal-only entry, live without a liveTool and any input not among the entry inputs, and otherwise run the entry tool or liveTool through runToolCall so guardCall applies?'),
     'REQ-MCP-17': noul('Does the UserPromptSubmit useCases hook run as a curl to the context layer service with the bun script only after ||, does routePrompt skip text isPrompt refuses, correct typos, embed windows and combine denseScores and sparseScores at DENSE_WEIGHT, naming matches at or above the threshold and otherwise a menu at or above DEFAULT_MENU_FLOOR, and does hookAnswer on SessionStart return playReminder for the last play sessionPlayOf finds in the transcript?'),
     'REQ-MCP-16': noul('Does matchPlays score the prompt content words against each use case asks and title, keep only matches at or above MATCH_FLOOR best first and at most MATCHES_SHOWN, does playMatchText return a >>> PLAY MATCH line naming getGuide with the top use case id and nothing when there is no match, and does scripts/hooks/useCases.ts write it as additionalContext only when there is text?'),
     'REQ-MCP-15': noul('Does runToolCall call setActivePlay when getGuide is given a useCase, does stepsOf read each steps-table row into its number, step, the tools named in backticks and done when, does the server add playFooter to every non-guide tool answer naming the step that tool is and the next step, or that it is not a step of the play, and does playRefusal refuse a PLAY_REQUIRED tool with playMissing while no play is loaded, naming the use cases whose pages name the tool?'),
@@ -163,6 +179,7 @@ export const mcpServer = {
     'REQ-MCP-15': MET,
     'REQ-MCP-16': MET,
     'REQ-MCP-17': MET,
+    'REQ-MCP-18': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

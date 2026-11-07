@@ -20,6 +20,8 @@ skill in the same commit.
 | [`host`](skills/host/SKILL.md) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); `log facebook preflight` first (rule 79) |
 | [`lifecycle`](skills/lifecycle/SKILL.md) | The account lifecycle (rule 35): one machine per account, the browser kept open, onboarding with a day's warm-up, then its host |
 | [`runs`](skills/runs/SKILL.md) | List the recorded runs and prune the ones rea settled and the request docs hold, keeping findings and domains; the storage hook (rule 66) |
+| [`callTiming`](skills/callTiming/SKILL.md) | Find where a call's time goes from its stored timings: `timing` for p50, p95 and p99 per tool and stage, `timing` { call } for one call's waterfall, then measure again after a fix (rule 165) |
+| [`tregExtension`](skills/tregExtension/SKILL.md) | Find a treg endpoint by the job, read its price and params, and call it with the key held server-side; priced ones only when matt approves the spend (rule 166) |
 | [`warmup`](skills/warmup/SKILL.md) | Record the five warm-up activities headed, turn them into flows, run them in one open browser with an activity feed (rule 36) |
 | [`humanMouse`](skills/humanMouse/SKILL.md) | Make the cursor move like matt's hand (rule 32): record his mouse, fit `humanMouse.py`, measure ours with the same analyser |
 | [`inspect`](skills/inspect/SKILL.md) | Look at a Facebook page step by step in one gated Camoufox before writing code for it (rule 29): snapshot refs, screenshot, HAR and rea per step |
@@ -34,6 +36,7 @@ skill in the same commit.
 | [`layout`](skills/layout/SKILL.md) | Where a new file goes: every file in a domain folder, never loose in `python/` or `scripts/` (rule 58) |
 | [`xPosting`](skills/xPosting/SKILL.md) | Set up an X account in Twenty (`log twitter cookies save`), its copy style, original posts by the social posting playbook, and replies, dms and queues with `log twitter` |
 | [`knowledgeBase`](skills/knowledgeBase/SKILL.md) | Search the knowledge base before guessing, save what a session learned, and refresh it from every source (rule 93) |
+| [`logCatalog`](skills/logCatalog/SKILL.md) | Find and run any log command over MCP: logSearch the job, logGet its inputs and a call that works, logCall it (rule 163) |
 | [`memelord`](skills/memelord/SKILL.md) | Reply in a chat with a Memelord meme that fits the moment: read, search, gate, send its media url (rule 119) |
 | [`voiceClone`](skills/voiceClone/SKILL.md) | matt's voice cloned once per provider (Inworld or Fish Audio), and a voice note in it sent natively only when he asks: draft, gate, dry run, live (rules 142, 143) |
 

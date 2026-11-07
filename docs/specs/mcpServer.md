@@ -80,7 +80,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-12: A stale MCP server is said to matt
 
-When the running MCP server started before the newest change to log-cli's code, the engines hook says so loudly and tells matt to restart the app, and says never to work around it with a hand-run command.
+When the running MCP server started before the newest change to log-cli's code, the engines hook says so. When no reload proxy is running (rule 167), it tells matt to restart the app and never to work around it with a hand-run command. When the proxy is running, there is no line while the reload is due, a line naming what the reload waits on (a call or a job), or a line saying why the new code didn't start.
 
 Checked by: code and SubQ
 
@@ -95,6 +95,18 @@ Checked by: code and SubQ
 ### REQ-MCP-14: They are said at session start and whenever they change
 
 The engines hook writes its text at every session start, and on a prompt only when the text differs from the last one it wrote.
+
+Checked by: code and SubQ
+
+### REQ-MCP-18: Any command is found and run with logSearch, logGet and logCall
+
+`catalogTools` in `src/mcp/catalog/index.ts` lists three tools, which the ListTools handler in `src/mcp/server/index.ts` puts right after `getGuide`. `catalogOf` (`src/mcp/catalog/helpers/entries.ts`) makes one entry per command tool from `commandTools`, its `…Live` twin folded in as `liveTool`, with the id `catalogIdOf` gives (`<platform>.<command>.<form words>`, no platform for `any`). Each terminal-only command (`TERMINAL_ONLY`) is an entry too, with `terminalOnly` set and no tool.
+
+- **`logSearch`:** `searchCatalog` (`src/mcp/catalog/helpers/search.ts`) scores the query's words against each entry's id, summary, input names and usage, keeps only the named platform (and `any`) when a platform is named, and answers `strong` when the first result has every word, `closest` when results have at least half, and `none` with up to 3 near misses otherwise.
+- **`logGet`:** `renderGet` (`src/mcp/catalog/helpers/view.ts`) answers the entry's inputs, required first, a `logCall` line from `exampleInputs`, a live line when there is a `liveTool`, the CLI form from `cliExample`, its guide and `rulesLine`. A terminal-only entry says matt runs it in a terminal. An unknown id gets `didYouMean`.
+- **`logCall`:** `resolveCall` refuses an unknown id, a terminal-only entry, `live` on an entry with no `liveTool`, and any input not among the entry's inputs (naming the ones it takes, and that nothing was run). Otherwise `runToolCall` runs the entry's `tool`, or its `liveTool` when `live` is true, with the inputs and `confirmLive`, `confirmBypass` and `waitMs`, so `guardCall`, `playRefusal`, jobs and claims apply as for that tool, and the play footer names that tool.
+
+Every answer ends with `helpLines`. `src/mcp/catalog/catalog.test.ts` fails when an entry's `exampleInputs` don't pass `guardCall`. matt, 2026-11-07. Rule 163.
 
 Checked by: code and SubQ
 
