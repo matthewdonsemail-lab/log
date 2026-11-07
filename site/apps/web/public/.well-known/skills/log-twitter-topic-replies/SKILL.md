@@ -12,13 +12,13 @@ This is the log play `twitter/topicReplies`. Before anything else, call the log 
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](../../specs/writeBudgets.md)).
+Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](https://github.com/matthewdonsemail-lab/log/blob/main/docs/specs/writeBudgets.md)).
 
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <article or video url>"**. The agent then:
 
-1. Reads this page and [README.md](README.md).
+1. Reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md).
 2. Gets the owner's facts on the topic from their own posts, article or video. Every number in a reply has to come from there.
 3. Runs the steps below and shows the full list with the copy for the owner's yes.
 

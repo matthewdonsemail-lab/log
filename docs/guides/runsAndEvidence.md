@@ -368,7 +368,7 @@ AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says t
 
 From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
 
-**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `observability/trace`).
+**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `src/observability/trace`).
 
 **Rule 10.** 2026-10-18 · matt asked for posting: `log publish` posts one listing through the publish machine. It is a dry run unless `--live`, and once Publish is clicked nothing is retried. Captchas go CaptchaKraken first, then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still holds for editing and deleting.
 

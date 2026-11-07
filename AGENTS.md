@@ -175,7 +175,7 @@ Rule 26 below.
 ## How we fix problems: read the run, then fix (matt, 2026-10-19)
 
 This is the most important outline in the repo. The machines
-(`marketplace/connect`, `marketplace/publish`) already encode most of the
+(`src/marketplace/connect`, `src/marketplace/publish`) already encode most of the
 steps. When a run fails, hangs or meets something new, don't guess: every
 run records a raw HAR of everything (rule 22), and rea reads it, so we can
 see exactly what caused what, then fix the machine.
@@ -239,7 +239,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
    done, and rejects an AST block that doesn't match the code. Never
    `--no-verify`. "AST" means abstract syntax tree, never a line prefix.
 6. 2026-10-18 · Processes that run over time are XState machines that can be
-   started and watched from the CLI (`log watch`, `observability/trace`).
+   started and watched from the CLI (`log watch`, `src/observability/trace`).
 7. 2026-10-18 · How the work is done is written down as skills in
    `skills/<camelCaseName>/SKILL.md` (the twitter-controller layout), indexed
    in `skills.md`. When a routine changes, update its skill in the same
@@ -258,7 +258,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 11. 2026-10-18 · Camoufox is never headless. Every launch is headed so the
     window can be watched, with humanize on and the cursor shown
     (`python/browser/visibleBrowser.py`). There is no flag to turn it off.
-    `camofox/session/visible.test.ts` enforces it.
+    `src/camofox/session/visible.test.ts` enforces it.
 12. 2026-10-18 · No browser opens for an account unless its proxy is attached
     and its exit IP is in the account's country (`python/browser/proxyGate.py`). There
     is no exception: not dry runs, not signing in (matt: "never, ever open"
@@ -321,20 +321,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     and `steps/NN_<action>.har`, one per step, each read by the local rea
     (`settleRunCapture`). Never committed.
 23. 2026-10-19 · matt: "whatever Listaro did we go with that path". `log
-    connect` is the connect machine (`marketplace/connect`), and every sign-in
+    connect` is the connect machine (`src/marketplace/connect`), and every sign-in
     page takes Listaro_backup's path (`src/lib/auto-login`,
     `src/lib/fb-login-helper.ts`): the cookie banner is accepted, "Find your
     account" submitted once, "We suspect automated behaviour" dismissed,
     login captchas solved (rule 10's solvers), two-step and trust-device
     answered, signed in only with c_user and xs, then the Marketplace check.
     For connect this narrows rule 10: only identity, photo, video and SMS
-    checkpoints go to a person. `marketplace/connect/machine.test.ts`.
+    checkpoints go to a person. `src/marketplace/connect/machine.test.ts`.
 24. 2026-10-19 · matt: "fix them issues now" (the launch budget from
     RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md). One account's browser opens
     on Facebook at most 8 times per local day, dry runs counted, at least 10
     minutes apart. A launch counts once it passed the gate ("Self-check
     passed" in its `steps.jsonl`). Refused before anything opens:
-    `launchTooSoon`, `launchBudgetSpent` (`browser/run/helpers/launchBudget.ts`).
+    `launchTooSoon`, `launchBudgetSpent` (`src/browser/run/helpers/launchBudget.ts`).
     `--bypass` doesn't skip it; only a publish against the saved fixture form
     (`--formUrl file://...`) isn't counted. A publish meets a login wall or
     checkpoint in its own browser (the connect steps run there), never in a
@@ -360,8 +360,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 28. 2026-10-19 · matt asked for profile setup: `log profile setup --account
     <a>` sets the account's profile picture and cover photo from Twenty
     (`socialAccounts.profilePhoto`, `coverPhoto`; a URL or path, fetched
-    through the account's proxy and varied, `media/photo`), both in one run
-    (matt's choice), through the profile machine (`marketplace/profile`,
+    through the account's proxy and varied, `src/media/photo`), both in one run
+    (matt's choice), through the profile machine (`src/marketplace/profile`,
     `python/session/profileSession.py`). A dry run unless `--live`; the dry run
     lists every control the profile page has in `profileFound.txt`, and the
     clicks are checked against it before the first `--live` (rule 25). It is
@@ -434,7 +434,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Facebook's message id or a stable hash, so a rescan adds nothing. The
     listing is matched by its Facebook id or a unique title, never guessed.
     `log conversations`, `log conversation show|read|lead|link|record`
-    (`marketplace/conversation`, `docs/conversations.md`).
+    (`src/marketplace/conversation`, `docs/conversations.md`).
 35. 2026-10-19 · matt: the browser stays open. One browser per account,
     opened once per local day by its host and kept open through the
     account's active hours; every action is a tab in it; it closes only for
@@ -2506,21 +2506,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Facebook Marketplace only: listings and the Facebook accounts that publish
   them. X, Reddit, keywords and communities from listeningkit-hackathon are out
   of scope until asked for.
-- Data comes from Twenty through `marketplace/socialAccount`,
-  `marketplace/agencyListing` and `marketplace/replacement`, over
-  `twenty/graphql`. Commands get it from `context.twenty`; tests inject
+- Data comes from Twenty through `src/marketplace/socialAccount`,
+  `src/marketplace/agencyListing` and `src/marketplace/replacement`, over
+  `src/twenty/graphql`. Commands get it from `context.twenty`; tests inject
   `marketplaceFixture()` (an in-memory Twenty) and never call the network.
 - The listeningkit-hackathon seed (`context.load()`) stays only for the
   listing machine port below.
-- `marketplace/listing/types.ts` and `machine.ts` are ports of
+- `src/marketplace/listing/types.ts` and `machine.ts` are ports of
   `apps/web/src/lib/listings/types.ts` and `machine.ts`. Keep them in step
   with the source.
 
 ## Live mode
 
-- `doctor`, `scan`, `status` go through `camofox/worker` and launch a real
+- `doctor`, `scan`, `status` go through `src/camofox/worker` and launch a real
   Camoufox browser. `connect` is the connect machine
-  (`marketplace/connect`) driving `python/session/connectSession.py` one step at a
+  (`src/marketplace/connect`) driving `python/session/connectSession.py` one step at a
   time, like publish. Tests inject `worker` and `connectSession` into the
   context and never launch a browser.
 - Read-only on Facebook, except `connect`, which only signs in and saves a session, and
@@ -2529,7 +2529,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Cookies, browser storage, proxies, devices and 2FA secrets live in Twenty
   only. A run writes the account's proxy, device file and session
   (cookies + localStorage) to a private temp folder for the Python
-  (`browser/run`) and deletes it afterwards. After the run the session the
+  (`src/browser/run`) and deletes it afterwards. After the run the session the
   browser left is saved back (only while it still holds a Facebook login),
   and a newly made device is saved once. Never commit, print or paste them;
   `log` never selects password, email or totpSecret, except
@@ -2541,12 +2541,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 ## Monitor (XState v5)
 
-- `marketplace/monitor/machine.ts` is XState v5 (`setup()`, named guards,
+- `src/marketplace/monitor/machine.ts` is XState v5 (`setup()`, named guards,
   actions and delays). Its only side effect is the `check` actor, which the
   caller provides with `machine.provide`. Tests script `check` outcomes and use
   1ms timings.
 - Every new process that runs over time should be a machine run through
-  `observability/trace`, so `log` can show each step.
+  `src/observability/trace`, so `log` can show each step.
 - The monitor decides and never posts. A repost executor is a separate,
   explicit step for matt to ask for.
 
@@ -2554,7 +2554,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 - Commands return `{ code, stdout, stderr }` and never write to the console
   directly. The runner prints. This keeps them testable.
-- Usage is generated from `COMMANDS` in `cli/runner/index.ts`. A new command
+- Usage is generated from `COMMANDS` in `src/cli/runner/index.ts`. A new command
   goes in that list.
 - `log launch` is a thin Clack wrapper. It only prompts, then delegates to
   the scriptable commands. `--json`, piped output or no TTY never prompt.

@@ -16,7 +16,7 @@ Before a slide, a page or a message says someone follows you (or that you follow
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/followers.md for <handles>"**, or "for everyone named on <page>". The agent then reads this page and [README.md](README.md) and runs the steps.
+Say: **"go on docs/useCases/twitter/followers.md for <handles>"**, or "for everyone named on <page>". The agent then reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) and runs the steps.
 
 ## The steps
 

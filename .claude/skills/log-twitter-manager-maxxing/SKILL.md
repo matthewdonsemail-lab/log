@@ -14,13 +14,13 @@ Draft every message from that person's own thread and matt's real replies (`voic
 
 The owner's go-to-market, in his words (https://x.com/matthewsoldit/status/2118285429674017268): "find every single kick streamers managers on twitter, reply guy them for a few days then cold dm them to use log and show claviculars twitter". The pitch, once they're talking: if Claude Code explains the sponsor deals a streamer does, with tracked links, sign-up rates go up, which means more affiliate money. Letting AI use your social media increases your surface area of luck.
 
-The people this is for (the ICP) are the managers of Kick streamers, category by category, starting with the streamers with the most viewers. It runs on the network-maxing logic ([networkMaxing.md](networkMaxing.md)): every touch is about them and what they're doing, and the ask comes only once they're talking.
+The people this is for (the ICP) are the managers of Kick streamers, category by category, starting with the streamers with the most viewers. It runs on the network-maxing logic ([networkMaxing.md](../log-twitter-network-maxing/SKILL.md)): every touch is about them and what they're doing, and the ask comes only once they're talking.
 
 How the owner asks for it: "manager maxxing", "find every kick streamer's manager on twitter", "reply guy the kick managers with memes", "the managers that engaged, send them their tweet, a message and a voice note".
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/managerMaxxing.md for <category, or all of them>"**. The agent reads this page, [README.md](README.md) and [networkMaxing.md](networkMaxing.md), loads `getGuide({ topic: "xSending" })` and `getGuide({ topic: "extensions" })`, and runs the steps.
+Say: **"go on docs/useCases/twitter/managerMaxxing.md for <category, or all of them>"**. The agent reads this page, [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) and [networkMaxing.md](../log-twitter-network-maxing/SKILL.md), loads `getGuide({ topic: "xSending" })` and `getGuide({ topic: "extensions" })`, and runs the steps.
 
 ## The steps
 
