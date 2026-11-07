@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 455 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 39 domains, 460 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -588,6 +588,16 @@ An X account's own lists, shown, made and added to through its one session on ve
 
 matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 151.
 
+
+## [Provider balances](./balance.md)
+
+Every paid provider log calls, with what is left, so a failing voice note, gate or search is seen as money and not a bug. Reading a balance spends nothing, and topping up is matt's. Rules 41, 73, 94 and 164.
+
+- **REQ-BALANCE-01** One command shows every paid provider
+- **REQ-BALANCE-02** A balance API is read where the provider has one
+- **REQ-BALANCE-03** Without a balance API, the last real answer decides
+- **REQ-BALANCE-04** Each paid call's answer is kept
+- **REQ-BALANCE-05** Out of credit is said in the failure itself
 
 ## [Instagram](./instagram.md)
 

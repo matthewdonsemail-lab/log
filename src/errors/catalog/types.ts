@@ -309,6 +309,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
     action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
   },
+  providerOutOfCredit: {
+    layer: 'runtime',
+    meaning: 'A paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI) answered that it is out of credit (402, or words like insufficient credit). The call failed for want of money, not a bug.',
+    retryable: false,
+    raisedIn: ['subq/decisions', 'voice/aiTells', 'extensions/inworld', 'extensions/fishAudio', 'media/voiceNotes'],
+    action: 'Run log balance (MCP balance) to see every provider, then tell matt which one needs topping up and where. Never top up from log (rule 41).'
+  },
   jinaKeyMissing: {
     layer: 'twitter',
     meaning: 'The AI tells index and the voice gate embed and rerank with Jina, and JINA_API_KEY is not set.',
