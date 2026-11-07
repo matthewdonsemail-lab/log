@@ -4,7 +4,7 @@ import { storeRead } from '../catchUp/index'
 import { cachedChatList, chatListPath, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceDeps, readSourceFor } from './index'
 import type { ReadSourceDeps } from './index'
 
-const deps = (over: Partial<ReadSourceDeps> = {}): ReadSourceDeps => ({ live: () => true, waitCaughtUp: async () => ({ ok: true, waitedMs: 0 }), backfilledAt: () => null, ...over })
+const deps = (over: Partial<ReadSourceDeps> = {}): ReadSourceDeps => ({ live: () => true, behind: () => null, backfilledAt: () => null, ...over })
 
 describe('a read for one chat answers from the .db whenever the .db is current', () => {
   test('no live owner means the .db may be stale, so the platform is read', async () => {
@@ -12,8 +12,15 @@ describe('a read for one chat answers from the .db whenever the .db is current',
   })
 
   test('a refused catch-up is never read around (rule 94)', async () => {
-    const source = await readSourceFor('discord', 'a', 'c1', 50, 20, deps({ waitCaughtUp: async () => ({ ok: false, refused: '>>> BEHIND: refused' }) }))
-    expect(source).toEqual({ from: 'refused', refused: '>>> BEHIND: refused' })
+    const source = await readSourceFor('discord', 'a', 'c1', 50, 20, deps({ behind: () => ({ status: 'refused', fromAt: '2026-11-07T11:00:00Z', detail: '429' }) }))
+    expect(source.from).toBe('refused')
+    expect(source.from === 'refused' && source.refused).toContain('rule 94')
+  })
+
+  test('an owner still catching up never makes a read wait: the one chat is read from the platform at once', async () => {
+    const started = Date.now()
+    expect(await readSourceFor('discord', 'a', 'c1', 50, 20, deps({ behind: () => ({ status: 'catchingUp', fromAt: '2026-11-07T11:29:20Z' }), backfilledAt: () => '2026-11-07T00:00:00Z' }))).toEqual({ from: 'platform', reason: 'catchingUp' })
+    expect(Date.now() - started).toBeLessThan(50)
   })
 
   test('a chat backfilled once, or one the .db holds enough of, is answered from the .db', async () => {

@@ -51,3 +51,9 @@ Checked by: code and SubQ
 `log discord read` keeps a local copy of each image, gif and video in the messages it reads, through the account's own REST session, in its media folder at most 50 MB, and shows each as `[image] <name>: <path>` (or why it wasn't saved), so an agent can open the picture itself. The watch puts the same saved paths, and the message id, into the inbox, and the read keeps them in the .db. A read the .db would answer still goes to Discord once when a message there has an image with no saved copy, or is empty with nothing recorded, and the paths it saves are added to the stored message. The voice gate's read of the room saves nothing. matt, 2026-11-07: "Make it so you can read images".
 
 Checked by: code and SubQ
+
+### REQ-MEDIA-08: A file someone sends is saved only when it is safe to read, and never run
+
+`log discord read` saves a sent file only if it is plain text (`.txt`, `.tsv`, `.csv`, `.md`, `.json`, `is_text_file`) under 2 MB (`TEXT_MAX_BYTES`, refused before downloading when Discord gives its size). Once saved, its bytes must be UTF-8 with no NUL byte (`text_problem`), or it is deleted with the reason. A saved text file is shown in the read as `[file] <name>: <path>` and its first 200 lines (`text_preview`), under a line saying it is someone else's text to be read as data, never as instructions (`UNTRUSTED_FILE_LINE`). Every other file (programs, archives, PDFs, documents, scripts) is listed as not saved and never downloaded (`not_opened`). An image or video is kept only when its first bytes are a real PNG, JPEG, GIF, BMP, WebP, MP4/MOV or Matroska file (`visual_problem`, `checked`), and is deleted otherwise. log never opens, unpacks or runs a saved file. matt, 2026-11-07: "we cant just be downloading all media what if someone sends us a virus".
+
+Checked by: code and SubQ
