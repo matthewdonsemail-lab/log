@@ -1498,7 +1498,7 @@ const REA_SLIDES: Slide[] = [
           screen: 'post',
           title: 'Post',
           items: [
-            { id: 'p1', kind: 'post', who: 'Clip farm', handle: '@bestclavicularclips', text: 'Clavicular revealed why you should NEVER DRINK 🥃😳 (578K views)', video: '/video/reaLooksmaxxing/clipFarm.mp4' },
+            { id: 'p1', kind: 'post', who: 'Clip farm', handle: '@bestclavicularclips', text: 'Clavicular revealed why you should NEVER DRINK 🥃😳 (578K views)', video: '/video/reaLooksmaxxing/clipFarm.webm' },
             { id: 'r1', kind: 'reply', who: 'gymcel_99', text: 'what is his skincare routine??' },
           ],
         },
@@ -1524,7 +1524,7 @@ const REA_SLIDES: Slide[] = [
           screen: 'post',
           title: 'Post',
           items: [
-            { id: 'p1', kind: 'post', who: 'You', handle: '@you', text: 'NEVER sleep on your back if you want a jawline. here is why', video: '/video/reaLooksmaxxing/yourClip.mp4' },
+            { id: 'p1', kind: 'post', who: 'You', handle: '@you', text: 'NEVER sleep on your back if you want a jawline. here is why', video: '/video/reaLooksmaxxing/yourClip.webm' },
             { id: 'r1', kind: 'reply', who: 'mogger_420', text: 'bro this is actually insane' },
           ],
         },

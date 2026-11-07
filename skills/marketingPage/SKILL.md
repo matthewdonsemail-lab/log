@@ -58,8 +58,11 @@ and only the copy, clips and session are new. The worked example is
    or `image`, DMs take a `meme` item for a photo. Clips come from footage we
    already have (the video's project): cut a few seconds, silent, about 360 px
    wide, so each is a few hundred KB at most:
-   `ffmpeg -ss 1 -t 6 -i <clip>.mp4 -an -vf "scale=360:-2,fps=24" -c:v libx264 -crf 30 -preset slow -pix_fmt yuv420p -movflags +faststart public/video/<page>/<name>.mp4`.
-   Photos go to `public/images/<page>/` as webp.
+   `ffmpeg -ss 1 -t 6 -i <clip>.mp4 -an -vf "scale=360:-2,fps=24" -c:v libvpx-vp9 -b:v 0 -crf 40 -row-mt 1 public/video/<page>/<name>.webm`.
+   Clips are webm, never mp4: `site/.gitignore` ignores every `.mp4`, so an
+   mp4 never reaches the deploy (the /rea-looksmaxxing clips 404ed on the live
+   site until they were re-encoded). Photos go to `public/images/<page>/` as
+   webp.
 4. **The session.** `platformSessions.ts`: a run of `user`, `tool` and
    `assistant` events that goes through the whole play with the real tool
    names. A tool from another MCP server sets `server` (treg's
