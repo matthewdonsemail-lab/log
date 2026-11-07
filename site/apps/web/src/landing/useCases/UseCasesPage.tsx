@@ -471,7 +471,7 @@ function Hero({ platform }: { platform: Platform | null }) {
   )
 }
 
-function CtaBand({ children }: { children: ReactNode }) {
+export function CtaBand({ children }: { children: ReactNode }) {
   return (
     <div className="relative isolate w-full bg-white">
       <div
@@ -793,7 +793,7 @@ function OutDemo({ rows }: { rows: { label: string; tag: string }[] }) {
 }
 
 
-function ThreeSteps({ play, platform, icon }: { play: Play; platform: Platform; icon: IconDefinition }) {
+export function ThreeSteps({ play, platform, icon }: { play: Play; platform: Platform; icon: IconDefinition }) {
   const platformLabel = platform.label
   const steps = [
     { ...play.steps[0], demo: <AskDemo ask={play.ask} icon={icon} /> },
@@ -1054,7 +1054,7 @@ function Plays({ plays, title }: { plays: UseCase[]; title: string }) {
   )
 }
 
-function PromptCta({ title, ask, isCommand }: { title: string; ask: string; isCommand: boolean }) {
+export function PromptCta({ title, ask, isCommand }: { title: string; ask: string; isCommand: boolean }) {
   const [agent, setAgent] = useState(AGENTS[0])
   const [copied, setCopied] = useState(false)
   const prompt = [INSTALL, agent.line, isCommand ? `then: ${ask}` : `then say: "${ask}"`].join('\n')

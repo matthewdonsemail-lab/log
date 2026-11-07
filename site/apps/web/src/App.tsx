@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
 import { LandingPage } from './landing/LandingPage'
 import { UseCasesPage } from './landing/useCases/UseCasesPage'
+import { ReaLooksmaxxingPage } from './landing/useCases/ReaLooksmaxxingPage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
 const createQueryClient = () => new QueryClient({
@@ -52,6 +53,7 @@ export function App() {
             <Route path="/slack" element={<UseCasesPage key="slack" platform="slack" />} />
             <Route path="/instagram" element={<UseCasesPage key="instagram" platform="instagram" />} />
             <Route path="/reddit" element={<UseCasesPage key="reddit" platform="reddit" />} />
+            <Route path="/rea-looksmaxxing" element={<ReaLooksmaxxingPage />} />
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/health" element={<HealthPage />} />
