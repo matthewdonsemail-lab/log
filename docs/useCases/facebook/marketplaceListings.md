@@ -35,7 +35,7 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | --- | --- | --- | --- |
 | Import | `scripts/twenty/importVendorAccounts.mjs` | – | the row in Twenty `socialAccounts` |
 | Proxy | `log proxy assign --account <a> --vendor <vendor>`, `log proxy check` | `proxy` | the exit IP is in the home country and within 100 km of the home town |
-| Browser profile | `log adsPower sync --apply` | `adsPower` | one AdsPower profile per account, linked in `adsPowerProfileId` |
+| Browser profile | `log adsPower sync --apply` | `adsPower` | one [AdsPower](https://www.adspower.com/share/pD25Iu) profile per account, linked in `adsPowerProfileId` |
 | Ready? | `log facebook preflight` | `preflight` | hours, proxy, kernel, opens left, photo on disk, before anything opens |
 | Open the day | `log facebook host start --account <a> --live` | `hostStartLive` | the browser's own timezone, language and exit IP match the account |
 | Sign in | `log facebook connect --account <a>` (the host does it) | `connect` | Facebook's `c_user` and `xs` cookies |

@@ -1,6 +1,6 @@
 # AdsPower
 
-AdsPower is the main browser log uses for accounts that need one. Each account
+[AdsPower](https://www.adspower.com/share/pD25Iu) is the main browser log uses for accounts that need one. Each account
 gets one AdsPower profile, which keeps its own fingerprint and cookies, and log
 opens it, checks it and drives it through Playwright. Read this when you set up
 AdsPower, link accounts to profiles, or wonder why a profile was given back.

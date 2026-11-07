@@ -22,7 +22,7 @@ cross-account isolation and provider swappability ×2. Everything else ×1.
 | 3 | boat VM per account | 2.41 | 2.43 |
 | 4 | This PC as is | 2.40 | 2.57 |
 | 5 | Cloud Windows GPU VM | 2.26 | 2.42 |
-| 6 | Anti-detect browser on servers (Listaro's AdsPower route) | 2.26 | 2.26 |
+| 6 | Anti-detect browser on servers (Listaro's [AdsPower](https://www.adspower.com/share/pD25Iu) route) | 2.26 | 2.26 |
 | 7 | boat VM packed with many accounts | 2.22 | 2.23 |
 | 8 | Cloud browser vendor | 2.18 | 2.15 |
 | 9 | 2Captcha Fingerprint API | 2.18 | 2.23 |

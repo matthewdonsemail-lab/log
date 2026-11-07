@@ -92,6 +92,15 @@ if (-not ($Current -match '^LOG_PYTHON=')) { Add-Content $EnvFile "LOG_PYTHON=$P
 if (-not ($Current -match '^LOG_ACCOUNTS=')) { Add-Content $EnvFile "LOG_ACCOUNTS=local" }
 
 Say "done. Your settings are in $EnvFile and your accounts will live in $LogHome."
-Say "next: run log launch to add your first account and sign it in"
 if (Get-Command log -ErrorAction SilentlyContinue) { Say "log is on your PATH" } else { Say "open a new terminal so 'log' is on your PATH" }
 InstallSkills
+
+$BunHome = if ($env:BUN_INSTALL) { $env:BUN_INSTALL } else { Join-Path $HOME ".bun" }
+$LogBin = if (Get-Command log -ErrorAction SilentlyContinue) { (Get-Command log).Source } else { Join-Path $BunHome "bin\log.exe" }
+if ($env:LOG_SETUP -ne "0" -and (Test-Path $LogBin) -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected) {
+  Say "setting log up: pick your platforms, sign them in, and add extensions"
+  & $LogBin launch --setup
+  if ($LASTEXITCODE -ne 0) { Say "setup stopped. Run log launch --setup any time to finish it" }
+} else {
+  Say "next: run log launch --setup to pick your platforms, sign them in and add extensions"
+}

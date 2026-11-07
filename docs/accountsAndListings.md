@@ -46,7 +46,7 @@ they are a setup problem, not the account's.
 - `log proxy assign --missing` skips it, and `log proxy assign --account`
   refuses it.
 - Its lifecycle ends at once, and no run or sign-in may open it.
-- Its AdsPower profile is deleted and unlinked, and the slot goes to an
+- Its [AdsPower](https://www.adspower.com/share/pD25Iu) profile is deleted and unlinked, and the slot goes to an
   account waiting for one.
 - Its listings are lost and replaced, the same as for a RESTRICTED account.
 - Its row, cookies and history stay.

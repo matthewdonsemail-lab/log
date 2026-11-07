@@ -1,6 +1,6 @@
 # Facebook
 
-log runs Facebook accounts for Marketplace listings and local groups: it posts and checks listings, joins and reads groups, and keeps each account warmed up. Most of it happens in the account's own browser (AdsPower or Camoufox), opened once for the day with a proxy in the account's home country. Reading a group's posts goes through Facebook's own API directly first, with no browser.
+log runs Facebook accounts for Marketplace listings and local groups: it posts and checks listings, joins and reads groups, and keeps each account warmed up. Most of it happens in the account's own browser ([AdsPower](https://www.adspower.com/share/pD25Iu) or Camoufox), opened once for the day with a proxy in the account's home country. Reading a group's posts goes through Facebook's own API directly first, with no browser.
 
 Commands that read send nothing. Anything that acts is a dry run until you add `--live`.
 

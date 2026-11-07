@@ -1,6 +1,6 @@
 ---
 name: log-instagram-new-platform
-description: "Bringing a new platform up, then vendoring its client. A log play (docs/useCases/instagram/newPlatform.md): Make a platform log-cli doesn't have yet, open it in the account's AdsPower browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way."
+description: "Bringing a new platform up, then vendoring its client. A log play (docs/useCases/instagram/newPlatform.md): Make a platform log-cli doesn't have yet, open it in the account's [AdsPower](https://www.adspower.com/share/pD25Iu) browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way."
 when_to_use: "Use when matt asks for this, in words like: \"make a new platform via the MCP for <platform>\", \"open <platform> in AdsPower\", \"find me via the gh api the most likely to go into the vendor\", \"make it work\""
 metadata:
   summary: "Bringing a new platform up, then vendoring its client"
@@ -12,7 +12,7 @@ This is the log play `instagram/newPlatform`. Before anything else, call the log
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Make a platform log-cli doesn't have yet, open it in the account's AdsPower browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.
+Make a platform log-cli doesn't have yet, open it in the account's [AdsPower](https://www.adspower.com/share/pD25Iu) browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.
 
 How the owner asks for it: "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work"
 

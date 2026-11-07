@@ -31,7 +31,7 @@ A Python browser driver built on Camoufox.
 
 ## The production poster
 
-A TypeScript poster using Playwright over AdsPower, used in production.
+A TypeScript poster using Playwright over [AdsPower](https://www.adspower.com/share/pD25Iu), used in production.
 
 **The live path** is the server route `/api/process-posts` → `postToFacebookMarketplace`, on an AdsPower profile that's already signed in. Its desktop agent is switched off (`posting-session-manager.ts:699-700`, `useAgent = false`). A Python posting engine isn't in the repo, but its scheduled job is still registered (`functions.ts:704-710`).
 

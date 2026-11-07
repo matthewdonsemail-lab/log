@@ -4,7 +4,7 @@ title: "treg"
 
 # treg
 
-[treg](https://treg.dev) is the tool catalog: about 2,600 endpoints across about 40 providers (web search, X and TikTok data, SEO, people and company enrichment, ad libraries...), each called with the key injected server-side, so nobody holds the provider's key. log uses it for every lookup that has to come from an external source, never from memory or a guess (rules 53, 166).
+[treg](https://treg.to/?ref=matthewdonse-aebsh) is the tool catalog: about 2,600 endpoints across about 40 providers (web search, X and TikTok data, SEO, people and company enrichment, ad libraries...), each called with the key injected server-side, so nobody holds the provider's key. log uses it for every lookup that has to come from an external source, never from memory or a guess (rules 53, 166).
 
 ## What log can do with it
 

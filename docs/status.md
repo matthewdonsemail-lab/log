@@ -30,7 +30,7 @@ listed near the end.
 
 | Command or step | State | Evidence |
 |---|---|---|
-| `log inspect start` / `do` (AdsPower) | ✅ 2026-10-22 | Every gate, about 37 recorded runs |
+| `log inspect start` / `do` ([AdsPower](https://www.adspower.com/share/pD25Iu)) | ✅ 2026-10-22 | Every gate, about 37 recorded runs |
 | `log facebook connect` | ✅ 2026-10-19, Camoufox only | Four accounts signed in ACTIVE, one RESTRICTED. The last one signed in, but saving to Twenty hit Twenty's rate limit. **Never run on AdsPower.** |
 | `log facebook doctor` | 🟡 2026-10-18, Camoufox | "All green" once. Never on AdsPower. |
 | `log facebook scan` | 🔴 2026-10-18, Camoufox | Only reported a login wall for an empty session. Never scanned a real account. |

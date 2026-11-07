@@ -1,6 +1,6 @@
 ---
 name: log-inbox-voice-note
-description: "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider (Inworld by default, Fish Audio too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one."
+description: "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one."
 when_to_use: "Use when matt asks for this, in words like: \"send <person> a voice note saying …\", \"voice note him that …\", \"send a vn to the group saying …\""
 metadata:
   summary: "Sending a voice note"
@@ -12,7 +12,7 @@ This is the log play `inbox/voiceNote`. Before anything else, call the log MCP t
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider (Inworld by default, Fish Audio too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.
+Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.
 
 How the owner asks for it: "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …"
 

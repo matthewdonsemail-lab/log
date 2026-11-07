@@ -4,7 +4,7 @@ title: "Inworld"
 
 # Inworld
 
-[Inworld](https://docs.inworld.ai) is the default voice provider for [the voice clone](./voiceClone.md) (rule 143). Instant voice cloning is free on every plan, and the free plan includes about 70 minutes of speech.
+[Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) ([API docs](https://docs.inworld.ai); subscribe through that link for $10 in credits) is the default voice provider for [the voice clone](./voiceClone.md) (rule 143). Instant voice cloning is free on every plan, and the free plan includes about 70 minutes of speech.
 
 ## The two calls
 

@@ -38,7 +38,7 @@ The full steps: [Adding an account](../accounts.md).
 ## Use cases
 
 - [Reading a Discord group chat](../useCases/discord/groupChatRead.md): catch up on a group over the last few hours, sending nothing.
-- [Replying with a meme](../useCases/discord/memeReply.md): answer a moment in a chat with a Memelord meme that fits it ([extensions](../extensions/README.md)).
+- [Replying with a meme](../useCases/discord/memeReply.md): answer a moment in a chat with a [Memelord](https://www.memelord.com/sign-up?ref=kfwut9wc) meme that fits it ([extensions](../extensions/README.md)).
 
 ## Full detail
 

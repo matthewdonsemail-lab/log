@@ -29,7 +29,7 @@ At the time of this study, this path didn't save the page's scripts or record a 
 
 ## The earlier production poster
 
-Its production browser isn't Camoufox. `agent/src/adspower.ts` starts an AdsPower profile and attaches Playwright with `chromium.connectOverCDP` on the local debug port (line 210).
+Its production browser isn't Camoufox. `agent/src/adspower.ts` starts an [AdsPower](https://www.adspower.com/share/pD25Iu) profile and attaches Playwright with `chromium.connectOverCDP` on the local debug port (line 210).
 
 - The live poster, `agent/src/poster.ts`, opens `/marketplace/create/item?locale=en_US`, waits, and attaches one image with `setInputFiles` (around lines 388 and 491).
 - The server poster is `src/lib/poster/facebook-poster.ts` (`postToFacebookMarketplace`).

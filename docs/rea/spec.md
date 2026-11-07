@@ -23,7 +23,7 @@ REA then reads those files from disk. It doesn't launch Camoufox, attach to the 
 These don't count as answers:
 
 - **Exposing the Chrome DevTools Protocol from Camoufox.** REA's page tools speak CDP, but Camoufox is Firefox, and no public REA document describes that attach.
-- **Pointing REA at an AdsPower Chromium session.** That's the earlier production poster's browser (`agent/src/adspower.ts` line 210), outside log's gate.
+- **Pointing REA at an [AdsPower](https://www.adspower.com/share/pD25Iu) Chromium session.** That's the earlier production poster's browser (`agent/src/adspower.ts` line 210), outside log's gate.
 - **Replacing Camoufox with Chrome so REA can attach.** log's browser for this path is Camoufox, visible, with humanize set and the cursor shown.
 - **Calling the Graph API, or replaying a captured request.** The listener log would copy, `NativeResponseAdapter`, never constructs requests.
 

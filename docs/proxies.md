@@ -26,7 +26,7 @@ and `proxyExitCountry` on the account.
 
 ## How one launch goes
 
-The diagram below follows a Camoufox launch. AdsPower runs the same checks
+The diagram below follows a Camoufox launch. [AdsPower](https://www.adspower.com/share/pD25Iu) runs the same checks
 through `gate_attached` and `check_attached` (see [Browsers](browsers.md)).
 
 In short:

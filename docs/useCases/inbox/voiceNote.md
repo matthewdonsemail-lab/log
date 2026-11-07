@@ -1,6 +1,6 @@
 # Sending a voice note
 
-Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider (Inworld by default, Fish Audio too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.
+Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.
 
 How the owner asks for it: "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …"
 
