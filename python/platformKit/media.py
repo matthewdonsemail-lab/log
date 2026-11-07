@@ -97,7 +97,7 @@ def text_problem(path: Path) -> str | None:
     if b"\x00" in raw:
         return "it has binary bytes in it, so it isn't plain text"
     try:
-        raw.decode("utf-8-sig")
+        raw.decode("utf_8_sig")
     except UnicodeDecodeError:
         return "it isn't plain UTF-8 text"
     return None
@@ -115,7 +115,7 @@ def checked(kept: dict[str, Any], problem_of: Any) -> dict[str, Any]:
 
 
 def text_preview(path: Path) -> str:
-    text = path.read_bytes().decode("utf-8-sig", errors="replace")
+    text = path.read_bytes().decode("utf_8_sig", errors="replace")
     return "\n".join(text.splitlines()[:TEXT_PREVIEW_LINES])[:TEXT_PREVIEW_CHARS]
 
 
