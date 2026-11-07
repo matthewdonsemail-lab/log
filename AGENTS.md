@@ -2327,6 +2327,41 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Specs: `docs/specs/voiceGate.md` (REQ-VOICE-16), `docs/specs/mcpServer.md`
     (REQ-MCP-15).
 
+158. 2026-11-07 · matt: "how do the guides get CALLED when I say something
+    ... do i have to invoke it or is it inferred", then "we need to have a
+    context engine ... one command that installs all of the skills ... the
+    use cases need to be injected as well ... you don't even try to look ...
+    you don't try to search ... I need to have variations". A use case was
+    only ever found if the agent thought to look. Now it is put in front of
+    it three ways:
+    - **Every use case is a skill.** `bun run skills:build`
+      (`scripts/docs/syncSiteSkills.mjs`) turns each
+      `docs/useCases/<platform>/<page>.md` into the skill
+      `log-<platform>-<page>`: its description is the page's title and lead,
+      its `when_to_use` is the page's own "How the owner asks for it" (the
+      title when a page has none, never words matt didn't say), and its body
+      says to load the play with `getGuide({ useCase })` first (rule 157).
+      They are written to `.claude/skills/` (so a session in this repo has
+      them) and published at `/.well-known/skills/`, and `install.sh --skills
+      all` (`--skillsOnly` for someone who already has log, `LOG_SKILLS=all`
+      on Windows) installs every one. `check:siteSkills` refuses a skill out
+      of step with its page.
+    - **The prompt is matched to a play.** A UserPromptSubmit hook
+      (`scripts/hooks/useCases.ts`, `matchPlays` in `src/useCases/router`)
+      compares matt's message with every page's asks and title by content
+      words, and when one scores 0.6 or more it puts `>>> PLAY MATCH` in the
+      agent's context, naming the play (and a runner-up) and saying to load
+      it with `getGuide` before anything else. Nothing is said when nothing
+      matches.
+    - **A refusal says where to look.** When the voice gate or `sameAsSent`
+      refuses a draft, the refusal ends with the steps to rewrite it from
+      evidence, not memory (`rewriteSteps`, `src/cli/twitter/helpers/voice.ts`):
+      `voice` with no text for that person's thread and matt's real replies,
+      `search` for what he has said on it before, then a draft unlike
+      anything sent today.
+    Specs: `docs/specs/mcpServer.md` (REQ-MCP-16), `docs/specs/voiceGate.md`
+    (REQ-VOICE-17).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

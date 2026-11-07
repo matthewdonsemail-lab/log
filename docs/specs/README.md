@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 445 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 447 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -43,6 +43,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-12** A stale MCP server is said to matt
 - **REQ-MCP-13** Uncommitted local changes are said loudly
 - **REQ-MCP-14** They are said at session start and whenever they change
+- **REQ-MCP-16** The prompt is matched to a play, and every play is a skill
 - **REQ-MCP-15** The loaded use case is the session's play, and sends need one
 
 ## [Agent hooks](./agentHooks.md)
@@ -389,6 +390,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
+- **REQ-VOICE-17** A refused draft says where to look before it is rewritten
 - **REQ-VOICE-16** No two messages read alike
 - **REQ-VOICE-15** Every send and voice note is gated against the room it goes to
 

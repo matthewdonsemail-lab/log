@@ -11,6 +11,214 @@
         "treg.to/treg",
         "treg.to/web-access"
       ]
+    },
+    {
+      "name": "log-discord-group-chat-read",
+      "description": "Reading a Discord group chat without Twenty. A log play (docs/useCases/discord/groupChatRead.md): Catch up on what was said in a Discord group or channel over the last few hours, on the account's own session, with the account kept in a local file instead of Twenty. This page reads and sends nothing.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reading a Discord group chat without Twenty"
+    },
+    {
+      "name": "log-discord-meme-reply",
+      "description": "Replying with a meme in a Discord chat. A log play (docs/useCases/discord/memeReply.md): Answer a moment in a Discord group or DM the way people there already do: with a meme. The chat is read first, Memelord finds a template that fits what was just said, the meme is gated like any other send, and it goes out as its media url, which Discord shows inline. Only Memelord's free tools are used (rule 41). The extension itself is described in [docs/extensions/memelord.md](../../extensions/memelord.md).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Replying with a meme in a Discord chat"
+    },
+    {
+      "name": "log-facebook-groups",
+      "description": "Listening to local Facebook groups. A log play (docs/useCases/facebook/groups.md): The same accounts can join the local groups in their town and hear when someone asks for what the business sells (\"anyone know someone who can take away an old sofa?\"). This page shows the parts.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Listening to local Facebook groups"
+    },
+    {
+      "name": "log-facebook-marketplace-listings",
+      "description": "From accounts to live Marketplace listings. A log play (docs/useCases/facebook/marketplaceListings.md): How a local service business gets listings in front of people in every town it serves: take aged Facebook accounts, turn each one into a believable local profile, and post a listing from each one. This page walks one account all the way through, shows which part of log-cli does each step, and what decides that the step worked.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "From accounts to live Marketplace listings"
+    },
+    {
+      "name": "log-inbox-rea-looksmaxxing",
+      "description": "/rea-looksmaxxing: moneymaxx like a creator. A log play (docs/useCases/inbox/reaLooksmaxxing.md): Reverse engineer how a creator gets paid, then run the same play on your own accounts. treg reads the social data (the creator's most viral clips, the clip farms reposting them, views and comments), the formula is decoded from what won, and log posts it through your accounts and funnels everyone who replies or DMs into your offer, every message checked against how you write. Clavicular is the worked example: 40 of his clips pulled, the top one at 8.44M views, a looksmaxxing program as the offer. The video and the page (`log.listeningkit.com/rea-looksmaxxing`) tell the same play.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "/rea-looksmaxxing: moneymaxx like a creator"
+    },
+    {
+      "name": "log-inbox-reactions",
+      "description": "Reacting to a message. A log play (docs/useCases/inbox/reactions.md): React to someone's message with an emoji on X, Discord, Slack or Instagram, the way a person answers a moment without typing: a laugh at a joke, a fire on a win, a heart on good news. It goes through the platform's own engine and the account's one session, never the browser, and counts as a write (rule 140).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reacting to a message"
+    },
+    {
+      "name": "log-inbox-voice-note",
+      "description": "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider (Inworld by default, Fish Audio too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Sending a voice note"
+    },
+    {
+      "name": "log-instagram-dm-reply",
+      "description": "Reading and answering an Instagram DM. A log play (docs/useCases/instagram/dmReply.md): Read what someone wrote to the account on Instagram and answer it in matt's voice, with text or a meme, on the account's own session through vendor/instagrapi. No browser, ever (rule 128).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reading and answering an Instagram DM"
+    },
+    {
+      "name": "log-instagram-new-platform",
+      "description": "Bringing a new platform up, then vendoring its client. A log play (docs/useCases/instagram/newPlatform.md): Make a platform log-cli doesn't have yet, open it in the account's AdsPower browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Bringing a new platform up, then vendoring its client"
+    },
+    {
+      "name": "log-slack-dm-reply",
+      "description": "Reading and answering a Slack DM. A log play (docs/useCases/slack/dmReply.md): Read what someone wrote to the account on Slack and answer it in matt's voice, on the account's own session, with no browser.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reading and answering a Slack DM"
+    },
+    {
+      "name": "log-twitter-affiliate-marketing",
+      "description": "Affiliate marketing through your DMs. A log play (docs/useCases/twitter/affiliateMarketing.md): You use a tool, you make content about it, and people message you about it. This page turns those conversations into affiliate income without sounding like a pitch: each person gets a reply about their own thread, an update on what you've built, and the tool with your affiliate credit only where it actually helps them. The other side of the page is the tool companies themselves: getting onto their partner, referral or creator program and booking the call.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Affiliate marketing through your DMs"
+    },
+    {
+      "name": "log-twitter-collab-maxxing",
+      "description": "Collab maxxing: turn open conversations into collabs. A log play (docs/useCases/twitter/collabMaxxing.md): Network maxing gets people talking to the owner. Collab maxxing turns those conversations into something you can work on together. Everything the owner builds is open source and he earns nothing from it. So the collab is the deal: he builds their system with them and makes content about doing it, they get the outcome, and they back the work. Money is the last thing in the conversation, never the first. It comes as a small ask once they're keen, or a retainer the owner prices himself.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Collab maxxing: turn open conversations into collabs"
+    },
+    {
+      "name": "log-twitter-dm-inbox",
+      "description": "Reading the DM inbox: who is waiting on you. A log play (docs/useCases/twitter/dmInbox.md): Read every DM conversation on the account and sort it into a pipeline: who is waiting on you and what they asked, who you're waiting on, and what to do next for each. It sends nothing and marks nothing read. Replies only go out after the owner says what to send.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reading the DM inbox: who is waiting on you"
+    },
+    {
+      "name": "log-twitter-engagement-replies",
+      "description": "Answering the people who engaged with your posts. A log play (docs/useCases/twitter/engagementReplies.md): When one of your posts gets comments, the people who commented are the warmest people on X for you. There are two ways to follow up, both public replies:",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Answering the people who engaged with your posts"
+    },
+    {
+      "name": "log-twitter-engager-dms",
+      "description": "DMing the people who liked or reposted your post. A log play (docs/useCases/twitter/engagerDms.md): A post that does well leaves hundreds of people who liked or reposted it and were never followed up. This page turns them into a short list the owner knows is worth it, writes each one a DM that opens on why they're on the list, and sends them through the queue as dms.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "DMing the people who liked or reposted your post"
+    },
+    {
+      "name": "log-twitter-follow-ups",
+      "description": "Following up in your own voice. A log play (docs/useCases/twitter/followUps.md): Answer or follow up the people the owner picked, each in the owner's own voice, the way they write to that person. It's for warming a relationship as much as for a deal: say it was good to meet, ask for advice, take someone up on an offer, keep a door open. Nothing goes out until the owner has seen every draft and said yes.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Following up in your own voice"
+    },
+    {
+      "name": "log-twitter-followers",
+      "description": "Checking who really follows you. A log play (docs/useCases/twitter/followers.md): Before a slide, a page or a message says someone follows you (or that you follow them), check it live on X. Engaging with you isn't following you. This page reads it on the account's own session and sends nothing.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Checking who really follows you"
+    },
+    {
+      "name": "log-twitter-get-the-action",
+      "description": "Getting people to do the thing: retweet, like, try it. A log play (docs/useCases/twitter/getTheAction.md): The owner needs people to do one action for him: retweet a post, like it, try the tool. This page goes through everyone talking to him, tells him in plain words what each conversation is about, and gets each of them a message that answers what they said and asks for the action. All of it goes out through the account's one queue.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Getting people to do the thing: retweet, like, try it"
+    },
+    {
+      "name": "log-twitter-manager-maxxing",
+      "description": "Manager maxxing: the managers of the biggest Kick streamers. A log play (docs/useCases/twitter/managerMaxxing.md): The owner's go-to-market, in his words (https://x.com/matthewsoldit/status/2118285429674017268): \"find every single kick streamers managers on twitter, reply guy them for a few days then cold dm them to use log and show claviculars twitter\". The pitch, once they're talking: if Claude Code explains the sponsor deals a streamer does, with tracked links, sign-up rates go up, which means more affiliate money. Letting AI use your social media increases your surface area of luck.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Manager maxxing: the managers of the biggest Kick streamers"
+    },
+    {
+      "name": "log-twitter-network-maxing",
+      "description": "Network maxing: grow the network, the niche map. A log play (docs/useCases/twitter/networkMaxing.md): The point is to expand the owner's network, and the network is his niche map: the people around the communities and creators in his niche, each with their role, whether they follow him, and how close they sit to him. Network maxing grows it, one real conversation at a time. Every conversation is about getting to know them and what they're doing: what they're building, how they work, what's going on for them. It is never about what the owner sells.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Network maxing: grow the network, the niche map"
+    },
+    {
+      "name": "log-twitter-niche-map-region",
+      "description": "A new region of the niche map, then outbound to it. A log play (docs/useCases/twitter/nicheMapRegion.md): The niche map is the owner's network ([networkMaxing.md](networkMaxing.md)). A region is one world added to it, for example the YC 2026 batches (the founders, their companies and the partners around them). The region's people go through the same niche map pipeline as everyone else: three months of who talks to them, everyone scored, bands set, and each person's closeness to the owner (ring 1 engaged with him, ring 2 talks to his followers, ring 3 follows him, ring 4 new). The outbound then goes to ring 2 first, the warmest people who haven't talked to him yet.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "A new region of the niche map, then outbound to it"
+    },
+    {
+      "name": "log-twitter-notifications",
+      "description": "Seeing who engaged with your posts. A log play (docs/useCases/twitter/notifications.md): After a post goes out, people like it, repost it, reply, quote it and follow you. This page pulls all of that from the account's X notifications, new and back through the history, keeps it on this machine, and gives the agent a list of who did what on which post. It sends nothing.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Seeing who engaged with your posts"
+    },
+    {
+      "name": "log-twitter-recruiting",
+      "description": "Recruiting on X with a reply queue. A log play (docs/useCases/twitter/recruiting.md): Find people who just posted that they want work, or who already do the job. Reply to each one publicly with one line in their own language, about their own post, ending with the job link. The owner approves the list, then the queue sends the replies slowly with likes mixed in. Applicants then come in through the job page.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Recruiting on X with a reply queue"
+    },
+    {
+      "name": "log-twitter-reply-guy-funnel",
+      "description": "Reply guy, then the DM, then the ask. A log play (docs/useCases/twitter/replyGuyFunnel.md): The owner's way of getting new people to do something for him (share a post, try a tool): reply to them in public first, then open a DM on their own post, build on what they say, and only then the ask. In his words: \"you're meant to reply guy them first and foremost. You go on, like a tweet, send a meme to the tweet, and then we're gonna forward the tweet to them as an opener, talking and building on top of it, and then you wait for the reply, and then you say something that's in context that then build on top of the conversation that then funnel them into doing an action.\"",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Reply guy, then the DM, then the ask"
+    },
+    {
+      "name": "log-twitter-topic-replies",
+      "description": "Replying to everyone posting about one topic. A log play (docs/useCases/twitter/topicReplies.md): Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](../../specs/writeBudgets.md)).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Replying to everyone posting about one topic"
+    },
+    {
+      "name": "log-twitter-who-needs-you",
+      "description": "Finding who needs something from you, or who matters. A log play (docs/useCases/twitter/whoNeedsYou.md): Go through the account's messages and find the people who clearly need something from the owner, or who matter: someone asking for work, a collaboration, a referral, a call; someone well placed (a fund, a big audience, a shared network). It reads what each conversation is about across its whole history, not just the last line, and says how close each one is to money. It sends nothing. What happens next with each person is the owner's call, and the reply itself is [followUps.md](followUps.md).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Finding who needs something from you, or who matters"
     }
   ]
 }

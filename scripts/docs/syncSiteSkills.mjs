@@ -4,11 +4,17 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const sourceDir = join(root, "skills", "published");
+const useCasesDir = join(root, "docs", "useCases");
 const outDir = join(root, "site", "apps", "web", "public", ".well-known", "skills");
+const repoSkillsDir = join(root, ".claude", "skills");
 const check = process.argv.includes("--check");
 const problems = [];
+const LISTING_MAX = 1500;
+const PLAY_PREFIX = "log-";
 
 const toKebab = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const oneLine = (text) => text.replace(/\s+/g, " ").trim();
+const yamlValue = (text) => JSON.stringify(oneLine(text));
 
 function frontmatterOf(text, file) {
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
@@ -20,12 +26,35 @@ function frontmatterOf(text, file) {
   return { block: match[0], name: field("name"), description: field("description"), summary: field("summary"), dependsOn: field("dependsOn")?.split(/\s+/).filter(Boolean) ?? [] };
 }
 
+function playSkillOf(platform, page, text) {
+  const id = `${platform}/${page}`;
+  const name = `${PLAY_PREFIX}${toKebab(platform)}-${toKebab(page)}`;
+  const title = (/^# (.+)$/m.exec(text)?.[1] ?? page).trim();
+  const lead = oneLine(text.split("\n\n").find((block, i) => i > 0 && !block.startsWith("#")) ?? "");
+  const asks = oneLine(/^How the owner asks for it: (.+)$/m.exec(text)?.[1] ?? "");
+  const description = `${title}. A log play (docs/useCases/${id}.md): ${lead}`.slice(0, 900);
+  const whenToUse = (asks ? `Use when matt asks for this, in words like: ${asks}` : `Use when matt asks for: ${title.toLowerCase()}.`).slice(0, LISTING_MAX - description.length);
+  const body = [
+    `# ${title}`,
+    "",
+    `This is the log play \`${id}\`. Before anything else, call the log MCP tool \`getGuide({ useCase: "${id}" })\`: it returns this page and makes it the session's play, so every log tool's answer says which step you are on and a send with no play loaded is refused (rules 157, 158). Then follow the steps in order.`,
+    "",
+    "Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).",
+    "",
+    text.replace(/^# .+\n/, "").replace(/<!-- stepsDiagram[\s\S]*?<!-- \/stepsDiagram -->\n?/, "").trim(),
+    "",
+  ].join("\n");
+  const skill = `---\nname: ${name}\ndescription: ${yamlValue(description)}\nwhen_to_use: ${yamlValue(whenToUse)}\nmetadata:\n  summary: ${yamlValue(title)}\n---\n\n${body}`;
+  return { name, description, summary: title, skill };
+}
+
+const files = new Map();
+const repoFiles = new Map();
+const index = { skills: [] };
+
 const skills = existsSync(sourceDir)
   ? readdirSync(sourceDir, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort()
   : [];
-
-const files = new Map();
-const index = { skills: [] };
 for (const folder of skills) {
   const file = `skills/published/${folder}/SKILL.md`;
   const text = readFileSync(join(sourceDir, folder, "SKILL.md"), "utf8").replace(/\r\n/g, "\n");
@@ -38,19 +67,45 @@ for (const folder of skills) {
   files.set(join(name, "SKILL.md"), published);
   index.skills.push({ name, description: meta.description, files: ["SKILL.md"], ...(meta.summary ? { summary: meta.summary } : {}), ...(meta.dependsOn.length ? { dependsOn: meta.dependsOn } : {}) });
 }
+
+const platforms = existsSync(useCasesDir) ? readdirSync(useCasesDir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort() : [];
+for (const platform of platforms) {
+  for (const file of readdirSync(join(useCasesDir, platform)).filter((f) => f.endsWith(".md") && f !== "README.md").sort()) {
+    const page = file.slice(0, -3);
+    const text = readFileSync(join(useCasesDir, platform, file), "utf8").replace(/\r\n/g, "\n");
+    const play = playSkillOf(platform, page, text);
+    files.set(join(play.name, "SKILL.md"), play.skill);
+    repoFiles.set(join(play.name, "SKILL.md"), play.skill);
+    index.skills.push({ name: play.name, description: play.description, files: ["SKILL.md"], summary: play.summary });
+  }
+}
 files.set("index.json", `${JSON.stringify(index, null, 2)}\n`);
 
-if (check) {
-  for (const [path, text] of files) {
-    const target = join(outDir, path);
+function compare(dir, label, wanted) {
+  for (const [path, text] of wanted) {
+    const target = join(dir, path);
     const current = existsSync(target) ? readFileSync(target, "utf8").replace(/\r\n/g, "\n") : null;
-    if (current !== text) problems.push(`site/apps/web/public/.well-known/skills/${path.split("\\").join("/")} is out of date: run bun run skills:build`);
+    if (current !== text) problems.push(`${label}/${path.split("\\").join("/")} is out of date: run bun run skills:build`);
+  }
+}
+
+if (check) {
+  compare(outDir, "site/apps/web/public/.well-known/skills", files);
+  compare(repoSkillsDir, ".claude/skills", repoFiles);
+  if (existsSync(repoSkillsDir)) {
+    const wanted = new Set([...repoFiles.keys()].map((p) => p.split(/[\\/]/)[0]));
+    for (const entry of readdirSync(repoSkillsDir)) if (entry.startsWith(PLAY_PREFIX) && !wanted.has(entry)) problems.push(`.claude/skills/${entry} has no use case any more: run bun run skills:build`);
   }
 } else {
   rmSync(outDir, { recursive: true, force: true });
   for (const [path, text] of files) {
     mkdirSync(dirname(join(outDir, path)), { recursive: true });
     writeFileSync(join(outDir, path), text);
+  }
+  if (existsSync(repoSkillsDir)) for (const entry of readdirSync(repoSkillsDir)) if (entry.startsWith(PLAY_PREFIX)) rmSync(join(repoSkillsDir, entry), { recursive: true, force: true });
+  for (const [path, text] of repoFiles) {
+    mkdirSync(dirname(join(repoSkillsDir, path)), { recursive: true });
+    writeFileSync(join(repoSkillsDir, path), text);
   }
 }
 
@@ -59,4 +114,4 @@ if (problems.length) {
   for (const problem of problems) console.error(`  - ${problem}`);
   process.exit(1);
 }
-console.log(`${check ? "check:siteSkills OK" : "skills:build wrote"} ${index.skills.length} published skill(s): ${index.skills.map((skill) => skill.name).join(", ")}`);
+console.log(`${check ? "check:siteSkills OK" : "skills:build wrote"} ${index.skills.length} skill(s), ${repoFiles.size} of them use-case plays also in .claude/skills: ${index.skills.map((skill) => skill.name).join(", ")}`);

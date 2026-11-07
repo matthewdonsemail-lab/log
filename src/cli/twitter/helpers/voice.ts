@@ -372,14 +372,24 @@ export async function gateSend(context: CommandContext, send: { platform: string
   const evidence = await chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text);
   const reading = await gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room });
   if (reading.pass) return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
-  return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`)].join("\n") };
+  return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`), ...rewriteSteps({ to: handle || send.to, said })].join("\n") };
 }
 
 export function sameAsSent(send: { platform: string; account: string; to: string; text: string }, now: Date = new Date()): { ok: true } | { ok: false; refused: string } {
   const since = new Date(now.getTime() - SAMENESS_WINDOW_HOURS * 3600_000).toISOString();
   const reading = samenessOf(send.text, ownTextsSince(send.platform, send.account, since).map((s) => ({ to: s.to, text: s.text })));
   if (reading.pass) return { ok: true };
-  return { ok: false, refused: `>>> SAME AS ANOTHER SEND, nothing was sent to ${send.to}: ${samenessLine(reading)}` };
+  return { ok: false, refused: [`>>> SAME AS ANOTHER SEND, nothing was sent to ${send.to}: ${samenessLine(reading)}`, ...rewriteSteps({ to: send.to })].join("\n") };
+}
+
+export function rewriteSteps(send: { to: string; said?: string }): string[] {
+  const about = (send.said ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
+  return [
+    "Before you rewrite it, look, don't guess (rule 158):",
+    `  1. \`voice\` { to: "${send.to}", with: "${send.to}"${about ? `, context: "${about}"` : ""} } with no text: matt's own latest lines to them and his real replies to things like it.`,
+    `  2. \`search\` { query: "${about || "what they said"}" }: how matt answered the same kind of thing anywhere, every platform.`,
+    "  3. Write it from those, in his words and his length, answering what they actually said. Make it read unlike anything else you have sent today: a platform reads a run of near-copies as automation.",
+  ];
 }
 
 export const gateDeps: { gate: typeof gateSend; same: typeof sameAsSent } = { gate: (context, send) => gateSend(context, send), same: (send) => sameAsSent(send) };

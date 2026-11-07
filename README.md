@@ -35,6 +35,14 @@ Windows (PowerShell):
 irm https://log.listeningkit.com/install.ps1 | iex
 ```
 
+Everything, with every play as a skill your agent picks up from what you say (each use case in `docs/useCases` is one):
+
+```bash
+curl -fsSL https://log.listeningkit.com/install.sh | sh -s -- --skills all
+```
+
+Already have log? `--skills all --skillsOnly` adds the skills and nothing else. On Windows, set `$env:LOG_SKILLS = "all"` before the PowerShell line.
+
 This installs the `log` and `logMcp` commands, and Python with everything the platform engines need. It writes your settings to `~/.logCli/.env`. Already have [Bun](https://bun.sh)? Then `bun add -g @listeningkit/log` installs the commands on their own. More: [docs/install.md](docs/install.md).
 
 ## Get started
