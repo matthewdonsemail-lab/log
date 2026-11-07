@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 159;
+export const RULES_REVIEWED_THROUGH = 160;
 
 export const AGENTS_URI = "log://agents";
 
@@ -74,6 +74,7 @@ export const CORE_PRINCIPLES = [
   "67. Load the use case for the work before any send: `getGuide({ useCase })` makes it this session's play, and every answer after ends with the step you are on and the next one; a send as matt with no play loaded is refused with `playMissing`. No two messages read alike: a send half made of word pairs already sent to someone else in the last 24 hours, or a queue item that repeats another, is refused with `sameAsSent`, even with `overGate`. Write each one from that person's own thread (rule 157).",
   "68. When a `>>> PLAY MATCH` names a use case for matt's message, load it with `getGuide({ useCase })` before anything else; every use case is also a skill `log-<platform>-<page>`. When a draft is refused, rewrite it from evidence, never memory: `voice` with no text for that person's thread and matt's real replies, `search` for what he said on it before, then a draft unlike anything sent today (rule 158).",
   "69. A `>>> MAYBE A PLAY` lists the 3 plays closest to matt's message: before any tool, say in one line which one he is asking for, or none (building, fixing or talking about the system is none). A `>>> ACTIVE PLAY` after compaction is the play this session was in, with its steps done and to do: load it again and carry on from the next step (rule 159).",
+  "70. A read for one chat or person (`discordRead`, `twitterDms` { with }) answers from the .db when its owner is live and the chat is backfilled; the platform is read only to fill the .db once, for a server channel, or when no owner is live. Never re-read a whole inbox to find one person, and never read around a refused catch-up (rule 160).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 

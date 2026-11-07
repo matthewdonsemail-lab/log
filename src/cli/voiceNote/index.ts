@@ -7,6 +7,7 @@ import { PLATFORM_AUDIO, providerOf, readClone, renderVoiceNote, textOnlyProblem
 import type { Rendered, VoiceNote, VoiceNotePlatform, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import { findInChatList } from "../../inbox/dbRead/index.ts";
 import { findInstagramAccount, instagramGate } from "../../instagram/account/session/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
@@ -146,9 +147,12 @@ export const discordVoiceCommand = voiceNoteCommandOf({
     let shown = said;
     let kind: RoomKind = "unknown";
     if (!/^\d{15,22}$/.test(said)) {
-      const listed = direct(account, { action: "chats" });
-      if (!listed.answer.ok) return { ok: false, result: { code: 1, stdout: `log ${label}: ${account.accountName}: reading its chats to find "${said}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` } };
-      const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], said);
+      const looked = findInChatList<DiscordChat, ReturnType<typeof matchChat>>("discord", account.accountName, said, matchChat, () => {
+        const listed = direct(account, { action: "chats" });
+        return listed.answer.ok ? { ok: true, chats: (listed.answer.chats as DiscordChat[] | undefined) ?? [] } : { ok: false, detail: `${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+      });
+      if ("failed" in looked) return { ok: false, result: { code: 1, stdout: `log ${label}: ${account.accountName}: reading its chats to find "${said}": ${looked.failed}` } };
+      const found = looked.found;
       if (!found.ok) return { ok: false, result: refuse(label, found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n")) };
       target = found.chat.id;
       shown = labelOf(found.chat);

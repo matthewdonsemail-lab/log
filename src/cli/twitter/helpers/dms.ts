@@ -2,6 +2,8 @@ import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { TwitterDmMessage, TwitterDmThread, TwitterInboxSync, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { storeRead } from "../../../inbox/catchUp/index.ts";
+import { chatContextOf } from "../../../inbox/context/index.ts";
+import { markBackfilled, readSourceFor, sourceLine, userIdOfHandle } from "../../../inbox/dbRead/index.ts";
 import { saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -121,6 +123,28 @@ export const dmsCommand: Command = {
     if (withHandle !== undefined && (typeof withHandle !== "string" || !withHandle.trim())) return refuse("twitter dms", "targetMissing", "--with names a handle");
     const waiting = parsed.flags["waiting"] === true;
     try {
+      if (typeof withHandle === "string" && parsed.flags["full"] !== true && parsed.flags["force"] !== true) {
+        const started = performance.now();
+        const needle = withHandle.trim().replace(/^@/, "");
+        const userId = userIdOfHandle("twitter", ref, needle);
+        const held = chatContextOf("twitter", ref, { handle: needle, userId });
+        const source = await readSourceFor("twitter", ref, `with:${needle.toLowerCase()}`, held.messages.length, limit);
+        if (source.from === "refused") return refuse("twitter dms", "accountBehind", source.refused);
+        if (source.from === "db") {
+          const messages: TwitterDmMessage[] = dropMirrors(held.messages.map((m) => ({ id: m.id, conversationId: m.conversationId, time: m.time, senderId: m.senderId, text: m.mediaLines.length ? [m.text, ...m.mediaLines].filter(Boolean).join("\n") : m.text, fromMe: m.fromMe }))).slice(-limit);
+          const store = readNotificationStore(notificationStorePath(ref));
+          const otherId = userId ?? messages.find((m) => !m.fromMe)?.senderId ?? null;
+          const activity = activityOf(Object.values(store?.rows ?? {}), { userId: otherId, handle: needle }).slice(0, 30);
+          context.err(sourceLine(source, "X", ref, performance.now() - started));
+          if (!messages.length && !activity.length) return refuse("twitter dms", "targetMissing", `@${needle} has no conversation with this account in the .db and nothing of theirs is in its notifications`);
+          const answer = { ok: true, messages, conversationId: messages[messages.length - 1]?.conversationId } as TwitterSessionAnswer & { messages: TwitterDmMessage[] };
+          if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "db", account: ref, source, ...answer, activity }, null, 2) };
+          const thread = messages.length ? render(ref, answer, false) : `log twitter dms: @${ref} has no conversation with @${needle} in the .db yet`;
+          const activityLines = activity.length ? [`  what @${needle} did on your posts, newest first (${activity.length}):`, ...activity.map((r) => `    ${activityLine(r)}`)] : [`  @${needle} hasn't liked, retweeted, replied to, quoted, mentioned or followed you in the notifications kept`];
+          return { code: 0, stdout: [thread, ...activityLines].join("\n") };
+        }
+        context.err(sourceLine(source, "X", ref, 0));
+      }
       const knownId = localAccountId(ref, twitterStateRoot());
       const early = knownId ? context.twenty.loginSecrets(knownId).catch(() => null) : null;
       const opened = await openTwitterAccount(context, "twitter dms", ref);
@@ -142,6 +166,7 @@ export const dmsCommand: Command = {
         if (!person.answer.ok) return { code: 1, stdout: render(opened.account.accountName, person.answer, false) };
         const answer = { ...person.answer, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: `with:${needle}` }, dropMirrors(person.answer.messages ?? []).slice(-limit), audioOf, context.err) };
         backfillThread(opened.account.accountName, answer.messages, context.now?.() ?? new Date());
+        if (answer.ok) markBackfilled("twitter", opened.account.accountName, `with:${needle.toLowerCase()}`, context.now?.() ?? new Date());
         context.err(`${opened.account.accountName}: and what @${needle} did on the account's posts (its notifications, what is new read first)`);
         const kept = readNotificationStore(notificationStorePath(opened.account.accountName));
         const notes = notificationsFresh(kept, context.now?.() ?? new Date()) ? { answer: { ok: true } as TwitterSessionAnswer } : await opened.engine({ action: "notifications", screenName: opened.account.accountName });

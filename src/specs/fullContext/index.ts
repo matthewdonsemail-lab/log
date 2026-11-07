@@ -17,6 +17,9 @@ export const fullContext = {
     'src/cli/twitter/helpers/send.ts',
     'src/twitter/notification/feed/client.ts',
     'src/inbox/context/client.ts',
+    'src/inbox/dbRead/client.ts',
+    'src/inbox/dbRead/types.ts',
+    'src/cli/discord/index.ts',
   ],
   anchors: {
     'REQ-CONTEXT-01': [{ kind: 'symbol', file: PERSON, name: 'activityOf' }],
@@ -38,6 +41,12 @@ export const fullContext = {
     ],
     'REQ-CONTEXT-07': [{ kind: 'symbol', file: 'src/twitter/queue/plan/client.ts', name: 'editItem' }],
     'REQ-CONTEXT-08': [{ kind: 'string', file: COMMAND, includes: 'queueBusy' }],
+    'REQ-CONTEXT-11': [
+      { kind: 'symbol', file: 'src/inbox/dbRead/client.ts', name: 'readSourceFor' },
+      { kind: 'symbol', file: 'src/inbox/dbRead/client.ts', name: 'findInChatList' },
+      { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'serverChannel' },
+      { kind: 'string', file: 'src/cli/twitter/helpers/dms.ts', includes: 'readSourceFor' },
+    ],
     'REQ-CONTEXT-10': [
       { kind: 'symbol', file: 'src/inbox/context/client.ts', name: 'chatContextOf' },
       { kind: 'string', file: COMMAND, includes: 'accountBehind' },
@@ -48,6 +57,7 @@ export const fullContext = {
     'REQ-CONTEXT-02': noul('Does activityLine pick its words by the row kind through ACTIVITY_WORDS, and include the row text, their own words, when there is one?'),
     'REQ-CONTEXT-03': noul('Does the dms command call the notifications engine action only when notificationsFresh, called with its default 120 second window, says the saved store is not fresh?'),
     'REQ-CONTEXT-04': noul('For a reply event, does runQueue await deps.contextChanged(item) before it calls deps.send, and does the queue run command wire contextChanged to read the person context with chatContextOf from the .db?'),
+    'REQ-CONTEXT-11': noul('Does readSourceFor return the platform only when no owner is live or the chat was never backfilled and the .db holds fewer than the limit, a refusal when waitCaughtUp fails, and the .db otherwise; does log discord read answer a DM or group from chatMessages without calling the engine when it says db, read a server channel from Discord, and mark a chat backfilled after a platform read; does log twitter dms --with decide before opening the X session and answer from chatContextOf on the db path; and does findInChatList call the platform list only when the cached list has no match?'),
     'REQ-CONTEXT-10': noul('Does the queue run command contextChanged await waitCaughtUp for the account and return its refusal as the change when it fails, then build the messages and activity from chatContextOf (events of type message, ownMessage and notification matched by userId, handle or conversation) and pass them to contextChangesSince, without calling the engine inbox or notifications actions?'),
     'REQ-CONTEXT-05': noul('Does contextChangesSince return every message, from either side, and every activity row whose time is after since, and does the queue pass item.draftedAt (or queue.created) as since?'),
     'REQ-CONTEXT-06': noul('When contextChanged returns any change, does runQueue set item.status to held, set item.heldFor to the changes, call dropPost for its other events, alert with a HELD line naming twitterQueueEdit, and continue without calling deps.send?'),
@@ -68,6 +78,7 @@ export const fullContext = {
     'REQ-CONTEXT-07': MET,
     'REQ-CONTEXT-08': MET,
     'REQ-CONTEXT-10': MET,
+    'REQ-CONTEXT-11': MET,
     'REQ-CONTEXT-09 like': NOT_VIOLATED,
     'REQ-CONTEXT-09 split': MET,
     'REQ-CONTEXT-09 readFails': MET,

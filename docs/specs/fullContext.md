@@ -71,3 +71,16 @@ Checked by: SubQ
 The queue's context check first waits for the account to catch up (rule 135), and an account still behind or whose catch-up was refused holds the item with the reason. It then takes that person's messages from either side and their activity (likes, retweets, replies, quotes, mentions, follows) from the .db, matched by their user id, handle or chat, and never calls the inbox or notifications engine actions. Rule 136.
 
 Checked by: code and SubQ
+
+### REQ-CONTEXT-11: A read for one chat or person answers from the .db, and the platform only fills it
+
+`readSourceFor` in `src/inbox/dbRead/client.ts` decides where a read for one chat comes from:
+- no live owner for the account (`sessionLive` over `readSession`): the platform;
+- a catch-up still running: it waits up to `READ_CATCH_UP_MS` (`waitCaughtUp`), and one still behind or refused is a refusal, never a platform read;
+- a chat marked backfilled (`markBackfilled`, a `backfill:` position): the .db;
+- a chat the .db holds at least the limit of: the .db;
+- otherwise: the platform, once.
+
+`log discord read` takes a server channel from Discord, because the watcher keeps only mentions and replies from one. A DM or group comes from `chatMessages`, filtered by `--after`, with no engine call. A platform read stores what it read and marks the chat backfilled. `log twitter dms --with` (without `--full` or `--force`) decides the same, before the X session is opened. On the .db path it takes the person's messages from `chatContextOf` (handle, and user id from `userIdOfHandle`) and their activity from the kept notification store, calling no engine action. A platform read marks `with:<handle>` backfilled after `backfillThread`. Finding a Discord chat by name (`findInChatList`) matches the kept chat list first (`cachedChatList`, fresh for `CHAT_LIST_FRESH_MS`), and lists from Discord (then keeps the list) only when the name isn't in it: `log discord read`, `send`, `delete`, `react` and `voice`. Each read says where its answer came from (`sourceLine`). matt, 2026-11-07. Rule 160.
+
+Checked by: code and SubQ
