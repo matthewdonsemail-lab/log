@@ -1,3 +1,4 @@
+import { withCreditNote } from '../../billing/balance/helpers/answers'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
@@ -24,7 +25,7 @@ export function hashOf(bytes: Uint8Array): string {
   return createHash('sha256').update(bytes).digest('hex')
 }
 
-const failed = (status: number, error: string): TranscribeAnswer => ({ ok: false, code: 'transcriptionFailed', status, error })
+const failed = (status: number, error: string): TranscribeAnswer => ({ ok: false, code: 'transcriptionFailed', status, error: status ? withCreditNote('assemblyAi', status, error) : error })
 
 async function answerOf(response: Response): Promise<Record<string, unknown>> {
   const text = await response.text()

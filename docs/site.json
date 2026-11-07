@@ -59,11 +59,11 @@
         { "title": "Diagrams", "folder": "diagrams" },
         {
           "title": "Working on log",
-          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "knowledgeBase.md", "deployment.md", "twitterPlatform.md"],
+          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "callTiming.md", "knowledgeBase.md", "deployment.md", "twitterPlatform.md"],
           "folders": ["rea", "voice"]
         }
       ]
     }
   ],
-  "private": ["identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation", "vendors", "infra", "site.json"]
+  "private": ["decisions", "identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation", "vendors", "infra", "site.json"]
 }

@@ -4,6 +4,7 @@ import { BACKFILL_SCOPE } from '../dbRead/types'
 import type { GapRow } from '../store/index'
 import { BEHIND_WAIT_MS, READ_GAP_MS } from './types'
 import type { CatchUpResult, PlatformRead, ReadMessage } from './types'
+import { timed } from '../../observability/timing/index'
 
 export function pacedWait(random: () => number = Math.random): Promise<void> {
   const [low, high] = READ_GAP_MS
@@ -74,7 +75,17 @@ export function catchUpOneChat(platform: string, account: string, conversationId
   return { ok: true, how: 'chatRead', stored }
 }
 
-export async function waitCaughtUp(platform: string, account: string, options: { timeoutMs?: number; sleep?: (ms: number) => Promise<void>; now?: () => number } = {}): Promise<{ ok: true; waitedMs: number } | { ok: false; refused: string }> {
+type WaitOptions = { timeoutMs?: number; sleep?: (ms: number) => Promise<void>; now?: () => number }
+
+export function waitCaughtUp(platform: string, account: string, options: WaitOptions = {}): Promise<{ ok: true; waitedMs: number } | { ok: false; refused: string }> {
+  return timed('inbox.waitCaughtUp', async (span) => {
+    const result = await waitCaughtUpNow(platform, account, options)
+    span.attrs.caughtUp = result.ok
+    return result
+  }, { platform, account })
+}
+
+async function waitCaughtUpNow(platform: string, account: string, options: WaitOptions): Promise<{ ok: true; waitedMs: number } | { ok: false; refused: string }> {
   const sleep = options.sleep ?? ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)))
   const now = options.now ?? Date.now
   const started = now()

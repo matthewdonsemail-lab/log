@@ -11,11 +11,13 @@ import { COMMANDS, defaultSendInspect, runCli } from "../../cli/runner/index.ts"
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
+import type { ActiveCall } from "../../observability/timing/index.ts";
 import { FLOWS_DIR, listFlows, loadFlow } from "../../browser/flow/index.ts";
 import { browserViews } from "../../browser/inspect/index.ts";
 import type { BrowserView } from "../../browser/inspect/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
+import { msText, timeCall } from "../../observability/timing/index.ts";
 import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_MS, finishJob, MAX_WAIT_MS, startJob } from "../jobs/index.ts";
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
@@ -95,7 +97,12 @@ interface Ran {
   cancelled: boolean;
 }
 
-async function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
+function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
+  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call), { account: accountOfArgv(argv) || undefined, job: job?.id });
+}
+
+async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall): Promise<Ran> {
+  const began = performance.now();
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
@@ -112,7 +119,7 @@ async function runGuarded(name: string, argv: string[], context: Partial<Command
   const send = context.sendInspect ?? defaultSendInspect;
   setLogSink((entry) => inFlight.forEach((listener) => listener(entry)));
   inFlight.add(fromProcess);
-  onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}`);
+  onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}  (call ${call.callId})`);
   let code: number;
   let cancelled = false;
   try {
@@ -147,7 +154,8 @@ async function runGuarded(name: string, argv: string[], context: Partial<Command
     if (inFlight.size === 0) setLogSink(null);
   }
   if (job && !cancelled && code !== 0 && cancelRequested(job.id)) cancelled = true;
-  onLine(name, "out", `■ exit ${code}`);
+  call.attrs.exit = code;
+  onLine(name, "out", `■ exit ${code} in ${msText(performance.now() - began)} (call ${call.callId}: timing { call: "${call.callId}" } shows where the time went)`);
   const text = [out.join("\n"), processLog.length ? `log:\n${processLog.join("\n")}` : "", err.length ? `stderr:\n${err.join("\n")}` : "", `exit ${code}`].filter(Boolean).join("\n\n");
   const stdout = out.join("\n");
   const json = jsonOf(stdout);

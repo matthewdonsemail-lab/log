@@ -2522,6 +2522,96 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     doesn't. The command tools stay as they are for now. Spec:
     `docs/specs/mcpServer.md` (REQ-MCP-18).
 
+164. 2026-11-07 · matt: "have a way inside of log to be able to view our
+    balance ... for the extensions as well ... if we have an issue with the
+    actual calls such as voice then it keeps causing issues but it may be
+    because the balance is low". `log balance` (MCP `balance`) shows every
+    paid provider log calls: SubQ, Jina, Inworld, Fish Audio, AssemblyAI,
+    Parallel, treg, 2Captcha and Byteful. Where the provider has a balance API
+    it is read (Jina's tokens, Fish Audio's credit, treg, 2Captcha, Byteful's
+    residential traffic); where it has none, its last answer to a real call
+    decides. The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients keep
+    every answer in `~/.logCli/billing/answers.jsonl`, and one that says it is
+    out of credit (a 402, insufficient credit, payment required) says so in
+    the failure itself, naming where to top up (`providerOutOfCredit`), so a
+    failing voice note or gate is seen as money, not a bug. Reading a balance
+    spends nothing, and topping up is matt's (rule 41). Spec:
+    `docs/specs/balance.md`.
+
+165. 2026-11-07 · matt: "find the place inside of my code that are
+    slowing it down", then "have all timing known and stored so that we're
+    able to then add further optimizations", after `twitterDms` took
+    p50 9.5 s while X answered in 0.69 s, and the live log had no call id,
+    so two sessions' calls couldn't be told apart. Every call is timed,
+    never guessed, through one timing layer for Bun and Python
+    (`src/observability/timing`, `python/platformKit/timing.py`):
+    - **A call id on every call.** Each MCP tool call and terminal run is
+      one call. Its id and how long it took are on its `▶` and `■` lines in
+      the live log.
+    - **Every stage is a span.** Each span records its parent, start and
+      length: the guards (the catch-up wait, the read source, the claim),
+      each step of the voice gate, every `fetch` (SubQ, Jina, Twenty, ...),
+      each Python engine run and the Python start-up before it. The trace
+      goes into the engine's spec and through the account's session host:
+      its queue, the account lock, the spacing, the governor, the client,
+      the action, and every curl_cffi request (twikit, instagrapi, gabriel).
+      The host sends its spans back in its answer, so one call is one tree.
+    - **Stored, kept 90 days.** Spans go to log.db's `spans` table. With
+      `LOG_OTLP_URL` set they are also sent as OTLP to a trace viewer
+      (otel-desktop-viewer), with no OpenTelemetry package to install.
+    - **Read before saying it's slow or fast.** `log timing` (MCP `timing`)
+      gives p50, p95 and p99 per tool and per stage, with each stage's share
+      of the time and the call's own time outside every stage. `log timing
+      --call <id>` shows one call as a waterfall. Optimisation starts from
+      those numbers, and the same report is run again after the change.
+    Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec:
+    `docs/specs/callTiming.md`.
+
+166. 2026-11-07 · matt: "make it so that we can then call treg as an
+    extension inside of this as well and then write it up into the
+    extensions". treg is an extension like Memelord (rule 119), reached
+    through log's own command and MCP tools, never by hand (rule 106):
+    - **`log treg search "<job>"`** (MCP `tregSearch`) finds an endpoint by
+      what you want done, with each one's price.
+    - **`log treg get <id>`** (MCP `tregGet`) reads one endpoint in full: its
+      price, its params and a call that works.
+    - **`log treg call <id> --params '<json>'`** (MCP `tregCall`) calls it
+      through the treg CLI on this machine, the key injected server-side by
+      treg (`TREG_BIN` moves it). The price is read from `get` before every
+      call. A free endpoint runs. A priced one is a dry run that says its
+      price and the exact command, and runs only with `--live` and
+      `--approvedBy` (MCP `tregCallLive`) when matt asked for that spend
+      (rule 41).
+    Every call is a timed span (rule 165), and treg's balance is in `log
+    balance` (rule 164). It is the way every lookup reaches an external
+    source (rule 53). `src/extensions/treg`, `src/cli/treg`,
+    `docs/extensions/treg.md`. Spec: `docs/specs/treg.md`.
+
+167. 2026-11-07 · matt: "we need to make it so that we're not needing to
+    restart every time that we make a change ... it takes up at least 3
+    minutes of mine to close Claude Code and reopen it", then the options
+    put to a SubQ matrix (issue #85; `docs/decisions/mcpReload`, own proxy
+    0.97 against reloaderoo, mcpmon, mcp-reloader and in-process
+    re-import). `logMcp` is a small reload proxy that never exits
+    (`src/mcp/reload`). It owns Claude Code's stdio pipe and runs the real
+    server as a child (`logMcp --child`). When log's code stamp
+    (`codeStamp`) is newer than the child's, it reloads, but only while no
+    call is in flight and no job runs in the child (`listJobs`), so a queue
+    run or a watch is never killed:
+    - it starts a new child and replays the client's `initialize`;
+    - once the child answers, it sends `notifications/initialized`, stops
+      the old child and sends `notifications/tools/list_changed` up.
+    A call caught by a crash is answered with `logMcpRestarted` so the
+    client calls again. New code that doesn't start leaves the old child
+    running and says why, and the next change tries again. Its state is
+    `~/.logCli/mcp/reload.json` (`LOG_MCP_RELOAD_FILE`). The stale-server
+    hook line no longer tells matt to restart while the proxy runs. It
+    says only what the reload is waiting on, or why the new code failed.
+    A tool added since Claude Code started is reached at once through
+    `logCall` (rule 163), since Windows clients have been seen ignoring
+    `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
+    proxy. Spec: `docs/specs/mcpReload.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

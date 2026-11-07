@@ -309,6 +309,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
     action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
   },
+  providerOutOfCredit: {
+    layer: 'runtime',
+    meaning: 'A paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI) answered that it is out of credit (402, or words like insufficient credit). The call failed for want of money, not a bug.',
+    retryable: false,
+    raisedIn: ['subq/decisions', 'voice/aiTells', 'extensions/inworld', 'extensions/fishAudio', 'media/voiceNotes'],
+    action: 'Run log balance (MCP balance) to see every provider, then tell matt which one needs topping up and where. Never top up from log (rule 41).'
+  },
   jinaKeyMissing: {
     layer: 'twitter',
     meaning: 'The AI tells index and the voice gate embed and rerank with Jina, and JINA_API_KEY is not set.',
@@ -1937,6 +1944,34 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['cli/clone', 'extensions/voiceClone'],
     action: 'Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else\'s voice.'
+  },
+  callTimingMissing: {
+    layer: 'runtime',
+    meaning: "No call with that id is stored in log.db's spans table: the id was mistyped, the call ran before timing existed, or it is older than the 90 days timings are kept.",
+    retryable: false,
+    raisedIn: ['cli/timing'],
+    action: "Copy the call id from the call's ▶ or ■ line in the live log (~/.logCli/mcp/<day>.log), or run log timing without --call for the report."
+  },
+  tregFailed: {
+    layer: 'runtime',
+    meaning: "treg answered with an error, or couldn't be run: the endpoint id is wrong, its params were refused, the team balance is out, or treg isn't on this machine's PATH.",
+    retryable: false,
+    raisedIn: ['cli/treg', 'extensions/treg'],
+    action: "Read treg's own words in the refusal. Check the id with log treg search, its params with log treg get, the balance with log balance; set TREG_BIN if treg isn't on the PATH."
+  },
+  tregParamsInvalid: {
+    layer: 'runtime',
+    meaning: "The params given to log treg call weren't a JSON object of query params.",
+    retryable: false,
+    raisedIn: ['cli/treg'],
+    action: 'Pass --params as a JSON object, e.g. {"query":"kick streamer managers","domain_type":"web"}; log treg get lists the params the endpoint takes.'
+  },
+  logMcpRestarted: {
+    layer: 'runtime',
+    meaning: "The log MCP server restarted while this call ran (it crashed, or its new code was swapped in), so the call's answer was lost. The proxy Claude Code talks to stayed up.",
+    retryable: true,
+    raisedIn: ['mcp/reload'],
+    action: 'Call the tool again. If it keeps happening, read the live log (~/.logCli/mcp/<day>.log) for why the server exited.'
   },
   xchatPinMissing: {
     layer: 'runtime',

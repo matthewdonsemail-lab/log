@@ -10,6 +10,7 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
+| `getGuide({ useCase: "discord/channelReply" })` | Answering someone in a Discord chat or channel | "message the guy in <chat> who just mentioned me", "reply to <someone> in <chat>", "explain what I'm trying to do to <someone> in <chat>", "answer him in the general" |
 | `getGuide({ useCase: "inbox/reaLooksmaxxing" })` | /rea-looksmaxxing: moneymaxx like a creator | "/rea-looksmaxxing how clavicular gets paid", "moneymaxx like <creator>", "how does <creator> get paid" |
 | `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note | "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …" |
@@ -102,6 +103,7 @@ Claim a chat before acting on it, release it, list the live claims, and read the
 log inbox claim --platform <twitter|discord|slack|instagram> --account <a> --chat <conversationId|handle> [--event <eventId>] [--json]
 Only the session that claims a chat acts on it (rule 133). Every message the push channels bring in has an event id (shown in >>> NEW MESSAGE). claim takes the chat for this session for 10 minutes before you draft or send; a second session is refused (chatClaimedElsewhere). Every send claims the chat itself and releases it once it is sent, interrupted or failed, so two sessions never answer the same chat. A claim held by a session that ended frees itself. resume is matt's go-ahead after a refused catch-up (rule 94): the account's gap opens again and its owner catches up through its own session within 30 s; only when matt says so. claims lists who holds what; actions is the log of every claim, refusal, send and release, oldest first, to search what was already done in a chat before acting.
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/channelReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xInbox" }) (Reading an X account's DMs and X Chat as one inbox, synced by sequence id, and watching X Chat live).
 AGENTS.md (log://agents): rules 94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

@@ -620,8 +620,11 @@ def main() -> int:
         return kit.main(ACTIONS, WRITES, LIBRARY)
     from instagramApi import host
 
-    out = host.call(json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")))
-    print(json.dumps(out, default=str))
+    spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    kit.timing.begin(spec.get("trace"))
+    kit.timing.record_since("python.imports", kit.timing.BOOT)
+    out = host.call(spec)
+    print(json.dumps(kit.timing.attach(out, boot=True), default=str))
     return 0 if out.get("ok") else 1
 
 

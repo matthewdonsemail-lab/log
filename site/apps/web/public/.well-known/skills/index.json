@@ -13,6 +13,14 @@
       ]
     },
     {
+      "name": "log-discord-channel-reply",
+      "description": "Answering someone in a Discord chat or channel. A log play (docs/useCases/discord/channelReply.md): Answer what someone said to the account in a Discord DM, group or server channel, with words: a question about what matt is building, a reply to something he posted, a mention. The chat is read first, the answer is written from what was said there and what matt has told you, gated like every send, and sent through the account's one session. No meme and no voice note (those are [memeReply](memeReply.md) and [voiceNote](../inbox/voiceNote.md)).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Answering someone in a Discord chat or channel"
+    },
+    {
       "name": "log-discord-group-chat-read",
       "description": "Reading a Discord group chat without Twenty. A log play (docs/useCases/discord/groupChatRead.md): Catch up on what was said in a Discord group or channel over the last few hours, on the account's own session, with the account kept in a local file instead of Twenty. This page reads and sends nothing.",
       "files": [

@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, timing, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, treg, balance, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `timing`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `treg`, `balance`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -189,9 +189,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 172 command tools + saved flows"]
+  mcp["MCP server log: 178 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 92 commands (COMMANDS)"]
+  runCli["runCli: 95 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -279,11 +279,12 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
 | [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 85, 30, 38, 39, 40, 41 |
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41 |
+| [`log timing`](#log-timing) | Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall | any (none) | `--tool <name>` `--hours <n>` `--stages <n>` `--json` `--call <callId>` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
 | [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat | any (none) | `--platform <twitter|discord|slack|instagram>` `--account <a>` `--chat <conversationId|handle>` `--event <eventId>` `--json` `--by` `--limit <n>` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 30, 38, 39, 40, 41 |
 | [`log media`](#log-media) | Describe every image, meme and video with one local vision model into the .db, so replies read what was sent | any (none) | `--json` `--wait <seconds>` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 126, 131, 137, 138, 139, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55) | any (none) | `--json` | none | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 54, 55, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `--afterLine <n>` `--waitMs <ms>` `--json` | none | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 10, 26, 35, 30, 38, 39, 40, 41 |
-| [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `--json` | none | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 21, 47, 30, 38, 39, 40, 41 |
+| [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `--json` | none | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 21, 47, 167, 30, 38, 39, 40, 41 |
 | [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `log login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
@@ -296,6 +297,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rebuild` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 30, 93, 30, 38, 39, 40, 41 |
 | [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` `--build` `--from <posts.json>` `--noTaste` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 119, 120, 30, 38, 39, 40, 41 |
+| [`log treg`](#log-treg) | The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked) | any (none) | `--limit <n>` `--json` `--params` `--path <path>` `--method <GET|POST>` `--data` `--await` `--approvedBy <who>` `--live` | none | none | `tregSearch`, `tregGet`, `tregCall`, `tregCallLive` | PreToolUse, PostToolUse · PostToolUse | no | 41, 53, 106, 119, 166, 30, 38, 39, 40, 41 |
+| [`log balance`](#log-balance) | Every paid provider log calls, with what is left and which are out of credit | any (none) | `--provider <name>` `--json` | none | none | `balance` | PreToolUse, PostToolUse · PostToolUse | no | 41, 73, 94, 164, 30, 38, 39, 40, 41 |
 | [`log clone`](#log-clone) | matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voice notes, and words said in it to a local file | any (none) | `--provider` `--from <file>` `--apply` `--replace` `--json` `--text` `--model <model>` `--format` | none | none | `cloneVoice`, `cloneSpeak` | PreToolUse, PostToolUse · PostToolUse | no | 39, 41, 94, 106, 119, 142, 143, 145, 146, 147, 30, 38, 39, 40, 41 |
 | [`log transcribe`](#log-transcribe) | Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ | any (none) | `--platform` `--account <a>` `--list` `--noIndex` `--json` | none | none | `transcribe`, `transcribeFile` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--limit <n>` `--json` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 80, 81, 104, 105, 30, 38, 39, 40, 41 |
@@ -383,6 +386,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_timing["timing"]
     c_inbox["inbox"]
     c_media["media"]
     c_browsers["browsers"]
@@ -395,6 +399,8 @@ flowchart TB
     c_search["search"]
     c_kb["kb"]
     c_memelord["memelord"]
+    c_treg["treg"]
+    c_balance["balance"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -566,6 +572,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_timing
+  mcp --> c_timing
   cli --> c_inbox
   mcp --> c_inbox
   cli --> c_media
@@ -600,6 +608,10 @@ flowchart TB
   mcp --> c_kb
   cli --> c_memelord
   mcp --> c_memelord
+  cli --> c_treg
+  mcp --> c_treg
+  cli --> c_balance
+  mcp --> c_balance
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe
@@ -1259,6 +1271,15 @@ log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, s
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 ```
 
+#### log timing
+
+Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall MCP tools: `timing`, one per form, with named fields.
+
+```text
+log timing [--tool <name>] [--hours <n>] [--stages <n>] [--json]   (p50, p95 and p99 for every tool call, and for every stage inside it: the guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request; newest --hours, default 24)
+log timing --call <callId> [--json]   (one call as a waterfall: every stage in order, when it started and how long it took; the id is on the call's ▶ and ■ lines in the live log)
+```
+
 #### log inbox
 
 Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat MCP tools: `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxClaims`, `inboxActions`, one per form, with named fields.
@@ -1435,6 +1456,28 @@ log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--jso
 log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: the styles he named and the memes he has sent, each read by SubQ from its picture; --build reads a file of his X media posts)
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
+```
+
+#### log treg
+
+The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked) MCP tools: `tregSearch`, `tregGet`, `tregCall`, `tregCallLive`, one per form, with named fields.
+
+```text
+log treg search "<what you want done>" [--limit <n>] [--json]   (treg's catalog, found by the job: each endpoint's id, what it does and its price)
+log treg get <endpointId> [--json]   (one endpoint in full: its price, its params and a call that works)
+log treg call <endpointId> [--params '<json object>'] [--path <path>] [--method <GET|POST>] [--data '<body>'] [--await] [--approvedBy <who>] [--live] [--json]   (calls it through treg, the key injected server-side: a free endpoint runs; a priced one is a dry run that says its price unless --live with --approvedBy)
+treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
+```
+
+#### log balance
+
+Every paid provider log calls, with what is left and which are out of credit MCP tools: `balance`, one per form, with named fields.
+
+```text
+log balance [--provider <name>] [--json]
+Every paid provider log calls, with what is left: subq, jina, inworld, fishAudio, assemblyAi, parallel, treg, twoCaptcha, byteful.
+A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (~/.logCli/billing/answers.jsonl). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.
+Reading balances spends nothing (rule 41). Topping up is matt's: never done from log.
 ```
 
 #### log clone
