@@ -179,6 +179,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 
 | Topic | What it covers |
 |---|---|
+| `logCatalog` | Finding and running any log command with three tools: logSearch by what you want done, logGet for its inputs and a call that works, logCall to run it |
 | `facebookBrowser` | An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks |
 | `facebookFlows` | Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause |
 | `facebookMarketplace` | Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations |

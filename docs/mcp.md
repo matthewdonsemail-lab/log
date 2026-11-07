@@ -45,6 +45,16 @@ claude mcp add --transport http log http://127.0.0.1:7337/mcp
 
 Your agent's first call is `getGuide({ topic: "logMcpInstructions" })`. It lists every use case and how to ask for it. `getGuide({ useCase: "<platform>/<page>" })` reads one [use case](useCases/README.md). Every tool's description names its guide, the use cases that call it and the AGENTS.md rules it falls under; AGENTS.md itself is the resource `log://agents` ([MCP server](specs/mcpServer.md)).
 
+## Find and run any command
+
+Three tools reach every command, so your agent doesn't have to know which tool to call:
+
+- `logSearch { "query": "send a dm on x" }` finds the commands for a job, in plain words.
+- `logGet { "id": "twitter.dm" }` gives the command's inputs and a call that works.
+- `logCall { "id": "twitter.dm", "inputs": { … } }` runs it, through the same checks as the command's own tool.
+
+A command that acts on a platform needs `live: true` and `confirmLive: true`. More: [the catalog guide](guides/logCatalog.md).
+
 ## Watch a long call
 
 Calls that take a while write one line per step to `~/.logCli/mcp/<day>.log`. Follow along with:

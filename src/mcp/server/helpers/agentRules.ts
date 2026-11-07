@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 162;
+export const RULES_REVIEWED_THROUGH = 163;
 
 export const AGENTS_URI = "log://agents";
 
@@ -93,11 +93,15 @@ export const SERVER_INSTRUCTIONS = [
   "7. A refusal names its error code: the `errors` tool says what to do.",
   "8. If something isn't working, fix it; ask matt only for exactly what the fix needs from him. A reply that answers someone and fits the conversation goes straight out (rule 108).",
   "9. Before any message to someone, read their full context at that moment with `twitterDms` { with }: their thread and what they did on the account's posts (rule 109).",
+  "10. Any command: `logSearch` the job, `logGet` its id, `logCall` it (rule 163).",
   "",
   `Every rule is in AGENTS.md (${AGENTS_URI}), the newest at the bottom; each tool's description ends with the ones it falls under.`,
 ].join("\n");
 
 export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
+  logSearch: [106, 163],
+  logGet: [106, 163],
+  logCall: [8, 10, 20, 26, 106, 163],
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73],
