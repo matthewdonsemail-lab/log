@@ -588,7 +588,7 @@ function PlayChat({ page, offset }: { page: PlatformPage; offset: number }) {
   )
 }
 
-function MoreUseCases({ current }: { current: PlatformPage | null }) {
+export function MoreUseCases({ current }: { current: PlatformPage | null }) {
   const others = PLATFORM_PAGES.filter((item) => item.id !== current?.id)
   return (
     <section aria-label="Other use cases" className="relative w-full bg-white px-4 pb-24 pt-20 text-center text-[#0D2A4C] md:px-6 md:pb-32">

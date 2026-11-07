@@ -78,6 +78,7 @@ panels have room.
   come from treg's TikTok search and the research in
   `~/.buzz/RESEARCH/LOOKSMAXXERS_MANAGERS_2026_11_06.md`. SubQ's scores and
   scripts are illustrative.
-- **Change the page and the video together.** The page's 11 step cards
-  (`reaLooksmaxxing.ts`) use the video's headline and sticker for each step,
-  with one extra joke line. A copy change to one goes to the other.
+- **The page is a summary, never the 11 steps.** It runs like a platform
+  page: the hero's use case (how it works, call by call), Clavicular's post
+  shown plainly (never boxed in a card), the three-step play and the prompt
+  (`reaLooksmaxxing.ts`). The step-by-step lives in the video only.

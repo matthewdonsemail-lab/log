@@ -1479,7 +1479,93 @@ const REDDIT_SLIDES: Slide[] = [
   },
 ]
 
+const REA_SLIDES: Slide[] = [
+  {
+    lead: 'Find what made him',
+    sticker: 'go viral.',
+    body: 'treg pulls **his 40 most viral clips** and the clip farms around him, and SubQ picks **the formats that win**. Nightclub, hot take, repeat.',
+    story: {
+      id: 'reaClips',
+      chrome: 'x',
+      phases: [
+        {
+          caption: 'His clip blows up',
+          screen: 'post',
+          title: 'Post',
+          items: [
+            { id: 'p1', kind: 'post', who: 'Clip farm', handle: '@bestclavicularclips', text: 'Clavicular revealed why you should NEVER DRINK 🥃😳 (578K views)' },
+            { id: 'r1', kind: 'reply', who: 'gymcel_99', text: 'what is his skincare routine??' },
+          ],
+        },
+        {
+          caption: 'SubQ picks the formula',
+          screen: 'post',
+          title: 'Post',
+          items: [{ id: 'r2', kind: 'reply', who: 'You', you: true, text: 'comedy skit 3.7M, mog edit 1.75M, morning routine 1.5M. noted.' }],
+        },
+      ],
+    },
+  },
+  {
+    lead: 'Post through every',
+    sticker: 'account.',
+    body: 'log **warms up every account** in its own browser and posts through each one’s **single session**, so the bot farm never looks like one.',
+    story: {
+      id: 'reaPost',
+      chrome: 'x',
+      phases: [
+        {
+          caption: 'Your clip goes out',
+          screen: 'post',
+          title: 'Post',
+          items: [
+            { id: 'p1', kind: 'post', who: 'You', handle: '@you', text: 'NEVER sleep on your back if you want a jawline. here is why' },
+            { id: 'r1', kind: 'reply', who: 'mogger_420', text: 'bro this is actually insane' },
+          ],
+        },
+        {
+          caption: 'The comments flood in',
+          screen: 'post',
+          title: 'Post',
+          items: [
+            { id: 'r2', kind: 'reply', who: 'lookscope_ana', text: 'is this ai' },
+            { id: 'r3', kind: 'reply', who: 'You', you: true, text: 'the jawline is real. everything else is Claude Code' },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    lead: 'Funnel them into',
+    sticker: 'your offer.',
+    body: 'Every **“how do I look like that”** gets an answer in your voice, then a seat in **the Discord**. Like Clav, but with Claude Code in your DMs.',
+    story: {
+      id: 'reaFunnel',
+      chrome: 'discord',
+      phases: [
+        {
+          caption: 'A DM lands',
+          screen: 'lock',
+          title: 'mogger_420',
+          items: [{ id: 'n1', kind: 'notify', who: 'mogger_420', text: 'how do i look like that' }],
+        },
+        {
+          caption: 'Answered, then funnelled',
+          screen: 'dm',
+          title: 'mogger_420',
+          items: [
+            { id: 'd1', kind: 'msg', who: 'mogger_420', text: 'how do i look like that' },
+            { id: 'd2', kind: 'msg', who: 'You', you: true, text: 'start with the morning routine, its all in the discord' },
+            { id: 'd3', kind: 'msg', who: 'mogger_420', text: 'joining rn', react: { emoji: '🔥', phase: 1 } },
+          ],
+        },
+      ],
+    },
+  },
+]
+
 const SLIDES_BY_PLATFORM: Record<string, Slide[]> = {
+  reaLooksmaxxing: REA_SLIDES,
   slack: SLACK_SLIDES,
   instagram: INSTAGRAM_SLIDES,
   discord: DISCORD_SLIDES,

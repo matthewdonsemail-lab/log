@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faAnglesRight, faArrowRight, faComments, faImage, faMicrophone } from '@fortawesome/free-solid-svg-icons'
@@ -10,7 +9,8 @@ import { PLATFORMS } from '../PlatformSuite'
 import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
 import { DitherFade } from './DitherFade'
 import { HowItWorks } from './HowItWorks'
-import { PromptCta, ThreeSteps } from './UseCasesPage'
+import { PlatformScroll } from './platformStories'
+import { MoreUseCases, PromptCta, ThreeSteps } from './UseCasesPage'
 import { REA_LOOKSMAXXING } from './reaLooksmaxxing'
 
 const HAND = { fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }
@@ -51,7 +51,7 @@ function Hero() {
                 Set up log
                 <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
               </RepoLink>
-              <a href="#steps" className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-3 text-[16px] font-bold text-white shadow-[0_3px_0_rgb(0_0_0/0.12)] transition-colors hover:bg-white/25">
+              <a href="#play" className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-3 text-[16px] font-bold text-white shadow-[0_3px_0_rgb(0_0_0/0.12)] transition-colors hover:bg-white/25">
                 See the play
                 <FontAwesomeIcon icon={faAnglesRight} className="text-[13px]" />
               </a>
@@ -91,70 +91,16 @@ function ClavTweet() {
     document.body.appendChild(script)
   }, [])
   return (
-    <section id="exhibitA" className="w-full scroll-mt-24 bg-white px-4 py-16 md:px-6 md:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="flex flex-col gap-5">
-          <p className="font-mono text-[12px] font-bold uppercase tracking-[0.18em] text-[#2A8CFF]">Exhibit A</p>
-          <h2 className="text-title text-[#0D2A4C]">
-            The man. The myth. <span className={STICKER}>The jawline.</span>
-          </h2>
-          <p className="text-lede text-[#0D2A4C]/80">
-            He already has Claude Code in his Instagram DMs. Step 9 of this play, confirmed by the man himself. We didn&apos;t invent moneymaxxing, we just made it run while you mew.
-          </p>
-          <ul className="flex flex-col gap-2 text-2xl text-[#0D2A4C]" style={HAND}>
-            <li>jawline: mogging ✓</li>
-            <li>bank account: also mogging ✓</li>
-            <li>his DMs: Claude Code ✓</li>
-          </ul>
-        </div>
-        <div ref={box} className="flex min-h-[20rem] justify-center rounded-3xl bg-[#F3F8FF] p-4 shadow-[0_0_0_1px_#C9E3FF,0_6px_0_#B5D6FF]">
-          <blockquote className="twitter-tweet" data-dnt="true" data-theme="light">
+    <section aria-label="Clavicular's post" className="w-full bg-white px-4 pb-16 md:px-6">
+      <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 text-center">
+        <h2 className="text-title text-[#0D2A4C]">
+          Even Clavicular has <span className={STICKER}>Claude Code in his DMs.</span>
+        </h2>
+        <div ref={box} className="flex w-full justify-center">
+          <blockquote className="twitter-tweet" data-dnt="true" data-theme="light" data-align="center">
             <a href={TWEET_URL}>A post from @clavicular on X</a>
           </blockquote>
         </div>
-      </div>
-    </section>
-  )
-}
-
-function ElevenSteps() {
-  return (
-    <section id="steps" className="w-full scroll-mt-24 bg-[#F7FAFF] px-4 py-16 md:px-6 md:py-24">
-      <div className="mx-auto mb-12 flex max-w-4xl flex-col items-center gap-4 text-center">
-        <h2 className="text-title text-[#0D2A4C]">
-          The play, <span className={STICKER}>step by step.</span>
-        </h2>
-        <p className="text-lede text-[#0D2A4C]/80">Eleven steps. Two of them are &quot;go viral&quot; and &quot;profit&quot;, which is how you know it&apos;s a real business plan.</p>
-      </div>
-      <ol className="mx-auto grid max-w-6xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {REA_LOOKSMAXXING.beats.map((beat, index) => (
-          <motion.li
-            key={beat.head}
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.35, delay: (index % 3) * 0.06 }}
-            className="flex flex-col gap-3 rounded-3xl bg-white px-6 pb-6 pt-7 shadow-[0_0_0_1px_#C9E3FF,0_5px_0_#B5D6FF]"
-          >
-            <p className="font-mono text-[12px] font-bold uppercase tracking-[0.18em] text-[#2A8CFF]">{beat.kicker}</p>
-            <p className="text-2xl font-black leading-tight tracking-[-0.02em] text-[#0D2A4C]">{beat.head}</p>
-            <p className="text-2xl leading-tight text-[#2A8CFF]" style={HAND}>
-              {beat.sticker}
-            </p>
-            <p className="mt-auto text-[15px] text-[#0D2A4C]/70">{beat.joke}</p>
-            {beat.tool ? (
-              <p className="font-mono text-[12px] text-[#0D2A4C]/55">
-                runs on <span className="font-bold text-[#0D2A4C]">{beat.tool}</span>
-              </p>
-            ) : null}
-          </motion.li>
-        ))}
-      </ol>
-      <div className="mx-auto mt-12 max-w-3xl rounded-3xl bg-[#0D2A4C] px-6 py-8 text-center text-white shadow-[0_6px_0_#061a33]">
-        <p className="text-3xl font-black tracking-[-0.03em]">Your brand might be a bit cooked.</p>
-        <p className="mt-2 text-3xl text-[#7BE3A4]" style={HAND}>
-          But at least you moneymaxxed.
-        </p>
       </div>
     </section>
   )
@@ -179,10 +125,11 @@ export function ReaLooksmaxxingPage() {
         accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
       />
       <Hero />
+      <PlatformScroll platformId="reaLooksmaxxing" ctaHref={LOG_REPO_URL} />
       <ClavTweet />
-      <ElevenSteps />
       <ThreeSteps play={REA_LOOKSMAXXING} platform={{ ...X, label: 'socials' }} icon={faXTwitter} />
       <PromptCta title="Run /rea-looksmaxxing with your agent" ask={REA_LOOKSMAXXING.ask} isCommand={false} />
+      <MoreUseCases current={null} />
       <SiteFooter />
     </div>
   )
