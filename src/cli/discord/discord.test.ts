@@ -172,6 +172,30 @@ describe("log discord session check", () => {
     expect(code).toBe(0);
     expect(sent).toMatchObject([{ action: "chats" }, { action: "send", channel: "1547936265436012645" }]);
   });
+  test("every line after the first goes as a continuation, so the governor doesn't stack its own gap on the line gap", async () => {
+    const wait = discordDeps.wait;
+    discordDeps.wait = async () => {};
+    const sent: Record<string, unknown>[] = [];
+    try {
+      const code = await runCli(["discord", "send", "--account", "discordOne", "--channel", "1547936265436012645", "--text", "first line here\nsecond line here", "--approvedBy", "matt", "--live"], {
+        twenty: fixture(),
+        out: () => {},
+        err: () => {},
+        directDiscord: (_account, spec) => {
+          sent.push(spec);
+          return { answer: { ok: true, event: "sent", messageId: String(sent.length), channelId: String(spec.channel), timestamp: "t" }, refreshed: null };
+        },
+      });
+      expect(code).toBe(0);
+    } finally {
+      discordDeps.wait = wait;
+    }
+    const sends = sent.filter((s) => s.action === "send");
+    expect(sends).toHaveLength(2);
+    expect(sends[0].continuesSend).toBeUndefined();
+    expect(sends[1].continuesSend).toBe(true);
+  });
+
   test("watch prints each message Discord pushes, only the chat asked for, and polls nothing", async () => {
     const err: string[] = [];
     const out: string[] = [];

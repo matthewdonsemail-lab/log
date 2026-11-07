@@ -522,7 +522,8 @@ export const discordSendCommand: Command = {
         if (!same.ok) return refuse("discord send", "sameAsSent", same.refused);
         context.err(`${account.accountName}: --overGate: matt said to send this message over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
       } else {
-        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer) });
+        const roomSource = kind === "channel" ? null : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), 20);
+        const voiced = await gateDeps.gate(context, { platform: "discord", account: account.accountName, to: shown, text, conversationId: target, readRoom: () => (roomSource?.from === "db" ? roomFromRead(shown, kind, { ok: true, messages: chatMessages("discord", account.accountName, target, 20) }) : roomFromRead(shown, kind, direct(account, { action: "read", channel: target, limit: 20, saveAudio: false } as never).answer)) });
         if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }
@@ -543,7 +544,7 @@ export const discordSendCommand: Command = {
               break;
             }
           }
-          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy });
+          const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}) });
           sent.push(run.answer);
           if (!run.answer.ok || run.answer.event !== "sent") break;
           context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
