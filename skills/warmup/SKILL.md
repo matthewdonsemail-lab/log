@@ -1,6 +1,6 @@
 ---
 name: warmup
-description: Record and run the account warm-up (rule 36) - Listaro's five activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log facebook warmup stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.
+description: 'Record and run the account warm-up (rule 36) - Listaro''s five activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log facebook warmup stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.'
 ---
 
 # warmup

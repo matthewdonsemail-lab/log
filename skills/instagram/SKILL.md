@@ -1,6 +1,6 @@
 ---
 name: instagram
-description: Work an Instagram account the way log does it: through the direct-API engine on vendor/instagrapi and the account's one session host, never the browser. Read the threads, read one person in full, draft in matt's voice, gate it, send text or a meme as a photo, and let the realtime watch push every new DM to the agent.
+description: 'Work an Instagram account the way log does it: through the direct-API engine on vendor/instagrapi and the account''s one session host, never the browser. Read the threads, read one person in full, draft in matt''s voice, gate it, send text or a meme as a photo, and let the realtime watch push every new DM to the agent.'
 ---
 
 # instagram

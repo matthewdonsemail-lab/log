@@ -14,11 +14,11 @@ Draft every message from that person's own thread and matt's real replies (`voic
 
 You use a tool, you make content about it, and people message you about it. This page turns those conversations into affiliate income without sounding like a pitch: each person gets a reply about their own thread, an update on what you've built, and the tool with your affiliate credit only where it actually helps them. The other side of the page is the tool companies themselves: getting onto their partner, referral or creator program and booking the call.
 
-Inbound and outbound are on other pages: [dmInbox.md](dmInbox.md) reads who is waiting, [engagerDms.md](engagerDms.md) opens new conversations.
+Inbound and outbound are on other pages: [dmInbox.md](../log-twitter-dm-inbox/SKILL.md) reads who is waiting, [engagerDms.md](../log-twitter-engager-dms/SKILL.md) opens new conversations.
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<affiliate link>`"**. The agent then reads this page and [README.md](README.md) and runs the steps.
+Say: **"go on docs/useCases/twitter/affiliateMarketing.md for `<tool>`, link `<affiliate link>`"**. The agent then reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md) and runs the steps.
 
 ## The steps
 

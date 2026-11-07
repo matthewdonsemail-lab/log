@@ -18,7 +18,7 @@ How the owner asks for it: "follow up with these, not for anything in particular
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/followUps.md"**, and who, with what the owner wants from each. The agent reads this page and [README.md](README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
+Say: **"go on docs/useCases/twitter/followUps.md"**, and who, with what the owner wants from each. The agent reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md), loads `getGuide({ topic: "xSending" })`, and runs the steps.
 
 ## The steps
 

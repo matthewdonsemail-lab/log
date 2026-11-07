@@ -26,6 +26,26 @@ function frontmatterOf(text, file) {
   return { block: match[0], name: field("name"), description: field("description"), summary: field("summary"), dependsOn: field("dependsOn")?.split(/\s+/).filter(Boolean) ?? [] };
 }
 
+const REPO_BLOB = "https://github.com/matthewdonsemail-lab/log/blob/main/";
+
+function linksOf(text, platform, page) {
+  const from = join(useCasesDir, platform);
+  return text.replace(/\]\(([^)\s]+)\)/g, (whole, target) => {
+    if (/^(https?:|mailto:|#)/.test(target)) return whole;
+    const [path, anchor] = target.split("#");
+    const file = resolve(from, path);
+    const hash = anchor ? `#${anchor}` : "";
+    if (!existsSync(file)) {
+      problems.push(`docs/useCases/${platform}/${page}.md links to ${target}, which doesn't exist`);
+      return whole;
+    }
+    const rel = file.slice(root.length + 1).split("\\").join("/");
+    const play = /^docs\/useCases\/([^/]+)\/([^/]+)\.md$/.exec(rel);
+    if (play && play[2] !== "README") return `](../${PLAY_PREFIX}${toKebab(play[1])}-${toKebab(play[2])}/SKILL.md${hash})`;
+    return `](${REPO_BLOB}${rel}${hash})`;
+  });
+}
+
 function playSkillOf(platform, page, text) {
   const id = `${platform}/${page}`;
   const name = `${PLAY_PREFIX}${toKebab(platform)}-${toKebab(page)}`;
@@ -41,12 +61,43 @@ function playSkillOf(platform, page, text) {
     "",
     "Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).",
     "",
-    text.replace(/^# .+\n/, "").replace(/<!-- stepsDiagram[\s\S]*?<!-- \/stepsDiagram -->\n?/, "").trim(),
+    linksOf(text.replace(/^# .+\n/, "").replace(/<!-- stepsDiagram[\s\S]*?<!-- \/stepsDiagram -->\n?/, "").trim(), platform, page),
     "",
   ].join("\n");
   const skill = `---\nname: ${name}\ndescription: ${yamlValue(description)}\nwhen_to_use: ${yamlValue(whenToUse)}\nmetadata:\n  summary: ${yamlValue(title)}\n---\n\n${body}`;
   return { name, description, summary: title, skill };
 }
+
+function plainValueProblem(value) {
+  if (/^['"]/.test(value)) return null;
+  if (/^[[{&*!|>%@`]/.test(value)) return `starts with ${value[0]}`;
+  if (/: /.test(value)) return `has ": " in it`;
+  if (/ #/.test(value)) return `has " #" in it`;
+  return null;
+}
+
+function headerProblems(dir, label) {
+  if (!existsSync(dir)) return;
+  for (const entry of readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory())) {
+    const file = join(dir, entry.name, "SKILL.md");
+    if (!existsSync(file)) {
+      headerProblems(join(dir, entry.name), `${label}/${entry.name}`);
+      continue;
+    }
+    const block = /^---\n([\s\S]*?)\n---\n/.exec(readFileSync(file, "utf8").replace(/\r\n/g, "\n"))?.[1];
+    if (!block) {
+      problems.push(`${label}/${entry.name}/SKILL.md: no frontmatter`);
+      continue;
+    }
+    for (const line of block.split("\n")) {
+      const field = /^(\s*[A-Za-z_]+):\s+(.+)$/.exec(line);
+      const problem = field && plainValueProblem(field[2]);
+      if (problem) problems.push(`${label}/${entry.name}/SKILL.md: ${field[1].trim()} ${problem}, so its header doesn't parse: quote the value`);
+    }
+  }
+}
+
+headerProblems(join(root, "skills"), "skills");
 
 const files = new Map();
 const repoFiles = new Map();

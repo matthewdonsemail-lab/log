@@ -12,13 +12,13 @@ This is the log play `twitter/whoNeedsYou`. Before anything else, call the log M
 
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
-Go through the account's messages and find the people who clearly need something from the owner, or who matter: someone asking for work, a collaboration, a referral, a call; someone well placed (a fund, a big audience, a shared network). It reads what each conversation is about across its whole history, not just the last line, and says how close each one is to money. It sends nothing. What happens next with each person is the owner's call, and the reply itself is [followUps.md](followUps.md).
+Go through the account's messages and find the people who clearly need something from the owner, or who matter: someone asking for work, a collaboration, a referral, a call; someone well placed (a fund, a big audience, a shared network). It reads what each conversation is about across its whole history, not just the last line, and says how close each one is to money. It sends nothing. What happens next with each person is the owner's call, and the reply itself is [followUps.md](../log-twitter-follow-ups/SKILL.md).
 
 How the owner asks for it: "look through my messages and find someone who clearly needs something off me", "summarise everything on my twitter, how likely is it we make money", "who's worth following up".
 
 ## Run it from a fresh context
 
-Say: **"go on docs/useCases/twitter/whoNeedsYou.md"**, and which account. The agent reads this page and [README.md](README.md), loads `getGuide({ topic: "xInbox" })`, and runs the steps.
+Say: **"go on docs/useCases/twitter/whoNeedsYou.md"**, and which account. The agent reads this page and [README.md](https://github.com/matthewdonsemail-lab/log/blob/main/docs/useCases/twitter/README.md), loads `getGuide({ topic: "xInbox" })`, and runs the steps.
 
 ## The steps
 
@@ -32,7 +32,7 @@ Say: **"go on docs/useCases/twitter/whoNeedsYou.md"**, and which account. The ag
 | 5 | What the conversation is about beyond the thread: earlier talk about the same thing anywhere | `search` { query, with: "<handle>" } | the matches, with when |
 | 6 | Who they are: their bio, role and reach, and whether they're in Twenty | treg's X profile read, Twenty | one line per person |
 | 7 | Sort them, each with the line that shows it and its time: **needs something from you** (asked for work, a call, help, an answer), **matters** (role, reach, where they could take you), **money** (a concrete need the owner sells, a budget, a referral), **warm** (friendly, nothing asked yet), **no action** (pitches at the owner, spam) | a table for the owner | every person has a row and a suggested next move |
-| 8 | The owner says what to do with each one, in their own words | the owner | one instruction per person, then [followUps.md](followUps.md) |
+| 8 | The owner says what to do with each one, in their own words | the owner | one instruction per person, then [followUps.md](../log-twitter-follow-ups/SKILL.md) |
 
 ## What to know
 

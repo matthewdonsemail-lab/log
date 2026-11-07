@@ -1,6 +1,6 @@
 ---
 name: layout
-description: Where a new file goes in log-cli (rule 58). Every file sits in a domain folder named for what it does: src/{library}/{domain}/, python/<domain>/, scripts/<domain>/; nothing loose. Use when adding a Python module, a script or a check, or when `bun run check:layout` refuses a commit.
+description: 'Where a new file goes in log-cli (rule 58). Every file sits in a domain folder named for what it does: src/{library}/{domain}/, python/<domain>/, scripts/<domain>/; nothing loose. Use when adding a Python module, a script or a check, or when `bun run check:layout` refuses a commit.'
 ---
 
 # layout

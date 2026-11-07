@@ -759,7 +759,7 @@ AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 80, 81, 88, 94, 104, 105, 133
 
 From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
 
-**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `observability/trace`).
+**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `src/observability/trace`).
 
 **Rule 8.** 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted unless matt asks for it.
 
