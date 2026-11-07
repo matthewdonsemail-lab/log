@@ -5,7 +5,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { roomOf } from "../../../voice/room/index.ts";
 import type { Room } from "../../../voice/room/index.ts";
 import { join } from "node:path";
-import { storedEmbedder, handleOfUserId, ownTextsSince } from "../../../inbox/store/index.ts";
+import { storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
 import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
 import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../../media/voiceNotes/index.ts";
@@ -381,7 +381,7 @@ async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ o
   if (prior && send.conversationId && !incomingSince(send.platform, send.account, send.conversationId, prior.at).length) return { ok: true, line: `voice gate: this exact text passed at ${prior.at} (voice ${prior.voice.toFixed(2)}) and nobody has written in the chat since, so SubQ wasn't asked again` };
   const guide = readGuide();
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
-  const handle = send.handle || (send.platform === "twitter" && send.userId ? handleOfUserId(send.platform, send.account, String(send.userId)) : null);
+  const handle = send.handle || (send.userId ? personOf(send.platform, send.account, String(send.userId)) : null);
   const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
   const held = timedSync("voice.chatContext", () => chatContextOf(send.platform, send.account, who).messages);
   const said = send.said ?? momentAnswered(held);
@@ -391,9 +391,9 @@ async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ o
   const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
   if (reading.pass) {
     recordPass(send.text, send.to, reading.voice);
-    return { ok: true, line: `voice gate: passed for ${send.to} (voice ${reading.voice.toFixed(2)})` };
+    return { ok: true, line: `voice gate: passed for ${handle ? `@${handle}` : send.to} (voice ${reading.voice.toFixed(2)})` };
   }
-  return { ok: false, refused: [`>>> VOICE GATE FAILED for ${send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`), ...rewriteSteps({ to: handle || send.to, said })].join("\n") };
+  return { ok: false, refused: [`>>> VOICE GATE FAILED for ${handle ? `@${handle}` : send.to}, nothing was sent; rewrite it in matt's words and send again:`, ...failedParts(reading).map((p) => `  - ${p}`), ...rewriteSteps({ to: handle || send.to, said })].join("\n") };
 }
 
 export async function gateBrief(send: { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; room?: Room; readRoom?: () => Room | undefined; files?: readonly string[] }): Promise<{ ok: true; line: string } | { ok: false; refused: string }> {
