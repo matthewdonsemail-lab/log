@@ -1,0 +1,16 @@
+{
+  "skills": [
+    {
+      "name": "rea-looksmaxxing",
+      "description": "Run the /rea-looksmaxxing play - reverse engineer how a creator gets paid (Clavicular is the worked example) from their most viral clips, then post that formula through your own accounts and funnel everyone who replies or DMs into your offer, in your voice. Use when someone says /rea-looksmaxxing, \"how does <creator> get paid\", \"moneymaxx like <creator>\", or wants a creator's viral formula turned into posts, replies and DMs. Builds on treg's web-access skill for the social data and on log's MCP tools for the accounts.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Finds a creator's most viral clips and the formula behind them, then posts it through your accounts and funnels the replies and DMs into your offer, in your voice.",
+      "dependsOn": [
+        "treg.to/treg",
+        "treg.to/web-access"
+      ]
+    }
+  ]
+}

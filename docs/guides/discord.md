@@ -12,6 +12,7 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|---|
 | `getGuide({ useCase: "discord/groupChatRead" })` | Reading a Discord group chat without Twenty | "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>" |
 | `getGuide({ useCase: "discord/memeReply" })` | Replying with a meme in a Discord chat | "respond with memes in the <chat>", "drop a meme in <chat> about that", "read <chat> and meme it" |
+| `getGuide({ useCase: "inbox/reaLooksmaxxing" })` | /rea-looksmaxxing: moneymaxx like a creator | "/rea-looksmaxxing how clavicular gets paid", "moneymaxx like <creator>", "how does <creator> get paid" |
 | `getGuide({ useCase: "inbox/reactions" })` | Reacting to a message | "react to that", "heart his message", "put a 😂 on what she said", "send a reaction to <person>" |
 | `getGuide({ useCase: "inbox/voiceNote" })` | Sending a voice note | "send <person> a voice note saying …", "voice note him that …", "send a vn to the group saying …" |
 | `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
@@ -43,7 +44,7 @@ log discord session check --account <accountName> [--json]
 Checks that Discord still accepts the account's saved session, on the direct-API engine (no browser). Sends nothing.
 Discord's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "inbox/reaLooksmaxxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -66,7 +67,7 @@ log discord read --account <accountName> --channel <channelId|chat name> [--limi
 Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "inbox/reactions" }), getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "twitter/collabMaxxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -101,7 +102,7 @@ log discord send --account <accountName> --channel <channelId|chat name> --text 
 Sends one message to a DM, a group DM (by its id or its name, from log discord chats) or a server channel (by its id), on the direct-API engine (no browser).
 A draft written on several lines goes out one message per line, wherever it is sent (matt, 2026-10-28: stop sending as one). A one-line draft is split the way matt writes in that chat, from his own messages there (log voice index): how many he sends in a row and how many words each runs to, cut at the draft's own line breaks or punctuation, else the nearest space, and sent with his usual gap between them; a chat where he mostly sends one gets one. --asOne always sends one. Without --live it is a dry run and Discord is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). Discord's answer decides: a message id is sent, none is a drop. The account's governor counts it as a write. Before anything is sent, dry run or --live, the copy is read for what AI chat interfaces leave in text (rule 111): hidden characters, odd spaces or pasted Claude HTML refuse it with aiArtifacts, and the reading is printed and kept in --json. --overGate sends it over the voice gate's refusal when matt said to send that exact message: the gate's SubQ read is skipped and the AI artifact check still runs (rule 152).
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "twitter/collabMaxxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "twitter/collabMaxxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "discord" }) (A Discord account: its session, chats, reading, the live gateway watch, sending and deleting its own messages).
 AGENTS.md (log://agents): rules 8, 13, 63, 64, 73, 83, 90, 91, 94, 122, 130, 133, 134, 135, 137, 138, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

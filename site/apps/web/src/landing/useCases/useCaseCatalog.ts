@@ -243,6 +243,16 @@ export const USE_CASES: UseCase[] = [
     readsOnly: false,
   },
   {
+    page: 'inbox/reaLooksmaxxing',
+    platform: 'everyChat',
+    title: 'Moneymaxx like a creator',
+    does: 'Finds a creator’s most viral clips through treg, decodes the formula, posts it through your accounts and funnels everyone who replies into your offer.',
+    asks: ['/rea-looksmaxxing how clavicular gets paid', 'moneymaxx like <creator>'],
+    say: 'go on docs/useCases/inbox/reaLooksmaxxing.md for <creator> and <offer>',
+    sends: 'Posts, replies and DMs, once the voice check passes',
+    readsOnly: false,
+  },
+  {
     page: 'inbox/voiceNote',
     platform: 'everyChat',
     title: 'Send a voice note',

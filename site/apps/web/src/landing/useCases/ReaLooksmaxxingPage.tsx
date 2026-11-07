@@ -128,7 +128,7 @@ export function ReaLooksmaxxingPage() {
       <PlatformScroll platformId="reaLooksmaxxing" ctaHref={LOG_REPO_URL} />
       <ClavTweet />
       <ThreeSteps play={REA_LOOKSMAXXING} platform={{ ...X, label: 'socials' }} icon={faXTwitter} />
-      <PromptCta title="Run /rea-looksmaxxing with your agent" ask={REA_LOOKSMAXXING.ask} isCommand={false} />
+      <PromptCta title="Run /rea-looksmaxxing with your agent" ask={REA_LOOKSMAXXING.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh -s -- --skills rea-looksmaxxing" />
       <MoreUseCases current={null} />
       <SiteFooter />
     </div>

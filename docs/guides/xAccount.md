@@ -10,6 +10,7 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
+| `getGuide({ useCase: "inbox/reaLooksmaxxing" })` | /rea-looksmaxxing: moneymaxx like a creator | "/rea-looksmaxxing how clavicular gets paid", "moneymaxx like <creator>", "how does <creator> get paid" |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
 | `getGuide({ useCase: "twitter/engagementReplies" })` | Answering the people who engaged with your posts | see the page |
 | `getGuide({ useCase: "twitter/engagerDms" })` | DMing the people who liked or reposted your post | see the page |
@@ -41,7 +42,7 @@ log twitter session check --account <accountName> [--json]
 Checks that X still accepts the account's saved session, on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
 X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/engagementReplies" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followers" }), getGuide({ useCase: "twitter/notifications" }), getGuide({ useCase: "twitter/recruiting" }), getGuide({ useCase: "twitter/topicReplies" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/engagementReplies" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/followers" }), getGuide({ useCase: "twitter/notifications" }), getGuide({ useCase: "twitter/recruiting" }), getGuide({ useCase: "twitter/topicReplies" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, who follows whom, and its notifications (who liked, reposted, replied to, quoted or followed it)).
 AGENTS.md (log://agents): rules 13, 21, 26, 63, 64, 73, 80, 81, 104, 105, 113, 150, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -89,7 +90,7 @@ Reads the account's X notifications on the direct-API engine through its one X s
 Without --full it reads only what is new: the newest page, then older pages until it meets rows already kept (the first run reads up to 5 pages). --full then pages back through the history from where the last --full stopped, as far as X gives, at most --pages pages a run (default 25). The read is one engine call (rule 104: one call per account at a time); its pages are 40 notifications, 4 to 11 s apart, each through the account's governor; a 429 or a governor stop ends the read and keeps what came.
 --stored answers from what is kept, calling nothing. --type, --since, --post and --limit (default 50 shown, at most 5000) narrow what is shown; --json gives the rows, counts by kind and the people who engaged most.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/managerMaxxing" }), getGuide({ useCase: "twitter/notifications" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/reaLooksmaxxing" }), getGuide({ useCase: "twitter/engagerDms" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/managerMaxxing" }), getGuide({ useCase: "twitter/notifications" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xAccount" }) (An X account's session: saving and checking its cookies, who follows whom, and its notifications (who liked, reposted, replied to, quoted or followed it)).
 AGENTS.md (log://agents): rules 13, 26, 63, 64, 73, 80, 81, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

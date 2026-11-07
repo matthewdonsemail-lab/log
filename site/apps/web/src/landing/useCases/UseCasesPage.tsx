@@ -1054,10 +1054,10 @@ function Plays({ plays, title }: { plays: UseCase[]; title: string }) {
   )
 }
 
-export function PromptCta({ title, ask, isCommand }: { title: string; ask: string; isCommand: boolean }) {
+export function PromptCta({ title, ask, isCommand, install = INSTALL }: { title: string; ask: string; isCommand: boolean; install?: string }) {
   const [agent, setAgent] = useState(AGENTS[0])
   const [copied, setCopied] = useState(false)
-  const prompt = [INSTALL, agent.line, isCommand ? `then: ${ask}` : `then say: "${ask}"`].join('\n')
+  const prompt = [install, agent.line, isCommand ? `then: ${ask}` : `then say: "${ask}"`].join('\n')
   const copy = () => {
     navigator.clipboard
       ?.writeText(prompt)
@@ -1090,7 +1090,7 @@ export function PromptCta({ title, ask, isCommand }: { title: string; ask: strin
         </div>
         <div className="w-full max-w-3xl rounded-2xl bg-[#0D2A4C] p-5 text-left font-mono text-[13px] shadow-[0_4px_0_#061a33] sm:text-[14px]">
           <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-white/50">Paste this into your terminal</p>
-          <p className="[overflow-wrap:anywhere]"><span className="text-[#5CA7FF]">$ </span>{INSTALL}</p>
+          <p className="[overflow-wrap:anywhere]"><span className="text-[#5CA7FF]">$ </span>{install}</p>
           <p className="mt-1 [overflow-wrap:anywhere]"><span className="text-[#5CA7FF]">$ </span>{agent.line}</p>
           {isCommand ? (
             <>

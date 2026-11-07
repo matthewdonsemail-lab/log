@@ -38,6 +38,9 @@ pre-commit:
     siteDocs:
       run: bun run check:siteDocs
 
+    siteSkills:
+      run: bun run check:siteSkills
+
     useCases:
       run: bun run check:useCases
 
@@ -84,6 +87,9 @@ pre-push:
 
     siteDocs:
       run: bun run check:siteDocs
+
+    siteSkills:
+      run: bun run check:siteSkills
 
     specs:
       run: bun run check:specs

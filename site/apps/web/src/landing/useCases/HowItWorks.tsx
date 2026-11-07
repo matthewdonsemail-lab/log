@@ -331,7 +331,7 @@ export function HowItWorks({
   return (
     <div ref={ref} className="mx-auto mt-24 flex w-full max-w-6xl flex-col items-center text-left">
       <h2 className="text-title text-center text-[#0D2A4C]">
-        Ask your agent once.
+        <span className="text-white">Ask your agent once.</span>
         <br />
         <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">log runs the whole play.</span>
       </h2>
