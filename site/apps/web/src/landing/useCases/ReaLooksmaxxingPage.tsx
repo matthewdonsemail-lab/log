@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXTwitter } from '@fortawesome/free-brands-svg-icons'
+import { faDiscord, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faAnglesRight, faArrowRight, faComments, faImage, faMicrophone } from '@fortawesome/free-solid-svg-icons'
 import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
@@ -21,6 +21,7 @@ const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-non
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X = PLATFORMS.find((platform) => platform.id === 'x')!
 const ICONS = { platform: faXTwitter, meme: faImage, voice: faMicrophone, react: faComments, voiceGate: faComments }
+const iconOfTool = (tool: string, kind: keyof typeof ICONS) => (tool.startsWith('discord') ? faDiscord : ICONS[kind])
 
 const CHIP_LOGOS = {
   treg: { src: '/logos/stack/treg.svg', mask: true },
@@ -92,9 +93,9 @@ function Hero() {
           ask={play.ask}
           done={play.how.done}
           title={play.name}
-          steps={play.how.steps.map((moment) => ({ icon: ICONS[moment.kind], label: moment.label, tool: moment.tool }))}
-          platformLabel={X.label}
-          platformIcon={X.icon}
+          steps={play.how.steps.map((moment) => ({ icon: iconOfTool(moment.tool, moment.kind), label: moment.label, tool: moment.tool }))}
+          platformLabel="Discord"
+          platformIcon={faDiscord}
           rows={play.how.rows}
         />
       </div>
@@ -165,7 +166,7 @@ export function ReaLooksmaxxingPage() {
       />
       <PlatformMoney
         platformId="reaLooksmaxxing"
-        platformLabel="X"
+        platformLabel="Discord"
         ctaHref={LOG_REPO_URL}
         embed={<ClavTweet />}
         title={
@@ -179,7 +180,7 @@ export function ReaLooksmaxxingPage() {
           </>
         }
       />
-      <ThreeSteps play={REA_LOOKSMAXXING} platform={{ ...X, label: 'socials' }} icon={faXTwitter} />
+      <ThreeSteps play={REA_LOOKSMAXXING} platform={{ ...X, label: 'socials' }} icon={faDiscord} />
       <PromptCta title="Run /rea-looksmaxxing with your agent" ask={REA_LOOKSMAXXING.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh -s -- --skills rea-looksmaxxing" />
       <MoreUseCases current={null} />
       <SiteFooter />

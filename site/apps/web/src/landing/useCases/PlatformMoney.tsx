@@ -114,12 +114,12 @@ const WALLS: Record<string, Wall> = {
     ],
   },
   reaLooksmaxxing: {
-    icon: faXTwitter,
-    where: 'X',
-    card: 'bg-white ring-1 ring-[#EFF3F4]',
-    name: 'text-[#0F1419]',
-    text: 'text-[#0F1419]',
-    muted: 'text-[#536471]',
+    icon: faDiscord,
+    where: 'Discord DMs',
+    card: 'bg-white ring-1 ring-[#E3E5E8]',
+    name: 'text-[#060607]',
+    text: 'text-[#313338]',
+    muted: 'text-[#5C5E66]',
     threads: [
       { who: 'mogger_420', text: 'how do i look like that' },
       { who: 'gymcel_99', text: 'what does he eat in a day bro' },
