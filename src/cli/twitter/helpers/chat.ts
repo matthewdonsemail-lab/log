@@ -114,7 +114,7 @@ export const chatCommand: Command = {
 };
 
 export function isChatMessage(event: XChatLiveEvent): boolean {
-  return event.type !== "socket" && Boolean(event.conversationId);
+  return (event.type === "message" || event.type === undefined) && Boolean(event.conversationId) && typeof event.text === "string" && event.text.trim() !== "";
 }
 
 export function liveLine(event: XChatLiveEvent): string {
@@ -125,7 +125,7 @@ export function liveLine(event: XChatLiveEvent): string {
 }
 
 export function inboxMessageOf(account: string, event: XChatLiveEvent, now: Date) {
-  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString() };
+  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString(), ...(event.openedLate ? { openedLate: event.openedLate } : {}) };
 }
 
 async function watchChat(context: CommandContext, argv: string[]): Promise<CommandResult> {

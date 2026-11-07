@@ -73,6 +73,7 @@ export interface XChatLiveEvent {
   from?: string | null
   box?: string
   encrypted?: boolean
+  openedLate?: { tries: number; waitedSeconds: number; firstError: string }
 }
 
 export interface TwitterFollow {

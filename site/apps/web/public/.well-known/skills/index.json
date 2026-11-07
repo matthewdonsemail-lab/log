@@ -235,6 +235,14 @@
         "SKILL.md"
       ],
       "summary": "Finding who needs something from you, or who matters"
+    },
+    {
+      "name": "log-web-competitor-traffic",
+      "description": "Competitor traffic: finding how to rank on your competitors' names. A log play (docs/useCases/web/competitorTraffic.md): Work out how a tool gets search and AI-search traffic from its competitors: what each competitor ranks for, who pays affiliate commission, what the people in the owner's DMs could link from, and what forums like BlackHatWorld say works this month. Then rank what to do first with a SubQ matrix and write it up. It reads and researches only. It publishes nothing and contacts nobody.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Competitor traffic: finding how to rank on your competitors' names"
     }
   ]
 }

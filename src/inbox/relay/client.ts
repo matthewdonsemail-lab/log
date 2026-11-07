@@ -145,7 +145,7 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
       const drop = socketChange(event)
       if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
       if (drop === 'open') void catching.run()
-      const type = String(event.type ?? event.kind ?? 'unknown')
+      const type = pushedTypeOf(event)
       const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
       relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
       if (stored) markStage(stored.eventId, 'relayed')
@@ -173,6 +173,12 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
     replaced.push(account)
   }
   return replaced
+}
+
+export function pushedTypeOf(event: Record<string, unknown>): string {
+  const named = event.type ?? event.kind
+  if (named) return String(named)
+  return typeof event.text === 'string' && (event.conversationId || event.channelId || event.thread) ? 'message' : 'unknown'
 }
 
 export function socketChange(event: Record<string, unknown>): 'dropped' | 'open' | null {
