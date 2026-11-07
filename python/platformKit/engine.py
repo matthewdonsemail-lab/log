@@ -54,7 +54,7 @@ def redact(text: Any, cookies: dict[str, str]) -> str:
     return out
 
 
-def governor_for(state_root: str, account: str, writes_per_day: int | None = None) -> Any:
+def governor_for(state_root: str, account: str, writes_per_day: int | None = None, continues_send: bool = False) -> Any:
     from dataclasses import replace
 
     from governor import GovernorConfig, RequestGovernor
@@ -64,6 +64,8 @@ def governor_for(state_root: str, account: str, writes_per_day: int | None = Non
     config = GovernorConfig.from_env()
     if writes_per_day and "FBK_GOVERNOR_MUTATION_DAILY" not in os.environ:
         config = replace(config, mutation_daily_cap=int(writes_per_day))
+    if continues_send:
+        config = replace(config, mean_gap_s=config.min_gap_s)
     return RequestGovernor(config=config, state_path=folder / "governor_state.json")
 
 
@@ -84,7 +86,7 @@ async def run(spec: dict[str, Any], actions: dict[str, Action], writes: tuple[st
     cookies = normalize_cookies(json.loads(Path(spec["cookiesPath"]).read_text(encoding="utf-8")))
     if spec.get("storagePath"):
         cookies.update({str(k): str(v) for k, v in json.loads(Path(spec["storagePath"]).read_text(encoding="utf-8")).items() if v})
-    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"))
+    governor = governor_for(spec["stateRoot"], spec["account"], spec.get("writesPerDay"), continues_send=action in writes and spec.get("continuesSend") is True)
     try:
         governor.before_request(is_mutation=action in writes, quiet=True)
     except GovernorBlockedError as e:

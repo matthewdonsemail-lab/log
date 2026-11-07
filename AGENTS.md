@@ -2442,6 +2442,34 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `bun scripts/inbox/benchDbRead.ts` measures it. Spec:
     `docs/specs/fullContext.md` (REQ-CONTEXT-11).
 
+161. 2026-11-07 · matt: "why isnt it faster ... its just sitting there on
+    1m 23s", then "Yes, fix all three". A two-line Discord send to Luke took
+    46 s, measured from the live log:
+    - the gate read the chat from Discord for its picture of the room (3 s);
+    - SubQ gated a draft that had just passed (3 s);
+    - the second line went out 33 s after the first, because the send's
+      8 s line gap was followed by the account's governor drawing its own
+      lognormal gap (mean 12 s, long tail) before the same request.
+
+    Now:
+    - **The room comes from the .db.** On a Discord DM or group whose .db is
+      current (rule 160), the gate's room is built from `chatMessages`, not
+      read from Discord.
+    - **A fresh pass isn't asked for again.** A pass is kept by the draft's
+      exact text (`recordPass`, `src/voice/passes`), from `log voice` or a
+      send. The send gate reuses it (`recentPass`) when it is under 10
+      minutes old and nothing has come in on the chat since. The sameness
+      check still runs every time.
+    - **The line gap is the gap.** Every line after the first goes as a
+      continuation (`continuesSend`). For it, the governor
+      (`python/platformKit/engine.py`) draws at its 4 s floor instead of
+      its 12 s mean. Its floor, hourly, daily and write caps, its cooldown
+      and rule 94's stop on any refusal stay exactly as they are, and the
+      first line keeps the full gap.
+
+    Spec: `docs/specs/messageSplit.md` (REQ-SPLIT-09),
+    `docs/specs/voiceGate.md` (REQ-VOICE-18).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 449 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 451 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -392,6 +392,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-12** The gate inside a send reads matt's real replies in that chat
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
+- **REQ-VOICE-18** A draft that just passed is not sent to SubQ again
 - **REQ-VOICE-17** A refused draft says where to look before it is rewritten
 - **REQ-VOICE-16** No two messages read alike
 - **REQ-VOICE-15** Every send and voice note is gated against the room it goes to
@@ -424,6 +425,7 @@ How a message to a person goes out: a draft on several lines goes out one messag
 - **REQ-SPLIT-04** The parts go out with his usual gap
 - **REQ-SPLIT-05** Every chat splits the same way
 - **REQ-SPLIT-06** A part that is not sent stops the rest
+- **REQ-SPLIT-09** The line gap is the gap, and the governor doesn't stack its own on it
 - **REQ-SPLIT-08** A send stops the moment they write back
 - **REQ-SPLIT-07** A first message is gated whole as the opener
 

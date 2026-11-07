@@ -100,6 +100,12 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-18: A draft that just passed is not sent to SubQ again
+
+When `gateSend` or the `log voice` command passes a draft, it records the pass by the draft's text (`recordPass`, `src/voice/passes`). `gateSend` then answers a send of the same text as passed without asking SubQ (`recentPass`) when that pass is under `PASS_REUSE_MS` (10 minutes) old and nothing has come in on the chat since (`incomingSince`). The sameness check (REQ-VOICE-16) still runs first. On a Discord DM or group whose .db is current (`readSourceFor`), the room the gate reads comes from `chatMessages`, not a read from Discord. matt, 2026-11-07. Rule 161.
+
+Checked by: code and SubQ
+
 ### REQ-VOICE-17: A refused draft says where to look before it is rewritten
 
 When `gateSend` in `src/cli/twitter/helpers/voice.ts` refuses a draft with `voiceGateFailed`, or `sameAsSent` refuses it, the refusal ends with `rewriteSteps`: call `voice` with the person (and what they said) and no text, to read their thread and matt's real replies to things like it; call `search` for what matt has said on it before; then write from those, unlike anything sent today. matt, 2026-11-07: "you don't even try to look ... you don't try to search". Rule 158.

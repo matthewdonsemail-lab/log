@@ -44,6 +44,12 @@ When X or Discord does not answer a part as sent, the parts after it are not sen
 
 Checked by: code and SubQ
 
+### REQ-SPLIT-09: The line gap is the gap, and the governor doesn't stack its own on it
+
+The discord send loop passes `continuesSend: true` with every part after the first. In `run` in `python/platformKit/engine.py`, a write with `continuesSend` gets its governor from `governor_for(..., continues_send=True)`, whose `mean_gap_s` is the config's `min_gap_s`. So the governor still enforces its floor, its hourly, daily and write caps and its cooldown, but draws no second random gap on top of the line gap the send already waited. The first part, and any send that isn't a continuation, keeps the governor's full lognormal gap. matt, 2026-11-07: a two-line send took 46 s, the second line 33 s after the first. Rule 161.
+
+Checked by: code and SubQ
+
 ### REQ-SPLIT-08: A send stops the moment they write back
 
 Before each part after the first, the send reads what the platform's push channel put in the inbox for that chat since the send began. If the other person wrote, the parts left are not sent, and the answer leads with `>>> INTERRUPTED`: what they said and the parts not sent. This holds for an X dm sent directly or by the queue (matched in either inbox), a Discord message, a Slack message and an Instagram message. Rule 130.
