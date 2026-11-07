@@ -45,8 +45,8 @@ export const messageSplit = {
     'REQ-SPLIT-06': [{ kind: 'symbol', file: SEND, name: 'sendDmParts' }],
     'REQ-SPLIT-07': [{ kind: 'symbol', file: 'src/twitter/copy/voice/client.ts', name: 'readVoice' }],
     'REQ-SPLIT-09': [
-      { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'continuesSend: true' },
-      { kind: 'string', file: 'python/platformKit/engine.py', includes: 'continues_send' },
+      { kind: 'uses', file: 'src/cli/discord/index.ts', name: 'continuesSend' },
+      { kind: 'uses', file: 'python/platformKit/engine.py', name: 'continues_send' },
     ],
     'REQ-SPLIT-08': [
       { kind: 'symbol', file: INBOX, name: 'incomingSince' },

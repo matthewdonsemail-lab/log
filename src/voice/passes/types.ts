@@ -1,4 +1,4 @@
-export const PASS_REUSE_MS = 10 * 60 * 1000
+export const PASS_REUSE_MS = 600_000
 
 export const PASSES_KEPT = 200
 

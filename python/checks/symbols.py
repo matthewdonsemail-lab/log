@@ -32,7 +32,8 @@ def symbols_of(source):
                 if isinstance(target, ast.Name) and node.value is not None:
                     found.setdefault(target.id, {"kind": "value", "line": node.lineno, "end": node.end_lineno, "value": literal(node.value), "valueStart": [node.value.lineno, node.value.col_offset], "valueEnd": [node.value.end_lineno, node.value.end_col_offset]})
     strings = sorted({n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str) and len(n.value) < 200})
-    return {"symbols": found, "strings": strings}
+    names = sorted({n.id for n in ast.walk(tree) if isinstance(n, ast.Name)} | {n.arg for n in ast.walk(tree) if isinstance(n, (ast.arg, ast.keyword)) and n.arg} | {n.attr for n in ast.walk(tree) if isinstance(n, ast.Attribute)})
+    return {"symbols": found, "strings": strings, "names": names}
 
 
 if __name__ == "__main__":
