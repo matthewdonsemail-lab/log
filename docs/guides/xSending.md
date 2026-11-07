@@ -402,7 +402,7 @@ Like one post on X, on the direct-API engine (no browser, no proxy: X accounts c
 Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's favorite answer decides: Done (or already liked, code 139) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole. What acts on X is `twitterLikeLive`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }), getGuide({ useCase: "twitter/replyGuyFunnel" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -416,7 +416,7 @@ Like one post on X, on the direct-API engine (no browser, no proxy: X accounts c
 Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's favorite answer decides: Done (or already liked, code 139) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }), getGuide({ useCase: "twitter/nicheMapRegion" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }), getGuide({ useCase: "twitter/nicheMapRegion" }), getGuide({ useCase: "twitter/replyGuyFunnel" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
@@ -520,7 +520,7 @@ Follow one person on X, on the direct-API engine (no browser, no proxy: X accoun
 Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (240 a day). --force goes past the governor's pause and caps for this one call, only when matt asked (rule 86): X still answers, and its answer still decides.
 X's follow answer decides: the followed user back is sent, already following is sent too. Follow before a cold dm: nobody gets a cold message from an account that doesn't follow them. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }), getGuide({ useCase: "twitter/nicheMapRegion" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/networkMaxing" }), getGuide({ useCase: "twitter/nicheMapRegion" }), getGuide({ useCase: "twitter/replyGuyFunnel" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "xSending" }) (Sending as an X account: original posts with a video or images, dms one message per line, replies, quotes, likes, follows, queues, and matt's voice gate before every send).
 AGENTS.md (log://agents): rules 8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
