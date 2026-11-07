@@ -1,23 +1,23 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { waitCaughtUp } from '../catchUp/index'
 import { readSession, sessionLive } from '../relay/index'
-import { db, positionsOf, recordPosition } from '../store/index'
-import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS, READ_CATCH_UP_MS } from './types'
+import { behindOf, db, positionsOf, recordPosition } from '../store/index'
+import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS } from './types'
 import type { DbMessage, ReadSource, ReadSourceDeps } from './types'
 import type { MessageAttachment } from '../catchUp/types'
 
 export const readSourceDeps: ReadSourceDeps = {
   live: (platform, account) => sessionLive(readSession(platform, account)),
-  waitCaughtUp: (platform, account, options) => waitCaughtUp(platform, account, options),
+  behind: (platform, account) => behindOf(platform, account),
   backfilledAt: (platform, account, chatKey) => positionsOf(platform, account)[`${BACKFILL_SCOPE}${chatKey}`] ?? null,
 }
 
 export async function readSourceFor(platform: string, account: string, chatKey: string, have: number, limit: number, deps: ReadSourceDeps = readSourceDeps): Promise<ReadSource> {
   if (!deps.live(platform, account)) return { from: 'platform', reason: 'noLiveOwner' }
-  const caught = await deps.waitCaughtUp(platform, account, { timeoutMs: READ_CATCH_UP_MS })
-  if (!caught.ok) return { from: 'refused', refused: caught.refused }
+  const gap = deps.behind(platform, account)
+  if (gap?.status === 'refused') return { from: 'refused', refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so nothing is read around it; nothing resumes on it until matt says so (rule 94)` }
+  if (gap) return { from: 'platform', reason: 'catchingUp' }
   if (deps.backfilledAt(platform, account, chatKey)) return { from: 'db', reason: 'backfilled' }
   if (have >= limit) return { from: 'db', reason: 'enoughInDb' }
   return { from: 'platform', reason: 'notBackfilled' }
@@ -42,7 +42,13 @@ function attachmentsOf(value: unknown): MessageAttachment[] | undefined {
 }
 
 export function mediaNotSaved(messages: readonly DbMessage[]): boolean {
-  return messages.some((m) => (!m.text && m.attachments === undefined) || (m.attachments ?? []).some((a) => isVisualAttachment(a) && !a.path && !a.error))
+  return messages.some((m) => (!m.text && m.attachments === undefined) || (m.attachments ?? []).some((a) => (isVisualAttachment(a) || isTextAttachment(a)) && !a.path && !a.error))
+}
+
+export function isTextAttachment(a: MessageAttachment): boolean {
+  const type = (a.type ?? '').toLowerCase()
+  if (type.startsWith('image/') || type.startsWith('video/') || type.startsWith('audio/')) return false
+  return /\.(txt|tsv|csv|md|json)$/i.test(a.name)
 }
 
 export function isVisualAttachment(a: MessageAttachment): boolean {
@@ -74,7 +80,7 @@ export function userIdOfHandle(platform: string, account: string, handle: string
 
 export function sourceLine(source: ReadSource, platform: string, account: string, ms: number): string {
   if (source.from === 'db') return `${account}: answered from the .db in ${Math.round(ms)} ms (${source.reason === 'backfilled' ? 'this chat was backfilled once and its owner keeps it current' : 'the .db already holds enough of it'}), nothing read from ${platform}`
-  if (source.from === 'platform') return `${account}: read from ${platform} (${{ noLiveOwner: `no live ${platform} owner is keeping the .db current`, notBackfilled: 'this chat is read once to backfill the .db; after this it answers from the .db', serverChannel: 'a server channel, which the watcher only keeps mentions and replies from', askedFull: 'a full read was asked for', mediaNotSaved: 'it holds an image or file the .db has no saved copy of' }[source.reason]})`
+  if (source.from === 'platform') return `${account}: read from ${platform} (${{ noLiveOwner: `no live ${platform} owner is keeping the .db current`, notBackfilled: 'this chat is read once to backfill the .db; after this it answers from the .db', serverChannel: 'a server channel, which the watcher only keeps mentions and replies from', askedFull: 'a full read was asked for', catchingUp: 'its owner is still catching up, so this one chat is read straight from the platform instead of waiting', mediaNotSaved: 'it holds an image or file the .db has no saved copy of' }[source.reason]})`
   return source.refused
 }
 

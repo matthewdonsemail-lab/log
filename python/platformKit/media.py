@@ -12,6 +12,12 @@ SLACK_AUDIO_SUBTYPES = ("slack_audio",)
 VISUAL_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".mp4", ".mov", ".m4v", ".mkv")
 VISUAL_TYPES = ("image/", "video/")
 VISUAL_MAX_BYTES = 50 * 1024 * 1024
+TEXT_SUFFIXES = (".txt", ".tsv", ".csv", ".md", ".json")
+TEXT_MAX_BYTES = 2 * 1024 * 1024
+TEXT_PREVIEW_LINES = 200
+TEXT_PREVIEW_CHARS = 20000
+IMAGE_SIGNATURES = ((b"\x89PNG\r\n\x1a\n", 0), (b"\xff\xd8\xff", 0), (b"GIF87a", 0), (b"GIF89a", 0), (b"BM", 0))
+VIDEO_SIGNATURES = ((b"ftyp", 4), (b"\x1a\x45\xdf\xa3", 0))
 
 
 def is_audio(attachment: dict[str, Any], message_flags: int | None = None) -> bool:
@@ -63,3 +69,55 @@ def voice_note_path(given: Any, suffix: str) -> Path | None:
     if path.suffix.lower() != suffix or not path.is_file() or not path.stat().st_size:
         return None
     return path if voice_notes_root() in path.parents else None
+
+
+def is_text_file(attachment: dict[str, Any]) -> bool:
+    kind = str(attachment.get("type") or "").lower()
+    name = str(attachment.get("name") or "").lower()
+    if any(kind.startswith(t) for t in ("image/", "video/", "audio/")):
+        return False
+    return name.endswith(TEXT_SUFFIXES) and (not kind or kind.startswith("text/") or kind.startswith("application/json"))
+
+
+def starts_with(head: bytes, signatures: tuple[tuple[bytes, int], ...]) -> bool:
+    return any(head[at:at + len(sig)] == sig for sig, at in signatures)
+
+
+def visual_problem(path: Path) -> str | None:
+    head = path.read_bytes()[:16]
+    if starts_with(head, IMAGE_SIGNATURES) or (head[:4] == b"RIFF" and head[8:12] == b"WEBP") or starts_with(head, VIDEO_SIGNATURES):
+        return None
+    return "its bytes aren't an image or video, whatever its name says"
+
+
+def text_problem(path: Path) -> str | None:
+    if path.stat().st_size > TEXT_MAX_BYTES:
+        return f"the file is over the {TEXT_MAX_BYTES // 1024 // 1024} MB a text file may be"
+    raw = path.read_bytes()
+    if b"\x00" in raw:
+        return "it has binary bytes in it, so it isn't plain text"
+    try:
+        raw.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return "it isn't plain UTF-8 text"
+    return None
+
+
+def checked(kept: dict[str, Any], problem_of: Any) -> dict[str, Any]:
+    path = Path(str(kept.get("path") or ""))
+    if not kept.get("path") or not path.is_file():
+        return kept
+    problem = problem_of(path)
+    if not problem:
+        return kept
+    path.unlink()
+    return {k: v for k, v in kept.items() if k != "path"} | {"error": f"deleted: {problem}"}
+
+
+def text_preview(path: Path) -> str:
+    text = path.read_bytes().decode("utf-8-sig", errors="replace")
+    return "\n".join(text.splitlines()[:TEXT_PREVIEW_LINES])[:TEXT_PREVIEW_CHARS]
+
+
+def not_opened(attachment: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in attachment.items() if k != "url"} | {"error": "not a type log opens, so it wasn't downloaded"}

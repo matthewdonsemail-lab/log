@@ -47,6 +47,14 @@ export const mediaDescriber = {
       { kind: 'symbol', file: 'src/inbox/dbRead/client.ts', name: 'mediaNotSaved' },
       { kind: 'symbol', file: 'src/inbox/store/client.ts', name: 'addToPayload' },
     ],
+    'REQ-MEDIA-08': [
+      { kind: 'symbol', file: 'python/platformKit/media.py', name: 'is_text_file' },
+      { kind: 'symbol', file: 'python/platformKit/media.py', name: 'text_problem' },
+      { kind: 'symbol', file: 'python/platformKit/media.py', name: 'visual_problem' },
+      { kind: 'symbol', file: 'python/platformKit/media.py', name: 'not_opened' },
+      { kind: 'symbol', file: 'python/discordApi/engine.py', name: 'saved_files' },
+      { kind: 'symbol', file: 'src/cli/discord/index.ts', name: 'UNTRUSTED_FILE_LINE' },
+    ],
     'REQ-MEDIA-05': [
       { kind: 'symbol', file: CLIENT, name: 'mediaLine' },
       { kind: 'symbol', file: CONTEXT, name: 'chatContextOf' },
@@ -60,6 +68,7 @@ export const mediaDescriber = {
     'REQ-MEDIA-05': noul('Does chatContextOf attach mediaLine of every media row of each message as mediaLines, does mediaLine give the description once described and a not described yet line with the detail otherwise, and does the inbox messageOf add the same lines to the text it shows?'),
     'REQ-MEDIA-06': noul('Does is_visual say true for image and video types and suffixes and false for audio; does the slack watch, for a message from someone else with visual attachments, fetch each through core.http.fetch_authenticated with file_of (refusing files over VISUAL_MAX_BYTES) before it calls live with the saved paths; does the instagram realtime dispatch take media_ref_of the item (image, video or gif url) and, in a thread, fetch it with saved_media through client.private.get under the HTTP lock, never instagrapi photo or video downloads, before emitting the event with its attachment path; does the discord watch, for a message from someone else that is a DM, mentions the account or replies to it, keep each visual attachment with with_visuals through its REST client get_file (deleting one over VISUAL_MAX_BYTES), and leave guild messages to others untouched; and does the X chat watch pass each message media filename, type and path to enqueueAttachments?'),
     'REQ-MEDIA-07': noul('Does the discord engine read_message, unless saveImages is false, keep each visual attachment with saved_images through with_visuals and return them as images without their url; does log discord read print each image with attachmentLines as [image] name and its saved path or why it was not saved, store each message with storedAttachmentsOf so the .db keeps the paths, and go to Discord with reason mediaNotSaved when mediaNotSaved says a stored message has a visual attachment with no path and no error, or no text and no attachments recorded; does storeRead add the attachments to an already stored message with addToPayload; does discordInboxMessageOf keep the watch attachments with their saved paths and the message id; and does the voice gate read of the room pass saveImages false?'),
+    'REQ-MEDIA-08': noul('Does the discord engine save a sent file only when is_text_file says it is .txt, .tsv, .csv, .md or .json and it is under TEXT_MAX_BYTES, delete it when text_problem finds a NUL byte or bytes that are not UTF-8, list every other non-audio non-visual file with not_opened without downloading it, and keep an image or video only when visual_problem finds a real image or video signature; and does log discord read show a saved text file with its path and preview under UNTRUSTED_FILE_LINE?'),
     unspecifiedBehavior: noul('Does the describer send media to a remote service to describe it, describe audio, run more than one model process, or let a message with undescribed media reach the context without saying so, by a route the specification does not describe?'),
   },
   assertions: {
@@ -70,6 +79,7 @@ export const mediaDescriber = {
     'REQ-MEDIA-05': MET,
     'REQ-MEDIA-06': MET,
     'REQ-MEDIA-07': MET,
+    'REQ-MEDIA-08': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }
