@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from twitterApi import engine as e
+from platformKit import timing
 
 IDLE_SECONDS = 1800
 START_WAIT_SECONDS = 30.0
@@ -107,17 +108,22 @@ class Host:
     async def answer(self, spec: dict[str, Any], writer: asyncio.StreamWriter) -> dict[str, Any]:
         if spec.get("account") != self.account:
             return {"ok": False, "code": "xSessionHostRefused", "detail": f"this X session is {self.account}'s, not {spec.get('account')}'s"}
+        timing.begin(spec.get("trace"))
         token = e.LIVE_WRITER.set(writer)
         self.active += 1
         try:
             if spec.get("action") in e.UNLOCKED:
                 self.watching += 1
                 try:
-                    return await e.run(spec)
+                    return timing.attach(await e.run(spec))
                 finally:
                     self.watching -= 1
-            async with self.serial:
-                return await e.run(spec)
+            with timing.span("host.queue", active=self.active - 1):
+                await self.serial.acquire()
+            try:
+                return timing.attach(await e.run(spec))
+            finally:
+                self.serial.release()
         finally:
             self.active -= 1
             e.LIVE_WRITER.reset(token)
@@ -220,12 +226,14 @@ def connect_host(account: str) -> tuple[socket.socket | None, dict[str, Any] | N
 
 def call(spec: dict[str, Any]) -> dict[str, Any]:
     account = spec["account"]
-    sock, info, error_text = connect_host(account)
+    with timing.span("host.connect", started=live_host(account) is None):
+        sock, info, error_text = connect_host(account)
     if sock is None or info is None:
         return {"ok": False, "code": "xSessionHostDown", "detail": f"{error_text}, so nothing was sent and no second session was opened (rule 104). Its log: {host_log(account)}"}
-    with sock:
+    with sock, timing.span("host.roundTrip"):
         sock.settimeout(None)
-        sock.sendall((json.dumps({"token": info["token"], "spec": spec}) + "\n").encode("utf-8"))
+        sent = {**spec, "trace": timing.child_trace(spec.get("trace"))}
+        sock.sendall((json.dumps({"token": info["token"], "spec": sent}) + "\n").encode("utf-8"))
         for line in sock.makefile("r", encoding="utf-8"):
             line = line.strip()
             if not line:

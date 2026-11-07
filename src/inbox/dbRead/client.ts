@@ -6,6 +6,7 @@ import { behindOf, db, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS } from './types'
 import type { DbMessage, ReadSource, ReadSourceDeps } from './types'
 import type { MessageAttachment } from '../catchUp/types'
+import { timed } from '../../observability/timing/index'
 
 export const readSourceDeps: ReadSourceDeps = {
   live: (platform, account) => sessionLive(readSession(platform, account)),
@@ -13,7 +14,15 @@ export const readSourceDeps: ReadSourceDeps = {
   backfilledAt: (platform, account, chatKey) => positionsOf(platform, account)[`${BACKFILL_SCOPE}${chatKey}`] ?? null,
 }
 
-export async function readSourceFor(platform: string, account: string, chatKey: string, have: number, limit: number, deps: ReadSourceDeps = readSourceDeps): Promise<ReadSource> {
+export function readSourceFor(platform: string, account: string, chatKey: string, have: number, limit: number, deps: ReadSourceDeps = readSourceDeps): Promise<ReadSource> {
+  return timed('inbox.readSource', async (span) => {
+    const source = await readSourceNow(platform, account, chatKey, have, limit, deps)
+    span.attrs.from = source.from
+    return source
+  }, { platform })
+}
+
+async function readSourceNow(platform: string, account: string, chatKey: string, have: number, limit: number, deps: ReadSourceDeps): Promise<ReadSource> {
   if (!deps.live(platform, account)) return { from: 'platform', reason: 'noLiveOwner' }
   const gap = deps.behind(platform, account)
   if (gap?.status === 'refused') return { from: 'refused', refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so nothing is read around it; nothing resumes on it until matt says so (rule 94)` }

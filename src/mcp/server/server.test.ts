@@ -196,9 +196,9 @@ describe("live logs", () => {
     const result = await runToolCall("doctor", { args: ["--json"] }, { twenty: marketplaceFixture(), worker }, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`));
     const text = (result.content as { text: string }[])[0].text;
     expect(text).toContain("log:\nOpening Camoufox through the proxy\nAuto-login: typed the email and password (try 1).");
-    expect(seen[0]).toMatch(/^doctor out ▶ log facebook doctor --json  \(job job\w+\)$/);
+    expect(seen[0]).toMatch(/^doctor out ▶ log facebook doctor --json  \(job job\w+\)  \(call [0-9a-f]{12}\)$/);
     expect(seen).toContain("doctor worker Auto-login: typed the email and password (try 1).");
-    expect(seen.at(-1)).toBe("doctor out ■ exit 0");
+    expect(seen.at(-1)).toMatch(/^doctor out ■ exit 0 in [\d.]+ m?s \(call [0-9a-f]{12}: timing \{ call: "[0-9a-f]{12}" \} shows where the time went\)$/);
   });
 
   test("the server writes every line to the day's log file as it happens", async () => {
@@ -217,7 +217,7 @@ describe("live logs", () => {
       expect(file).toMatch(/^\d{4}-\d{2}-\d{2}\.log$/);
       const lines = readFileSync(join(dir, file), "utf8");
       expect(lines).toContain("doctor worker | Logged in.");
-      expect(lines).toContain("doctor out    | ■ exit 0");
+      expect(lines).toContain("doctor out    | ■ exit 0 in ");
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

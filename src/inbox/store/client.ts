@@ -27,6 +27,9 @@ const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT NULL, describedAt TEXT, UNIQUE (eventId, name))`,
   `CREATE INDEX IF NOT EXISTS mediaByStatus ON media (status, id)`,
   `CREATE TABLE IF NOT EXISTS people (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, handle TEXT NOT NULL, name TEXT, seenAt TEXT NOT NULL, PRIMARY KEY (platform, account, userId))`,
+  `CREATE TABLE IF NOT EXISTS spans (spanId TEXT PRIMARY KEY, traceId TEXT NOT NULL, callId TEXT NOT NULL, parentId TEXT, tool TEXT NOT NULL, name TEXT NOT NULL, source TEXT NOT NULL, pid INTEGER NOT NULL, startedAt REAL NOT NULL, ms REAL NOT NULL, ok INTEGER NOT NULL, attrs TEXT NOT NULL DEFAULT '{}')`,
+  `CREATE INDEX IF NOT EXISTS spansByTool ON spans (tool, startedAt)`,
+  `CREATE INDEX IF NOT EXISTS spansByCall ON spans (callId)`,
 ]
 
 const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]

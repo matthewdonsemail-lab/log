@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 40 domains, 464 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 42 domains, 470 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -607,6 +607,22 @@ The log MCP server picks up new code without restarting Claude Code: a reload pr
 - **REQ-RELOAD-02** A reload waits until nothing is running, then replays initialize
 - **REQ-RELOAD-03** A crash or a failed start never leaves the client hanging
 - **REQ-RELOAD-04** Its state is recorded and the hook reads it
+
+## [Call timing](./callTiming.md)
+
+Every call is timed, never guessed: one timing layer across Bun and Python gives each call an id, stores every stage inside it in log.db, and reports p50, p95 and p99 per tool and per stage. Rule 165.
+
+- **REQ-TIMING-01** Every call has an id and its stages are spans
+- **REQ-TIMING-02** The trace crosses into Python and back as one tree
+- **REQ-TIMING-03** The guards and the voice gate are timed stage by stage
+- **REQ-TIMING-04** Timings are stored and reported, never lost to a failure
+
+## [treg](./treg.md)
+
+treg's catalog reached from log as an extension: endpoints found by the job, read, and called with the key held server-side, with nothing priced run unless matt approved the spend. Rule 166.
+
+- **REQ-TREG-01** Search, get and call run the treg CLI, never a shell
+- **REQ-TREG-02** Nothing priced runs unless matt approved the spend
 
 ## [Instagram](./instagram.md)
 

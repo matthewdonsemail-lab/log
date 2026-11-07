@@ -22,6 +22,7 @@ import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
+import { tregCommand } from "../treg/index.ts";
 import { balanceCommand } from "../balance/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
@@ -30,6 +31,7 @@ import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
+import { timingCommand } from "../timing/index.ts";
 import { inboxCommand } from "../inbox/index.ts";
 import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
@@ -86,6 +88,7 @@ export const COMMANDS: Command[] = [
   graphCommand,
   captureCommand,
   runsCommand,
+  timingCommand,
   inboxCommand,
   mediaCommand,
   browsersCommand,
@@ -103,6 +106,7 @@ export const COMMANDS: Command[] = [
   searchCommand,
   kbCommand,
   memelordCommand,
+  tregCommand,
   balanceCommand,
   cloneCommand,
   transcribeCommand,

@@ -2538,6 +2538,55 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     spends nothing, and topping up is matt's (rule 41). Spec:
     `docs/specs/balance.md`.
 
+165. 2026-11-07 · matt: "find the place inside of my code that are
+    slowing it down", then "have all timing known and stored so that we're
+    able to then add further optimizations", after `twitterDms` took
+    p50 9.5 s while X answered in 0.69 s, and the live log had no call id,
+    so two sessions' calls couldn't be told apart. Every call is timed,
+    never guessed, through one timing layer for Bun and Python
+    (`src/observability/timing`, `python/platformKit/timing.py`):
+    - **A call id on every call.** Each MCP tool call and terminal run is
+      one call. Its id and how long it took are on its `▶` and `■` lines in
+      the live log.
+    - **Every stage is a span.** Each span records its parent, start and
+      length: the guards (the catch-up wait, the read source, the claim),
+      each step of the voice gate, every `fetch` (SubQ, Jina, Twenty, ...),
+      each Python engine run and the Python start-up before it. The trace
+      goes into the engine's spec and through the account's session host:
+      its queue, the account lock, the spacing, the governor, the client,
+      the action, and every curl_cffi request (twikit, instagrapi, gabriel).
+      The host sends its spans back in its answer, so one call is one tree.
+    - **Stored, kept 90 days.** Spans go to log.db's `spans` table. With
+      `LOG_OTLP_URL` set they are also sent as OTLP to a trace viewer
+      (otel-desktop-viewer), with no OpenTelemetry package to install.
+    - **Read before saying it's slow or fast.** `log timing` (MCP `timing`)
+      gives p50, p95 and p99 per tool and per stage, with each stage's share
+      of the time and the call's own time outside every stage. `log timing
+      --call <id>` shows one call as a waterfall. Optimisation starts from
+      those numbers, and the same report is run again after the change.
+    Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec:
+    `docs/specs/callTiming.md`.
+
+166. 2026-11-07 · matt: "make it so that we can then call treg as an
+    extension inside of this as well and then write it up into the
+    extensions". treg is an extension like Memelord (rule 119), reached
+    through log's own command and MCP tools, never by hand (rule 106):
+    - **`log treg search "<job>"`** (MCP `tregSearch`) finds an endpoint by
+      what you want done, with each one's price.
+    - **`log treg get <id>`** (MCP `tregGet`) reads one endpoint in full: its
+      price, its params and a call that works.
+    - **`log treg call <id> --params '<json>'`** (MCP `tregCall`) calls it
+      through the treg CLI on this machine, the key injected server-side by
+      treg (`TREG_BIN` moves it). The price is read from `get` before every
+      call. A free endpoint runs. A priced one is a dry run that says its
+      price and the exact command, and runs only with `--live` and
+      `--approvedBy` (MCP `tregCallLive`) when matt asked for that spend
+      (rule 41).
+    Every call is a timed span (rule 165), and treg's balance is in `log
+    balance` (rule 164). It is the way every lookup reaches an external
+    source (rule 53). `src/extensions/treg`, `src/cli/treg`,
+    `docs/extensions/treg.md`. Spec: `docs/specs/treg.md`.
+
 167. 2026-11-07 · matt: "we need to make it so that we're not needing to
     restart every time that we make a change ... it takes up at least 3
     minutes of mine to close Claude Code and reopen it", then the options
