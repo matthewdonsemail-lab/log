@@ -7,6 +7,8 @@ import type { TwentyClient } from '../../../twenty/graphql/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../../marketplace/socialAccount/index'
 import { twitterStateRoot, writeLocalSession, writesPerDayOf } from '../../../directApi/engine/index'
+import { timedEngine, timedEngineSync } from '../../../observability/timing/index'
+import type { EngineTrace } from '../../../observability/timing/index'
 import type { TwitterEngineRun, TwitterEngineSpec, TwitterGate, TwitterSessionAnswer, XChatLiveEvent } from './types'
 
 const ENGINE = join(import.meta.dir, '..', '..', '..', '..', 'python', 'twitterApi', 'engine.py')
@@ -69,6 +71,10 @@ export function mergeCookieShape(raw: unknown, refreshed: Record<string, string>
 }
 
 export function runTwitterEngine(account: TwitterAccount, request: TwitterEngineSpec): TwitterEngineRun {
+  return timedEngineSync(`engine twitter ${String(request.action ?? '')}`.trim(), { account: account.accountName }, (trace) => spawnTwitterEngine(account, request, trace), (run) => run.answer)
+}
+
+function spawnTwitterEngine(account: TwitterAccount, request: TwitterEngineSpec, trace: EngineTrace | null): TwitterEngineRun {
   const dir = mkdtempSync(join(tmpdir(), 'twitterApi'))
   try {
     const cookiesPath = join(dir, 'cookies.json')
@@ -78,7 +84,7 @@ export function runTwitterEngine(account: TwitterAccount, request: TwitterEngine
     const pinPath = chatPin ? join(dir, 'chatPin.txt') : undefined
     if (pinPath) writeFileSync(pinPath, chatPin!, { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
+    writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}), ...(trace ? { trace } : {}) }), { mode: 0o600 })
     const run = spawnSync(process.env.LOG_PYTHON || 'python', [ENGINE, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, windowsHide: true })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: TwitterSessionAnswer
@@ -95,6 +101,10 @@ export function runTwitterEngine(account: TwitterAccount, request: TwitterEngine
 }
 
 export function runTwitterEngineLive(account: TwitterAccount, request: TwitterEngineSpec, onLive: (event: XChatLiveEvent) => void): Promise<TwitterEngineRun> {
+  return timedEngine(`engine twitter ${String(request.action ?? '')}`.trim(), { account: account.accountName, live: true }, (trace) => spawnTwitterEngineLive(account, request, onLive, trace), (run) => run.answer)
+}
+
+function spawnTwitterEngineLive(account: TwitterAccount, request: TwitterEngineSpec, onLive: (event: XChatLiveEvent) => void, trace: EngineTrace | null): Promise<TwitterEngineRun> {
   const dir = mkdtempSync(join(tmpdir(), 'twitterApi'))
   const cookiesPath = join(dir, 'cookies.json')
   const refreshedPath = join(dir, 'refreshed.json')
@@ -103,7 +113,7 @@ export function runTwitterEngineLive(account: TwitterAccount, request: TwitterEn
   const pinPath = chatPin ? join(dir, 'chatPin.txt') : undefined
   if (pinPath) writeFileSync(pinPath, chatPin!, { mode: 0o600 })
   const spec = join(dir, 'spec.json')
-  writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}) }), { mode: 0o600 })
+  writeFileSync(spec, JSON.stringify({ ...rest, account: account.accountName, writesPerDay: writesPerDayOf('twitter'), cookiesPath, refreshedPath, ...(pinPath ? { pinPath } : {}), ...(trace ? { trace } : {}) }), { mode: 0o600 })
   return new Promise((resolve) => {
     const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', ENGINE, spec], { windowsHide: true })
     let buffer = ''

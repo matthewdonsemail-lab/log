@@ -17,6 +17,7 @@ if str(ROOT) not in sys.path:
 
 from instagramApi import engine as e
 from platformKit import engine as kit
+from platformKit import timing
 
 IDLE_SECONDS = 1800
 START_WAIT_SECONDS = 30.0
@@ -135,17 +136,22 @@ class Host:
     async def answer(self, spec: dict[str, Any], writer: asyncio.StreamWriter) -> dict[str, Any]:
         if spec.get("account") != self.account:
             return {"ok": False, "code": "instagramSessionHostRefused", "detail": f"this Instagram session is {self.account}'s, not {spec.get('account')}'s"}
+        timing.begin(spec.get("trace"))
         token = e.LIVE_TARGET.set((asyncio.get_running_loop(), writer))
         self.active += 1
         try:
             if spec.get("action") == "watch":
                 self.watching += 1
                 try:
-                    return await kit.run(spec, e.ACTIONS, e.WRITES)
+                    return timing.attach(await kit.run(spec, e.ACTIONS, e.WRITES))
                 finally:
                     self.watching -= 1
-            async with self.serial:
-                return await kit.run(spec, e.ACTIONS, e.WRITES)
+            with timing.span("host.queue", active=self.active - 1):
+                await self.serial.acquire()
+            try:
+                return timing.attach(await kit.run(spec, e.ACTIONS, e.WRITES))
+            finally:
+                self.serial.release()
         finally:
             self.active -= 1
             e.LIVE_TARGET.reset(token)
@@ -253,12 +259,14 @@ def connect_host(state_root: str, account: str) -> tuple[socket.socket | None, d
 
 def call(spec: dict[str, Any]) -> dict[str, Any]:
     state_root, account = str(spec["stateRoot"]), str(spec["account"])
-    sock, info, error_text = connect_host(state_root, account)
+    with timing.span("host.connect"):
+        sock, info, error_text = connect_host(state_root, account)
     if sock is None or info is None:
         return {"ok": False, "code": "instagramSessionHostDown", "detail": f"{error_text}, so nothing was sent and no second session was opened (rule 129). Its log: {host_log(state_root, account)}"}
-    with sock:
+    with sock, timing.span("host.roundTrip"):
         sock.settimeout(None)
-        sock.sendall((json.dumps({"token": info["token"], "spec": spec}) + "\n").encode("utf-8"))
+        sent = {**spec, "trace": timing.child_trace(spec.get("trace"))}
+        sock.sendall((json.dumps({"token": info["token"], "spec": sent}) + "\n").encode("utf-8"))
         for line in sock.makefile("r", encoding="utf-8"):
             line = line.strip()
             if not line:

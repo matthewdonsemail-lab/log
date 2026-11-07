@@ -13,6 +13,7 @@ import type { TwentyClient } from '../../twenty/graphql/index'
 import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } from './helpers/index'
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
 import { WRITES_PER_DAY_DEFAULT, writesPerDayOf } from './types'
+import { timedEngineSync } from '../../observability/timing/index'
 
 
 function localClock(iso: string): string {
@@ -191,6 +192,11 @@ export function directGate(account: FacebookAccount, options: { bypass: boolean;
 }
 
 function spawnEngine(spec: object): EngineAnswer {
+  const action = 'method' in spec ? String((spec as { method: unknown }).method) : 'governorStatus' in spec ? 'governorStatus' : ''
+  return timedEngineSync(`engine facebook ${action}`.trim(), {}, (trace) => spawnFbk(trace ? { ...spec, trace } : spec), (answer) => answer)
+}
+
+function spawnFbk(spec: object): EngineAnswer {
   const dir = mkdtempSync(join(tmpdir(), 'directApi'))
   try {
     const file = join(dir, 'spec.json')

@@ -2471,6 +2471,15 @@
     ],
     "action": "Read his chats so the engines keep his voice notes (log discord read, log instagram dms), then run log clone voice again. Never clone anyone else's voice."
   },
+  "callTimingMissing": {
+    "layer": "runtime",
+    "meaning": "No call with that id is stored in log.db's spans table: the id was mistyped, the call ran before timing existed, or it is older than the 90 days timings are kept.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/timing"
+    ],
+    "action": "Copy the call id from the call's ▶ or ■ line in the live log (~/.logCli/mcp/<day>.log), or run log timing without --call for the report."
+  },
   "xchatPinMissing": {
     "layer": "runtime",
     "meaning": "X Chat couldn't be opened to send, because the X account has no X Chat PIN saved. Sending in X Chat needs the conversation key, which only the PIN unlocks. Nothing was sent.",

@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 455 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 39 domains, 459 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -588,6 +588,15 @@ An X account's own lists, shown, made and added to through its one session on ve
 
 matt's voice is cloned once per voice provider from the voice notes he sent himself, and a voice note in that voice goes out only when he asks for one, as the platform's own voice note, made from text. The voice layer is provider-agnostic: Inworld and Fish Audio are providers behind one interface. Every voice note is shaped like his own voice notes and listened back before it goes. Rules 142 to 151.
 
+
+## [Call timing](./callTiming.md)
+
+Every call is timed, never guessed: one timing layer across Bun and Python gives each call an id, stores every stage inside it in log.db, and reports p50, p95 and p99 per tool and per stage. Rule 164.
+
+- **REQ-TIMING-01** Every call has an id and its stages are spans
+- **REQ-TIMING-02** The trace crosses into Python and back as one tree
+- **REQ-TIMING-03** The guards and the voice gate are timed stage by stage
+- **REQ-TIMING-04** Timings are stored and reported, never lost to a failure
 
 ## [Instagram](./instagram.md)
 

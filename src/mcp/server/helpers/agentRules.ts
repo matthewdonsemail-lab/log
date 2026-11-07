@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 163;
+export const RULES_REVIEWED_THROUGH = 164;
 
 export const AGENTS_URI = "log://agents";
 
@@ -76,6 +76,7 @@ export const CORE_PRINCIPLES = [
   "69. A `>>> MAYBE A PLAY` lists the 3 plays closest to matt's message: before any tool, say in one line which one he is asking for, or none (building, fixing or talking about the system is none). A `>>> ACTIVE PLAY` after compaction is the play this session was in, with its steps done and to do: load it again and carry on from the next step (rule 159).",
   "70. A read for one chat or person (`discordRead`, `twitterDms` { with }) answers from the .db when its owner is live and the chat is backfilled; the platform is read only to fill the .db once, for a server channel, or when no owner is live. Never re-read a whole inbox to find one person, and never read around a refused catch-up (rule 160).",
   "71. A message that hands someone a task is a brief, never a curt order: send it with `brief` so the gate asks whether it says what to do in order, why it matters, what done looks like and by when, kindly, and how to ask when stuck. Files (a guide, a sheet) go with it through `file`, from OUTBOX or ~/.logCli (rule 162).",
+  "72. Every call is timed, never guessed: each tool call gets a call id (on its ▶ and ■ lines in the live log, with how long it took), and every stage inside it is stored in log.db (guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request). Before saying something is slow or fast, or changing code to speed it up, read `timing` (p50, p95 and p99 per tool and per stage) or `timing` { call } for one call's waterfall, and measure again after the change (rule 164).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -153,6 +154,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   twitterDm: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 98, 104, 105, 108, 109, 111, 130, 133, 135, 137, 138, 152, 153],
   twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138],
   runs: [19, 22, 25, 27, 66, 73],
+  timing: [26, 73, 164],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],

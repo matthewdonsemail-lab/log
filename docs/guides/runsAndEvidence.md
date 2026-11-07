@@ -1,6 +1,6 @@
 # runsAndEvidence
 
-What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself.
+What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -25,6 +25,7 @@ When the owner asks for one of these, follow its page step by step.
 | `runsExchanges` | Take every recorded step's internal API calls |
 | `runsPrune` | Delete each analysed run after taking out its steps' exchanges… |
 | `runsSpace` | The size of the runs folder and the disk's free space |
+| `timing` | Where the time goes |
 | `jobStatus` | A long run's status, the lines after afterLine, and its result once… |
 | `jobCancel` | Stop a long run at its next browser step |
 | `jobList` | The latest jobs |
@@ -263,6 +264,36 @@ trip, keeps scripts and documents up to 16 MB (other bodies 2 MB), and writes
 were lost. A request whose slice no run has is read the next time a run loads
 its bundle.
 
+## The work, step by step: callTiming
+
+From `skills/callTiming/SKILL.md`.
+
+## callTiming
+
+### The loop
+
+1. **Read the numbers first.** Run `timing` (MCP), or `timing { tool, hours }` for one tool. Note the tool's p50, p95 and p99, and the stages with the largest share.
+2. **Open a slow call.** Take a call id from a `■` line in the live log, or pick a slow call, and run `timing { call }`. The waterfall shows which stage took the time.
+3. **Name the cause from the span.**
+   - `python.start` or `python.imports`: the cost of starting Python for each call.
+   - `host.connect` with `started=true`: the account's session host was started cold.
+   - `host.queue` or `account.lock`: another call held the account.
+   - `spacing` or `governor`: pacing, which is there on purpose (rules 104, 110).
+   - `inbox.waitCaughtUp`: the account was behind.
+   - `voice.*` or `fetch …`: SubQ, Jina or Twenty.
+   - `http …`: the platform itself.
+   - `unaccounted`: our own code with no span yet. Add one.
+4. **Go deeper only when a span can't explain it.** Run `py-spy record --native --pid <host pid>` on the Python host, or `bun --cpu-prof` on Bun, to see which function and library the time is in.
+5. **Fix, then measure again.** Run the same `timing` report after the change and give matt both numbers. Never call something faster without them.
+
+### Hard boundaries
+
+- Timing never changes what a call sends. A span holds no cookie, token or message text.
+- Pacing (`spacing`, `governor`) protects the accounts. It is never cut to win a benchmark unless matt says so.
+- Commands go through the MCP (rule 106). `timing` is read-only.
+
+Docs: `docs/callTiming.md`. Spec: `docs/specs/callTiming.md`.
+
 ## Every tool, in full
 
 ### `errors`
@@ -271,7 +302,7 @@ The error catalog.
 List every error code: meaning, retryable, where each machine ends up
 log errors [--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>] [--code <code>] [--json] [--markdown]
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 25, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `graph`
@@ -280,7 +311,7 @@ log graph <publish|monitor>
 Print a machine's states and transitions as a Mermaid diagram
 Usage: log graph <publish|monitor>
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 6, 25, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `capture`
@@ -294,7 +325,7 @@ The HAR is the one Playwright writes from the account browser that ran. It is co
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 19, 22, 26, 27, 46, 48, 85, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsList`
@@ -306,7 +337,7 @@ log runs exchanges   (takes every recorded step's internal API calls, what was s
 log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsExchanges`
@@ -315,7 +346,7 @@ Take every recorded step's internal API calls (sent and answered) out of its HAR
 The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains
 log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsPrune`
@@ -324,7 +355,7 @@ Delete each analysed run after taking out its steps' exchanges, keeping its find
 The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains
 log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsSpace`
@@ -333,8 +364,18 @@ The size of the runs folder and the disk's free space.
 The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `timing`
+
+Where the time goes: p50, p95 and p99 for each tool call and each stage inside it, or one call as a waterfall.
+Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall
+log timing [--tool <name>] [--hours <n>] [--stages <n>] [--json]   (p50, p95 and p99 for every tool call, and for every stage inside it: the guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request; newest --hours, default 24)
+log timing --call <callId> [--json]   (one call as a waterfall: every stage in order, when it started and how long it took; the id is on the call's ▶ and ■ lines in the live log)
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
+AGENTS.md (log://agents): rules 26, 73, 164, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `jobStatus`
 
@@ -342,7 +383,7 @@ A long run's status, the lines after afterLine, and its result once it ends.
 Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait
 log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `jobCancel`
@@ -352,7 +393,7 @@ Follow or stop a long MCP run: each runs as a job when it outlasts its call's wa
 log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 10)
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "twitter/getTheAction" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `jobList`
@@ -361,7 +402,7 @@ The latest jobs.
 Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait
 log job list [--json]   (the latest jobs)
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs and the MCP server itself).
+Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself).
 AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
@@ -403,3 +444,5 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
 
 **Rule 85.** 2026-10-25 · matt: "THE WHOLE POINT IS TO GO THROUGH REA." Every platform's internal calls go through rea, their code as well as their network, never Facebook's alone. `log facebook capture --docs` builds every browser platform's request docs (`docs/platforms/<platform>/`): it takes each run's calls to that platform's hosts (`PLATFORM_SITES`), names each by its GraphQL operation or its path without ids, finds the code that sends it in the platform's own bundles by syntax tree (an operation by its exact name, a path where it is fetched), and rea reads each call's slice (`src/rea/platformClient`). A call whose code isn't in the bundles keeps its step's rea reading. The docs gate (`check:facebookClientDocs`) refuses a platform's doc that rea hasn't read or whose reasoning isn't written. The first Reddit run: 39 calls, 33 read from their code, the other 6 from their step.
+
+**Rule 164.** 2026-11-07 · matt: "find the place inside of my code that are slowing it down", then "have all timing known and stored so that we're able to then add further optimizations", after `twitterDms` took p50 9.5 s while X answered in 0.69 s, and the live log had no call id, so two sessions' calls couldn't be told apart. Every call is timed, never guessed, through one timing layer for Bun and Python (`src/observability/timing`, `python/platformKit/timing.py`): - **A call id on every call.** Each MCP tool call and terminal run is one call. Its id and how long it took are on its `▶` and `■` lines in the live log. - **Every stage is a span.** Each span records its parent, start and length: the guards (the catch-up wait, the read source, the claim), each step of the voice gate, every `fetch` (SubQ, Jina, Twenty, ...), each Python engine run and the Python start-up before it. The trace goes into the engine's spec and through the account's session host: its queue, the account lock, the spacing, the governor, the client, the action, and every curl_cffi request (twikit, instagrapi, gabriel). The host sends its spans back in its answer, so one call is one tree. - **Stored, kept 90 days.** Spans go to log.db's `spans` table. With `LOG_OTLP_URL` set they are also sent as OTLP to a trace viewer (otel-desktop-viewer), with no OpenTelemetry package to install. - **Read before saying it's slow or fast.** `log timing` (MCP `timing`) gives p50, p95 and p99 per tool and per stage, with each stage's share of the time and the call's own time outside every stage. `log timing --call <id>` shows one call as a waterfall. Optimisation starts from those numbers, and the same report is run again after the change. Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec: `docs/specs/callTiming.md`.

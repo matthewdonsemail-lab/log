@@ -2522,6 +2522,35 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     doesn't. The command tools stay as they are for now. Spec:
     `docs/specs/mcpServer.md` (REQ-MCP-18).
 
+164. 2026-11-07 · matt: "find the place inside of my code that are
+    slowing it down", then "have all timing known and stored so that we're
+    able to then add further optimizations", after `twitterDms` took
+    p50 9.5 s while X answered in 0.69 s, and the live log had no call id,
+    so two sessions' calls couldn't be told apart. Every call is timed,
+    never guessed, through one timing layer for Bun and Python
+    (`src/observability/timing`, `python/platformKit/timing.py`):
+    - **A call id on every call.** Each MCP tool call and terminal run is
+      one call. Its id and how long it took are on its `▶` and `■` lines in
+      the live log.
+    - **Every stage is a span.** Each span records its parent, start and
+      length: the guards (the catch-up wait, the read source, the claim),
+      each step of the voice gate, every `fetch` (SubQ, Jina, Twenty, ...),
+      each Python engine run and the Python start-up before it. The trace
+      goes into the engine's spec and through the account's session host:
+      its queue, the account lock, the spacing, the governor, the client,
+      the action, and every curl_cffi request (twikit, instagrapi, gabriel).
+      The host sends its spans back in its answer, so one call is one tree.
+    - **Stored, kept 90 days.** Spans go to log.db's `spans` table. With
+      `LOG_OTLP_URL` set they are also sent as OTLP to a trace viewer
+      (otel-desktop-viewer), with no OpenTelemetry package to install.
+    - **Read before saying it's slow or fast.** `log timing` (MCP `timing`)
+      gives p50, p95 and p99 per tool and per stage, with each stage's share
+      of the time and the call's own time outside every stage. `log timing
+      --call <id>` shows one call as a waterfall. Optimisation starts from
+      those numbers, and the same report is run again after the change.
+    Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec:
+    `docs/specs/callTiming.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

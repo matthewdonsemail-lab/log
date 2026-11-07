@@ -7,6 +7,8 @@ import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../marketplace/socialAcco
 import type { FacebookAccount, SocialAccountRow } from '../../marketplace/socialAccount/index'
 import { TwentyError, accountStore } from '../../twenty/graphql/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
+import { timedEngine, timedEngineSync } from '../../observability/timing/index'
+import type { EngineTrace } from '../../observability/timing/index'
 import type { PlatformAnswer, PlatformEngineRun, PlatformEngineSpec, PlatformGate, PlatformShape } from './types'
 
 export type PlatformAccount = FacebookAccount
@@ -92,6 +94,10 @@ export function mergeCookieShape(raw: unknown, refreshed: Record<string, string>
 }
 
 export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec): PlatformEngineRun {
+  return timedEngineSync(`engine ${shape.platform} ${String(request.action ?? '')}`.trim(), { account: account.accountName }, (trace) => spawnPlatformEngine(shape, account, request, trace), (run) => run.answer)
+}
+
+function spawnPlatformEngine(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec, trace: EngineTrace | null): PlatformEngineRun {
   const dir = mkdtempSync(join(tmpdir(), `${shape.platform}Api`))
   try {
     const cookiesPath = join(dir, 'cookies.json')
@@ -100,7 +106,7 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
     const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
     if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
+    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}), ...(trace ? { trace } : {}) }), { mode: 0o600 })
     const run = spawnSync(process.env.LOG_PYTHON || 'python', [shape.engine, spec], { encoding: 'utf8', windowsHide: true, maxBuffer: 512 * 1024 * 1024, stdio: ['ignore', 'pipe', request.streamProgress ? 'inherit' : 'pipe'] })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: PlatformAnswer
@@ -117,6 +123,10 @@ export function runPlatformEngine(shape: PlatformShape, account: PlatformAccount
 }
 
 export function runPlatformEngineLive(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void): Promise<PlatformEngineRun> {
+  return timedEngine(`engine ${shape.platform} ${String(request.action ?? '')}`.trim(), { account: account.accountName, live: true }, (trace) => spawnPlatformEngineLive(shape, account, request, onLive, trace), (run) => run.answer)
+}
+
+function spawnPlatformEngineLive(shape: PlatformShape, account: PlatformAccount, request: PlatformEngineSpec, onLive: (event: Record<string, unknown>) => void, trace: EngineTrace | null): Promise<PlatformEngineRun> {
   const dir = mkdtempSync(join(tmpdir(), `${shape.platform}Api`))
   const cookiesPath = join(dir, 'cookies.json')
   const refreshedPath = join(dir, 'refreshed.json')
@@ -124,7 +134,7 @@ export function runPlatformEngineLive(shape: PlatformShape, account: PlatformAcc
   const storagePath = shape.sessionStorage ? join(dir, 'storage.json') : null
   if (storagePath) writeFileSync(storagePath, JSON.stringify(sessionStorageOf(account.storageOrigins, shape.sessionStorage)), { mode: 0o600 })
   const spec = join(dir, 'spec.json')
-  writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}) }), { mode: 0o600 })
+  writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, platform: shape.platform, stateRoot: platformStateRoot(shape.platform), writesPerDay: writesPerDayOf(shape.platform), cookiesPath, refreshedPath, ...(storagePath ? { storagePath } : {}), ...(trace ? { trace } : {}) }), { mode: 0o600 })
   return new Promise((resolve) => {
     const child = spawn(process.env.LOG_PYTHON || 'python', ['-u', shape.engine, spec], { windowsHide: true })
     let buffer = ''
