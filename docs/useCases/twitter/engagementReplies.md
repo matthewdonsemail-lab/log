@@ -33,7 +33,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
-| 1 | Who commented on the post (not the account itself) | treg's X comments read | a list of commenters with their comment |
+| 1 | Who commented on the post (not the account itself) | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X comments read | a list of commenters with their comment |
 | 2 | Drop bots and hype accounts (few followers and no bio, or a one-word "🔥"), anyone already answered, and anyone not worth a reply | treg's X profile read, the account's past replies | the people worth answering |
 | 3a | **Answer the comment:** one line that answers what they said, then the follow-up link | house style | passes `twitterQueueCheck` |
 | 3b | **Or their own post:** read their recent posts and pick one from the last few days where you have a real take | treg's X posts read | one post per person and the line for it |

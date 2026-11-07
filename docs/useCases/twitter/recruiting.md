@@ -54,7 +54,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Is the account signed in | `twitterSessionCheck` { account } | `loggedIn` |
-| 1 | Search: the role's language plus one work word per query, last few days, `-filter:retweets` | treg's X post search, many queries in parallel | a pool of authors, minus everyone already contacted |
+| 1 | Search: the role's language plus one work word per query, last few days, `-filter:retweets` | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X post search, many queries in parallel | a pool of authors, minus everyone already contacted |
 | 2 | Read every profile | treg's X profile read, in parallel | location, bio and followers for each one |
 | 3 | Qualify them with the five checks | by hand, or a model scoring fit, region and real person | a keep list, plus a "no location" hold list |
 | 4 | Write one line per person, in their language, opening on their own post, ending with the link | house style | every line passes `twitterQueueCheck` |

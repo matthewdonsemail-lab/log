@@ -1,7 +1,7 @@
 # Browser setup
 
 Some commands work in the account's own browser rather than through a
-platform's API. This page shows how to get each browser ready: AdsPower (the
+platform's API. This page shows how to get each browser ready: [AdsPower](https://www.adspower.com/share/pD25Iu) (the
 main one) and Camoufox (the fallback). You need it before running any command
 that opens a browser, such as `log inspect` or `log facebook host`.
 

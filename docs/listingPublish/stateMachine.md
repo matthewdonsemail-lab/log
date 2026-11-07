@@ -82,7 +82,7 @@ How a post's result changed the account's status (`process-posts/route.ts`):
 
 Inside `postToFacebookMarketplace` the steps run in this fixed order (`facebook-poster.ts` line numbers; details in [The create form](formFill.md)):
 
-1. Connect to AdsPower (1011).
+1. Connect to [AdsPower](https://www.adspower.com/share/pD25Iu) (1011).
 2. Go to `create/item?locale=en_US` (1048); stop on a login or checkpoint URL (1081).
 3. Force English (1092), close popups (1113), click "Item for sale" (1118), stop on daily-limit text (1159).
 4. Wait for the Title input (1201).

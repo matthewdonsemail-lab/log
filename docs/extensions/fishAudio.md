@@ -4,7 +4,7 @@ title: "Fish Audio"
 
 # Fish Audio
 
-[Fish Audio](https://docs.fish.audio) is a voice provider for [the voice clone](./voiceClone.md), picked with `--provider fishAudio` or `LOG_VOICE_PROVIDER=fishAudio` (rule 143). It was the first provider (rule 142). Creating a voice model through its API needs API credit: on 2026-11-05 it answered 403, "API model creation limit reached (0/0)", so Inworld became the default.
+[Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) ([API docs](https://docs.fish.audio)) is a voice provider for [the voice clone](./voiceClone.md), picked with `--provider fishAudio` or `LOG_VOICE_PROVIDER=fishAudio` (rule 143). It was the first provider (rule 142). Creating a voice model through its API needs API credit: on 2026-11-05 it answered 403, "API model creation limit reached (0/0)", so [Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) became the default.
 
 ## The three calls
 

@@ -32,7 +32,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
-| 1 | Find the posts: the topic's words, latest first, original posts and replies with a real take | treg's X post search | a pool of posts, newest first |
+| 1 | Find the posts: the topic's words, latest first, original posts and replies with a real take | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X post search | a pool of posts, newest first |
 | 2 | One post per person, only from people with 1500 followers or fewer (bigger accounts aren't worth it yet, rule 121; niche map people first). Drop anyone the account already replied to, and accounts that only repost news | the niche map's `followers`, treg's posts read on the account, for its past replies | a unique list, everyone at 1500 followers or under |
 | 3 | For each post, a one-line summary of what they said, and a reply that answers it with one of your facts. Mark which link it carries (article or video) | house style | every line passes `twitterQueueCheck` |
 | 4 | Write the list somewhere the owner can read it on a phone: number, handle, link type, post url, "they said", the reply | a shared page | the owner says yes |

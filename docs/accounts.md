@@ -10,7 +10,7 @@ You don't sign in to log itself: your accounts live on your machine, and each on
 log launch
 ```
 
-Pick **Set up log** to tick every platform you want and sign each one in, then AdsPower and the extensions ([setup](install.md#setup)), or **Add an account and sign it in** for one account: the platform, then the account's name. log walks you through the rest: the masked cookie prompt for X, LinkedIn and Slack, the steps for the account's browser on Reddit, Discord and Instagram, and connecting a Facebook account. **Check an account** and **Connect your agent** are in the same menu. The steps below are what it runs, if you'd rather type them.
+Pick **Set up log** to tick every platform you want and sign each one in, then [AdsPower](https://www.adspower.com/share/pD25Iu) and the extensions ([setup](install.md#setup)), or **Add an account and sign it in** for one account: the platform, then the account's name. log walks you through the rest: the masked cookie prompt for X, LinkedIn and Slack, the steps for the account's browser on Reddit, Discord and Instagram, and connecting a Facebook account. **Check an account** and **Connect your agent** are in the same menu. The steps below are what it runs, if you'd rather type them.
 
 ## 1. Add the account
 

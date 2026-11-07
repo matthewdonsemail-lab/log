@@ -7,7 +7,7 @@ Since then, log records a HAR for every browser step and rea reads each one, and
 ## First
 
 1. **Install the CLI.** Node 24.18.1, `npm install --global rea-agents@6.7.0`; `rea --version` prints `6.7.0`. `rea setup` wasn't run, because it rewrites agent config and waits for a person. Frida's postinstall didn't run (`allow-scripts`), which only blocks native instrumentation; the HAR and script commands don't use it.
-2. **Keep REA off the live window.** No CDP attach to Camoufox, and no attach to an AdsPower profile that's signed in to Facebook.
+2. **Keep REA off the live window.** No CDP attach to Camoufox, and no attach to an [AdsPower](https://www.adspower.com/share/pD25Iu) profile that's signed in to Facebook.
 
 ## Next, once a gated run is available
 

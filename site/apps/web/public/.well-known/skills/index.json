@@ -30,7 +30,7 @@
     },
     {
       "name": "log-discord-meme-reply",
-      "description": "Replying with a meme in a Discord chat. A log play (docs/useCases/discord/memeReply.md): Answer a moment in a Discord group or DM the way people there already do: with a meme. The chat is read first, Memelord finds a template that fits what was just said, the meme is gated like any other send, and it goes out as its media url, which Discord shows inline. Only Memelord's free tools are used (rule 41). The extension itself is described in [docs/extensions/memelord.md](../../extensions/memelord.md).",
+      "description": "Replying with a meme in a Discord chat. A log play (docs/useCases/discord/memeReply.md): Answer a moment in a Discord group or DM the way people there already do: with a meme. The chat is read first, [Memelord](https://www.memelord.com/sign-up?ref=kfwut9wc) finds a template that fits what was just said, the meme is gated like any other send, and it goes out as its media url, which Discord shows inline. Only Memelord's free tools are used (rule 41). The extension itself is described in [docs/extensions/memelord.md](../../extensions/memelord.md).",
       "files": [
         "SKILL.md"
       ],
@@ -54,7 +54,7 @@
     },
     {
       "name": "log-inbox-rea-looksmaxxing",
-      "description": "/rea-looksmaxxing: moneymaxx like a creator. A log play (docs/useCases/inbox/reaLooksmaxxing.md): Reverse engineer how a creator gets paid, then run the same play on your own accounts. treg reads the social data (the creator's most viral clips, the clip farms reposting them, views and comments), the formula is decoded from what won, and log posts it through your accounts and funnels everyone who replies or DMs into your offer, every message checked against how you write. Clavicular is the worked example: 40 of his clips pulled, the top one at 8.44M views, a looksmaxxing program as the offer. The video and the page (`log.listeningkit.com/rea-looksmaxxing`) tell the same play.",
+      "description": "/rea-looksmaxxing: moneymaxx like a creator. A log play (docs/useCases/inbox/reaLooksmaxxing.md): Reverse engineer how a creator gets paid, then run the same play on your own accounts. [treg](https://treg.to/?ref=matthewdonse-aebsh) reads the social data (the creator's most viral clips, the clip farms reposting them, views and comments), the formula is decoded from what won, and log posts it through your accounts and funnels everyone who replies or DMs into your offer, every message checked against how you write. Clavicular is the worked example: 40 of his clips pulled, the top one at 8.44M views, a looksmaxxing program as the offer. The video and the page (`log.listeningkit.com/rea-looksmaxxing`) tell the same play.",
       "files": [
         "SKILL.md"
       ],
@@ -70,7 +70,7 @@
     },
     {
       "name": "log-inbox-voice-note",
-      "description": "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider (Inworld by default, Fish Audio too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.",
+      "description": "Sending a voice note. A log play (docs/useCases/inbox/voiceNote.md): Send someone a voice note in matt's own cloned voice, as the platform's own voice note, on Discord, Instagram or Slack. It is made from his words by the voice provider ([Inworld](https://inworld.ai/signup?ref=FSNLMJ2H) by default, [Fish Audio](https://fish.audio/?aff=Q6W4DNSLJCSXG) too) and goes through the platform's engine and the account's one session, never the browser (rules 142, 143). A voice note only goes out when matt asks for one.",
       "files": [
         "SKILL.md"
       ],
@@ -86,7 +86,7 @@
     },
     {
       "name": "log-instagram-new-platform",
-      "description": "Bringing a new platform up, then vendoring its client. A log play (docs/useCases/instagram/newPlatform.md): Make a platform log-cli doesn't have yet, open it in the account's AdsPower browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.",
+      "description": "Bringing a new platform up, then vendoring its client. A log play (docs/useCases/instagram/newPlatform.md): Make a platform log-cli doesn't have yet, open it in the account's [AdsPower](https://www.adspower.com/share/pD25Iu) browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.",
       "files": [
         "SKILL.md"
       ],

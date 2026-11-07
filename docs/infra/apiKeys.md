@@ -8,7 +8,7 @@ never what it is. Read a key in a script, and never print it.
 | File | What it is | Who reads it |
 | --- | --- | --- |
 | `subq-api-key.txt` | SubQ's API key, alone or as a `SUBQ_API_KEY=` line (a `SUBQ_BASE_URL=` line beside it is ignored) (Decisions API `subq.ai/v1/systemone`: `log inspect` readings, `log voice`, persona reads) | `subqKey()` in `src/subq/decisions` (after `SUBQ_API_KEY` in the environment, before `.env.local`) |
-| `treg-api-key.txt` | treg's API token (X search, profiles, posts, comments: every lookup, rule 53) | a copy for reference: the `treg` CLI reads its own `~/.treg/config.json`, written by `treg login`. After a new login, copy the token across again |
+| `treg-api-key.txt` | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s API token (X search, profiles, posts, comments: every lookup, rule 53) | a copy for reference: the `treg` CLI reads its own `~/.treg/config.json`, written by `treg login`. After a new login, copy the token across again |
 | `twenty-listeningkit-api-key.txt` | node02's Twenty API key for `log kb` (workspace key "log-cli knowledge base") | `log kb` |
 | `twenty-basic-auth.txt` | the Basic Auth login for `twenty.listeningkit.com` | a person, in the browser |
 | `kb-redis-url.txt` | the kb-redis URL with its password | `log kb` |

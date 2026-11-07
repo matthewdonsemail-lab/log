@@ -1,6 +1,6 @@
 # Bringing a new platform up, then vendoring its client
 
-Make a platform log-cli doesn't have yet, open it in the account's AdsPower browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.
+Make a platform log-cli doesn't have yet, open it in the account's [AdsPower](https://www.adspower.com/share/pD25Iu) browser, sign in by hand, keep the session, read what its own client called with rea, then find the open-source client that speaks the same calls and vendor it so the platform works on the direct-API engine. Instagram was the first one done this way.
 
 How the owner asks for it: "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work"
 

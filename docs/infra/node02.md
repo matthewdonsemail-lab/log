@@ -59,7 +59,7 @@ log MCP server, remotely"). It is its own stack, apart from Twenty's:
   (`node02.tail4fcf85.ts.net:8443`) and moved the same day to the tunnel. The Funnel is
   off (`tailscale funnel --https=8443 off`).
 - **What runs there:** the direct-API platforms (X, Reddit, Discord) and the
-  knowledge base. No browser: AdsPower and Camoufox stay on the PC.
+  knowledge base. No browser: [AdsPower](https://www.adspower.com/share/pD25Iu) and Camoufox stay on the PC.
 - **X Chat:** chat-xdk has no Linux wheel in `vendor/chatXdk`, so the image
   builds it from source with juicebox-sdk 0.3.7 checked out beside it (chat-xdk's
   CI does the same). That build takes about 13 minutes and is cached after.
@@ -126,7 +126,7 @@ Never in the repo, the knowledge base or chat. On matt's PC, in
 - `log-mcp-token.txt`: the bearer token for log MCP on node02 (also
   `LOG_MCP_TOKEN` in `~/services/logMcp/.env` there).
 
-Every key file, the SubQ and treg keys included: `docs/infra/apiKeys.md`.
+Every key file, the SubQ and [treg](https://treg.to/?ref=matthewdonse-aebsh) keys included: `docs/infra/apiKeys.md`.
 
 On node02 the stack's secrets are in `.env` (mode 600, owner deepman).
 

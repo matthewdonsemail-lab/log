@@ -21,7 +21,7 @@ Py  inspectSession.py
 ```
 
 - All the Playwright work is async (`playwright.async_api`).
-- AdsPower is Chromium and Camoufox is Firefox, but both are driven through the
+- [AdsPower](https://www.adspower.com/share/pD25Iu) is Chromium and Camoufox is Firefox, but both are driven through the
   same Playwright API.
 - Neither uses Puppeteer. `ws.puppeteer` is only the name AdsPower's Local API
   gives the CDP websocket it returns, which Playwright's `connect_over_cdp`

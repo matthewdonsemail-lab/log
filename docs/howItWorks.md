@@ -82,7 +82,7 @@ The current list of platforms, and which commands run where, is in
 ## Browsers
 
 log is **browser-agnostic** too. Each account's browser is a driver chosen in
-Twenty: AdsPower first (one profile per account), Camoufox kept, and more to
+Twenty: [AdsPower](https://www.adspower.com/share/pD25Iu) first (one profile per account), Camoufox kept, and more to
 come, each one more driver (`src/browser/<name>`). Every driver opens through
 the same gates:
 

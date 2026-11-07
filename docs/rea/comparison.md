@@ -25,7 +25,7 @@ Sign-in goes through the proxy too: `checkRunnable` refuses to start `log facebo
 
 | | log's publish | Earlier Camoufox client | Earlier production poster |
 | --- | --- | --- | --- |
-| Browser | Camoufox, visible, cursor shown | `AsyncCamoufox` | AdsPower Chromium over CDP |
+| Browser | Camoufox, visible, cursor shown | `AsyncCamoufox` | [AdsPower](https://www.adspower.com/share/pD25Iu) Chromium over CDP |
 | What decides | An XState machine | `MarketplaceCreateAction` | `poster.ts` / `facebook-poster.ts` |
 | Upload check | Facebook's `N/10` counter | Its spike waits on the counter; the action's tests don't prove a live publish | A fixed wait, then `setInputFiles` |
 | After Publish | No retry; a crash becomes `unconfirmedId` | Can report published with no id, and can take another listing's id | The server path can return success with no URL |

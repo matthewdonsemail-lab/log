@@ -38,7 +38,7 @@ flowchart TD
 | 3 | Shortlist: everyone waiting on the owner, plus anyone recent the owner wrote to who answered | `twitterDms` { account, waiting: true, limit: "60" } | a shortlist of handles |
 | 4 | Read each shortlisted person in full, old DM thread and X Chat merged, one person at a time | `twitterDms` { account, with: "<handle>" } | their whole thread, oldest first |
 | 5 | What the conversation is about beyond the thread: earlier talk about the same thing anywhere | `search` { query, with: "<handle>" } | the matches, with when |
-| 6 | Who they are: their bio, role and reach, and whether they're in Twenty | treg's X profile read, Twenty | one line per person |
+| 6 | Who they are: their bio, role and reach, and whether they're in Twenty | [treg](https://treg.to/?ref=matthewdonse-aebsh)'s X profile read, Twenty | one line per person |
 | 7 | Sort them, each with the line that shows it and its time: **needs something from you** (asked for work, a call, help, an answer), **matters** (role, reach, where they could take you), **money** (a concrete need the owner sells, a budget, a referral), **warm** (friendly, nothing asked yet), **no action** (pitches at the owner, spam) | a table for the owner | every person has a row and a suggested next move |
 | 8 | The owner says what to do with each one, in their own words | the owner | one instruction per person, then [followUps.md](followUps.md) |
 

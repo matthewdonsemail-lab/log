@@ -19,7 +19,7 @@ It was written from the source code of the earlier projects, and every claim cit
 | Short name | What it is | Language | How far it got |
 | --- | --- | --- | --- |
 | **Camoufox client** | A Python browser driver | Python, Camoufox | One live publish (a spike script), and a photo edit on a live listing |
-| **Production poster** | A posting tool used in production | TypeScript, Playwright over AdsPower | Posted for real users; its server path is the live one |
+| **Production poster** | A posting tool used in production | TypeScript, Playwright over [AdsPower](https://www.adspower.com/share/pD25Iu) | Posted for real users; its server path is the live one |
 | **Dashboard** | A listings dashboard with no browser | TypeScript | Owns the listing status machine log already ports |
 
 A fourth experiment with vision models is out of date. Only its CaptchaKraken notes carry over, in [CaptchaKraken](captchaKraken.md).

@@ -23,11 +23,11 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Facebook | [From accounts to live Marketplace listings](facebook/marketplaceListings.md) | one local profile per town, each posting a listing, clicks counted into Twenty |
 | Facebook | [Listening to local Facebook groups](facebook/groups.md) | joins local groups and passes the posts asking for the service to Twenty |
 | Discord | [Reading a Discord group chat without Twenty](discord/groupChatRead.md) | catches up on a group over the last few hours with a local account, sends nothing |
-| Discord | [Replying with a meme in a Discord chat](discord/memeReply.md) | reads the chat, finds a Memelord meme that fits the moment, gates it and sends it inline |
+| Discord | [Replying with a meme in a Discord chat](discord/memeReply.md) | reads the chat, finds a [Memelord](https://www.memelord.com/sign-up?ref=kfwut9wc) meme that fits the moment, gates it and sends it inline |
 | Slack | [Reading and answering a Slack DM](slack/dmReply.md) | finds the chat by who it is with, reads it, drafts in matt's voice, gates it and sends it one line at a time |
 | Instagram | [Reading and answering an Instagram DM](instagram/dmReply.md) | reads the thread, drafts in matt's voice or picks a meme, gates it and sends it through the engine, never the browser |
 | Every chat | [Reacting to a message](inbox/reactions.md) | reacts with an emoji on X, Discord, Slack or Instagram through the platform's own engine, claimed and counted as a write |
-| Every chat | [/rea-looksmaxxing: moneymaxx like a creator](inbox/reaLooksmaxxing.md) | finds a creator's most viral clips through treg, decodes the formula, posts it through your accounts and funnels the replies and DMs into your offer; also an installable skill |
+| Every chat | [/rea-looksmaxxing: moneymaxx like a creator](inbox/reaLooksmaxxing.md) | finds a creator's most viral clips through [treg](https://treg.to/?ref=matthewdonse-aebsh), decodes the formula, posts it through your accounts and funnels the replies and DMs into your offer; also an installable skill |
 | Every chat | [Sending a voice note](inbox/voiceNote.md) | only when matt asks: his words said in his cloned voice and sent as Discord's, Instagram's or Slack's own voice note, gated and claimed like a send |
 | Instagram | [Bringing a new platform up, then vendoring its client](instagram/newPlatform.md) | makes the platform, opens it in the account's browser to sign in, reads its client's calls with rea, then vendors the GitHub client that speaks them |
 

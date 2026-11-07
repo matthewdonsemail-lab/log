@@ -58,7 +58,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 6a | Who opened it: `twitterDms` { waiting: true, limit: "200" } lists them apart, after the people waiting on a reply (the default 20 only looks at the newest threads) | `twitterDms` { account, waiting: true, limit: "200" } | the opened list |
-| 6b | Read the thread and what they've posted lately, then follow up about them and what they're doing: pick up where it left off, never repeat the opener, never the ask | `twitterDms` { with }, treg's posts read, `voice` | the gate passes |
+| 6b | Read the thread and what they've posted lately, then follow up about them and what they're doing: pick up where it left off, never repeat the opener, never the ask | `twitterDms` { with }, [treg](https://treg.to/?ref=matthewdonse-aebsh)'s posts read, `voice` | the gate passes |
 | 6c | Send them the same way as step 6: one person directly, two or more through the account's one queue (rules 104, 107) | `twitterDmLive`, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` |
 
 ### New people in the mixer
