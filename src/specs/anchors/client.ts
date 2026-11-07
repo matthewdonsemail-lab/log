@@ -87,7 +87,7 @@ export function checkAnchors(root: string, domain: string, anchors: RequirementA
       continue
     }
     if (anchor.kind === 'string') {
-      const strings = anchor.file.endsWith('.py') ? py[anchor.file]!.strings : project.addSourceFileAtPath(path).getDescendants().filter((n) => Node.isStringLiteral(n) || Node.isNoSubstitutionTemplateLiteral(n)).map((n) => (n as unknown as { getLiteralText(): string }).getLiteralText())
+      const strings = anchor.file.endsWith('.py') ? py[anchor.file]!.strings : project.addSourceFileAtPath(path).getDescendants().filter((n) => Node.isStringLiteral(n) || Node.isNoSubstitutionTemplateLiteral(n) || Node.isTemplateHead(n) || Node.isTemplateMiddle(n) || Node.isTemplateTail(n)).map((n) => (n as unknown as { getLiteralText(): string }).getLiteralText())
       if (!strings.some((s) => s.includes(anchor.includes))) miss(`no string "${anchor.includes}" in ${anchor.file}`)
       continue
     }

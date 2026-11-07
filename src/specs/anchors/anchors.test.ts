@@ -77,6 +77,16 @@ describe('anchors: what a rule names is proved by the syntax tree (rule 117)', (
     expect(checkAnchors(dir, 'pilot', uses).findings.map((f) => f.problem)).toEqual(['continuesSend is not used in src/cli/discord/index.ts', 'continues_send is not used in python/platformKit/engine.py'])
   })
 
+  test('a string anchor finds its text in a template string with substitutions too', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'anchors'))
+    mkdirSync(join(dir, 'src'), { recursive: true })
+    writeFileSync(join(dir, 'src', 'refuse.ts'), 'export const say = (e: string) => `log x: tregTrimInvalid: ${e} then ${e} badEnd`\n')
+    const found = (includes: string) => checkAnchors(dir, 'tpl', { 'REQ-T-01': [{ kind: 'string', file: 'src/refuse.ts', includes }] }).findings
+    expect(found('tregTrimInvalid')).toEqual([])
+    expect(found('badEnd')).toEqual([])
+    expect(found('notThere')).toHaveLength(1)
+  })
+
   test('the slice holds only the declarations the requirement names', () => {
     const slice = sliceOf(root, anchors)
     expect(slice).toContain('WRITES_PER_DAY')

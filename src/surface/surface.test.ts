@@ -62,7 +62,7 @@ describe("diagrams", () => {
   test("the platforms diagram has every platform, its direct-API client and its browser path", () => {
     const d = platformsDiagram(catalog(COMMANDS)).mermaid;
     for (const p of PLATFORMS) expect(d).toContain(`p_${p}["${PLATFORM_LABELS[p]} (`);
-    for (const lib of ["fbk", "twikit", "rdvwr"]) expect(d).toContain(`e_${lib}["${lib} (vendor/${lib})`);
+    for (const lib of ["fbk", "twikit", "reverseChud"]) expect(d).toContain(`e_${lib}["${lib} (vendor/${lib})`);
     expect(d).toContain("nob_twitter");
     expect(d).toMatch(/b_reddit\["Reddit's browser path: no proxy/);
     expect(d).toMatch(/b_facebook\["Facebook's browser path: its proxy/);
@@ -81,7 +81,7 @@ describe("diagrams", () => {
     const d = diagrams(catalog(COMMANDS), []).find((x) => x.name === "surface")!.mermaid;
     expect(d).toContain("engine -->|direct API| direct");
     expect(d).toContain("engine -->|browser| browser");
-    expect(d).toMatch(/Direct-API engine: [^"]*rdvwr/);
+    expect(d).toMatch(/Direct-API engine: [^"]*reverseChud/);
   });
 });
 
@@ -92,8 +92,8 @@ describe("readme", () => {
     expect(section).toContain("| [`log facebook connect`](#log-facebook-connect) |");
     expect(section).toContain("```mermaid");
     expect(section).toContain("### The platforms");
-    expect(section).toContain("Reddit through rdvwr (`vendor/rdvwr`)");
-    expect(section).toContain("- `log reddit session`: the direct-API engine only (rdvwr, vendored in vendor/rdvwr");
+    expect(section).toContain("Reddit through reverseChud (`vendor/reverseChud`)");
+    expect(section).toContain("- `log reddit session`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud");
     expect(section).not.toContain("is the first platform");
     const first = withSurface("# x\n\nintro\n\n## Twenty\n\nrest\n", section);
     expect(first.indexOf("<!-- surface:start")).toBeLessThan(first.indexOf("## Twenty"));

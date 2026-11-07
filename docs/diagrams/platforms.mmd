@@ -15,10 +15,10 @@ flowchart LR
   p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter cookies, twitter followers, twitter notifications, twitter reply, twitter quote, twitter post, twitter like, twitter list, twitter repost, twitter follow, twitter dm, twitter react, twitter queue, twitter voice"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
   e_twikit --> api
   p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
-  p_reddit["Reddit (REDDIT): 1 command of its own"]
+  p_reddit["Reddit (REDDIT): 5 commands of its own"]
   twenty --> p_reddit
-  p_reddit -->|"direct API: reddit session"| e_rdvwr["rdvwr (vendor/rdvwr): the saved session, a governor per account"]
-  e_rdvwr --> api
+  p_reddit -->|"direct API: reddit session, reddit read, reddit post, reddit reply, reddit vote"| e_reverseChud["reverseChud (vendor/reverseChud): the saved session, a governor per account"]
+  e_reverseChud --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
   p_discord["Discord (DISCORD): 8 commands of its own"]

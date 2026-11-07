@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
@@ -46,16 +46,39 @@ describe("log reddit session check", () => {
     expect(r.calls).toEqual([]);
   });
 
-  test("the engine runs on vendor/rdvwr and refuses an action it doesn't have, sending nothing", () => {
+  test("the engine runs on vendor/reverseChud and refuses an action it doesn't have, sending nothing", () => {
     const dir = mkdtempSync(join(tmpdir(), "redditEngine"));
     const cookiesPath = join(dir, "cookies.json");
     writeFileSync(cookiesPath, JSON.stringify({ session: "x" }));
     const spec = join(dir, "spec.json");
-    writeFileSync(spec, JSON.stringify({ action: "vote", account: "redditOne", platform: "reddit", stateRoot: join(dir, "state"), cookiesPath }));
+    writeFileSync(spec, JSON.stringify({ action: "dance", account: "redditOne", platform: "reddit", stateRoot: join(dir, "state"), cookiesPath }));
     const engine = spawnSync(process.env.LOG_PYTHON || "python", [REDDIT_PLATFORM.engine, spec], { encoding: "utf8" });
     if (engine.error) return;
     expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code: "actionUnknown" });
-    const loads = spawnSync(process.env.LOG_PYTHON || "python", ["-c", "import sys; sys.path.insert(0, 'vendor/rdvwr'); import rdvwr; print(rdvwr.IMPERSONATE)"], { encoding: "utf8" });
-    expect(loads.stdout.trim()).toBe("chrome131");
+    expect(readFileSync(join("vendor", "reverseChud", "src", "session.ts"), "utf8")).toContain('DEFAULT_REDDIT_BROWSER_PROFILE = "chrome_140"');
+  });
+
+  test("the engine refuses a post, reply or vote without live and who approved it, sending nothing (rule 8)", () => {
+    const dir = mkdtempSync(join(tmpdir(), "redditEngine"));
+    const cookiesPath = join(dir, "cookies.json");
+    writeFileSync(cookiesPath, JSON.stringify({ session: "x" }));
+    for (const [action, extra, code] of [["create", {}, "notLive"], ["reply", {}, "notLive"], ["vote", { live: true }, "notApproved"]] as const) {
+      const spec = join(dir, `${action}.json`);
+      writeFileSync(spec, JSON.stringify({ action, account: "redditOne", platform: "reddit", stateRoot: join(dir, "state"), cookiesPath, ...extra }));
+      const engine = spawnSync(process.env.LOG_PYTHON || "python", [REDDIT_PLATFORM.engine, spec], { encoding: "utf8" });
+      if (engine.error) return;
+      expect(JSON.parse(engine.stdout.trim().split("\n").pop()!)).toMatchObject({ ok: false, code });
+    }
+  });
+
+  test("a write is a dry run without --live, and --live needs --approvedBy", async () => {
+    const dry = await run(["reddit", "vote", "--account", "redditOne", "--target", "t3_abc"]);
+    expect(dry.code).toBe(0);
+    expect(dry.out).toContain("dry run");
+    expect(dry.calls).toEqual([]);
+    const unapproved = await run(["reddit", "post", "--account", "redditOne", "--subreddit", "test", "--title", "hi", "--live"]);
+    expect(unapproved.code).toBe(1);
+    expect(unapproved.err).toContain("notApproved");
+    expect(unapproved.calls).toEqual([]);
   });
 });
