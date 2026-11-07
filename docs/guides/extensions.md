@@ -1,6 +1,6 @@
 # extensions
 
-Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for.
+Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -26,6 +26,11 @@ When the owner asks for one of these, follow its page step by step.
 | `memelordTrending` | Memelord's trending templates right now, each with its cultural… |
 | `memelordTools` | Memelord's catalog of one-shot image tools |
 | `memelordTaste` | matt's meme taste |
+| `tregSearch` | Find a treg endpoint by what you want done |
+| `tregGet` | One treg endpoint in full |
+| `tregCall` | Call a treg endpoint, the key injected server-side |
+| `tregCallLive` | Call a treg endpoint, the key injected server-side, live on Facebook |
+| `balance` | Every paid provider log calls |
 | `cloneVoice` | matt's voice cloned once on the voice provider from his own voice… |
 | `cloneSpeak` | Say words in matt's cloned voice, to a local audio file under… |
 
@@ -135,6 +140,29 @@ The provider is `provider`, else `LOG_VOICE_PROVIDER`, else inworld. X has no
 voice note path. Docs: `docs/extensions/voiceClone.md`,
 `docs/useCases/inbox/voiceNote.md`, spec `docs/specs/voiceClone.md`.
 
+## The work, step by step: tregExtension
+
+From `skills/tregExtension/SKILL.md`.
+
+## tregExtension
+
+### The loop
+
+1. **Search by the job.** `tregSearch` { query: ["<what you want done>"] }. Pick one of the endpoints it returns. Never guess an id.
+2. **Read it.** `tregGet` { id } shows its price and its params, and a call that works.
+3. **Call it.** `tregCall` { id, params: "<json object>" }.
+   - A free endpoint answers straight away.
+   - A priced one comes back as a dry run with its price. Run it only when matt asked for that spend: `tregCallLive` { id, params, approvedBy: "matt", confirmLive: true }.
+4. **Name the source.** Say which endpoint the answer came from (rule 53).
+
+### Hard boundaries
+
+- Nothing that costs money runs unless matt asked for it (rule 41).
+- Every call goes through these tools, never a hand-run `treg` from a shell for log's work (rule 106).
+- treg's balance: `balance`. How long a call took: `timing` { call }.
+
+Docs: `docs/extensions/treg.md`. Spec: `docs/specs/treg.md`.
+
 ## Every tool, in full
 
 ### `memelordSearch`
@@ -146,7 +174,7 @@ Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads 
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }), getGuide({ useCase: "instagram/dmReply" }), getGuide({ useCase: "twitter/getTheAction" }), getGuide({ useCase: "twitter/managerMaxxing" }), getGuide({ useCase: "twitter/replyGuyFunnel" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTemplate`
@@ -157,7 +185,7 @@ log memelord template <id> [--json]   (one template: its name, media url, text s
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTrending`
@@ -169,7 +197,7 @@ Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads 
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/memeReply" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTools`
@@ -180,7 +208,7 @@ log memelord tools [--category imageToImage|imageTextToImage|textToImage] [--jso
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `memelordTaste`
@@ -191,8 +219,61 @@ log memelord taste [--build --from <posts.json>] [--json]   (matt's meme taste: 
 Search ranks what it finds by matt's taste (--noTaste turns it off): SubQ reads each template's picture against the styles he named (deep fried, larping, streamer reacts like FlightReacts, Zias and Bloo, shitposts) and the memes he has sent, and the taste line leads the answer.
 Memelord is an extension (docs/extensions/memelord.md): only its four free discovery tools are reachable from log, so nothing here spends money (rule 41). The key is MEMELORD_API_KEY in .env.local. A meme goes out on Discord as its media url on a line of its own, which Discord shows inline.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 41, 94, 119, 120, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `tregSearch`
+
+Find a treg endpoint by what you want done: each one's id, what it does and its price.
+The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)
+log treg search "<what you want done>" [--limit <n>] [--json]   (treg's catalog, found by the job: each endpoint's id, what it does and its price)
+treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
+AGENTS.md (log://agents): rules 41, 53, 106, 119, 166, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `tregGet`
+
+One treg endpoint in full: its price, its params and a call that works.
+The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)
+log treg get <endpointId> [--json]   (one endpoint in full: its price, its params and a call that works)
+treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
+AGENTS.md (log://agents): rules 41, 53, 106, 119, 166, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `tregCall`
+
+Call a treg endpoint, the key injected server-side: a free one runs, a priced one is a dry run saying its price unless live with approvedBy.
+The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)
+log treg call <endpointId> [--params '<json object>'] [--path <path>] [--method <GET|POST>] [--data '<body>'] [--await] [--approvedBy <who>] [--live] [--json]   (calls it through treg, the key injected server-side: a free endpoint runs; a priced one is a dry run that says its price unless --live with --approvedBy)
+treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
+Fill the named fields; each value goes through whole. What acts on Facebook is `tregCallLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
+AGENTS.md (log://agents): rules 41, 53, 106, 119, 166, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `tregCallLive`
+
+Call a treg endpoint, the key injected server-side: a free one runs, a priced one is a dry run saying its price unless live with approvedBy.
+Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)
+log treg call <endpointId> [--params '<json object>'] [--path <path>] [--method <GET|POST>] [--data '<body>'] [--await] [--approvedBy <who>] [--live] [--json]   (calls it through treg, the key injected server-side: a free endpoint runs; a priced one is a dry run that says its price unless --live with --approvedBy)
+treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
+AGENTS.md (log://agents): rules 41, 53, 106, 119, 166, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `balance`
+
+Every paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI, Parallel, treg, 2Captcha, Byteful): its balance, or its last answer when it has no balance API, and which are out of credit.
+Every paid provider log calls, with what is left and which are out of credit
+log balance [--provider <name>] [--json]
+Every paid provider log calls, with what is left: subq, jina, inworld, fishAudio, assemblyAi, parallel, treg, twoCaptcha, byteful.
+A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (~/.logCli/billing/answers.jsonl). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.
+Reading balances spends nothing (rule 41). Topping up is matt's: never done from log.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
+AGENTS.md (log://agents): rules 41, 73, 94, 164, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `cloneVoice`
 
@@ -202,7 +283,7 @@ log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply
 Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 143, 145, 146, 147, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `cloneSpeak`
@@ -213,7 +294,7 @@ log clone speak --text "<words>" [--provider inworld|fishAudio] [--model <model>
 Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }).
-Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for).
+Before first using this tool in a session, load its guide: getGuide({ topic: "extensions" }) (Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup).
 AGENTS.md (log://agents): rules 39, 41, 94, 106, 119, 142, 143, 145, 146, 147, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
@@ -229,6 +310,10 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
 
 **Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
+
+**Rule 53.** 2026-10-20 · matt: when something has to be found (a group to join, a provider, a price, a fact), it comes from an external source, never from memory or a guess: search with TinyFish through treg (`treg call tinyfish.web.search`, `tinyfish.web.fetch`, free) as the basis for every lookup, and pull the actual candidates from it. A suggestion names where it came from (the page, the search), and a pick is one of what the search returned.
+
+**Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
 
 **Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
 
@@ -247,3 +332,7 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 **Rule 146.** 2026-11-05 · matt: "the second one but why does it speak so slowly" and "use the discord audio for the samples". The clone speaks at `LOG_VOICE_SPEED` (`.env.local`, default 1.15, kept between 0.8 and 1.5), sent as Inworld's `speakingRate`, and a clone made on Inworld speaks with `inworld-tts-2` (the provider's `preferred` model, which takes emotion tags), not the cheapest. `log clone voice --from <file>[,<file>]` clones from recordings of matt's own that he names instead of his voice notes, each one's words read from a `.txt` of the same name beside it. Spec: `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-12).
 
 **Rule 147.** 2026-11-05 · matt: "ITS IRISH", none of the accent-steered clips sounded like him, "11_script_long272_b ... was pretty good", then "go through my voice notes ... analyse it", "it still doesn't have that distortion", and "op is real like op not o p ... make it the gate for the voice ... or it won't pass". A voice note sounds like his own voice notes and says what was written, measured both times: - **The clone** is Inworld instant cloning from one continuous 30 s of his own Discord voice note (`matt-long272_b`, 2:30 into his 4.5 minute note), the accent `Irish` (`LOG_VOICE_ACCENT`). No accent instruction is sent with the text: the clone carries the accent. On `inworld-tts-2` breaths are put in (`[breathe]` at the start and once at least 8 words have gone by, `withBreaths`). - **Shaped like his notes** (`processLikeMatt`, `src/extensions/voiceClone/helpers/realism.ts`), every number measured from five of his real Discord voice notes against the clone: phone squash (`dynaudnorm`), the phone mic's own tone curve measured from his notes (`REALISM.phoneCurve`: its low cut under 160 Hz, its dip around 2 to 3 kHz and its dull top over 5 kHz), his slow mic drift (1.9 dB), tone sway as the phone moves, phone-mic saturation on loud words, and his own room tone taken from the gaps in his own voice notes (never a sound effect), laid 22 dB under the voice so it lands where his do (30 to 33 dB). Seeded by the text, so the same words come out the same. - **Listened back** (`readSpoken`, `spoken.ts`): the shaped note is transcribed with AssemblyAI's word timings and lined up with the text. A word in the spoken lexicon (`SPOKEN_LEXICON`: `op` said as a word, written `OP` for the clone, since a lower-case `op` came out as "up") must be heard as itself, as one word under 400 ms; spelled out, heard as something else, or more than a quarter of the words different, and it is refused with `spokenMismatch`, naming what was heard. An acronym the lexicon doesn't have is refused before anything is spoken (`pronunciationUnknown`): how matt says it is never guessed. A note that can't be listened back is never sent (`spokenCheckFailed`). It runs in `log clone speak` and every `log discord|instagram|slack voice`. This replaces rule 145's accent steer. Spec: `docs/specs/voiceClone.md` (REQ-VOICE-CLONE-13, 14).
+
+**Rule 164.** 2026-11-07 · matt: "have a way inside of log to be able to view our balance ... for the extensions as well ... if we have an issue with the actual calls such as voice then it keeps causing issues but it may be because the balance is low". `log balance` (MCP `balance`) shows every paid provider log calls: SubQ, Jina, Inworld, Fish Audio, AssemblyAI, Parallel, treg, 2Captcha and Byteful. Where the provider has a balance API it is read (Jina's tokens, Fish Audio's credit, treg, 2Captcha, Byteful's residential traffic); where it has none, its last answer to a real call decides. The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients keep every answer in `~/.logCli/billing/answers.jsonl`, and one that says it is out of credit (a 402, insufficient credit, payment required) says so in the failure itself, naming where to top up (`providerOutOfCredit`), so a failing voice note or gate is seen as money, not a bug. Reading a balance spends nothing, and topping up is matt's (rule 41). Spec: `docs/specs/balance.md`.
+
+**Rule 166.** 2026-11-07 · matt: "make it so that we can then call treg as an extension inside of this as well and then write it up into the extensions". treg is an extension like Memelord (rule 119), reached through log's own command and MCP tools, never by hand (rule 106): - **`log treg search "<job>"`** (MCP `tregSearch`) finds an endpoint by what you want done, with each one's price. - **`log treg get <id>`** (MCP `tregGet`) reads one endpoint in full: its price, its params and a call that works. - **`log treg call <id> --params '<json>'`** (MCP `tregCall`) calls it through the treg CLI on this machine, the key injected server-side by treg (`TREG_BIN` moves it). The price is read from `get` before every call. A free endpoint runs. A priced one is a dry run that says its price and the exact command, and runs only with `--live` and `--approvedBy` (MCP `tregCallLive`) when matt asked for that spend (rule 41). Every call is a timed span (rule 165), and treg's balance is in `log balance` (rule 164). It is the way every lookup reaches an external source (rule 53). `src/extensions/treg`, `src/cli/treg`, `docs/extensions/treg.md`. Spec: `docs/specs/treg.md`.

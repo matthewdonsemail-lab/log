@@ -2522,7 +2522,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     doesn't. The command tools stay as they are for now. Spec:
     `docs/specs/mcpServer.md` (REQ-MCP-18).
 
-164. 2026-11-07 · matt: "find the place inside of my code that are
+164. 2026-11-07 · matt: "have a way inside of log to be able to view our
+    balance ... for the extensions as well ... if we have an issue with the
+    actual calls such as voice then it keeps causing issues but it may be
+    because the balance is low". `log balance` (MCP `balance`) shows every
+    paid provider log calls: SubQ, Jina, Inworld, Fish Audio, AssemblyAI,
+    Parallel, treg, 2Captcha and Byteful. Where the provider has a balance API
+    it is read (Jina's tokens, Fish Audio's credit, treg, 2Captcha, Byteful's
+    residential traffic); where it has none, its last answer to a real call
+    decides. The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients keep
+    every answer in `~/.logCli/billing/answers.jsonl`, and one that says it is
+    out of credit (a 402, insufficient credit, payment required) says so in
+    the failure itself, naming where to top up (`providerOutOfCredit`), so a
+    failing voice note or gate is seen as money, not a bug. Reading a balance
+    spends nothing, and topping up is matt's (rule 41). Spec:
+    `docs/specs/balance.md`.
+
+165. 2026-11-07 · matt: "find the place inside of my code that are
     slowing it down", then "have all timing known and stored so that we're
     able to then add further optimizations", after `twitterDms` took
     p50 9.5 s while X answered in 0.69 s, and the live log had no call id,
@@ -2550,6 +2566,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       those numbers, and the same report is run again after the change.
     Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec:
     `docs/specs/callTiming.md`.
+
+166. 2026-11-07 · matt: "make it so that we can then call treg as an
+    extension inside of this as well and then write it up into the
+    extensions". treg is an extension like Memelord (rule 119), reached
+    through log's own command and MCP tools, never by hand (rule 106):
+    - **`log treg search "<job>"`** (MCP `tregSearch`) finds an endpoint by
+      what you want done, with each one's price.
+    - **`log treg get <id>`** (MCP `tregGet`) reads one endpoint in full: its
+      price, its params and a call that works.
+    - **`log treg call <id> --params '<json>'`** (MCP `tregCall`) calls it
+      through the treg CLI on this machine, the key injected server-side by
+      treg (`TREG_BIN` moves it). The price is read from `get` before every
+      call. A free endpoint runs. A priced one is a dry run that says its
+      price and the exact command, and runs only with `--live` and
+      `--approvedBy` (MCP `tregCallLive`) when matt asked for that spend
+      (rule 41).
+    Every call is a timed span (rule 165), and treg's balance is in `log
+    balance` (rule 164). It is the way every lookup reaches an external
+    source (rule 53). `src/extensions/treg`, `src/cli/treg`,
+    `docs/extensions/treg.md`. Spec: `docs/specs/treg.md`.
 
 ## Checks
 

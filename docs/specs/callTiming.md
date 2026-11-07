@@ -4,7 +4,7 @@ title: "Call timing"
 
 # Call timing
 
-Every call is timed, never guessed: one timing layer across Bun and Python gives each call an id, stores every stage inside it in log.db, and reports p50, p95 and p99 per tool and per stage. Rule 164.
+Every call is timed, never guessed: one timing layer across Bun and Python gives each call an id, stores every stage inside it in log.db, and reports p50, p95 and p99 per tool and per stage. Rule 165.
 
 ### REQ-TIMING-01: Every call has an id and its stages are spans
 

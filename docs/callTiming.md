@@ -4,7 +4,7 @@ title: "Call timing"
 
 # Call timing
 
-Every log call is timed. You can see where the time went from the numbers, so nobody has to guess (rule 164). One timing layer runs across Bun and Python:
+Every log call is timed. You can see where the time went from the numbers, so nobody has to guess (rule 165). One timing layer runs across Bun and Python:
 
 1. It gives every call an id.
 2. It records every stage inside the call as a span.

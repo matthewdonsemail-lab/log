@@ -347,6 +347,19 @@
     ],
     "action": "Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it."
   },
+  "providerOutOfCredit": {
+    "layer": "runtime",
+    "meaning": "A paid provider log calls (SubQ, Jina, Inworld, Fish Audio, AssemblyAI) answered that it is out of credit (402, or words like insufficient credit). The call failed for want of money, not a bug.",
+    "retryable": false,
+    "raisedIn": [
+      "subq/decisions",
+      "voice/aiTells",
+      "extensions/inworld",
+      "extensions/fishAudio",
+      "media/voiceNotes"
+    ],
+    "action": "Run log balance (MCP balance) to see every provider, then tell matt which one needs topping up and where. Never top up from log (rule 41)."
+  },
   "jinaKeyMissing": {
     "layer": "twitter",
     "meaning": "The AI tells index and the voice gate embed and rerank with Jina, and JINA_API_KEY is not set.",
@@ -2479,6 +2492,25 @@
       "cli/timing"
     ],
     "action": "Copy the call id from the call's ▶ or ■ line in the live log (~/.logCli/mcp/<day>.log), or run log timing without --call for the report."
+  },
+  "tregFailed": {
+    "layer": "runtime",
+    "meaning": "treg answered with an error, or couldn't be run: the endpoint id is wrong, its params were refused, the team balance is out, or treg isn't on this machine's PATH.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/treg",
+      "extensions/treg"
+    ],
+    "action": "Read treg's own words in the refusal. Check the id with log treg search, its params with log treg get, the balance with log balance; set TREG_BIN if treg isn't on the PATH."
+  },
+  "tregParamsInvalid": {
+    "layer": "runtime",
+    "meaning": "The params given to log treg call weren't a JSON object of query params.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/treg"
+    ],
+    "action": "Pass --params as a JSON object, e.g. {\"query\":\"kick streamer managers\",\"domain_type\":\"web\"}; log treg get lists the params the endpoint takes."
   },
   "xchatPinMissing": {
     "layer": "runtime",

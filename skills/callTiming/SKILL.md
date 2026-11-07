@@ -1,6 +1,6 @@
 ---
 name: callTiming
-description: Find where a log call spends its time from stored timings, never a guess (rule 164). Every MCP tool call and terminal run has a call id and stores each stage as a span in log.db; `timing` reports p50, p95 and p99 per tool and per stage, and `timing` { call } shows one call as a waterfall. Use when matt asks why something is slow, whether we hit p99 or p95, or before and after any change made to speed something up.
+description: Find where a log call spends its time from stored timings, never a guess (rule 165). Every MCP tool call and terminal run has a call id and stores each stage as a span in log.db; `timing` reports p50, p95 and p99 per tool and per stage, and `timing` { call } shows one call as a waterfall. Use when matt asks why something is slow, whether we hit p99 or p95, or before and after any change made to speed something up.
 ---
 
 # callTiming
