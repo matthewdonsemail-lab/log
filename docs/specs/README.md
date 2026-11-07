@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 38 domains, 448 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 38 domains, 449 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -372,6 +372,7 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-08** An item cannot be edited while its run is going
 - **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
 - **REQ-CONTEXT-10** The context before a send is read from the .db once the account has caught up
+- **REQ-CONTEXT-11** A read for one chat or person answers from the .db, and the platform only fills it
 
 ## [Voice gate](./voiceGate.md)
 

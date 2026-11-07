@@ -9,6 +9,7 @@ import { gateDeps } from "../twitter/helpers/voice.ts";
 import { recordPosition } from "../../inbox/store/index.ts";
 import { discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
+import { cachedChatList, chatMessageCount, chatMessages, findInChatList, markBackfilled, readSourceFor, sourceLine } from "../../inbox/dbRead/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
 import { withVoiceNotes } from "../transcribe/index.ts";
 import type { AudioOf } from "../transcribe/index.ts";
@@ -179,16 +180,35 @@ export const discordReadCommand: Command = {
       const gate = discordGate(account);
       if (!gate.ok) return refuse("discord read", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directDiscord) return { code: 1, stderr: "log discord read: the direct-API engine isn't wired in this context" };
+      const started = performance.now();
+      const direct = context.directDiscord;
       let target = channel;
+      let kind = cachedChatList<DiscordChat>("discord", account.accountName)?.find((c) => c.id === channel)?.kind ?? (chatMessageCount("discord", account.accountName, channel) ? "dm" : "channel");
       if (!/^\d{15,22}$/.test(channel)) {
-        const listed = context.directDiscord(account, { action: "chats" });
-        if (!listed.answer.ok) return { code: 1, stdout: `log discord read: ${account.accountName}: reading its chats to find "${channel}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` };
-        const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], channel);
+        const looked = findInChatList<DiscordChat, ReturnType<typeof matchChat>>("discord", account.accountName, channel, matchChat, () => {
+          const listed = direct(account, { action: "chats" });
+          return listed.answer.ok ? { ok: true, chats: (listed.answer.chats as DiscordChat[] | undefined) ?? [] } : { ok: false, detail: `${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+        });
+        if ("failed" in looked) return { code: 1, stdout: `log discord read: ${account.accountName}: reading its chats to find "${channel}": ${looked.failed}` };
+        const found = looked.found;
         if (!found.ok) return refuse("discord read", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
         target = found.chat.id;
-        context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`);
+        kind = found.chat.kind;
+        context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})${looked.from === "cache" ? ", from the kept chat list" : ""}`);
       }
-      const run = context.directDiscord(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
+      const source = kind === "channel" ? ({ from: "platform", reason: "serverChannel" } as const) : await readSourceFor("discord", account.accountName, target, chatMessageCount("discord", account.accountName, target), limit);
+      if (source.from === "refused") return refuse("discord read", "accountBehind", source.refused);
+      if (source.from === "db") {
+        const afterId = after ? BigInt(after) : null;
+        const stored = chatMessages("discord", account.accountName, target, after ? 1000 : limit).filter((m) => afterId === null || (/^\d+$/.test(m.id) && BigInt(m.id) > afterId)).slice(-limit);
+        const messages: DiscordRead[] = stored.map((m) => ({ id: m.id, at: m.at, from: m.from, bot: false, fromMe: m.fromMe, replyTo: null, text: m.text, embeds: [] }));
+        context.err(sourceLine(source, "Discord", account.accountName, performance.now() - started));
+        if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "db", platform: "discord", account: account.accountName, ok: true, source, messages }, null, 2) };
+        return { code: 0, stdout: [`log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}, from the .db`, ...messages.map((m) => [`  ${m.at} ${m.from}${m.fromMe ? " (me)" : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : [])].join("\n"))].join("\n") };
+      }
+      context.err(sourceLine(source, "Discord", account.accountName, 0));
+      const run = direct(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
+      if (run.answer.ok && kind !== "channel") markBackfilled("discord", account.accountName, target, context.now?.() ?? new Date());
       const code = run.answer.ok ? 0 : 1;
       const messages = await withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: target }, (run.answer.messages as DiscordRead[] | undefined) ?? [], (m) => m.audio ?? [], context.err);
       if (run.answer.ok) for (const m of messages) storeRead("discord", account.accountName, target, "dm", { id: m.id, at: m.at, from: m.from, fromMe: m.fromMe, text: m.text }, context.now?.() ?? new Date(), "backfill");
@@ -374,9 +394,12 @@ export const discordDeleteCommand: Command = {
       if (!context.directDiscord) return { code: 1, stderr: "log discord delete: the direct-API engine isn't wired in this context" };
       let target = channel;
       if (!/^\d{15,22}$/.test(channel)) {
-        const listed = context.directDiscord(account, { action: "chats" });
-        if (!listed.answer.ok) return { code: 1, stdout: `log discord delete: ${account.accountName}: reading its chats to find "${channel}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` };
-        const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], channel);
+        const looked = findInChatList<DiscordChat, ReturnType<typeof matchChat>>("discord", account.accountName, channel, matchChat, () => {
+          const listed = context.directDiscord!(account, { action: "chats" });
+          return listed.answer.ok ? { ok: true, chats: (listed.answer.chats as DiscordChat[] | undefined) ?? [] } : { ok: false, detail: `${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+        });
+        if ("failed" in looked) return { code: 1, stdout: `log discord delete: ${account.accountName}: reading its chats to find "${channel}": ${looked.failed}` };
+        const found = looked.found;
         if (!found.ok) return refuse("discord delete", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
         target = found.chat.id;
         context.err(`"${channel}" is ${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`);
@@ -469,9 +492,12 @@ export const discordSendCommand: Command = {
       let kind = "unknown";
       if (!/^\d{15,22}$/.test(channel)) {
         if (!context.directDiscord) return { code: 1, stderr: "log discord send: the direct-API engine isn't wired in this context" };
-        const listed = context.directDiscord(account, { action: "chats" });
-        if (!listed.answer.ok) return { code: 1, stdout: `log discord send: ${account.accountName}: reading its chats to find "${channel}": ${listed.answer.code}: ${listed.answer.detail ?? ""}` };
-        const found = matchChat((listed.answer.chats as DiscordChat[] | undefined) ?? [], channel);
+        const looked = findInChatList<DiscordChat, ReturnType<typeof matchChat>>("discord", account.accountName, channel, matchChat, () => {
+          const listed = context.directDiscord!(account, { action: "chats" });
+          return listed.answer.ok ? { ok: true, chats: (listed.answer.chats as DiscordChat[] | undefined) ?? [] } : { ok: false, detail: `${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+        });
+        if ("failed" in looked) return { code: 1, stdout: `log discord send: ${account.accountName}: reading its chats to find "${channel}": ${looked.failed}` };
+        const found = looked.found;
         if (!found.ok) return refuse("discord send", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n"));
         target = found.chat.id;
         label = `${labelOf(found.chat)} (${found.chat.kind} ${found.chat.id})`;

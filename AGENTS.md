@@ -2409,6 +2409,39 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       caught or breaks the budget doesn't ship.
     Spec: `docs/specs/mcpServer.md` (REQ-MCP-17).
 
+160. 2026-11-07 · matt: "it keeps rereading all of my conversations on
+    social media. It shouldn't ever call that ... that's meant to read from
+    the database ... If it needs to read it, it re-indexes and plays catch
+    up ... or it's routed into just reading directly against the database,
+    which achieves P99". On 2026-11-07, `discordRead` took p50 91 s and
+    `twitterDms` p50 11 s (p95 69 s). Both went to the platform on every
+    call, and every Discord lookup by name listed all its chats first, while
+    each account's owner was already keeping the .db current. Now a read
+    for one chat or person decides where its answer comes from
+    (`readSourceFor`, `src/inbox/dbRead`):
+    - **the .db,** when the owner is live, the account has caught up, and
+      the chat has been backfilled once (`markBackfilled`) or the .db holds
+      as many messages as asked for;
+    - **the platform, once, to fill the .db,** when the chat was never
+      backfilled, when no owner is live, or for a Discord server channel,
+      which the watcher keeps only mentions and replies from;
+    - **a refusal, never a platform read,** when the catch-up was refused
+      (rule 94).
+
+    `log discord read` and `log twitter dms --with` work this way. The X
+    read decides before the X session is opened, and `--full` or `--force`
+    still reads X. A Discord chat named by its name is found in the kept
+    chat list (`findInChatList`, fresh for 6 hours), and Discord is listed
+    only for a name the list doesn't have: read, send, delete, react and
+    voice. Every read says where its answer came from. On the top 20 chats:
+    - Discord from the .db: p50/p95/p99 of 0.6/1.7/2.6 ms, 12 of 20 already
+      answerable;
+    - X from the .db: 25/33/40 ms, 3 of 20 already, and each other one
+      after its first read.
+
+    `bun scripts/inbox/benchDbRead.ts` measures it. Spec:
+    `docs/specs/fullContext.md` (REQ-CONTEXT-11).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
