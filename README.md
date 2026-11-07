@@ -198,3 +198,12 @@ Every commit and push runs the same checks CI does (lefthook): the docs and refe
 ## License
 
 MIT
+
+## Star history
+
+<a href="https://star-history.com/#matthewdonsemail-lab/log&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=matthewdonsemail-lab/log&type=Date&theme=dark" />
+    <img src="https://api.star-history.com/svg?repos=matthewdonsemail-lab/log&type=Date" alt="Stargazers of matthewdonsemail-lab/log over time" width="100%" />
+  </picture>
+</a>
