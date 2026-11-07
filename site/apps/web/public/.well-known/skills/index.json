@@ -53,6 +53,14 @@
       "summary": "From accounts to live Marketplace listings"
     },
     {
+      "name": "log-inbox-boss-maxxing",
+      "description": "Bossmaxxing: giving out tasks to the team. A log play (docs/useCases/inbox/bossMaxxing.md): Give out tasks to the people the owner works with, wherever they are (a Discord group, an X DM, Slack, Instagram), and keep track of every job across the team: who has what, what they owe, what's blocked. Each task goes out as a brief that says what to do, why, what done looks like and by when. A live monitor stays on, so every reply is answered as it lands, and someone being set up is walked through one step at a time until it works.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Bossmaxxing: giving out tasks to the team"
+    },
+    {
       "name": "log-inbox-rea-looksmaxxing",
       "description": "/rea-looksmaxxing: moneymaxx like a creator. A log play (docs/useCases/inbox/reaLooksmaxxing.md): Reverse engineer how a creator gets paid, then run the same play on your own accounts. [treg](https://treg.to/?ref=matthewdonse-aebsh) reads the social data (the creator's most viral clips, the clip farms reposting them, views and comments), the formula is decoded from what won, and log posts it through your accounts and funnels everyone who replies or DMs into your offer, every message checked against how you write. Clavicular is the worked example: 40 of his clips pulled, the top one at 8.44M views, a looksmaxxing program as the offer. The video and the page (`log.listeningkit.com/rea-looksmaxxing`) tell the same play.",
       "files": [

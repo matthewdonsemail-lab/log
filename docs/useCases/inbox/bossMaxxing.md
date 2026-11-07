@@ -1,0 +1,59 @@
+# Bossmaxxing: giving out tasks to the team
+
+Give out tasks to the people the owner works with, wherever they are (a Discord group, an X DM, Slack, Instagram), and keep track of every job across the team: who has what, what they owe, what's blocked. Each task goes out as a brief that says what to do, why, what done looks like and by when. A live monitor stays on, so every reply is answered as it lands, and someone being set up is walked through one step at a time until it works.
+
+How the owner asks for it: "bossmaxxing", "give out the tasks", "send <person> the task in <group> and tag them", "tell <person> about everything I researched and give them an outline", "triage the jobs across the team", "walk <person> through setting up <tool>", "help <person> get set up like we did with <other person>"
+
+## Run it from a fresh context
+
+Say: **"go on docs/useCases/inbox/bossMaxxing.md for <people or group>"**. The agent reads this page and runs the steps.
+
+## The steps
+
+<!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
+```mermaid
+flowchart TD
+  s0["1. Find each person and where the owner talks to them: the group t…<br/><i>discordChats, twitterDms, slackChats, instagramDms</i>"]
+  s1["2. Read each person's chat in full before giving them anything: wh…<br/><i>discordRead, twitterDms, slackRead, instagramDms</i>"]
+  s2["3. Triage the jobs across the team: one row per person with the ta…<br/><i>the reply to the owner</i>"]
+  s3["4. Write the task as a brief: what to do, in order; why it matters…<br/><i>the agent, OUTBOX/PERSON_TASK.md</i>"]
+  s4["5. Turn on the live monitor before anything goes out, so each repl…<br/><i>Monitor</i>"]
+  s5["6. Claim the chat<br/><i>inboxClaim</i>"]
+  s6["7. Send the task<br/><i>discordSendLive, twitterDmLive, slackSendLive, instagramSendLive</i>"]
+  s7["8. Walk them through it live, one step at a time: give step 1, ask…<br/><i>twitterDms, discordRead, aside</i>"]
+  s8["9. Tell the owner what went out and where things stand<br/><i>the reply to the owner</i>"]
+  s0 --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+```
+<!-- /stepsDiagram -->
+
+| # | Step | Tool | Done when |
+| --- | --- | --- | --- |
+| 1 | Find each person and where the owner talks to them: the group they're in, or their DM, on whichever platform he named | `discordChats`, `twitterDms` { account, limit }, `slackChats`, `instagramDms` | every person has one chat, named as the owner says it ("the aeo group", "@someone on X"), never an id (rule 155) |
+| 2 | Read each person's chat in full before giving them anything: what they were last told, what they owe, what they said back, and what they sent (files and sheets open through the read) | `discordRead` { channel, limit: "120" }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { with } | for each person: the last task, its status and the time of their last message |
+| 3 | Triage the jobs across the team: one row per person with the task, its status (done, waiting on them, waiting on the owner, blocked), the last update with its time, and the next move | the reply to the owner | the owner can see who has what in one table |
+| 4 | Write the task as a brief: what to do, in order; why it matters; what done looks like and by when; what to do if they're stuck. When it carries research or a long outline, put it in a file in `OUTBOX/` (plain words, no frontmatter) and keep the message short | the agent, `OUTBOX/<PERSON>_<TASK>.md` | the brief answers clear, why, done when, kind and how to ask (rule 162) |
+| 5 | Turn on the live monitor before anything goes out, so each reply wakes the agent the moment it lands | `Monitor` { command: "tail -n 0 -F ~/.logCli/inbox/pending.jsonl …", timeout_ms: 1800000 }, re-armed on expiry (rule 130) | the monitor is running |
+| 6 | Claim the chat | `inboxClaim` { platform, account, chat, event } | this session holds the chat (rule 133) |
+| 7 | Send the task. In a group, tag the person (`<@their id>` on Discord) and send it as a brief with the file attached. In a DM, send it one message per line. Send over the voice gate only when the owner said to | `discordSendLive` { channel, text, brief: true, file, approvedBy: "matt", confirmLive: true }, `twitterDmLive` { userId, text }, `slackSendLive`, `instagramSendLive`; `overGate: true` only on the owner's word (rule 152) | the platform answers `sent` |
+| 8 | Walk them through it live, one step at a time: give step 1, ask them to say done, read what they send back, then give step 2. Ask for the one thing a setup needs from them (their email, a login). Do the owner's side yourself through the tool that holds it, such as an invite in a web dashboard through the Aside REPL | the monitor, `twitterDms` { with } or `discordRead` before each reply, `aside repl` for a dashboard | each step is confirmed by what they sent back, not assumed |
+| 9 | Tell the owner what went out and where things stand | the reply to the owner | who got what, what they said, what is still pending, and anything only the owner can do |
+
+## What the runs taught
+
+- **A task is a brief, not a chat message.** `brief: true` on `discordSendLive` gates it on clear, why, done when, kind and how to ask (rule 162). A brief with no "done when" or no deadline comes back as "what do you want me to do".
+- **Give the same access the others have.** Before inviting someone to a shared tool, look at who is already in it and with which role (a dashboard's members or pending invitations), and give the new person the same role.
+- **Ask for one thing at a time.** "What email do you want the invite on" got an answer in a minute. A long setup message with the question at the end didn't.
+- **They write while it's going out.** A send that is one message per line stops when they reply partway through (`>>> INTERRUPTED`, rule 130). Read what they said, answer it, then send the held lines if they still fit.
+- **A burst of empty X Chat events right after you message is read receipts, not messages.** Read the person fresh with `twitterDms` { with, full: true } before saying they wrote anything.
+- **X DMs are checked against house style.** A domain or an email address counts as a full stop. Write "your gmail" or the domain without its ending, or keep the address for the dashboard.
+- **The work runs in a harness, never in a browser by hand.** When someone does research or lead work, they run it from a coding agent (T3 Code, Claude Code, Codex), and web pages are read through the Aside REPL. Lists come back as a `.tsv` (one row per line, tab between columns), never a pasted table.
+- **Report money as it's spent.** When a step costs something (a lookup, an email check), say what it cost next to what it found, and stop to ask the owner before anything he didn't ask to pay for (rule 41).
+- **The live chat starts where the owner says.** If the person is on two platforms and the owner names one, answer there and point the other chat to it.
+- **A play must be loaded before sending as the owner.** A send with no play loaded is refused `playMissing` (rule 157). This page is that play.
