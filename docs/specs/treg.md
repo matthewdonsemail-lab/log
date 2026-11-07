@@ -17,3 +17,9 @@ Checked by: code and SubQ
 Before every call, `call` reads the endpoint with `get` and takes its price (`endpointOf`). A price of free or $0 is free (`isFreePrice`). A free endpoint is called. A priced endpoint without `--live` is a dry run: it says the price and the exact command (`shownCommand`), and calls nothing. With `--live` but no `--approvedBy` it is refused with `notApproved`. Only `--live` with `--approvedBy` calls it, which is the MCP tool `tregCallLive` with `confirmLive`.
 
 Checked by: code and SubQ
+
+### REQ-TREG-03: A call's answer comes back trimmed
+
+`call` drops treg's `raw` copy of the provider's answer unless `--raw` (`trimAnswer`). `--where key=value`, `--maxItems` and `--fields` trim every list of rows in the answer, after it is parsed and before it is printed (`trimOf`, `trimAnswer`), and a malformed one is refused with `tregTrimInvalid` before treg is called. Trimming changes only what comes back, never the call or its charge.
+
+Checked by: code and tests

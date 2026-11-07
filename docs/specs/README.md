@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 42 domains, 470 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 42 domains, 471 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -623,6 +623,7 @@ treg's catalog reached from log as an extension: endpoints found by the job, rea
 
 - **REQ-TREG-01** Search, get and call run the treg CLI, never a shell
 - **REQ-TREG-02** Nothing priced runs unless matt approved the spend
+- **REQ-TREG-03** A call's answer comes back trimmed
 
 ## [Instagram](./instagram.md)
 

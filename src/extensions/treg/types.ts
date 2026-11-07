@@ -33,3 +33,10 @@ export interface TregClient {
   get: (id: string) => Promise<TregRun>
   call: (input: TregCallInput) => Promise<TregRun>
 }
+
+export interface TregTrim {
+  fields: string[]
+  maxItems?: number
+  where: [string, string][]
+  raw: boolean
+}

@@ -87,6 +87,33 @@ describe("treg extension", () => {
     expect(seen.some((a) => a[0] === "call")).toBe(true);
   });
 
+  test("an answer drops treg's raw copy, and maxItems, fields and where trim its lists", async () => {
+    const posts = [
+      { id: "1", text: "a", isReply: true, views: 9 },
+      { id: "2", text: "b", isReply: false, views: 8 },
+      { id: "3", text: "c", isReply: false, views: 7 },
+      { id: "4", text: "d", isReply: false, views: 6 },
+    ];
+    const stdout = JSON.stringify({ output: { posts, next_cursor: "x" }, raw: { output: { data: { tweets: posts } } }, _treg: { charged_micro: 450 } });
+    fake(PRICED, { ok: true, code: 0, stdout, stderr: "" });
+    const plain = await tregCommand.run(context().ctx, ["call", "tikhub.x.user-tweets", "--live", "--approvedBy", "matt", "--json"]);
+    const whole = JSON.parse(plain.stdout ?? "{}").answer;
+    expect(whole.raw).toBeUndefined();
+    expect(whole.output.posts).toHaveLength(4);
+    fake(PRICED, { ok: true, code: 0, stdout, stderr: "" });
+    const trimmed = await tregCommand.run(context().ctx, ["call", "tikhub.x.user-tweets", "--live", "--approvedBy", "matt", "--json", "--where", "isReply=false", "--maxItems", "2", "--fields", "id,text"]);
+    const answer = JSON.parse(trimmed.stdout ?? "{}").answer;
+    expect(answer.output.posts).toEqual([{ id: "2", text: "b" }, { id: "3", text: "c" }]);
+    expect(answer.output.next_cursor).toBe("x");
+    expect(answer._treg).toEqual({ charged_micro: 450 });
+    fake(PRICED, { ok: true, code: 0, stdout, stderr: "" });
+    const kept = await tregCommand.run(context().ctx, ["call", "tikhub.x.user-tweets", "--live", "--approvedBy", "matt", "--json", "--raw"]);
+    expect(JSON.parse(kept.stdout ?? "{}").answer.raw).toBeDefined();
+    fake(PRICED);
+    const bad = await tregCommand.run(context().ctx, ["call", "tikhub.x.user-tweets", "--live", "--approvedBy", "matt", "--where", "isReply"]);
+    expect(bad.stderr).toContain("tregTrimInvalid");
+  });
+
   test("a failed run and bad params are refused with their codes", async () => {
     fake(FREE, { ok: false, code: 2, stdout: "", stderr: "402 balance empty" });
     const failed = await tregCommand.run(context().ctx, ["call", "tinyfish.web.search"]);

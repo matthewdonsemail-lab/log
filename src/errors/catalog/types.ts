@@ -1966,6 +1966,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/treg'],
     action: 'Pass --params as a JSON object, e.g. {"query":"kick streamer managers","domain_type":"web"}; log treg get lists the params the endpoint takes.'
   },
+  tregTrimInvalid: {
+    layer: 'runtime',
+    meaning: "The trimming given to log treg call was malformed: --where wasn't key=value pairs, or --maxItems wasn't a whole number from 1 to 1000.",
+    retryable: false,
+    raisedIn: ['cli/treg'],
+    action: 'Pass --where as key=value[,key=value] (e.g. isReply=false), --maxItems as a whole number and --fields as comma-separated keys (e.g. id,text,createdUtc).'
+  },
   logMcpRestarted: {
     layer: 'runtime',
     meaning: "The log MCP server restarted while this call ran (it crashed, or its new code was swapped in), so the call's answer was lost. The proxy Claude Code talks to stayed up.",

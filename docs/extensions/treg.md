@@ -29,6 +29,8 @@ The team's treg balance is in `log balance` (rule 164).
 
 log runs the treg CLI on this machine (`treg.exe`, found on the PATH; `TREG_BIN` moves it), as a child process with its arguments passed one by one, never through a shell. Each `search`, `get` and `call` is a timed span in the call's timings (`treg.search`, `treg.get`, `treg.call`, rule 165), so `log timing` shows how long treg took.
 
+A call's answer comes back without treg's `raw` copy of the provider's answer, which repeats `output` (`--raw` keeps it). `--where key=value`, `--maxItems <n>` and `--fields a,b` trim every list in the answer, so a person's 20 posts can come back as their newest original posts with only the keys needed: `--where isReply=false --maxItems 5 --fields id,text,createdUtc,likes,replies,media`. The trimming changes what comes back, never what treg charges.
+
 ## Example
 
 ```
