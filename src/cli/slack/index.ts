@@ -310,7 +310,7 @@ export function slackToInboxOf(event: Record<string, unknown>): boolean {
 
 export function slackInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
   const channel = String(event.channel ?? "");
-  return { platform: "slack", account, conversationId: channel, with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: channel.startsWith("D") ? "dm" : channel.startsWith("G") ? "group" : "mention", seenAt: now.toISOString(), workspace: String(event.workspace ?? "") };
+  return { platform: "slack", account, conversationId: channel, with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: channel.startsWith("D") ? "dm" : channel.startsWith("G") ? "group" : "mention", seenAt: now.toISOString(), workspace: String(event.workspace ?? ""), ...(event.ts ? { id: String(event.ts) } : {}), ...(event.user ? { senderId: String(event.user) } : {}), ...(event.threadTs ? { replyTo: String(event.threadTs) } : {}), ...(Array.isArray(event.attachments) && event.attachments.length ? { attachments: event.attachments as { name: string }[] } : {}) };
 }
 
 export const slackWatchCommand: Command = {

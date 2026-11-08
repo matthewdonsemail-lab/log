@@ -25,6 +25,10 @@ export interface InboxMessage {
   box: string
   seenAt: string
   workspace?: string
+  id?: string
+  senderId?: string
+  replyTo?: string
+  serverId?: string
   attachments?: MessageAttachment[]
 }
 

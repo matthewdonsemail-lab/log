@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { migrate } from '../../storage/schema'
+import { isBareId, typeEvent } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -84,12 +85,7 @@ export interface AppendInput {
   source?: 'live' | 'catchUp' | 'backfill'
 }
 
-const BARE_ID = /^@?(?:\d{4,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i
-const SLACK_ID = /^[UWB](?=[A-Z0-9]*\d)[A-Z0-9]{8,}$/
-
-export function isBareId(label: string | null | undefined): boolean {
-  return !label || BARE_ID.test(label.trim()) || SLACK_ID.test(label.trim())
-}
+export { isBareId }
 
 const UNNAMED = 'someone not named yet'
 
@@ -140,6 +136,7 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
     const result = handle.prepare(`INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(eventId, input.platform, input.account, input.conversationId ?? '', input.type, known ? 1 : 0, input.with ?? '', input.text ?? '', input.box ?? '', JSON.stringify(input.payload ?? {}).slice(0, 20000), input.sourceAt ?? '', receivedAt, now.toISOString(), process.pid, input.source ?? 'live')
     if (!result.changes) return null
+    typeEvent(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live' })
     markStage(eventId, 'received', new Date(receivedAt), handle)
     markStage(eventId, 'appended', now, handle)
     if (senderId && handleGiven) rememberPerson(input.platform, input.account, senderId, handleGiven, null, now, handle)

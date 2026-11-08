@@ -308,7 +308,7 @@ export function instagramWatchLine(event: Record<string, unknown>): string {
 }
 
 export function instagramInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
-  return { platform: "instagram", account, conversationId: String(event.thread ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: "dm", seenAt: now.toISOString() };
+  return { platform: "instagram", account, conversationId: String(event.thread ?? ""), with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: "dm", seenAt: now.toISOString(), ...(event.itemId ? { id: String(event.itemId) } : {}), ...(event.userId ? { senderId: String(event.userId) } : {}) };
 }
 
 export const instagramWatchCommand: Command = {
