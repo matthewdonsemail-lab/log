@@ -3,7 +3,7 @@ import { shouldPrompt } from "../../launch/helpers/index.ts";
 import type { LaunchTTY } from "../../launch/helpers/index.ts";
 import { addPending } from "../../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../../inbox/relay/index.ts";
-import { appendEvent, eventIdOf, recordPosition } from "../../../inbox/store/index.ts";
+import { afterGap, appendEvent, eventIdOf, recordPosition } from "../../../inbox/store/index.ts";
 import { enqueueAttachments } from "../../../media/describer/index.ts";
 import { recordTwitterSession } from "../../../twitter/account/session/index.ts";
 import type { XChatLiveEvent } from "../../../twitter/account/session/index.ts";
@@ -125,7 +125,7 @@ export function liveLine(event: XChatLiveEvent): string {
 }
 
 export function inboxMessageOf(account: string, event: XChatLiveEvent, now: Date) {
-  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString(), ...(event.openedLate ? { openedLate: event.openedLate } : {}) };
+  return { platform: "twitter", account, conversationId: event.conversationId ?? "", with: event.from || event.senderId || "?", text: event.text ?? "", at: event.time ?? now.toISOString(), box: "xchat", seenAt: now.toISOString(), ...(event.id ? { id: String(event.id) } : {}), ...(event.senderId ? { senderId: String(event.senderId) } : {}), ...(event.openedLate ? { openedLate: event.openedLate } : {}) };
 }
 
 async function watchChat(context: CommandContext, argv: string[]): Promise<CommandResult> {
@@ -181,7 +181,7 @@ export function storeOwnMessage(account: string, m: ReturnType<typeof inboxMessa
   return !!appendEvent({ platform: "twitter", account, conversationId: m.conversationId, type: "ownMessage", with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.at, eventId: eventIdOf(m), source });
 }
 
-type CatchUpMessage = { conversationId?: string; senderId?: string; from?: string | null; text?: string | null; time?: string | null; fromMe?: boolean };
+type CatchUpMessage = { id?: string; conversationId?: string; senderId?: string; from?: string | null; text?: string | null; time?: string | null; fromMe?: boolean };
 
 export async function twitterCatchUp(account: string, engine: Engine, chatPin: string | undefined, fromAt: string, now: Date): Promise<{ appended: number; refused?: string; detail?: string }> {
   const run = await engine({ action: "inbox", limit: 200, export: true, ...(chatPin ? { chatPin } : {}) });
@@ -190,8 +190,8 @@ export async function twitterCatchUp(account: string, engine: Engine, chatPin: s
   let appended = 0;
   for (const c of answer.conversations ?? []) {
     for (const m of c.messages) {
-      if (m.text == null || !m.time || m.time <= fromAt) continue;
-      const row = { platform: "twitter", account, conversationId: c.conversationId, with: m.from || m.senderId || "?", text: m.text, at: m.time, box: c.box, seenAt: now.toISOString() };
+      if (m.text == null || !m.time || !afterGap(m.time, fromAt)) continue;
+      const row = { platform: "twitter", account, conversationId: c.conversationId, with: m.from || m.senderId || "?", text: m.text, at: m.time, box: c.box, seenAt: now.toISOString(), ...(m.id ? { id: String(m.id) } : {}), ...(m.senderId ? { senderId: String(m.senderId) } : {}) };
       const stored = m.fromMe ? storeOwnMessage(account, row, "catchUp") : !!appendEvent({ platform: "twitter", account, conversationId: row.conversationId, type: "message", with: row.with, text: row.text, box: row.box, payload: row, sourceAt: row.at, receivedAt: now.toISOString(), eventId: eventIdOf(row), source: "catchUp" });
       if (stored) appended++;
     }

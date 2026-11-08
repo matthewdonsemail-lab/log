@@ -42,6 +42,8 @@ export interface MessageRow {
   senderLabel: string | null
   fromOwner: boolean
   sentAt: string
+  sentAtMs: number
+  timeSource: 'platform' | 'received'
   text: string
   replyToKey: string | null
 }

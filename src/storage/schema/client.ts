@@ -3,7 +3,7 @@ import type { Statement } from 'bun:sqlite'
 import { mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { MIGRATIONS, SCHEMA_VERSION } from './helpers'
+import { MIGRATIONS, runBackfill, SCHEMA_VERSION } from './helpers'
 import { SchemaTooNewError } from './types'
 import type { AppliedMigration } from './types'
 
@@ -52,6 +52,7 @@ export function openDatabase(path: string = defaultDbPath()): Database {
   handle.exec('PRAGMA busy_timeout = 5000')
   handle.exec('PRAGMA synchronous = NORMAL')
   migrate(handle)
+  runBackfill(handle)
   handles.set(path, handle)
   return handle
 }
@@ -70,6 +71,7 @@ export function useDatabase<T>(path: string, work: (handle: Database) => T): T {
   try {
     handle.exec('PRAGMA busy_timeout = 5000')
     migrate(handle)
+    runBackfill(handle)
     return work(handle)
   } finally {
     for (const statement of statements) statement.finalize()

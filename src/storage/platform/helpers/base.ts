@@ -1,6 +1,7 @@
 import type { AttachmentKind, AttachmentRow, ChatKind, ChatRow, EventInput, ExtenderContext, IdentityRow, InteractionRow, MessageRow, PlatformExtender } from '../types'
 import { MESSAGE_TYPES } from '../types'
 import { chatIdOf, handleIdOf, isBareId, isOwnerLabel, selfIdOf, textOf } from './ids'
+import { messageKeyOf, messageTimeOf, platformMessageIdOf } from './time'
 
 export function attachmentKindOf(contentType: string | null, name: string | null): AttachmentKind {
   const type = (contentType ?? '').toLowerCase()
@@ -64,17 +65,18 @@ export function makeExtender(options: BaseOptions): PlatformExtender {
     toMessage(event, context) {
       if (!isMessage(event)) return null
       const chatId = chatIdOf(event.platform, event.account, event.conversationId)
-      const platformMessageId = textOf(event.payload.id) ?? textOf(event.payload.itemId) ?? textOf(event.payload.ts) ?? textOf(event.payload.messageId)
+      const platformMessageId = platformMessageIdOf(event.payload)
       const replyTo = textOf(event.payload.replyTo) ?? textOf(event.payload.threadTs)
       const fromOwner = event.type === 'ownMessage' || event.payload.fromMe === true
       return {
-        messageKey: `${chatId}:${platformMessageId ?? event.eventId}`,
+        messageKey: messageKeyOf(event.platform, event.account, event.conversationId, platformMessageId) ?? `${chatId}:${event.eventId}`,
         chatId,
         platformMessageId,
         senderUserId: sender(event, context),
         senderLabel: fromOwner ? 'me' : handleOf(event),
         fromOwner,
         sentAt: event.sourceAt || event.receivedAt,
+        ...messageTimeOf(event.sourceAt, event.receivedAt),
         text: event.text,
         replyToKey: replyTo && replyTo !== platformMessageId ? `${chatId}:${replyTo}` : null,
       }

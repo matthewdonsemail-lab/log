@@ -7,7 +7,7 @@ import { CLAIM_TTL_MS } from './types'
 import type { ActionRecord, ChatClaim, ChatRef } from './types'
 import { timedSync } from '../../observability/timing/index'
 
-export function eventIdOf(message: Pick<InboxMessage, 'platform' | 'account' | 'conversationId' | 'at' | 'text'>): string {
+export function eventIdOf(message: Pick<InboxMessage, 'platform' | 'account' | 'conversationId' | 'at' | 'text' | 'id'>): string {
   return storeEventIdOf(message)
 }
 

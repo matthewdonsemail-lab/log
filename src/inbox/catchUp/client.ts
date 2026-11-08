@@ -1,5 +1,5 @@
 import type { PlatformAccount, PlatformEngineRun, PlatformEngineSpec } from '../../platformKit/session/index'
-import { addToPayload, appendEvent, behindOf, eventIdOf, positionsOf, recordPosition } from '../store/index'
+import { addToPayload, adoptUnkeyed, afterGap, appendEvent, behindOf, eventIdOf, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE } from '../dbRead/types'
 import type { GapRow } from '../store/index'
 import { BEHIND_WAIT_MS, READ_GAP_MS } from './types'
@@ -13,10 +13,12 @@ export function pacedWait(random: () => number = Math.random): Promise<void> {
 
 export function storeRead(platform: string, account: string, chat: string, box: string, m: ReadMessage, now: Date, source: 'live' | 'catchUp' | 'backfill' = 'catchUp'): boolean {
   if (m.text == null || !m.at) return false
-  const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString() }
+  const id = m.id ?? m.ts ?? null
+  const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString(), ...(id ? { id: String(id) } : {}) }
   const attachments = m.attachments ? { attachments: m.attachments } : {}
-  const added = !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id: m.id ?? m.ts ?? null, ...attachments }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })
-  if (!added && m.attachments) addToPayload(eventIdOf(row), { id: m.id ?? m.ts ?? null, ...attachments })
+  if (id && adoptUnkeyed({ platform, account, conversationId: chat, at: m.at, text: String(m.text), id: String(id) }, attachments)) return false
+  const added = !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id, ...attachments }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })
+  if (!added && m.attachments) addToPayload(eventIdOf(row), { id, ...attachments })
   return added
 }
 
@@ -31,7 +33,7 @@ async function readChats(platform: string, account: PlatformAccount, gap: GapRow
     const run = read(account, { ...c.spec, catchUp: true } as PlatformEngineSpec)
     const refused = refusedOf(run)
     if (refused) return { appended, refused: `reading ${c.chat}: ${refused}` }
-    const messages = ((run.answer.messages as ReadMessage[] | undefined) ?? []).filter((m) => !m.at || m.at > gap.fromAt)
+    const messages = ((run.answer.messages as ReadMessage[] | undefined) ?? []).filter((m) => afterGap(m.at, gap.fromAt))
     let last: string | null = null
     for (const m of messages) {
       if (storeRead(platform, account.accountName, c.chat, c.box, m, now)) appended++

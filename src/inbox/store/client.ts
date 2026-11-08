@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
-import { isBareId, typeEvent } from '../../storage/platform'
+import { isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf, typeEvent } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -38,8 +38,34 @@ export function immediate<T>(work: (handle: Database) => T): T {
   }
 }
 
-export function eventIdOf(event: { platform: string; account: string; conversationId: string; at: string; text: string }): string {
-  return createHash('sha1').update([event.platform, event.account, event.conversationId, event.at, event.text].join('|')).digest('hex').slice(0, 12)
+export function eventIdOf(event: { platform: string; account: string; conversationId: string; at: string; text: string; id?: string | null; messageKey?: string | null }): string {
+  const key = event.messageKey ?? messageKeyOf(event.platform, event.account, event.conversationId, event.id ?? null)
+  if (key) return createHash('sha1').update(key).digest('hex').slice(0, 12)
+  const at = msOf(event.at)
+  return createHash('sha1').update([event.platform, event.account, event.conversationId, at === null ? event.at : String(at), event.text].join('|')).digest('hex').slice(0, 12)
+}
+
+export function adoptUnkeyed(event: { platform: string; account: string; conversationId: string; at: string; text: string; id: string }, extra: Record<string, unknown> = {}): boolean {
+  const messageKey = messageKeyOf(event.platform, event.account, event.conversationId, event.id)
+  if (!messageKey) return false
+  const legacy = eventIdOf({ platform: event.platform, account: event.account, conversationId: event.conversationId, at: event.at, text: event.text })
+  return immediate((handle) => {
+    if (handle.prepare('SELECT 1 FROM events WHERE messageKey = ?').get(messageKey)) return false
+    const changed = handle.prepare('UPDATE events SET messageKey = ?, payload = json_patch(payload, ?) WHERE eventId = ? AND messageKey IS NULL').run(messageKey, JSON.stringify({ id: event.id, ...extra }), legacy).changes
+    return changed > 0
+  })
+}
+
+export function afterGap(at: string | null | undefined, fromAt: string): boolean {
+  if (!at) return true
+  const a = msOf(at)
+  const b = msOf(fromAt)
+  return a !== null && b !== null ? a > b : at > fromAt
+}
+
+export function messageKeyOfEvent(input: { platform: string; account: string; conversationId?: string; type: string; payload?: unknown }): string | null {
+  if (!MESSAGE_TYPES.includes(input.type) || !input.payload || typeof input.payload !== 'object') return null
+  return messageKeyOf(input.platform, input.account, input.conversationId ?? '', platformMessageIdOf(input.payload as Record<string, unknown>))
 }
 
 export function markStage(eventId: string, stage: Stage, at: Date = new Date(), handle: Database = db()): void {
@@ -124,10 +150,11 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
   const senderId = senderIdOf(input)
   const handleGiven = handleIn(input)
   input = { ...input, with: handleGiven || (senderId ? personOf(input.platform, input.account, senderId) ?? input.with : input.with) }
-  const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}) })
+  const messageKey = messageKeyOfEvent(input)
+  const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}), messageKey })
   return immediate((handle) => {
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
-    const result = handle.prepare(`INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(eventId, input.platform, input.account, input.conversationId ?? '', input.type, known ? 1 : 0, input.with ?? '', input.text ?? '', input.box ?? '', JSON.stringify(input.payload ?? {}).slice(0, 20000), input.sourceAt ?? '', receivedAt, now.toISOString(), process.pid, input.source ?? 'live')
+    const result = handle.prepare(`INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source, sourceAtMs, receivedAtMs, messageKey) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(eventId, input.platform, input.account, input.conversationId ?? '', input.type, known ? 1 : 0, input.with ?? '', input.text ?? '', input.box ?? '', JSON.stringify(input.payload ?? {}).slice(0, 20000), input.sourceAt ?? '', receivedAt, now.toISOString(), process.pid, input.source ?? 'live', msOf(input.sourceAt), msOf(receivedAt), messageKey)
     if (!result.changes) return null
     typeEvent(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live' })
     markStage(eventId, 'received', new Date(receivedAt), handle)

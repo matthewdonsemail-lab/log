@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 42 domains, 472 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 43 domains, 475 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -687,3 +687,11 @@ What `log new platform slack` made, and what the platform's code must keep doing
 - **REQ-SLACK-03** Slack's own answer is what gets recorded
 - **REQ-SLACK-04** The platform is wired into the CLI and the direct-API routes
 - **REQ-SLACK-05** Slack is reached only through one curl_cffi session that impersonates Chrome
+
+## [Storage](./storage.md)
+
+How log keeps what it reads and does: one SQLite database, `~/.logCli/log.db`, with every message entering as an event and the typed tables built from those events. The order of work and the reasons, from Designing Data-Intensive Applications, are in `docs/storageAgainstTheBook.md`. Issues #96 and #97.
+
+- **REQ-STORAGE-01** Every time is stored as integer milliseconds, normalised once
+- **REQ-STORAGE-02** One stable key per message
+- **REQ-STORAGE-03** Old rows are filled in batches that resume

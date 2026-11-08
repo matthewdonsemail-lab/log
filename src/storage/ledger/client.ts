@@ -3,12 +3,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, useDatabase } from '../schema/client'
+import { msOf } from '../platform/helpers/time'
 import { fromOldLine } from './helpers'
 import { OLD_LEDGER_FILES } from './types'
 import type { LedgerEntry, LedgerFilter, LedgerKind, LedgerRow } from './types'
 
 export function writeLedger(handle: Database, entry: LedgerEntry): void {
-  handle.prepare('INSERT INTO ledger (kind, provider, platform, account, subject, at, amount, unit, outcome, code, detail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(entry.kind, entry.provider ?? null, entry.platform ?? null, entry.account ?? null, entry.subject ?? null, entry.at, entry.amount ?? null, entry.unit ?? null, entry.outcome, entry.code ?? null, entry.detail ?? null)
+  handle.prepare('INSERT INTO ledger (kind, provider, platform, account, subject, at, atMs, amount, unit, outcome, code, detail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(entry.kind, entry.provider ?? null, entry.platform ?? null, entry.account ?? null, entry.subject ?? null, entry.at, msOf(entry.at), entry.amount ?? null, entry.unit ?? null, entry.outcome, entry.code ?? null, entry.detail ?? null)
 }
 
 const imported = new Set<string>()

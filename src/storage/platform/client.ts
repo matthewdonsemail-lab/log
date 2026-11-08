@@ -1,5 +1,5 @@
 import type { Database } from 'bun:sqlite'
-import { extenderOf, readConversations, writeConversation } from './helpers'
+import { extenderOf, msOf, readConversations, writeConversation } from './helpers'
 import type { StoredConversation } from './helpers'
 import type { EventInput, ExtenderContext, TypedRows } from './types'
 
@@ -54,11 +54,11 @@ export function writeTypedRows(handle: Database, event: EventInput, rows: TypedR
   }
   if (rows.chat) {
     const c = rows.chat
-    handle.prepare('INSERT INTO chats (chatId, platform, account, conversationId, kind, name, serverId, lastMessageAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(chatId) DO UPDATE SET name = COALESCE(chats.name, excluded.name), serverId = COALESCE(excluded.serverId, chats.serverId), lastMessageAt = MAX(COALESCE(chats.lastMessageAt, \'\'), COALESCE(excluded.lastMessageAt, \'\'))').run(c.chatId, c.platform, c.account, c.conversationId, c.kind, c.name, c.serverId, rows.message ? at : null)
+    handle.prepare('INSERT INTO chats (chatId, platform, account, conversationId, kind, name, serverId, lastMessageAt, lastMessageAtMs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(chatId) DO UPDATE SET name = COALESCE(chats.name, excluded.name), serverId = COALESCE(excluded.serverId, chats.serverId), lastMessageAt = MAX(COALESCE(chats.lastMessageAt, \'\'), COALESCE(excluded.lastMessageAt, \'\')), lastMessageAtMs = MAX(COALESCE(chats.lastMessageAtMs, 0), COALESCE(excluded.lastMessageAtMs, 0))').run(c.chatId, c.platform, c.account, c.conversationId, c.kind, c.name, c.serverId, rows.message ? at : null, rows.message ? rows.message.sentAtMs : null)
   }
   if (rows.message) {
     const m = rows.message
-    const inserted = handle.prepare('INSERT OR IGNORE INTO messages (messageKey, chatId, platformMessageId, senderPlatform, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source, rawHash, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)').run(m.messageKey, m.chatId, m.platformMessageId, event.platform, m.senderUserId, m.senderLabel, m.fromOwner ? 1 : 0, m.sentAt, m.text, m.replyToKey, event.source, event.receivedAt).changes > 0
+    const inserted = handle.prepare('INSERT OR IGNORE INTO messages (messageKey, chatId, platformMessageId, senderPlatform, senderUserId, senderLabel, fromOwner, sentAt, sentAtMs, timeSource, text, replyToKey, source, rawHash, receivedAt, receivedAtMs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)').run(m.messageKey, m.chatId, m.platformMessageId, event.platform, m.senderUserId, m.senderLabel, m.fromOwner ? 1 : 0, m.sentAt, m.sentAtMs, m.timeSource, m.text, m.replyToKey, event.source, event.receivedAt, msOf(event.receivedAt)).changes > 0
     if (inserted) {
       const attach = handle.prepare('INSERT OR IGNORE INTO attachments (messageKey, n, kind, name, contentType, url, durationMs) VALUES (?, ?, ?, ?, ?, ?, ?)')
       for (const a of rows.attachments) attach.run(m.messageKey, a.n, a.kind, a.name, a.contentType, a.url, a.durationMs)
@@ -69,7 +69,7 @@ export function writeTypedRows(handle: Database, event: EventInput, rows: TypedR
   }
   if (rows.interaction) {
     const i = rows.interaction
-    handle.prepare('INSERT OR IGNORE INTO interactions (interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, at, rawHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)').run(i.interactionKey, event.platform, event.account, i.kind, i.actorUserId, i.targetRef, i.targetText, i.text, i.at)
+    handle.prepare('INSERT OR IGNORE INTO interactions (interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, at, atMs, rawHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)').run(i.interactionKey, event.platform, event.account, i.kind, i.actorUserId, i.targetRef, i.targetText, i.text, i.at, msOf(i.at) ?? msOf(event.receivedAt))
   }
 }
 
@@ -146,12 +146,12 @@ export interface ChatMessage {
 }
 
 export function lastMessagesOf(handle: Database, chatId: string, limit = 100): ChatMessage[] {
-  const rows = handle.prepare('SELECT messageKey, platformMessageId, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source FROM messages WHERE chatId = ? ORDER BY sentAt DESC LIMIT ?').all(chatId, limit) as (Omit<ChatMessage, 'fromOwner'> & { fromOwner: number })[]
+  const rows = handle.prepare('SELECT messageKey, platformMessageId, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source FROM messages WHERE chatId = ? ORDER BY sentAtMs DESC, seq DESC LIMIT ?').all(chatId, limit) as (Omit<ChatMessage, 'fromOwner'> & { fromOwner: number })[]
   return rows.reverse().map((r) => ({ ...r, fromOwner: r.fromOwner === 1 }))
 }
 
 export function messagesFromIdentity(handle: Database, platform: string, userId: string, limit = 500): (ChatMessage & { chatId: string })[] {
-  const rows = handle.prepare('SELECT messageKey, chatId, platformMessageId, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source FROM messages WHERE senderPlatform = ? AND senderUserId = ? ORDER BY sentAt DESC LIMIT ?').all(platform, userId, limit) as (Omit<ChatMessage, 'fromOwner'> & { fromOwner: number; chatId: string })[]
+  const rows = handle.prepare('SELECT messageKey, chatId, platformMessageId, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source FROM messages WHERE senderPlatform = ? AND senderUserId = ? ORDER BY sentAtMs DESC, seq DESC LIMIT ?').all(platform, userId, limit) as (Omit<ChatMessage, 'fromOwner'> & { fromOwner: number; chatId: string })[]
   return rows.map((r) => ({ ...r, fromOwner: r.fromOwner === 1 }))
 }
 

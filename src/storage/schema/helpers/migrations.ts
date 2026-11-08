@@ -8,6 +8,36 @@ function hasColumn(handle: Database, table: string, column: string): boolean {
   return (handle.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column)
 }
 
+export const TIME_COLUMNS: readonly (readonly [string, string, string])[] = [
+  ['messages', 'sentAtMs', 'INTEGER'],
+  ['messages', 'receivedAtMs', 'INTEGER'],
+  ['messages', 'timeSource', 'TEXT'],
+  ['interactions', 'atMs', 'INTEGER'],
+  ['chats', 'lastMessageAtMs', 'INTEGER'],
+  ['ledger', 'atMs', 'INTEGER'],
+  ['events', 'sourceAtMs', 'INTEGER'],
+  ['events', 'receivedAtMs', 'INTEGER'],
+  ['events', 'messageKey', 'TEXT'],
+]
+
+export const TIME_INDEXES: readonly string[] = [
+  'DROP INDEX IF EXISTS messagesByChat',
+  'DROP INDEX IF EXISTS messagesBySender',
+  'DROP INDEX IF EXISTS messagesBySentAt',
+  'DROP INDEX IF EXISTS interactionsByActor',
+  'DROP INDEX IF EXISTS interactionsByAccount',
+  'DROP INDEX IF EXISTS ledgerByKind',
+  'DROP INDEX IF EXISTS ledgerByAccount',
+  'CREATE INDEX IF NOT EXISTS messagesByChatTime ON messages (chatId, sentAtMs, seq)',
+  'CREATE INDEX IF NOT EXISTS messagesBySenderTime ON messages (senderPlatform, senderUserId, sentAtMs, seq)',
+  'CREATE INDEX IF NOT EXISTS messagesByTime ON messages (sentAtMs, seq)',
+  'CREATE INDEX IF NOT EXISTS interactionsByActorTime ON interactions (platform, actorUserId, atMs)',
+  'CREATE INDEX IF NOT EXISTS interactionsByAccountTime ON interactions (platform, account, atMs)',
+  'CREATE INDEX IF NOT EXISTS ledgerByKindTime ON ledger (kind, atMs)',
+  'CREATE INDEX IF NOT EXISTS ledgerByAccountTime ON ledger (kind, platform, account, atMs)',
+  'CREATE UNIQUE INDEX IF NOT EXISTS eventsByMessageKey ON events (messageKey) WHERE messageKey IS NOT NULL',
+]
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -45,6 +75,14 @@ export const MIGRATIONS: readonly Migration[] = [
     apply(handle) {
       if (!hasColumn(handle, 'chats', 'box')) handle.exec('ALTER TABLE chats ADD COLUMN box TEXT')
       if (!hasColumn(handle, 'memberships', 'position')) handle.exec('ALTER TABLE memberships ADD COLUMN position INTEGER')
+    },
+  },
+  {
+    version: 6,
+    name: 'integerTimesAndMessageKeys',
+    apply(handle) {
+      for (const [table, column, type] of TIME_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+      for (const statement of TIME_INDEXES) handle.exec(statement)
     },
   },
 ]
