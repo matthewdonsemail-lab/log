@@ -86,7 +86,7 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-13: What a run taught is kept
 
-A pruned run keeps its `findings.md`, `steps.jsonl`, `settle.json`, every step's `exchanges.json` and reading, its goal findings, and its requests by domain, in `~/.logCli/runs/kept`, with one line in `runs/pruned.jsonl`.
+A pruned run keeps its `findings.md`, `steps.jsonl`, `settle.json`, every step's `exchanges.json` and reading, its goal findings, and its requests by domain, in `~/.logCli/runs/kept`, with one `prunedRun` record in `log.db`.
 
 Checked by: code and SubQ
 

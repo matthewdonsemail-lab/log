@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, utimesSync, writeFile
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { backfillAll, countDomains, domainsInHar, listRuns, pruneRuns, storageVerdict } from './index'
+import { readRecords } from '../../storage/records/index'
 
 const NOW = Date.parse('2026-10-22T12:00:00Z')
 const BUILT = Date.parse('2026-10-22T09:45:00Z')
@@ -51,7 +52,7 @@ describe('runStore', () => {
     expect(pruned.domains).toEqual({ groups: 1, background: 1 })
     expect(readFileSync(join(pruned.kept, 'findings.md'), 'utf8')).toBe('# f')
     expect(existsSync(join(pruned.kept, 'steps.jsonl'))).toBe(true)
-    expect(readFileSync(join(root, 'runs', 'pruned.jsonl'), 'utf8')).toContain('20261020T100000_a')
+    expect(JSON.stringify(readRecords('prunedRun'))).toContain('20261020T100000_a')
   })
 
   test('every step still on disk gets its exchanges taken out of its HAR, inspect step folders and settle cuts alike, and the prune keeps them with the readings and goal findings', async () => {

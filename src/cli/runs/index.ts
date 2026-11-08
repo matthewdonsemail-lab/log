@@ -69,7 +69,7 @@ export const runsCommand: Command = {
     return {
       code: 0,
       stdout: [
-        `${apply ? "Pruned" : "Would prune"} ${pruned.length} run(s), ${gb(bytes)}${apply ? "; each one's findings, steps and domains are in ~/.logCli/runs/kept and runs/pruned.jsonl" : " (a dry run: --apply deletes them)"}.`,
+        `${apply ? "Pruned" : "Would prune"} ${pruned.length} run(s), ${gb(bytes)}${apply ? "; each one's findings, steps and domains are in ~/.logCli/runs/kept, and each prune is a prunedRun record in log.db" : " (a dry run: --apply deletes them)"}.`,
         ...kept.map((e) => `Kept ${e.action}/${e.run}: ${e.keep}`),
       ].join("\n"),
     };

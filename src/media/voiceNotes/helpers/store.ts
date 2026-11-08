@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { db } from '../../../inbox/store/index'
 import { hashOf } from '../client'
 import { AUDIO_LEFTOVER, AUDIO_MARKER } from '../types'
 import type { AssemblyAiClient, MessageLink, Transcript, TranscribeAnswer } from '../types'
@@ -10,24 +11,51 @@ export function transcriptsRoot(): string {
   return process.env.LOG_TRANSCRIPTS_DIR || join(homedir(), '.logCli', 'transcripts')
 }
 
-const transcriptPath = (root: string, hash: string) => join(root, `${hash}.json`)
-const linksPath = (root: string) => join(root, 'messages.json')
+const importedRoots = new Set<string>()
 
-function readJson<T>(path: string, fallback: T): T {
-  try {
-    return JSON.parse(readFileSync(path, 'utf8')) as T
-  } catch {
-    return fallback
-  }
+function putTranscript(transcript: Transcript, source: string): void {
+  db().prepare('INSERT INTO transcripts (audioHash, provider, text, durationMs, createdAt, body) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(audioHash) DO UPDATE SET text = excluded.text, durationMs = excluded.durationMs, body = excluded.body').run(transcript.hash, source, transcript.text ?? '', typeof transcript.seconds === 'number' ? Math.round(transcript.seconds * 1000) : null, new Date().toISOString(), JSON.stringify(transcript))
+}
+
+export function importTranscriptFiles(root = transcriptsRoot()): number {
+  if (importedRoots.has(root)) return 0
+  importedRoots.add(root)
+  const handle = db()
+  const store = `transcriptFiles:${root}`
+  if (handle.prepare("SELECT 1 FROM imports WHERE store = ? AND state = 'done'").get(store) || !existsSync(root)) return 0
+  let count = 0
+  handle.transaction(() => {
+    for (const file of readdirSync(root).filter((f) => f.endsWith('.json'))) {
+      try {
+        const value = JSON.parse(readFileSync(join(root, file), 'utf8')) as unknown
+        if (file === 'messages.json') {
+          for (const [key, hash] of Object.entries(value as Record<string, string>)) handle.prepare('INSERT INTO transcriptLinks (linkKey, audioHash) VALUES (?, ?) ON CONFLICT(linkKey) DO NOTHING').run(key, hash)
+          continue
+        }
+        const transcript = value as Transcript
+        if (!transcript?.hash) continue
+        if (!handle.prepare('SELECT 1 FROM transcripts WHERE audioHash = ?').get(transcript.hash)) {
+          putTranscript(transcript, 'assemblyai')
+          count++
+        }
+      } catch {}
+    }
+    handle.prepare("INSERT INTO imports (store, state, rows, detail, startedAt, endedAt) VALUES (?, 'done', ?, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = 'done', rows = excluded.rows, endedAt = excluded.endedAt").run(store, count, root, new Date().toISOString(), new Date().toISOString())
+  }).immediate()
+  return count
 }
 
 export function readTranscript(hash: string, root = transcriptsRoot()): Transcript | null {
-  return existsSync(transcriptPath(root, hash)) ? readJson<Transcript | null>(transcriptPath(root, hash), null) : null
+  importTranscriptFiles(root)
+  const row = db().prepare('SELECT body, text, durationMs FROM transcripts WHERE audioHash = ?').get(hash) as { body: string | null; text: string; durationMs: number | null } | null
+  if (!row) return null
+  if (row.body) return JSON.parse(row.body) as Transcript
+  return { hash, text: row.text, ...(row.durationMs !== null ? { seconds: row.durationMs / 1000 } : {}) } as Transcript
 }
 
 export function writeTranscript(transcript: Transcript, root = transcriptsRoot()): void {
-  mkdirSync(root, { recursive: true })
-  writeFileSync(transcriptPath(root, transcript.hash), JSON.stringify(transcript, null, 2))
+  importTranscriptFiles(root)
+  putTranscript(transcript, 'assemblyai')
 }
 
 export function linkKey(link: MessageLink): string {
@@ -35,15 +63,18 @@ export function linkKey(link: MessageLink): string {
 }
 
 export function readLinks(root = transcriptsRoot()): Record<string, string> {
-  return readJson<Record<string, string>>(linksPath(root), {})
+  importTranscriptFiles(root)
+  const rows = db().prepare('SELECT linkKey, audioHash FROM transcriptLinks').all() as { linkKey: string; audioHash: string }[]
+  return Object.fromEntries(rows.map((r) => [r.linkKey, r.audioHash]))
 }
 
 export function linkMessages(pairs: readonly { link: MessageLink; hash: string }[], root = transcriptsRoot()): void {
   if (!pairs.length) return
-  const links = readLinks(root)
-  for (const { link, hash } of pairs) links[linkKey(link)] = hash
-  mkdirSync(root, { recursive: true })
-  writeFileSync(linksPath(root), JSON.stringify(links, null, 2))
+  importTranscriptFiles(root)
+  const handle = db()
+  handle.transaction(() => {
+    for (const { link, hash } of pairs) handle.prepare('INSERT INTO transcriptLinks (linkKey, audioHash) VALUES (?, ?) ON CONFLICT(linkKey) DO UPDATE SET audioHash = excluded.audioHash').run(linkKey(link), hash)
+  }).immediate()
 }
 
 export function transcriptOf(link: MessageLink, root = transcriptsRoot(), links: Record<string, string> = readLinks(root)): Transcript | null {

@@ -1,3 +1,4 @@
+import { appendRecord } from '../../storage/records/index'
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statfsSync, statSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -167,7 +168,7 @@ export async function pruneRuns(entries: RunEntry[], options: { apply: boolean; 
         for (const file of KEPT_FILES) if (existsSync(join(dir, file))) copyFileSync(join(dir, file), join(kept, file))
       }
       writeFileSync(join(kept, 'pruned.json'), `${JSON.stringify(pruned, null, 2)}\n`)
-      appendFileSync(join(runs, 'pruned.jsonl'), `${JSON.stringify(pruned)}\n`)
+      appendRecord('prunedRun', pruned as unknown as Record<string, unknown>, `${entry.action}/${entry.run}`)
       rmSync(entry.path, { recursive: true, force: true })
       rmSync(join(runs, '.size.json'), { force: true })
     }

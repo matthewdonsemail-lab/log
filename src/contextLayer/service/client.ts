@@ -1,5 +1,7 @@
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
 import { spawn } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
+import { openDatabase } from '../../storage/schema/client'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { CONTEXT_PORT, CURL_CONNECT_SECONDS, CURL_MAX_SECONDS, HOST, SERVICE_START_GRACE_MS, SERVICE_TIMEOUT_MS } from './types'
@@ -38,10 +40,11 @@ export function writeService(info: ServiceInfo, root = contextLayerRoot()): void
   writeFileSync(servicePath(root), JSON.stringify(info))
 }
 
-export function logTiming(line: Omit<TimingLine, 'at'>, root = contextLayerRoot()): void {
+export function logTiming(line: Omit<TimingLine, 'at'>, _root = contextLayerRoot()): void {
   try {
-    mkdirSync(root, { recursive: true })
-    appendFileSync(timingsPath(root), `${JSON.stringify({ at: new Date().toISOString(), ...line })}\n`)
+    const id = randomBytes(8).toString('hex')
+    const startedAt = Date.now() - line.ms
+    openDatabase().prepare("INSERT OR IGNORE INTO spans (spanId, traceId, callId, parentId, tool, name, source, pid, startedAt, ms, ok, attrs) VALUES (?, ?, ?, NULL, ?, 'call', 'hook', ?, ?, ?, ?, ?)").run(id, id, id.slice(0, 12), `hook:${line.event}:${line.provider}`, process.pid, startedAt, line.ms, line.outcome.endsWith('!') ? 0 : 1, JSON.stringify({ event: line.event, provider: line.provider, chars: line.chars, outcome: line.outcome }))
   } catch {}
 }
 

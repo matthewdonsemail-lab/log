@@ -186,6 +186,22 @@ export const MIGRATIONS: readonly Migration[] = [
       for (const statement of JOB_TABLES) handle.exec(statement)
     },
   },
+  {
+    version: 14,
+    name: 'transcriptBodies',
+    apply(handle) {
+      if (!hasColumn(handle, 'transcripts', 'body')) handle.exec('ALTER TABLE transcripts ADD COLUMN body TEXT')
+      handle.exec('CREATE TABLE IF NOT EXISTS transcriptLinks (linkKey TEXT PRIMARY KEY, audioHash TEXT NOT NULL) WITHOUT ROWID')
+    },
+  },
+  {
+    version: 15,
+    name: 'records',
+    apply(handle) {
+      handle.exec('CREATE TABLE IF NOT EXISTS records (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, key TEXT, at TEXT NOT NULL, body TEXT NOT NULL, source TEXT NOT NULL)')
+      handle.exec('CREATE INDEX IF NOT EXISTS recordsByKind ON records (kind, key, seq)')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

@@ -95,3 +95,15 @@ Checked by: code and SubQ
 A long MCP call that comes back as a job is a row in `jobs` (its tool, arguments, account, pid, status, result and whether a cancel was asked for), and its progress lines are rows in `jobLines` numbered from 0. `startJob`, `appendProgress`, `finishJob`, `requestCancel`, `readJob`, `readProgress`, `listJobs` and `busyJob` read and write them in transactions (`src/mcp/jobs/client.ts`), replacing the `.json`, `.jsonl` and `.cancel` files in `~/.logCli/mcp/jobs`. A job whose pid is gone still reads as lost. The old files are imported once (`importJobFiles`), and a cancel file becomes `cancelRequested`.
 
 Checked by: code and SubQ
+
+### REQ-STORAGE-14: Transcripts live in log.db
+
+Every voice-note transcript is a row in `transcripts`, keyed by the sha256 of its audio, with its text, length and whole answer (`body`). Which message each one belongs to is a row in `transcriptLinks`. `readTranscript`, `writeTranscript`, `readLinks` and `linkMessages` (`src/media/voiceNotes/helpers/store.ts`) read and write them, so search, the voice gate and profiles find voice notes beside the events. The old `~/.logCli/transcripts` files and their `messages.json` are imported once (`importTranscriptFiles`).
+
+Checked by: code and SubQ
+
+### REQ-STORAGE-15: The small logs are records, and hook timings are spans
+
+The Facebook warm-up's stage log, each run prune and each meme rating are rows in `records`, with a kind (`stageLog`, `prunedRun`, `memeRating`), a key (the account, the run) and the body (`appendRecord`, `readRecords`, `src/storage/records`). `appendStageLog`, `readStageLog`, `pruneRuns`, `addRating` and `readRatings` go through it, and each old file is imported once (`importRecordFile`). Every context-layer hook timing (`logTiming`) is a span in `spans`, tool `hook:<event>:<provider>`, so `log timing` reports hook costs beside tool calls instead of in `timings.jsonl`.
+
+Checked by: code and SubQ

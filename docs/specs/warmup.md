@@ -34,7 +34,7 @@ Checked by: code and SubQ
 
 ### REQ-WARMUP-05: Each stage event goes to the stage log
 
-Every start, activity, step, gap, note, stop and end of a stages run is written as one line to the stage log (`~/.logCli/runs/warmup/stageLog.jsonl`), read with `log facebook warmup stages log`.
+Every start, activity, step, gap, note, stop and end of a stages run is written as one `stageLog` record in `log.db` (the old `~/.logCli/runs/warmup/stageLog.jsonl` is imported once), read with `log facebook warmup stages log`.
 
 Checked by: code and SubQ
 
