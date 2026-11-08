@@ -7,6 +7,7 @@ import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS } from './types'
 import type { DbMessage, ReadSource, ReadSourceDeps } from './types'
 import type { MessageAttachment } from '../catchUp/types'
 import { timed } from '../../observability/timing/index'
+import { chatIdOf } from '../../storage/platform/index'
 
 export const readSourceDeps: ReadSourceDeps = {
   live: (platform, account) => sessionLive(readSession(platform, account)),
@@ -36,15 +37,6 @@ export function markBackfilled(platform: string, account: string, chatKey: strin
   recordPosition(platform, account, now.toISOString(), `${BACKFILL_SCOPE}${chatKey}`, now)
 }
 
-function payloadOf(payload: string): { id?: unknown; attachments?: unknown } {
-  try {
-    const parsed = JSON.parse(payload) as unknown
-    return parsed && typeof parsed === 'object' ? (parsed as { id?: unknown; attachments?: unknown }) : {}
-  } catch {
-    return {}
-  }
-}
-
 function attachmentsOf(value: unknown): MessageAttachment[] | undefined {
   if (!Array.isArray(value)) return undefined
   return value.filter((a): a is MessageAttachment => !!a && typeof a === 'object' && typeof (a as { name?: unknown }).name === 'string').map((a) => ({ name: a.name, ...(a.type ? { type: a.type } : {}), ...(a.path ? { path: a.path } : {}), ...(a.error ? { error: a.error } : {}) }))
@@ -67,18 +59,20 @@ export function isVisualAttachment(a: MessageAttachment): boolean {
 }
 
 export function chatMessages(platform: string, account: string, conversationId: string, limit: number): DbMessage[] {
-  const rows = db()
-    .prepare("SELECT eventId, conversationId, type, withWho, text, payload, sourceAt, receivedAt FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type IN ('message', 'ownMessage') ORDER BY COALESCE(NULLIF(sourceAt, ''), receivedAt) DESC, seq DESC LIMIT ?")
-    .all(platform, account, conversationId, limit) as { eventId: string; conversationId: string; type: string; withWho: string; text: string; payload: string; sourceAt: string; receivedAt: string }[]
+  const chatId = chatIdOf(platform, account, conversationId)
+  const handle = db()
+  const rows = handle
+    .prepare('SELECT messageKey, platformMessageId, senderLabel, senderUserId, fromOwner, sentAt, text FROM messages WHERE chatId = ? ORDER BY sentAtMs DESC, seq DESC LIMIT ?')
+    .all(chatId, limit) as { messageKey: string; platformMessageId: string | null; senderLabel: string | null; senderUserId: string; fromOwner: number; sentAt: string; text: string }[]
+  const files = handle.prepare('SELECT name, contentType, path, error FROM attachments WHERE messageKey = ? ORDER BY n')
   return rows.reverse().map((r) => {
-    const payload = payloadOf(r.payload)
-    const attachments = attachmentsOf(payload.attachments)
-    return { id: payload.id == null ? r.eventId : String(payload.id), conversationId: r.conversationId, at: r.sourceAt || r.receivedAt, from: r.type === 'ownMessage' ? 'me' : r.withWho, fromMe: r.type === 'ownMessage', text: r.text, ...(attachments ? { attachments } : {}) }
+    const attachments = attachmentsOf((files.all(r.messageKey) as { name: string | null; contentType: string | null; path: string | null; error: string | null }[]).map((a) => ({ name: a.name, type: a.contentType ?? undefined, path: a.path ?? undefined, error: a.error ?? undefined })))
+    return { id: r.platformMessageId ?? r.messageKey.slice(chatId.length + 1), conversationId, at: r.sentAt, from: r.fromOwner ? 'me' : r.senderLabel ?? r.senderUserId, fromMe: r.fromOwner === 1, text: r.text, ...(attachments?.length ? { attachments } : {}) }
   })
 }
 
 export function chatMessageCount(platform: string, account: string, conversationId: string): number {
-  const row = db().prepare("SELECT COUNT(*) AS n FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type IN ('message', 'ownMessage')").get(platform, account, conversationId) as { n: number }
+  const row = db().prepare('SELECT COUNT(*) AS n FROM messages WHERE chatId = ?').get(chatIdOf(platform, account, conversationId)) as { n: number }
   return row.n
 }
 

@@ -16,12 +16,32 @@ Checked by: code and SubQ
 
 ### REQ-STORAGE-02: One stable key per message
 
-A message's key is `platform:account:conversation:platformMessageId` (`messageKeyOf`), the same in `events.messageKey` and `messages.messageKey`. `events.messageKey` is unique where set (`eventsByMessageKey`), so the same message from the live watch, a catch-up and a read is stored once, and two different messages with the same time and text are kept apart. `eventIdOf` derives the event id from the key when there is one, and only a message with no platform id falls back to its instant (not its time text) plus its text. Every watcher's inbox message carries the platform's id (X Chat's event id, Discord's message id, Slack's ts, Instagram's item id), and both catch-ups pass it on. When a keyed message meets an older copy of itself stored without a key, `adoptUnkeyed` gives that copy the key instead of storing a second event.
+A message's key is `platform:account:conversation:platformMessageId` (`messageKeyOf`), the same in `events.messageKey` and `messages.messageKey`. `events.messageKey` is unique where set (`eventsByMessageKey`), so the same message from the live watch, a catch-up and a read is stored once, and two different messages with the same time and text are kept apart. `eventIdOf` derives the event id from the key when there is one, and only a message with no platform id falls back to its instant (not its time text) plus its text. Every watcher's inbox message carries the platform's id (X Chat's event id, Discord's message id, Slack's ts, Instagram's item id), and both catch-ups pass it on. When a keyed message meets an older copy of itself stored without a key, `adoptUnkeyed` stores no second copy: it leaves the old event as it is and appends an `attachmentsSeen` event that gives the old copy's message its platform id and any attachments.
 
 Checked by: code and SubQ
 
 ### REQ-STORAGE-03: Old rows are filled in batches that resume
 
 Migration 6 only adds the columns and indexes. `runBackfill` (`src/storage/schema/helpers/backfill.ts`) fills old rows after every migrate, in transactions of `BACKFILL_BATCH` rows. The column being filled is its own progress mark, set in the same transaction, so a crash resumes at the next unfilled row and a finished backfill costs only its checks. Only the first event of a message keeps the key; later copies stay unkeyed.
+
+Checked by: code and SubQ
+
+## The events are the record
+
+### REQ-STORAGE-04: Every typed row comes from an event
+
+`insertEventRow` (`src/storage/platform/client.ts`) is the one way a row enters `events`, and it derives the typed rows (messages, attachments, chats, identities, memberships, interactions) from that event in the same transaction. `appendEvent`, the conversation import (`saveConversationRows`, `writeConversation`) and every read, catch-up and backfill go through it, so nothing writes a typed row without an event. A change is a new event, never an edit of an old one: attachments seen later are `attachmentsSeen` (`addToPayload`, `adoptUnkeyed`), a text a read finds changed is `messageEdited`, and a conversation's box and members are `conversationSeen`. Chats are read back from the typed tables (`chatMessages`), so what those events add is seen.
+
+Checked by: code and SubQ
+
+### REQ-STORAGE-05: Nothing a replay needs is cut or looked up again
+
+A payload longer than `PAYLOAD_INLINE_LIMIT` is kept whole, gzip-compressed, in `blobs` (`putBlob`), with `events.rawHash` pointing at it, and a replay reads it back (`readBlob`, `eventInputOf`). The account's own id is written into `events.ownerId` when the event is appended, from a per-database tally of its conversation pairs (`notePairConversation`), so a replay never guesses it again. Each derived message and interaction records the `EXTENDER_VERSION` that made it.
+
+Checked by: code and SubQ
+
+### REQ-STORAGE-06: The typed tables can be rebuilt and verified from the events
+
+`rebuildDerived` clears the typed tables and replays every event in `seq` order in one transaction. `verifyDerived` does the same on a scratch copy and compares each table's rows (`derivedFingerprint`) with the live ones. `log storage verify` and `log storage rebuild --apply` (MCP `storageVerify`, `storageRebuild`) run them. Before the first rebuild, the backfill gives every typed row with no event an `import` event carrying its original key (`eventsForTypedRows`), records any text changed in place as `messageEdited` (`editsForChangedText`), and types any event older code left untyped (`untypedEvents`, `events.typedAt`). The steps that read every row run once (`once`).
 
 Checked by: code and SubQ

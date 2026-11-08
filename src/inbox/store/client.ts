@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
-import { isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf, typeEvent } from '../../storage/platform'
+import { attachmentsSeenEvent, eventIdFrom, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -39,10 +39,7 @@ export function immediate<T>(work: (handle: Database) => T): T {
 }
 
 export function eventIdOf(event: { platform: string; account: string; conversationId: string; at: string; text: string; id?: string | null; messageKey?: string | null }): string {
-  const key = event.messageKey ?? messageKeyOf(event.platform, event.account, event.conversationId, event.id ?? null)
-  if (key) return createHash('sha1').update(key).digest('hex').slice(0, 12)
-  const at = msOf(event.at)
-  return createHash('sha1').update([event.platform, event.account, event.conversationId, at === null ? event.at : String(at), event.text].join('|')).digest('hex').slice(0, 12)
+  return eventIdFrom({ ...event, messageKey: event.messageKey ?? messageKeyOf(event.platform, event.account, event.conversationId, event.id ?? null) })
 }
 
 export function adoptUnkeyed(event: { platform: string; account: string; conversationId: string; at: string; text: string; id: string }, extra: Record<string, unknown> = {}): boolean {
@@ -51,8 +48,10 @@ export function adoptUnkeyed(event: { platform: string; account: string; convers
   const legacy = eventIdOf({ platform: event.platform, account: event.account, conversationId: event.conversationId, at: event.at, text: event.text })
   return immediate((handle) => {
     if (handle.prepare('SELECT 1 FROM events WHERE messageKey = ?').get(messageKey)) return false
-    const changed = handle.prepare('UPDATE events SET messageKey = ?, payload = json_patch(payload, ?) WHERE eventId = ? AND messageKey IS NULL').run(messageKey, JSON.stringify({ id: event.id, ...extra }), legacy).changes
-    return changed > 0
+    if (!handle.prepare('SELECT 1 FROM events WHERE eventId = ? AND messageKey IS NULL').get(legacy)) return false
+    const attachments = Array.isArray(extra.attachments) ? (extra.attachments as Record<string, unknown>[]) : []
+    insertEventRow(handle, attachmentsSeenEvent(event, `${event.platform}:${event.account}:${event.conversationId}:${legacy}`, attachments, event.id))
+    return true
   })
 }
 
@@ -142,7 +141,13 @@ export function namedLabel(platform: string, account: string, label: string | nu
 }
 
 export function addToPayload(eventId: string, extra: Record<string, unknown>): boolean {
-  return immediate((handle) => handle.prepare('UPDATE events SET payload = json_patch(payload, ?) WHERE eventId = ?').run(JSON.stringify(extra), eventId).changes > 0)
+  return immediate((handle) => {
+    const target = handle.prepare('SELECT platform, account, conversationId, messageKey FROM events WHERE eventId = ?').get(eventId) as { platform: string; account: string; conversationId: string; messageKey: string | null } | null
+    if (!target) return false
+    const messageKey = target.messageKey ?? `${target.platform}:${target.account}:${target.conversationId}:${eventId}`
+    const attachments = Array.isArray(extra.attachments) ? (extra.attachments as Record<string, unknown>[]) : []
+    return insertEventRow(handle, attachmentsSeenEvent(target, messageKey, attachments)) !== null
+  })
 }
 
 export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: number; eventId: string; known: boolean } | null {
@@ -154,9 +159,9 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
   const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}), messageKey })
   return immediate((handle) => {
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
-    const result = handle.prepare(`INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source, sourceAtMs, receivedAtMs, messageKey) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(eventId, input.platform, input.account, input.conversationId ?? '', input.type, known ? 1 : 0, input.with ?? '', input.text ?? '', input.box ?? '', JSON.stringify(input.payload ?? {}).slice(0, 20000), input.sourceAt ?? '', receivedAt, now.toISOString(), process.pid, input.source ?? 'live', msOf(input.sourceAt), msOf(receivedAt), messageKey)
-    if (!result.changes) return null
-    typeEvent(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live' })
+    const inserted = insertEventRow(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live', known }, now)
+    if (!inserted) return null
+    const result = { lastInsertRowid: inserted.seq }
     markStage(eventId, 'received', new Date(receivedAt), handle)
     markStage(eventId, 'appended', now, handle)
     if (senderId && handleGiven) rememberPerson(input.platform, input.account, senderId, handleGiven, null, now, handle)

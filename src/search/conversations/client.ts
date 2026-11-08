@@ -85,8 +85,8 @@ const loaded = new Map<string, { stamp: string; conversations: Conversation[] }>
 
 export function loadConversations(path = conversationsDbPath(), filter: { platform?: string } = {}): Conversation[] {
   const all = withConversationsDb(path, (handle) => {
-    const row = handle.prepare("SELECT COALESCE(MAX(seq), 0) AS last, COUNT(*) AS n, (SELECT COUNT(*) FROM memberships) AS members, (SELECT COALESCE(MAX(backfilledAt), '') FROM chats) AS filled FROM messages").get() as { last: number; n: number; members: number; filled: string }
-    const stamp = `${row.last}:${row.n}:${row.members}:${row.filled}`
+    const row = handle.prepare('SELECT COALESCE(MAX(seq), 0) AS last FROM events').get() as { last: number }
+    const stamp = String(row.last)
     const held = loaded.get(path)
     if (held?.stamp === stamp) return held.conversations
     const conversations = loadConversationRows(handle)

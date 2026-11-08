@@ -1,7 +1,8 @@
 import type { Database } from 'bun:sqlite'
-import { createHash } from 'node:crypto'
-import type { EventInput, ExtenderContext } from '../types'
-import { chatIdOf, handleIdOf, isBareId } from './ids'
+import type { EventInsert } from '../types'
+import { conversationSeenEvent, messageEditedEvent } from './derivedEvents'
+import { isBareId } from './ids'
+import { messageKeyOf } from './time'
 
 export interface StoredAttachment {
   name: string
@@ -27,17 +28,11 @@ export interface StoredConversation {
   messages: StoredMessage[]
 }
 
-function eventIdFor(c: StoredConversation, m: StoredMessage): string {
-  return createHash('sha1').update([c.platform, c.account, c.conversationId, m.at ?? '', m.text].join('|')).digest('hex').slice(0, 12)
-}
-
-export function writeConversation(handle: Database, c: StoredConversation, context: ExtenderContext, write: (handle: Database, event: EventInput, context: ExtenderContext) => void, now: Date = new Date()): number {
-  const chatId = chatIdOf(c.platform, c.account, c.conversationId)
+export function writeConversation(handle: Database, c: StoredConversation, insert: (handle: Database, input: EventInsert) => unknown, storedText: (handle: Database, messageKey: string) => string | null, now: Date = new Date()): number {
   const at = now.toISOString()
   let written = 0
   for (const m of c.messages) {
-    write(handle, {
-      eventId: eventIdFor(c, m),
+    insert(handle, {
       platform: c.platform,
       account: c.account,
       conversationId: c.conversationId,
@@ -49,17 +44,15 @@ export function writeConversation(handle: Database, c: StoredConversation, conte
       sourceAt: m.at ?? '',
       receivedAt: m.at ?? at,
       source: 'read',
-    }, context)
-    if (m.text) handle.prepare('UPDATE messages SET text = ? WHERE messageKey = ? AND text != ?').run(m.text, `${chatId}:${m.id}`, m.text)
+    })
+    const key = messageKeyOf(c.platform, c.account, c.conversationId, m.id)
+    if (key && m.text) {
+      const stored = storedText(handle, key)
+      if (stored !== null && stored !== m.text) insert(handle, messageEditedEvent(c, key, m.text, at))
+    }
     written++
   }
-  handle.prepare('INSERT INTO chats (chatId, platform, account, conversationId, kind, box, backfilledAt) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(chatId) DO UPDATE SET box = excluded.box, backfilledAt = excluded.backfilledAt').run(chatId, c.platform, c.account, c.conversationId, c.box === 'group' ? 'group' : 'dm', c.box, at)
-  c.with.forEach((label, position) => {
-    if (!label) return
-    const userId = isBareId(label) ? label.replace(/^@/, '') : handleIdOf(label)
-    handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, NULL, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = COALESCE(identities.handle, excluded.handle)').run(c.platform, userId, isBareId(label) ? null : label.replace(/^@/, ''), at, at)
-    handle.prepare('INSERT INTO memberships (platform, roomId, userId, firstSeenAt, lastSeenAt, position) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, roomId, userId) DO UPDATE SET position = excluded.position').run(c.platform, chatId, userId, at, at, position)
-  })
+  insert(handle, conversationSeenEvent(c, c.box, c.with, at))
   return written
 }
 

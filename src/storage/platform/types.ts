@@ -11,6 +11,30 @@ export interface EventInput {
   sourceAt: string
   receivedAt: string
   source: string
+  ownerId?: string | null
+}
+
+export interface EventInsert {
+  eventId?: string
+  platform: string
+  account: string
+  conversationId: string
+  type: string
+  with: string
+  text: string
+  box: string
+  payload: Record<string, unknown>
+  sourceAt: string
+  receivedAt: string
+  source: string
+  known?: boolean
+  ownerId?: string | null
+}
+
+export interface InsertedEvent {
+  seq: number
+  eventId: string
+  messageKey: string | null
 }
 
 export type ChatKind = 'dm' | 'group' | 'channel' | 'thread'
@@ -55,6 +79,8 @@ export interface AttachmentRow {
   contentType: string | null
   url: string | null
   durationMs: number | null
+  path: string | null
+  error: string | null
 }
 
 export interface InteractionRow {
@@ -89,3 +115,9 @@ export interface TypedRows {
 }
 
 export const MESSAGE_TYPES: readonly string[] = ['message', 'ownMessage']
+
+export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen']
+
+export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identities']
+
+export const EXTENDER_VERSION = 2

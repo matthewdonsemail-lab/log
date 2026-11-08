@@ -199,7 +199,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `slack` | A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending |
 | `linkedin` | A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn |
 | `accountsAndProxies` | Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher |
-| `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings and the MCP server itself |
+| `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it |
 | `extensions` | Extensions that make an account more human on social media: Memelord's memes found for the moment in a chat and sent in context, and matt's cloned voice (Inworld or Fish Audio) for the voice notes he asks for, every paid provider's balance, and treg's catalog of endpoints for every lookup |
 | `newPlatform` | Making a new platform whole with one command, and where every new file goes |

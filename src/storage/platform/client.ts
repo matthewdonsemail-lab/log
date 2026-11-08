@@ -1,9 +1,19 @@
-import type { Database } from 'bun:sqlite'
-import { extenderOf, msOf, readConversations, writeConversation } from './helpers'
+import { Database } from 'bun:sqlite'
+import { createHash } from 'node:crypto'
+import { gunzipSync, gzipSync } from 'node:zlib'
+import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, platformMessageIdOf, readConversations, writeConversation } from './helpers'
 import type { StoredConversation } from './helpers'
-import type { EventInput, ExtenderContext, TypedRows } from './types'
+import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES } from './types'
+import type { EventInput, EventInsert, ExtenderContext, InsertedEvent, TypedRows } from './types'
 
-const owners = new Map<string, string | null>()
+export const PAYLOAD_INLINE_LIMIT = 20000
+
+interface PairTally {
+  seen: Set<string>
+  found: string | null
+}
+
+let tallies = new WeakMap<Database, Map<string, PairTally>>()
 
 export function ownerIdFromPairs(conversationIds: readonly string[]): string | null {
   const counts = new Map<string, number>()
@@ -18,22 +28,41 @@ export function ownerIdFromPairs(conversationIds: readonly string[]): string | n
   return ranked[0][0]
 }
 
+function tallyOf(handle: Database, platform: string, account: string): PairTally {
+  let byKey = tallies.get(handle)
+  if (!byKey) {
+    byKey = new Map()
+    tallies.set(handle, byKey)
+  }
+  const key = `${platform}:${account}`
+  let tally = byKey.get(key)
+  if (!tally) {
+    const rows = handle.prepare("SELECT DISTINCT conversationId FROM events WHERE platform = ? AND account = ? AND (conversationId LIKE '%:%' OR conversationId LIKE '%-%') LIMIT 500").all(platform, account) as { conversationId: string }[]
+    const seen = new Set(rows.map((r) => r.conversationId))
+    tally = { seen, found: ownerIdFromPairs([...seen]) }
+    byKey.set(key, tally)
+  }
+  return tally
+}
+
+export function notePairConversation(handle: Database, platform: string, account: string, conversationId: string): void {
+  if (platform !== 'twitter' || !/^\d+[:-]\d+$/.test(conversationId)) return
+  const tally = tallyOf(handle, platform, account)
+  if (tally.seen.has(conversationId)) return
+  tally.seen.add(conversationId)
+  if (!tally.found) tally.found = ownerIdFromPairs([...tally.seen])
+}
+
 export function contextOn(handle: Database): ExtenderContext {
   return {
     ownerIdOf(platform, account) {
-      const key = `${platform}:${account}`
-      if (owners.has(key)) return owners.get(key) ?? null
-      if (platform !== 'twitter') return null
-      const rows = handle.prepare("SELECT DISTINCT conversationId FROM events WHERE platform = ? AND account = ? AND (conversationId LIKE '%:%' OR conversationId LIKE '%-%') LIMIT 500").all(platform, account) as { conversationId: string }[]
-      const found = ownerIdFromPairs(rows.map((r) => r.conversationId))
-      if (found) owners.set(key, found)
-      return found
+      return platform === 'twitter' ? tallyOf(handle, platform, account).found : null
     },
   }
 }
 
 export function forgetOwners(): void {
-  owners.clear()
+  tallies = new WeakMap()
 }
 
 export function typedRowsOf(event: EventInput, context: ExtenderContext): TypedRows {
@@ -47,7 +76,66 @@ export function typedRowsOf(event: EventInput, context: ExtenderContext): TypedR
   }
 }
 
+export function putBlob(handle: Database, kind: string, text: string, now: Date = new Date()): string {
+  const bytes = Buffer.from(text, 'utf8')
+  const hash = createHash('sha256').update(bytes).digest('hex')
+  const packed = gzipSync(bytes)
+  handle.prepare('INSERT OR IGNORE INTO blobs (hash, kind, codec, size, storedSize, chunks, bytes, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?, ?)').run(hash, kind, 'gzip', bytes.length, packed.length, packed, now.toISOString())
+  return hash
+}
+
+export function readBlob(handle: Database, hash: string): string | null {
+  const row = handle.prepare('SELECT codec, bytes FROM blobs WHERE hash = ?').get(hash) as { codec: string; bytes: Uint8Array } | null
+  if (!row) return null
+  return (row.codec === 'gzip' ? gunzipSync(row.bytes) : Buffer.from(row.bytes)).toString('utf8')
+}
+
+export function insertEventRow(handle: Database, input: EventInsert, now: Date = new Date()): InsertedEvent | null {
+  const messageKey = MESSAGE_TYPES.includes(input.type) ? messageKeyOf(input.platform, input.account, input.conversationId, platformMessageIdOf(input.payload)) : null
+  const eventId = input.eventId ?? eventIdFrom({ platform: input.platform, account: input.account, conversationId: input.conversationId, at: input.sourceAt || input.receivedAt, text: input.text, messageKey })
+  notePairConversation(handle, input.platform, input.account, input.conversationId)
+  const ownerId = input.ownerId ?? contextOn(handle).ownerIdOf(input.platform, input.account)
+  const json = JSON.stringify(input.payload)
+  const rawHash = json.length > PAYLOAD_INLINE_LIMIT ? putBlob(handle, 'eventPayload', json, now) : null
+  const result = handle.prepare('INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source, sourceAtMs, receivedAtMs, messageKey, rawHash, ownerId, typedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(eventId, input.platform, input.account, input.conversationId, input.type, input.known === false ? 0 : 1, input.with, input.text, input.box, rawHash ? JSON.stringify({ storedIn: 'blobs', rawHash }) : json, input.sourceAt, input.receivedAt, now.toISOString(), process.pid, input.source, msOf(input.sourceAt), msOf(input.receivedAt), messageKey, rawHash, ownerId, now.getTime())
+  if (!result.changes) return null
+  typeEvent(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId, type: input.type, with: input.with, text: input.text, box: input.box, payload: input.payload, sourceAt: input.sourceAt, receivedAt: input.receivedAt, source: input.source, ownerId })
+  return { seq: Number(result.lastInsertRowid), eventId, messageKey }
+}
+
+function deriveInternal(handle: Database, event: EventInput): boolean {
+  if (event.type === 'attachmentsSeen') {
+    const messageKey = String(event.payload.messageKey ?? '')
+    const list = Array.isArray(event.payload.attachments) ? (event.payload.attachments as Record<string, unknown>[]) : []
+    const rows = extenderOf(event.platform).toAttachments({ ...event, type: 'message', conversationId: event.conversationId || 'derived', payload: { attachments: list } })
+    const attach = handle.prepare('INSERT INTO attachments (messageKey, n, kind, name, contentType, url, durationMs, path, error) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(messageKey, n) DO UPDATE SET kind = excluded.kind, name = COALESCE(excluded.name, attachments.name), contentType = COALESCE(excluded.contentType, attachments.contentType), url = COALESCE(excluded.url, attachments.url), durationMs = COALESCE(excluded.durationMs, attachments.durationMs), path = COALESCE(excluded.path, attachments.path), error = COALESCE(excluded.error, attachments.error)')
+    for (const a of rows) attach.run(messageKey, a.n, a.kind, a.name, a.contentType, a.url, a.durationMs, a.path, a.error)
+    const platformMessageId = typeof event.payload.platformMessageId === 'string' ? event.payload.platformMessageId : null
+    if (platformMessageId) handle.prepare('UPDATE messages SET platformMessageId = COALESCE(platformMessageId, ?) WHERE messageKey = ?').run(platformMessageId, messageKey)
+    return true
+  }
+  if (event.type === 'messageEdited') {
+    handle.prepare('UPDATE messages SET text = ? WHERE messageKey = ?').run(event.text, String(event.payload.messageKey ?? ''))
+    return true
+  }
+  if (event.type === 'conversationSeen') {
+    const chatId = chatIdOf(event.platform, event.account, event.conversationId)
+    const at = event.receivedAt
+    handle.prepare('INSERT INTO chats (chatId, platform, account, conversationId, kind, box, backfilledAt) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(chatId) DO UPDATE SET box = excluded.box, backfilledAt = COALESCE(chats.backfilledAt, excluded.backfilledAt)').run(chatId, event.platform, event.account, event.conversationId, event.box === 'group' ? 'group' : 'dm', event.box, at)
+    const members = Array.isArray(event.payload.members) ? (event.payload.members as unknown[]).map(String) : []
+    members.forEach((label, position) => {
+      if (!label) return
+      const userId = isBareId(label) ? label.replace(/^@/, '') : handleIdOf(label)
+      handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, NULL, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = COALESCE(identities.handle, excluded.handle)').run(event.platform, userId, isBareId(label) ? null : label.replace(/^@/, ''), at, at)
+      handle.prepare('INSERT INTO memberships (platform, roomId, userId, firstSeenAt, lastSeenAt, position) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, roomId, userId) DO UPDATE SET position = excluded.position').run(event.platform, chatId, userId, at, at, position)
+    })
+    return true
+  }
+  return false
+}
+
 export function writeTypedRows(handle: Database, event: EventInput, rows: TypedRows): void {
+  if (deriveInternal(handle, event)) return
   const at = event.sourceAt || event.receivedAt
   for (const identity of rows.identities) {
     handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = COALESCE(excluded.handle, identities.handle), displayName = COALESCE(excluded.displayName, identities.displayName), firstSeenAt = MIN(identities.firstSeenAt, excluded.firstSeenAt), lastSeenAt = MAX(identities.lastSeenAt, excluded.lastSeenAt)').run(identity.platform, identity.userId, identity.handle, identity.displayName, at, at)
@@ -58,10 +146,10 @@ export function writeTypedRows(handle: Database, event: EventInput, rows: TypedR
   }
   if (rows.message) {
     const m = rows.message
-    const inserted = handle.prepare('INSERT OR IGNORE INTO messages (messageKey, chatId, platformMessageId, senderPlatform, senderUserId, senderLabel, fromOwner, sentAt, sentAtMs, timeSource, text, replyToKey, source, rawHash, receivedAt, receivedAtMs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)').run(m.messageKey, m.chatId, m.platformMessageId, event.platform, m.senderUserId, m.senderLabel, m.fromOwner ? 1 : 0, m.sentAt, m.sentAtMs, m.timeSource, m.text, m.replyToKey, event.source, event.receivedAt, msOf(event.receivedAt)).changes > 0
+    const inserted = handle.prepare('INSERT OR IGNORE INTO messages (messageKey, chatId, platformMessageId, senderPlatform, senderUserId, senderLabel, fromOwner, sentAt, sentAtMs, timeSource, text, replyToKey, source, rawHash, receivedAt, receivedAtMs, extenderVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)').run(m.messageKey, m.chatId, m.platformMessageId, event.platform, m.senderUserId, m.senderLabel, m.fromOwner ? 1 : 0, m.sentAt, m.sentAtMs, m.timeSource, m.text, m.replyToKey, event.source, event.receivedAt, msOf(event.receivedAt), EXTENDER_VERSION).changes > 0
     if (inserted) {
-      const attach = handle.prepare('INSERT OR IGNORE INTO attachments (messageKey, n, kind, name, contentType, url, durationMs) VALUES (?, ?, ?, ?, ?, ?, ?)')
-      for (const a of rows.attachments) attach.run(m.messageKey, a.n, a.kind, a.name, a.contentType, a.url, a.durationMs)
+      const attach = handle.prepare('INSERT OR IGNORE INTO attachments (messageKey, n, kind, name, contentType, url, durationMs, path, error) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      for (const a of rows.attachments) attach.run(m.messageKey, a.n, a.kind, a.name, a.contentType, a.url, a.durationMs, a.path, a.error)
       if (!m.fromOwner && !m.senderUserId.startsWith('unknown:')) {
         handle.prepare('INSERT INTO memberships (platform, roomId, userId, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, roomId, userId) DO UPDATE SET firstSeenAt = MIN(memberships.firstSeenAt, excluded.firstSeenAt), lastSeenAt = MAX(memberships.lastSeenAt, excluded.lastSeenAt)').run(event.platform, m.chatId, m.senderUserId, at, at)
       }
@@ -69,7 +157,7 @@ export function writeTypedRows(handle: Database, event: EventInput, rows: TypedR
   }
   if (rows.interaction) {
     const i = rows.interaction
-    handle.prepare('INSERT OR IGNORE INTO interactions (interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, at, atMs, rawHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)').run(i.interactionKey, event.platform, event.account, i.kind, i.actorUserId, i.targetRef, i.targetText, i.text, i.at, msOf(i.at) ?? msOf(event.receivedAt))
+    handle.prepare('INSERT OR IGNORE INTO interactions (interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, at, atMs, rawHash, extenderVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)').run(i.interactionKey, event.platform, event.account, i.kind, i.actorUserId, i.targetRef, i.targetText, i.text, i.at, msOf(i.at) ?? msOf(event.receivedAt), EXTENDER_VERSION)
   }
 }
 
@@ -92,15 +180,88 @@ interface EventRow {
   sourceAt: string
   receivedAt: string
   source: string
+  rawHash?: string | null
+  ownerId?: string | null
 }
 
-export function eventInputOf(row: EventRow): EventInput {
+export function eventInputOf(row: EventRow, handle?: Database): EventInput {
   let payload: Record<string, unknown> = {}
   try {
-    const parsed = JSON.parse(row.payload)
+    const text = row.rawHash && handle ? readBlob(handle, row.rawHash) ?? row.payload : row.payload
+    const parsed = JSON.parse(text)
     if (parsed && typeof parsed === 'object') payload = parsed as Record<string, unknown>
   } catch {}
-  return { eventId: row.eventId, platform: row.platform, account: row.account, conversationId: row.conversationId, type: row.type, with: row.withWho, text: row.text, box: row.box, payload, sourceAt: row.sourceAt, receivedAt: row.receivedAt, source: row.source }
+  return { eventId: row.eventId, platform: row.platform, account: row.account, conversationId: row.conversationId, type: row.type, with: row.withWho, text: row.text, box: row.box, payload, sourceAt: row.sourceAt, receivedAt: row.receivedAt, source: row.source, ownerId: row.ownerId ?? null }
+}
+
+export function replayEvents(handle: Database, afterSeq = 0): number {
+  const rows = handle.prepare('SELECT eventId, platform, account, conversationId, type, withWho, text, box, payload, sourceAt, receivedAt, source, rawHash, ownerId FROM events WHERE seq > ? ORDER BY seq').all(afterSeq) as EventRow[]
+  forgetOwners()
+  const context = contextOn(handle)
+  for (const row of rows) {
+    const event = eventInputOf(row, handle)
+    writeTypedRows(handle, event, typedRowsOf(event, context))
+  }
+  return rows.length
+}
+
+export function rebuildDerived(handle: Database): { events: number; messages: number; interactions: number; identities: number; chats: number } {
+  handle.exec('BEGIN IMMEDIATE')
+  try {
+    for (const table of DERIVED_TABLES) handle.exec(`DELETE FROM ${table}`)
+    const events = replayEvents(handle)
+    handle.exec('COMMIT')
+    return { events, ...countsOf(handle) }
+  } catch (error) {
+    handle.exec('ROLLBACK')
+    throw error
+  }
+}
+
+const FINGERPRINT_COLUMNS: Record<string, string> = {
+  messages: 'messageKey, chatId, platformMessageId, senderPlatform, senderUserId, senderLabel, fromOwner, sentAtMs, timeSource, text, replyToKey',
+  attachments: 'messageKey, n, kind, name, contentType, url, durationMs, path, error',
+  chats: 'chatId, platform, account, conversationId, kind, name, serverId, box',
+  identities: 'platform, userId, handle, displayName',
+  memberships: 'platform, roomId, userId, position',
+  interactions: 'interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, atMs',
+}
+
+export function derivedFingerprint(handle: Database): Record<string, { rows: number; hash: string }> {
+  const out: Record<string, { rows: number; hash: string }> = {}
+  for (const [table, columns] of Object.entries(FINGERPRINT_COLUMNS)) {
+    const rows = handle.prepare(`SELECT ${columns} FROM ${table} ORDER BY ${columns.split(',')[0]}, ${columns.split(',')[1]}`).values() as unknown[][]
+    const hash = createHash('sha256')
+    for (const row of rows) hash.update(JSON.stringify(row)).update('\n')
+    out[table] = { rows: rows.length, hash: hash.digest('hex').slice(0, 16) }
+  }
+  return out
+}
+
+export interface VerifyResult {
+  ok: boolean
+  live: Record<string, { rows: number; hash: string }>
+  replayed: Record<string, { rows: number; hash: string }>
+  differs: string[]
+}
+
+export function verifyDerived(handle: Database, prepare: (copy: Database) => void = () => {}): VerifyResult {
+  const bytes = handle.serialize()
+  if (bytes.length > 19) {
+    bytes[18] = 1
+    bytes[19] = 1
+  }
+  const copy = Database.deserialize(bytes)
+  try {
+    prepare(copy)
+    rebuildDerived(copy)
+    const live = derivedFingerprint(handle)
+    const replayed = derivedFingerprint(copy)
+    const differs = Object.keys(live).filter((t) => live[t].hash !== replayed[t].hash)
+    return { ok: differs.length === 0, live, replayed, differs }
+  } finally {
+    copy.close()
+  }
 }
 
 export function typeStoredEvents(handle: Database, now: Date = new Date()): { events: number; messages: number; interactions: number; identities: number } {
@@ -158,9 +319,8 @@ export function messagesFromIdentity(handle: Database, platform: string, userId:
 export function saveConversationRows(handle: Database, conversations: readonly StoredConversation[]): number {
   handle.exec('BEGIN IMMEDIATE')
   try {
-    const context = contextOn(handle)
     let written = 0
-    for (const c of conversations) written += writeConversation(handle, c, context, (h, event, ctx) => writeTypedRows(h, event, typedRowsOf(event, ctx)))
+    for (const c of conversations) written += writeConversation(handle, c, (h, input) => insertEventRow(h, input), (h, key) => (h.prepare('SELECT text FROM messages WHERE messageKey = ?').get(key) as { text: string } | null)?.text ?? null)
     handle.exec('COMMIT')
     return written
   } catch (error) {

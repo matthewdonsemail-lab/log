@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { textOf } from './ids'
 
 const SECONDS_BELOW = 100_000_000_000
@@ -30,4 +31,14 @@ export function messageTimeOf(sourceAt: string, receivedAt: string, fallbackMs: 
   const platform = msOf(sourceAt)
   if (platform !== null) return { sentAtMs: platform, timeSource: 'platform' }
   return { sentAtMs: msOf(receivedAt) ?? fallbackMs, timeSource: 'received' }
+}
+
+export function eventIdFrom(event: { platform: string; account: string; conversationId: string; at: string; text: string; messageKey?: string | null }): string {
+  if (event.messageKey) return createHash('sha1').update(event.messageKey).digest('hex').slice(0, 12)
+  const at = msOf(event.at)
+  return createHash('sha1').update([event.platform, event.account, event.conversationId, at === null ? event.at : String(at), event.text].join('|')).digest('hex').slice(0, 12)
+}
+
+export function derivedEventId(type: string, parts: readonly string[]): string {
+  return createHash('sha1').update([type, ...parts].join('|')).digest('hex').slice(0, 12)
 }

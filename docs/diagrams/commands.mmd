@@ -15,6 +15,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_storage["storage"]
     c_timing["timing"]
     c_inbox["inbox"]
     c_media["media"]
@@ -205,6 +206,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_storage
+  mcp --> c_storage
   cli --> c_timing
   mcp --> c_timing
   cli --> c_inbox

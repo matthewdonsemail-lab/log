@@ -37,7 +37,7 @@ function handleOf(event: EventInput): string | null {
 
 export function makeExtender(options: BaseOptions): PlatformExtender {
   const isMessage = (event: EventInput) => MESSAGE_TYPES.includes(event.type) && event.conversationId !== ''
-  const owner = (event: EventInput, context: ExtenderContext) => options.ownerIdOf?.(event, context) ?? context.ownerIdOf(event.platform, event.account) ?? selfIdOf(event.account)
+  const owner = (event: EventInput, context: ExtenderContext) => event.ownerId ?? options.ownerIdOf?.(event, context) ?? context.ownerIdOf(event.platform, event.account) ?? selfIdOf(event.account)
   const sender = (event: EventInput, context: ExtenderContext): string => {
     if (event.type === 'ownMessage' || event.payload.fromMe === true) return owner(event, context)
     const id = options.senderIdOf?.(event, context) ?? payloadSenderId(event)
@@ -88,7 +88,7 @@ export function makeExtender(options: BaseOptions): PlatformExtender {
         const name = textOf(a.name) ?? textOf(a.filename)
         const contentType = textOf(a.type) ?? textOf(a.content_type) ?? textOf(a.contentType)
         const seconds = typeof a.duration === 'number' ? a.duration : typeof a.duration_secs === 'number' ? a.duration_secs : null
-        return { n, kind: attachmentKindOf(contentType, name), name, contentType, url: textOf(a.url), durationMs: typeof a.durationMs === 'number' ? a.durationMs : seconds === null ? null : Math.round(seconds * 1000) }
+        return { n, kind: attachmentKindOf(contentType, name), name, contentType, url: textOf(a.url), durationMs: typeof a.durationMs === 'number' ? a.durationMs : seconds === null ? null : Math.round(seconds * 1000), path: textOf(a.path), error: textOf(a.error) }
       })
     },
     toInteraction(event) {

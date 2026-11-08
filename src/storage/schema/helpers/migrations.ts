@@ -38,6 +38,16 @@ export const TIME_INDEXES: readonly string[] = [
   'CREATE UNIQUE INDEX IF NOT EXISTS eventsByMessageKey ON events (messageKey) WHERE messageKey IS NOT NULL',
 ]
 
+export const RECORD_COLUMNS: readonly (readonly [string, string, string])[] = [
+  ['events', 'rawHash', 'TEXT'],
+  ['events', 'ownerId', 'TEXT'],
+  ['events', 'typedAt', 'INTEGER'],
+  ['messages', 'extenderVersion', 'INTEGER'],
+  ['interactions', 'extenderVersion', 'INTEGER'],
+  ['attachments', 'path', 'TEXT'],
+  ['attachments', 'error', 'TEXT'],
+]
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -83,6 +93,15 @@ export const MIGRATIONS: readonly Migration[] = [
     apply(handle) {
       for (const [table, column, type] of TIME_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
       for (const statement of TIME_INDEXES) handle.exec(statement)
+    },
+  },
+  {
+    version: 7,
+    name: 'eventsAsTheRecord',
+    apply(handle) {
+      for (const [table, column, type] of RECORD_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+      handle.exec('CREATE INDEX IF NOT EXISTS eventsUntyped ON events (seq) WHERE typedAt IS NULL')
+      handle.exec('CREATE INDEX IF NOT EXISTS eventsWithoutTime ON events (seq) WHERE receivedAtMs IS NULL')
     },
   },
 ]
