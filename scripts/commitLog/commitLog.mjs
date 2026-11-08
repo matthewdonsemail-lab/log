@@ -22,7 +22,7 @@ Entries before the AST hook existed were rebuilt from each commit with
 \`node scripts/astSummary.mjs <commit>\`.
 `;
 
-const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+const git = (...args) => execFileSync('git', args, { windowsHide: true, cwd: root, encoding: 'utf8' }).trim();
 
 export const dayOf = (when) => when.slice(0, 10);
 export const dayFile = (day) => `log/${day}.md`;
@@ -112,7 +112,7 @@ export function replaceLastAstBlock(text, ast) {
 
 const gitShow = (spec) => {
   try {
-    return execFileSync('git', ['show', spec], { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).replace(/\r/g, '');
+    return execFileSync('git', ['show', spec], { windowsHide: true, cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).replace(/\r/g, '');
   } catch {
     return '';
   }

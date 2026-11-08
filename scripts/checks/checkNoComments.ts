@@ -54,7 +54,7 @@ export function stripComments(text: string, ranges: CommentRange[]): string {
 }
 
 function trackedFiles(): string[] {
-  const listed = spawnSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { cwd: root, encoding: "utf8" });
+  const listed = spawnSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { windowsHide: true, cwd: root, encoding: "utf8" });
   return listed.stdout.split("\n").map((f) => f.trim()).filter((f) => f && !SKIPPED.test(f) && (CODE.test(f) || PYTHON.test(f)) && existsSync(join(root, f)));
 }
 
@@ -67,7 +67,7 @@ function python(): string {
 
 function pythonComments(files: string[], strip: boolean): Record<string, { kind: string; line: number }[]> {
   if (!files.length) return {};
-  const run = spawnSync(python(), [join(root, "python", "checks", "comments.py"), strip ? "--strip" : "--check", ...files.map((f) => join(root, f))], { encoding: "utf8" });
+  const run = spawnSync(python(), [join(root, "python", "checks", "comments.py"), strip ? "--strip" : "--check", ...files.map((f) => join(root, f))], { windowsHide: true, encoding: "utf8" });
   if (run.status !== 0) throw new Error(`python/checks/comments.py failed: ${run.stderr.trim().slice(0, 400)}`);
   return JSON.parse(run.stdout || "{}") as Record<string, { kind: string; line: number }[]>;
 }

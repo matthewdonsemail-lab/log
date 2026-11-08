@@ -2612,6 +2612,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
     proxy. Spec: `docs/specs/mcpReload.md`.
 
+168. 2026-11-08 · matt: "Reset the governor on X back to 0 confirm it's in
+    the db", then "make that a use case and a guide and part of the mcp
+    aswell to reset the platforms count to 0". Every platform account's
+    governor count (its requests, writes and this hour's requests) is read
+    with `log governor show` and put back to 0 with `log governor reset
+    --platform <p> --account <a|all> --by matt [--reason]` (MCP
+    `governorShow`, `governorReset`), only when matt says so. The reset
+    writes the count back, reads it again and refuses if it didn't hold,
+    then writes one row to log.db's `ledger` (kind `governorReset`: the
+    platform, the account, who said it, the count before), which the answer
+    and `governor show` name. A cooldown after a block is kept (rule 94),
+    and the platform's own answer still decides (rule 73). The resets made
+    by hand before this (`governorResets.jsonl`) are imported into the
+    ledger once. `governor_state.json` is never edited by hand.
+    `src/directApi/governor`, `src/cli/governor`, the `governor` skill and
+    guide, `docs/useCases/inbox/governorReset.md`. Spec:
+    `docs/specs/governor.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

@@ -87,7 +87,7 @@ def transport_problems():
 
 
 def files():
-    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", "vendor/gabrielSlack/gabriel"], cwd=ROOT, capture_output=True, text=True).stdout
+    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", "vendor/gabrielSlack/gabriel"], cwd=ROOT, capture_output=True, text=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)).stdout
     return sorted(ROOT / n for n in out.split() if n.endswith(".py") and (ROOT / n).exists())
 
 

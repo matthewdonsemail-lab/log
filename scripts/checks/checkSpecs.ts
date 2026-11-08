@@ -32,5 +32,5 @@ if (!live && process.env.CI) {
   say("SUBQ_API_KEY is not set in CI: add it as a repository secret, the spec gate never passes without checking");
   process.exit(2);
 }
-const run = spawnSync(process.execPath, ["node_modules/jev-spec/bin/jev-spec.js", "check", "-c", "jevSpec.config.ts", ...args, ...(live ? [] : ["--dry-run"])], { cwd: root, stdio: "inherit" });
+const run = spawnSync(process.execPath, ["node_modules/jev-spec/bin/jev-spec.js", "check", "-c", "jevSpec.config.ts", ...args, ...(live ? [] : ["--dry-run"])], { windowsHide: true, cwd: root, stdio: "inherit" });
 process.exit(run.status ?? 2);

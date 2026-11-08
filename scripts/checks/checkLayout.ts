@@ -7,7 +7,7 @@ const DOMAIN_ROOTS: Record<string, string> = {
   scripts: "checks, commitLog, datasets, docs, hooks, twenty",
 };
 
-const git = (...args: string[]) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
+const git = (...args: string[]) => execFileSync("git", args, { windowsHide: true, cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
 const files = [...new Set([...git("ls-files"), ...git("ls-files", "--others", "--exclude-standard")])].map((f) => f.replace(/\\/g, "/"));
 const onDisk = new Set(git("ls-files", "--deleted"));
 const present = files.filter((f) => !onDisk.has(f));

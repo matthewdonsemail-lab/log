@@ -3,7 +3,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { hookAnswer, hookOutput } from '../../src/contextLayer/hook/index'
 import type { HookInput } from '../../src/contextLayer/hook/index'
-import { CONTEXT_PORT, HOST, labelledPath, logTiming, readService, serviceStarted, SOURCE_CHECK_MS, writeService } from '../../src/contextLayer/service/index'
+import { CODE_CHECK_MS, CONTEXT_PORT, forgetService, HOST, labelledPath, logTiming, readService, serviceStarted, SOURCE_CHECK_MS, startService, writeService } from '../../src/contextLayer/service/index'
+import { codeStamp } from '../../src/mcp/freshness/index.ts'
 import { listUseCases } from '../../src/mcp/server/helpers/index.ts'
 import { localEmbedder } from '../../src/search/conversations/helpers/embed.ts'
 import { EMBED_MODEL } from '../../src/search/conversations/types.ts'
@@ -68,11 +69,10 @@ const route = (prompt: string) => routePrompt(prompt, index, embed, thresholds)
 useFreshnessSource(cachedFreshness(repo))
 
 let server: ReturnType<typeof Bun.serve>
-try {
-  server = Bun.serve({
-  hostname: HOST,
-  port: CONTEXT_PORT,
-  async fetch(request) {
+let inFlight = 0
+const codeNow = () => Math.max(codeStamp(repo), newest(join(repo, 'scripts')))
+const codeAtStart = codeNow()
+async function handle(request: Request): Promise<Response> {
     const url = new URL(request.url)
     if (url.pathname === '/health') return Response.json({ ok: true, utterances: index.utterances.length })
     if (url.pathname === '/hook' && request.method === 'POST') {
@@ -100,6 +100,18 @@ try {
     const decision = await routePrompt(String(prompt ?? ''), index, embed, thresholds)
     logTiming({ event: 'UserPromptSubmit', provider: 'routeService', ms: decision.ms.total, chars: 0, outcome: decision.skipped ?? (decision.matches[0]?.id || 'none') })
     return Response.json(decision)
+}
+try {
+  server = Bun.serve({
+  hostname: HOST,
+  port: CONTEXT_PORT,
+  async fetch(request) {
+    inFlight++
+    try {
+      return await handle(request)
+    } finally {
+      inFlight--
+    }
   },
   })
 } catch (error) {
@@ -112,3 +124,14 @@ try {
 writeService({ pid: process.pid, port: server.port ?? 0, startedAt: new Date().toISOString(), model: EMBED_MODEL, utterances: index.utterances.length, sourceStamp: stamp })
 serviceStarted()
 console.log(`${new Date().toISOString()} context layer listening on ${HOST}:${server.port} (pid ${process.pid})`)
+
+setInterval(() => {
+  if (inFlight > 0 || codeNow() <= codeAtStart) return
+  console.log(`${new Date().toISOString()} log's code changed since this service started, so it hands over to a fresh one running the new code`)
+  void server.stop(true)
+  embedder.stop?.()
+  forgetService()
+  serviceStarted()
+  startService(repo)
+  process.exit(0)
+}, CODE_CHECK_MS)

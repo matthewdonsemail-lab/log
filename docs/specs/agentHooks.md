@@ -142,3 +142,9 @@ Checked by: code and SubQ
 The service (`scripts/contextLayer/service.ts`) answers `/hooks/<event>` with `answerEvent` (`src/agentHooks/answers/client.ts`). That runs every hook of the event whose matcher fits the tool (`hooksForEvent`, never a refusing one) at the same time, merges their answers (`mergeAnswers`), and names a hook that throws in the context instead of failing the others. Each event writes a timing line. Inside the service, the code stamp and the uncommitted files come from `cachedFreshness`. `git status` reruns only when the stamp moved, or once a minute. Issue #99.
 
 Checked by: code and SubQ
+
+### REQ-HOOKS-22: The hook service moves itself onto new code
+
+The service moves itself onto new code: every `CODE_CHECK_MS` (30 s) it compares log's code stamp (`codeStamp`, and the newest file under `scripts/`) with the one it started on. Once it is newer and no hook request is in flight (`inFlight`), it stops listening, forgets its record (`forgetService`), starts a fresh service with `startService` and exits, so a hook never runs old code for long. matt, 2026-11-08: hooks must never open a window, and a fix only reaches the hooks once the service runs it.
+
+Checked by: code and SubQ

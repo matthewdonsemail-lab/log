@@ -32,7 +32,7 @@ def main() -> int:
         return answer({"ok": False, "code": "bad_request", "error": "the request is not a JSON object"})
     command = [os.environ.get("LOG_BUN", "bun"), os.environ.get("LOG_WORKER_ENTRY", "bin/log.ts"), "facebook", "poll", "--request", json.dumps(request)]
     try:
-        proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding="utf8", timeout=TIMEOUT_S)
+        proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding="utf8", timeout=TIMEOUT_S, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except subprocess.TimeoutExpired:
         return answer({"ok": False, "code": "worker_timeout", "error": f"log facebook poll --request took over {TIMEOUT_S} s"})
     except OSError as error:

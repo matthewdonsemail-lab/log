@@ -37,6 +37,7 @@ export const mcpServer = {
     'src/contextLayer/service/client.ts',
     'src/contextLayer/service/types.ts',
     'scripts/contextLayer/service.ts',
+    'src/agentHooks/answers/client.ts',
     'scripts/useCases/benchRouter.ts',
     'src/mcp/catalog/index.ts',
     'src/mcp/catalog/types.ts',

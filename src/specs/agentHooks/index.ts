@@ -18,6 +18,12 @@ export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
   specPath: 'docs/specs/agentHooks.md',
   codePaths: [
+    'scripts/contextLayer/service.ts',
+    'scripts/hooks/event.ts',
+    'src/agentHooks/answers/client.ts',
+    'src/mcp/freshness/client.ts',
+    'src/contextLayer/service/client.ts',
+    'src/contextLayer/service/types.ts',
     'src/storage/schema/client.ts',
     'src/agentHooks/registry/index.ts',
     'src/agentHooks/registry/types.ts',
@@ -52,6 +58,11 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_WATCH, name: 'startSlackWatch' },
       { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
       { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
+    ],
+    'REQ-HOOKS-22': [
+      { kind: 'symbol', file: 'src/contextLayer/service/client.ts', name: 'forgetService' },
+      { kind: 'value', file: 'src/contextLayer/service/types.ts', name: 'CODE_CHECK_MS', equals: 30000 },
+      { kind: 'string', file: 'scripts/contextLayer/service.ts', includes: 'hands over to a fresh one running the new code' },
     ],
     'REQ-HOOKS-21': [
       { kind: 'symbol', file: 'src/agentHooks/registry/index.ts', name: 'claudeCodeHooks' },
@@ -171,6 +182,7 @@ export const agentHooks = {
     'REQ-HOOKS-14': noul('Does ownOrAttach make the watch that wins claimWatcher the one owner, opening a relay with openRelay that records its owners row (pid, hostname, startedAt, a lastHeartbeat refreshed every HEARTBEAT_MS, status, port, token, subscribers) and broadcasting every event to every subscriber that sent the token, while a watch that loses attaches through attachRelay to a live owner session or, when it is an inbox watch, is refused; and does replaceHungOwners stop an owner whose heartbeat is older than STALE_MS and write a hungOwner alert? Do the twitter chat, discord, slack and instagram watch commands all go through ownOrAttach?'),
     'REQ-HOOKS-13': noul('In src/inbox/watch/client.ts, does claimWatcher write the owners row with the watcher pid inside an immediate transaction, refuse a second watcher while the lock holder pid is alive by adding a duplicateWatcher alert row, and take over the row when the holder pid is dead; does ensureLiveWatchers skip starting a watcher while watchHolder returns a live holder; and does stopStaleWatchers stop a live lock holder as well as the pid file process? In scripts/hooks/inbox.ts, are the takeAlerts lines put first in the agent context under ONE PROCESS PER ACCOUNT?'),
     'REQ-HOOKS-16': noul('Does appendEvent insert each event once by its eventId into the events table with an autoincrement seq inside an immediate transaction, store an event whose type is not in eventTypes with known 0 and add an unknownEventType alert through typeStatus, and time its received, appended and indexed stages; does takePending read events after the reader cursor and start a new reader at latestSeq; does importPendingFile import pending.jsonl only while events is empty; does claimChat give each new claim the next chatGenerations generation and stillHeld compare the holder and generation; do the discord and slack sends call guard.part before every part and stop when it is not go; does releaseChat write its actions in the same transaction as deleting the claim; and does the relay broadcast drop a subscriber whose writableLength passes MAX_BUFFERED_BYTES?'),
+    'REQ-HOOKS-22': noul('Does scripts/contextLayer/service.ts count the hook requests in flight around handle, and every CODE_CHECK_MS (30 s, src/contextLayer/service/types.ts) compare codeStamp (src/mcp/freshness) and the newest file under scripts with the stamp it started on; once newer and with nothing in flight, does it stop its server, call forgetService (src/contextLayer/service/client.ts, which deletes its contextService state row), call startService for a fresh service and exit?'),
     'REQ-HOOKS-21': noul('Does claudeCodeHooks in src/agentHooks/registry/index.ts write UserPromptSubmit, PostToolUse and Stop as one type http hook each to HOOK_SERVICE_URL/<event>, SessionStart as one command bun with args running EVENT_SCRIPT and the event name and no shell, and each hook in REFUSING_HOOKS as its own command bun with args; does scripts/hooks/event.ts start the service when it is down; does scripts/contextLayer/service.ts answer /hooks/<event> with answerEvent; does answerEvent run every hook hooksForEvent picks (matcher fits the tool, never one in REFUSING_HOOKS) with Promise.all, merge them with mergeAnswers and put a throwing hook name in the context instead of failing the event; and does cachedFreshness rerun its file listing only when the stamp changed or refreshMs passed?'),
     'REQ-HOOKS-20': noul('Is scripts/hooks/chatNames.ts registered in src/agentHooks/registry/index.ts as a PreToolUse hook for the log MCP discord, slack and instagram tools, and does chatNameVerdict in src/agentHooks/chatNames/index.ts refuse a channel, chat or with argument that isBareId calls an id with how to name it instead, while letting a name through?'),
     'REQ-HOOKS-19': noul('In src/inbox/store/client.ts, does appendEvent take the sender id with senderIdOf (senderId, userId, authorId, sender_id or user in the payload, or a with that isBareId calls an id) and a real handle with handleIn (with, from, handle, username or screenName that isBareId does not call an id), call personOf for the sender id when there is no handle before the INSERT, call rememberPerson with the sender id and handle, and mark the named stage only when the stored with is not a bare id; do personOf and handleOfUserId (and its xInboxHandleOf fallback) return null instead of any value isBareId calls an id; does rememberPerson refuse a handle isBareId calls an id; does namedLabel return the label when it is not a bare id and otherwise personOf or someone not named yet; and in src/inbox/watch/client.ts do messageOf and twitterThreads label people through namedLabel?'),
@@ -200,6 +212,7 @@ export const agentHooks = {
     'REQ-HOOKS-19': MET,
     'REQ-HOOKS-20': MET,
     'REQ-HOOKS-21': MET,
+    'REQ-HOOKS-22': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }
