@@ -5,18 +5,17 @@ import { faAnglesRight, faArrowRight, faCheck } from '@fortawesome/free-solid-sv
 import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
-import { PLATFORMS } from '../PlatformSuite'
 import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
 import { DitherFade } from '../useCases/DitherFade'
 import { HowItWorks } from '../useCases/HowItWorks'
-import { MoreUseCases, PromptCta, ThreeSteps } from '../useCases/UseCasesPage'
+import { MoreUseCases, PromptCta } from '../useCases/UseCasesPage'
+import { Control } from '../Control'
 import { pageForPlatform } from '../useCases/platformPages'
 import { CompareTable, Receipt, STICKER, StoryCta, StoryKicker, StorySection } from '../story/StorySections'
 import { XREACHER_ALTERNATIVE } from './xreacherAlternative'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
-const X = PLATFORMS.find((platform) => platform.id === 'x')!
 const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
 const TITLE = 'Xreacher alternative: log, the free open-source tool to automate X DMs'
 const DESCRIPTION =
@@ -244,7 +243,7 @@ export function XreacherAlternativePage() {
       <Hero />
       <Story />
       <ThePlay />
-      <ThreeSteps play={XREACHER_ALTERNATIVE} platform={{ ...X, label: 'X account' }} icon={faXTwitter} />
+      <Control />
       <PromptCta title="Try log on your own X DMs" ask={XREACHER_ALTERNATIVE.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
       <MoreUseCases current={null} />
       <SiteFooter />
