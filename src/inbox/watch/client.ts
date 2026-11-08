@@ -6,7 +6,7 @@ import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
 import { mediaLine, mediaOf } from '../../media/describer/index'
-import { addAlertRow, appendEvent, db, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
+import { addAlertRow, appendEvent, db, dropFence, holdFence, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
@@ -159,9 +159,31 @@ export function processAlive(pid: number): boolean {
   try {
     process.kill(pid, 0)
     return true
-  } catch {
-    return false
+  } catch (error) {
+    return (error as { code?: string }).code === 'EPERM'
   }
+}
+
+export function ownStartedAt(): string {
+  return new Date(Date.now() - process.uptime() * 1000).toISOString()
+}
+
+export function processStartedAt(pid: number): string | null {
+  try {
+    const run = process.platform === 'win32'
+      ? spawnSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', `(Get-Process -Id ${pid} -ErrorAction Stop).StartTime.ToUniversalTime().ToString('o')`], { encoding: 'utf8', timeout: 10_000, windowsHide: true })
+      : spawnSync('ps', ['-o', 'lstart=', '-p', String(pid)], { encoding: 'utf8', timeout: 5_000, windowsHide: true })
+    const text = String(run.stdout ?? '').trim()
+    const at = Date.parse(text)
+    return run.status === 0 && Number.isFinite(at) ? new Date(at).toISOString() : null
+  } catch {
+    return null
+  }
+}
+
+export function sameProcess(storedStartedAt: string | null | undefined, actualStartedAt: string | null, toleranceMs = 5_000): boolean {
+  if (!storedStartedAt || !actualStartedAt) return true
+  return Math.abs(Date.parse(storedStartedAt) - Date.parse(actualStartedAt)) <= toleranceMs
 }
 
 export const GOVERNOR_DAILY_CAP = 500
@@ -185,10 +207,10 @@ export function addAlert(alert: { platform: string; account: string; kind: strin
   addAlertRow(alert, now)
 }
 
-export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive, now: Date = new Date()): { ok: true } | { ok: false; holder: number } {
+export function claimWatcher(platform: string, account: string, pid: number = process.pid, alive: (pid: number) => boolean = processAlive, now: Date = new Date()): { ok: true; generation: number } | { ok: false; holder: number } {
   const claimed = immediate((handle) => {
     const row = handle.prepare('SELECT pid, generation, heartbeat, status FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { pid: number; generation: number; heartbeat: string; status: string } | null
-    if (row && row.pid === pid) return { ok: true as const }
+    if (row && row.pid === pid) return { ok: true as const, generation: row.generation }
     if (row && row.status !== 'stopped' && alive(row.pid)) {
       addAlertRow({ platform, account, kind: 'duplicateWatcher', detail: `a second ${platform} watcher (pid ${pid}) tried to start for ${account} while pid ${row.pid} owns it; it was refused and exited, so there is still one process` }, now, handle)
       return { ok: false as const, holder: row.pid }
@@ -196,9 +218,11 @@ export function claimWatcher(platform: string, account: string, pid: number = pr
     const stamp = now.toISOString()
     const fromAt = row?.heartbeat ?? lastEventAt(platform, account, handle)
     if (fromAt) openGap(platform, account, fromAt, row ? 'ownerRestarted' : 'noOwner', now, handle)
-    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation`).run(platform, account, pid, hostname(), stamp, stamp, (row?.generation ?? 0) + 1)
-    return { ok: true as const }
+    const generation = (row?.generation ?? 0) + 1
+    handle.prepare(`INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, generation, pidStartedAt, staleSeenAt) VALUES (?, ?, ?, ?, ?, ?, 'connecting', ?, ?, NULL) ON CONFLICT(platform, account) DO UPDATE SET pid = excluded.pid, hostname = excluded.hostname, startedAt = excluded.startedAt, heartbeat = excluded.heartbeat, status = 'connecting', port = 0, token = '', subscribers = 0, generation = excluded.generation, pidStartedAt = excluded.pidStartedAt, staleSeenAt = NULL`).run(platform, account, pid, hostname(), stamp, stamp, generation, pid === process.pid ? ownStartedAt() : null)
+    return { ok: true as const, generation }
   })
+  if (claimed.ok && pid === process.pid) holdFence(platform, account, claimed.generation)
   if (claimed.ok) {
     mkdirSync(join(inboxRoot(), platform, account), { recursive: true })
     writeFileSync(watchPidPath(platform, account), String(pid))
@@ -207,6 +231,7 @@ export function claimWatcher(platform: string, account: string, pid: number = pr
 }
 
 export function releaseWatcher(platform: string, account: string, pid: number = process.pid): void {
+  if (pid === process.pid) dropFence(platform, account)
   db().prepare("UPDATE owners SET status = 'stopped', port = 0, token = '', subscribers = 0, heartbeat = ? WHERE platform = ? AND account = ? AND pid = ?").run(new Date().toISOString(), platform, account, pid)
 }
 

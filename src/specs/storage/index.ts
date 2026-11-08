@@ -16,11 +16,13 @@ const DB_READ = 'src/inbox/dbRead/client.ts'
 const COMMAND = 'src/cli/storage/index.ts'
 const PLATFORM_SESSION = 'src/platformKit/session/client.ts'
 const X_SESSION = 'src/twitter/account/session/client.ts'
+const WATCH = 'src/inbox/watch/client.ts'
+const RELAY = 'src/inbox/relay/client.ts'
 
 export const storage = {
   description: 'One SQLite database: times as integer milliseconds, one stable key per message, and old rows filled in resumable batches',
   specPath: 'docs/specs/storage.md',
-  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION],
+  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY],
   anchors: {
     'REQ-STORAGE-01': [
       { kind: 'symbol', file: TIME, name: 'msOf' },
@@ -76,6 +78,22 @@ export const storage = {
       { kind: 'uses', file: X_SESSION, name: 'identifyAccount' },
       { kind: 'string', file: BACKFILL, includes: 'peopleToAliases' },
     ],
+    'REQ-STORAGE-08': [
+      { kind: 'symbol', file: STORE, name: 'checkFence' },
+      { kind: 'symbol', file: STORE, name: 'asOwner' },
+      { kind: 'symbol', file: STORE, name: 'OwnerFencedError' },
+      { kind: 'uses', file: WATCH, name: 'holdFence' },
+      { kind: 'uses', file: RELAY, name: 'asOwner' },
+      { kind: 'symbol', file: WATCH, name: 'processStartedAt' },
+      { kind: 'symbol', file: WATCH, name: 'sameProcess' },
+      { kind: 'string', file: RELAY, includes: 'ownerPidReused' },
+    ],
+    'REQ-STORAGE-09': [
+      { kind: 'string', file: MIGRATIONS, includes: 'gapsOneOpen' },
+      { kind: 'symbol', file: STORE, name: 'openGap' },
+      { kind: 'symbol', file: STORE, name: 'markGap' },
+      { kind: 'symbol', file: RELAY, name: 'catchUpRunner' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -90,6 +108,8 @@ export const storage = {
     'REQ-STORAGE-05': noul('Does insertEventRow store a payload longer than PAYLOAD_INLINE_LIMIT gzip-compressed in blobs through putBlob with events.rawHash set, does eventInputOf read it back with readBlob, does insertEventRow write events.ownerId from notePairConversation and contextOn, and do messages and interactions record EXTENDER_VERSION?'),
     'REQ-STORAGE-06': noul('Does rebuildDerived delete every table in DERIVED_TABLES and replay every event in seq order inside one transaction; does verifyDerived rebuild a deserialized copy and compare derivedFingerprint of each table; does log storage verify change nothing and rebuild change the live tables only with --apply; and do the backfill steps eventsForTypedRows, editsForChangedText and untypedEvents give unevented typed rows an import event with their original key, record in-place text changes as messageEdited and type untyped events, the full-scan ones running once?'),
     'REQ-STORAGE-07': noul('Do recordPlatformSession and recordTwitterSession call identifyAccount with the session answer userId, appending an accountIdentified event whose derivation upserts accounts and re-keys self:<account> senders only in that account chats through rekeyIdentity; does rememberPerson append an identityLearned event instead of writing the people table, whose derivation upserts handleAliases with the lower-cased handle, re-keys @handle rows in messages, memberships, interactions and identities to the real id and logs identityMerges; does the base extender key a handle-only sender by userIdOfHandle when an alias is known; does storeRead keep fromId, senderId or userId as senderId; and do personOf and chatMessages read names from identities, with no code reading or writing people except the one-time peopleToAliases import?'),
+    'REQ-STORAGE-08': noul('Does claimWatcher hold the generation it wins with holdFence; do appendEvent, recordPosition, openGap and markGap call checkFence inside their write transaction, which throws OwnerFencedError when the current call runs inside asOwner for that account and owners no longer names this pid with that generation, and does nothing outside asOwner; does ownOrAttach run its emitted events and its catch-up inside asOwner and stop writing after OwnerFencedError with one ownerFenced alert; does processAlive treat EPERM as alive; and does replaceHungOwners kill only after two stale readings STALE_CONFIRM_MS apart, and skip the kill with an ownerPidReused alert when sameProcess says the pid start time differs?'),
+    'REQ-STORAGE-09': noul('Does migration 9 close extra open gaps into the oldest and create the partial unique index gapsOneOpen; does openGap raise drops on an open or catchingUp gap instead of inserting a second; does markGap close with expectDrops only where status is catchingUp and drops still matches, returning whether it changed; and does catchUpRunner reopen the gap when that close fails?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -100,6 +120,8 @@ export const storage = {
     'REQ-STORAGE-05': MET,
     'REQ-STORAGE-06': MET,
     'REQ-STORAGE-07': MET,
+    'REQ-STORAGE-08': MET,
+    'REQ-STORAGE-09': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

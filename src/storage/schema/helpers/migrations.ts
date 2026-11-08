@@ -55,6 +55,12 @@ export const IDENTITY_TABLES: readonly string[] = [
   'CREATE TABLE IF NOT EXISTS identityMerges (seq INTEGER PRIMARY KEY, platform TEXT NOT NULL, fromId TEXT NOT NULL, toId TEXT NOT NULL, at TEXT NOT NULL, reason TEXT NOT NULL)',
 ]
 
+export const FENCE_COLUMNS: readonly (readonly [string, string, string])[] = [
+  ['owners', 'pidStartedAt', 'TEXT'],
+  ['owners', 'staleSeenAt', 'TEXT'],
+  ['gaps', 'drops', 'INTEGER NOT NULL DEFAULT 0'],
+]
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -116,6 +122,15 @@ export const MIGRATIONS: readonly Migration[] = [
     name: 'stableIdentities',
     apply(handle) {
       for (const statement of IDENTITY_TABLES) handle.exec(statement)
+    },
+  },
+  {
+    version: 9,
+    name: 'fencedOwnersAndGaps',
+    apply(handle) {
+      for (const [table, column, type] of FENCE_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+      handle.prepare(`UPDATE gaps SET status = 'closed', closedAt = COALESCE(closedAt, ?), detail = COALESCE(detail || '; ', '') || 'closed into the older open gap for this account' WHERE status IN ('open', 'catchingUp', 'refused') AND id NOT IN (SELECT MIN(id) FROM gaps WHERE status IN ('open', 'catchingUp', 'refused') GROUP BY platform, account)`).run(new Date().toISOString())
+      handle.exec("CREATE UNIQUE INDEX IF NOT EXISTS gapsOneOpen ON gaps (platform, account) WHERE status IN ('open', 'catchingUp', 'refused')")
     },
   },
 ]

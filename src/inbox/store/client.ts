@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { Database } from 'bun:sqlite'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
@@ -23,6 +24,53 @@ export function db(): Database {
   for (const [platform, types] of Object.entries(KNOWN_TYPES)) for (const type of types) seed.run(platform, type, now)
   opened = { path, db: handle }
   return handle
+}
+
+export class OwnerFencedError extends Error {
+  readonly code = 'ownerFenced'
+}
+
+const fences = new Map<string, number>()
+
+export const ownerScope = new AsyncLocalStorage<{ platform: string; account: string }>()
+
+export function asOwner<T>(platform: string, account: string, work: () => T): T {
+  return ownerScope.run({ platform, account }, work)
+}
+
+export function holdFence(platform: string, account: string, generation: number): void {
+  fences.set(`${platform}:${account}`, generation)
+}
+
+export function dropFence(platform: string, account: string): void {
+  fences.delete(`${platform}:${account}`)
+}
+
+export function fenceOf(platform: string, account: string): number | null {
+  return fences.get(`${platform}:${account}`) ?? null
+}
+
+export function checkFence(handle: Database, platform: string, account: string): void {
+  const scope = ownerScope.getStore()
+  if (!scope || scope.platform !== platform || scope.account !== account) return
+  const generation = fenceOf(platform, account)
+  if (generation === null) return
+  const row = handle.prepare('SELECT generation, pid FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { generation: number; pid: number } | null
+  if (row && row.generation === generation && row.pid === process.pid) return
+  throw new OwnerFencedError(`${platform} ${account}: this process (pid ${process.pid}) owned it as generation ${generation}, but ${row ? `pid ${row.pid} owns it now as generation ${row.generation}` : 'no owner row is left'}, so its write was refused`)
+}
+
+export function inWrite<T>(handle: Database, work: (handle: Database) => T): T {
+  if (handle.inTransaction) return work(handle)
+  handle.exec('BEGIN IMMEDIATE')
+  try {
+    const result = work(handle)
+    handle.exec('COMMIT')
+    return result
+  } catch (error) {
+    handle.exec('ROLLBACK')
+    throw error
+  }
 }
 
 export function immediate<T>(work: (handle: Database) => T): T {
@@ -174,6 +222,7 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
   const messageKey = messageKeyOfEvent(input)
   const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}), messageKey })
   return immediate((handle) => {
+    checkFence(handle, input.platform, input.account)
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
     const inserted = insertEventRow(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live', known }, now)
     if (!inserted) return null
@@ -227,7 +276,10 @@ export function importPendingFile(path: string): number {
 }
 
 export function recordPosition(platform: string, account: string, position: string, scope = '', now: Date = new Date()): void {
-  db().prepare('INSERT INTO positions (platform, account, scope, position, updatedAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, account, scope) DO UPDATE SET position = excluded.position, updatedAt = excluded.updatedAt').run(platform, account, scope, position, now.toISOString())
+  inWrite(db(), (handle) => {
+    checkFence(handle, platform, account)
+    handle.prepare('INSERT INTO positions (platform, account, scope, position, updatedAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, account, scope) DO UPDATE SET position = excluded.position, updatedAt = excluded.updatedAt').run(platform, account, scope, position, now.toISOString())
+  })
 }
 
 export function positionsOf(platform: string, account: string): Record<string, string> {
@@ -240,19 +292,32 @@ export function openGapOf(platform: string, account: string, handle: Database = 
 }
 
 export function openGap(platform: string, account: string, fromAt: string, reason: string, now: Date = new Date(), handle: Database = db()): GapRow {
-  const held = openGapOf(platform, account, handle)
-  if (held) return held
-  const result = handle.prepare("INSERT INTO gaps (platform, account, fromAt, reason, status, openedAt) VALUES (?, ?, ?, ?, 'open', ?)").run(platform, account, fromAt, reason, now.toISOString())
-  addAlertRow({ platform, account, kind: 'gapOpened', detail: `${platform} ${account} is behind from ${fromAt} (${reason}): its owner catches up through its own session, and a send that needs its context waits for that` }, now, handle)
-  return handle.prepare('SELECT * FROM gaps WHERE id = ?').get(Number(result.lastInsertRowid)) as GapRow
+  return inWrite(handle, (h) => {
+    checkFence(h, platform, account)
+    const held = openGapOf(platform, account, h)
+    if (held) {
+      if (held.status === 'refused') return held
+      h.prepare('UPDATE gaps SET drops = drops + 1, detail = ? WHERE id = ?').run(`dropped again (${reason}) at ${now.toISOString()}${held.detail ? `; ${held.detail}` : ''}`, held.id)
+      return h.prepare('SELECT * FROM gaps WHERE id = ?').get(held.id) as GapRow
+    }
+    const result = h.prepare("INSERT INTO gaps (platform, account, fromAt, reason, status, openedAt) VALUES (?, ?, ?, ?, 'open', ?)").run(platform, account, fromAt, reason, now.toISOString())
+    addAlertRow({ platform, account, kind: 'gapOpened', detail: `${platform} ${account} is behind from ${fromAt} (${reason}): its owner catches up through its own session, and a send that needs its context waits for that` }, now, h)
+    return h.prepare('SELECT * FROM gaps WHERE id = ?').get(Number(result.lastInsertRowid)) as GapRow
+  })
 }
 
-export function markGap(id: number, status: GapStatus, detail: string | null = null, appended = 0, now: Date = new Date()): void {
-  const closing = status === 'closed'
-  const sql = closing ? 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ?, toAt = ?, closedAt = ? WHERE id = ?' : 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ? WHERE id = ?'
-  db().prepare(sql).run(...(closing ? [status, detail, appended, now.toISOString(), now.toISOString(), id] : [status, detail, appended, id]))
-  const gap = db().prepare('SELECT platform, account FROM gaps WHERE id = ?').get(id) as { platform: string; account: string } | null
-  if (gap && status === 'refused') addAlertRow({ platform: gap.platform, account: gap.account, kind: 'catchUpRefused', detail: `catching up ${gap.platform} ${gap.account} was refused: ${detail ?? ''}; it stays behind and nothing resumes until matt says so (rule 94)` }, now)
+export function markGap(id: number, status: GapStatus, detail: string | null = null, appended = 0, now: Date = new Date(), expectDrops: number | null = null): boolean {
+  return inWrite(db(), (handle) => {
+    const gap = handle.prepare('SELECT platform, account FROM gaps WHERE id = ?').get(id) as { platform: string; account: string } | null
+    if (gap) checkFence(handle, gap.platform, gap.account)
+    const closing = status === 'closed'
+    const guard = closing && expectDrops !== null ? " AND status = 'catchingUp' AND drops = ?" : ''
+    const sql = closing ? `UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ?, toAt = ?, closedAt = ? WHERE id = ?${guard}` : 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ? WHERE id = ?'
+    const args = closing ? [status, detail, appended, now.toISOString(), now.toISOString(), id, ...(guard ? [expectDrops as number] : [])] : [status, detail, appended, id]
+    const changed = handle.prepare(sql).run(...args).changes > 0
+    if (gap && status === 'refused') addAlertRow({ platform: gap.platform, account: gap.account, kind: 'catchUpRefused', detail: `catching up ${gap.platform} ${gap.account} was refused: ${detail ?? ''}; it stays behind and nothing resumes until matt says so (rule 94)` }, now, handle)
+    return changed
+  })
 }
 
 export function resumeGap(platform: string, account: string, by: string, now: Date = new Date()): GapRow | null {

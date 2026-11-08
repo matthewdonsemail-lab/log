@@ -53,3 +53,17 @@ Checked by: code and SubQ
 `accounts (platform, account, userId)` holds each account's own real id, learned from its session check: `recordPlatformSession` and `recordTwitterSession` call `identifyAccount`, which appends an `accountIdentified` event once per id. Deriving it moves the account's own messages from `self:<account>` to that id, only in that account's chats (`rekeyIdentity`). `handleAliases (platform, handle, userId)` maps each handle, lower-cased, to the id behind it, from `identityLearned` events (`rememberPerson`, whenever an event carries both a sender id and a handle). Deriving one re-keys every row keyed by `@handle` (messages, memberships, interactions, identities) to the real id and logs it in `identityMerges`. Later messages from that handle are keyed by the id (`userIdOfHandle`). Reads (`storeRead`) keep the sender's id (`fromId`, `senderId` or `userId`) so ids are learned from every read and catch-up. A name is read through `identities` (`personOf`, `handleOfIdentity`, the join in `chatMessages`), and `people` is no longer read or written: its rows were imported once as `identityLearned` events (`peopleToAliases`). Every id is stored as text.
 
 Checked by: code and SubQ
+
+## One owner at a time
+
+### REQ-STORAGE-08: A replaced owner's writes are refused by the database, not by its own good behaviour
+
+When a watcher wins ownership (`claimWatcher`) it holds that generation as its fence (`holdFence`). Everything the owner itself writes (the events its push channel brings, its catch-up, its positions and gaps) runs inside its owner scope (`asOwner`, from `ownOrAttach`), and `appendEvent`, `recordPosition`, `openGap` and `markGap` check, in the same `BEGIN IMMEDIATE` as the write, that `owners` still names this process with that generation (`checkFence`). A replaced owner gets `OwnerFencedError` on every write after that. It raises one `ownerFenced` alert and writes nothing more. Writes the same process makes outside the owner scope (an ordinary read or send) aren't affected. A pid that refuses a liveness probe with EPERM counts as alive. An owner is stopped only after two stale readings at least `STALE_CONFIRM_MS` apart (`staleSeenAt`, cleared by any heartbeat). If its pid now belongs to a process with a different start time (`pidStartedAt`, `processStartedAt`), nothing is killed and `ownerPidReused` is alerted. A heartbeat that meets a busy database is retried rather than dropped.
+
+Checked by: code and SubQ
+
+### REQ-STORAGE-09: A gap is never closed over a newer drop
+
+An account has at most one open gap (`gapsOneOpen`, a partial unique index; migration 9 closes any extra into the oldest). When the socket drops again while a gap is open, `openGap` raises its `drops` counter. The catch-up runner closes the gap only if `drops` is still what it was when the catch-up started (`markGap` with `expectDrops`). Otherwise the gap goes back to open, and the next run catches up again.
+
+Checked by: code and SubQ
