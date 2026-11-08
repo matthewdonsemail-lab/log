@@ -1,0 +1,37 @@
+[
+  {
+    "slug": "twitter",
+    "icon": "faXTwitter",
+    "title": "log for X (Twitter): your AI agent reads and answers your DMs",
+    "description": "log by ListeningKit lets your agent read both inboxes as one, see who is waiting on you, and send your replies, posts and DMs in your own voice, the moment you say so.",
+    "card": { "lead": "your", "name": "X", "pitch": "DMs and replies, run by <span class=\"u\">your AI agent</span>" }
+  },
+  {
+    "slug": "discord",
+    "icon": "faDiscord",
+    "title": "log for Discord: your AI agent answers your DMs, groups and channels",
+    "description": "log by ListeningKit lets your agent read your DMs, groups and channels, watch them live, and reply with words or a meme that fits, the moment you say so.",
+    "card": { "lead": "your", "name": "Discord", "pitch": "DMs, groups and channels, answered by <span class=\"u\">your AI agent</span>" }
+  },
+  {
+    "slug": "slack",
+    "icon": "faSlack",
+    "title": "log for Slack: your AI agent answers your DMs in every workspace",
+    "description": "log by ListeningKit lets your agent read your DMs and group DMs in every workspace, watch them live, and reply one line at a time in your voice, the moment you say so.",
+    "card": { "lead": "your", "name": "Slack", "pitch": "DMs in every workspace, answered by <span class=\"u\">your AI agent</span>" }
+  },
+  {
+    "slug": "instagram",
+    "icon": "faInstagram",
+    "title": "log for Instagram: your AI agent answers your DMs, no browser",
+    "description": "log by ListeningKit lets your agent answer every DM as it lands, with text or a meme that fits, straight through Instagram with no browser, the moment you say so.",
+    "card": { "lead": "your", "name": "Instagram", "pitch": "DMs answered by <span class=\"u\">your AI agent</span>, no browser" }
+  },
+  {
+    "slug": "reddit",
+    "icon": "faReddit",
+    "title": "log for Reddit: your AI agent runs your Reddit account",
+    "description": "log by ListeningKit lets your agent keep your Reddit account signed in and run your recorded steps in its own browser, a dry run until you say go.",
+    "card": { "lead": "your", "name": "Reddit", "pitch": "account, run by <span class=\"u\">your AI agent</span>" }
+  }
+]

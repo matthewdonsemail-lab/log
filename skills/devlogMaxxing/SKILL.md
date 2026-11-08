@@ -14,6 +14,7 @@ The worked example is `/devlog/xreacher-alternative`:
 - the page: `site/apps/web/src/landing/devlog/XreacherAlternativePage.tsx`
 - its play data: `devlog/xreacherAlternative.ts`
 - the shared story parts: `site/apps/web/src/landing/story/StorySections.tsx` and `story.css`
+- the list of every devlog: `site/apps/web/src/landing/devlog/articles.json` (`articles.ts` reads it). The `/devlog` page, the share cards and the prerender all come from it
 - the research and outline: `~/.buzz/PLANS/LOG_XREACHER_ALTERNATIVE_PAGE_OUTLINE_2026_11_09.md`
 
 ## Hard boundaries
@@ -92,21 +93,37 @@ The worked example is `/devlog/xreacher-alternative`:
    - Crop it with ffmpeg into `site/apps/web/public/images/devlog/<name>.webp`.
 4. **Write the outline** to `~/.buzz/PLANS/LOG_<TOPIC>_PAGE_OUTLINE_<date>.md`. It holds the keywords with their volumes, what their pages carry, the BHW list, what the page will have, and what's left.
 5. **Build the page.**
-   - Write `devlog/<Name>Page.tsx` and its play data, starting from the Xreacher page.
-   - Add a route `/devlog/<keyword-slug>` in `App.tsx` and a line in `public/sitemap.xml`.
-   - In `useMeta`, set:
-     - the title with the keyword and the year
-     - the meta description
-     - JSON-LD with an `Article` (author Matthew Don, `datePublished`, `dateModified`, the image) and a `FAQPage` built from the same FAQ data the page shows
-6. **Link it in.**
+   - Add the article to `devlog/articles.json`:
+     - `slug`
+     - `title` (the keyword and the year)
+     - `headline`
+     - `description`
+     - `summary`
+     - `published` and `publishedLabel`
+     - `author`
+     - `card`: `lead`, `name` (shown in capitals as a white sticker) and `pitch` (HTML, where a span with class `u` draws the dashed underline)
+   - Write `devlog/<Name>Page.tsx`, starting from the Xreacher page. Export its story component and its schema (`articleSchema(article, faq)`), and read its title, description and dates from `articleOf(slug)`.
+   - Register the story in `BODIES` in `devlog/prerender.tsx`.
+   - Add the route `/devlog/<slug>` in `App.tsx` and a line in `public/sitemap.xml`.
+   - The `/devlog` list picks the article up by itself.
+6. **Make its share card.** Run `C:\Python312\python.exe site/apps/web/scripts/ogCards.py <slug>`. It fills `scripts/ogCard.html` (the member sites' card: blue gradient, hand-drawn frame, matt's photo, the card text, the byline), renders it in Chrome at 1200×630 and writes `public/og/devlog/<slug>.png`. Look at the PNG before committing it.
+7. **Rendered for crawlers and social previews.** The site build (`site/scripts/build-site.mjs`) runs `site/scripts/prerenderPages.mjs` after the web build:
+   - It renders every devlog's story to HTML with React on the server.
+   - It writes `dist/devlog/<slug>.html` and `dist/devlog.html`, each with its own title, description, canonical link, OG and Twitter tags (the share card as the image), the JSON-LD (`id="devlog-schema"`, so the page doesn't add it twice), and the whole article inside `#root`.
+   - `vercel.json` sends `/devlog` and `/devlog/:slug` to those files before the app's catch-all.
+
+   The platform pages (`/twitter`, `/discord`, `/slack`, `/instagram`, `/reddit`) go through the same build, from `landing/useCases/sharePages.json`. Each gets its own title, description and card: the platform's logo on a white tile with no photo, rendered by the same `ogCards.py` into `public/og/pages/<slug>.png`. They carry the tags only, and the app still renders their content. A new platform page is one entry there, plus a rewrite in `vercel.json` (the build refuses a page with no rewrite).
+
+   Check it locally: run `npx vite build` in `site/apps/web`, then `node site/scripts/prerenderPages.mjs`, then read the title, the og tags and the text in `dist/devlog/<slug>.html`.
+8. **Link it in.**
    - Link to the platform page (`/twitter` …) where the copy names the platform.
    - Link to the docs (`/docs/<tab>/<page>`, for example `getStarted/mcp`, `howItWorks/liveInbox`, `howItWorks/proxies`, `platforms/x`, `howItWorks/specs/voiceGate`) where the copy names how log does it.
    - Check that every docs link answers 200 on log.listeningkit.com.
-7. **Check it.**
+9. **Check it.**
    - Run `npx tsc --noEmit --skipLibCheck` in `site/apps/web`.
    - Open it on the local dev server in Aside at 1440 and 390 wide, with nothing scrolling sideways.
    - Read the title and the JSON-LD types from the page.
-8. **Ship it.** Commit as matt (`GIT_CONFIG_COUNT=0`) with the day's log entry (rule 5), push, and add it to the PR or open one (`gh pr create`).
+10. **Ship it.** Commit as matt (`GIT_CONFIG_COUNT=0`) with the day's log entry (rule 5), push, and add it to the PR or open one (`gh pr create`).
 
 ## Done when
 
@@ -114,6 +131,9 @@ The worked example is `/devlog/xreacher-alternative`:
 - The keyword is in the title, the H1, the short version, the FAQ and the copy.
 - Every number has its source in the outline.
 - The byline shows matt's photo and the date.
+- The page is on `/devlog`.
+- Its share card is in `public/og/devlog/`.
+- The prerendered HTML carries its own tags and the full text.
 - The FAQ and the article schema load.
 - It reads cleanly at desktop and phone widths.
 - The outline lists what's left, above all getting named on the "best <x> alternatives" pages that AI answers already cite. That is the citation tracker's job.
