@@ -3,12 +3,12 @@ import { chatContextOf } from '../../src/inbox/context/index'
 import { chatMessageCount, chatMessages, readSourceFor, userIdOfHandle } from '../../src/inbox/dbRead/index'
 import { db } from '../../src/inbox/store/index'
 
-const ROUNDS = 5
+const ROUNDS = Number(process.env.BENCH_ROUNDS) || 5
 const pct = (values: number[], p: number) => {
   const sorted = [...values].sort((a, b) => a - b)
   return Math.round(sorted[Math.min(sorted.length - 1, Math.round((p / 100) * (sorted.length - 1)))] * 10) / 10
 }
-const summary = (ms: number[]) => ({ n: ms.length, p50: pct(ms, 50), p95: pct(ms, 95), p99: pct(ms, 99) })
+const summary = (ms: number[]) => ({ n: ms.length, p50: pct(ms, 50), p95: pct(ms, 95), p99: pct(ms, 99), p999: pct(ms, 99.9) })
 
 const owners = db().prepare("SELECT platform, account FROM owners WHERE platform IN ('discord', 'twitter') AND status = 'streaming'").all() as { platform: string; account: string }[]
 const report: Record<string, unknown> = {}

@@ -34,6 +34,7 @@ export interface CommandContext {
   connectTiming?: Partial<ConnectTiming>;
   out: (line: string) => void;
   err: (line: string) => void;
+  image?: (data: string, mimeType: string) => void;
   now?: () => Date;
   sleep?: (ms: number) => Promise<void>;
   cancelled?: () => boolean;

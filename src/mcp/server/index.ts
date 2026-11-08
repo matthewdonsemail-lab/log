@@ -52,10 +52,10 @@ export function browserLines(views: BrowserView[]): string[] {
   return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 54: a known state is resolved, never a reason to stop).`] : [])];
 }
 
-function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers): CallToolResult {
+function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers, images: readonly ToolImage[] = []): CallToolResult {
   const views = safeViews(read);
   const result: ToolResult = { ...base, browsers: views, next: views.find((v) => v.next)?.next ?? null, needsMatt: views.find((v) => v.needsMatt)?.needsMatt ?? null };
-  return { isError, content: [{ type: "text", text: [...browserLines(views), "", body].join("\n") }], structuredContent: result as unknown as Record<string, unknown> };
+  return { isError, content: [{ type: "text", text: [...browserLines(views), "", body].join("\n") }, ...images.map((image) => ({ type: "image" as const, data: image.data, mimeType: image.mimeType }))], structuredContent: result as unknown as Record<string, unknown> };
 }
 
 function refused(message: string, read: ReadBrowsers): CallToolResult {
@@ -95,6 +95,12 @@ interface Ran {
   base: Omit<ToolResult, "browsers" | "next" | "needsMatt">;
   text: string;
   cancelled: boolean;
+  images: ToolImage[];
+}
+
+export interface ToolImage {
+  data: string;
+  mimeType: string;
 }
 
 function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, signal?: AbortSignal): Promise<Ran> {
@@ -107,6 +113,7 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
+  const images: ToolImage[] = [];
   const note = (source: string, line: string) => {
     const entry = { at: new Date().toISOString(), source, line };
     progress.push(entry);
@@ -160,6 +167,9 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
         note("err", line);
         onLine(name, "err", line);
       },
+      image: (data, mimeType) => {
+        images.push({ data, mimeType });
+      },
     });
   } catch (error) {
     cancelled = error instanceof JobCancelled;
@@ -178,7 +188,7 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
   if (keptJob) finishJob(keptJob.id, code === 0 ? "completed" : "failed", { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), cancelledByClient: true }, text);
-  return { base: { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled };
+  return { base: { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled, images };
 }
 
 function commandOfTool(name: string) {
@@ -236,7 +246,7 @@ export async function runToolCall(
   const progress: ProgressLine[] = [];
   if (!entry || !LONG_RUNNING.has(entry.command.name)) {
     const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, signal);
-    return withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers);
+    return withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
   }
   const account = accountOfArgv(guard.argv);
   const holder = busyJob(account);

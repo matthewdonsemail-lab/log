@@ -8,8 +8,8 @@ export async function loadDescriber(model = VISION_MODEL): Promise<Describer> {
   const vision = await AutoModelForImageTextToText.from_pretrained(model, { dtype: VISION_DTYPE, device: 'cpu' })
   return {
     model,
-    async describe(path: string, prompt = DESCRIBE_PROMPT) {
-      const image = await RawImage.read(path)
+    async describe(input: string | Uint8Array, prompt = DESCRIBE_PROMPT) {
+      const image = typeof input === 'string' ? await RawImage.read(input) : await RawImage.fromBlob(new Blob([input]))
       const messages = [{ role: 'user', content: [{ type: 'image' }, { type: 'text', text: prompt }] }]
       const text = processor.apply_chat_template(messages, { add_generation_prompt: true }) as string
       const inputs = await processor(image, text, { add_special_tokens: false })
