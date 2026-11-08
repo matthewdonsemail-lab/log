@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { callHost, readHostInfo } from './helpers'
 
 const python = join(import.meta.dir, '..', '..', '..', '..', 'python')
 const engine = join(python, 'twitterApi', 'engine.py')
@@ -49,5 +50,29 @@ describe('one X session per account: every call goes through the same host', () 
     const second = spawnSync(process.env.LOG_PYTHON || 'python', [host, account], { encoding: 'utf8', env, timeout: 30_000 })
     expect(second.status).toBe(1)
     expect(second.stdout).toContain('another X session already holds')
+  })
+
+  test('Bun reaches the same session directly over its port, with no Python started for the call', async () => {
+    const info = readHostInfo(join(state, account, 'host.json'))
+    expect(info).not.toBeNull()
+    const dir = mkdtempSync(join(tmpdir(), 'logTwitterHostDirect'))
+    const cookiesPath = join(dir, 'cookies.json')
+    writeFileSync(cookiesPath, JSON.stringify({ auth_token: 'a'.repeat(40), ct0: 'b'.repeat(40), twid: 'u%3D1' }))
+    const called = await callHost(info!, { action: 'dm', account, cookiesPath, text: 'hello', userId: '1' })
+    expect(called.reached).toBe(true)
+    if (!called.reached) return
+    expect(called.answer.code).toBe('notLive')
+    expect((called.answer.xSession as { pid: number }).pid).toBe(info!.pid)
+  })
+
+  test('a wrong token is refused by the session and reported as not reached, so the call falls back', async () => {
+    const info = readHostInfo(join(state, account, 'host.json'))!
+    const called = await callHost({ ...info, token: 'wrong' }, { action: 'dm', account })
+    expect(called.reached).toBe(false)
+  })
+
+  test('nothing listening on the port is not reached, so nothing is sent', async () => {
+    const called = await callHost({ pid: 1, port: 1, token: 'x' }, { action: 'dm', account }, undefined, 500)
+    expect(called.reached).toBe(false)
   })
 })

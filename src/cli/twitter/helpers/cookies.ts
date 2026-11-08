@@ -95,7 +95,7 @@ export const cookiesCommand: Command = {
       const cookies = { auth_token: authToken, ct0, twid };
       const probe = toFacebookAccount({ id: found?.id ?? "new", accountName: handle, name: handle, platform: "TWITTER", cookies } as SocialAccountRow);
       context.err(`@${handle}: checking the cookies with X on the direct-API engine before saving`);
-      const run = context.directTwitter(probe, { action: "ping" });
+      const run = await context.directTwitter(probe, { action: "ping" });
       if (!run.answer.ok || run.answer.loginState !== "loggedIn") {
         prompts.cancel("X didn't accept those cookies. Nothing saved.");
         return refuse("twitter cookies save", "twitterCookiesRefused", `${run.answer.code ?? "notLoggedIn"}${run.answer.loginState ? ` (${run.answer.loginState})` : ""}`);

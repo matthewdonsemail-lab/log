@@ -64,14 +64,14 @@ export const sessionCommand: Command = {
       if (!context.directTwitter) return { code: 1, stderr: "log twitter session check: the direct-API engine isn't wired in this context" };
       if (word === "webClient") {
         context.err(`${account.accountName}: loading x.com/home and its scripts through the account's one X session`);
-        const run = context.directTwitter(account, { action: "webClient" });
+        const run = await context.directTwitter(account, { action: "webClient" });
         const answer = run.answer as TwitterSessionAnswer & { folder?: string; saved?: { file: string; bytes: number }[]; scripts?: string[] };
         if (parsed.flags["json"]) return { code: answer.ok ? 0 : 1, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, ...answer }, null, 2) };
         if (!answer.ok) return { code: 1, stdout: `log twitter session webClient: ${account.accountName}: ${answer.code}: ${answer.detail ?? ""}` };
         return { code: 0, stdout: [`log twitter session webClient: @${account.accountName}: ${answer.saved?.length ?? 0} of ${answer.scripts?.length ?? 0} scripts saved with the page to ${answer.folder}`, ...(answer.saved ?? []).map((f) => `  ${f.file} (${Math.round(f.bytes / 1024)} KB)`)].join("\n") };
       }
       context.err(`${account.accountName}: session check on the direct-API engine, X called directly`);
-      const run = context.directTwitter(account, { action: "ping" });
+      const run = await context.directTwitter(account, { action: "ping" });
       const lines = await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date());
       for (const line of lines) context.err(line);
       const code = run.answer.ok ? 0 : 1;

@@ -39,7 +39,7 @@ export const callTiming = {
       { kind: 'symbol', file: TIMING, name: 'timedEngineSync' },
       { kind: 'symbol', file: TIMING, name: 'harvestEngine' },
       { kind: 'uses', file: PLATFORM, name: 'timedEngineSync' },
-      { kind: 'uses', file: TWITTER, name: 'timedEngineSync' },
+      { kind: 'uses', file: TWITTER, name: 'timedEngine' },
       { kind: 'uses', file: FBK, name: 'timedEngineSync' },
       { kind: 'symbol', file: PY, name: 'instrument_curl' },
       { kind: 'symbol', file: PY, name: 'child_trace' },

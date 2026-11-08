@@ -12,7 +12,7 @@ export async function openTwitterAccount(context: CommandContext, label: string,
   const direct = context.directTwitter;
   if (!direct) return { ok: false, result: { code: 1, stderr: `log ${label}: the direct-API engine isn't wired in this context` } };
   const engine: Engine = async (spec) => {
-    const run = direct(account, spec);
+    const run = await direct(account, spec);
     for (const line of await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
     return run;
   };

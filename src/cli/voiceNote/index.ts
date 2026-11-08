@@ -17,7 +17,7 @@ import { openAccount as openSlackAccount, chatIdOf as slackChatIdOf, inWorkspace
 import { openTwitterAccount } from "../twitter/helpers/account.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 
-type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; room?: () => Room | undefined; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer } | { ok: false; result: CommandResult };
+type Resolved = { ok: true; account: string; chatId: string; label: string; claimWith?: string; gateHandle?: string; room?: () => Room | undefined; send: (note: VoiceNote, approvedBy: string) => PlatformAnswer | Promise<PlatformAnswer> } | { ok: false; result: CommandResult };
 
 interface VoiceShape {
   platform: VoiceNotePlatform;
@@ -113,7 +113,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
         let answer: PlatformAnswer;
         try {
-          answer = resolved.send(rendered.note, approvedBy);
+          answer = await resolved.send(rendered.note, approvedBy);
         } catch (error) {
           guard.done("failed", error instanceof Error ? error.message : String(error));
           throw error;
@@ -212,6 +212,6 @@ export const twitterVoiceCommand = voiceNoteCommandOf({
     const said = String(flags["with"]).trim().replace(/^@/, "");
     const who = /^\d{5,25}$/.test(said) ? { userId: said } : { screenName: said };
     const account = opened.account;
-    return { ok: true, account: account.accountName, chatId: said, label: /^\d+$/.test(said) ? said : `@${said}`, claimWith: said, gateHandle: said, send: (note, approvedBy) => direct(account, { action: "xchatVoice", ...who, path: note.path, seconds: note.seconds, live: true, approvedBy, chatPin } as never).answer as PlatformAnswer };
+    return { ok: true, account: account.accountName, chatId: said, label: /^\d+$/.test(said) ? said : `@${said}`, claimWith: said, gateHandle: said, send: async (note, approvedBy) => (await direct(account, { action: "xchatVoice", ...who, path: note.path, seconds: note.seconds, live: true, approvedBy, chatPin } as never)).answer as PlatformAnswer };
   },
 });
