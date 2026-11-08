@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -8,6 +9,13 @@ const web = join(root, 'apps/web')
 const dist = join(web, 'dist')
 const ssrOut = join(web, 'dist-devlog-ssr')
 const SITE = 'https://log.listeningkit.com'
+
+function versioned(image) {
+  if (!image.startsWith(`${SITE}/`)) return image
+  const file = join(dist, image.slice(SITE.length + 1))
+  if (!existsSync(file)) throw new Error(`share image ${image} is not in dist`)
+  return `${image}?v=${createHash('sha1').update(readFileSync(file)).digest('hex').slice(0, 10)}`
+}
 
 function escapeAttr(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -67,7 +75,7 @@ for (const page of prerenderedPages()) {
   if (!routed(page.path)) throw new Error(`vercel.json has no rewrite sending ${page.path} to its prerendered file`)
   const out = join(dist, `${page.path.replace(/^\//, '')}.html`)
   mkdirSync(dirname(out), { recursive: true })
-  writeFileSync(out, pageHtml(template, page))
+  writeFileSync(out, pageHtml(template, { ...page, image: versioned(page.image) }))
   console.log(`prerendered: ${page.path} -> ${out.replace(dist, 'dist')}`)
 }
 rmSync(ssrOut, { recursive: true, force: true })

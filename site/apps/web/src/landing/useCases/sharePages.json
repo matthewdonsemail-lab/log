@@ -4,34 +4,136 @@
     "icon": "faXTwitter",
     "title": "log for X (Twitter): your AI agent reads and answers your DMs",
     "description": "log by ListeningKit lets your agent read both inboxes as one, see who is waiting on you, and send your replies, posts and DMs in your own voice, the moment you say so.",
-    "card": { "lead": "your", "name": "X", "pitch": "DMs and replies, run by <span class=\"u\">your AI agent</span>" }
+    "card": {
+      "lead": "your",
+      "name": "X",
+      "pitch": "DMs and replies, run by <span class=\"u\">your AI agent</span>"
+    },
+    "chat": {
+      "ask": "answer everyone waiting in my dms",
+      "done": "Done. 12 replies sent, all in your voice.",
+      "rows": [
+        {
+          "who": "@dana_builds",
+          "status": "Replied"
+        },
+        {
+          "who": "@leo_ops",
+          "status": "Replied"
+        },
+        {
+          "who": "@priya",
+          "status": "Replied"
+        }
+      ]
+    }
   },
   {
     "slug": "discord",
     "icon": "faDiscord",
     "title": "log for Discord: your AI agent answers your DMs, groups and channels",
     "description": "log by ListeningKit lets your agent read your DMs, groups and channels, watch them live, and reply with words or a meme that fits, the moment you say so.",
-    "card": { "lead": "your", "name": "Discord", "pitch": "DMs, groups and channels, answered by <span class=\"u\">your AI agent</span>" }
+    "card": {
+      "lead": "your",
+      "name": "Discord",
+      "pitch": "DMs, groups and channels, answered by <span class=\"u\">your AI agent</span>"
+    },
+    "chat": {
+      "ask": "help anyone stuck in #marketing",
+      "done": "Answered 4 people. 2 already DM'd you.",
+      "rows": [
+        {
+          "who": "mila",
+          "status": "Answered"
+        },
+        {
+          "who": "deano",
+          "status": "DM'd you"
+        }
+      ]
+    }
   },
   {
     "slug": "slack",
     "icon": "faSlack",
     "title": "log for Slack: your AI agent answers your DMs in every workspace",
     "description": "log by ListeningKit lets your agent read your DMs and group DMs in every workspace, watch them live, and reply one line at a time in your voice, the moment you say so.",
-    "card": { "lead": "your", "name": "Slack", "pitch": "DMs in every workspace, answered by <span class=\"u\">your AI agent</span>" }
+    "card": {
+      "lead": "your",
+      "name": "Slack",
+      "pitch": "DMs in every workspace, answered by <span class=\"u\">your AI agent</span>"
+    },
+    "chat": {
+      "ask": "which clients want more work from me?",
+      "done": "3 do. I've replied to each in your voice.",
+      "rows": [
+        {
+          "who": "Priya",
+          "status": "Replied"
+        },
+        {
+          "who": "Tom",
+          "status": "Replied"
+        },
+        {
+          "who": "Jay",
+          "status": "Replied"
+        }
+      ]
+    }
   },
   {
     "slug": "instagram",
     "icon": "faInstagram",
     "title": "log for Instagram: your AI agent answers your DMs, no browser",
     "description": "log by ListeningKit lets your agent answer every DM as it lands, with text or a meme that fits, straight through Instagram with no browser, the moment you say so.",
-    "card": { "lead": "your", "name": "Instagram", "pitch": "DMs answered by <span class=\"u\">your AI agent</span>, no browser" }
+    "card": {
+      "lead": "your",
+      "name": "Instagram",
+      "pitch": "DMs answered by <span class=\"u\">your AI agent</span>, no browser"
+    },
+    "chat": {
+      "ask": "reply to every dm about my offer",
+      "done": "Replied to 9 people, one with a meme.",
+      "rows": [
+        {
+          "who": "maya.makes",
+          "status": "Replied"
+        },
+        {
+          "who": "jess.fit",
+          "status": "Replied"
+        }
+      ]
+    }
   },
   {
     "slug": "reddit",
     "icon": "faReddit",
     "title": "log for Reddit: your AI agent runs your Reddit account",
     "description": "log by ListeningKit lets your agent keep your Reddit account signed in and run your recorded steps in its own browser, a dry run until you say go.",
-    "card": { "lead": "your", "name": "Reddit", "pitch": "account, run by <span class=\"u\">your AI agent</span>" }
+    "card": {
+      "lead": "your",
+      "name": "Reddit",
+      "pitch": "account, run by <span class=\"u\">your AI agent</span>"
+    },
+    "chat": {
+      "ask": "what does r/smallbusiness keep asking for?",
+      "done": "Read 40 posts. Here's what they want most:",
+      "rows": [
+        {
+          "who": "a cheap website",
+          "status": "#1"
+        },
+        {
+          "who": "more leads",
+          "status": "#2"
+        },
+        {
+          "who": "bookkeeping",
+          "status": "#3"
+        }
+      ]
+    }
   }
 ]
