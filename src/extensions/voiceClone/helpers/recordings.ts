@@ -1,7 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { db } from '../../../inbox/store/index'
-import { conversationsRoot } from '../../../search/conversations/index'
 import { SHORTEST_CLIP } from '../types'
 import type { CloneLimits, Recording } from '../types'
 import { secondsOf } from './audio'
@@ -33,14 +32,8 @@ export function recordingFiles(platforms: readonly string[] = Object.keys(OWN_RE
 }
 
 export function sentByMatt(recording: Pick<Recording, 'platform' | 'account' | 'conversationId' | 'messageId'>): boolean {
-  const file = join(conversationsRoot(), recording.platform, recording.account, `${recording.conversationId}.json`)
-  if (existsSync(file)) {
-    try {
-      const stored = JSON.parse(readFileSync(file, 'utf8')) as { messages?: { id?: unknown; fromMe?: unknown }[] }
-      const message = (stored.messages ?? []).find((m) => String(m.id) === recording.messageId)
-      if (message) return message.fromMe === true
-    } catch {}
-  }
+  const stored = db().query('SELECT fromOwner FROM messages WHERE senderPlatform = ? AND chatId = ? AND platformMessageId = ? LIMIT 1').get(recording.platform, `${recording.platform}:${recording.account}:${recording.conversationId}`, recording.messageId) as { fromOwner: number } | null
+  if (stored) return stored.fromOwner === 1
   const row = db().query(`SELECT 1 FROM events WHERE platform = ? AND account = ? AND type = 'ownMessage' AND json_extract(payload, '$.id') = ? LIMIT 1`).get(recording.platform, recording.account, recording.messageId)
   return !!row
 }

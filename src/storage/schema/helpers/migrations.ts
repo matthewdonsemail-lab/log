@@ -39,6 +39,14 @@ export const MIGRATIONS: readonly Migration[] = [
       if (!hasColumn(handle, 'ledger', 'code')) handle.exec('ALTER TABLE ledger ADD COLUMN code TEXT')
     },
   },
+  {
+    version: 5,
+    name: 'chatBoxAndMemberOrder',
+    apply(handle) {
+      if (!hasColumn(handle, 'chats', 'box')) handle.exec('ALTER TABLE chats ADD COLUMN box TEXT')
+      if (!hasColumn(handle, 'memberships', 'position')) handle.exec('ALTER TABLE memberships ADD COLUMN position INTEGER')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

@@ -1,4 +1,5 @@
 import { Database } from 'bun:sqlite'
+import type { Statement } from 'bun:sqlite'
 import { mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -53,4 +54,25 @@ export function openDatabase(path: string = defaultDbPath()): Database {
   migrate(handle)
   handles.set(path, handle)
   return handle
+}
+
+export function useDatabase<T>(path: string, work: (handle: Database) => T): T {
+  if (handles.has(path) || path === defaultDbPath()) return work(openDatabase(path))
+  mkdirSync(dirname(path), { recursive: true })
+  const handle = new Database(path, { create: true })
+  const statements: Statement[] = []
+  const prepare = handle.prepare.bind(handle)
+  handle.prepare = ((...args: Parameters<typeof prepare>) => {
+    const statement = prepare(...args)
+    statements.push(statement)
+    return statement
+  }) as typeof handle.prepare
+  try {
+    handle.exec('PRAGMA busy_timeout = 5000')
+    migrate(handle)
+    return work(handle)
+  } finally {
+    for (const statement of statements) statement.finalize()
+    handle.close()
+  }
 }

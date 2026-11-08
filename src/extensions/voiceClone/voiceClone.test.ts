@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
-import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { conversationsRoot } from '../../search/conversations/index'
+import { saveConversations } from '../../search/conversations/index'
+import { defaultDbPath } from '../../storage/schema'
 import { discordWaveform, providerOf, insideVoiceNotes, instagramLevels, mattsRecordings, pickReferences, quietPieces, readSpoken, REALISM, rmsLevels, seeded, sentByMatt, shapeLikeMatt, speakableText, textOnlyProblem, unknownAcronyms, voiceNotesDir, withBreaths, wordsOf, paceOf, mattsOwnVoiceNotes, recordedAt, firstClonedAt } from './index'
 import type { Recording } from './index'
 
@@ -14,9 +14,7 @@ describe('fishAudio helpers', () => {
   })
 
   test('only recordings matt sent are kept', () => {
-    const dir = join(conversationsRoot(), 'discord', 'mattDiscord')
-    mkdirSync(dir, { recursive: true })
-    writeFileSync(join(dir, '77.json'), JSON.stringify({ messages: [{ id: '1', fromMe: true }, { id: '2', fromMe: false }] }))
+    saveConversations([{ platform: 'discord', account: 'mattDiscord', conversationId: '77', box: 'dm', with: ['someone'], messages: [{ id: '1', at: '2026-11-01T00:00:00Z', from: 'mattDiscord', fromMe: true, text: 'one' }, { id: '2', at: '2026-11-01T00:01:00Z', from: 'someone', fromMe: false, text: 'two' }] }], defaultDbPath())
     const base = { platform: 'discord', account: 'mattDiscord', conversationId: '77' }
     expect(sentByMatt({ ...base, messageId: '1' })).toBe(true)
     expect(sentByMatt({ ...base, messageId: '2' })).toBe(false)

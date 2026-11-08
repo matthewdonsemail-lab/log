@@ -9,6 +9,9 @@ import { SEARCH_DEPTH } from './types'
 import type { Chunk, Conversation, Embedder, Latency, SearchHit, SearchOptions } from './types'
 import type { TwitterDmConversation } from '../../twitter/account/session/index'
 import { applyTranscripts } from '../../media/voiceNotes/helpers/store'
+import type { Database } from 'bun:sqlite'
+import { defaultDbPath, useDatabase } from '../../storage/schema'
+import { loadConversationRows, saveConversationRows } from '../../storage/platform'
 
 type ChunkMeta = { platform: string; account: string; conversationId: string; at: string }
 
@@ -30,16 +33,23 @@ export function conversationsRoot(): string {
   return process.env.LOG_CONVERSATIONS_DIR || join(homedir(), '.logCli', 'conversations')
 }
 
-export function saveConversations(conversations: Conversation[], root = conversationsRoot()): number {
-  for (const c of applyTranscripts(conversations).conversations) {
-    const dir = join(root, c.platform, c.account)
-    mkdirSync(dir, { recursive: true })
-    writeFileSync(join(dir, `${c.conversationId.replace(/[^\w-]/g, '_')}.json`), JSON.stringify(c))
-  }
-  return conversations.length
+export function conversationsDbPath(): string {
+  return process.env.LOG_CONVERSATIONS_DIR ? join(process.env.LOG_CONVERSATIONS_DIR, 'log.db') : defaultDbPath()
 }
 
-export function loadConversations(root = conversationsRoot()): Conversation[] {
+const importedFrom = new Set<string>()
+
+function withConversationsDb<T>(path: string, work: (handle: Database) => T): T {
+  return useDatabase(path, (handle) => {
+    if (!importedFrom.has(path)) {
+      importedFrom.add(path)
+      if (path === join(homedir(), '.logCli', 'log.db')) importOldConversations(handle)
+    }
+    return work(handle)
+  })
+}
+
+export function readConversationFiles(root = conversationsRoot()): Conversation[] {
   const out: Conversation[] = []
   if (!existsSync(root)) return out
   for (const platform of readdirSync(root)) {
@@ -55,6 +65,35 @@ export function loadConversations(root = conversationsRoot()): Conversation[] {
     }
   }
   return out
+}
+
+export function importOldConversations(handle: Database, root = join(homedir(), '.logCli', 'conversations'), now: Date = new Date()): { files: number; messages: number } | null {
+  const done = handle.prepare("SELECT state FROM imports WHERE store = 'conversations'").get() as { state: string } | null
+  if (done?.state === 'done') return null
+  const files = readConversationFiles(root)
+  const messages = saveConversationRows(handle, files)
+  handle.prepare("INSERT INTO imports (store, state, files, rows, detail, startedAt, endedAt) VALUES ('conversations', 'done', ?, ?, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = 'done', files = excluded.files, rows = excluded.rows, detail = excluded.detail, endedAt = excluded.endedAt").run(files.length, messages, root, now.toISOString(), new Date().toISOString())
+  return { files: files.length, messages }
+}
+
+export function saveConversations(conversations: Conversation[], path = conversationsDbPath()): number {
+  withConversationsDb(path, (handle) => saveConversationRows(handle, applyTranscripts(conversations).conversations))
+  return conversations.length
+}
+
+const loaded = new Map<string, { stamp: string; conversations: Conversation[] }>()
+
+export function loadConversations(path = conversationsDbPath(), filter: { platform?: string } = {}): Conversation[] {
+  const all = withConversationsDb(path, (handle) => {
+    const row = handle.prepare("SELECT COALESCE(MAX(seq), 0) AS last, COUNT(*) AS n, (SELECT COUNT(*) FROM memberships) AS members, (SELECT COALESCE(MAX(backfilledAt), '') FROM chats) AS filled FROM messages").get() as { last: number; n: number; members: number; filled: string }
+    const stamp = `${row.last}:${row.n}:${row.members}:${row.filled}`
+    const held = loaded.get(path)
+    if (held?.stamp === stamp) return held.conversations
+    const conversations = loadConversationRows(handle)
+    loaded.set(path, { stamp, conversations })
+    return conversations
+  })
+  return filter.platform ? all.filter((c) => c.platform === filter.platform) : all
 }
 
 function queryTerms(query: string): string[][] {

@@ -351,7 +351,7 @@ export function chatIdFor(conversations: readonly Conversation[], send: { platfo
 }
 
 export async function chatEvidence(context: CommandContext, said: string, send: { platform: string; conversationId?: string | null; userId?: string | null; handle?: string | null }, draft: string): Promise<VoiceEvidence | undefined> {
-  const id = chatIdFor(loadConversations(), send);
+  const id = chatIdFor(loadConversations(undefined, { platform: send.platform }), send);
   if (!id) return undefined;
   const found = await evidenceFor(context, said, id, draft).catch(() => null);
   return found?.ok ? found.evidence : undefined;

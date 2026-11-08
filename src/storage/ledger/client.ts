@@ -2,7 +2,7 @@ import type { Database } from 'bun:sqlite'
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { defaultDbPath, openDatabase } from '../schema/client'
+import { defaultDbPath, useDatabase } from '../schema/client'
 import { fromOldLine } from './helpers'
 import { OLD_LEDGER_FILES } from './types'
 import type { LedgerEntry, LedgerFilter, LedgerKind, LedgerRow } from './types'
@@ -17,17 +17,18 @@ export function homeDbPath(home: string = homedir()): string {
   return join(home, '.logCli', 'log.db')
 }
 
-export function ledgerDb(path: string = defaultDbPath()): Database {
-  const handle = openDatabase(path)
-  if (!imported.has(path)) {
-    imported.add(path)
-    if (path === homeDbPath()) importOldLedgers(handle)
-  }
-  return handle
+export function withLedger<T>(path: string, work: (handle: Database) => T): T {
+  return useDatabase(path, (handle) => {
+    if (!imported.has(path)) {
+      imported.add(path)
+      if (path === homeDbPath()) importOldLedgers(handle)
+    }
+    return work(handle)
+  })
 }
 
 export function appendLedger(entry: LedgerEntry, path: string = defaultDbPath()): void {
-  writeLedger(ledgerDb(path), entry)
+  withLedger(path, (handle) => writeLedger(handle, entry))
 }
 
 export function ledgerRows(kind: LedgerKind, filter: LedgerFilter = {}, path: string = defaultDbPath()): LedgerRow[] {
@@ -47,7 +48,7 @@ export function ledgerRows(kind: LedgerKind, filter: LedgerFilter = {}, path: st
   }
   const limit = filter.limit ? ` LIMIT ${Math.max(1, Math.floor(filter.limit))}` : ''
   const order = filter.limit ? 'ORDER BY seq DESC' : 'ORDER BY seq'
-  const rows = ledgerDb(path).prepare(`SELECT * FROM ledger WHERE ${where.join(' AND ')} ${order}${limit}`).all(...args) as LedgerRow[]
+  const rows = withLedger(path, (handle) => handle.prepare(`SELECT * FROM ledger WHERE ${where.join(' AND ')} ${order}${limit}`).all(...args) as LedgerRow[])
   return filter.limit ? rows.reverse() : rows
 }
 

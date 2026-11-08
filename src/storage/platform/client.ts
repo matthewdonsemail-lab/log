@@ -1,5 +1,6 @@
 import type { Database } from 'bun:sqlite'
-import { extenderOf } from './helpers'
+import { extenderOf, readConversations, writeConversation } from './helpers'
+import type { StoredConversation } from './helpers'
 import type { EventInput, ExtenderContext, TypedRows } from './types'
 
 const owners = new Map<string, string | null>()
@@ -152,4 +153,22 @@ export function lastMessagesOf(handle: Database, chatId: string, limit = 100): C
 export function messagesFromIdentity(handle: Database, platform: string, userId: string, limit = 500): (ChatMessage & { chatId: string })[] {
   const rows = handle.prepare('SELECT messageKey, chatId, platformMessageId, senderUserId, senderLabel, fromOwner, sentAt, text, replyToKey, source FROM messages WHERE senderPlatform = ? AND senderUserId = ? ORDER BY sentAt DESC LIMIT ?').all(platform, userId, limit) as (Omit<ChatMessage, 'fromOwner'> & { fromOwner: number; chatId: string })[]
   return rows.map((r) => ({ ...r, fromOwner: r.fromOwner === 1 }))
+}
+
+export function saveConversationRows(handle: Database, conversations: readonly StoredConversation[]): number {
+  handle.exec('BEGIN IMMEDIATE')
+  try {
+    const context = contextOn(handle)
+    let written = 0
+    for (const c of conversations) written += writeConversation(handle, c, context, (h, event, ctx) => writeTypedRows(h, event, typedRowsOf(event, ctx)))
+    handle.exec('COMMIT')
+    return written
+  } catch (error) {
+    handle.exec('ROLLBACK')
+    throw error
+  }
+}
+
+export function loadConversationRows(handle: Database, account?: string): StoredConversation[] {
+  return readConversations(handle, account)
 }
