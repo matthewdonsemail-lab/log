@@ -28,7 +28,7 @@ async function main(): Promise<number> {
   writeFileSync(spec, JSON.stringify({ account: account.accountName, proxy: account.proxy, email: secrets.email, password: secrets.password, totpSecret: secrets.totpSecret }), { mode: 0o600 })
   const py = process.env.LOG_PYTHON || 'python'
   const code = await new Promise<number>((resolve) => {
-    const p = spawn(py, [join(import.meta.dir, '..', '..', 'python', 'directApi', 'fbkTry.py'), spec], { stdio: 'inherit' })
+    const p = spawn(py, [join(import.meta.dir, '..', '..', 'python', 'directApi', 'fbkTry.py'), spec], { windowsHide: true, stdio: 'inherit' })
     p.on('close', (c) => resolve(c ?? 1))
   })
   rmSync(dir, { recursive: true, force: true })

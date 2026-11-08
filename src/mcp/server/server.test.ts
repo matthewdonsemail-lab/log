@@ -9,6 +9,7 @@ import { join } from "node:path";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import { emitLog } from "../../observability/processLog/index.ts";
 import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, savedFlows, TERMINAL_ONLY, toolsFromCommands, toolsFromFlows } from "./index.ts";
+import { readJob } from "../jobs/index.ts";
 
 async function connected() {
   const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null, watchFlows: false });
@@ -208,6 +209,20 @@ describe("live logs", () => {
     expect(seen[0]).toMatch(/^doctor out ▶ log facebook doctor --json  \(job job\w+\)  \(call [0-9a-f]{12}\)$/);
     expect(seen).toContain("doctor worker Auto-login: typed the email and password (try 1).");
     expect(seen.at(-1)).toMatch(/^doctor out ■ exit 0 in [\d.]+ m?s \(call [0-9a-f]{12}: timing \{ call: "[0-9a-f]{12}" \} shows where the time went\)$/);
+  });
+
+  test("a call the client cancelled runs to its end, says so, and keeps its answer as a job", async () => {
+    const stop = new AbortController();
+    stop.abort();
+    const seen: string[] = [];
+    await runToolCall("governorShow", {}, {}, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`), undefined, stop.signal);
+    const said = seen.find((l) => l.includes("✕ the client cancelled call")) ?? "";
+    expect(said).toContain("its answer is kept as job");
+    const id = /job (job\w+)/.exec(said)?.[1] ?? "";
+    expect(seen.at(-1)).toContain(`the client had cancelled it, so its answer is job ${id}`);
+    const kept = readJob(id);
+    expect(kept?.status).toBe("completed");
+    expect(kept?.result).toMatchObject({ exit: 0, cancelledByClient: true });
   });
 
   test("the server writes every line to the day's log file as it happens", async () => {

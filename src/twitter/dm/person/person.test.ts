@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import type { TwitterDmThread } from '../../account/session/index'
 import { onePerPerson } from '../../../search/conversations/helpers/index'
 import { newMessages } from '../../../inbox/watch/client'
-import { dropMirrors, followUpDue, mergeThreads, openedNoReply, personKeyOf, reactedOnly, waitingOnYou } from './index'
+import { dropMirrors, followUpDue, mergeThreads, openedNoReply, personKeyOf, reactedOnly, storedThreads, waitingOnYou } from './index'
 
 const thread = (conversationId: string, lastAt: string, over: Partial<TwitterDmThread> = {}): TwitterDmThread => ({
   conversationId,
@@ -98,5 +98,36 @@ describe('an opened message with no reply is a follow-up too', () => {
     expect(followUpDue({ lastFromMe: true, lastText: 'saw this', openedByThem: false })).toBe(false)
     expect(followUpDue({ lastFromMe: true, lastText: 'saw this' })).toBe(false)
     expect(openedNoReply({ lastFromMe: false, openedByThem: true })).toBe(false)
+  })
+})
+
+describe('every stored chat in the waiting list', () => {
+  const chat = (conversationId: string, handle: string, messages: { at: string; fromMe: boolean; text: string }[]) => ({ conversationId, box: 'xchat', with: [handle], messages })
+
+  test('one thread per person, its last real message deciding who wrote last', () => {
+    const threads = storedThreads([
+      chat('1:2', 'aymanemsi', [{ at: '2026-11-07T19:01:05Z', fromMe: true, text: 'never do i trust any service like revolut' }, { at: '2026-11-07T20:14:27Z', fromMe: false, text: 'But what can we do' }]),
+      chat('1-2', 'aymanemsi', [{ at: '2026-11-07T18:00:00Z', fromMe: false, text: 'old dm' }]),
+      chat('3:2', 'claudeebum', [{ at: '2026-11-07T17:12:59Z', fromMe: true, text: 'star my repo when you can bro' }, { at: '2026-11-08T02:18:21Z', fromMe: false, text: '(reacted 🫡)' }]),
+      chat('4:2', 'seanlongden', [{ at: '2026-10-30T00:00:00Z', fromMe: true, text: 'yo' }, { at: '2026-11-01T16:05:00Z', fromMe: false, text: '(could not open: Crypto error: Signature verification failed: ReadReceipt)' }]),
+    ])
+    expect(threads.map((t) => [t.with[0].handle, t.lastFromMe])).toEqual([['aymanemsi', false], ['claudeebum', true], ['seanlongden', true]])
+    expect(threads.filter(waitingOnYou).map((t) => t.with[0].handle)).toEqual(['aymanemsi'])
+  })
+
+  test('a person the newest thread could not name keeps the name a stored chat has', () => {
+    const fromX = { conversationId: '362012227:1974596626342686720', box: 'xchat' as const, type: 'oneToOne' as const, with: [{ userId: '362012227' }], lastAt: '2026-11-07T20:25:49Z', lastFromMe: false, lastText: 'Idk. Team manages that.', unread: true, messagesLoaded: 1 }
+    const stored = storedThreads([chat('362012227-1974596626342686720', 'honeydreamss', [{ at: '2026-11-06T21:21:47Z', fromMe: false, text: 'Nope.' }])])
+    expect(mergeThreads([fromX, ...stored])[0].with[0].handle).toBe('honeydreamss')
+  })
+})
+
+describe('your own reaction is not a reply', () => {
+  test('a person you only reacted to is still waiting on you, marked so', () => {
+    const fromX = { conversationId: '1797030036727611392:1974596626342686720', box: 'xchat' as const, type: 'oneToOne' as const, with: [{ userId: '1797030036727611392', handle: 'tahaha_a' }], lastAt: '2026-11-02T13:28:31Z', lastFromMe: true, lastText: '(reacted 😂)', unread: false, messagesLoaded: 1 }
+    const stored = storedThreads([{ conversationId: '1797030036727611392:1974596626342686720', box: 'xchat', with: ['tahaha_a'], messages: [{ at: '2026-11-02T10:20:00Z', fromMe: false, text: 'Yea bro, respect the grind' }] }])
+    const [merged] = mergeThreads([fromX, ...stored])
+    expect(waitingOnYou(merged)).toBe(true)
+    expect(merged.youReactedOnly).toBe(true)
   })
 })

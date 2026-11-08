@@ -31,6 +31,7 @@ flowchart TB
     c_memelord["memelord"]
     c_treg["treg"]
     c_balance["balance"]
+    c_governor["governor"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -248,6 +249,8 @@ flowchart TB
   mcp --> c_treg
   cli --> c_balance
   mcp --> c_balance
+  cli --> c_governor
+  mcp --> c_governor
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe

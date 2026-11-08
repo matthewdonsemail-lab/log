@@ -123,7 +123,7 @@ export function staleServerLine(root: string, file = serverStampFile(), stampNow
 
 const LOCAL_PATHS = ["src", "python", "vendor", "bin", "scripts", "package.json"];
 
-export function uncommittedFiles(root: string, run: (args: string[]) => string = (args) => execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] })): string[] {
+export function uncommittedFiles(root: string, run: (args: string[]) => string = (args) => execFileSync("git", args, { windowsHide: true, cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] })): string[] {
   try {
     return run(["status", "--porcelain", "--", ...LOCAL_PATHS]).split(/\r?\n/).map((l) => l.slice(3).trim()).filter(Boolean);
   } catch {

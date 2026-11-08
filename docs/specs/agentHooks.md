@@ -110,7 +110,7 @@ The inbox's state is one SQLite database (`~/.logCli/log.db`, WAL, each write in
 
 ### REQ-HOOKS-17: An account behind is caught up by its owner, and sends wait for it
 
-Each owner records the platform's own last position (X's sequence id, each Discord DM's last message id, each Slack chat's last ts, Instagram's last activity). A gap opens when an owner takes over from a stopped or dead one (from its last heartbeat), when a first owner starts on an account with events (from the newest), or when the push channel drops. One catch-up job in the owner, never two at once, pulls only what came after the saved positions through the account's own session, paced 0.8 to 2.5 s between reads, appends it as `source: catchUp`, and closes the gap. A refusal stops it, keeps the account behind and alerts `catchUpRefused`. Every send waits up to 90 s for an open gap to close and is refused with `accountBehind` if it doesn't, or at once if the catch-up was refused. A Discord send to a DM or group doesn't wait: while the account catches up it reads that one chat from Discord and stores it (`catchUpOneChat`), then sends, refused at once only when the catch-up was refused (matt, 2026-11-07: "we're not achieving p99"). Rule 135.
+Each owner records the platform's own last position (X's sequence id, each Discord DM's last message id, each Slack chat's last ts, Instagram's last activity). A gap opens when an owner takes over from a stopped or dead one (from its last heartbeat), when a first owner starts on an account with events (from the newest), or when the push channel drops. One catch-up job in the owner, never two at once, pulls only what came after the saved positions through the account's own session, paced 0.8 to 2.5 s between reads, appends it as `source: catchUp`, and closes the gap. A refusal from the platform (a 429, X's 226 or 344, a soft block, a rate limit, a suspension or lock: `PLATFORM_REFUSAL`) stops it, keeps the account behind and alerts `catchUpRefused`. A network failure (DNS, a timeout, a dropped or refused connection: `NETWORK_FAILURE`) or log's own error (a session host error or a Python exception: `OWN_FAILURE`) is not the platform refusing (`notThePlatform`, `src/inbox/relay`). It leaves the gap open, and the next check (every `RECHECK_GAP_MS`) tries again. A gap that was marked refused for one of these is reopened by itself at the next check. The same test decides in the catch-up job and in the read source. Every send waits up to 90 s for an open gap to close and is refused with `accountBehind` if it doesn't, or at once if the catch-up was refused. A Discord send to a DM or group doesn't wait: while the account catches up it reads that one chat from Discord and stores it (`catchUpOneChat`), then sends, refused at once only when the catch-up was refused (matt, 2026-11-07: "we're not achieving p99"). Rule 135.
 
 ### REQ-HOOKS-18: A refused catch-up resumes only on matt's word
 
@@ -140,5 +140,17 @@ Checked by: code and SubQ
 - the two PreToolUse hooks in `REFUSING_HOOKS` (`chatNames`, `liveLogs`) stay their own exec-form `bun` processes, so a refusal still works when the service is down. `liveLogs` also starts the service when it is down.
 
 The service (`scripts/contextLayer/service.ts`) answers `/hooks/<event>` with `answerEvent` (`src/agentHooks/answers/client.ts`). That runs every hook of the event whose matcher fits the tool (`hooksForEvent`, never a refusing one) at the same time, merges their answers (`mergeAnswers`), and names a hook that throws in the context instead of failing the others. Each event writes a timing line. Inside the service, the code stamp and the uncommitted files come from `cachedFreshness`. `git status` reruns only when the stamp moved, or once a minute. Issue #99.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-22: The hook service moves itself onto new code
+
+The service moves itself onto new code: every `CODE_CHECK_MS` (30 s) it compares log's code stamp (`codeStamp`, and the newest file under `scripts/`) with the one it started on. Once it is newer and no hook request is in flight (`inFlight`), it stops listening, forgets its record (`forgetService`), starts a fresh service with `startService` and exits, so a hook never runs old code for long. matt, 2026-11-08: hooks must never open a window, and a fix only reaches the hooks once the service runs it.
+
+Checked by: code and SubQ
+
+### REQ-HOOKS-23: Only the platform's refusal stops a catch-up
+
+`notThePlatform` (`src/inbox/relay/client.ts`) is true for a failure that `NETWORK_FAILURE` or `OWN_FAILURE` matches and `PLATFORM_REFUSAL` does not. Such a failure leaves the gap open for the next check, and a gap once refused for one is reopened. A 429, 226, 344, soft block or rate limit is still a refusal, and nothing resumes until matt says so (rules 94, 150). On 2026-11-08, matthewsoldit had been held since a DNS failure on 7 Nov, and abelqxr since a crash of log's own on 5 Nov.
 
 Checked by: code and SubQ

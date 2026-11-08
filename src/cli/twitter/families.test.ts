@@ -214,6 +214,7 @@ describe("log twitter reply, quote, like, dm", () => {
     const sent = await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--approvedBy", "matt", "--live"]);
     expect(sent.code).toBe(0);
     expect(h.calls.map((c) => c.text)).toEqual(["was sick meeting you", "coffee was class"]);
+    expect(h.calls.map((c) => (c as { continuesSend?: boolean }).continuesSend)).toEqual([undefined, true]);
     expect(sent.out).toContain("sent the dm as 2 messages");
     h.calls.length = 0;
     await h.run(["twitter", "dm", "--account", "xTwo", "--userId", "42", "--text", "was sick meeting you\ncoffee was class", "--asOne", "--approvedBy", "matt", "--live"]);

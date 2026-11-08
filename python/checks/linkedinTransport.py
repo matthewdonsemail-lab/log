@@ -44,8 +44,8 @@ def problems_in(path):
 
 
 def tracked():
-    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", "vendor/openLinkedinApi/open_linkedin_api"], cwd=ROOT, capture_output=True, text=True).stdout
-    staged = set(subprocess.run(["git", "ls-files", "--cached", "vendor/openLinkedinApi/open_linkedin_api"], cwd=ROOT, capture_output=True, text=True).stdout.split())
+    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", "vendor/openLinkedinApi/open_linkedin_api"], cwd=ROOT, capture_output=True, text=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)).stdout
+    staged = set(subprocess.run(["git", "ls-files", "--cached", "vendor/openLinkedinApi/open_linkedin_api"], cwd=ROOT, capture_output=True, text=True, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)).stdout.split())
     names = [line for line in out.split() if line.endswith(".py")]
     return [ROOT / n for n in names if n in staged] if staged else [ROOT / n for n in names]
 

@@ -3,6 +3,7 @@ export const SERVICE_TIMEOUT_MS = 600
 export const SERVICE_START_GRACE_MS = 30_000
 
 export const SOURCE_CHECK_MS = 30_000
+export const CODE_CHECK_MS = 30_000
 
 export const HOST = '127.0.0.1'
 

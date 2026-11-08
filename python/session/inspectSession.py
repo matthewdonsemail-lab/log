@@ -142,7 +142,7 @@ async def run_rea(har: Path) -> dict[str, Any]:
         return {"code": 127, "evidenceId": None, "detail": "rea not on PATH"}
     try:
         proc = await asyncio.create_subprocess_exec(exe, "inspect-web-network-capture", str(har), "har", "--format", "json",
-                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, creationflags=getattr(__import__("subprocess"), "CREATE_NO_WINDOW", 0))
         out, err = await asyncio.wait_for(proc.communicate(), timeout=90)
     except Exception as exc:
         return {"code": 1, "evidenceId": None, "detail": type(exc).__name__}

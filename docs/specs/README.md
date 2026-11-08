@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 43 domains, 489 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 496 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -37,7 +37,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-06** getGuide reads a guide or a use case
 - **REQ-MCP-07** Every tool names the use cases that call it
 - **REQ-MCP-08** Every tool declares Claude Code's result limit
-- **REQ-MCP-09** The pre-commit review asks SubQ whether the use cases are stale
+- **REQ-MCP-09** The use-case review asks SubQ whether the use cases are stale, when run
 - **REQ-MCP-10** A log command run by hand from a shell is refused
 - **REQ-MCP-11** The terminal-only prompts are let through
 - **REQ-MCP-12** A stale MCP server is said to matt
@@ -73,6 +73,8 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-19** Every event is named before matt sees it
 - **REQ-HOOKS-20** A Discord, Slack or Instagram call names its chat, never its id
 - **REQ-HOOKS-21** Claude Code's hooks reach log through the warm service, and only the refusals start a process
+- **REQ-HOOKS-22** The hook service moves itself onto new code
+- **REQ-HOOKS-23** Only the platform's refusal stops a catch-up
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -608,6 +610,7 @@ The log MCP server picks up new code without restarting Claude Code: a reload pr
 - **REQ-RELOAD-02** A reload waits until nothing is running, then replays initialize
 - **REQ-RELOAD-03** A crash or a failed start never leaves the client hanging
 - **REQ-RELOAD-04** Its state is recorded and the hook reads it
+- **REQ-RELOAD-05** A call the client cancels is caught, finished and kept
 
 ## [Call timing](./callTiming.md)
 
@@ -625,6 +628,15 @@ treg's catalog reached from log as an extension: endpoints found by the job, rea
 - **REQ-TREG-01** Search, get and call run the treg CLI, never a shell
 - **REQ-TREG-02** Nothing priced runs unless matt approved the spend
 - **REQ-TREG-03** A call's answer comes back trimmed
+
+## [Governor counts](./governor.md)
+
+Every platform account's governor counts what it sent today (requests, writes, this hour's requests) and refuses once the day is spent. Its count is read with one command and put back to 0 with another, only when matt says so, and every reset is checked and kept in log.db. Rules 73, 94 and 168.
+
+- **REQ-GOVERNOR-01** One command shows every account's count
+- **REQ-GOVERNOR-02** A reset puts the count back to 0 and proves it held
+- **REQ-GOVERNOR-03** Every reset is a row in log.db
+- **REQ-GOVERNOR-04** A cooldown after a block is kept
 
 ## [Instagram](./instagram.md)
 

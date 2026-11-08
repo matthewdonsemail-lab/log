@@ -31,6 +31,12 @@ export function readService(root = contextLayerRoot()): ServiceInfo | null {
   return info && processAlive(info.pid) ? info : null
 }
 
+export function forgetService(root = contextLayerRoot()): void {
+  try {
+    deleteState('contextService', root)
+  } catch {}
+}
+
 export function writeService(info: ServiceInfo, root = contextLayerRoot()): void {
   putState('contextService', root, info)
 }

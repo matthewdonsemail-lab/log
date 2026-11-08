@@ -37,3 +37,9 @@ export const HEARTBEAT_RETRY_MS = 250
 export const MAX_BUFFERED_BYTES = 1_000_000
 
 export type CatchUp = (gap: GapRow) => Promise<{ appended: number; refused?: string; detail?: string }>
+
+export const NETWORK_FAILURE = /could not resolve host|curl: \((6|7|28|35|52|55|56)\)|operation timed out|timed out|timeout|connection (reset|refused|aborted|closed)|failed to connect|network is unreachable|getaddrinfo|econnreset|econnrefused|etimedout|enotfound/i
+
+export const PLATFORM_REFUSAL = /\b(429|226|344)\b|soft.?block|rate.?limit|too many requests|governorBlocked|suspended|locked/i
+
+export const OWN_FAILURE = /xSessionHostError|instagramSessionHostError|NameError|is not defined|Traceback|AttributeError|TypeError/
