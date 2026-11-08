@@ -65,7 +65,11 @@ try {
     if (run.status !== 2) problems.push(`${liveLogs.script} let a log run piped through tail through (exit ${run.status}): it must refuse it (rule 26)`);
   }
 } finally {
-  rmSync(scratch, { recursive: true, force: true });
+  try {
+    rmSync(scratch, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+  } catch (error) {
+    console.error(`check:agentHooks: left ${scratch} in the temp folder, Windows still held a file in it (${(error as { code?: string }).code ?? error})`);
+  }
 }
 
 const commandNames = new Set(COMMANDS.map((c) => c.name));

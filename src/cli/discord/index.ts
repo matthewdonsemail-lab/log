@@ -7,7 +7,7 @@ import { findDiscordAccount, recordDiscordSession, discordGate } from "../../dis
 import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
-import { enqueueAttachments } from "../../media/describer/index.ts";
+import { enqueueAttachments, mediaByPath, mediaLine } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
 import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { catchUpOneChat, discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
@@ -175,8 +175,13 @@ export function attachmentLines(m: { attachments?: { name: string; type?: string
   const images = m.images ?? (m.attachments ?? []).filter((a) => isVisualAttachment(a));
   const files = m.files ?? [];
   const shown = new Set([...(m.audio ?? []).map((v) => v.name), ...images.map((a) => a.name), ...files.map((a) => a.name)]);
+  const keptMedia = mediaByPath(images.map((a) => a.path ?? ""));
   return [
-    ...images.map((a) => `    [image] ${a.name}${a.path ? `: ${a.path}` : a.error ? ` (not saved: ${a.error})` : " (not saved)"}`),
+    ...images.map((a) => {
+      const kept = a.path ? keptMedia.get(a.path) : undefined;
+      if (kept && (kept.status === "described" || kept.fileRemovedAt || !existsSync(a.path!))) return `    [image] ${mediaLine(kept)}`;
+      return `    [image] ${a.name}${a.path ? `: ${a.path}` : a.error ? ` (not saved: ${a.error})` : " (not saved)"}`;
+    }),
     ...files.flatMap((a) => (a.path ? [`    [file] ${a.name}: ${a.path}`, ...(a.preview !== undefined ? [`      ${UNTRUSTED_FILE_LINE}`, ...a.preview.split("\n").map((l) => `      | ${l}`)] : [])] : [`    [file] ${a.name} (not saved: ${a.error ?? "no copy kept"})`])),
     ...(m.attachments ?? []).filter((a) => !shown.has(a.name)).map((a) => `    [attachment] ${a.name}`),
   ];

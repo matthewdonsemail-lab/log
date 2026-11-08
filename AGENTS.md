@@ -2612,6 +2612,40 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
     proxy. Spec: `docs/specs/mcpReload.md`.
 
+168. 2026-11-08 · matt: "Implement the correct systems ... that achieve what
+    we want", after a SubQ matrix over 17 GitHub systems that let a model
+    understand media (openclaw first overall, screenpipe for the store and
+    speed, RAG-Anything for silent video;
+    `RESEARCH/MEDIA_UNDERSTANDING_SYSTEMS_ON_GITHUB.md` in the Buzz
+    workspace). He doesn't want media files kept on disk, and every model,
+    even one that can't see, must know what was sent and recall it later.
+    Every image, meme, gif and video is kept as text in log.db, with a small
+    preview, and no media file is kept:
+    - **Stage 0, the record:** each item's row in `media` keeps its hash,
+      size, length, width, height and one small JPEG preview made by ffmpeg
+      through a pipe (`ingestRow`, migration 17). A still keeps its first
+      frame at 320 px; a moving picture keeps a 3 x 2 grid of frames.
+    - **Stage 1, the text** (openclaw's shape): describers are tried in
+      order, falling back to the next (`describeWith`), and the text is
+      labelled by kind.
+    - **Video** (RAG-Anything's shape): cut where the picture changes into
+      at most 8 scenes (`sceneCutsOf`, `spansOf`). One keyframe per scene is
+      described with its on-screen words read out. Its sound goes to
+      AssemblyAI, and each word lands in its scene. It reads `video 0:32, 4
+      scenes, speech: [0:00-0:08] screen: … | speech: "…"`. A silent one says
+      `no sound`.
+    - **Voice notes:** a voice note's line shows its transcript.
+    - **No file kept** (screenpipe's shape: rows stay, media goes): once the
+      preview and text are in log.db, the engine's downloaded copy is
+      deleted (`removeSpoolFile`), never a local file a person asked about
+      and never a voice note. Anything described again is described from
+      the kept preview. The queue's overflow waits and is described when
+      there is room.
+    - **A model that can see:** `log media view <id>` (MCP `mediaView`)
+      returns the preview as an MCP image block beside the text, and every
+      line with a preview ends `(picture: media view <id>)`.
+    Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-09 to 12).
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.

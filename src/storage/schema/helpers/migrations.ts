@@ -19,6 +19,20 @@ export const TIME_COLUMNS: readonly (readonly [string, string, string])[] = [
   ['events', 'messageKey', 'TEXT'],
 ]
 
+export const MEDIA_COLUMNS: readonly (readonly [string, string])[] = [
+  ['sha256', 'TEXT'],
+  ['sizeBytes', 'INTEGER'],
+  ['durationMs', 'INTEGER'],
+  ['width', 'INTEGER'],
+  ['height', 'INTEGER'],
+  ['preview', 'BLOB'],
+  ['previewMime', 'TEXT'],
+  ['scenes', 'TEXT'],
+  ['transcript', 'TEXT'],
+  ['providers', 'TEXT'],
+  ['fileRemovedAt', 'TEXT'],
+]
+
 export const TIME_INDEXES: readonly string[] = [
   'DROP INDEX IF EXISTS messagesByChat',
   'DROP INDEX IF EXISTS messagesBySender',
@@ -207,6 +221,15 @@ export const MIGRATIONS: readonly Migration[] = [
     name: 'state',
     apply(handle) {
       handle.exec('CREATE TABLE IF NOT EXISTS state (scope TEXT NOT NULL, key TEXT NOT NULL, body TEXT NOT NULL, updatedAt INTEGER NOT NULL, PRIMARY KEY (scope, key)) WITHOUT ROWID')
+    },
+  },
+  {
+    version: 17,
+    name: 'mediaRepresentation',
+    apply(handle) {
+      for (const [column, type] of MEDIA_COLUMNS) if (!hasColumn(handle, 'media', column)) handle.exec(`ALTER TABLE media ADD COLUMN ${column} ${type}`)
+      handle.exec('CREATE INDEX IF NOT EXISTS mediaByEvent ON media (eventId)')
+      handle.exec('CREATE INDEX IF NOT EXISTS mediaByPath ON media (path)')
     },
   },
 ]

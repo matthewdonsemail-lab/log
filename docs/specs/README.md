@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 43 domains, 489 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 43 domains, 493 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -558,11 +558,15 @@ Every voice note on X and Discord, sent to matt or by him, is transcribed with A
 
 ## [Media described](./mediaDescriber.md)
 
-Every image, meme, gif and video sent or received is described by one local vision model into the .db before anyone replies, and anything not described yet is shown as such. Rules 126, 131, 137 and 138.
+Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview, before anyone replies, and anything not described yet is shown as such. No media file is kept: the engine's downloaded copy is deleted once its preview and text are in log.db. Rules 126, 131, 137, 138 and 168.
 
 - **REQ-MEDIA-01** One describer per machine, the model loaded once
 - **REQ-MEDIA-02** It beats, and stops loudly past its memory ceiling
-- **REQ-MEDIA-03** Each description is labelled and embedded
+- **REQ-MEDIA-03** Each description is labelled and embedded, with a fallback
+- **REQ-MEDIA-09** A small record of every item stays in log.db
+- **REQ-MEDIA-10** A video is told scene by scene, with what was said
+- **REQ-MEDIA-11** No media file is kept, and the overflow is described later
+- **REQ-MEDIA-12** A model that can see gets the picture through MCP
 - **REQ-MEDIA-04** Every attachment a watch receives is queued, bounded
 - **REQ-MEDIA-05** The context shows the description, or that there is none yet
 - **REQ-MEDIA-06** The engines keep a local copy of every image and video sent

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 167;
+export const RULES_REVIEWED_THROUGH = 168;
 
 export const AGENTS_URI = "log://agents";
 
@@ -79,6 +79,7 @@ export const CORE_PRINCIPLES = [
   "72. Every call is timed, never guessed: each tool call gets a call id (on its ▶ and ■ lines in the live log, with how long it took), and every stage inside it is stored in log.db (guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request). Before saying something is slow or fast, or changing code to speed it up, read `timing` (p50, p95 and p99 per tool and per stage) or `timing` { call } for one call's waterfall, and measure again after the change (rule 165).",
   "73. treg is an extension: find an endpoint by the job with `tregSearch`, read its price and params with `tregGet`, and call it with `tregCall` (params as a JSON object), the key injected server-side by treg. A free endpoint runs; a priced one is a dry run that says its price, and runs only with `tregCallLive` { approvedBy, confirmLive } when matt asked for that spend. Every lookup comes from it, never memory (rules 41, 53, 166).",
   "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
+  "75. Every image, voice note and video is text any model can read, kept in log.db with a small preview, never a file: a video reads scene by scene as `[0:00-0:08] screen: … | speech: \"…\"`, a silent one says `no sound`, a voice note shows its transcript. Answer from that text; a model that can see the picture itself calls `mediaView` { args: [\"<id>\"] } from a line's `(picture: media view <id>)` and gets it back as an image (rule 168).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -146,7 +147,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
-  media: [26, 41, 126, 131, 137, 138, 139],
+  media: [26, 41, 126, 131, 137, 138, 139, 168],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121],
@@ -160,7 +161,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   runs: [19, 22, 25, 27, 66, 73],
   storage: [73, 134],
   timing: [26, 73, 165],
-  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
+  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 168],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
   mcp: [21, 47, 167],

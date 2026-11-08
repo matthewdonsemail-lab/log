@@ -4,7 +4,7 @@ title: "Media described"
 
 # Media described
 
-Every image, meme, gif and video sent or received is described by one local vision model into the .db before anyone replies, and anything not described yet is shown as such. Rules 126, 131, 137 and 138.
+Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview, before anyone replies, and anything not described yet is shown as such. No media file is kept: the engine's downloaded copy is deleted once its preview and text are in log.db. Rules 126, 131, 137, 138 and 168.
 
 ## The describer
 
@@ -20,9 +20,44 @@ It writes a heartbeat every 5 s. Past its memory ceiling it writes a `describerM
 
 Checked by: code and SubQ
 
-### REQ-MEDIA-03: Each description is labelled and embedded
+### REQ-MEDIA-03: Each description is labelled and embedded, with a fallback
 
-Each item is described with one prompt (what is in it, its text word for word, what it means or the joke), a video from three frames taken with ffmpeg, labelled with its kind (`image: …`, `video: frame 1 of 3: …`), stored on its row, and its `jina-embeddings-v5-omni-small` vector stored in the .db's embeddings. An item whose file is missing is marked failed with why.
+Each image is described with one prompt (what is in it, its text word for word, what it means or the joke). `describeWith` asks an ordered list of describers and takes the first answer; one that throws or answers empty is passed over for the next. The description is labelled with its kind (`image: …`) and stored on its row with the model and every provider tried. Its `jina-embeddings-v5-omni-small` vector is stored in the .db's embeddings. An item whose file is missing and has no kept preview is marked failed with why.
+
+Checked by: code and SubQ
+
+### REQ-MEDIA-09: A small record of every item stays in log.db
+
+Before an item is described, `ingestRow` keeps its sha256, size, length, width and height (from ffprobe). For an image, gif or video it also keeps one small JPEG preview, made by ffmpeg through a pipe:
+- a still: the first frame at 320 px wide;
+- a moving picture: a 3 x 2 grid of frames across its length.
+
+They are columns of the item's `media` row (migration 17, `MEDIA_COLUMNS`), so nothing about it needs the original file again.
+
+Checked by: code and SubQ
+
+### REQ-MEDIA-10: A video is told scene by scene, with what was said
+
+This covers a video, or a gif that is really a video.
+- **Scenes:** it is cut where the picture changes (`sceneCutsOf`, ffmpeg's scene score 0.3), into at most 8 scenes of at least 1.5 s (`spansOf`).
+- **Screen:** one keyframe from the middle of each scene is described, with the words on screen read out (`SCENE_PROMPT`).
+- **Sound:** taken out through a pipe (`soundtrackOf`) and transcribed by AssemblyAI (`assemblyAiTranscriber`, kept by its hash in `transcripts`). Each word is put in the scene it was said in.
+
+The item reads `video 0:32, 4 scenes, speech: [0:00-0:08] screen: … | speech: "…" · …`. A silent one (motion graphics) says `no sound` and is told by what changes on screen. Its scenes and transcript are kept on its row.
+
+Checked by: code and SubQ
+
+### REQ-MEDIA-11: No media file is kept, and the overflow is described later
+
+Once an item has its preview and its text, the engine's downloaded copy is deleted (`removeSpoolFile`, `fileRemovedAt`). This happens only for an image, meme, gif or video inside an engine media folder. It never happens to a local file a person asked about (`log media describe`), or to a voice note.
+
+An item described again after that is described from its kept preview. An item the queue was too full for waits (`QUEUE_FULL_DETAIL`) and is taken when no item is pending.
+
+Checked by: code and SubQ
+
+### REQ-MEDIA-12: A model that can see gets the picture through MCP
+
+`log media view <id>` (MCP `mediaView`) gives the item's line and its kept preview. Over MCP the preview comes back as an image content block beside the text (`context.image`, `ToolImage`). Every item line with a kept preview ends `(picture: media view <id>)`. A Discord read shows a kept item by its line once its downloaded file is gone (`mediaByPath`).
 
 Checked by: code and SubQ
 
@@ -30,13 +65,16 @@ Checked by: code and SubQ
 
 ### REQ-MEDIA-04: Every attachment a watch receives is queued, bounded
 
-The Discord, Slack and Instagram watches queue every attachment of a message they hand to the inbox, by its event id. Audio and plain files are never sent to the vision model (audio goes to AssemblyAI). An item without a local file, or past the 20 already waiting, is marked not described yet with why, and a full queue alerts `mediaQueueFull`.
+The Discord, Slack and Instagram watches queue every attachment of a message they hand to the inbox, by its event id. Audio and plain files are never sent to the vision model (audio goes to AssemblyAI). An item without a local file, or past the 20 already waiting, is marked not described yet with why, and a full queue alerts `mediaQueueFull`. The overflow is described once there is room (REQ-MEDIA-11).
 
 Checked by: code and SubQ
 
 ### REQ-MEDIA-05: The context shows the description, or that there is none yet
 
-The inbox hook's message lines and the chat context the voice gate ranks carry each message's media: its description once described, `[kind name not described yet: why]` until then.
+The inbox hook's message lines and the chat context the voice gate ranks carry each message's media:
+- its description once described;
+- a voice note's transcript (found by its hash), as `[audio name 0:14: "…"]`;
+- `[kind name not described yet: why]` until then.
 
 Checked by: code and SubQ
 

@@ -193,7 +193,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 190 command tools + saved flows"]
+  mcp["MCP server log: 191 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 100 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -285,8 +285,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41 |
 | [`log storage`](#log-storage) | Check that log.db's typed tables are exactly what its events derive, and rebuild them from the events | any (none) | `--json` `--apply` | none | none | `storageVerify`, `storageRebuild` | PreToolUse, PostToolUse · PostToolUse | no | 73, 134, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall | any (none) | `--tool <name>` `--hours <n>` `--stages <n>` `--json` `--call <callId>` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
-| [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat | any (none) | `--platform <twitter|discord|slack|instagram>` `--account <a>` `--chat <conversationId|handle>` `--event <eventId>` `--json` `--by` `--limit <n>` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 30, 38, 39, 40, 41 |
-| [`log media`](#log-media) | Describe every image, meme and video with one local vision model into the .db, so replies read what was sent | any (none) | `--json` `--wait <seconds>` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 126, 131, 137, 138, 139, 30, 38, 39, 40, 41 |
+| [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat | any (none) | `--platform <twitter|discord|slack|instagram>` `--account <a>` `--chat <conversationId|handle>` `--event <eventId>` `--json` `--by` `--limit <n>` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 168, 30, 38, 39, 40, 41 |
+| [`log media`](#log-media) | Turn every image, meme and video into text any model reads, kept in the .db with a small preview, so replies read what was sent | any (none) | `--json` `--wait <seconds>` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus`, `mediaView` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 126, 131, 137, 138, 139, 168, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55) | any (none) | `--json` | none | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 54, 55, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `--afterLine <n>` `--waitMs <ms>` `--json` | none | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 10, 26, 35, 30, 38, 39, 40, 41 |
 | [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `--json` | none | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 21, 47, 167, 30, 38, 39, 40, 41 |
@@ -1330,13 +1330,14 @@ Only the session that claims a chat acts on it (rule 133). Every message the pus
 
 #### log media
 
-Describe every image, meme and video with one local vision model into the .db, so replies read what was sent MCP tools: `mediaDescriber`, `mediaDescribe`, `mediaStatus`, one per form, with named fields.
+Turn every image, meme and video into text any model reads, kept in the .db with a small preview, so replies read what was sent MCP tools: `mediaDescriber`, `mediaDescribe`, `mediaStatus`, `mediaView`, one per form, with named fields.
 
 ```text
 log media describer [--json]
 log media describe <path> [--wait <seconds>] [--json]
 log media status [--json]
-Every image, meme, gif and video sent or received is described by one local vision model (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js) and the description, labelled with what the media is, is stored in the .db with its jina-embeddings-v5-omni vector, so the voice step reads what was sent before anyone replies (rule 138). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the model once, takes one item at a time from a queue of at most 20 (the overflow is marked not described yet and shown so in every context), describes a video from three frames, beats every 5 s, and stops loudly past its memory ceiling. describe puts one local file in the queue and waits for its description. status shows the queue. Audio goes to AssemblyAI (rule 126), never here.
+log media view <id> [--json]
+Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview (rules 138, 168). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the vision model once (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js, the first of an ordered list that falls back to the next), takes one item at a time from a queue of at most 20 (the overflow waits and is described when there is room), and for each keeps its size, length, hash and a small JPEG preview (a contact sheet of frames for a video), describes an image with its text word for word, and a video scene by scene (ffmpeg scene changes, one keyframe per scene with its on-screen words, its sound transcribed through AssemblyAI) as timestamped lines, labels it, stores its jina-embeddings-v5-omni vector, then deletes the engine's downloaded copy, so no media file is kept. A voice note shows its transcript. describe puts one local file in the queue and waits for its description. status shows the queue. view shows one item's line, and over MCP returns its preview as an image for a model that can see.
 ```
 
 #### log browsers
