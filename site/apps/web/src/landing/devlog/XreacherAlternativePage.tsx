@@ -11,6 +11,7 @@ import { Control } from '../Control'
 import { pageForPlatform } from '../useCases/platformPages'
 import { CompareTable, Receipt, STICKER, StoryCta, StoryFaq, StoryImage, StoryKicker, StorySection, type FaqItem } from '../story/StorySections'
 import { XREACHER_ALTERNATIVE } from './xreacherAlternative'
+import { articleOf, articleSchema } from './articles'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
 const X_LINK = 'font-bold text-[#2A8CFF] underline decoration-dashed underline-offset-4 hover:text-[#1A5FC8]'
@@ -32,11 +33,8 @@ function Doc({ to, children }: { to: string; children: ReactNode }) {
 }
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
-const TITLE = 'Xreacher Alternative (2026): the free open-source tool to automate Twitter DMs'
-const DESCRIPTION =
-  'Looking for an Xreacher alternative? I tried Xreacher to automate my Twitter DMs and my X account never connected. Here is what Xreacher costs, what X accounts and proxies cost, and log, the free open-source tool I built instead.'
-const UPDATED = '2026-11-09'
-const FAQ: FaqItem[] = [
+const ARTICLE = articleOf('xreacher-alternative')
+export const XREACHER_FAQ: FaqItem[] = [
   {
     q: 'What is the best Xreacher alternative?',
     a: "If you want to automate X (Twitter) DMs from your own accounts without a monthly bill, log. It's free and open source, runs from Claude Code, Codex or Cursor, reads your X DMs and X Chat, and sends only when you approve.",
@@ -66,25 +64,7 @@ const FAQ: FaqItem[] = [
     a: 'No. Anything that sends is a dry run until you approve it, and a live send needs your explicit go-ahead.',
   },
 ]
-const SCHEMA = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Article',
-      headline: "The Xreacher alternative I built because it didn't work",
-      description: DESCRIPTION,
-      author: { '@type': 'Person', name: 'Matthew Don', url: 'https://x.com/matthewsoldit' },
-      datePublished: UPDATED,
-      dateModified: UPDATED,
-      image: 'https://log.listeningkit.com/images/devlog/xreacherSignupEmail.webp',
-      mainEntityOfPage: 'https://log.listeningkit.com/devlog/xreacher-alternative',
-    },
-    {
-      '@type': 'FAQPage',
-      mainEntity: FAQ.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
-    },
-  ],
-}
+export const XREACHER_SCHEMA = articleSchema(ARTICLE, XREACHER_FAQ)
 
 function LogoChip() {
   return (
@@ -100,14 +80,17 @@ function useMeta() {
     const previousTitle = document.title
     const meta = document.querySelector('meta[name="description"]')
     const previousDescription = meta?.getAttribute('content') ?? null
-    document.title = TITLE
-    meta?.setAttribute('content', DESCRIPTION)
-    const schema = document.createElement('script')
-    schema.type = 'application/ld+json'
-    schema.text = JSON.stringify(SCHEMA)
-    document.head.appendChild(schema)
+    document.title = ARTICLE.title
+    meta?.setAttribute('content', ARTICLE.description)
+    const prerendered = document.getElementById('devlog-schema')
+    const schema = prerendered ? null : document.createElement('script')
+    if (schema) {
+      schema.type = 'application/ld+json'
+      schema.text = JSON.stringify(XREACHER_SCHEMA)
+      document.head.appendChild(schema)
+    }
     return () => {
-      schema.remove()
+      schema?.remove()
       document.title = previousTitle
       if (meta && previousDescription !== null) meta.setAttribute('content', previousDescription)
     }
@@ -138,7 +121,7 @@ function Hero() {
               <p className="text-[16px] leading-tight">
                 <span className="block font-black">By Matthew Don</span>
                 <span className="text-white/75">
-                  Published <time dateTime={UPDATED}>9 November 2026</time>
+                  Published <time dateTime={ARTICLE.published}>{ARTICLE.publishedLabel}</time>
                 </span>
               </p>
             </div>
@@ -171,7 +154,7 @@ function Hero() {
   )
 }
 
-function Story() {
+export function XreacherStory() {
   return (
     <article id="story" className="w-full bg-white">
       <div className="mx-auto w-full max-w-3xl px-4 pt-6 md:px-6">
@@ -330,7 +313,7 @@ function Story() {
         </p>
       </StorySection>
 
-      <StoryFaq title="Xreacher alternative: questions" items={FAQ} />
+      <StoryFaq title="Xreacher alternative: questions" items={XREACHER_FAQ} />
 
       <StoryCta page={X_PAGE} href={LOG_REPO_URL} title="Run it on your own X account tonight." />
     </article>
@@ -350,7 +333,7 @@ export function XreacherAlternativePage() {
         accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
       />
       <Hero />
-      <Story />
+      <XreacherStory />
       <Control />
       <PromptCta title="Try log on your own X DMs" ask={XREACHER_ALTERNATIVE.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
       <SiteFooter />

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1200" />
+  <title>{{NAME}} devlog card (1200x630)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Schoolbell&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1200px; height: 630px; overflow: hidden; }
+    body {
+      position: relative;
+      font-family: "Schoolbell", cursive;
+      color: #fff;
+      background-image: linear-gradient(180deg, #117eff -12.71%, #1e88ff 44.69%, #5ea7ff 102.1%);
+      box-shadow: inset 0 2px 90px #5ea7ff;
+    }
+    .frame { position: absolute; inset: 0; width: 1200px; height: 630px; }
+    .photo { position: absolute; left: 84px; top: 74px; width: 424px; height: 482px; transform: rotate(-2.5deg); }
+    .photo .clip { position: absolute; inset: 16px; overflow: hidden; border-radius: 20px; background: #eff6ff; }
+    .photo img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 50% 35%; }
+    .photo svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .text { position: absolute; left: 566px; right: 74px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+    h1 { font-size: 60px; line-height: 1.2; font-weight: 400; letter-spacing: 0.2px; text-shadow: 0 3px 0 rgba(13, 42, 76, 0.28); }
+    .name {
+      display: inline-block; margin: 2px 2px; padding: 0 14px 4px; border-radius: 10px;
+      background: #fff; color: #1e88ff; font-size: 1.12em; line-height: 1.1;
+      transform: rotate(-1.8deg); text-shadow: none; box-shadow: 0 5px 0 #0d2a4c;
+    }
+    .u { text-decoration: underline dashed #fff; text-decoration-thickness: 3px; text-underline-offset: 8px; }
+    .by { font-size: 30px; opacity: 0.92; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="rough2" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="11" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+  <svg class="frame" viewBox="0 0 1200 630" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="24" y="24" width="1152" height="582" rx="30" stroke-width="7" filter="url(#rough)" />
+    <rect x="31" y="30" width="1140" height="574" rx="28" stroke-width="3" opacity="0.7" filter="url(#rough2)" />
+  </svg>
+  <div class="photo">
+    <div class="clip">
+      <img src="{{PHOTO}}" alt="Matthew Don" />
+    </div>
+    <svg viewBox="0 0 424 482" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="406" height="464" rx="26" stroke-width="9" filter="url(#rough)" />
+      <rect x="2" y="3" width="420" height="476" rx="30" stroke-width="3" opacity="0.8" filter="url(#rough2)" />
+    </svg>
+  </div>
+  <div class="text">
+    <h1>{{LEAD}} <span class="name">{{NAME}}</span> {{PITCH}}</h1>
+    <p class="by">devlog · {{AUTHOR}} · {{DATE}}</p>
+  </div>
+</body>
+</html>

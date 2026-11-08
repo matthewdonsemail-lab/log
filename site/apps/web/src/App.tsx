@@ -7,6 +7,7 @@ import { LandingPage } from './landing/LandingPage'
 import { UseCasesPage } from './landing/useCases/UseCasesPage'
 import { ReaLooksmaxxingPage } from './landing/useCases/ReaLooksmaxxingPage'
 import { XreacherAlternativePage } from './landing/devlog/XreacherAlternativePage'
+import { DevlogIndexPage } from './landing/devlog/DevlogIndexPage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
 const createQueryClient = () => new QueryClient({
@@ -54,6 +55,7 @@ export function App() {
             <Route path="/instagram" element={<UseCasesPage key="instagram" platform="instagram" />} />
             <Route path="/reddit" element={<UseCasesPage key="reddit" platform="reddit" />} />
             <Route path="/rea-looksmaxxing" element={<ReaLooksmaxxingPage />} />
+            <Route path="/devlog" element={<DevlogIndexPage />} />
             <Route path="/devlog/xreacher-alternative" element={<XreacherAlternativePage />} />
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
