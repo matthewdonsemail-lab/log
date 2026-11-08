@@ -62,3 +62,39 @@ The weakest is "kept-open transports differ by under 1 ms at p99.9", at 0.69.
 4. Hosts for Discord, Slack and Reddit, through D2 C.
 
 Each step is measured before and after with the method in issue #99.
+
+## Second run: with the lectures, the DDIA docs and the tools search
+
+`bun docs/decisions/processLimits/runMatrix.ts --second` asked about five decisions this time. It used the first run's evidence plus:
+- `transcripts.md`, a digest of 12 lecture transcripts (Berkeley CS162, MIT 6.S081, Windows Internals, the Cygwin fork talk, Ryan Dahl, Bert Belder, Hussein Nasser, inotify, The Tail at Scale, Martin Thompson, Joyee Cheung);
+- `tools.md`, the GitHub search for libraries;
+- `docs/storageAgainstTheBook.md`, `docs/storageReadPath.md` and `docs/toolCallSpeed.md`;
+- the first run's results.
+
+It made 32 calls with 1,200,109 input tokens. The raw answers are in `subqResults2.json`.
+
+| Decision | Chosen | Confidence (probability) |
+| --- | --- | --- |
+| D1 How hooks reach log's code | E: http hooks per event to the warm service, exec-form Bun for the two refusing hooks | 0.95 (E 96%) |
+| D2 How Bun reaches the Python engines | C: straight to the host, a new loopback connection per call (built) | 0.68 (C 72%, D 27%) |
+| D3 How latency is recorded | B: HdrHistogramJS + HdrHistogram_py, encoded histograms in SQLite | 1.00 |
+| D4 What drives open-loop load tests | A: a small Bun fixed-rate script recording from the intended start time | 0.97 |
+| D5 How code changes are noticed | B: the `fs.watch` dirty flag with a backstop walk (built) | 0.99 |
+
+- **D2:** the kept-open connection (D) now scores best on latency, one session and robustness. Its total is 18.8 against C's 18.7. C is still chosen, because it is built and simpler. D stays the follow-up if the 1 ms per call ever matters.
+- **D4:** vegeta and oha only speak HTTP and can't drive the hosts' newline-JSON TCP. autocannon is closed-loop.
+
+**Claims.** 24 of the 29 were judged true at 0.91 or above, including all 15 from the first run. The 5 judged false (0.00 to 0.05) were the deliberately wrong statements among the lecture claims:
+- Cygwin tweaks halving fork time;
+- a middlebox drop notifying both peers;
+- a client header setting how long a connection is kept alive;
+- hedging being fine for writes;
+- response time staying flat until a server is full.
+
+So SubQ read the lectures rather than agreeing with whatever it was given. "Hedging writes is fine" being false matches log's rule that a sent write is never sent again.
+
+**What the lectures add.** They don't change any choice. They add conditions:
+- the refusing exec-form hooks need a tiny import graph, since Windows builds every process from scratch;
+- the warm service must never block its one event loop;
+- a direct host call must read up to the newline across many reads and never resend a write;
+- the backstop walk stays, since no source covers lost watch events.

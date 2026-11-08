@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { subqKey } from "../../../src/subq/decisions/index.ts";
 
@@ -25,6 +25,12 @@ const evidence: [string, string][] = [
   ["python/twitterApi/host.py", read("python/twitterApi/host.py")],
   ["src/mcp/reload/client.ts", read("src/mcp/reload/client.ts")],
   ["src/mcp/freshness/client.ts", read("src/mcp/freshness/client.ts")],
+  ["docs/decisions/processLimits/tools.md", read("docs/decisions/processLimits/tools.md")],
+  ["docs/decisions/processLimits/transcripts.md", existsSync(join(root, "docs/decisions/processLimits/transcripts.md")) ? read("docs/decisions/processLimits/transcripts.md") : "(not yet written)"],
+  ["docs/storageAgainstTheBook.md", read("docs/storageAgainstTheBook.md")],
+  ["docs/storageReadPath.md", read("docs/storageReadPath.md")],
+  ["docs/toolCallSpeed.md", read("docs/toolCallSpeed.md")],
+  ["docs/decisions/processLimits/results.md (the first run)", read("docs/decisions/processLimits/results.md")],
 ];
 
 function stateFor(decision: Decision): string {
@@ -90,5 +96,5 @@ const answeredClaims = await decide(stateFor(decisions[0]), claimQuestions);
 results.claims = answeredClaims.answers;
 tokens += answeredClaims.usage?.input_tokens ?? 0;
 results.inputTokens = tokens;
-writeFileSync(join(here, "subqResults.json"), JSON.stringify(results, null, 2));
+writeFileSync(join(here, process.argv.includes("--second") ? "subqResults2.json" : "subqResults.json"), JSON.stringify(results, null, 2));
 console.log(`total input tokens ${tokens}`);

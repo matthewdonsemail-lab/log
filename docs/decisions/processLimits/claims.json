@@ -1,17 +1,118 @@
 [
-  { "id": "hooksParallel", "statement": "Claude Code 2.1.305 runs the matching hooks of one event at the same time, not one after another." },
-  { "id": "argsNoShell", "statement": "On Claude Code 2.1.305, a command hook with args runs without a shell." },
-  { "id": "httpInjects", "statement": "On Claude Code 2.1.305, a type http hook's additionalContext reaches the model." },
-  { "id": "processDwarfsSyscall", "statement": "Creating a process costs at least four orders of magnitude more than a system call." },
-  { "id": "gitBashForkCost", "statement": "Starting a hook through Git Bash costs about 100 ms or more on top of starting it directly." },
-  { "id": "persistentSubMs", "statement": "Every kept-open transport measured (kept-open TCP, HTTP keep-alive, stdio pipe) has p99 under 1 ms and p99.9 under 2 ms on this machine." },
-  { "id": "freshConnectionMs", "statement": "A new loopback TCP connection per call adds about 1 ms at p50 over a kept-open one." },
-  { "id": "transportsDifferLittle", "statement": "The differences between kept-open transports are under 1 ms at p99.9, far below the cost of starting one process." },
-  { "id": "nagleNoStall", "statement": "On this machine, Nagle and delayed ACK cause no 40 to 200 ms stall on loopback." },
-  { "id": "hostConnectNotTcp", "statement": "Most of the measured 7 ms host.connect is not the TCP connect." },
-  { "id": "host64k", "statement": "The X host refuses a request larger than 64 KiB because of asyncio's default readline limit." },
-  { "id": "childHostBreaksRules", "statement": "A host started as the child of one MCP server cannot be the single host per account shared by every Claude session." },
-  { "id": "eventLoopBlocking", "statement": "A long computation or blocking call inside a single event loop stalls every request it serves." },
-  { "id": "stampWalkPerCall", "statement": "The MCP proxy walks the source tree synchronously before relaying each tool call." },
-  { "id": "asyncioNoUnixWindows", "statement": "Python asyncio's default Windows event loop does not support a Unix-socket server." }
+ {
+  "id": "hooksParallel",
+  "statement": "Claude Code 2.1.305 runs the matching hooks of one event at the same time, not one after another."
+ },
+ {
+  "id": "argsNoShell",
+  "statement": "On Claude Code 2.1.305, a command hook with args runs without a shell."
+ },
+ {
+  "id": "httpInjects",
+  "statement": "On Claude Code 2.1.305, a type http hook's additionalContext reaches the model."
+ },
+ {
+  "id": "processDwarfsSyscall",
+  "statement": "Creating a process costs at least four orders of magnitude more than a system call."
+ },
+ {
+  "id": "gitBashForkCost",
+  "statement": "Starting a hook through Git Bash costs about 100 ms or more on top of starting it directly."
+ },
+ {
+  "id": "persistentSubMs",
+  "statement": "Every kept-open transport measured (kept-open TCP, HTTP keep-alive, stdio pipe) has p99 under 1 ms and p99.9 under 2 ms on this machine."
+ },
+ {
+  "id": "freshConnectionMs",
+  "statement": "A new loopback TCP connection per call adds about 1 ms at p50 over a kept-open one."
+ },
+ {
+  "id": "transportsDifferLittle",
+  "statement": "The differences between kept-open transports are under 1 ms at p99.9, far below the cost of starting one process."
+ },
+ {
+  "id": "nagleNoStall",
+  "statement": "On this machine, Nagle and delayed ACK cause no 40 to 200 ms stall on loopback."
+ },
+ {
+  "id": "hostConnectNotTcp",
+  "statement": "Most of the measured 7 ms host.connect is not the TCP connect."
+ },
+ {
+  "id": "host64k",
+  "statement": "The X host refuses a request larger than 64 KiB because of asyncio's default readline limit."
+ },
+ {
+  "id": "childHostBreaksRules",
+  "statement": "A host started as the child of one MCP server cannot be the single host per account shared by every Claude session."
+ },
+ {
+  "id": "eventLoopBlocking",
+  "statement": "A long computation or blocking call inside a single event loop stalls every request it serves."
+ },
+ {
+  "id": "stampWalkPerCall",
+  "statement": "The MCP proxy walks the source tree synchronously before relaying each tool call."
+ },
+ {
+  "id": "asyncioNoUnixWindows",
+  "statement": "Python asyncio's default Windows event loop does not support a Unix-socket server."
+ },
+ {
+  "id": "windowsNeverForks",
+  "statement": "Windows creates every new process with a fresh address space built from scratch rather than by forking an existing process. (lecture: windowsInternals)"
+ },
+ {
+  "id": "windowsLoaderRunsDllInit",
+  "statement": "Before a Windows program's main runs, the loader maps its imported DLLs recursively and runs their DllMain and TLS callbacks under the loader lock. (lecture: windowsInternals)"
+ },
+ {
+  "id": "cygwinForkHundredfold",
+  "statement": "In the Cygwin benchmark, 1,000 forks took about 0.23 s on native Linux and 10 to 16 s under Cygwin on Windows. (lecture: cygwinFork)"
+ },
+ {
+  "id": "cygwinTweaksFixedFork",
+  "statement": "Raising cygserver thread counts, changing the power plan and debloating Windows cut Cygwin's fork time by more than half. (lecture: cygwinFork)"
+ },
+ {
+  "id": "eventLoopBlockStallsAll",
+  "statement": "In a single-threaded event-loop server, one handler that blocks on I/O stalls every other client. (lecture: dahlNode)"
+ },
+ {
+  "id": "dnsUsesThreadPool",
+  "statement": "Node resolves host names through the operating system resolver on its worker thread pool, while network sockets are polled directly by the event loop. (lecture: belderEventLoop)"
+ },
+ {
+  "id": "middleboxDropNotifiesPeers",
+  "statement": "When a middlebox drops its state for an idle TCP connection, both peers are notified at once. (lecture: nasserKeepAlive)"
+ },
+ {
+  "id": "clientSetsKeepAliveDuration",
+  "statement": "HTTP has a request header with which the client tells the server how long to keep the connection alive. (lecture: nasserKeepAlive)"
+ },
+ {
+  "id": "pipeEndClosureSignals",
+  "statement": "When the last writer of a pipe closes, the reader gets end-of-file, and when the last reader closes, a writer gets SIGPIPE or EPIPE. (lecture: cs162Ipc)"
+ },
+ {
+  "id": "inotifyAppKeepsPaths",
+  "statement": "inotify reports events by watch descriptor, and the application itself must keep and update the descriptor-to-path mapping, including on renames. (lecture: inotify)"
+ },
+ {
+  "id": "hedgeWritesWhenCheap",
+  "statement": "Hedged requests are appropriate for mutating requests as long as each request is cheap. (lecture: tailAtScale)"
+ },
+ {
+  "id": "fanOutRaisesTailOdds",
+  "statement": "The more machines a single request touches, the higher the chance it hits at least one slow machine. (lecture: tailAtScale)"
+ },
+ {
+  "id": "responseFlatUntilFull",
+  "statement": "Response time stays roughly flat until utilisation approaches 100%. (lecture: thompsonPerformance)"
+ },
+ {
+  "id": "nodeStartupSnapshot",
+  "statement": "Node cut its startup from about 60 ms to about 21 ms mainly through lazy loading, a code cache and a V8 startup snapshot. (lecture: cheungNodeStartup)"
+ }
 ]
