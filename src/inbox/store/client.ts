@@ -3,36 +3,9 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { migrate } from '../../storage/schema'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
-
-const SCHEMA = [
-  `CREATE TABLE IF NOT EXISTS events (seq INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL UNIQUE, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, known INTEGER NOT NULL DEFAULT 1, withWho TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', box TEXT NOT NULL DEFAULT '', payload TEXT NOT NULL DEFAULT '{}', sourceAt TEXT NOT NULL DEFAULT '', receivedAt TEXT NOT NULL, appendedAt TEXT NOT NULL, ownerPid INTEGER NOT NULL DEFAULT 0)`,
-  `CREATE INDEX IF NOT EXISTS eventsByChat ON events (platform, account, conversationId, seq)`,
-  `CREATE TABLE IF NOT EXISTS cursors (reader TEXT PRIMARY KEY, seq INTEGER NOT NULL, updatedAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS owners (platform TEXT NOT NULL, account TEXT NOT NULL, pid INTEGER NOT NULL, hostname TEXT NOT NULL DEFAULT '', startedAt TEXT NOT NULL, heartbeat TEXT NOT NULL, status TEXT NOT NULL, port INTEGER NOT NULL DEFAULT 0, token TEXT NOT NULL DEFAULT '', subscribers INTEGER NOT NULL DEFAULT 0, generation INTEGER NOT NULL DEFAULT 1, PRIMARY KEY (platform, account))`,
-  `CREATE TABLE IF NOT EXISTS claims (chatKey TEXT PRIMARY KEY, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL, parties TEXT NOT NULL, withWho TEXT, eventId TEXT, holder INTEGER NOT NULL, generation INTEGER NOT NULL, claimedAt TEXT NOT NULL, expiresAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS chatGenerations (chatKey TEXT PRIMARY KEY, generation INTEGER NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS actions (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, kind TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL, withWho TEXT, eventId TEXT, holder INTEGER NOT NULL, generation INTEGER, stateBefore TEXT, detail TEXT)`,
-  `CREATE INDEX IF NOT EXISTS actionsByChat ON actions (platform, account, conversationId, id)`,
-  `CREATE TABLE IF NOT EXISTS alerts (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, kind TEXT NOT NULL, detail TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS timings (eventId TEXT NOT NULL, stage TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (eventId, stage))`,
-  `CREATE TABLE IF NOT EXISTS eventTypes (platform TEXT NOT NULL, type TEXT NOT NULL, status TEXT NOT NULL, firstSeenAt TEXT NOT NULL, sample TEXT NOT NULL DEFAULT '{}', PRIMARY KEY (platform, type))`,
-  `CREATE VIRTUAL TABLE IF NOT EXISTS searchIndex USING fts5(source, ref, platform, account, conversationId, text)`,
-  `CREATE TABLE IF NOT EXISTS positions (platform TEXT NOT NULL, account TEXT NOT NULL, scope TEXT NOT NULL DEFAULT '', position TEXT NOT NULL, updatedAt TEXT NOT NULL, PRIMARY KEY (platform, account, scope))`,
-  `CREATE TABLE IF NOT EXISTS gaps (id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT NOT NULL, account TEXT NOT NULL, fromAt TEXT NOT NULL, toAt TEXT, reason TEXT NOT NULL, status TEXT NOT NULL, detail TEXT, appended INTEGER NOT NULL DEFAULT 0, openedAt TEXT NOT NULL, closedAt TEXT)`,
-  `CREATE INDEX IF NOT EXISTS gapsOpen ON gaps (platform, account, status)`,
-  `CREATE TABLE IF NOT EXISTS embeddings (hash TEXT NOT NULL, model TEXT NOT NULL, dimensions INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'text', text TEXT NOT NULL, vector BLOB NOT NULL, createdAt TEXT NOT NULL, PRIMARY KEY (hash, model, dimensions))`,
-  `CREATE TABLE IF NOT EXISTS aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT NULL, describedAt TEXT, UNIQUE (eventId, name))`,
-  `CREATE INDEX IF NOT EXISTS mediaByStatus ON media (status, id)`,
-  `CREATE TABLE IF NOT EXISTS people (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, handle TEXT NOT NULL, name TEXT, seenAt TEXT NOT NULL, PRIMARY KEY (platform, account, userId))`,
-  `CREATE TABLE IF NOT EXISTS spans (spanId TEXT PRIMARY KEY, traceId TEXT NOT NULL, callId TEXT NOT NULL, parentId TEXT, tool TEXT NOT NULL, name TEXT NOT NULL, source TEXT NOT NULL, pid INTEGER NOT NULL, startedAt REAL NOT NULL, ms REAL NOT NULL, ok INTEGER NOT NULL, attrs TEXT NOT NULL DEFAULT '{}')`,
-  `CREATE INDEX IF NOT EXISTS spansByTool ON spans (tool, startedAt)`,
-  `CREATE INDEX IF NOT EXISTS spansByCall ON spans (callId)`,
-]
-
-const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]
 
 let opened: { path: string; db: Database } | null = null
 
@@ -50,12 +23,7 @@ export function db(): Database {
   handle.exec('PRAGMA journal_mode = WAL')
   handle.exec('PRAGMA busy_timeout = 5000')
   handle.exec('PRAGMA synchronous = NORMAL')
-  for (const statement of SCHEMA) handle.exec(statement)
-  for (const statement of MIGRATIONS) {
-    try {
-      handle.exec(statement)
-    } catch {}
-  }
+  migrate(handle)
   const seed = handle.prepare(`INSERT INTO eventTypes (platform, type, status, firstSeenAt) VALUES (?, ?, 'known', ?) ON CONFLICT(platform, type) DO UPDATE SET status = 'known'`)
   const now = new Date().toISOString()
   for (const [platform, types] of Object.entries(KNOWN_TYPES)) for (const type of types) seed.run(platform, type, now)
