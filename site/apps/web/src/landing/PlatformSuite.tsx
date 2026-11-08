@@ -408,7 +408,7 @@ export function PlatformSuite() {
             <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">every account</span> moving.
           </p>
           <a
-            href="/useCases"
+            href="/docs/useCases"
             className={`inline-flex items-center gap-2 rounded-md bg-white px-3.5 py-2 text-[15px] font-bold text-[#2A8CFF] transition-transform hover:-translate-y-px ${LIP}`}
           >
             Every use case, platform by platform

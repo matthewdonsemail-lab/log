@@ -1,0 +1,40 @@
+.lk-story {
+  --cv-brand: #2a8cff;
+  --cv-ink: #0d2a4c;
+  --cv-line: color-mix(in srgb, #2a8cff 20%, #fff);
+  --cv-muted: color-mix(in srgb, #0d2a4c 58%, #fff);
+}
+
+.lk-story .bluekey {
+  font-family: "Schoolbell", cursive;
+  font-weight: 400;
+  color: var(--cv-brand);
+  text-shadow: 2px 0 0 #fff, 1.9px .62px 0 #fff, 1.62px 1.18px 0 #fff, 1.18px 1.62px 0 #fff, .62px 1.9px 0 #fff, 0 2px 0 #fff, -.62px 1.9px 0 #fff, -1.18px 1.62px 0 #fff, -1.62px 1.18px 0 #fff, -1.9px .62px 0 #fff, -2px 0 0 #fff, -1.9px -.62px 0 #fff, -1.62px -1.18px 0 #fff, -1.18px -1.62px 0 #fff, -.62px -1.9px 0 #fff, .62px -1.9px 0 #fff, 1.18px -1.62px 0 #fff, 1.62px -1.18px 0 #fff, 1.9px -.62px 0 #fff, 4px 0 0 #000, 3.8px 1.24px 0 #000, 3.24px 2.35px 0 #000, 2.35px 3.24px 0 #000, 1.24px 3.8px 0 #000, 0 4px 0 #000, -1.24px 3.8px 0 #000, -2.35px 3.24px 0 #000, -3.24px 2.35px 0 #000, -3.8px 1.24px 0 #000, -4px 0 0 #000, -3.8px -1.24px 0 #000, -3.24px -2.35px 0 #000, -2.35px -3.24px 0 #000, -1.24px -3.8px 0 #000, 1.24px -3.8px 0 #000, 2.35px -3.24px 0 #000, 3.24px -2.35px 0 #000, 3.8px -1.24px 0 #000;
+}
+
+.lk-story .receipt { margin: 6px 0 10px; }
+.lk-story .rLine { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: baseline; padding: 12px 0; }
+.lk-story .rLine + .rLine { border-top: 2px dashed var(--cv-line); }
+.lk-story .rLine p { margin: 0; font-family: "Schoolbell", cursive; font-size: clamp(21px, 2.5vw, 24px); line-height: 1.35; color: var(--cv-ink); }
+.lk-story .rLine p small { display: block; font-size: 18px; color: var(--cv-brand); }
+.lk-story .rLine b { font-size: 40px; line-height: 1; white-space: nowrap; }
+.lk-story .rLine.total { border-top: 3px dashed var(--cv-brand); margin-top: 6px; padding-top: 16px; }
+.lk-story .rLine.total p { font-size: 28px; }
+
+.lk-story .cmp { margin: 10px 0 6px; }
+.lk-story .cmpRow { display: grid; grid-template-columns: 190px minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: baseline; padding: 14px 0; }
+.lk-story .cmpRow + .cmpRow { border-top: 2px dashed var(--cv-line); }
+.lk-story .cmpHead { padding-bottom: 6px; }
+.lk-story .cmpHead .them { font-family: "Schoolbell", cursive; font-size: 30px; color: var(--cv-ink); }
+.lk-story .cmpHead .us { font-size: 36px; }
+.lk-story .cmpRow .k { font-family: "Schoolbell", cursive; font-size: 20px; color: var(--cv-muted); }
+.lk-story .cmpRow .a,
+.lk-story .cmpRow .b { font-family: "Schoolbell", cursive; font-size: clamp(21px, 2.5vw, 24px); line-height: 1.35; color: var(--cv-ink); }
+.lk-story .cmpRow .b strong { font-weight: 400; color: var(--cv-brand); }
+
+@media (max-width: 640px) {
+  .lk-story .cmpRow { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px 16px; }
+  .lk-story .cmpRow .k { grid-column: 1 / -1; }
+  .lk-story .cmpHead .k { display: none; }
+  .lk-story .rLine b { font-size: 32px; }
+}

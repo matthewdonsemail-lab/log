@@ -512,7 +512,7 @@ function AgentIcon({ src, tone }: { src: string; tone: string }) {
   return <span aria-hidden className="block size-3.5" style={{ ...mask, backgroundColor: tone }} />
 }
 
-function PlayChat({ page, offset }: { page: PlatformPage; offset: number }) {
+export function PlayChat({ page, offset }: { page: PlatformPage; offset: number }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { amount: 0.4 })
   const ask = page.play.ask
