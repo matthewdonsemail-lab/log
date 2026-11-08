@@ -1,13 +1,11 @@
 import { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXTwitter } from '@fortawesome/free-brands-svg-icons'
-import { faAnglesRight, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faAnglesRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
 import { DitherFade } from '../useCases/DitherFade'
-import { HowItWorks } from '../useCases/HowItWorks'
 import { MoreUseCases, PromptCta } from '../useCases/UseCasesPage'
 import { Control } from '../Control'
 import { pageForPlatform } from '../useCases/platformPages'
@@ -81,25 +79,6 @@ function Hero() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  )
-}
-
-function ThePlay() {
-  const play = XREACHER_ALTERNATIVE
-  return (
-    <section aria-label="The play" className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[86rem] px-4 pb-8 md:px-6">
-        <HowItWorks
-          ask={play.ask}
-          done={play.how.done}
-          title={play.name}
-          steps={play.how.steps.map((moment) => ({ icon: moment.kind === 'voiceGate' ? faCheck : faXTwitter, label: moment.label, tool: moment.tool }))}
-          platformLabel="X"
-          platformIcon={faXTwitter}
-          rows={play.how.rows}
-        />
       </div>
     </section>
   )
@@ -242,7 +221,6 @@ export function XreacherAlternativePage() {
       />
       <Hero />
       <Story />
-      <ThePlay />
       <Control />
       <PromptCta title="Try log on your own X DMs" ask={XREACHER_ALTERNATIVE.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
       <MoreUseCases current={null} />
