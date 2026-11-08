@@ -230,7 +230,7 @@ stateDiagram-v2
 | `noSolverForKind` | no | `publish.routingCaptcha` | publish→needsPerson | Facebook's own challenge, or a captcha no solver recognises. | Log in by hand and clear it, then run again. |
 | `noSolverConfigured` | no | `publish.routingCaptcha` | publish→needsPerson | No key for a solver that can take this captcha. | Set CAPTCHA_KRAKEN_API_KEY and/or 2CAPTCHA_API_KEY in .env.local. |
 | `arkoseCapReached` | yes | `publish.routingCaptcha` | publish→needsPerson | This account used its Arkose solves for today. | Wait until tomorrow, or clear it by hand. |
-| `attemptsUsed` | no | `publish.routingCaptcha` | publish→needsPerson | Every usable solver was tried as many times as the policy allows. | Clear it by hand. The ledger (the `ledger` table in `~/.logCli/log.db` (kind `captchaAttempt`)) shows each try. |
+| `attemptsUsed` | no | `publish.routingCaptcha` | publish→needsPerson | Every usable solver was tried as many times as the policy allows. | Clear it by hand. The ledger (the ledger table in ~/.logCli/log.db (kind captchaAttempt)) shows each try. |
 | `roundsUsed` | no | `publish.routingCaptcha` | publish→needsPerson | The run hit its cap on captcha rounds. | Clear it by hand. Facebook kept serving captchas: the account may be flagged. |
 | `captchaNoProxy` | no | `publish.solvingCaptcha` | captcha→skipSolver | 2Captcha would have solved from its own IP: the account's proxy couldn't be passed to it. Refused rather than mixing a foreign IP into the session. | Check the account's proxy file reached the session (rule 12). The captcha goes to a person instead. |
 | `missingApiKey` | no | `publish.solvingCaptcha` | captcha→skipSolver | The solver's API key is not set. | Put the key in .env.local. |
