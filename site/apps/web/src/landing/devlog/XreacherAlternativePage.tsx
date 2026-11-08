@@ -124,10 +124,25 @@ function Hero() {
       </div>
       <div className="mx-auto w-full max-w-[86rem] px-4 pb-48 pt-72 md:px-6 md:pb-64 md:pt-[26rem]">
         <div className="grid items-end gap-8 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-12 lg:gap-16">
-          <h1 className="text-[clamp(2.75rem,1.4rem+4.2vw,5.25rem)] font-black leading-[0.95] tracking-[-0.04em] text-white">
-            <span className="block">The Xreacher alternative</span>
-            <span className="block text-white/65">I built because it didn&apos;t work.</span>
-          </h1>
+          <div className="flex flex-col gap-6">
+            <h1 className="text-[clamp(2.75rem,1.4rem+4.2vw,5.25rem)] font-black leading-[0.95] tracking-[-0.04em] text-white">
+              <span className="block">The Xreacher alternative</span>
+              <span className="block text-white/65">I built because it didn&apos;t work.</span>
+            </h1>
+            <div className="flex items-center gap-3 text-white">
+              <img
+                src="/images/mattlistening.webp"
+                alt="Matthew Don"
+                className="size-12 shrink-0 rounded-full object-cover ring-[3px] ring-white shadow-[0_3px_0_#1A5FC8]"
+              />
+              <p className="text-[16px] leading-tight">
+                <span className="block font-black">By Matthew Don</span>
+                <span className="text-white/75">
+                  Published <time dateTime={UPDATED}>9 November 2026</time>
+                </span>
+              </p>
+            </div>
+          </div>
           <div className="flex flex-col items-start gap-6 md:pb-2">
             <p className="text-2xl leading-tight text-white sm:text-3xl" style={HAND}>
               I wanted my X DMs automated. <span className="text-white/70">Xreacher never got going.</span>
@@ -163,9 +178,6 @@ function Story() {
         <StoryKicker>
           why would you <span className={STICKER}>pay</span> monthly to DM people from accounts you also have to buy?
         </StoryKicker>
-        <p className="mt-4 text-[15px] font-bold text-[#0D2A4C]/55">
-          By Matthew Don · Updated <time dateTime={UPDATED}>9 November 2026</time>
-        </p>
         <div className="mt-6 rounded-2xl bg-[#F3F8FF] px-5 py-5 sm:px-6">
           <h2 className="text-[22px] font-black tracking-[-0.02em] text-[#0D2A4C]">The short version</h2>
           <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-[17px] leading-relaxed text-[#0D2A4C]/85">
