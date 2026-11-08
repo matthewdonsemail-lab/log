@@ -14,7 +14,7 @@ Checked by: code and SubQ
 
 ### REQ-TREG-02: Nothing priced runs unless matt approved the spend
 
-Before every call, `call` reads the endpoint with `get` and takes its price (`endpointOf`). A price of free or $0 is free (`isFreePrice`). A free endpoint is called. A priced endpoint without `--live` is a dry run: it says the price and the exact command (`shownCommand`), and calls nothing. With `--live` but no `--approvedBy` it is refused with `notApproved`. Only `--live` with `--approvedBy` calls it, which is the MCP tool `tregCallLive` with `confirmLive`.
+Every call reads the endpoint with `get` and takes its price (`endpointOf`). Without `--live` and `--approvedBy`, that read comes first and decides what happens. With both, the spend is already approved, so the read and the call run at the same time, and the price is still reported. That saves the read's 4 s from every approved call (issue #99). A price of free or $0 is free (`isFreePrice`). A free endpoint is called. A priced endpoint without `--live` is a dry run: it says the price and the exact command (`shownCommand`), and calls nothing. With `--live` but no `--approvedBy` it is refused with `notApproved`. Only `--live` with `--approvedBy` calls it, which is the MCP tool `tregCallLive` with `confirmLive`.
 
 Checked by: code and SubQ
 

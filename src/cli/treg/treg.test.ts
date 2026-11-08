@@ -121,4 +121,26 @@ describe("treg extension", () => {
     const bad = await tregCommand.run(context().ctx, ["call", "tinyfish.web.search", "--params", "[1]"]);
     expect(bad.stderr).toContain("tregParamsInvalid");
   });
+
+  test("a live, approved call reads the price and calls at the same time, and a dry run only reads the price", async () => {
+    const started: string[] = [];
+    let release: () => void = () => {};
+    const gate = new Promise<void>((r) => (release = r));
+    tregDeps.client = () =>
+      createTregClient(async (args) => {
+        started.push(args[0] === "catalog" ? "get" : "call");
+        if (started.length === 2) release();
+        await gate;
+        return args[0] === "catalog" ? { ok: true, code: 0, stdout: PRICED, stderr: "" } : { ok: true, code: 0, stdout: "{\"results\":[1]}", stderr: "" };
+      });
+    const { err, ctx } = context();
+    const live = await tregCommand.run(ctx, ["call", "tikhub.x.user-tweets", "--params", "{\"user\":\"x\"}", "--live", "--approvedBy", "matt"]);
+    expect(live.code).toBe(0);
+    expect(started.sort()).toEqual(["call", "get"]);
+    expect(err.join(" ")).toContain("costs $0.001/call");
+    const seen = fake(PRICED);
+    const dry = await tregCommand.run(context().ctx, ["call", "tikhub.x.user-tweets", "--params", "{\"user\":\"x\"}"]);
+    expect(dry.code).toBe(0);
+    expect(seen.map((a) => a[0])).toEqual(["catalog"]);
+  });
 });

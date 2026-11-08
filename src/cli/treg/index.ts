@@ -91,14 +91,16 @@ export const tregCommand: Command = {
     }
     const id = String(parsed.positionals[0] ?? "").trim();
     if (!id) return { code: 1, stderr: `log treg ${sub}: say which endpoint\n${TREG_USAGE}` };
-    const got = await client.get(id);
-    if (!got.ok) return failed("get", got);
-    const endpoint = endpointOf(id, got.stdout);
-    if (sub === "get") return { code: 0, stdout: json ? JSON.stringify({ endpoint: { ...endpoint, text: undefined }, detail: got.stdout }, null, 2) : got.stdout.trim() };
+    if (sub === "get") {
+      const got = await client.get(id);
+      if (!got.ok) return failed("get", got);
+      const endpoint = endpointOf(id, got.stdout);
+      return { code: 0, stdout: json ? JSON.stringify({ endpoint: { ...endpoint, text: undefined }, detail: got.stdout }, null, 2) : got.stdout.trim() };
+    }
     const params = paramsOf(parsed.flags["params"]);
     if (!params.ok) return { code: 1, stderr: `log treg call: tregParamsInvalid: ${params.error}` };
     const input = {
-      id: endpoint.id,
+      id,
       params: params.params,
       ...(typeof parsed.flags["path"] === "string" ? { path: parsed.flags["path"] } : {}),
       ...(typeof parsed.flags["method"] === "string" ? { method: parsed.flags["method"] } : {}),
@@ -110,16 +112,31 @@ export const tregCommand: Command = {
     const shown = shownCommand(callArgs(input));
     const live = parsed.flags["live"] === true;
     const approvedBy = typeof parsed.flags["approvedBy"] === "string" ? parsed.flags["approvedBy"].trim() : "";
+    const answerOf = (run: { stdout: string }, endpointId: string, price: string) => {
+      const parsedAnswer = asJson(run.stdout);
+      const answer = typeof parsedAnswer === "string" ? parsedAnswer : trimAnswer(parsedAnswer, trimmed.trim);
+      return { code: 0, stdout: json ? JSON.stringify({ endpoint: endpointId, price, answer }, null, 2) : typeof answer === "string" ? answer.trim() : JSON.stringify(answer, null, 2) };
+    };
+    if (live && approvedBy) {
+      context.err(`treg: calling ${id} (approved by ${approvedBy}; its price is read at the same time)`);
+      const [got, run] = await Promise.all([client.get(id), client.call(input)]);
+      const endpoint = got.ok ? endpointOf(id, got.stdout) : null;
+      const price = endpoint ? (endpoint.free ? "free" : endpoint.price ?? "unknown") : "unknown (the price read failed)";
+      context.err(`treg: ${id} costs ${price}`);
+      if (!run.ok) return failed(sub, run);
+      return answerOf(run, endpoint?.id ?? id, price);
+    }
+    const got = await client.get(id);
+    if (!got.ok) return failed("get", got);
+    const endpoint = endpointOf(id, got.stdout);
     const price = endpoint.price ?? "unknown";
     if (!endpoint.free && !live) {
       return { code: 0, stdout: json ? JSON.stringify({ dryRun: true, endpoint: endpoint.id, price, command: shown }, null, 2) : `log treg call: dry run, nothing called or spent. ${endpoint.id} costs ${price}; with --live and --approvedBy it runs: ${shown}` };
     }
     if (!endpoint.free && !approvedBy) return { code: 1, stderr: `log treg call: notApproved: ${endpoint.id} costs ${price}, so it needs the name of who approved the spend (--approvedBy, rule 41)` };
-    context.err(`treg: calling ${endpoint.id} (${price}${endpoint.free ? "" : `, approved by ${approvedBy}`})`);
-    const run = await client.call(input);
+    context.err(`treg: calling ${endpoint.id} (${price})`);
+    const run = await client.call({ ...input, id: endpoint.id });
     if (!run.ok) return failed(sub, run);
-    const parsedAnswer = asJson(run.stdout);
-    const answer = typeof parsedAnswer === "string" ? parsedAnswer : trimAnswer(parsedAnswer, trimmed.trim);
-    return { code: 0, stdout: json ? JSON.stringify({ endpoint: endpoint.id, price, answer }, null, 2) : typeof answer === "string" ? answer.trim() : JSON.stringify(answer, null, 2) };
+    return answerOf(run, endpoint.id, price);
   },
 };
