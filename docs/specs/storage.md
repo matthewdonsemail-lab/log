@@ -89,3 +89,9 @@ Checked by: code and SubQ
 Each X queue is one document in `queues` (its JSON, its account and a version that rises with every save), keyed by its resolved path, so every command that names a queue by its file still finds it (`loadQueue`, `saveQueue`, through `readQueueBody` and `writeQueueBody`). What a run logs goes to `queueLog` (`queueLog`, `appendQueueLog`). The queue hook reads it with one cursor per Claude session (`queue:<session>`, `queueReader`) and shows the queue by its short name (`queueLabel`). Items added during a run are `queueIncoming` rows taken in one transaction. The run lock is a row in `queueLocks` that is taken over when its pid has died (`takeQueueLock`, `queueLockHolder`, `clearDeadQueueLockRows`), and a nudge is a row in `queueNudges`. A queue file already on disk is imported once with its `.log` and `.incoming.jsonl` (`importQueueFile`, `importQueueFiles`) and isn't read again. `queue build` refuses to overwrite a queue that is in the store or on disk.
 
 Checked by: code and SubQ
+
+### REQ-STORAGE-13: The MCP jobs live in log.db
+
+A long MCP call that comes back as a job is a row in `jobs` (its tool, arguments, account, pid, status, result and whether a cancel was asked for), and its progress lines are rows in `jobLines` numbered from 0. `startJob`, `appendProgress`, `finishJob`, `requestCancel`, `readJob`, `readProgress`, `listJobs` and `busyJob` read and write them in transactions (`src/mcp/jobs/client.ts`), replacing the `.json`, `.jsonl` and `.cancel` files in `~/.logCli/mcp/jobs`. A job whose pid is gone still reads as lost. The old files are imported once (`importJobFiles`), and a cancel file becomes `cancelRequested`.
+
+Checked by: code and SubQ

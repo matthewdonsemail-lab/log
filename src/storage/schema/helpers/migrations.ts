@@ -75,6 +75,13 @@ export const QUEUE_TABLES: readonly string[] = [
   'CREATE TABLE IF NOT EXISTS queueNudges (name TEXT PRIMARY KEY, replies INTEGER NOT NULL) WITHOUT ROWID',
 ]
 
+export const JOB_TABLES: readonly string[] = [
+  'CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, tool TEXT NOT NULL, argv TEXT NOT NULL, account TEXT, live INTEGER NOT NULL, pid INTEGER NOT NULL, startedAt TEXT NOT NULL, endedAt TEXT, status TEXT NOT NULL, cancelRequested INTEGER NOT NULL DEFAULT 0, result TEXT, text TEXT) WITHOUT ROWID',
+  'CREATE INDEX IF NOT EXISTS jobsByAccount ON jobs (account, status, startedAt)',
+  'CREATE INDEX IF NOT EXISTS jobsByStart ON jobs (startedAt)',
+  'CREATE TABLE IF NOT EXISTS jobLines (jobId TEXT NOT NULL, n INTEGER NOT NULL, at TEXT NOT NULL, source TEXT NOT NULL, line TEXT NOT NULL, PRIMARY KEY (jobId, n)) WITHOUT ROWID',
+]
+
 export const MIN_READER_VERSION = 1
 
 export const MIGRATIONS: readonly Migration[] = [
@@ -170,6 +177,13 @@ export const MIGRATIONS: readonly Migration[] = [
     name: 'queueTables',
     apply(handle) {
       for (const statement of QUEUE_TABLES) handle.exec(statement)
+    },
+  },
+  {
+    version: 13,
+    name: 'jobTables',
+    apply(handle) {
+      for (const statement of JOB_TABLES) handle.exec(statement)
     },
   },
 ]

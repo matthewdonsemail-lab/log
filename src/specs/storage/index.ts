@@ -23,6 +23,7 @@ const LEDGER = 'src/storage/ledger/client.ts'
 const QUEUE_STORE = 'src/twitter/queue/store/client.ts'
 const QUEUE_PLAN = 'src/twitter/queue/plan/client.ts'
 const QUEUE_EVENTS = 'src/twitter/queue/events/client.ts'
+const JOBS = 'src/mcp/jobs/client.ts'
 const DISCORD = 'src/cli/discord/index.ts'
 const SLACK = 'src/cli/slack/index.ts'
 const X_SEND = 'src/cli/twitter/helpers/send.ts'
@@ -31,7 +32,7 @@ const INSTAGRAM = 'src/cli/instagram/index.ts'
 export const storage = {
   description: 'One SQLite database: times as integer milliseconds, one stable key per message, and old rows filled in resumable batches',
   specPath: 'docs/specs/storage.md',
-  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM, LEDGER, QUEUE_STORE, QUEUE_PLAN, QUEUE_EVENTS],
+  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM, LEDGER, QUEUE_STORE, QUEUE_PLAN, QUEUE_EVENTS, JOBS],
   anchors: {
     'REQ-STORAGE-01': [
       { kind: 'symbol', file: TIME, name: 'msOf' },
@@ -133,6 +134,13 @@ export const storage = {
       { kind: 'symbol', file: QUEUE_EVENTS, name: 'queueReader' },
       { kind: 'uses', file: QUEUE_EVENTS, name: 'queueLogAfter' },
     ],
+    'REQ-STORAGE-13': [
+      { kind: 'string', file: MIGRATIONS, includes: 'CREATE TABLE IF NOT EXISTS jobs' },
+      { kind: 'string', file: MIGRATIONS, includes: 'CREATE TABLE IF NOT EXISTS jobLines' },
+      { kind: 'symbol', file: JOBS, name: 'importJobFiles' },
+      { kind: 'symbol', file: JOBS, name: 'appendProgress' },
+      { kind: 'symbol', file: JOBS, name: 'requestCancel' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -152,6 +160,7 @@ export const storage = {
     'REQ-STORAGE-10': noul('Does guardSend take the chat claim and then a send lease (claims.sendingOp) with its own operation id, refusing a second send into the same chat while the lease is live; does part check in one immediate transaction that the claim row has this holder, generation, an unexpired expiresAt and this sendingOp, renew it and record an intent action with the operation id, part number and text hash, returning lost when the check fails, movedOn on the first part when heardAfter finds a message in the chat after readUpTo, and alreadySent when echoedBefore finds an earlier unfinished intent with the same text whose ownMessage echo is in the chat; does partSent record a partSent action; does done clear the lease and release the claim; and do the discord, slack, X dm, X queue, instagram and voice note sends call part before sending and partSent after?'),
     'REQ-STORAGE-11': noul('Does saveConversationRows commit in groups of about CONVERSATION_BATCH_MESSAGES messages instead of one transaction; does importOldLedgers write in inBatches of BACKFILL_BATCH lines with the imports row marked importing and its line count updated in each batch, resuming after that count; does migration 3 move no data; does migrate open a file whose user_version is above SCHEMA_VERSION without changes unless minReaderVersionOf is above SCHEMA_VERSION, when it throws SchemaTooNewError; does migration 11 store MIN_READER_VERSION in meta; and does the owner relay call sweepUntyped on its recheck timer?'),
     'REQ-STORAGE-12': noul('Do loadQueue and saveQueue read and write the queue document in the queues table through readQueueBody and writeQueueBody, keyed by queueName (the resolved path), raising its version on every save; does queueLog append to queueLog; does newQueueEvents read queueLog rows after the session cursor queueReader and move it to the latest seq; are additions, the run lock and nudges rows in queueIncoming, queueLocks and queueNudges; and does importQueueFile import a queue file with its log and incoming lines once, recording it in imports?'),
+    'REQ-STORAGE-13': noul('Do startJob, appendProgress, finishJob, requestCancel, readJob, readProgress, listJobs and busyJob in src/mcp/jobs/client.ts read and write the jobs and jobLines tables (cancelRequested as a column, progress lines numbered per job) instead of files, does statusOf still read a running job with a dead pid as lost, and does importJobFiles import the old json, jsonl and cancel files once, recording it in imports?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -167,6 +176,7 @@ export const storage = {
     'REQ-STORAGE-10': MET,
     'REQ-STORAGE-11': MET,
     'REQ-STORAGE-12': MET,
+    'REQ-STORAGE-13': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

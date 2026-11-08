@@ -76,7 +76,7 @@ Checked by: code and SubQ
 
 ### REQ-QUEUE-11: The hook reads each queue's log since this session's last look
 
-The queue hook reads every queue's log from where this Claude session last read it, keeping offsets per session, so each session sees each event once.
+The queue hook reads every queue's log lines (`queueLog` in `log.db`) after this Claude session's own cursor (`queue:<session>`), so each session sees each event once.
 
 Checked by: code and SubQ
 
