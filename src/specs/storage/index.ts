@@ -19,6 +19,7 @@ const X_SESSION = 'src/twitter/account/session/client.ts'
 const WATCH = 'src/inbox/watch/client.ts'
 const RELAY = 'src/inbox/relay/client.ts'
 const CLAIMS = 'src/inbox/claims/client.ts'
+const LEDGER = 'src/storage/ledger/client.ts'
 const DISCORD = 'src/cli/discord/index.ts'
 const SLACK = 'src/cli/slack/index.ts'
 const X_SEND = 'src/cli/twitter/helpers/send.ts'
@@ -27,7 +28,7 @@ const INSTAGRAM = 'src/cli/instagram/index.ts'
 export const storage = {
   description: 'One SQLite database: times as integer milliseconds, one stable key per message, and old rows filled in resumable batches',
   specPath: 'docs/specs/storage.md',
-  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM],
+  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM, LEDGER],
   anchors: {
     'REQ-STORAGE-01': [
       { kind: 'symbol', file: TIME, name: 'msOf' },
@@ -110,6 +111,15 @@ export const storage = {
       { kind: 'uses', file: X_SEND, name: 'partSent' },
       { kind: 'uses', file: INSTAGRAM, name: 'partSent' },
     ],
+    'REQ-STORAGE-11': [
+      { kind: 'symbol', file: TYPED, name: 'CONVERSATION_BATCH_MESSAGES' },
+      { kind: 'symbol', file: BACKFILL, name: 'inBatches' },
+      { kind: 'uses', file: LEDGER, name: 'inBatches' },
+      { kind: 'symbol', file: MIGRATIONS, name: 'MIN_READER_VERSION' },
+      { kind: 'symbol', file: SCHEMA, name: 'minReaderVersionOf' },
+      { kind: 'symbol', file: BACKFILL, name: 'sweepUntyped' },
+      { kind: 'uses', file: RELAY, name: 'sweepUntyped' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -127,6 +137,7 @@ export const storage = {
     'REQ-STORAGE-08': noul('Does claimWatcher hold the generation it wins with holdFence; do appendEvent, recordPosition, openGap and markGap call checkFence inside their write transaction, which throws OwnerFencedError when the current call runs inside asOwner for that account and owners no longer names this pid with that generation, and does nothing outside asOwner; does ownOrAttach run its emitted events and its catch-up inside asOwner and stop writing after OwnerFencedError with one ownerFenced alert; does processAlive treat EPERM as alive; and does replaceHungOwners kill only after two stale readings STALE_CONFIRM_MS apart, and skip the kill with an ownerPidReused alert when sameProcess says the pid start time differs?'),
     'REQ-STORAGE-09': noul('Does migration 9 close extra open gaps into the oldest and create the partial unique index gapsOneOpen; does openGap raise drops on an open or catchingUp gap instead of inserting a second; does markGap close with expectDrops only where status is catchingUp and drops still matches, returning whether it changed; and does catchUpRunner reopen the gap when that close fails?'),
     'REQ-STORAGE-10': noul('Does guardSend take the chat claim and then a send lease (claims.sendingOp) with its own operation id, refusing a second send into the same chat while the lease is live; does part check in one immediate transaction that the claim row has this holder, generation, an unexpired expiresAt and this sendingOp, renew it and record an intent action with the operation id, part number and text hash, returning lost when the check fails, movedOn on the first part when heardAfter finds a message in the chat after readUpTo, and alreadySent when echoedBefore finds an earlier unfinished intent with the same text whose ownMessage echo is in the chat; does partSent record a partSent action; does done clear the lease and release the claim; and do the discord, slack, X dm, X queue, instagram and voice note sends call part before sending and partSent after?'),
+    'REQ-STORAGE-11': noul('Does saveConversationRows commit in groups of about CONVERSATION_BATCH_MESSAGES messages instead of one transaction; does importOldLedgers write in inBatches of BACKFILL_BATCH lines with the imports row marked importing and its line count updated in each batch, resuming after that count; does migration 3 move no data; does migrate open a file whose user_version is above SCHEMA_VERSION without changes unless minReaderVersionOf is above SCHEMA_VERSION, when it throws SchemaTooNewError; does migration 11 store MIN_READER_VERSION in meta; and does the owner relay call sweepUntyped on its recheck timer?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -140,6 +151,7 @@ export const storage = {
     'REQ-STORAGE-08': MET,
     'REQ-STORAGE-09': MET,
     'REQ-STORAGE-10': MET,
+    'REQ-STORAGE-11': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

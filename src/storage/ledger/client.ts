@@ -4,6 +4,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, useDatabase } from '../schema/client'
 import { msOf } from '../platform/helpers/time'
+import { BACKFILL_BATCH, inBatches } from '../schema/helpers/backfill'
 import { fromOldLine } from './helpers'
 import { OLD_LEDGER_FILES } from './types'
 import type { LedgerEntry, LedgerFilter, LedgerKind, LedgerRow } from './types'
@@ -57,12 +58,15 @@ export function importOldLedgers(handle: Database, env: Record<string, string | 
   const done: { store: string; rows: number }[] = []
   const now = new Date().toISOString()
   for (const file of OLD_LEDGER_FILES) {
-    const already = handle.prepare('SELECT state FROM imports WHERE store = ?').get(file.store) as { state: string } | null
+    const already = handle.prepare('SELECT state, rows FROM imports WHERE store = ?').get(file.store) as { state: string; rows: number } | null
     if (already?.state === 'done') continue
     const path = env[file.env]?.trim() || join(home, '.logCli', ...file.homePath)
+    const lines = existsSync(path) ? readFileSync(path, 'utf8').split(/\r?\n/) : []
+    const resumeAt = already?.state === 'importing' ? already.rows : 0
+    const mark = handle.prepare("INSERT INTO imports (store, state, files, rows, detail, startedAt, endedAt) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = excluded.state, files = excluded.files, rows = excluded.rows, detail = excluded.detail, endedAt = excluded.endedAt")
     let rows = 0
-    if (existsSync(path)) {
-      for (const line of readFileSync(path, 'utf8').split(/\r?\n/)) {
+    inBatches(handle, lines.slice(resumeAt), BACKFILL_BATCH, (batch, offset) => {
+      for (const line of batch) {
         if (!line.trim()) continue
         try {
           const entry = fromOldLine(file.store, JSON.parse(line) as Record<string, unknown>)
@@ -72,8 +76,9 @@ export function importOldLedgers(handle: Database, env: Record<string, string | 
           }
         } catch {}
       }
-    }
-    handle.prepare("INSERT INTO imports (store, state, files, rows, detail, startedAt, endedAt) VALUES (?, 'done', ?, ?, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = 'done', files = excluded.files, rows = excluded.rows, detail = excluded.detail, endedAt = excluded.endedAt").run(file.store, existsSync(path) ? 1 : 0, rows, path, now, now)
+      mark.run(file.store, 'importing', 1, resumeAt + offset + batch.length, path, now, null)
+    })
+    mark.run(file.store, 'done', existsSync(path) ? 1 : 0, lines.length, path, now, new Date().toISOString())
     done.push({ store: file.store, rows })
   }
   return done

@@ -2,7 +2,6 @@ import type { Database } from 'bun:sqlite'
 import type { Migration } from '../types'
 import { INBOX_TABLES } from './inbox'
 import { PLATFORM_TABLES } from './platformTables'
-import { typeStoredEvents } from '../../platform/client'
 
 function hasColumn(handle: Database, table: string, column: string): boolean {
   return (handle.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).some((c) => c.name === column)
@@ -66,6 +65,8 @@ export const SEND_COLUMNS: readonly (readonly [string, string, string])[] = [
   ['claims', 'sendingSince', 'TEXT'],
 ]
 
+export const MIN_READER_VERSION = 1
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -85,8 +86,8 @@ export const MIGRATIONS: readonly Migration[] = [
   {
     version: 3,
     name: 'typeStoredEvents',
-    apply(handle) {
-      typeStoredEvents(handle)
+    apply() {
+      return
     },
   },
   {
@@ -144,6 +145,14 @@ export const MIGRATIONS: readonly Migration[] = [
     apply(handle) {
       for (const [table, column, type] of SEND_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
       handle.exec('CREATE INDEX IF NOT EXISTS actionsByChat ON actions (platform, account, conversationId, id)')
+    },
+  },
+  {
+    version: 11,
+    name: 'readerVersion',
+    apply(handle) {
+      handle.exec('CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID')
+      handle.prepare("INSERT INTO meta (key, value) VALUES ('minReaderVersion', ?) ON CONFLICT(key) DO UPDATE SET value = MAX(CAST(meta.value AS INTEGER), CAST(excluded.value AS INTEGER))").run(String(MIN_READER_VERSION))
     },
   },
 ]

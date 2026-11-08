@@ -7,6 +7,27 @@ import { contextOn, eventInputOf, insertEventRow, typedRowsOf, writeTypedRows } 
 
 export const BACKFILL_BATCH = 1000
 
+export function inBatches<T>(handle: Database, items: readonly T[], size: number, work: (batch: readonly T[], offset: number) => void): number {
+  if (handle.inTransaction) {
+    work(items, 0)
+    return 1
+  }
+  let batches = 0
+  for (let offset = 0; offset < items.length; offset += size) {
+    const slice = items.slice(offset, offset + size)
+    handle.exec('BEGIN IMMEDIATE')
+    try {
+      work(slice, offset)
+      handle.exec('COMMIT')
+    } catch (error) {
+      handle.exec('ROLLBACK')
+      throw error
+    }
+    batches++
+  }
+  return batches
+}
+
 export interface BackfillStep {
   name: string
   once?: boolean
@@ -250,6 +271,14 @@ function producedTexts(handle: Database): Map<string, string> {
   const texts = new Map<string, string>()
   eachMessageEvent(handle, (key, text) => texts.set(key, text))
   return texts
+}
+
+export const SWEEP_LIMIT = 200
+
+export function sweepUntyped(handle: Database, limit = SWEEP_LIMIT): number {
+  const step = BACKFILL_STEPS.find((s) => s.name === 'untypedEvents')
+  if (!step || handle.inTransaction) return 0
+  return batch(handle, () => step.run(handle, limit, new Set()))
 }
 
 export function runBackfill(handle: Database, steps: readonly BackfillStep[] = BACKFILL_STEPS, size = BACKFILL_BATCH): Record<string, number> {

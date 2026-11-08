@@ -8,8 +8,8 @@ export interface Migration {
 
 export class SchemaTooNewError extends Error {
   readonly code = 'schemaTooNew'
-  constructor(readonly found: number, readonly expected: number) {
-    super(`log.db is at schema version ${found}, newer than this code's ${expected}: update log before opening it, nothing was changed (schemaTooNew)`)
+  constructor(readonly found: number, readonly expected: number, readonly needs: number = found) {
+    super(`log.db is at schema version ${found} and needs code that reads version ${needs} or later, newer than this code's ${expected}: update log before opening it, nothing was changed (schemaTooNew)`)
   }
 }
 

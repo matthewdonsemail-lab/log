@@ -1,3 +1,4 @@
+import { sweepUntyped } from '../../storage/schema/helpers/backfill'
 import { createConnection, createServer } from 'node:net'
 import type { AddressInfo, Socket } from 'node:net'
 import { createHash, randomBytes } from 'node:crypto'
@@ -147,7 +148,12 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
   })
   let fenced = false
   void catchUpAsOwner()
-  const recheck = setInterval(() => void catchUpAsOwner(), RECHECK_GAP_MS)
+  const recheck = setInterval(() => {
+    void catchUpAsOwner()
+    try {
+      sweepUntyped(db())
+    } catch {}
+  }, RECHECK_GAP_MS)
   try {
     const result = await options.run((event) => {
       if (fenced) return

@@ -11,9 +11,20 @@ export function schemaVersionOf(handle: Database): number {
   return (handle.prepare('PRAGMA user_version').get() as { user_version: number }).user_version
 }
 
+export function minReaderVersionOf(handle: Database): number {
+  const table = handle.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'meta'").get()
+  if (!table) return schemaVersionOf(handle)
+  const row = handle.prepare("SELECT value FROM meta WHERE key = 'minReaderVersion'").get() as { value: string } | null
+  return row ? Number(row.value) : 1
+}
+
 export function migrate(handle: Database, now: Date = new Date()): AppliedMigration[] {
   const found = schemaVersionOf(handle)
-  if (found > SCHEMA_VERSION) throw new SchemaTooNewError(found, SCHEMA_VERSION)
+  if (found > SCHEMA_VERSION) {
+    const needs = minReaderVersionOf(handle)
+    if (needs > SCHEMA_VERSION) throw new SchemaTooNewError(found, SCHEMA_VERSION, needs)
+    return []
+  }
   const applied: AppliedMigration[] = []
   for (const migration of MIGRATIONS) {
     if (migration.version <= found) continue

@@ -309,31 +309,6 @@ export function verifyDerived(handle: Database, prepare: (copy: Database) => voi
   }
 }
 
-export function typeStoredEvents(handle: Database, now: Date = new Date()): { events: number; messages: number; interactions: number; identities: number } {
-  const before = countsOf(handle)
-  const rows = handle.prepare('SELECT eventId, platform, account, conversationId, type, withWho, text, box, payload, sourceAt, receivedAt, source FROM events ORDER BY seq').all() as EventRow[]
-  const context = contextOn(handle)
-  for (const row of rows) {
-    const event = eventInputOf(row)
-    writeTypedRows(handle, event, typedRowsOf(event, context))
-  }
-  const after = countsOf(handle)
-  handle.prepare("INSERT INTO imports (store, state, files, rows, startedAt, endedAt) VALUES ('events', 'done', 0, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = 'done', rows = excluded.rows, endedAt = excluded.endedAt").run(rows.length, now.toISOString(), new Date().toISOString())
-  return { events: rows.length, messages: after.messages - before.messages, interactions: after.interactions - before.interactions, identities: after.identities - before.identities }
-}
-
-export function typeAllEvents(handle: Database, now: Date = new Date()): { events: number; messages: number; interactions: number; identities: number } {
-  handle.exec('BEGIN IMMEDIATE')
-  try {
-    const result = typeStoredEvents(handle, now)
-    handle.exec('COMMIT')
-    return result
-  } catch (error) {
-    handle.exec('ROLLBACK')
-    throw error
-  }
-}
-
 export function countsOf(handle: Database): { messages: number; interactions: number; identities: number; chats: number } {
   const n = (table: string) => (handle.prepare(`SELECT COUNT(*) AS n FROM ${table}`).get() as { n: number }).n
   return { messages: n('messages'), interactions: n('interactions'), identities: n('identities'), chats: n('chats') }
@@ -361,17 +336,41 @@ export function messagesFromIdentity(handle: Database, platform: string, userId:
   return rows.map((r) => ({ ...r, fromOwner: r.fromOwner === 1 }))
 }
 
+export const CONVERSATION_BATCH_MESSAGES = 1000
+
 export function saveConversationRows(handle: Database, conversations: readonly StoredConversation[]): number {
-  handle.exec('BEGIN IMMEDIATE')
-  try {
-    let written = 0
-    for (const c of conversations) written += writeConversation(handle, c, (h, input) => insertEventRow(h, input), (h, key) => (h.prepare('SELECT text FROM messages WHERE messageKey = ?').get(key) as { text: string } | null)?.text ?? null)
-    handle.exec('COMMIT')
-    return written
-  } catch (error) {
-    handle.exec('ROLLBACK')
-    throw error
+  const groups: StoredConversation[][] = []
+  let current: StoredConversation[] = []
+  let size = 0
+  for (const c of conversations) {
+    current.push(c)
+    size += c.messages.length + 1
+    if (size >= CONVERSATION_BATCH_MESSAGES) {
+      groups.push(current)
+      current = []
+      size = 0
+    }
   }
+  if (current.length) groups.push(current)
+  let written = 0
+  const write = (group: readonly StoredConversation[]) => {
+    for (const c of group) written += writeConversation(handle, c, (h, input) => insertEventRow(h, input), (h, key) => (h.prepare('SELECT text FROM messages WHERE messageKey = ?').get(key) as { text: string } | null)?.text ?? null)
+  }
+  if (handle.inTransaction) {
+    for (const group of groups) write(group)
+    return written
+  }
+  for (const group of groups) {
+    handle.exec('BEGIN IMMEDIATE')
+    try {
+      write(group)
+      handle.exec('COMMIT')
+    } catch (error) {
+      handle.exec('ROLLBACK')
+      throw error
+    }
+  }
+  return written
 }
 
 export function loadConversationRows(handle: Database, account?: string): StoredConversation[] {
