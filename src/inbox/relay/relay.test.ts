@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { attachRelay, openRelay, ownOrAttach, readSession, replaceHungOwners, sessionLive } from "./index.ts";
+import { attachRelay, networkFailure, notThePlatform, openRelay, ownOrAttach, readSession, replaceHungOwners, sessionLive } from "./index.ts";
 import { db } from "../store/index.ts";
 import { takeAlerts } from "../watch/index.ts";
 
@@ -78,5 +78,33 @@ describe("one owner, every subscriber attached (rule 132)", () => {
     db().prepare("INSERT OR REPLACE INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status) VALUES ('instagram', 'acct', ?, 'h', ?, ?, 'streaming')").run(process.ppid, fresh, fresh);
     const lost = await ownOrAttach("instagram", "acct", { inbox: true, onAttached: () => {}, run: async () => 0 });
     expect("refused" in lost && lost.refused).toContain(`pid ${process.ppid} already owns`);
+  });
+});
+
+describe("a catch-up's failure", () => {
+  test("a network failure is tried again, never a refusal", () => {
+    expect(networkFailure("reading the inbox: DNSError: Failed to perform, curl: (6) Could not resolve host: api.x.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.")).toBe(true);
+    expect(networkFailure("reading the inbox: Timeout: curl private transport failed (Timeout)")).toBe(true);
+    expect(networkFailure("reading 123: ConnectionError: Connection reset by peer")).toBe(true);
+  });
+
+  test("the platform refusing stays a refusal", () => {
+    expect(networkFailure("reading the inbox: 429: Too Many Requests")).toBe(false);
+    expect(networkFailure("reading the inbox: 226: this request looks like it might be automated")).toBe(false);
+    expect(networkFailure("reading the inbox: governorBlocked: daily cap reached (500/day)")).toBe(false);
+    expect(networkFailure("reading the inbox: 344 timeout after the daily limit")).toBe(false);
+  });
+});
+
+describe("who stopped a catch-up", () => {
+  test("a network failure or our own crash isn't the platform refusing", () => {
+    expect(notThePlatform("DNSError: Failed to perform, curl: (6) Could not resolve host: api.x.com.")).toBe(true);
+    expect(notThePlatform("xSessionHostError: name 'XCHAT_MEDIA_PART_BYTES' is not defined")).toBe(true);
+  });
+
+  test("the platform's own refusal stays a refusal", () => {
+    expect(notThePlatform("429: Too Many Requests")).toBe(false);
+    expect(notThePlatform("226: this request looks like it might be automated")).toBe(false);
+    expect(notThePlatform(null)).toBe(false);
   });
 });

@@ -20,6 +20,17 @@ export function isResponse(message: RpcMessage): message is RpcMessage & { id: R
   return message.method === undefined && message.id !== undefined && message.id !== null;
 }
 
+export function cancelledId(message: RpcMessage): RpcId | null {
+  if (message.method !== "notifications/cancelled") return null;
+  const id = (message.params as { requestId?: RpcId } | undefined)?.requestId;
+  return id === undefined || id === null ? null : id;
+}
+
+export function callName(message: RpcMessage): string {
+  const tool = (message.params as { name?: unknown } | undefined)?.name;
+  return message.method === "tools/call" && typeof tool === "string" ? tool : String(message.method);
+}
+
 export function idKey(id: RpcId): string {
   return `${typeof id}:${String(id)}`;
 }

@@ -44,7 +44,7 @@ try {
       problems.push(`${hook.script} (${hook.event}) doesn't exist`);
       continue;
     }
-    const run = spawnSync("bun", [script], { input: JSON.stringify(samples[hook.event]), encoding: "utf8", timeout: hook.timeout * 1000, env: { ...process.env, LOG_HOOK_MEMORY: join(scratch, "memory.json"), LOG_INBOX_STATE: join(scratch, "inbox"), LOG_INBOX_POLL: "off" } });
+    const run = spawnSync("bun", [script], { windowsHide: true, input: JSON.stringify(samples[hook.event]), encoding: "utf8", timeout: hook.timeout * 1000, env: { ...process.env, LOG_HOOK_MEMORY: join(scratch, "memory.json"), LOG_INBOX_STATE: join(scratch, "inbox"), LOG_INBOX_POLL: "off" } });
     const out = (run.stdout ?? "").trim();
     if (run.status === 2 && (hook.event === "PreToolUse" || hook.event === "Stop") && run.stderr.trim()) continue;
     if (run.status !== 0) {
@@ -61,15 +61,13 @@ try {
   }
   const liveLogs = AGENT_HOOKS.find((h) => h.event === "PreToolUse" && (h.matcher ?? "").includes("Bash"));
   if (liveLogs) {
-    const run = spawnSync("bun", [join(root, liveLogs.script)], { input: JSON.stringify(samples.PreToolUse), encoding: "utf8" });
+    const run = spawnSync("bun", [join(root, liveLogs.script)], { windowsHide: true, input: JSON.stringify(samples.PreToolUse), encoding: "utf8" });
     if (run.status !== 2) problems.push(`${liveLogs.script} let a log run piped through tail through (exit ${run.status}): it must refuse it (rule 26)`);
   }
 } finally {
   try {
-    rmSync(scratch, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
-  } catch (error) {
-    console.error(`check:agentHooks: left ${scratch} in the temp folder, Windows still held a file in it (${(error as { code?: string }).code ?? error})`);
-  }
+    rmSync(scratch, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  } catch {}
 }
 
 const commandNames = new Set(COMMANDS.map((c) => c.name));

@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, posix, relative, resolve } from "node:path";
@@ -39,7 +40,11 @@ function place(rel, slug) {
   placed.set(rel, slug);
 }
 
-const all = listDocs(docsDir);
+const tracked = (() => {
+  const run = spawnSync("git", ["ls-files", "-z", "--", "docs"], { windowsHide: true, cwd: join(docsDir, ".."), encoding: "utf8" });
+  return run.status === 0 ? new Set(run.stdout.split("\0").filter(Boolean).map((f) => toPosix(f).replace(/^docs\//, ""))) : null;
+})();
+const all = listDocs(docsDir).filter((rel) => !tracked || tracked.has(rel));
 if (site.front) place(site.front, "index");
 
 for (const tab of site.tabs) {

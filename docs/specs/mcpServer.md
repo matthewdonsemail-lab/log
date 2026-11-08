@@ -58,9 +58,9 @@ Every tool the server lists carries `anthropic/maxResultSizeChars` in its `_meta
 
 Checked by: code and SubQ
 
-### REQ-MCP-09: The pre-commit review asks SubQ whether the use cases are stale
+### REQ-MCP-09: The use-case review asks SubQ whether the use cases are stale, when run
 
-On pre-commit, `check:useCases` reads the latest Claude Code session for the repo (matt's asks and the tools called) and asks SubQ, for every use case page, whether it is still current, stale or should move, and whether the session did repeatable work no page covers. A stale or misplaced page, or uncovered work, stops the commit unless that page, or a new page, is staged. A commit that stages only the landing site (`site/`) and the commit log (`log.md`, `log/<date>.md`) isn't reviewed (`siteOnly`): site work is never a use case (matt, 2026-11-06).
+Run by hand (`bun run check:useCases`), never in a commit, push or CI (rule 170), `check:useCases` reads the latest Claude Code session for the repo (matt's asks and the tools called) and asks SubQ, for every use case page, whether it is still current, stale or should move, and whether the session did repeatable work no page covers. A stale or misplaced page, or uncovered work, stops the commit unless that page, or a new page, is staged. A commit that stages only the landing site (`site/`) and the commit log (`log.md`, `log/<date>.md`) isn't reviewed (`siteOnly`): site work is never a use case (matt, 2026-11-06).
 
 Checked by: code and SubQ
 
@@ -121,6 +121,8 @@ Checked by: code and SubQ
 - otherwise gives a `menu` of the `MATCHES_SHOWN` closest at or above `DEFAULT_MENU_FLOOR`.
 
 `playMatchText` writes `>>> PLAY MATCH` for matches, `>>> MAYBE A PLAY` for a menu, and nothing for neither. On SessionStart, `hookAnswer` reads the session's transcript with `sessionPlayOf` and returns `playReminder` for the last play it loaded. `scripts/useCases/benchRouter.ts` scores the router 5-fold on `~/.logCli/contextLayer/labelledPrompts.json`, kept on matt's machine and never committed because the repo is public and reports plays caught, wrong fires on "none", the right play in the top 3 and p50/p95/p99; with `--fit` it writes the threshold that catches the most plays under `FALSE_FIRE_CAP`. matt, 2026-11-07. Rule 159.
+
+The service moves itself onto new code: every `CODE_CHECK_MS` (30 s) it compares log's code stamp (`codeStamp`, and the newest file under `scripts/`) with the one it started on. Once it is newer and no hook request is in flight (`inFlight`), it stops listening, forgets its record (`forgetService`), starts a fresh service with `startService` and exits, so a hook never runs old code for long.
 
 Checked by: code and SubQ
 

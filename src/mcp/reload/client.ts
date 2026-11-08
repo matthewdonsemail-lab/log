@@ -6,7 +6,7 @@ import { createInterface } from "node:readline";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
 import { codeStampWatcher } from "../freshness/index.ts";
 import { listJobs, statusOf } from "../jobs/index.ts";
-import { idKey, initialized, isRequest, isResponse, parseMessage, replayedInitialize, restartedMidCall, toolsChanged } from "./helpers/index.ts";
+import { callName, cancelledId, idKey, initialized, isRequest, isResponse, parseMessage, replayedInitialize, restartedMidCall, toolsChanged } from "./helpers/index.ts";
 import { CHECK_EVERY_MS, CRASH_WINDOW_MS, INIT_TIMEOUT_MS, MAX_CRASHES } from "./types.ts";
 import type { ChildEvents, ReloadChild, ReloadDeps, ReloadState, RpcId, RpcMessage } from "./types.ts";
 
@@ -28,7 +28,7 @@ export class ReloadProxy {
   private swap: Swap | null = null;
   private generation = 0;
   private initialize: RpcMessage | null = null;
-  private pending = new Map<string, RpcId>();
+  private pending = new Map<string, { id: RpcId; what: string; since: number }>();
   private queue: string[] = [];
   private crashes: number[] = [];
   private killed = new Set<number>();
@@ -76,7 +76,13 @@ export class ReloadProxy {
       this.reload("the code changed");
       return;
     }
-    if (message && isRequest(message)) this.pending.set(idKey(message.id), message.id);
+    if (message && isRequest(message)) this.pending.set(idKey(message.id), { id: message.id, what: callName(message), since: this.deps.now() });
+    const cancelled = message ? cancelledId(message) : null;
+    const dropped = cancelled === null ? undefined : this.pending.get(idKey(cancelled));
+    if (cancelled !== null && dropped) {
+      this.pending.delete(idKey(cancelled));
+      this.deps.log(`✕ the client cancelled ${dropped.what} after ${Math.round((this.deps.now() - dropped.since) / 1000)} s: the server runs it to its end and keeps its answer as a job, and no reload waits on it`);
+    }
     this.current.child.write(line);
   }
 
@@ -100,7 +106,7 @@ export class ReloadProxy {
     }
     if (!this.current || generation !== this.current.generation) return;
     const why = `it exited with ${code}`;
-    for (const id of this.pending.values()) this.deps.toClient(restartedMidCall(id, why));
+    for (const { id } of this.pending.values()) this.deps.toClient(restartedMidCall(id, why));
     this.pending.clear();
     const now = this.deps.now();
     this.crashes = [...this.crashes.filter((at) => now - at < CRASH_WINDOW_MS), now];
@@ -120,7 +126,9 @@ export class ReloadProxy {
     if (!this.current || this.swap || !this.initialize) return false;
     const stamp = this.deps.stamp();
     if (stamp <= this.current.stamp || stamp === this.failedStamp) return false;
-    const busy = [...(this.pending.size ? [`${this.pending.size} call(s) in flight`] : []), ...this.deps.jobsRunning(this.current.child.pid)];
+    const now = this.deps.now();
+    const calls = [...this.pending.values()].map((p) => `${p.what} for ${Math.round((now - p.since) / 1000)} s`);
+    const busy = [...(calls.length ? [`${calls.length} call(s) in flight: ${calls.join(", ")}`] : []), ...this.deps.jobsRunning(this.current.child.pid)];
     this.state.waitingOn = busy.length ? busy.join(", ") : null;
     if (busy.length) this.save();
     return busy.length === 0;

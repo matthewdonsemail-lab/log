@@ -13,6 +13,6 @@ function python(): string {
 }
 
 const mode = process.argv[2] ?? "--check";
-const run = spawnSync(python(), [join(root, "python", "checks", "twikitTransport.py"), mode], { encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
+const run = spawnSync(python(), [join(root, "python", "checks", "twikitTransport.py"), mode], { windowsHide: true, encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
 if (run.status !== 0) console.error("twikitTransport: vendor/twikit must reach the network only through curl_cffi (rule 81). See the touchpoints above; `bun scripts/checks/checkTwikitTransport.ts --map` lists them all.");
 process.exit(run.status ?? 1);

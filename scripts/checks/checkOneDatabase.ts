@@ -14,6 +14,7 @@ const WHY: Record<Kind, string> = {
 }
 
 const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
+  'src/directApi/governor/client.ts': { writes: 1, kind: 'session' },
   'scripts/checks/checkAgentHooks.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkBrowserParity.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkNoComments.ts': { writes: 1, kind: 'repo' },
@@ -73,7 +74,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
 
 const WRITE = /appendFileSync\(|writeFileSync\(/g
 
-const files = spawnSync('git', ['ls-files', 'src/**/*.ts', 'scripts/**/*.ts', 'scripts/**/*.mjs', 'bin/*.ts'], { encoding: 'utf8' }).stdout.split(/\r?\n/).filter((f) => f && !f.endsWith('.test.ts'))
+const files = spawnSync('git', ['ls-files', 'src/**/*.ts', 'scripts/**/*.ts', 'scripts/**/*.mjs', 'bin/*.ts'], { windowsHide: true, encoding: 'utf8' }).stdout.split(/\r?\n/).filter((f) => f && !f.endsWith('.test.ts'))
 const problems: string[] = []
 const looser: string[] = []
 for (const file of files) {

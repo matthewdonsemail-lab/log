@@ -1,4 +1,4 @@
-export type LedgerKind = 'providerAnswer' | 'proxyTraffic' | 'launchReset' | 'captchaAttempt'
+export type LedgerKind = 'providerAnswer' | 'proxyTraffic' | 'launchReset' | 'captchaAttempt' | 'governorReset'
 
 export interface LedgerEntry {
   kind: LedgerKind
@@ -36,4 +36,5 @@ export const OLD_LEDGER_FILES: readonly OldLedgerFile[] = [
   { store: 'proxyTraffic', env: 'LOG_PROXY_TRAFFIC', homePath: ['proxyTraffic.jsonl'] },
   { store: 'launchResets', env: 'LOG_LAUNCH_RESETS', homePath: ['launchResets.jsonl'] },
   { store: 'captchaAttempts', env: 'LOG_CAPTCHA_LEDGER', homePath: ['captcha', 'attempts.jsonl'] },
+  { store: 'governorResets', env: 'LOG_GOVERNOR_RESETS', homePath: ['governorResets.jsonl'] },
 ]

@@ -6,7 +6,8 @@ import { subqKey } from "../../src/subq/decisions/index.ts";
 const root = join(import.meta.dir, "..", "..");
 const say = (line: string) => console.log(`specs: ${line}`);
 const heal = process.argv.includes("--heal");
-const args = process.argv.slice(2).filter((a) => a !== "--heal");
+const askSubq = process.argv.includes("--subq");
+const args = process.argv.slice(2).filter((a) => a !== "--heal" && a !== "--subq");
 
 const unpaired = unpairedSpecs(root);
 if (unpaired.length) {
@@ -26,11 +27,8 @@ if (anchorProblems) {
   process.exit(1);
 }
 
-const live = Boolean(subqKey());
-if (!live && !process.env.CI) say("no SUBQ_API_KEY on this machine, so only the wiring is checked (a dry run); CI runs the full check");
-if (!live && process.env.CI) {
-  say("SUBQ_API_KEY is not set in CI: add it as a repository secret, the spec gate never passes without checking");
-  process.exit(2);
-}
-const run = spawnSync(process.execPath, ["node_modules/jev-spec/bin/jev-spec.js", "check", "-c", "jevSpec.config.ts", ...args, ...(live ? [] : ["--dry-run"])], { cwd: root, stdio: "inherit" });
+const live = askSubq && Boolean(subqKey());
+if (!askSubq) say("anchors proved; SubQ isn't asked in commits, pushes or CI (rule 170): run `bun run check:specs --subq` to ask it");
+else if (!live) say("--subq asked for SubQ, but there is no SUBQ_API_KEY on this machine, so only the wiring is checked (a dry run)");
+const run = spawnSync(process.execPath, ["node_modules/jev-spec/bin/jev-spec.js", "check", "-c", "jevSpec.config.ts", ...args, ...(live ? [] : ["--dry-run"])], { windowsHide: true, cwd: root, stdio: "inherit" });
 process.exit(run.status ?? 2);

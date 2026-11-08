@@ -2612,6 +2612,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
     proxy. Spec: `docs/specs/mcpReload.md`.
 
+168. 2026-11-08 · matt: "Reset the governor on X back to 0 confirm it's in
+    the db", then "make that a use case and a guide and part of the mcp
+    aswell to reset the platforms count to 0". Every platform account's
+    governor count (its requests, writes and this hour's requests) is read
+    with `log governor show` and put back to 0 with `log governor reset
+    --platform <p> --account <a|all> --by matt [--reason]` (MCP
+    `governorShow`, `governorReset`), only when matt says so. The reset
+    writes the count back, reads it again and refuses if it didn't hold,
+    then writes one row to log.db's `ledger` (kind `governorReset`: the
+    platform, the account, who said it, the count before), which the answer
+    and `governor show` name. A cooldown after a block is kept (rule 94),
+    and the platform's own answer still decides (rule 73). The resets made
+    by hand before this (`governorResets.jsonl`) are imported into the
+    ledger once. `governor_state.json` is never edited by hand.
+    `src/directApi/governor`, `src/cli/governor`, the `governor` skill and
+    guide, `docs/useCases/inbox/governorReset.md`. Spec:
+    `docs/specs/governor.md`.
+
 169. 2026-11-08 · matt: "Implement the correct systems ... that achieve what
     we want", after a SubQ matrix over 17 GitHub systems that let a model
     understand media (openclaw first overall, screenpipe for the store and
@@ -2646,9 +2664,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
       line with a preview ends `(picture: media view <id>)`.
     Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-09 to 12).
 
+170. 2026-11-08 · matt: "the subq process takes us too long and adds no
+    value, remove that". SubQ is out of every commit, push and CI run:
+    - `check:specs` still proves every spec's anchors by the syntax tree
+      and checks its wiring (a dry run), but asks SubQ nothing unless it is
+      run by hand with `--subq`.
+    - `check:useCases` is no longer in lefthook's pre-commit. It runs only
+      by hand.
+    - CI no longer needs `SUBQ_API_KEY`.
+    New rules still go into their domain's spec, with anchors and questions
+    (rule 117). Only the SubQ reading moved out of the gates. This replaces
+    rule 117's gate on SubQ and rule 95's pre-commit review.
+
 ## Checks
 
-- Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
+- Run `bun run check` before pushing: no comments (rule 70), naming gate, the specs' anchors (rules 117, 170), `tsc --noEmit`, `bun test`.
 - Naming: `docs/namingConventions.md`. camelCase everywhere, never kebab-case,
   `{library}/{domain}/` with `index.ts`, `types.ts`, `client.ts`, `machine.ts`,
   `helpers/`.

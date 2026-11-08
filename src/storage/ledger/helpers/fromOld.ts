@@ -17,6 +17,11 @@ export function fromOldLine(store: string, old: Old): LedgerEntry | null {
   if (store === 'launchResets') {
     return { kind: 'launchReset', at, account: str(old.account), outcome: 'reset', detail: str(old.reason) }
   }
+  if (store === 'governorResets') {
+    const account = str(old.account)
+    const [platform, name] = account && account.includes(' ') ? account.split(' ', 2) : ['twitter', account]
+    return { kind: 'governorReset', at, platform, account: name, subject: str(old.by), amount: typeof old.dayCountBefore === 'number' ? old.dayCountBefore : null, unit: 'requests', outcome: 'reset', detail: str(old.reason) ?? str(old.what) ?? str(old.said) }
+  }
   if (store === 'captchaAttempts') {
     return { kind: 'captchaAttempt', at, account: str(old.accountId), provider: str(old.solver), subject: str(old.kind), amount: old.accepted === true ? 1 : old.accepted === false ? 0 : null, outcome: old.solved ? 'solved' : 'unsolved', code: str(old.code), detail: str(old.detail) }
   }

@@ -16,6 +16,11 @@ describe('a read for one chat answers from the .db whenever the .db is current',
     expect(source.from === 'refused' && source.refused).toContain('rule 94')
   })
 
+  test('a gap a network failure stopped is no refusal: it is caught up, not refused (rule 118)', async () => {
+    const source = await readSourceFor('twitter', 'a', 'c1', 50, 20, deps({ behind: () => ({ status: 'refused', fromAt: '2026-11-07T20:25:53Z', detail: 'DNSError: Failed to perform, curl: (6) Could not resolve host: api.x.com.' }) }))
+    expect(source.from).not.toBe('refused')
+  })
+
   test('an owner still catching up never makes a read wait: the one chat is read from the platform at once', async () => {
     const started = Date.now()
     expect(await readSourceFor('discord', 'a', 'c1', 50, 20, deps({ behind: () => ({ status: 'catchingUp', fromAt: '2026-11-07T11:29:20Z' }), backfilledAt: () => '2026-11-07T00:00:00Z' }))).toEqual({ from: 'platform', reason: 'catchingUp' })

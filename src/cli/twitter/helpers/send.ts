@@ -147,7 +147,7 @@ export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">
       answers.push({ ok: true, event: "sent" } as TwitterSessionAnswer);
       continue;
     }
-    last = await engine({ ...spec, text: part, ...(i && spec.media ? { media: undefined } : {}) });
+    last = await engine({ ...spec, text: part, ...(i && spec.media ? { media: undefined } : {}), ...(i ? { continuesSend: true } : {}) });
     answers.push(last.answer);
     if (!last.answer.ok || last.answer.event !== "sent") break;
     guard?.partSent(i, part, last.answer.messageId ? String(last.answer.messageId) : null);

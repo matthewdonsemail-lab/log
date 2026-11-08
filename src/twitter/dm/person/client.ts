@@ -25,6 +25,8 @@ export function isMirror(a: MirrorMessage, b: MirrorMessage, seconds = MIRROR_SE
   return Math.abs(Date.parse(at) - Date.parse(bt)) <= seconds * 1000
 }
 
+const myReaction = (t: Pick<TwitterDmThread, 'lastFromMe' | 'lastText'>): boolean => t.lastFromMe && /^\(reacted/.test(t.lastText ?? '')
+
 export function mergeThreads(threads: readonly TwitterDmThread[]): TwitterDmThread[] {
   const byPerson = new Map<string, TwitterDmThread[]>()
   for (const t of threads) {
@@ -33,10 +35,16 @@ export function mergeThreads(threads: readonly TwitterDmThread[]): TwitterDmThre
   }
   return [...byPerson.values()]
     .map((group) => {
-      const newest = [...group].sort((x, y) => (y.lastAt ?? '').localeCompare(x.lastAt ?? ''))[0]
+      const sorted = [...group].sort((x, y) => (y.lastAt ?? '').localeCompare(x.lastAt ?? ''))
+      const worded = sorted.find((t) => !myReaction(t))
+      const newest = worded ?? sorted[0]
+      const youReactedOnly = Boolean(worded && !worded.lastFromMe && myReaction(sorted[0]))
       if (group.length === 1) return newest
+      const named = newest.with.some((p) => p.handle) ? newest.with : (group.find((t) => t.with.some((p) => p.handle))?.with ?? newest.with)
       return {
         ...newest,
+        ...(youReactedOnly ? { youReactedOnly } : {}),
+        with: named,
         unread: group.some((t) => t.unread),
         openedByThem: newest.lastFromMe && group.some((t) => t.lastFromMe && t.openedByThem),
         messagesLoaded: group.reduce((n, t) => n + t.messagesLoaded, 0),
@@ -101,4 +109,42 @@ export function contextChangesSince(messages: readonly TwitterDmMessage[], activ
     .filter((m) => m.time && Date.parse(m.time) > after)
     .map((m) => `${m.time} ${m.fromMe ? 'you messaged them outside this draft' : 'they messaged you'}: "${short(m.text)}"`)
   return [...said, ...activity.filter((r) => r.at && Date.parse(r.at) > after).map(activityLine)]
+}
+
+export const NOT_A_MESSAGE = /^\((reacted|read|could not open|encrypted X Chat message)/
+
+export interface StoredChat {
+  conversationId: string
+  box: string
+  with: string[]
+  messages: { at: string | null; fromMe: boolean; text: string }[]
+}
+
+export function storedThreads(chats: readonly StoredChat[]): TwitterDmThread[] {
+  const byPerson = new Map<string, StoredChat[]>()
+  for (const c of chats) {
+    const key = c.with.length === 1 ? `@${c.with[0].toLowerCase()}` : personKeyOf(c.conversationId)
+    byPerson.set(key, [...(byPerson.get(key) ?? []), c])
+  }
+  const out: TwitterDmThread[] = []
+  for (const group of byPerson.values()) {
+    const said = group.flatMap((c) => c.messages).filter((m) => m.text && !NOT_A_MESSAGE.test(m.text)).sort((a, b) => (a.at ?? '').localeCompare(b.at ?? ''))
+    const last = said.at(-1)
+    if (!last) continue
+    const first = group[0]
+    const box = (['inbox', 'request', 'xchat'] as const).find((b) => group.some((c) => c.box === b)) ?? 'inbox'
+    out.push({
+      conversationId: first.conversationId,
+      conversationIds: group.map((c) => c.conversationId),
+      box,
+      type: first.with.length > 1 ? 'group' : 'oneToOne',
+      with: first.with.map((handle) => ({ handle, userId: '' })),
+      lastAt: last.at,
+      lastFromMe: last.fromMe,
+      lastText: last.text,
+      unread: false,
+      messagesLoaded: said.length,
+    })
+  }
+  return out.sort((a, b) => (b.lastAt ?? '').localeCompare(a.lastAt ?? ''))
 }

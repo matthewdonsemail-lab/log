@@ -9,7 +9,7 @@ import type { DecisionAnswer } from "../../src/subq/decisions/index.ts";
 
 const root = join(import.meta.dir, "..", "..");
 const say = (line: string) => console.log(`useCases: ${line}`);
-const git = (args: string) => execSync(`git ${args}`, { cwd: root }).toString().split(/\r?\n/).filter(Boolean);
+const git = (args: string) => execSync(`git ${args}`, { windowsHide: true, cwd: root }).toString().split(/\r?\n/).filter(Boolean);
 
 if (siteOnly(git("diff --cached --name-only"))) {
   say("only the landing site (site/) and the commit log are staged: site work isn't a use case, so the pages aren't reviewed");

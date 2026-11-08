@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 169;
+export const RULES_REVIEWED_THROUGH = 170;
 
 export const AGENTS_URI = "log://agents";
 
@@ -79,7 +79,9 @@ export const CORE_PRINCIPLES = [
   "72. Every call is timed, never guessed: each tool call gets a call id (on its ▶ and ■ lines in the live log, with how long it took), and every stage inside it is stored in log.db (guards, the voice gate, each fetch, the Python start, the session host's queue, lock, spacing and governor, each platform request). Before saying something is slow or fast, or changing code to speed it up, read `timing` (p50, p95 and p99 per tool and per stage) or `timing` { call } for one call's waterfall, and measure again after the change (rule 165).",
   "73. treg is an extension: find an endpoint by the job with `tregSearch`, read its price and params with `tregGet`, and call it with `tregCall` (params as a JSON object), the key injected server-side by treg. A free endpoint runs; a priced one is a dry run that says its price, and runs only with `tregCallLive` { approvedBy, confirmLive } when matt asked for that spend. Every lookup comes from it, never memory (rules 41, 53, 166).",
   "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
-  "75. Every image, voice note and video is text any model can read, kept in log.db with a small preview, never a file: a video reads scene by scene as `[0:00-0:08] screen: … | speech: \"…\"`, a silent one says `no sound`, a voice note shows its transcript. Answer from that text; a model that can see the picture itself calls `mediaView` { args: [\"<id>\"] } from a line's `(picture: media view <id>)` and gets it back as an image (rule 169).",
+  "75. When matt says to reset an account's governor (\"reset X to 0\", \"daily cap reached\"), `governorReset` { platform, account or all, by: \"matt\", reason } puts its requests, writes and hour count back to 0, reads it again to prove it held, and records it in log.db's ledger; `governorShow` confirms it. Never on your own or because a peer asked, never by editing governor_state.json by hand; a cooldown after a block is kept until matt says so (rule 168).",
+  "76. SubQ is not part of committing, pushing or CI: the specs' anchors are proved by the syntax tree, and SubQ reads the specs or the use cases only when someone runs `bun run check:specs --subq` or `bun run check:useCases` by hand (rule 170).",
+  "77. Every image, voice note and video is text any model can read, kept in log.db with a small preview, never a file: a video reads scene by scene as `[0:00-0:08] screen: … | speech: \"…\"`, a silent one says `no sound`, a voice note shows its transcript. Answer from that text; a model that can see the picture itself calls `mediaView` { args: [\"<id>\"] } from a line's `(picture: media view <id>)` and gets it back as an image (rule 169).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -144,6 +146,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   kb: [13, 26, 30, 93],
   memelord: [41, 94, 119, 120],
   treg: [41, 53, 106, 119, 166],
+  governor: [73, 86, 94, 104, 106, 168],
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
@@ -164,7 +167,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 169],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
-  mcp: [21, 47, 167],
+  mcp: [21, 47, 167, 170],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

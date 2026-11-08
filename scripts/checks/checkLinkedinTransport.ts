@@ -13,6 +13,6 @@ function python(): string {
 }
 
 const mode = process.argv[2] ?? "--check";
-const run = spawnSync(python(), [join(root, "python", "checks", "linkedinTransport.py"), mode], { encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
+const run = spawnSync(python(), [join(root, "python", "checks", "linkedinTransport.py"), mode], { windowsHide: true, encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
 if (run.status !== 0) console.error("linkedinTransport: vendor/openLinkedinApi must reach the network only through its one curl_cffi Session in transport.py, pinned to IMPERSONATE.");
 process.exit(run.status ?? 1);

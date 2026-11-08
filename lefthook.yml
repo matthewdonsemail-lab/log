@@ -26,6 +26,9 @@ pre-commit:
     oneDatabase:
       run: bun run check:oneDatabase
 
+    hiddenWindows:
+      run: bun run check:hiddenWindows
+
     commitLog:
       run: node scripts/commitLog/commitLog.mjs
 
@@ -43,9 +46,6 @@ pre-commit:
 
     siteSkills:
       run: bun run check:siteSkills
-
-    useCases:
-      run: bun run check:useCases
 
     specs:
       run: bun run check:specs --staged
@@ -81,6 +81,9 @@ pre-push:
 
     oneDatabase:
       run: bun run check:oneDatabase
+
+    hiddenWindows:
+      run: bun run check:hiddenWindows
 
     browserParity:
       run: bun run check:browsers

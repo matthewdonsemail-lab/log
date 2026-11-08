@@ -13,6 +13,6 @@ function python(): string {
 }
 
 const mode = process.argv[2] ?? "--check";
-const run = spawnSync(python(), [join(root, "python", "checks", "slackTransport.py"), mode], { encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
+const run = spawnSync(python(), [join(root, "python", "checks", "slackTransport.py"), mode], { windowsHide: true, encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
 if (run.status !== 0) console.error("slackTransport: vendor/gabrielSlack must reach Slack only through its one curl_cffi AsyncSession in gabriel/core/transport.py, pinned to IMPERSONATE, sending that target's own user agent (rule 125).");
 process.exit(run.status ?? 1);

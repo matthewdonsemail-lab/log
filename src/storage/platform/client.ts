@@ -1,4 +1,5 @@
 import { Database } from 'bun:sqlite'
+import { timedSync } from '../../observability/timing/index'
 import { createHash } from 'node:crypto'
 import { gunzipSync, gzipSync } from 'node:zlib'
 import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, platformMessageIdOf, readConversations, writeConversation } from './helpers'
@@ -361,7 +362,7 @@ export function saveConversationRows(handle: Database, conversations: readonly S
     return written
   }
   for (const group of groups) {
-    handle.exec('BEGIN IMMEDIATE')
+    timedSync('db.writeLock', () => handle.exec('BEGIN IMMEDIATE'))
     try {
       write(group)
       handle.exec('COMMIT')

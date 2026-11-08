@@ -24,6 +24,7 @@ import { kbCommand } from "../kb/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
 import { tregCommand } from "../treg/index.ts";
 import { balanceCommand } from "../balance/index.ts";
+import { governorCommand } from "../governor/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
@@ -110,6 +111,7 @@ export const COMMANDS: Command[] = [
   memelordCommand,
   tregCommand,
   balanceCommand,
+  governorCommand,
   cloneCommand,
   transcribeCommand,
   followersCommand,

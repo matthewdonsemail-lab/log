@@ -103,12 +103,13 @@ export interface ToolImage {
   mimeType: string;
 }
 
-function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
-  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call), { account: accountOfArgv(argv) || undefined, job: job?.id });
+function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, signal?: AbortSignal): Promise<Ran> {
+  return timeCall(name, (call) => runTimed(name, argv, context, onLine, progress, job, call, signal), { account: accountOfArgv(argv) || undefined, job: job?.id });
 }
 
-async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall): Promise<Ran> {
+async function runTimed(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null, call: ActiveCall, signal?: AbortSignal): Promise<Ran> {
   const began = performance.now();
+  let kept: JobRecord | null = null;
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
@@ -116,8 +117,23 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
   const note = (source: string, line: string) => {
     const entry = { at: new Date().toISOString(), source, line };
     progress.push(entry);
-    if (job) appendProgress(job.id, entry);
+    const holder = job ?? kept;
+    if (holder) appendProgress(holder.id, entry);
   };
+  const clientCancelled = () => {
+    call.attrs.cancelledByClient = true;
+    const after = msText(performance.now() - began);
+    if (job) {
+      onLine(name, "err", `✕ the client cancelled call ${call.callId} after ${after}: job ${job.id} keeps running to its end; follow it with jobStatus { jobId: "${job.id}" }`);
+      return;
+    }
+    kept = startJob({ tool: name, argv, account: accountOfArgv(argv), live: commandOfTool(name)?.live ?? false });
+    call.attrs.keptAsJob = kept.id;
+    for (const line of progress) appendProgress(kept.id, line);
+    onLine(name, "err", `✕ the client cancelled call ${call.callId} after ${after}: it runs to its end so nothing is left half done, and its answer is kept as job ${kept.id}; read it with jobStatus { jobId: "${kept.id}" }`);
+  };
+  if (signal?.aborted) clientCancelled();
+  else signal?.addEventListener("abort", clientCancelled, { once: true });
   const fromProcess = (entry: LogLine) => {
     processLog.push(entry.line);
     note(entry.source, entry.line);
@@ -160,15 +176,18 @@ async function runTimed(name: string, argv: string[], context: Partial<CommandCo
     err.push(error instanceof Error ? error.message : String(error));
     code = 1;
   } finally {
+    signal?.removeEventListener("abort", clientCancelled);
     inFlight.delete(fromProcess);
     if (inFlight.size === 0) setLogSink(null);
   }
   if (job && !cancelled && code !== 0 && cancelRequested(job.id)) cancelled = true;
   call.attrs.exit = code;
-  onLine(name, "out", `■ exit ${code} in ${msText(performance.now() - began)} (call ${call.callId}: timing { call: "${call.callId}" } shows where the time went)`);
+  const keptJob = kept as JobRecord | null;
+  onLine(name, "out", `■ exit ${code} in ${msText(performance.now() - began)} (call ${call.callId}: timing { call: "${call.callId}" } shows where the time went)${keptJob ? `; the client had cancelled it, so its answer is job ${keptJob.id}` : ""}`);
   const text = [out.join("\n"), processLog.length ? `log:\n${processLog.join("\n")}` : "", err.length ? `stderr:\n${err.join("\n")}` : "", `exit ${code}`].filter(Boolean).join("\n\n");
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
+  if (keptJob) finishJob(keptJob.id, code === 0 ? "completed" : "failed", { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), cancelledByClient: true }, text);
   return { base: { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled, images };
 }
 
@@ -187,6 +206,7 @@ export async function runToolCall(
   context: Partial<CommandContext> = {},
   onLine: OnLogLine = () => {},
   readBrowsers: ReadBrowsers = browserViews,
+  signal?: AbortSignal,
 ): Promise<CallToolResult> {
   if (name === GUIDE_TOOL) {
     const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown };
@@ -206,7 +226,7 @@ export async function runToolCall(
     if (name === CALL_TOOL) {
       const target = resolveCall(entries, input);
       if (!target.ok) return refused(target.message, readBrowsers);
-      return runToolCall(target.tool, target.input, context, onLine, readBrowsers);
+      return runToolCall(target.tool, target.input, context, onLine, readBrowsers, signal);
     }
     const answer = name === SEARCH_TOOL ? searchAnswer(entries, input) : getAnswer(entries, input);
     return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
@@ -216,7 +236,7 @@ export async function runToolCall(
   if (flowCall) {
     const built = flowArgv(flowCall.flow, fields as Record<string, unknown>, flowCall.live);
     if (!built.ok) return refused(built.message, readBrowsers);
-    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) }, context, onLine, readBrowsers);
+    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) }, context, onLine, readBrowsers, signal);
   }
   const guard = guardCall(name, input === undefined ? undefined : fields, COMMANDS);
   if (!guard.ok) return refused(guard.message, readBrowsers);
@@ -225,14 +245,14 @@ export async function runToolCall(
   const entry = commandOfTool(name);
   const progress: ProgressLine[] = [];
   if (!entry || !LONG_RUNNING.has(entry.command.name)) {
-    const ran = await runGuarded(name, guard.argv, context, onLine, progress, null);
+    const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, signal);
     return withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
   }
   const account = accountOfArgv(guard.argv);
   const holder = busyJob(account);
   if (holder) return refused(`accountBusy: job ${holder.id} (${holder.tool}) holds ${account}, started ${holder.startedAt}. Follow it with jobStatus { jobId: "${holder.id}" }, or stop it with jobCancel (rule 35).`, readBrowsers);
   const job = startJob({ tool: name, argv: guard.argv, account, live: entry.live });
-  const run = runGuarded(name, guard.argv, context, onLine, progress, job).then((ran) => {
+  const run = runGuarded(name, guard.argv, context, onLine, progress, job, signal).then((ran) => {
     const status = ran.cancelled ? "cancelled" : ran.base.exit === 0 ? "completed" : "failed";
     const done = withBrowsers({ ...ran.base, job: { id: job.id, status, afterLine: progress.length } }, ran.text, ran.base.exit !== 0, readBrowsers);
     finishJob(job.id, status, done.structuredContent as Record<string, unknown>, (done.content as { text: string }[])[0].text);
@@ -280,8 +300,8 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the one resource is ${AGENTS_URI})`);
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews);
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
+    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal);
     if (request.params.name === GUIDE_TOOL) return result;
     const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
     return withPlayFooter(target?.ok ? target.tool : request.params.name, result);

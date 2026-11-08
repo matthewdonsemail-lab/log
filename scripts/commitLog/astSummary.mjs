@@ -5,7 +5,7 @@ import ts from 'typescript';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (...args) =>
-  execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
+  execFileSync('git', args, { windowsHide: true, cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
 
 function readAt(rev, path) {
   try {
@@ -74,7 +74,7 @@ print(json.dumps(out))
 
 export function collectPython(before, after) {
   try {
-    const raw = execFileSync(process.env.LOG_PYTHON || 'python', ['-c', PY_AST], {
+    const raw = execFileSync(process.env.LOG_PYTHON || 'python', ['-c', PY_AST], { windowsHide: true,
       input: JSON.stringify({ before, after }),
       encoding: 'utf8',
     });

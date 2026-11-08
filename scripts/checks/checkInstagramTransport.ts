@@ -13,6 +13,6 @@ function python(): string {
 }
 
 const mode = process.argv[2] ?? "--check";
-const run = spawnSync(python(), [join(root, "python", "checks", "instagramTransport.py"), mode], { encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
+const run = spawnSync(python(), [join(root, "python", "checks", "instagramTransport.py"), mode], { windowsHide: true, encoding: "utf8", stdio: ["ignore", "inherit", "inherit"] });
 if (run.status !== 0) console.error("instagramTransport: python/instagramApi/engine.py must reach Instagram only through vendor/instagrapi with both its private and public transports on curl_cffi; the realtime MQTT socket is the one exception (rule 128).");
 process.exit(run.status ?? 1);

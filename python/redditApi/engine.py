@@ -30,7 +30,7 @@ def bun() -> str:
 def bridge(spec: dict[str, Any], cookies: dict[str, str], **fields: Any) -> dict[str, Any]:
     request = {"action": spec["action"], "account": spec.get("account"), "cookies": cookies, "proxy": spec.get("proxy") or None, "readSpacingMs": READ_SPACING_MS, **fields}
     try:
-        run = subprocess.run([bun(), str(BRIDGE)], input=json.dumps(request), capture_output=True, text=True, encoding="utf-8", timeout=BRIDGE_TIMEOUT_S, cwd=str(REPO))
+        run = subprocess.run([bun(), str(BRIDGE)], input=json.dumps(request), capture_output=True, text=True, encoding="utf-8", timeout=BRIDGE_TIMEOUT_S, cwd=str(REPO), creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except subprocess.TimeoutExpired:
         return {"ok": False, "code": "networkDropped", "detail": f"the reverseChud bridge gave no answer in {BRIDGE_TIMEOUT_S} s", "loginState": "unknown"}
     lines = [line for line in (run.stdout or "").splitlines() if line.strip()]

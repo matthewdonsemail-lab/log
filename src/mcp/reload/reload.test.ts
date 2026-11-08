@@ -96,6 +96,16 @@ describe("reload proxy", () => {
     expect(r.children).toHaveLength(2);
   });
 
+  test("a call the client cancelled no longer holds a reload back", () => {
+    const r = rig();
+    r.init();
+    r.proxy.fromClient(call(4));
+    r.proxy.fromClient(JSON.stringify({ jsonrpc: "2.0", method: "notifications/cancelled", params: { requestId: 4, reason: "interrupted" } }));
+    r.setStamp(200);
+    r.proxy.tick();
+    expect(r.children).toHaveLength(2);
+  });
+
   test("a crash mid-call answers the call with an error and starts the server again", () => {
     const r = rig();
     r.init();
