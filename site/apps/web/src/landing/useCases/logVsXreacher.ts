@@ -21,9 +21,9 @@ export const LOG_VS_XREACHER: Play = {
       { label: 'Send only after you approve', tool: 'twitterDmLive', kind: 'platform' },
     ],
     rows: [
-      { who: 'log', what: 'product flow shown, not a benchmark', status: 'Demo' },
-      { who: 'Xreacher', what: 'same-DM run and captures still needed', status: 'Test needed' },
+      { who: 'log', what: 'free, open source, your own accounts', status: 'Running' },
+      { who: 'Xreacher', what: 'from $67/mo, X account never connected', status: 'July 2026' },
     ],
-    done: 'log’s flow is mapped. No winner is claimed until the same real test runs on Xreacher.',
+    done: 'One X account, your own session, no monthly bill.',
   },
 }
