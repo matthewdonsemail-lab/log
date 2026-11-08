@@ -27,6 +27,7 @@ const JOBS = 'src/mcp/jobs/client.ts'
 const TRANSCRIPTS = 'src/media/voiceNotes/helpers/store.ts'
 const RECORDS = 'src/storage/records/client.ts'
 const CONTEXT = 'src/contextLayer/service/client.ts'
+const ONE_DB = 'scripts/checks/checkOneDatabase.ts'
 const DISCORD = 'src/cli/discord/index.ts'
 const SLACK = 'src/cli/slack/index.ts'
 const X_SEND = 'src/cli/twitter/helpers/send.ts'
@@ -35,7 +36,7 @@ const INSTAGRAM = 'src/cli/instagram/index.ts'
 export const storage = {
   description: 'One SQLite database: times as integer milliseconds, one stable key per message, and old rows filled in resumable batches',
   specPath: 'docs/specs/storage.md',
-  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM, LEDGER, QUEUE_STORE, QUEUE_PLAN, QUEUE_EVENTS, JOBS, TRANSCRIPTS, RECORDS, CONTEXT],
+  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION, WATCH, RELAY, CLAIMS, DISCORD, SLACK, X_SEND, INSTAGRAM, LEDGER, QUEUE_STORE, QUEUE_PLAN, QUEUE_EVENTS, JOBS, TRANSCRIPTS, RECORDS, CONTEXT, ONE_DB],
   anchors: {
     'REQ-STORAGE-01': [
       { kind: 'symbol', file: TIME, name: 'msOf' },
@@ -159,6 +160,12 @@ export const storage = {
       { kind: 'uses', file: 'src/browser/runStore/client.ts', name: 'appendRecord' },
       { kind: 'string', file: CONTEXT, includes: 'INSERT OR IGNORE INTO spans' },
     ],
+    'REQ-STORAGE-16': [
+      { kind: 'symbol', file: ONE_DB, name: 'ALLOWED' },
+      { kind: 'symbol', file: ONE_DB, name: 'WHY' },
+      { kind: 'string', file: ONE_DB, includes: 'oneDatabase: no new loose store' },
+      { kind: 'symbol', file: STORE, name: 'retirePendingFile' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -181,6 +188,7 @@ export const storage = {
     'REQ-STORAGE-13': noul('Do startJob, appendProgress, finishJob, requestCancel, readJob, readProgress, listJobs and busyJob in src/mcp/jobs/client.ts read and write the jobs and jobLines tables (cancelRequested as a column, progress lines numbered per job) instead of files, does statusOf still read a running job with a dead pid as lost, and does importJobFiles import the old json, jsonl and cancel files once, recording it in imports?'),
     'REQ-STORAGE-14': noul('Do readTranscript and writeTranscript read and write the transcripts table keyed by the audio hash with the whole answer in body, do readLinks and linkMessages read and write transcriptLinks, and does importTranscriptFiles import the old transcript files and messages.json once, recording it in imports?'),
     'REQ-STORAGE-15': noul('Do appendStageLog, readStageLog, pruneRuns, addRating and readRatings write and read records rows (kinds stageLog, prunedRun, memeRating) through appendRecord and readRecords, importing each old file once with importRecordFile, and does logTiming insert each hook timing into spans with tool hook:<event>:<provider> instead of appending to timings.jsonl?'),
+    'REQ-STORAGE-16': noul('Does checkOneDatabase count appendFileSync and writeFileSync in every tracked non-test ts and mjs file under src, scripts and bin, fail when a file not in ALLOWED writes or a listed file writes more than its count, and name every notMovedYet writer; is it run by lefthook and bun run check; and does retirePendingFile append any pending.jsonl row not already in events and then rename the file to pending.jsonl.imported, keeping a file with an unreadable line?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -199,6 +207,7 @@ export const storage = {
     'REQ-STORAGE-13': MET,
     'REQ-STORAGE-14': MET,
     'REQ-STORAGE-15': MET,
+    'REQ-STORAGE-16': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

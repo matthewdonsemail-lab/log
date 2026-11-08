@@ -7,7 +7,7 @@ import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
 import { mediaLine, mediaOf } from '../../media/describer/index'
-import { addAlertRow, appendEvent, db, dropFence, holdFence, eventIdOf, eventsAfter, immediate, importPendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
+import { addAlertRow, appendEvent, db, dropFence, holdFence, eventIdOf, eventsAfter, immediate, importPendingFile, retirePendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
@@ -65,6 +65,7 @@ function messageOf(row: StoredEvent): InboxMessage {
 
 function migrated(): void {
   importPendingFile(pendingPath())
+  retirePendingFile(pendingPath())
 }
 
 export function addPending(messages: readonly InboxMessage[]): void {

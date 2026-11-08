@@ -107,3 +107,9 @@ Checked by: code and SubQ
 The Facebook warm-up's stage log, each run prune and each meme rating are rows in `records`, with a kind (`stageLog`, `prunedRun`, `memeRating`), a key (the account, the run) and the body (`appendRecord`, `readRecords`, `src/storage/records`). `appendStageLog`, `readStageLog`, `pruneRuns`, `addRating` and `readRatings` go through it, and each old file is imported once (`importRecordFile`). Every context-layer hook timing (`logTiming`) is a span in `spans`, tool `hook:<event>:<provider>`, so `log timing` reports hook costs beside tool calls instead of in `timings.jsonl`.
 
 Checked by: code and SubQ
+
+### REQ-STORAGE-16: Nothing new writes shared state outside log.db
+
+`bun run check:oneDatabase` (`scripts/checks/checkOneDatabase.ts`, lefthook pre-commit and pre-push, and `bun run check`) counts every `appendFileSync` and `writeFileSync` in log's own tracked code, leaving out tests and vendored libraries. A file that writes to disk must be in `ALLOWED` with how many writes it has and a kind from `WHY`: inside the repo, a capture, a dataset or export, an index, media, a log people watch, a private session file, or shared state not moved yet (`notMovedYet`, named in every run of the check). A new writer, or more writes in a listed one, fails the commit. The old `inbox/pending.jsonl` is retired (`retirePendingFile`): any row not already in `events` is appended, and then the file is renamed `pending.jsonl.imported`, not deleted. A file with an unreadable line is left where it is.
+
+Checked by: code and SubQ

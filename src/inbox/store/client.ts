@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { Database } from 'bun:sqlite'
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, renameSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
@@ -260,6 +260,26 @@ export function searchStore(query: string, limit = 20): { source: string; ref: s
   const terms = query.split(/\s+/).map((w) => w.replace(/[^\p{L}\p{N}_]/gu, '')).filter(Boolean)
   if (!terms.length) return []
   return db().prepare('SELECT source, ref, platform, account, conversationId, text FROM searchIndex WHERE searchIndex MATCH ? ORDER BY rank LIMIT ?').all(terms.map((t) => `"${t}"`).join(' '), limit) as { source: string; ref: string; platform: string; account: string; conversationId: string; text: string }[]
+}
+
+export function retirePendingFile(path: string, handle: Database = db()): { retired: boolean; rows: number; added: number; unreadable: number } {
+  if (!existsSync(path)) return { retired: false, rows: 0, added: 0, unreadable: 0 }
+  const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.trim())
+  const found = handle.prepare("SELECT 1 FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND text = ? AND type = 'message' LIMIT 1")
+  let added = 0
+  let unreadable = 0
+  for (const line of lines) {
+    try {
+      const m = JSON.parse(line) as { platform: string; account: string; conversationId: string; with: string; text: string; at: string; box: string; seenAt: string }
+      if (found.get(m.platform, m.account, m.conversationId ?? '', m.text ?? '')) continue
+      if (appendEvent({ platform: m.platform, account: m.account, conversationId: m.conversationId, type: 'message', with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.seenAt || m.at, source: 'backfill' })) added++
+    } catch {
+      unreadable++
+    }
+  }
+  if (unreadable) return { retired: false, rows: lines.length, added, unreadable }
+  renameSync(path, `${path}.imported`)
+  return { retired: true, rows: lines.length, added, unreadable: 0 }
 }
 
 export function importPendingFile(path: string): number {
