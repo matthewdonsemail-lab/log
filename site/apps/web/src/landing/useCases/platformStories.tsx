@@ -1570,7 +1570,83 @@ const REA_SLIDES: Slide[] = [
   },
 ]
 
+const LOG_VS_XREACHER_SLIDES: Slide[] = [
+  {
+    lead: 'Both X inboxes,',
+    sticker: 'one thread.',
+    body: 'log reads **the old DMs and X Chat together**, with the conversation in place before a reply is drafted.',
+    story: {
+      id: 'logVsXreacherInbox',
+      chrome: 'x',
+      phases: [
+        {
+          caption: 'A message lands',
+          screen: 'lock',
+          title: 'Jay',
+          items: [{ id: 'n1', kind: 'notify', who: 'Jay', text: 'can you send over the details?' }],
+        },
+        {
+          caption: 'The whole thread, read first',
+          screen: 'dm',
+          title: 'Jay',
+          items: [{ id: 'j1', kind: 'msg', who: 'Jay', text: 'can you send over the details?' }],
+        },
+      ],
+    },
+  },
+  {
+    lead: 'A draft in your voice,',
+    sticker: 'checked first.',
+    body: 'The draft is checked against **how you already write** and **what this conversation is about**. A mismatch stops the send.',
+    story: {
+      id: 'logVsXreacherVoice',
+      chrome: 'x',
+      phases: [
+        {
+          caption: 'Jay’s message, with its context',
+          screen: 'dm',
+          title: 'Jay',
+          items: [{ id: 'j1', kind: 'msg', who: 'Jay', text: 'can you send over the details?' }],
+        },
+        {
+          caption: 'Drafted and checked, not sent yet',
+          screen: 'dm',
+          title: 'Jay',
+          items: [{ id: 'y1', kind: 'msg', who: 'You', you: true, text: 'yeah, sending them over now' }],
+        },
+      ],
+    },
+  },
+  {
+    lead: 'Your approval,',
+    sticker: 'then the send.',
+    body: 'The live send is a separate, explicit step. **You approve the reply**, then log sends it. The matching Xreacher run and captures are still needed for a verdict.',
+    story: {
+      id: 'logVsXreacherApproval',
+      chrome: 'x',
+      phases: [
+        {
+          caption: 'The reply waits for your yes',
+          screen: 'dm',
+          title: 'Jay',
+          items: [
+            { id: 'j1', kind: 'msg', who: 'Jay', text: 'can you send over the details?' },
+            { id: 'y1', kind: 'msg', who: 'You', you: true, text: 'yeah, sending them over now' },
+          ],
+        },
+        {
+          caption: 'Approved by you, then sent',
+          screen: 'dm',
+          title: 'Jay',
+          items: [],
+        },
+      ],
+    },
+  },
+]
+
 const SLIDES_BY_PLATFORM: Record<string, Slide[]> = {
+  logVsXreacher: LOG_VS_XREACHER_SLIDES,
   reaLooksmaxxing: REA_SLIDES,
   slack: SLACK_SLIDES,
   instagram: INSTAGRAM_SLIDES,
