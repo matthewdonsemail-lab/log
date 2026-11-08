@@ -95,6 +95,7 @@ export interface InteractionRow {
 
 export interface ExtenderContext {
   ownerIdOf(platform: string, account: string): string | null
+  userIdOfHandle?(platform: string, handle: string): string | null
 }
 
 export interface PlatformExtender {
@@ -116,8 +117,8 @@ export interface TypedRows {
 
 export const MESSAGE_TYPES: readonly string[] = ['message', 'ownMessage']
 
-export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen']
+export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen', 'identityLearned', 'accountIdentified']
 
-export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identities']
+export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identities', 'accounts', 'handleAliases', 'identityMerges']
 
 export const EXTENDER_VERSION = 2

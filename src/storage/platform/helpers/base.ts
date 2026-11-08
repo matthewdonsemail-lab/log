@@ -44,7 +44,8 @@ export function makeExtender(options: BaseOptions): PlatformExtender {
     if (id) return id.replace(/^@/, '')
     if (event.with && isBareId(event.with) && !isOwnerLabel(event.with)) return event.with.replace(/^@/, '')
     const handle = handleOf(event)
-    return handle ? handleIdOf(handle) : `unknown:${event.conversationId}`
+    if (!handle) return `unknown:${event.conversationId}`
+    return context.userIdOfHandle?.(event.platform, handle) ?? handleIdOf(handle)
   }
   return {
     platform: options.platform,

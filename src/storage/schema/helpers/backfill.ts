@@ -2,7 +2,7 @@ import type { Database } from 'bun:sqlite'
 import { MESSAGE_TYPES } from '../../platform/types'
 import { messageKeyOf, messageTimeOf, msOf, platformMessageIdOf } from '../../platform/helpers/time'
 import { chatIdOf } from '../../platform/helpers/ids'
-import { conversationSeenEvent, messageEditedEvent } from '../../platform/helpers/derivedEvents'
+import { accountIdentifiedEvent, conversationSeenEvent, identityLearnedEvent, messageEditedEvent } from '../../platform/helpers/derivedEvents'
 import { contextOn, eventInputOf, insertEventRow, typedRowsOf, writeTypedRows } from '../../platform/client'
 
 export const BACKFILL_BATCH = 1000
@@ -158,6 +158,52 @@ export const BACKFILL_STEPS: readonly BackfillStep[] = [
       const rows = handle.prepare("SELECT c.chatId, c.platform, c.account, c.conversationId, c.box, c.backfilledAt FROM chats c WHERE c.box IS NOT NULL AND c.backfilledAt IS NOT NULL AND NOT EXISTS (SELECT 1 FROM events e WHERE e.type = 'conversationSeen' AND e.platform = c.platform AND e.account = c.account AND e.conversationId = c.conversationId) LIMIT ?").all(limit) as { chatId: string; platform: string; account: string; conversationId: string; box: string; backfilledAt: string }[]
       const members = handle.prepare('SELECT COALESCE(i.handle, m.userId) AS label FROM memberships m LEFT JOIN identities i ON i.platform = m.platform AND i.userId = m.userId WHERE m.roomId = ? AND m.position IS NOT NULL ORDER BY m.position')
       for (const r of rows) insertEventRow(handle, conversationSeenEvent(r, r.box, (members.all(r.chatId) as { label: string }[]).map((m) => m.label), r.backfilledAt, 'import'))
+      return rows.length
+    },
+  },
+  {
+    name: 'peopleToAliases',
+    once: true,
+    run(handle, limit, tried) {
+      const hasPeople = handle.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'people'").get()
+      if (!hasPeople) return 0
+      const rows = (handle.prepare('SELECT platform, account, userId, handle, name, seenAt FROM people ORDER BY seenAt').all() as { platform: string; account: string; userId: string; handle: string; name: string | null; seenAt: string }[]).filter((r) => !tried.has(`${r.platform}:${r.account}:${r.userId}`)).slice(0, limit)
+      for (const r of rows) {
+        tried.add(`${r.platform}:${r.account}:${r.userId}`)
+        if (r.handle && r.userId) insertEventRow(handle, identityLearnedEvent(r.platform, r.account, r.userId, r.handle, r.name, r.seenAt, 'import'))
+      }
+      return rows.length
+    },
+  },
+  {
+    name: 'ownersToAccounts',
+    once: true,
+    run(handle, limit, tried) {
+      const rows = (handle.prepare("SELECT platform, account, ownerId, MAX(receivedAt) AS at FROM events WHERE ownerId IS NOT NULL AND ownerId NOT LIKE 'self:%' GROUP BY platform, account, ownerId").all() as { platform: string; account: string; ownerId: string; at: string }[]).filter((r) => !tried.has(`${r.platform}:${r.account}`)).slice(0, limit)
+      for (const r of rows) {
+        tried.add(`${r.platform}:${r.account}`)
+        insertEventRow(handle, accountIdentifiedEvent(r.platform, r.account, r.ownerId, r.at, 'import'))
+      }
+      return rows.length
+    },
+  },
+  {
+    name: 'attachmentPaths',
+    once: true,
+    run(handle, limit, tried) {
+      const rows = (handle.prepare("SELECT seq, platform, account, conversationId, eventId, type, payload, messageKey FROM events WHERE type IN ('message', 'ownMessage', 'attachmentsSeen') AND payload LIKE '%\"path\"%' ORDER BY seq").all() as { seq: number; platform: string; account: string; conversationId: string; eventId: string; type: string; payload: string; messageKey: string | null }[]).filter((r) => !tried.has(String(r.seq))).slice(0, limit)
+      const fill = handle.prepare('UPDATE attachments SET path = COALESCE(path, ?), error = COALESCE(error, ?) WHERE messageKey = ? AND n = ?')
+      for (const r of rows) {
+        tried.add(String(r.seq))
+        const payload = payloadOf(r.payload)
+        const key = r.type === 'attachmentsSeen' ? String(payload.messageKey ?? '') : r.messageKey ?? messageKeyOf(r.platform, r.account, r.conversationId, platformMessageIdOf(payload)) ?? `${chatIdOf(r.platform, r.account, r.conversationId)}:${r.eventId}`
+        const list = Array.isArray(payload.attachments) ? (payload.attachments as Record<string, unknown>[]) : []
+        list.forEach((a, n) => {
+          const path = typeof a?.path === 'string' && a.path ? a.path : null
+          const error = typeof a?.error === 'string' && a.error ? a.error : null
+          if (path || error) fill.run(path, error, key, n)
+        })
+      }
       return rows.length
     },
   },

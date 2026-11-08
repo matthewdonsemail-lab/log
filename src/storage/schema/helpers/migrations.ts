@@ -48,6 +48,13 @@ export const RECORD_COLUMNS: readonly (readonly [string, string, string])[] = [
   ['attachments', 'error', 'TEXT'],
 ]
 
+export const IDENTITY_TABLES: readonly string[] = [
+  'CREATE TABLE IF NOT EXISTS accounts (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, learnedAt TEXT NOT NULL, PRIMARY KEY (platform, account)) WITHOUT ROWID',
+  'CREATE TABLE IF NOT EXISTS handleAliases (platform TEXT NOT NULL, handle TEXT NOT NULL, userId TEXT NOT NULL, firstSeenAt TEXT NOT NULL, lastSeenAt TEXT NOT NULL, PRIMARY KEY (platform, handle, userId)) WITHOUT ROWID',
+  'CREATE INDEX IF NOT EXISTS handleAliasesByUser ON handleAliases (platform, userId)',
+  'CREATE TABLE IF NOT EXISTS identityMerges (seq INTEGER PRIMARY KEY, platform TEXT NOT NULL, fromId TEXT NOT NULL, toId TEXT NOT NULL, at TEXT NOT NULL, reason TEXT NOT NULL)',
+]
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -102,6 +109,13 @@ export const MIGRATIONS: readonly Migration[] = [
       for (const [table, column, type] of RECORD_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
       handle.exec('CREATE INDEX IF NOT EXISTS eventsUntyped ON events (seq) WHERE typedAt IS NULL')
       handle.exec('CREATE INDEX IF NOT EXISTS eventsWithoutTime ON events (seq) WHERE receivedAtMs IS NULL')
+    },
+  },
+  {
+    version: 8,
+    name: 'stableIdentities',
+    apply(handle) {
+      for (const statement of IDENTITY_TABLES) handle.exec(statement)
     },
   },
 ]

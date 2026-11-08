@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
-import { attachmentsSeenEvent, eventIdFrom, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
+import { accountIdentifiedEvent, attachmentsSeenEvent, eventIdFrom, identityLearnedEvent, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -121,14 +121,30 @@ function handleIn(input: AppendInput): string {
 
 export function rememberPerson(platform: string, account: string, userId: string, handle: string, name: string | null = null, now: Date = new Date(), on: Database = db()): void {
   if (!userId || !handle || isBareId(handle)) return
-  on.prepare('INSERT INTO people (platform, account, userId, handle, name, seenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, account, userId) DO UPDATE SET handle = excluded.handle, name = COALESCE(excluded.name, people.name), seenAt = excluded.seenAt').run(platform, account, userId, handle.replace(/^@/, ''), name, now.toISOString())
+  const learn = () => {
+    insertEventRow(on, identityLearnedEvent(platform, account, userId, handle, name, now.toISOString()), now)
+  }
+  if (on.inTransaction) learn()
+  else on.transaction(learn).immediate()
+}
+
+export function identifyAccount(platform: string, account: string, userId: string, now: Date = new Date(), on: Database = db()): boolean {
+  if (!userId) return false
+  const known = on.prepare('SELECT userId FROM accounts WHERE platform = ? AND account = ?').get(platform, account) as { userId: string } | null
+  if (known?.userId === String(userId)) return false
+  return on.transaction(() => insertEventRow(on, accountIdentifiedEvent(platform, account, String(userId), now.toISOString()), now) !== null).immediate()
+}
+
+export function handleOfIdentity(platform: string, userId: string, on: Database = db()): string | null {
+  const alias = on.prepare('SELECT handle FROM identities WHERE platform = ? AND userId = ?').get(platform, userId) as { handle: string | null } | null
+  return alias?.handle && !isBareId(alias.handle) ? alias.handle : null
 }
 
 export function personOf(platform: string, account: string, userId: string, on: Database = db()): string | null {
   if (!userId) return null
   const id = userId.replace(/^@/, '')
-  const row = on.prepare('SELECT handle FROM people WHERE platform = ? AND account = ? AND userId = ?').get(platform, account, id) as { handle: string } | null
-  if (row?.handle && !isBareId(row.handle)) return row.handle
+  const known = handleOfIdentity(platform, id, on)
+  if (known) return known
   const handle = handleOfUserId(platform, account, id)
   if (!handle || isBareId(handle)) return null
   rememberPerson(platform, account, id, handle, null, new Date(), on)

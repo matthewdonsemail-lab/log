@@ -45,3 +45,11 @@ Checked by: code and SubQ
 `rebuildDerived` clears the typed tables and replays every event in `seq` order in one transaction. `verifyDerived` does the same on a scratch copy and compares each table's rows (`derivedFingerprint`) with the live ones. `log storage verify` and `log storage rebuild --apply` (MCP `storageVerify`, `storageRebuild`) run them. Before the first rebuild, the backfill gives every typed row with no event an `import` event carrying its original key (`eventsForTypedRows`), records any text changed in place as `messageEdited` (`editsForChangedText`), and types any event older code left untyped (`untypedEvents`, `events.typedAt`). The steps that read every row run once (`once`).
 
 Checked by: code and SubQ
+
+## Who is who
+
+### REQ-STORAGE-07: People and accounts have stable ids, and names live in one place
+
+`accounts (platform, account, userId)` holds each account's own real id, learned from its session check: `recordPlatformSession` and `recordTwitterSession` call `identifyAccount`, which appends an `accountIdentified` event once per id. Deriving it moves the account's own messages from `self:<account>` to that id, only in that account's chats (`rekeyIdentity`). `handleAliases (platform, handle, userId)` maps each handle, lower-cased, to the id behind it, from `identityLearned` events (`rememberPerson`, whenever an event carries both a sender id and a handle). Deriving one re-keys every row keyed by `@handle` (messages, memberships, interactions, identities) to the real id and logs it in `identityMerges`. Later messages from that handle are keyed by the id (`userIdOfHandle`). Reads (`storeRead`) keep the sender's id (`fromId`, `senderId` or `userId`) so ids are learned from every read and catch-up. A name is read through `identities` (`personOf`, `handleOfIdentity`, the join in `chatMessages`), and `people` is no longer read or written: its rows were imported once as `identityLearned` events (`peopleToAliases`). Every id is stored as text.
+
+Checked by: code and SubQ

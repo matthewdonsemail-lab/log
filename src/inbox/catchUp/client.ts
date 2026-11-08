@@ -14,7 +14,8 @@ export function pacedWait(random: () => number = Math.random): Promise<void> {
 export function storeRead(platform: string, account: string, chat: string, box: string, m: ReadMessage, now: Date, source: 'live' | 'catchUp' | 'backfill' = 'catchUp'): boolean {
   if (m.text == null || !m.at) return false
   const id = m.id ?? m.ts ?? null
-  const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString(), ...(id ? { id: String(id) } : {}) }
+  const senderId = m.fromMe ? null : m.fromId ?? m.senderId ?? m.userId ?? null
+  const row = { platform, account, conversationId: chat, with: String(m.from ?? '?'), text: String(m.text), at: m.at, box, seenAt: now.toISOString(), ...(id ? { id: String(id) } : {}), ...(senderId ? { senderId: String(senderId) } : {}) }
   const attachments = m.attachments ? { attachments: m.attachments } : {}
   if (id && adoptUnkeyed({ platform, account, conversationId: chat, at: m.at, text: String(m.text), id: String(id) }, attachments)) return false
   const added = !!appendEvent({ platform, account, conversationId: chat, type: m.fromMe ? 'ownMessage' : 'message', with: row.with, text: row.text, box, payload: { ...row, id, ...attachments }, sourceAt: m.at, receivedAt: m.fromMe ? m.at : now.toISOString(), eventId: eventIdOf(row), source })

@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite'
 import { createHash } from 'node:crypto'
 import { gunzipSync, gzipSync } from 'node:zlib'
-import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, platformMessageIdOf, readConversations, writeConversation } from './helpers'
+import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, platformMessageIdOf, readConversations, writeConversation } from './helpers'
 import type { StoredConversation } from './helpers'
 import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES } from './types'
 import type { EventInput, EventInsert, ExtenderContext, InsertedEvent, TypedRows } from './types'
@@ -56,9 +56,33 @@ export function notePairConversation(handle: Database, platform: string, account
 export function contextOn(handle: Database): ExtenderContext {
   return {
     ownerIdOf(platform, account) {
+      const known = handle.prepare('SELECT userId FROM accounts WHERE platform = ? AND account = ?').get(platform, account) as { userId: string } | null
+      if (known) return known.userId
       return platform === 'twitter' ? tallyOf(handle, platform, account).found : null
     },
+    userIdOfHandle(platform, name) {
+      const row = handle.prepare('SELECT userId FROM handleAliases WHERE platform = ? AND handle = ? ORDER BY lastSeenAt DESC LIMIT 1').get(platform, normalHandle(name)) as { userId: string } | null
+      return row?.userId ?? null
+    },
   }
+}
+
+export function rekeyIdentity(handle: Database, platform: string, fromId: string, toId: string, reason: string, at: string, chatPrefix: string | null = null): number {
+  if (!fromId || !toId || fromId === toId) return 0
+  const inChats = chatPrefix ? ' AND chatId LIKE ? ESCAPE \'\\\'' : ''
+  const prefix = chatPrefix ? [`${chatPrefix.replace(/[\\%_]/g, (c) => `\\${c}`)}%`] : []
+  let moved = handle.prepare(`UPDATE messages SET senderUserId = ? WHERE senderPlatform = ? AND lower(senderUserId) = lower(?)${inChats}`).run(toId, platform, fromId, ...prefix).changes
+  moved += handle.prepare('UPDATE OR IGNORE memberships SET userId = ? WHERE platform = ? AND lower(userId) = lower(?)').run(toId, platform, fromId).changes
+  handle.prepare('DELETE FROM memberships WHERE platform = ? AND lower(userId) = lower(?)').run(platform, fromId)
+  moved += handle.prepare('UPDATE interactions SET actorUserId = ? WHERE platform = ? AND lower(actorUserId) = lower(?)').run(toId, platform, fromId).changes
+  const old = handle.prepare('SELECT handle, displayName, firstSeenAt, lastSeenAt FROM identities WHERE platform = ? AND lower(userId) = lower(?)').get(platform, fromId) as { handle: string | null; displayName: string | null; firstSeenAt: string; lastSeenAt: string } | null
+  if (old) {
+    handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = COALESCE(identities.handle, excluded.handle), displayName = COALESCE(identities.displayName, excluded.displayName), firstSeenAt = MIN(identities.firstSeenAt, excluded.firstSeenAt), lastSeenAt = MAX(identities.lastSeenAt, excluded.lastSeenAt)').run(platform, toId, old.handle, old.displayName, old.firstSeenAt, old.lastSeenAt)
+    handle.prepare('DELETE FROM identities WHERE platform = ? AND lower(userId) = lower(?)').run(platform, fromId)
+    moved++
+  }
+  if (moved) handle.prepare('INSERT INTO identityMerges (platform, fromId, toId, at, reason) VALUES (?, ?, ?, ?, ?)').run(platform, fromId, toId, at, reason)
+  return moved
 }
 
 export function forgetOwners(): void {
@@ -112,6 +136,24 @@ function deriveInternal(handle: Database, event: EventInput): boolean {
     for (const a of rows) attach.run(messageKey, a.n, a.kind, a.name, a.contentType, a.url, a.durationMs, a.path, a.error)
     const platformMessageId = typeof event.payload.platformMessageId === 'string' ? event.payload.platformMessageId : null
     if (platformMessageId) handle.prepare('UPDATE messages SET platformMessageId = COALESCE(platformMessageId, ?) WHERE messageKey = ?').run(platformMessageId, messageKey)
+    return true
+  }
+  if (event.type === 'accountIdentified') {
+    const userId = String(event.payload.userId ?? '')
+    if (!userId) return true
+    handle.prepare('INSERT INTO accounts (platform, account, userId, learnedAt) VALUES (?, ?, ?, ?) ON CONFLICT(platform, account) DO UPDATE SET userId = excluded.userId, learnedAt = excluded.learnedAt').run(event.platform, event.account, userId, event.receivedAt)
+    rekeyIdentity(handle, event.platform, `self:${event.account}`, userId, 'accountIdentified', event.receivedAt, `${event.platform}:${event.account}:`)
+    return true
+  }
+  if (event.type === 'identityLearned') {
+    const userId = String(event.payload.userId ?? '')
+    const name = String(event.payload.handle ?? '')
+    if (!userId || !name) return true
+    const at = event.receivedAt
+    handle.prepare('INSERT INTO handleAliases (platform, handle, userId, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, handle, userId) DO UPDATE SET lastSeenAt = MAX(handleAliases.lastSeenAt, excluded.lastSeenAt)').run(event.platform, normalHandle(name), userId, at, at)
+    rekeyIdentity(handle, event.platform, handleIdOf(name), userId, 'identityLearned', at)
+    const displayName = typeof event.payload.displayName === 'string' ? event.payload.displayName : null
+    handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = excluded.handle, displayName = COALESCE(excluded.displayName, identities.displayName), lastSeenAt = MAX(identities.lastSeenAt, excluded.lastSeenAt)').run(event.platform, userId, name, displayName, at, at)
     return true
   }
   if (event.type === 'messageEdited') {
@@ -225,6 +267,9 @@ const FINGERPRINT_COLUMNS: Record<string, string> = {
   identities: 'platform, userId, handle, displayName',
   memberships: 'platform, roomId, userId, position',
   interactions: 'interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, atMs',
+  accounts: 'platform, account, userId',
+  handleAliases: 'platform, handle, userId',
+  identityMerges: 'platform, fromId, toId, reason',
 }
 
 export function derivedFingerprint(handle: Database): Record<string, { rows: number; hash: string }> {

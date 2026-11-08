@@ -62,7 +62,7 @@ export function chatMessages(platform: string, account: string, conversationId: 
   const chatId = chatIdOf(platform, account, conversationId)
   const handle = db()
   const rows = handle
-    .prepare('SELECT messageKey, platformMessageId, senderLabel, senderUserId, fromOwner, sentAt, text FROM messages WHERE chatId = ? ORDER BY sentAtMs DESC, seq DESC LIMIT ?')
+    .prepare('SELECT m.messageKey, m.platformMessageId, COALESCE(i.handle, m.senderLabel) AS senderLabel, m.senderUserId, m.fromOwner, m.sentAt, m.text FROM messages m LEFT JOIN identities i ON i.platform = m.senderPlatform AND i.userId = m.senderUserId WHERE m.chatId = ? ORDER BY m.sentAtMs DESC, m.seq DESC LIMIT ?')
     .all(chatId, limit) as { messageKey: string; platformMessageId: string | null; senderLabel: string | null; senderUserId: string; fromOwner: number; sentAt: string; text: string }[]
   const files = handle.prepare('SELECT name, contentType, path, error FROM attachments WHERE messageKey = ? ORDER BY n')
   return rows.reverse().map((r) => {
@@ -77,7 +77,8 @@ export function chatMessageCount(platform: string, account: string, conversation
 }
 
 export function userIdOfHandle(platform: string, account: string, handle: string): string | null {
-  const row = db().prepare('SELECT userId FROM people WHERE platform = ? AND account = ? AND lower(handle) = lower(?) ORDER BY seenAt DESC LIMIT 1').get(platform, account, handle.replace(/^@/, '')) as { userId: string } | null
+  void account
+  const row = db().prepare('SELECT userId FROM handleAliases WHERE platform = ? AND handle = ? ORDER BY lastSeenAt DESC LIMIT 1').get(platform, handle.replace(/^@/, '').trim().toLowerCase()) as { userId: string } | null
   return row?.userId ?? null
 }
 

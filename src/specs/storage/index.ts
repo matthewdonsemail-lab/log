@@ -14,11 +14,13 @@ const CONVERSATIONS = 'src/storage/platform/helpers/conversations.ts'
 const DERIVED = 'src/storage/platform/helpers/derivedEvents.ts'
 const DB_READ = 'src/inbox/dbRead/client.ts'
 const COMMAND = 'src/cli/storage/index.ts'
+const PLATFORM_SESSION = 'src/platformKit/session/client.ts'
+const X_SESSION = 'src/twitter/account/session/client.ts'
 
 export const storage = {
   description: 'One SQLite database: times as integer milliseconds, one stable key per message, and old rows filled in resumable batches',
   specPath: 'docs/specs/storage.md',
-  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND],
+  codePaths: [TIME, BASE, TYPED, MIGRATIONS, BACKFILL, SCHEMA, STORE, CATCH_UP, X_CHAT, CONVERSATIONS, DERIVED, DB_READ, COMMAND, PLATFORM_SESSION, X_SESSION],
   anchors: {
     'REQ-STORAGE-01': [
       { kind: 'symbol', file: TIME, name: 'msOf' },
@@ -62,6 +64,18 @@ export const storage = {
       { kind: 'string', file: BACKFILL, includes: 'eventsForTypedRows' },
       { kind: 'string', file: BACKFILL, includes: 'untypedEvents' },
     ],
+    'REQ-STORAGE-07': [
+      { kind: 'string', file: MIGRATIONS, includes: 'CREATE TABLE IF NOT EXISTS accounts' },
+      { kind: 'string', file: MIGRATIONS, includes: 'CREATE TABLE IF NOT EXISTS handleAliases' },
+      { kind: 'symbol', file: TYPED, name: 'rekeyIdentity' },
+      { kind: 'symbol', file: DERIVED, name: 'identityLearnedEvent' },
+      { kind: 'symbol', file: DERIVED, name: 'accountIdentifiedEvent' },
+      { kind: 'symbol', file: STORE, name: 'identifyAccount' },
+      { kind: 'symbol', file: STORE, name: 'rememberPerson' },
+      { kind: 'uses', file: PLATFORM_SESSION, name: 'identifyAccount' },
+      { kind: 'uses', file: X_SESSION, name: 'identifyAccount' },
+      { kind: 'string', file: BACKFILL, includes: 'peopleToAliases' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -75,6 +89,7 @@ export const storage = {
     'REQ-STORAGE-04': noul('Is insertEventRow the only code that inserts into events, deriving the typed rows with typeEvent in the same call; do appendEvent and saveConversationRows (through writeConversation) insert only through it; do addToPayload and adoptUnkeyed append an attachmentsSeen event instead of updating an existing event, writeConversation append messageEdited when the stored text differs and conversationSeen with the box and members; and does chatMessages read the messages and attachments tables rather than the events table?'),
     'REQ-STORAGE-05': noul('Does insertEventRow store a payload longer than PAYLOAD_INLINE_LIMIT gzip-compressed in blobs through putBlob with events.rawHash set, does eventInputOf read it back with readBlob, does insertEventRow write events.ownerId from notePairConversation and contextOn, and do messages and interactions record EXTENDER_VERSION?'),
     'REQ-STORAGE-06': noul('Does rebuildDerived delete every table in DERIVED_TABLES and replay every event in seq order inside one transaction; does verifyDerived rebuild a deserialized copy and compare derivedFingerprint of each table; does log storage verify change nothing and rebuild change the live tables only with --apply; and do the backfill steps eventsForTypedRows, editsForChangedText and untypedEvents give unevented typed rows an import event with their original key, record in-place text changes as messageEdited and type untyped events, the full-scan ones running once?'),
+    'REQ-STORAGE-07': noul('Do recordPlatformSession and recordTwitterSession call identifyAccount with the session answer userId, appending an accountIdentified event whose derivation upserts accounts and re-keys self:<account> senders only in that account chats through rekeyIdentity; does rememberPerson append an identityLearned event instead of writing the people table, whose derivation upserts handleAliases with the lower-cased handle, re-keys @handle rows in messages, memberships, interactions and identities to the real id and logs identityMerges; does the base extender key a handle-only sender by userIdOfHandle when an alias is known; does storeRead keep fromId, senderId or userId as senderId; and do personOf and chatMessages read names from identities, with no code reading or writing people except the one-time peopleToAliases import?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -84,6 +99,7 @@ export const storage = {
     'REQ-STORAGE-04': MET,
     'REQ-STORAGE-05': MET,
     'REQ-STORAGE-06': MET,
+    'REQ-STORAGE-07': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }
