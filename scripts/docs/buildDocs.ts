@@ -201,7 +201,7 @@ for (const dir of readdirSync(cliDir)) {
     }
   }
   const markdown = (dir: string): string[] => readdirSync(join(root, dir)).flatMap((name) => (statSync(join(root, dir, name)).isDirectory() ? markdown(`${dir}/${name}`) : name.endsWith(".md") ? [`${dir}/${name}`] : []));
-  for (const rel of markdown("docs")) {
+  for (const rel of [...markdown("docs"), "README.md"]) {
     for (const block of readFileSync(join(root, rel), "utf8").replace(/\r\n/g, "\n").matchAll(/```mermaid\n([\s\S]*?)```/g)) {
       try {
         await mermaid.parse(block[1]!);
