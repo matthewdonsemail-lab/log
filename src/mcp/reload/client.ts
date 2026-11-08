@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { createInterface } from "node:readline";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
-import { codeStamp } from "../freshness/index.ts";
+import { codeStampWatcher } from "../freshness/index.ts";
 import { listJobs, statusOf } from "../jobs/index.ts";
 import { idKey, initialized, isRequest, isResponse, parseMessage, replayedInitialize, restartedMidCall, toolsChanged } from "./helpers/index.ts";
 import { CHECK_EVERY_MS, CRASH_WINDOW_MS, INIT_TIMEOUT_MS, MAX_CRASHES } from "./types.ts";
@@ -245,9 +245,10 @@ function spawnServerChild(root: string, events: ChildEvents): ReloadChild {
 export function runReloadProxy(root: string): void {
   const dir = liveLogDir();
   const file = reloadStateFile();
+  const stamps = codeStampWatcher(root);
   const proxy = new ReloadProxy({
     startChild: (events) => spawnServerChild(root, events),
-    stamp: () => codeStamp(root),
+    stamp: () => stamps.current(),
     jobsRunning: (pid) => listJobs().filter((job) => job.pid === pid && statusOf(job) === "running").map((job) => `job ${job.id} (${job.tool})`),
     toClient: (line) => process.stdout.write(`${line}\n`),
     log: (line) => {
@@ -264,11 +265,15 @@ export function runReloadProxy(root: string): void {
     now: () => Date.now(),
   });
   proxy.start();
-  const timer = setInterval(() => proxy.tick(), CHECK_EVERY_MS);
+  const timer = setInterval(() => {
+    stamps.refresh();
+    proxy.tick();
+  }, CHECK_EVERY_MS);
   const input = createInterface({ input: process.stdin });
   input.on("line", (line) => proxy.fromClient(line));
   input.on("close", () => {
     clearInterval(timer);
+    stamps.close();
     proxy.close();
     process.exit(0);
   });

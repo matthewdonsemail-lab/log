@@ -21,7 +21,7 @@ export const mcpReload = {
       { kind: 'symbol', file: MESSAGE, name: 'replayedInitialize' },
       { kind: 'symbol', file: MESSAGE, name: 'toolsChanged' },
       { kind: 'uses', file: PROXY, name: 'listJobs' },
-      { kind: 'uses', file: PROXY, name: 'codeStamp' },
+      { kind: 'uses', file: PROXY, name: 'codeStampWatcher' },
     ],
     'REQ-RELOAD-03': [
       { kind: 'symbol', file: MESSAGE, name: 'restartedMidCall' },
@@ -35,7 +35,7 @@ export const mcpReload = {
   },
   rubrics: {
     'REQ-RELOAD-01': noul('Does bin/logMcp.ts run runReloadProxy unless --child, --http or LOG_MCP_RELOAD=off, and does the proxy spawn bin/logMcp.ts --child, forward every line both ways, keep the initialize request, track forwarded requests until answered, and exit only when stdin closes?'),
-    'REQ-RELOAD-02': noul('Is reloadDue true only when codeStamp is newer than the child stamp, the stamp has not failed before, no request is in flight and no running job has the child pid, recording waitingOn otherwise; and does a reload replay initialize to a new child under its own id, not forward that answer, then send notifications/initialized, kill the old child marked as killed, send notifications/tools/list_changed to the client and flush the queued lines?'),
+    'REQ-RELOAD-02': noul('Is reloadDue true only when the cached code stamp (codeStampWatcher, read without walking the tree, refreshed on the timer after a file change or the backstop) is newer than the child stamp, the stamp has not failed before, no request is in flight and no running job has the child pid, recording waitingOn otherwise; and does a reload replay initialize to a new child under its own id, not forward that answer, then send notifications/initialized, kill the old child marked as killed, send notifications/tools/list_changed to the client and flush the queued lines?'),
     'REQ-RELOAD-03': noul('When the child exits unexpectedly, is every in-flight request answered with restartedMidCall and the child restarted with initialize replayed, with restarts stopped after more than 5 crashes in a minute; is a new child that exits or misses initialize within 30 s killed while the old child keeps serving with lastError set and that stamp not retried; and is a request with no child running answered with the same error?'),
     'REQ-RELOAD-04': noul('Does runReloadProxy write the proxy state (pids, child stamp, reloads, waitingOn, lastError) to reloadStateFile and log each reload, and does staleServerLine, through readProxyState, never tell matt to restart while the proxy pid is alive, giving only lastError or waitingOn?'),
     unspecifiedBehavior: noul('Does the proxy ever exit while the client is connected, kill a child while a call or job runs in it on a code change, swallow a client request without an answer, or forward the replayed initialize answer to the client, by a route the specification does not describe?'),

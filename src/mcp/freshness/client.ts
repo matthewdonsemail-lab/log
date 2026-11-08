@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, watch, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
@@ -36,6 +36,64 @@ export function codeStamp(root: string): number {
   };
   for (const sub of WATCHED) if (existsSync(join(root, sub))) walk(join(root, sub));
   return newest;
+}
+
+export interface StampWatcher {
+  current(): number;
+  refresh(): boolean;
+  close(): void;
+}
+
+export interface StampWatcherDeps {
+  walk?: (root: string) => number;
+  watch?: (dir: string, onChange: (file: string | null) => void) => { close(): void } | null;
+  now?: () => number;
+  backstopMs?: number;
+}
+
+function watchTree(dir: string, onChange: (file: string | null) => void): { close(): void } | null {
+  try {
+    const watcher = watch(dir, { recursive: true }, (_event, file) => onChange(file ? String(file) : null));
+    watcher.on("error", () => onChange(null));
+    return watcher;
+  } catch {
+    return null;
+  }
+}
+
+export function codeStampWatcher(root: string, deps: StampWatcherDeps = {}): StampWatcher {
+  const walk = deps.walk ?? codeStamp;
+  const now = deps.now ?? Date.now;
+  const backstopMs = deps.backstopMs ?? 60_000;
+  let stamp = walk(root);
+  let walkedAt = now();
+  let dirty = false;
+  const watchers: { close(): void }[] = [];
+  let watching = true;
+  for (const sub of WATCHED) {
+    const dir = join(root, sub);
+    if (!existsSync(dir)) continue;
+    const handle = (deps.watch ?? watchTree)(dir, (file) => {
+      if (file === null || CODE.test(file)) dirty = true;
+    });
+    if (handle) watchers.push(handle);
+    else watching = false;
+  }
+  return {
+    current: () => stamp,
+    refresh() {
+      if (!dirty && watching && now() - walkedAt < backstopMs) return false;
+      dirty = false;
+      walkedAt = now();
+      const next = walk(root);
+      const changed = next !== stamp;
+      stamp = next;
+      return changed;
+    },
+    close() {
+      for (const handle of watchers) handle.close();
+    },
+  };
 }
 
 export function recordServerStart(root: string, file = serverStampFile()): void {
