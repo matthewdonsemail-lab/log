@@ -48,7 +48,7 @@
       "description": "How log works inside, for contributors",
       "sections": [
         { "title": "Specs", "folder": "specs" },
-        { "title": "The ideas", "pages": ["howItWorks.md", "liveInbox.md", "unifyStorage.md", "storageAgainstTheBook.md", "accountsAndListings.md", "lifecycle.md", "twenty.md", "signingIn.md", "status.md"] },
+        { "title": "The ideas", "pages": ["howItWorks.md", "liveInbox.md", "unifyStorage.md", "storageAgainstTheBook.md", "storageReadPath.md", "accountsAndListings.md", "lifecycle.md", "twenty.md", "signingIn.md", "status.md"] },
         { "title": "Browsers and proxies", "pages": ["browsers.md", "browserSetup.md", "adsPower.md", "proxies.md"], "folders": ["proxyVendors"] },
         {
           "title": "Facebook in depth",
