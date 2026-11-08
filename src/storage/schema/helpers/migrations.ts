@@ -61,6 +61,11 @@ export const FENCE_COLUMNS: readonly (readonly [string, string, string])[] = [
   ['gaps', 'drops', 'INTEGER NOT NULL DEFAULT 0'],
 ]
 
+export const SEND_COLUMNS: readonly (readonly [string, string, string])[] = [
+  ['claims', 'sendingOp', 'TEXT'],
+  ['claims', 'sendingSince', 'TEXT'],
+]
+
 export const MIGRATIONS: readonly Migration[] = [
   {
     version: 1,
@@ -131,6 +136,14 @@ export const MIGRATIONS: readonly Migration[] = [
       for (const [table, column, type] of FENCE_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
       handle.prepare(`UPDATE gaps SET status = 'closed', closedAt = COALESCE(closedAt, ?), detail = COALESCE(detail || '; ', '') || 'closed into the older open gap for this account' WHERE status IN ('open', 'catchingUp', 'refused') AND id NOT IN (SELECT MIN(id) FROM gaps WHERE status IN ('open', 'catchingUp', 'refused') GROUP BY platform, account)`).run(new Date().toISOString())
       handle.exec("CREATE UNIQUE INDEX IF NOT EXISTS gapsOneOpen ON gaps (platform, account) WHERE status IN ('open', 'catchingUp', 'refused')")
+    },
+  },
+  {
+    version: 10,
+    name: 'fencedSends',
+    apply(handle) {
+      for (const [table, column, type] of SEND_COLUMNS) if (!hasColumn(handle, table, column)) handle.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`)
+      handle.exec('CREATE INDEX IF NOT EXISTS actionsByChat ON actions (platform, account, conversationId, id)')
     },
   },
 ]

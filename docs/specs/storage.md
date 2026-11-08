@@ -67,3 +67,9 @@ Checked by: code and SubQ
 An account has at most one open gap (`gapsOneOpen`, a partial unique index; migration 9 closes any extra into the oldest). When the socket drops again while a gap is open, `openGap` raises its `drops` counter. The catch-up runner closes the gap only if `drops` is still what it was when the catch-up started (`markGap` with `expectDrops`). Otherwise the gap goes back to open, and the next run catches up again.
 
 Checked by: code and SubQ
+
+### REQ-STORAGE-10: Each part of a send is fenced by its claim
+
+A send takes its chat's claim (`guardSend`), then a send lease inside the claim with an operation id of its own (`claims.sendingOp`). A second call in the same process that tries to send into that chat meanwhile is refused (`A SEND IS ALREADY GOING OUT`), though the session's earlier `inboxClaim` still counts as its own. Before each part, one transaction (`part`) checks that the claim still names this holder and generation, hasn't expired and still carries this operation id; renews it; and records an `intent` action with the operation id, part number and text hash. After the platform answers, `partSent` records the send the same way. A part whose claim was lost is held (`lost`, `chatClaimLost`). Before the first part, a message in that chat after the `seq` the voice gate read up to (`readUpTo`, taken just before the gate) stops the send (`movedOn`, `chatMovedOn`), naming what they wrote. A part whose text was intended by an earlier operation that never recorded its send, and whose echo is already in the chat as the account's own message, is not sent again (`alreadySent`, `echoedBefore`). The Discord, Slack, X DM, X queue, Instagram and voice-note sends all go through it.
+
+Checked by: code and SubQ

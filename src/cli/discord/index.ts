@@ -9,7 +9,7 @@ import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/i
 import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
-import { recordPosition } from "../../inbox/store/index.ts";
+import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { catchUpOneChat, discordCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import type { ReadMessage } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
@@ -593,6 +593,7 @@ export const discordSendCommand: Command = {
       if (!caught.ok) return refuse("discord send", "accountBehind", caught.refused);
       if ("how" in caught && caught.how === "chatRead") context.err(`${account.accountName}: still catching up, so this one chat was read from Discord first (${caught.stored} new message(s) stored) instead of waiting for the whole account`);
       const chatCurrent = "how" in caught && caught.how === "chatRead";
+      const readUpTo = latestSeq();
       if (parsed.flags["overGate"] === true) {
         const same = gateDeps.same({ platform: "discord", account: account.accountName, to: shown, text });
         if (!same.ok) return refuse("discord send", "sameAsSent", same.refused);
@@ -603,8 +604,9 @@ export const discordSendCommand: Command = {
         if (!voiced.ok) return refuse("discord send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }
-      const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target });
+      const guard = guardSend({ platform: "discord", account: account.accountName, conversationId: target }, undefined, { readUpTo });
       if (!guard.ok) return refuse("discord send", "chatClaimedElsewhere", guard.refused);
+      let movedOn: string[] = [];
       const sent: PlatformAnswer[] = [];
       const startedAt = discordDeps.now();
       let interrupted: InboxMessage[] = [];
@@ -615,20 +617,31 @@ export const discordSendCommand: Command = {
             await discordDeps.wait(plan.gapSeconds * 1000);
             interrupted = discordDeps.incoming(account.accountName, target, startedAt);
             if (interrupted.length) break;
-            if (!guard.held()) {
-              fenced = true;
-              break;
-            }
+          }
+          const step = guard.part(i, part);
+          if (step === "lost") {
+            fenced = true;
+            break;
+          }
+          if (step === "movedOn") {
+            movedOn = guard.heard();
+            break;
+          }
+          if (step === "alreadySent") {
+            sent.push({ ok: true, event: "sent", messageId: "(already sent before)" } as PlatformAnswer);
+            continue;
           }
           const run = context.directDiscord(account, { action: "send", channel: target, text: part, live: true, approvedBy, ...(i ? { continuesSend: true } : {}), ...(files.paths.length && i === plan.parts.length - 1 ? { files: files.paths } : {}) });
           sent.push(run.answer);
           if (!run.answer.ok || run.answer.event !== "sent") break;
+          guard.partSent(i, part, run.answer.messageId ? String(run.answer.messageId) : null);
           context.err(`  ${i + 1}/${plan.parts.length} sent ${run.answer.messageId}: ${part}`);
         }
       } finally {
         const ok = sent.filter((a) => a.ok && a.event === "sent").length;
         guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
+      if (movedOn.length) return refuse("discord send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${movedOn.map((m) => `  ${m}`).join("\n")}`);
       const last = sent[sent.length - 1];
       const done = sent.filter((a) => a.ok && a.event === "sent");
       const code = done.length === plan.parts.length ? 0 : 1;

@@ -7,7 +7,7 @@ import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
-import { recordPosition } from "../../inbox/store/index.ts";
+import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { instagramCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
@@ -253,13 +253,22 @@ export const instagramSendCommand: Command = {
       context.err(`${account.accountName}: send to ${said}, ${plan.length} message(s), on the direct-API engine (instagrapi), approved by ${approvedBy}`);
       const caught = await waitCaughtUp("instagram", account.accountName);
       if (!caught.ok) return refuse("instagram send", "accountBehind", caught.refused);
+      const readUpTo = latestSeq();
       if (text.trim()) {
         const voiced = await gateDeps.gate(context, { platform: "instagram", account: account.accountName, to: said, text, handle: said });
         if (!voiced.ok) return refuse("instagram send", "voiceGateFailed", voiced.refused);
         context.err(voiced.line);
       }
-      const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said });
+      const guard = guardSend({ platform: "instagram", account: account.accountName, conversationId: said, with: said }, undefined, { readUpTo });
       if (!guard.ok) return refuse("instagram send", "chatClaimedElsewhere", guard.refused);
+      const whole = text.trim() || "(photo)";
+      const step = guard.part(0, whole);
+      if (step !== "go") {
+        guard.done("failed", step === "alreadySent" ? "it had already gone out before" : step === "movedOn" ? "they wrote after the gate read the chat" : "the claim on this chat was lost");
+        if (step === "movedOn") return refuse("instagram send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${guard.heard().map((m) => `  ${m}`).join("\n")}`);
+        if (step === "alreadySent") return { code: 0, stdout: `log instagram send: ${account.accountName}: this message already went out to ${said} before (its echo is in the chat), so it was not sent again.` };
+        return refuse("instagram send", "chatClaimLost", "the claim on this chat was lost before anything was sent, so nothing went out");
+      }
       let run: ReturnType<NonNullable<typeof context.directInstagram>>;
       try {
         run = context.directInstagram(account, { action: "send", with: said, text, ...(photo ? { photo } : {}), asOne, live: true, approvedBy });
@@ -268,6 +277,7 @@ export const instagramSendCommand: Command = {
         throw error;
       }
       const sent = (run.answer.sent as { id: string; kind: string; text?: string }[] | undefined) ?? [];
+      if (run.answer.ok && sent.length) guard.partSent(0, whole, sent.map((s) => s.id).join(","));
       guard.done(((run.answer.interrupted as unknown[] | undefined) ?? []).length ? "interrupted" : run.answer.ok ? "sent" : "failed", `${sent.length} of ${plan.length}: ${sent.map((s) => s.text ?? s.kind).join(" / ").slice(0, 300)}`);
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "instagram", account: account.accountName, approvedBy, ...run.answer }, null, 2) };

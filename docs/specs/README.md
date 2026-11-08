@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 43 domains, 481 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 43 domains, 482 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -701,3 +701,4 @@ How log keeps what it reads and does: one SQLite database, `~/.logCli/log.db`, w
 - **REQ-STORAGE-07** People and accounts have stable ids, and names live in one place
 - **REQ-STORAGE-08** A replaced owner's writes are refused by the database, not by its own good behaviour
 - **REQ-STORAGE-09** A gap is never closed over a newer drop
+- **REQ-STORAGE-10** Each part of a send is fenced by its claim

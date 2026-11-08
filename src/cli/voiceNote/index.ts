@@ -111,6 +111,10 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         context.err(`${resolved.account}: ${rendered.note.path}, ${rendered.note.seconds} s`);
         const guard = guardSend({ platform: shape.platform, account: resolved.account, conversationId: resolved.chatId, ...(resolved.claimWith ? { with: resolved.claimWith } : {}) });
         if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
+        if (guard.part(0, `voice note: ${text.trim()}`) !== "go") {
+          guard.done("failed", "the claim on this chat was lost before the voice note went out");
+          return refuse(label, "chatClaimLost", "the claim on this chat was lost before the voice note went out, so nothing was sent");
+        }
         let answer: PlatformAnswer;
         try {
           answer = await resolved.send(rendered.note, approvedBy);
@@ -118,6 +122,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
           guard.done("failed", error instanceof Error ? error.message : String(error));
           throw error;
         }
+        if (answer.ok) guard.partSent(0, `voice note: ${text.trim()}`, answer.messageId ? String(answer.messageId) : null);
         guard.done(answer.ok ? "sent" : "failed", `voice note (${rendered.note.seconds} s): ${text.trim().slice(0, 240)}${answer.ok ? "" : `: ${answer.code}`}`);
         const code = answer.ok ? 0 : 1;
         if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", approvedBy, ...where, file: rendered.note.path, seconds: rendered.note.seconds, ...answer }, null, 2) };

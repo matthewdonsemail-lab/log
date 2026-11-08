@@ -282,7 +282,12 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
             log(`#${item.n} @${item.handle ?? "?"}: voice note made in matt's cloned voice, ${rendered.note.seconds} s`);
             const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
             if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+            if (guard.part(0, `voice note: ${item.text}`) !== "go") {
+              guard.done("failed", "the claim on this chat was lost before the voice note went out");
+              return { ok: false, code: "chatClaimLost", detail: "the claim on this chat was lost before the voice note went out, so nothing was sent" };
+            }
             const answer = (await opened.engine({ action: "xchatVoice", userId: item.userId, path: rendered.note.path, seconds: rendered.note.seconds, live: true, approvedBy, chatPin, ...(flags["force"] === true ? { force: true } : {}) } as never)).answer;
+            if (answer.ok && answer.event === "sent") guard.partSent(0, `voice note: ${item.text}`, answer.messageId ? String(answer.messageId) : null);
             guard.done(answer.ok && answer.event === "sent" ? "sent" : "failed", answer.ok ? "voice note" : String(answer.code ?? ""));
             return answer;
           }
@@ -299,14 +304,15 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
           let parts: Awaited<ReturnType<typeof sendDmParts>>;
           try {
-            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
+            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId }, guard);
           } catch (error) {
             guard.done("failed", error instanceof Error ? error.message : String(error));
             throw error;
           }
           const { answers, last, interrupted } = parts;
           const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
-          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}`);
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}${parts.lost ? ", then the claim on this chat was lost, so the rest was held" : ""}`);
+          if (!last) return { ok: false, code: "chatClaimLost", detail: "the claim on this chat was lost before anything was sent, so nothing went out" };
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           if (interrupted.length) {
             for (const line of dmInterruptedLines(opened.account.accountName, split, done, interrupted)) log(`#${item.n} @${item.handle ?? "?"}: ${line}`);

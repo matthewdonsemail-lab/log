@@ -22,7 +22,7 @@ export interface ChatRef {
 
 export interface ActionRecord {
   at: string
-  kind: 'claimed' | 'renewed' | 'released' | 'refused' | 'sent' | 'interrupted' | 'failed'
+  kind: 'claimed' | 'renewed' | 'released' | 'refused' | 'sent' | 'interrupted' | 'failed' | 'intent' | 'partSent'
   platform: string
   account: string
   conversationId: string
@@ -35,3 +35,9 @@ export interface ActionRecord {
 }
 
 export const CLAIM_TTL_MS = 10 * 60_000
+
+export type PartStep = 'go' | 'lost' | 'alreadySent' | 'movedOn'
+
+export interface SendOptions {
+  readUpTo?: number
+}

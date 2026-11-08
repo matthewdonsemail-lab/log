@@ -176,6 +176,8 @@ stateDiagram-v2
 | `twoStepNoAuthApp` | no | `host.signIn` | publish→blocked, monitor→blocked | Facebook asked for a passkey and its method picker (TwoStepVerificationChallengePickerDialogQuery) offered no authentication app (TOTP), or disabled it, so the account's authenticator secret can't sign it in. | Tell matt. Don't retry the account until it's looked at. |
 | `proxyWrongCountry` | no | `cli/preflight` | publish→blocked, monitor→blocked | The proxy answers, but its exit is in another country than the account's home. | Run `log proxy assign --account <id>`. |
 | `proxyCheckFailed` | yes | `cli/preflight` | publish→blocked, monitor→blocked | The proxy check itself could not run (the worker or the run folder failed), so the proxy is unknown. | Run `log proxy check --account <id>` and read its error. |
+| `chatMovedOn` | yes | `inbox/claims`, `src/cli/discord`, `src/cli/slack`, `src/cli/twitter` | publish→blocked, monitor→blocked | Someone wrote in the chat after the voice gate read it, so the draft answers an older moment. Nothing was sent. | Read what they said (it is in the refusal), redraft to answer it, gate it and send again. |
+| `chatClaimLost` | yes | `inbox/claims`, `src/cli/twitter` | publish→blocked, monitor→blocked | The claim on this chat was lost (expired, taken over, or another send took it) before the first part went out. Nothing was sent. | Check `log inbox actions --chat <id>` for who holds it now; claim it again only if nobody else is answering, then send. |
 
 ## listing
 
