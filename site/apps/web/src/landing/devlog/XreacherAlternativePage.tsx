@@ -9,7 +9,7 @@ import { DitherFade } from '../useCases/DitherFade'
 import { PromptCta } from '../useCases/UseCasesPage'
 import { Control } from '../Control'
 import { pageForPlatform } from '../useCases/platformPages'
-import { CompareTable, Receipt, STICKER, StoryCta, StoryKicker, StorySection } from '../story/StorySections'
+import { CompareTable, Receipt, STICKER, StoryCta, StoryFaq, StoryImage, StoryKicker, StorySection, type FaqItem } from '../story/StorySections'
 import { XREACHER_ALTERNATIVE } from './xreacherAlternative'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
@@ -32,9 +32,59 @@ function Doc({ to, children }: { to: string; children: ReactNode }) {
 }
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
-const TITLE = 'Xreacher alternative: log, the free open-source tool to automate X DMs'
+const TITLE = 'Xreacher Alternative (2026): the free open-source tool to automate Twitter DMs'
 const DESCRIPTION =
-  'Looking for an Xreacher alternative? I tried Xreacher to automate my X DMs and it never connected. Here is what it costs, what X accounts and proxies cost, and the free open-source tool I built instead.'
+  'Looking for an Xreacher alternative? I tried Xreacher to automate my Twitter DMs and my X account never connected. Here is what Xreacher costs, what X accounts and proxies cost, and log, the free open-source tool I built instead.'
+const UPDATED = '2026-11-09'
+const FAQ: FaqItem[] = [
+  {
+    q: 'What is the best Xreacher alternative?',
+    a: "If you want to automate X (Twitter) DMs from your own accounts without a monthly bill, log. It's free and open source, runs from Claude Code, Codex or Cursor, reads your X DMs and X Chat, and sends only when you approve.",
+  },
+  {
+    q: 'How much does Xreacher cost?',
+    a: 'Pro is $67 a month for one account per platform, $135 for five and $189 for ten. Scale is $299 a month for 100 accounts up to $1,299 for 1,000. Aged X accounts bought from Xreacher cost $3.50 to $10 each.',
+  },
+  {
+    q: 'Is log free?',
+    a: "Yes. log is open source under the MIT license. It runs on your own machine with your own accounts, so there's no seat fee and no plan to upgrade.",
+  },
+  {
+    q: 'Do I need proxies to automate Twitter messages with log?',
+    a: "No. log talks to X directly through one session per account, the way X's own web app does, so X needs no proxy. For platforms that do need one, you bring your own. We use Byteful.",
+  },
+  {
+    q: 'Do I need to buy X accounts?',
+    a: 'No. log runs on the accounts you already have. Xreacher asks for an X account at least 6 months old with X Premium, or sells aged accounts at $3.50 to $10 each.',
+  },
+  {
+    q: 'Does log read X Chat, the encrypted DMs?',
+    a: 'Yes. log reads the old X DM inbox and the encrypted X Chat inbox together, so your agent sees the whole thread before it drafts a reply.',
+  },
+  {
+    q: 'Will it send messages without me?',
+    a: 'No. Anything that sends is a dry run until you approve it, and a live send needs your explicit go-ahead.',
+  },
+]
+const SCHEMA = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      headline: "The Xreacher alternative I built because it didn't work",
+      description: DESCRIPTION,
+      author: { '@type': 'Person', name: 'Matthew Don', url: 'https://x.com/matthewsoldit' },
+      datePublished: UPDATED,
+      dateModified: UPDATED,
+      image: 'https://log.listeningkit.com/images/devlog/xreacherSignupEmail.webp',
+      mainEntityOfPage: 'https://log.listeningkit.com/devlog/xreacher-alternative',
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
+    },
+  ],
+}
 
 function LogoChip() {
   return (
@@ -52,7 +102,12 @@ function useMeta() {
     const previousDescription = meta?.getAttribute('content') ?? null
     document.title = TITLE
     meta?.setAttribute('content', DESCRIPTION)
+    const schema = document.createElement('script')
+    schema.type = 'application/ld+json'
+    schema.text = JSON.stringify(SCHEMA)
+    document.head.appendChild(schema)
     return () => {
+      schema.remove()
       document.title = previousTitle
       if (meta && previousDescription !== null) meta.setAttribute('content', previousDescription)
     }
@@ -108,12 +163,27 @@ function Story() {
         <StoryKicker>
           why would you <span className={STICKER}>pay</span> monthly to DM people from accounts you also have to buy?
         </StoryKicker>
+        <p className="mt-4 text-[15px] font-bold text-[#0D2A4C]/55">
+          By Matthew Don · Updated <time dateTime={UPDATED}>9 November 2026</time>
+        </p>
+        <div className="mt-6 rounded-2xl bg-[#F3F8FF] px-5 py-5 sm:px-6">
+          <h2 className="text-[22px] font-black tracking-[-0.02em] text-[#0D2A4C]">The short version</h2>
+          <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-[17px] leading-relaxed text-[#0D2A4C]/85">
+            <li>Xreacher costs $67 to $1,299 a month, plus X accounts at $3.50 to $10 each, plus your own proxies.</li>
+            <li>log is free and open source (MIT), runs on your own X accounts, and needs no proxy for X.</li>
+            <li>I signed up for Xreacher on 17 July 2026 and my X account never connected.</li>
+            <li>
+              If you want to automate Twitter DMs from your own accounts, log is the Xreacher alternative to try first.
+            </li>
+          </ul>
+        </div>
       </div>
 
       <StorySection id="looking" title="I was looking for exactly this." punch="something to automate my X DMs">
         <p>
           In July I wanted my X outreach automated: find the right people, open a conversation, follow up, and let me step in when someone
-          answers. Xreacher was the tool that kept coming up, so I signed up on 17 July 2026.
+          answers. I wanted to automate Twitter messages without sitting in the inbox all day. Xreacher kept coming up on lists of the best cold DM
+          tools, so I signed up on 17 July 2026.
         </p>
         <p>It covers X, Telegram and LinkedIn from one dashboard, with lead scraping, AI openers, follow-ups and a bot that answers replies.</p>
       </StorySection>
@@ -127,6 +197,11 @@ function Story() {
           I put it all in and the account never connected. Telegram didn&apos;t work for me either. The next day their email landed: &ldquo;Saw you
           haven&apos;t connected your X account yet.&rdquo; My dashboard still says no campaign created, from July to today.
         </p>
+        <StoryImage
+          src="/images/devlog/xreacherSignupEmail.webp"
+          alt="Xreacher's welcome email to Matthew, 17 July 2026: You signed up for Xreacher"
+          caption="Their welcome email, 17 July 2026"
+        />
         <p>To be honest, it probably works now. But back when I used it, it didn&apos;t.</p>
       </StorySection>
 
@@ -173,7 +248,7 @@ function Story() {
 
       <StorySection id="proxies" title="And you bring your own proxies." punch="one more bill">
         <p>
-          Connect more than one account and Xreacher wants your own proxies, active and in the right format. That&apos;s a third thing to buy and
+          Connect more than one account and Xreacher wants your own Twitter proxies, active and in the right format. That&apos;s a third thing to buy and
           keep alive.
         </p>
         <p>
@@ -242,6 +317,8 @@ function Story() {
           the open.
         </p>
       </StorySection>
+
+      <StoryFaq title="Xreacher alternative: questions" items={FAQ} />
 
       <StoryCta page={X_PAGE} href={LOG_REPO_URL} title="Run it on your own X account tonight." />
     </article>

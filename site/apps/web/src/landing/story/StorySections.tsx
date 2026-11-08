@@ -96,3 +96,32 @@ export function StoryCta({ page, title, href }: { page: PlatformPage; title: Rea
     </aside>
   )
 }
+
+export function StoryImage({ src, alt, caption }: { src: string; alt: string; caption: ReactNode }) {
+  return (
+    <figure className="flex flex-col gap-2">
+      <img src={src} alt={alt} loading="lazy" className="w-full rounded-xl border-2 border-[#D6E8FF]" />
+      <figcaption className="text-lg text-[#0D2A4C]/60" style={HAND}>
+        {caption}
+      </figcaption>
+    </figure>
+  )
+}
+
+export type FaqItem = { q: string; a: string }
+
+export function StoryFaq({ title, items }: { title: string; items: FaqItem[] }) {
+  return (
+    <section id="faq" className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-12">
+      <h2 className="text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] font-black leading-[1] tracking-[-0.035em] text-[#0D2A4C]">{title}</h2>
+      <div className="mt-6 flex flex-col">
+        {items.map((item) => (
+          <div key={item.q} className="border-t-2 border-dashed border-[#D6E8FF] py-5 first:border-t-0">
+            <h3 className="text-[22px] font-black leading-tight tracking-[-0.02em] text-[#0D2A4C]">{item.q}</h3>
+            <p className="mt-2 text-[18px] leading-relaxed text-[#0D2A4C]/85">{item.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
