@@ -1,6 +1,8 @@
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { appendLedger, ledgerRows } from '../../../storage/ledger'
+import { defaultDbPath } from '../../../storage/schema'
 import { CAPTURE_FOLDERS } from '../../driver/types'
 
 export interface LaunchLimits {
@@ -12,26 +14,19 @@ export const LAUNCH_LIMITS: LaunchLimits = { minGapMinutes: 10, perDay: 8 }
 
 const SELF_CHECK = 'Self-check passed'
 
-export const launchResetsPath = (env: Record<string, string | undefined> = process.env) => env.LOG_LAUNCH_RESETS || join(homedir(), '.logCli', 'launchResets.jsonl')
+export const launchResetsPath = (env: Record<string, string | undefined> = process.env) => env.LOG_LAUNCH_RESETS || defaultDbPath(env)
 
 export function lastLaunchReset(accountName: string, path: string = launchResetsPath()): Date | null {
-  if (!existsSync(path)) return null
   let last: Date | null = null
-  for (const line of readFileSync(path, 'utf8').split(/\r?\n/)) {
-    if (!line.trim()) continue
-    try {
-      const entry = JSON.parse(line) as { account: string; at: string }
-      const at = new Date(entry.at)
-      if (entry.account === accountName && !Number.isNaN(at.getTime()) && (!last || at > last)) last = at
-    } catch {
-    }
+  for (const row of ledgerRows('launchReset', { account: accountName }, path)) {
+    const at = new Date(row.at)
+    if (!Number.isNaN(at.getTime()) && (!last || at > last)) last = at
   }
   return last
 }
 
 export function recordLaunchReset(accountName: string, reason: string, at: Date = new Date(), path: string = launchResetsPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  appendFileSync(path, `${JSON.stringify({ account: accountName, at: at.toISOString(), reason })}\n`)
+  appendLedger({ kind: 'launchReset', at: at.toISOString(), account: accountName, outcome: 'reset', detail: reason }, path)
 }
 
 export function listLaunches(accountName: string, roots: { runs?: string; publish?: string; resets?: string } = {}): Date[] {

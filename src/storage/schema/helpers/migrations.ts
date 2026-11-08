@@ -31,6 +31,14 @@ export const MIGRATIONS: readonly Migration[] = [
       typeStoredEvents(handle)
     },
   },
+  {
+    version: 4,
+    name: 'ledgerColumns',
+    apply(handle) {
+      if (!hasColumn(handle, 'ledger', 'subject')) handle.exec('ALTER TABLE ledger ADD COLUMN subject TEXT')
+      if (!hasColumn(handle, 'ledger', 'code')) handle.exec('ALTER TABLE ledger ADD COLUMN code TEXT')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

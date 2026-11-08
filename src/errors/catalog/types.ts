@@ -1131,7 +1131,7 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['publish.routingCaptcha'],
     publish: 'needsPerson',
-    action: 'Clear it by hand. The ledger (~/.logCli/captcha/attempts.jsonl) shows each try.'
+    action: 'Clear it by hand. The ledger (the ledger table in ~/.logCli/log.db (kind captchaAttempt)) shows each try.'
   },
   roundsUsed: {
     layer: 'captcha',

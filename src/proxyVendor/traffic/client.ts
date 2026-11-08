@@ -1,30 +1,18 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
-import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { defaultDbPath } from '../../storage/schema'
+import { appendLedger, ledgerRows } from '../../storage/ledger'
 import { bytefulCredentials, getResidentialSummary } from '../byteful/client'
 import { getProxyAccount, twoCaptchaCredentials } from '../twoCaptcha/client'
 import { vendorOfProxy } from '../vendor/helpers/vendorOfProxy'
 import type { TrafficEntry, TrafficMeter } from './types'
 
-export const trafficLedgerPath = (env: Record<string, string | undefined> = process.env) => env.LOG_PROXY_TRAFFIC || join(homedir(), '.logCli', 'proxyTraffic.jsonl')
+export const trafficLedgerPath = (env: Record<string, string | undefined> = process.env) => env.LOG_PROXY_TRAFFIC || defaultDbPath(env)
 
 export function readTrafficLedger(path = trafficLedgerPath()): TrafficEntry[] {
-  if (!existsSync(path)) return []
-  return readFileSync(path, 'utf8')
-    .split('\n')
-    .filter((l) => l.trim())
-    .flatMap((l) => {
-      try {
-        return [JSON.parse(l) as TrafficEntry]
-      } catch {
-        return []
-      }
-    })
+  return ledgerRows('proxyTraffic', {}, path).map((r) => ({ at: r.at, account: r.account ?? '', run: r.detail ?? '', mb: r.amount ?? 0 }))
 }
 
 export function recordTraffic(entry: TrafficEntry, path = trafficLedgerPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  appendFileSync(path, `${JSON.stringify(entry)}\n`)
+  appendLedger({ kind: 'proxyTraffic', at: entry.at, account: entry.account, amount: entry.mb, unit: 'MB', outcome: 'used', detail: entry.run }, path)
 }
 
 export function twoCaptchaMeter(env: Record<string, string | undefined> = process.env): TrafficMeter {

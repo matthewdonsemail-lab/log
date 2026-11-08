@@ -102,7 +102,7 @@ page and adds no network identity.
 4. **Refuse without a proxy.** New catalog code `captchaNoProxy`, added to
    `src/errors/catalog/types.ts` and exported to `python/errors/errorCatalog.json`.
 5. **Record it.** Write whether a proxy was used into the captcha ledger
-   (`src/captcha/router/client.ts`, `~/.logCli/captcha/attempts.jsonl`).
+   (`src/captcha/router/client.ts`, the `ledger` table in `~/.logCli/log.db` (kind `captchaAttempt`)).
 6. **Treat Arkose through 2Captcha as account-burning.** That matches the
    existing `arkoseDailyCap` (R2 §5).
 
@@ -111,7 +111,7 @@ page and adds no network identity.
 1. Unit test: stub `TwoCaptcha` and assert that `recaptcha()` and `funcaptcha()`
    receive `proxy` (with the account's sticky session id), `userAgent` and the
    frame URL. Assert that a run with no proxy raises `captchaNoProxy`.
-2. Ledger: after a live solve, `~/.logCli/captcha/attempts.jsonl` records the
+2. Ledger: after a live solve, the `ledger` table in `~/.logCli/log.db` (kind `captchaAttempt`) records the
    proxy as used.
 3. Live: in the 2Captcha dashboard, the task should show the proxy. The IP
    2Captcha reports for the task should be the account's exit IP.

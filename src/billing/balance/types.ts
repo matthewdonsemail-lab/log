@@ -1,3 +1,4 @@
+import { defaultDbPath } from '../../storage/schema'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
@@ -54,7 +55,7 @@ export const LOW_AT: Partial<Record<Provider, number>> = { jina: 1_000_000, fish
 export const ANSWERS_ENV = 'LOG_BILLING_ANSWERS'
 
 export function answersFile(env: Record<string, string | undefined> = process.env, home = homedir()): string {
-  return env[ANSWERS_ENV]?.trim() || join(home, '.logCli', 'billing', 'answers.jsonl')
+  return env[ANSWERS_ENV]?.trim() || (env.LOG_DB || env.LOG_INBOX_STATE ? defaultDbPath(env) : join(home, '.logCli', 'log.db'))
 }
 
 export const JINA_BALANCE_URL = 'https://embeddings-dashboard-api.jina.ai/api/v1/api_key/fe_user?api_key='

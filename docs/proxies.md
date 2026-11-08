@@ -197,7 +197,7 @@ over the last 24 hours: 1024 MB by default, or `--trafficMb <mb>` for one run
 - The Reels warm-up reads the counter again every 5 reels and stops with
   `trafficBudgetSpent` once the account reaches its budget.
 - At the end, each run's megabytes are appended to
-  `~/.logCli/proxyTraffic.jsonl` (time, account, run, MB), which is what the
+  the `ledger` table in `~/.logCli/log.db` (kind `proxyTraffic`) (time, account, run, MB), which is what the
   next run counts.
 - A traffic-billed proxy is metered by its own provider (`meterForProxy`); a
   static IP is not metered.

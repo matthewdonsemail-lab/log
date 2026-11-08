@@ -63,7 +63,7 @@ export const launchBudget = {
     ],
     'REQ-LAUNCH-10': [
       { kind: 'symbol', file: budget, name: 'recordLaunchReset' },
-      { kind: 'string', file: budget, includes: 'launchResets.jsonl' },
+      { kind: 'string', file: budget, includes: 'launchReset' },
       { kind: 'symbol', file: 'src/cli/account/helpers/resetOpens.ts', name: 'resetAccountOpens' },
       { kind: 'symbol', file: 'src/marketplace/host/helpers/progress.ts', name: 'resetHostOpens' },
     ],

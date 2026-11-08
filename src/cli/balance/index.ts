@@ -6,7 +6,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 export const BALANCE_USAGE = [
   "Usage: log balance [--provider <name>] [--json]",
   `Every paid provider log calls, with what is left: ${PROVIDERS.join(", ")}.`,
-  "A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (~/.logCli/billing/answers.jsonl). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.",
+  "A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (the ledger table in ~/.logCli/log.db (kind providerAnswer)). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.",
   "Reading balances spends nothing (rule 41). Topping up is matt's: never done from log.",
 ].join("\n");
 

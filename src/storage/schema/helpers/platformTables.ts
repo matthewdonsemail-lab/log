@@ -16,7 +16,7 @@ export const PLATFORM_TABLES: readonly string[] = [
   `CREATE INDEX IF NOT EXISTS interactionsByAccount ON interactions (platform, account, at)`,
   `CREATE TABLE IF NOT EXISTS memberships (platform TEXT NOT NULL, roomId TEXT NOT NULL, userId TEXT NOT NULL, firstSeenAt TEXT NOT NULL, lastSeenAt TEXT NOT NULL, PRIMARY KEY (platform, roomId, userId)) WITHOUT ROWID`,
   `CREATE INDEX IF NOT EXISTS membershipsByUser ON memberships (platform, userId)`,
-  `CREATE TABLE IF NOT EXISTS ledger (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, provider TEXT, platform TEXT, account TEXT, at TEXT NOT NULL, amount REAL, unit TEXT, outcome TEXT NOT NULL, detail TEXT)`,
+  `CREATE TABLE IF NOT EXISTS ledger (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, provider TEXT, platform TEXT, account TEXT, subject TEXT, at TEXT NOT NULL, amount REAL, unit TEXT, outcome TEXT NOT NULL, code TEXT, detail TEXT)`,
   `CREATE INDEX IF NOT EXISTS ledgerByKind ON ledger (kind, at)`,
   `CREATE INDEX IF NOT EXISTS ledgerByAccount ON ledger (kind, platform, account, at)`,
   `CREATE TABLE IF NOT EXISTS transcripts (audioHash TEXT PRIMARY KEY, provider TEXT NOT NULL, text TEXT NOT NULL, wordsHash TEXT, durationMs INTEGER, createdAt TEXT NOT NULL) WITHOUT ROWID`,

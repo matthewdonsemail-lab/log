@@ -68,7 +68,7 @@ Checked by: code and SubQ
 
 ### REQ-LAUNCH-10: resetOpens writes one dated line and deletes nothing
 
-`log facebook account resetOpens <a>|all` writes one line with the account, the time and the reason to `~/.logCli/launchResets.jsonl` and sets the host's opens today to 0. Nothing is deleted. Rule 37.
+`log facebook account resetOpens <a>|all` writes one line with the account, the time and the reason to the `ledger` table in `~/.logCli/log.db` (kind `launchReset`) and sets the host's opens today to 0. Nothing is deleted. Rule 37.
 
 Checked by: code and SubQ
 

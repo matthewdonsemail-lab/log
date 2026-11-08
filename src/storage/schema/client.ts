@@ -1,4 +1,7 @@
-import type { Database } from 'bun:sqlite'
+import { Database } from 'bun:sqlite'
+import { mkdirSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { dirname, join } from 'node:path'
 import { MIGRATIONS, SCHEMA_VERSION } from './helpers'
 import { SchemaTooNewError } from './types'
 import type { AppliedMigration } from './types'
@@ -29,4 +32,25 @@ export function migrate(handle: Database, now: Date = new Date()): AppliedMigrat
     }
   }
   return applied
+}
+
+export function defaultDbPath(env: Record<string, string | undefined> = process.env): string {
+  if (env.LOG_DB) return env.LOG_DB
+  if (env.LOG_INBOX_STATE) return join(env.LOG_INBOX_STATE, 'log.db')
+  return join(homedir(), '.logCli', 'log.db')
+}
+
+const handles = new Map<string, Database>()
+
+export function openDatabase(path: string = defaultDbPath()): Database {
+  const held = handles.get(path)
+  if (held) return held
+  mkdirSync(dirname(path), { recursive: true })
+  const handle = new Database(path, { create: true })
+  handle.exec('PRAGMA journal_mode = WAL')
+  handle.exec('PRAGMA busy_timeout = 5000')
+  handle.exec('PRAGMA synchronous = NORMAL')
+  migrate(handle)
+  handles.set(path, handle)
+  return handle
 }

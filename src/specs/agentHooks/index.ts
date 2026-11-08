@@ -18,6 +18,7 @@ export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
   specPath: 'docs/specs/agentHooks.md',
   codePaths: [
+    'src/storage/schema/client.ts',
     'src/agentHooks/registry/index.ts',
     'src/agentHooks/registry/types.ts',
     'src/agentHooks/pageState/index.ts',
@@ -83,7 +84,7 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_STORE, name: 'importPendingFile' },
       { kind: 'symbol', file: INBOX_CLAIMS, name: 'stillHeld' },
       { kind: 'symbol', file: INBOX_WATCH, name: 'takePending' },
-      { kind: 'string', file: INBOX_STORE, includes: 'PRAGMA journal_mode = WAL' },
+      { kind: 'string', file: 'src/storage/schema/client.ts', includes: 'PRAGMA journal_mode = WAL' },
       { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'the claim on this chat was lost' },
       { kind: 'string', file: 'src/cli/slack/index.ts', includes: 'the claim on this chat was lost' },
     ],

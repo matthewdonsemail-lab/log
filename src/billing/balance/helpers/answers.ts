@@ -1,5 +1,4 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
-import { dirname } from 'node:path'
+import { appendLedger, ledgerRows } from '../../../storage/ledger'
 import { answersFile, OUT_OF_CREDIT_WORDS, PROVIDER_INFO, PROVIDERS } from '../types'
 import type { Provider, ProviderAnswer } from '../types'
 
@@ -11,8 +10,7 @@ export function noteProviderAnswer(provider: Provider, status: number, said = ''
   const ok = status >= 200 && status < 300
   const answer: ProviderAnswer = { provider, at: now.toISOString(), status, ok, outOfCredit: !ok && isOutOfCredit(status, said), said: ok ? '' : said.replace(/\s+/g, ' ').slice(0, 300) }
   try {
-    mkdirSync(dirname(file), { recursive: true })
-    appendFileSync(file, `${JSON.stringify(answer)}\n`)
+    appendLedger({ kind: 'providerAnswer', at: answer.at, provider, amount: status, unit: 'httpStatus', outcome: ok ? 'ok' : answer.outOfCredit ? 'outOfCredit' : 'failed', detail: answer.said || null }, file)
   } catch {
   }
   return answer
@@ -20,14 +18,10 @@ export function noteProviderAnswer(provider: Provider, status: number, said = ''
 
 export function lastAnswers(file = answersFile()): Map<Provider, ProviderAnswer> {
   const last = new Map<Provider, ProviderAnswer>()
-  if (!existsSync(file)) return last
-  for (const line of readFileSync(file, 'utf8').split(/\r?\n/).slice(-5000)) {
-    if (!line.trim()) continue
-    try {
-      const answer = JSON.parse(line) as ProviderAnswer
-      if ((PROVIDERS as readonly string[]).includes(answer.provider)) last.set(answer.provider, answer)
-    } catch {
-    }
+  for (const row of ledgerRows('providerAnswer', { limit: 5000 }, file)) {
+    if (!(PROVIDERS as readonly string[]).includes(row.provider ?? '')) continue
+    const status = row.amount ?? 0
+    last.set(row.provider as Provider, { provider: row.provider as Provider, at: row.at, status, ok: row.outcome === 'ok', outOfCredit: row.outcome === 'outOfCredit', said: row.detail ?? '' })
   }
   return last
 }

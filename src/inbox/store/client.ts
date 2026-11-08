@@ -1,9 +1,9 @@
 import { Database } from 'bun:sqlite'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
-import { migrate } from '../../storage/schema'
+import { join } from 'node:path'
+import { defaultDbPath, openDatabase } from '../../storage/schema'
 import { isBareId, typeEvent } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
@@ -11,20 +11,13 @@ import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 let opened: { path: string; db: Database } | null = null
 
 export function dbPath(): string {
-  if (process.env.LOG_DB) return process.env.LOG_DB
-  if (process.env.LOG_INBOX_STATE) return join(process.env.LOG_INBOX_STATE, 'log.db')
-  return join(homedir(), '.logCli', 'log.db')
+  return defaultDbPath()
 }
 
 export function db(): Database {
   const path = dbPath()
   if (opened?.path === path) return opened.db
-  mkdirSync(dirname(path), { recursive: true })
-  const handle = new Database(path, { create: true })
-  handle.exec('PRAGMA journal_mode = WAL')
-  handle.exec('PRAGMA busy_timeout = 5000')
-  handle.exec('PRAGMA synchronous = NORMAL')
-  migrate(handle)
+  const handle = openDatabase(path)
   const seed = handle.prepare(`INSERT INTO eventTypes (platform, type, status, firstSeenAt) VALUES (?, ?, 'known', ?) ON CONFLICT(platform, type) DO UPDATE SET status = 'known'`)
   const now = new Date().toISOString()
   for (const [platform, types] of Object.entries(KNOWN_TYPES)) for (const type of types) seed.run(platform, type, now)
