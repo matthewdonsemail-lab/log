@@ -15,8 +15,8 @@ function run(args, env = {}) {
 }
 
 run(['--filter', 'web', 'build'])
-const prerendered = spawnSync('node', [join(root, 'scripts', 'prerenderDevlog.mjs')], { stdio: 'inherit' })
-if (prerendered.status !== 0) throw new Error('prerendering the devlog pages failed')
+const prerendered = spawnSync('node', [join(root, 'scripts', 'prerenderPages.mjs')], { stdio: 'inherit' })
+if (prerendered.status !== 0) throw new Error('prerendering the devlog and platform pages failed')
 const synced = spawnSync('node', [join(root, '..', 'scripts', 'docs', 'syncSiteDocs.mjs')], { stdio: 'inherit' })
 if (synced.status !== 0) throw new Error('syncing docs/ into the docs site failed')
 rmSync(out, { recursive: true, force: true })

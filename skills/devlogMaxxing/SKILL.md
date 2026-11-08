@@ -106,13 +106,15 @@ The worked example is `/devlog/xreacher-alternative`:
    - Register the story in `BODIES` in `devlog/prerender.tsx`.
    - Add the route `/devlog/<slug>` in `App.tsx` and a line in `public/sitemap.xml`.
    - The `/devlog` list picks the article up by itself.
-6. **Make its share card.** Run `C:\Python312\python.exe site/apps/web/scripts/devlogOg.py <slug>`. It fills `scripts/devlogOgCard.html` (the member sites' card: blue gradient, hand-drawn frame, matt's photo, the card text, the byline), renders it in Chrome at 1200×630 and writes `public/og/devlog/<slug>.png`. Look at the PNG before committing it.
-7. **Rendered for crawlers and social previews.** The site build (`site/scripts/build-site.mjs`) runs `site/scripts/prerenderDevlog.mjs` after the web build:
+6. **Make its share card.** Run `C:\Python312\python.exe site/apps/web/scripts/ogCards.py <slug>`. It fills `scripts/ogCard.html` (the member sites' card: blue gradient, hand-drawn frame, matt's photo, the card text, the byline), renders it in Chrome at 1200×630 and writes `public/og/devlog/<slug>.png`. Look at the PNG before committing it.
+7. **Rendered for crawlers and social previews.** The site build (`site/scripts/build-site.mjs`) runs `site/scripts/prerenderPages.mjs` after the web build:
    - It renders every devlog's story to HTML with React on the server.
    - It writes `dist/devlog/<slug>.html` and `dist/devlog.html`, each with its own title, description, canonical link, OG and Twitter tags (the share card as the image), the JSON-LD (`id="devlog-schema"`, so the page doesn't add it twice), and the whole article inside `#root`.
    - `vercel.json` sends `/devlog` and `/devlog/:slug` to those files before the app's catch-all.
 
-   Check it locally: run `npx vite build` in `site/apps/web`, then `node site/scripts/prerenderDevlog.mjs`, then read the title, the og tags and the text in `dist/devlog/<slug>.html`.
+   The platform pages (`/twitter`, `/discord`, `/slack`, `/instagram`, `/reddit`) go through the same build, from `landing/useCases/sharePages.json`. Each gets its own title, description and card: the platform's logo on a white tile with no photo, rendered by the same `ogCards.py` into `public/og/pages/<slug>.png`. They carry the tags only, and the app still renders their content. A new platform page is one entry there, plus a rewrite in `vercel.json` (the build refuses a page with no rewrite).
+
+   Check it locally: run `npx vite build` in `site/apps/web`, then `node site/scripts/prerenderPages.mjs`, then read the title, the og tags and the text in `dist/devlog/<slug>.html`.
 8. **Link it in.**
    - Link to the platform page (`/twitter` …) where the copy names the platform.
    - Link to the docs (`/docs/<tab>/<page>`, for example `getStarted/mcp`, `howItWorks/liveInbox`, `howItWorks/proxies`, `platforms/x`, `howItWorks/specs/voiceGate`) where the copy names how log does it.

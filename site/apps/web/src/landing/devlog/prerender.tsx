@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { DEVLOG_ARTICLES, SITE, devlogImage, devlogPath } from './articles'
 import { DEVLOG_DESCRIPTION, DEVLOG_TITLE, DevlogList } from './DevlogIndexPage'
 import { XREACHER_SCHEMA, XreacherStory } from './XreacherAlternativePage'
+import sharePages from '../useCases/sharePages.json'
 
 export type PrerenderedPage = {
   path: string
@@ -56,5 +57,14 @@ export function prerenderedPages(): PrerenderedPage[] {
       </main>,
     ),
   }
-  return [index, ...articles]
+  const platforms: PrerenderedPage[] = sharePages.map((page) => ({
+    path: `/${page.slug}`,
+    title: page.title,
+    description: page.description,
+    image: `${SITE}/og/pages/${page.slug}.png`,
+    type: 'website',
+    schema: null,
+    body: '',
+  }))
+  return [index, ...articles, ...platforms]
 }
