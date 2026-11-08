@@ -29,6 +29,6 @@ Checked by: code and SubQ
 
 ### REQ-RELOAD-04: Its state is recorded and the hook reads it
 
-`runReloadProxy` writes the proxy's state to `reload.json` (`reloadStateFile`, `LOG_MCP_RELOAD_FILE`): the proxy and child pids, the child's stamp, the reloads, `waitingOn` and `lastError`. Each reload is logged to stderr and the live log. `staleServerLine` reads it (`readProxyState`). While the proxy is alive, it never tells matt to restart, only what the reload waits on or why the new code failed.
+`runReloadProxy` writes the proxy's state to log.db's `state` table (scope `mcpReload`, keyed by `reloadStateFile`, `LOG_MCP_RELOAD_FILE`, REQ-STORAGE-17): the proxy and child pids, the child's stamp, the reloads, `waitingOn` and `lastError`. Each reload is logged to stderr and the live log. `staleServerLine` reads it (`readProxyState`). While the proxy is alive, it never tells matt to restart, only what the reload waits on or why the new code failed.
 
 Checked by: code and SubQ

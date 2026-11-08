@@ -1,6 +1,6 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { deleteState, getState, putState } from '../../storage/state/index'
 import { readSession, sessionLive } from '../relay/index'
 import { behindOf, db, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS } from './types'
@@ -94,18 +94,16 @@ export function chatListPath(platform: string, account: string): string {
 }
 
 export function cachedChatList<T>(platform: string, account: string, now: number = Date.now()): T[] | null {
-  try {
-    const kept = JSON.parse(readFileSync(chatListPath(platform, account), 'utf8')) as { savedAt: number; chats: T[] }
-    return now - kept.savedAt < CHAT_LIST_FRESH_MS ? kept.chats : null
-  } catch {
-    return null
-  }
+  const kept = getState<{ savedAt: number; chats: T[] }>('chatList', `${platform}:${account}`, { legacyFile: chatListPath(platform, account) })?.body
+  return kept && now - kept.savedAt < CHAT_LIST_FRESH_MS ? kept.chats : null
 }
 
 export function saveChatList<T>(platform: string, account: string, chats: readonly T[], now: number = Date.now()): void {
-  const path = chatListPath(platform, account)
-  mkdirSync(dirname(path), { recursive: true })
-  writeFileSync(path, JSON.stringify({ savedAt: now, chats }))
+  putState('chatList', `${platform}:${account}`, { savedAt: now, chats }, now)
+}
+
+export function forgetChatList(platform: string, account: string): void {
+  deleteState('chatList', `${platform}:${account}`)
 }
 
 export function findInChatList<T, M extends { ok: boolean }>(platform: string, account: string, said: string, match: (chats: T[], said: string) => M, list: () => { ok: true; chats: T[] } | { ok: false; detail: string }): { from: 'cache' | 'platform'; found: M } | { from: 'platform'; failed: string } {

@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, watch, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, statSync, watch } from "node:fs";
+import { getState, putState } from "../../storage/state/index.ts";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 
 const WATCHED = ["src", "python", join("vendor", "fbk", "src")];
 const CODE = /\.(ts|py)$/;
@@ -13,11 +14,7 @@ export interface ProxyState {
 }
 
 export function readProxyState(file = process.env.LOG_MCP_RELOAD_FILE || join(homedir(), ".logCli", "mcp", "reload.json")): ProxyState | null {
-  try {
-    return JSON.parse(readFileSync(file, "utf8")) as ProxyState;
-  } catch {
-    return null;
-  }
+  return getState<ProxyState>("mcpReload", file, { legacyFile: file })?.body ?? null;
 }
 
 export function serverStampFile(): string {
@@ -97,8 +94,7 @@ export function codeStampWatcher(root: string, deps: StampWatcherDeps = {}): Sta
 }
 
 export function recordServerStart(root: string, file = serverStampFile()): void {
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString(), stamp: codeStamp(root) }));
+  putState("mcpServerStart", file, { pid: process.pid, startedAt: new Date().toISOString(), stamp: codeStamp(root) });
 }
 
 function alive(pid: number): boolean {
@@ -111,13 +107,8 @@ function alive(pid: number): boolean {
 }
 
 export function staleServerLine(root: string, file = serverStampFile(), stampNow?: number): string | null {
-  if (!existsSync(file)) return null;
-  let started: { pid: number; startedAt: string; stamp: number };
-  try {
-    started = JSON.parse(readFileSync(file, "utf8"));
-  } catch {
-    return null;
-  }
+  const started = getState<{ pid: number; startedAt: string; stamp: number }>("mcpServerStart", file, { legacyFile: file })?.body;
+  if (!started) return null;
   if (!alive(started.pid)) return null;
   const now = stampNow ?? codeStamp(root);
   if (now <= started.stamp) return null;

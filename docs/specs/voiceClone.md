@@ -30,7 +30,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-CLONE-04: The clone is made once per provider, only from matt's own voice notes
 
-`mattsRecordings` in `src/extensions/voiceClone/helpers/recordings.ts` keeps only the kept voice notes `sentByMatt` says he sent (`fromMe` in the conversation store, or his `ownMessage` in the .db). `pickReferences` takes them shortest first, each at least 5 s, within the provider's most. `log clone voice` (`cloneCommand`, `src/cli/clone/index.ts`) lists them as a dry run, refuses under the provider's least with `voiceRecordingsMissing`, converts them to wav with `wavOf` when the provider wants wav, clones only with `--apply`, and never clones twice on a provider that `~/.logCli/voice/clone.json` already holds (`readClone`, `writeClone`, keyed by provider) unless `--replace` says to (REQ-VOICE-CLONE-11). `log fish` is refused with the `log clone` form it became.
+`mattsRecordings` in `src/extensions/voiceClone/helpers/recordings.ts` keeps only the kept voice notes `sentByMatt` says he sent (`fromMe` in the conversation store, or his `ownMessage` in the .db). `pickReferences` takes them shortest first, each at least 5 s, within the provider's most. `log clone voice` (`cloneCommand`, `src/cli/clone/index.ts`) lists them as a dry run, refuses under the provider's least with `voiceRecordingsMissing`, converts them to wav with `wavOf` when the provider wants wav, clones only with `--apply`, and never clones twice on a provider that log.db already holds (`readClone`, `writeClone`, the `voiceClone` row keyed by provider, REQ-STORAGE-17) unless `--replace` says to (REQ-VOICE-CLONE-11). `log fish` is refused with the `log clone` form it became.
 
 Checked by: code and SubQ
 

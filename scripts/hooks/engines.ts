@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { engineContext, fbkStateRoot } from '../../src/directApi/engine/index'
 import { localChangesLine, staleServerLine } from '../../src/mcp/freshness/index'
+import { getState, putState } from '../../src/storage/state/index'
 
 const raw = await Bun.stdin.text().catch(() => '')
 let event = 'UserPromptSubmit'
@@ -14,9 +14,8 @@ const repo = join(import.meta.dir, '..', '..')
 const text = [staleServerLine(repo), localChangesLine(repo), engineContext()].filter(Boolean).join('\n')
 const root = fbkStateRoot()
 const last = join(root, '.lastHook')
-const changed = !existsSync(last) || readFileSync(last, 'utf8') !== text
+const changed = getState<string>('lastHook', last, { legacyFile: last, parse: (raw) => raw })?.body !== text
 if (event === 'SessionStart' || changed) {
-  mkdirSync(root, { recursive: true })
-  writeFileSync(last, text)
+  putState('lastHook', last, text)
   process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))
 }

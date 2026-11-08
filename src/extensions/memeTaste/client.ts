@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { getState, putState } from '../../storage/state/index'
 import type { DecisionImage, DecisionsClient } from '../../subq/decisions/index'
 import { MEME_AT, TASTE_OTHER, TASTE_STYLES } from './types'
 import type { TasteCandidate, TasteFit, TasteIndex, TasteMeme, TasteRating, TasteStyle } from './types'
@@ -10,17 +10,11 @@ export function tastePath(env: Record<string, string | undefined> = process.env)
 }
 
 export function readTaste(path = tastePath()): TasteIndex | null {
-  if (!existsSync(path)) return null
-  try {
-    return JSON.parse(readFileSync(path, 'utf8')) as TasteIndex
-  } catch {
-    return null
-  }
+  return getState<TasteIndex>('memeTaste', path, { legacyFile: path })?.body ?? null
 }
 
 export function writeTaste(index: TasteIndex, path = tastePath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  writeFileSync(path, JSON.stringify(index, null, 1))
+  putState('memeTaste', path, index)
 }
 
 interface XMediaItem {

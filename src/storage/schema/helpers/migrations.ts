@@ -202,6 +202,13 @@ export const MIGRATIONS: readonly Migration[] = [
       handle.exec('CREATE INDEX IF NOT EXISTS recordsByKind ON records (kind, key, seq)')
     },
   },
+  {
+    version: 16,
+    name: 'state',
+    apply(handle) {
+      handle.exec('CREATE TABLE IF NOT EXISTS state (scope TEXT NOT NULL, key TEXT NOT NULL, body TEXT NOT NULL, updatedAt INTEGER NOT NULL, PRIMARY KEY (scope, key)) WITHOUT ROWID')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

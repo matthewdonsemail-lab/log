@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { getState, putState } from '../../storage/state/index'
 import { AGENT_HOOKS } from '../registry/index'
 import type { AgentHook, HookEvent } from '../registry/types'
 import { sessionIdOf } from '../sessionOffsets/index'
@@ -71,10 +71,9 @@ export function enginesAnswer(event: HookEvent, repo: string): HookAnswer {
   const text = [staleServerLine(repo, undefined, freshness?.stamp()), localChangesLine(repo, freshness ? freshness.changes() : undefined), engineContext()].filter(Boolean).join('\n')
   const root = fbkStateRoot()
   const last = join(root, '.lastHook')
-  const changed = !existsSync(last) || readFileSync(last, 'utf8') !== text
+  const changed = getState<string>('lastHook', last, { legacyFile: last, parse: (raw) => raw })?.body !== text
   if (event !== 'SessionStart' && !changed) return {}
-  mkdirSync(root, { recursive: true })
-  writeFileSync(last, text)
+  putState('lastHook', last, text)
   return { context: text }
 }
 
@@ -113,10 +112,10 @@ export function pageStateAnswer(event: HookEvent, raw: string): HookAnswer {
     input = JSON.parse(raw || '{}')
   } catch {}
   const memoryPath = process.env.LOG_HOOK_MEMORY || join(process.env.USERPROFILE ?? process.env.HOME ?? '.', '.logCli', 'runs', 'inspect', 'hookState.json')
-  const memory = parseMemory(existsSync(memoryPath) ? readFileSync(memoryPath, 'utf8') : '')
+  const kept = getState<unknown>('hookMemory', memoryPath, { legacyFile: memoryPath })
+  const memory = parseMemory(kept ? JSON.stringify(kept.body) : '')
   const result = hookReply(event, readOpenBrowsers(), memory, input.stop_hook_active === true)
-  mkdirSync(dirname(memoryPath), { recursive: true })
-  writeFileSync(memoryPath, JSON.stringify(result.memory))
+  putState('hookMemory', memoryPath, result.memory)
   return result.output ? { output: result.output as Record<string, unknown> } : {}
 }
 

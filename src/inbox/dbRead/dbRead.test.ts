@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'bun:test'
-import { rmSync } from 'node:fs'
 import { storeRead } from '../catchUp/index'
-import { cachedChatList, chatListPath, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceDeps, readSourceFor } from './index'
+import { cachedChatList, forgetChatList, chatMessageCount, chatMessages, findInChatList, isVisualAttachment, markBackfilled, mediaNotSaved, readSourceDeps, readSourceFor } from './index'
 import type { ReadSourceDeps } from './index'
 
 const deps = (over: Partial<ReadSourceDeps> = {}): ReadSourceDeps => ({ live: () => true, behind: () => null, backfilledAt: () => null, ...over })
@@ -54,7 +53,7 @@ describe('the .db gives back a chat oldest first, with who wrote each', () => {
 
 describe('a chat is found by name from the kept list, and the platform only when the name is new', () => {
   test('the first lookup lists from the platform and keeps the list; the next one asks nothing', () => {
-    rmSync(chatListPath('discord', 'lister'), { force: true })
+    forgetChatList('discord', 'lister')
     let calls = 0
     const list = () => {
       calls++

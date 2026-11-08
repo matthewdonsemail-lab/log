@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
-type Kind = 'repo' | 'capture' | 'dataset' | 'index' | 'media' | 'log' | 'session' | 'notMovedYet'
+type Kind = 'repo' | 'capture' | 'dataset' | 'index' | 'media' | 'log' | 'session'
 
 const WHY: Record<Kind, string> = {
   repo: 'writes files inside the repo (docs, skills, scaffolds, the commit log)',
@@ -11,7 +11,6 @@ const WHY: Record<Kind, string> = {
   media: 'a media file (audio, image, video)',
   log: 'a log people watch as it is written (the live log, rule 26) or a process log',
   session: 'a private per-run or per-account session file (cookies, specs, OAuth), never shared state',
-  notMovedYet: 'shared state not yet in log.db, listed so it is seen; moving it is the next step',
 }
 
 const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
@@ -28,12 +27,8 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'scripts/docs/syncSiteDocs.mjs': { writes: 4, kind: 'repo' },
   'scripts/docs/syncSiteSkills.mjs': { writes: 2, kind: 'repo' },
   'scripts/fbk/tryAccount.ts': { writes: 1, kind: 'capture' },
-  'scripts/hooks/engines.ts': { writes: 1, kind: 'notMovedYet' },
-  'scripts/hooks/pageState.ts': { writes: 1, kind: 'notMovedYet' },
   'scripts/media/personaPictures.ts': { writes: 1, kind: 'dataset' },
   'scripts/useCases/benchRouter.ts': { writes: 1, kind: 'dataset' },
-  'src/agentHooks/answers/client.ts': { writes: 2, kind: 'notMovedYet' },
-  'src/agentHooks/sessionOffsets/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/auth/session/client.ts': { writes: 2, kind: 'session' },
   'src/browser/flow/client.ts': { writes: 2, kind: 'capture' },
   'src/browser/inspect/client.ts': { writes: 5, kind: 'capture' },
@@ -47,20 +42,14 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/cli/warmup/helpers/feedRun.ts': { writes: 2, kind: 'capture' },
   'src/cli/warmup/helpers/personaRun.ts': { writes: 4, kind: 'capture' },
   'src/cli/warmup/helpers/platformActivity.ts': { writes: 1, kind: 'capture' },
-  'src/contextLayer/service/client.ts': { writes: 2, kind: 'notMovedYet' },
   'src/directApi/engine/client.ts': { writes: 3, kind: 'session' },
-  'src/extensions/memeTaste/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/extensions/memeTaste/helpers/call.ts': { writes: 1, kind: 'dataset' },
-  'src/extensions/voiceClone/helpers/store.ts': { writes: 1, kind: 'notMovedYet' },
   'src/extensions/voiceClone/helpers/voiceNote.ts': { writes: 1, kind: 'media' },
   'src/facebook/group/members/client.ts': { writes: 2, kind: 'capture' },
   'src/facebook/marketplace/check/client.ts': { writes: 1, kind: 'capture' },
-  'src/inbox/dbRead/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/inbox/watch/client.ts': { writes: 3, kind: 'log' },
   'src/marketplace/host/helpers/progress.ts': { writes: 2, kind: 'capture' },
-  'src/mcp/freshness/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/mcp/oauth/client.ts': { writes: 1, kind: 'session' },
-  'src/mcp/reload/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/media/persona/client.ts': { writes: 3, kind: 'dataset' },
   'src/media/photo/client.ts': { writes: 1, kind: 'dataset' },
   'src/observability/liveLog/index.ts': { writes: 1, kind: 'log' },
@@ -78,7 +67,6 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/twenty/graphql/helpers/localAccounts.ts': { writes: 1, kind: 'session' },
   'src/twitter/account/session/client.ts': { writes: 6, kind: 'session' },
   'src/voice/pairs/client.ts': { writes: 3, kind: 'index' },
-  'src/voice/passes/client.ts': { writes: 1, kind: 'notMovedYet' },
   'src/voice/phrases/client.ts': { writes: 1, kind: 'index' },
   'src/warmup/viewer/client.ts': { writes: 1, kind: 'dataset' },
 }
@@ -91,7 +79,10 @@ const looser: string[] = []
 for (const file of files) {
   const writes = (readFileSync(file, 'utf8').match(WRITE) ?? []).length
   const allowed = ALLOWED[file]
-  if (!writes) continue
+  if (!writes) {
+    if (allowed) looser.push(`${file} no longer writes to disk; drop it from ALLOWED`)
+    continue
+  }
   if (!allowed) problems.push(`${file} writes to disk ${writes} time(s) but isn't on the list: put what it stores in log.db (src/inbox/store, src/storage), or add it to ALLOWED in scripts/checks/checkOneDatabase.ts with a kind from WHY if it truly is one`)
   else if (writes > allowed.writes) problems.push(`${file} writes to disk ${writes} time(s), more than the ${allowed.writes} listed (${allowed.kind}): a new loose store; put it in log.db`)
   else if (writes < allowed.writes) looser.push(`${file}: ${writes} write(s) now, ${allowed.writes} listed; lower it`)
@@ -102,6 +93,5 @@ if (problems.length) {
   for (const p of problems) console.error(`  - ${p}`)
   process.exit(1)
 }
-const waiting = Object.entries(ALLOWED).filter(([, a]) => a.kind === 'notMovedYet').map(([f]) => f)
-console.log(`oneDatabase: no new loose store; ${Object.keys(ALLOWED).length} listed writers, ${waiting.length} still holding shared state outside log.db (${waiting.map((f) => f.split('/').slice(-2).join('/')).join(', ')})`)
+console.log(`oneDatabase: no new loose store; every shared state is in log.db, and the ${Object.keys(ALLOWED).length} listed writers keep only repo files, captures, datasets, indexes, media, logs and private session files`)
 for (const l of looser) console.log(`  note: ${l}`)

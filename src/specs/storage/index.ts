@@ -166,6 +166,16 @@ export const storage = {
       { kind: 'string', file: ONE_DB, includes: 'oneDatabase: no new loose store' },
       { kind: 'symbol', file: STORE, name: 'retirePendingFile' },
     ],
+    'REQ-STORAGE-17': [
+      { kind: 'string', file: MIGRATIONS, includes: 'CREATE TABLE IF NOT EXISTS state' },
+      { kind: 'symbol', file: 'src/storage/state/client.ts', name: 'getState' },
+      { kind: 'symbol', file: 'src/storage/state/client.ts', name: 'putState' },
+      { kind: 'symbol', file: 'src/storage/state/client.ts', name: 'claimState' },
+      { kind: 'uses', file: 'src/agentHooks/sessionOffsets/client.ts', name: 'putState' },
+      { kind: 'uses', file: 'src/contextLayer/service/client.ts', name: 'claimState' },
+      { kind: 'uses', file: 'src/extensions/voiceClone/helpers/store.ts', name: 'putState' },
+      { kind: 'uses', file: 'src/mcp/reload/client.ts', name: 'putState' },
+    ],
     'REQ-STORAGE-03': [
       { kind: 'symbol', file: BACKFILL, name: 'runBackfill' },
       { kind: 'symbol', file: BACKFILL, name: 'BACKFILL_BATCH' },
@@ -188,7 +198,8 @@ export const storage = {
     'REQ-STORAGE-13': noul('Do startJob, appendProgress, finishJob, requestCancel, readJob, readProgress, listJobs and busyJob in src/mcp/jobs/client.ts read and write the jobs and jobLines tables (cancelRequested as a column, progress lines numbered per job) instead of files, does statusOf still read a running job with a dead pid as lost, and does importJobFiles import the old json, jsonl and cancel files once, recording it in imports?'),
     'REQ-STORAGE-14': noul('Do readTranscript and writeTranscript read and write the transcripts table keyed by the audio hash with the whole answer in body, do readLinks and linkMessages read and write transcriptLinks, and does importTranscriptFiles import the old transcript files and messages.json once, recording it in imports?'),
     'REQ-STORAGE-15': noul('Do appendStageLog, readStageLog, pruneRuns, addRating and readRatings write and read records rows (kinds stageLog, prunedRun, memeRating) through appendRecord and readRecords, importing each old file once with importRecordFile, and does logTiming insert each hook timing into spans with tool hook:<event>:<provider> instead of appending to timings.jsonl?'),
-    'REQ-STORAGE-16': noul('Does checkOneDatabase count appendFileSync and writeFileSync in every tracked non-test ts and mjs file under src, scripts and bin, fail when a file not in ALLOWED writes or a listed file writes more than its count, and name every notMovedYet writer; is it run by lefthook and bun run check; and does retirePendingFile append any pending.jsonl row not already in events and then rename the file to pending.jsonl.imported, keeping a file with an unreadable line?'),
+    'REQ-STORAGE-16': noul('Does checkOneDatabase count appendFileSync and writeFileSync in every tracked non-test ts and mjs file under src, scripts and bin, fail when a file not in ALLOWED writes or a listed file writes more than its count, with no notMovedYet kind for shared state, and name a listed file that no longer writes; is it run by lefthook and bun run check; and does retirePendingFile append any pending.jsonl row not already in events and then rename the file to pending.jsonl.imported, keeping a file with an unreadable line?'),
+    'REQ-STORAGE-17': noul('Is there a state table keyed by scope and key, written only through putState, claimState, deleteState and pruneState in src/storage/state/client.ts; do the page-state and engines hooks (src/agentHooks/answers/client.ts, scripts/hooks/engines.ts, scripts/hooks/pageState.ts), the session offsets, the context service and its start claim, memeTaste readTaste and writeTaste, the voice clone store, the chat list cache, the MCP server stamp, the reload state and the voice passes read and write it instead of files; does getState import the old file at legacyFile only once, recorded in imports; and does writeSessionOffsets prune rows older than three days under its key prefix?'),
     unspecifiedBehavior: noul('Does the storage code order messages by text times, store the same message twice when it has a platform id, or hold the write lock for a whole backfill, by a route the specification does not describe?'),
   },
   assertions: {
@@ -208,6 +219,7 @@ export const storage = {
     'REQ-STORAGE-14': MET,
     'REQ-STORAGE-15': MET,
     'REQ-STORAGE-16': MET,
+    'REQ-STORAGE-17': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

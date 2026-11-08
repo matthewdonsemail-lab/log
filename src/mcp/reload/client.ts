@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { getState, putState } from "../../storage/state/index.ts";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
 import { codeStampWatcher } from "../freshness/index.ts";
@@ -217,11 +217,7 @@ export function reloadStateFile(): string {
 }
 
 export function readReloadState(file = reloadStateFile()): ReloadState | null {
-  try {
-    return JSON.parse(readFileSync(file, "utf8")) as ReloadState;
-  } catch {
-    return null;
-  }
+  return getState<ReloadState>("mcpReload", file, { legacyFile: file })?.body ?? null;
 }
 
 function spawnServerChild(root: string, events: ChildEvents): ReloadChild {
@@ -257,8 +253,7 @@ export function runReloadProxy(root: string): void {
     },
     record: (state) => {
       try {
-        mkdirSync(dirname(file), { recursive: true });
-        writeFileSync(file, JSON.stringify(state));
+        putState("mcpReload", file, state);
       } catch {
       }
     },
