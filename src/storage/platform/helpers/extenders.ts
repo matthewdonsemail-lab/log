@@ -73,7 +73,19 @@ export const redditExtender = makeExtender({
   chatKind: () => 'dm',
 })
 
+export const facebookExtender = makeExtender({
+  platform: 'facebook',
+  chatKind: () => 'dm',
+})
+
+export const linkedinExtender = makeExtender({
+  platform: 'linkedin',
+  chatKind: () => 'dm',
+})
+
 export const EXTENDERS: Readonly<Record<string, PlatformExtender>> = {
+  facebook: facebookExtender,
+  linkedin: linkedinExtender,
   twitter: twitterExtender,
   discord: discordExtender,
   slack: slackExtender,

@@ -5,6 +5,7 @@ import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { commandKey, PLATFORM_LABELS, PLATFORM_SITES, PLATFORMS } from "../../src/cli/runner/helpers/platforms.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { COMMAND_RULES } from "../../src/mcp/server/helpers/agentRules.ts";
+import { EXTENDERS } from "../../src/storage/platform/helpers/extenders.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const problems: string[] = [];
@@ -16,6 +17,7 @@ for (const platform of PLATFORMS.filter((p) => p !== PLATFORMS[0])) {
   if (!PLATFORM_LABELS[platform]) problems.push(`${platform}: no PLATFORM_LABELS entry (src/cli/runner/helpers/platforms.ts)`);
   if (!has(`src/${platform}`)) problems.push(`${platform}: no src/${platform} (rule 64)`);
   if (!has(`src/cli/${platform}/index.ts`)) problems.push(`${platform}: no src/cli/${platform}/index.ts`);
+  if (!EXTENDERS[platform]) problems.push(`${platform}: no extender in EXTENDERS (src/storage/platform/helpers/extenders.ts), so its events and reads don't reach the shared tables (#97)`);
   if (!has(`python/${platform}Api/engine.py`)) problems.push(`${platform}: no python/${platform}Api/engine.py`);
   else {
     const engine = readFileSync(join(root, `python/${platform}Api/engine.py`), "utf8");
