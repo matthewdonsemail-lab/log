@@ -180,7 +180,7 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
       if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
       if (drop === 'open') void catchUpAsOwner()
       const type = pushedTypeOf(event)
-      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
+      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: pushedEventId(platform, account, type, event, new Date().toISOString()) })
       relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
       if (stored) markStage(stored.eventId, 'relayed')
   }
@@ -211,6 +211,13 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
     replaced.push(account)
   }
   return replaced
+}
+
+export const TIMED_TYPES: readonly string[] = ['badge']
+
+export function pushedEventId(platform: string, account: string, type: string, event: Record<string, unknown>, at: string): string {
+  const { seenAt: _seen, ...rest } = event
+  return createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(rest)}${TIMED_TYPES.includes(type) ? `|${at}` : ''}`).digest('hex').slice(0, 12)
 }
 
 export function pushedTypeOf(event: Record<string, unknown>): string {

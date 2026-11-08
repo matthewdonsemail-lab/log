@@ -456,10 +456,10 @@ While an account's X Chat watch is open, its one session keeps X's own notificat
 
 - **REQ-XLIVE-01** The watch polls X's badge counts every 120 seconds
 - **REQ-XLIVE-02** A rise in unread notifications reads one page of new ones
-- **REQ-XLIVE-03** Every count and new event goes to live.jsonl
+- **REQ-XLIVE-03** Every count and new event goes into log.db
 - **REQ-XLIVE-04** A refused read stops the poll
 - **REQ-XLIVE-05** The X live hook puts new events in front of the agent
-- **REQ-XLIVE-06** Each Claude session reads from its own offsets
+- **REQ-XLIVE-06** Each Claude session reads from its own cursor
 - **REQ-XLIVE-07** A refused read is said to matt
 
 ## [Platform scaffold](./platformScaffold.md)
