@@ -8,6 +8,7 @@ import { UseCasesPage } from './landing/useCases/UseCasesPage'
 import { ReaLooksmaxxingPage } from './landing/useCases/ReaLooksmaxxingPage'
 import { XreacherAlternativePage } from './landing/devlog/XreacherAlternativePage'
 import { DevlogIndexPage } from './landing/devlog/DevlogIndexPage'
+import { ShareCardPage } from './landing/shareCard/ShareCardPage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
 const createQueryClient = () => new QueryClient({
@@ -59,6 +60,7 @@ export function App() {
             <Route path="/devlog/xreacher-alternative" element={<XreacherAlternativePage />} />
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
+            <Route path="/shareCard/:slug" element={<ShareCardPage />} />
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
