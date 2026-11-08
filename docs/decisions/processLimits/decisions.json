@@ -1,0 +1,44 @@
+[
+  {
+    "id": "D1",
+    "question": "How should Claude Code's hooks reach log's code?",
+    "options": [
+      { "id": "A", "name": "Bun per hook through Git Bash", "description": "What runs today: each hook is `bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/<name>.ts\"` through Git Bash, a new process per hook per event." },
+      { "id": "B", "name": "Bun per hook, exec form", "description": "Each hook stays a separate Bun process, started directly with `command` + `args`, no shell." },
+      { "id": "C", "name": "One Bun process per event", "description": "One exec-form Bun process per event runs every hook's logic for that event in-process and prints one combined answer." },
+      { "id": "D", "name": "http hook per event to the warm service", "description": "Every hook becomes one `type: \"http\"` hook per event to the long-lived context service on 127.0.0.1:47317, which answers all of that event's hooks from its open state in one request." },
+      { "id": "E", "name": "http for context, exec form for the refusing hooks", "description": "As D for hooks that add context, but the two refusing PreToolUse hooks (chatNames, liveLogs) stay exec-form Bun processes so they still refuse when the service is down; alert-only output may use asyncRewake." }
+    ],
+    "criteria": [
+      { "id": "latency", "question": "What does it add to each tool call at p99.9, given hooks run side by side and the measured costs?", "levels": ["Over 300 ms", "100 to 300 ms", "30 to 100 ms", "5 to 30 ms", "Under 5 ms"] },
+      { "id": "refusalSafety", "question": "Do the refusing hooks (rules 106, 155) still refuse a bad tool call when part of the system is down?", "levels": ["A failure lets every bad call through", "Refusal depends on the service being up", "Refusal holds unless the service hangs", "Refusal holds but slowly", "Refusal always holds"] },
+      { "id": "windowsFit", "question": "Does it work on Windows with Claude Code 2.1.305, as tested?", "levels": ["Known broken on Windows", "Untested and risky", "Should work, untested", "Works, with caveats", "Tested and works"] },
+      { "id": "effort", "question": "How small and safe is the change to log?", "levels": ["Rewrite of the hook layer and service", "Large change", "Moderate change", "Small change", "Settings only"] },
+      { "id": "observability", "question": "Can each hook's end-to-end cost be measured and attributed?", "levels": ["Invisible", "Only in-process time", "Per process, not per event", "Per event at the service", "Per event, end to end, in spans"] },
+      { "id": "robustness", "question": "Does it keep working through a service crash, restart or code reload?", "levels": ["Breaks until a person fixes it", "Breaks until the next session", "Degrades silently", "Degrades loudly and recovers", "Unaffected"] }
+    ]
+  },
+  {
+    "id": "D2",
+    "question": "How should log's Bun side reach the Python engines?",
+    "options": [
+      { "id": "A", "name": "Python per call, relaying to a host", "description": "Today for X and Instagram: a new Python process per call connects to the account's long-lived host over a new loopback TCP connection and relays one request." },
+      { "id": "B", "name": "Python per call, no host", "description": "Today for Discord, Slack and Reddit: a new Python process per call does the work itself." },
+      { "id": "C", "name": "Bun to the host directly, new TCP connection per call", "description": "Bun reads the host's port and token and opens a new loopback TCP connection per call, newline JSON, no Python relay. Every platform gets a host." },
+      { "id": "D", "name": "Bun to the host directly, kept-open connection", "description": "As C, but each Bun process keeps one connection per host open, with request ids, line reassembly and reconnect on host restart; the host reads many requests per connection." },
+      { "id": "E", "name": "stdio pipe to a child host owned by the MCP server", "description": "Each MCP server starts the hosts as its own children and talks over stdio pipes." },
+      { "id": "F", "name": "Windows named pipe to the host", "description": "Bun reaches an independent host over a Windows named pipe instead of TCP." },
+      { "id": "G", "name": "AF_UNIX socket to the host", "description": "Bun reaches an independent host over a Unix-domain socket (Windows 10+)." },
+      { "id": "H", "name": "Shared memory to the host", "description": "Bun and the host exchange messages through a shared memory mapping plus an event or semaphore." },
+      { "id": "I", "name": "Port the clients to TypeScript", "description": "Remove Python by porting twikit, instagrapi, endcord and gabriel into Bun." }
+    ],
+    "criteria": [
+      { "id": "latency", "question": "What does it add to each engine call at p99.9, from the measured costs?", "levels": ["Over 300 ms", "30 to 300 ms", "3 to 30 ms", "0.5 to 3 ms", "Under 0.5 ms"] },
+      { "id": "oneSession", "question": "Does it keep one session per account shared by every Claude session (rules 105, 129, 131)?", "levels": ["Breaks the rule", "Several sessions per account", "One per account, but killed by reloads", "One per account with caveats", "One per account, always"] },
+      { "id": "robustness", "question": "Does it recover from a host restart (rule 108 closes hosts on code change) or crash without a wrong send?", "levels": ["Fails silently", "Fails until a person acts", "Fails loudly, no recovery", "Recovers with a retry", "Recovers transparently and loudly"] },
+      { "id": "windowsFit", "question": "Does it work with Bun and Python asyncio on Windows today?", "levels": ["Not supported", "Needs private or unsupported APIs", "Should work, untested", "Works with care", "Works, already used in log"] },
+      { "id": "effort", "question": "How small and safe is the change to log?", "levels": ["Months, a rewrite", "Large change", "Moderate change", "Small change", "No change"] },
+      { "id": "observability", "question": "Can each engine call's cost be split into its stages in spans?", "levels": ["Invisible", "Total only", "Total plus host time", "Most stages", "Every stage, end to end"] }
+    ]
+  }
+]

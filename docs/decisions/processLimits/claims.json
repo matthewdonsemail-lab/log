@@ -1,0 +1,17 @@
+[
+  { "id": "hooksParallel", "statement": "Claude Code 2.1.305 runs the matching hooks of one event at the same time, not one after another." },
+  { "id": "argsNoShell", "statement": "On Claude Code 2.1.305, a command hook with args runs without a shell." },
+  { "id": "httpInjects", "statement": "On Claude Code 2.1.305, a type http hook's additionalContext reaches the model." },
+  { "id": "processDwarfsSyscall", "statement": "Creating a process costs at least four orders of magnitude more than a system call." },
+  { "id": "gitBashForkCost", "statement": "Starting a hook through Git Bash costs about 100 ms or more on top of starting it directly." },
+  { "id": "persistentSubMs", "statement": "Every kept-open transport measured (kept-open TCP, HTTP keep-alive, stdio pipe) has p99 under 1 ms and p99.9 under 2 ms on this machine." },
+  { "id": "freshConnectionMs", "statement": "A new loopback TCP connection per call adds about 1 ms at p50 over a kept-open one." },
+  { "id": "transportsDifferLittle", "statement": "The differences between kept-open transports are under 1 ms at p99.9, far below the cost of starting one process." },
+  { "id": "nagleNoStall", "statement": "On this machine, Nagle and delayed ACK cause no 40 to 200 ms stall on loopback." },
+  { "id": "hostConnectNotTcp", "statement": "Most of the measured 7 ms host.connect is not the TCP connect." },
+  { "id": "host64k", "statement": "The X host refuses a request larger than 64 KiB because of asyncio's default readline limit." },
+  { "id": "childHostBreaksRules", "statement": "A host started as the child of one MCP server cannot be the single host per account shared by every Claude session." },
+  { "id": "eventLoopBlocking", "statement": "A long computation or blocking call inside a single event loop stalls every request it serves." },
+  { "id": "stampWalkPerCall", "statement": "The MCP proxy walks the source tree synchronously before relaying each tool call." },
+  { "id": "asyncioNoUnixWindows", "statement": "Python asyncio's default Windows event loop does not support a Unix-socket server." }
+]
