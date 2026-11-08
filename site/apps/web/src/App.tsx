@@ -48,7 +48,6 @@ export function App() {
         <Router>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/useCases" element={<UseCasesPage />} />
             <Route path="/twitter" element={<UseCasesPage key="twitter" platform="twitter" />} />
             <Route path="/discord" element={<UseCasesPage key="discord" platform="discord" />} />
             <Route path="/slack" element={<UseCasesPage key="slack" platform="slack" />} />

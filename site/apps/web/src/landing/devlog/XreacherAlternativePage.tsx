@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAnglesRight, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { Header } from '../Header'
@@ -6,13 +6,30 @@ import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
 import { DitherFade } from '../useCases/DitherFade'
-import { MoreUseCases, PromptCta } from '../useCases/UseCasesPage'
+import { PromptCta } from '../useCases/UseCasesPage'
 import { Control } from '../Control'
 import { pageForPlatform } from '../useCases/platformPages'
 import { CompareTable, Receipt, STICKER, StoryCta, StoryKicker, StorySection } from '../story/StorySections'
 import { XREACHER_ALTERNATIVE } from './xreacherAlternative'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
+const X_LINK = 'font-bold text-[#2A8CFF] underline decoration-dashed underline-offset-4 hover:text-[#1A5FC8]'
+
+function XPage({ children }: { children: ReactNode }) {
+  return (
+    <a href="/twitter" className={X_LINK}>
+      {children}
+    </a>
+  )
+}
+
+function Doc({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <a href={`/docs/${to}`} className={X_LINK}>
+      {children}
+    </a>
+  )
+}
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
 const TITLE = 'Xreacher alternative: log, the free open-source tool to automate X DMs'
@@ -61,7 +78,7 @@ function Hero() {
               I wanted my X DMs automated. <span className="text-white/70">Xreacher never got going.</span>
             </p>
             <p className="text-lede text-white/85">
-              <LogoChip /> is free and open source. It reads your X DMs and X Chat, drafts in your voice and sends only when you say yes, from your
+              <LogoChip /> is free and open source. It reads your <a href="/twitter" className="font-black text-white underline decoration-dashed underline-offset-4">X DMs and X Chat</a>, drafts in your voice and sends only when you say yes, from your
               own accounts on your own machine.
             </p>
             <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
@@ -160,8 +177,8 @@ function Story() {
           keep alive.
         </p>
         <p>
-          With log, X doesn&apos;t need a proxy at all: every account talks to X directly, through one session, the way X&apos;s own web app does.
-          For the platforms that do need one, we use Byteful.
+          With log, <Doc to="platforms/x">X doesn&apos;t need a proxy at all</Doc>: every account talks to X directly, through one session, the way X&apos;s own web app does.
+          For the platforms that do need one, <Doc to="howItWorks/proxies">we use Byteful</Doc>.
         </p>
         <Receipt
           title="What we pay Byteful"
@@ -176,9 +193,9 @@ function Story() {
 
       <StorySection id="built" title="So I built my own." punch="it was free and cheap to run">
         <p>
-          log is the Xreacher alternative I wanted: a CLI and an MCP server. You point Claude Code, Codex or Cursor at it and say what you want:
-          &ldquo;read my X DMs and X Chat, draft a reply to Jay, and wait for my approval.&rdquo; It reads both X inboxes, checks the draft against
-          how you actually write, and sends nothing until you say yes.
+          log is the Xreacher alternative I wanted: a CLI and an <Doc to="getStarted/mcp">MCP server</Doc> that runs <XPage>your X account</XPage> from your agent. You point Claude Code, Codex or Cursor at it and say what you want:
+          &ldquo;read my X DMs and X Chat, draft a reply to Jay, and wait for my approval.&rdquo; It <XPage>reads both X inboxes</XPage>, checks the draft against
+          <Doc to="howItWorks/specs/voiceGate">how you actually write</Doc>, and sends nothing until you say yes.
         </p>
         <CompareTable
           them="Xreacher"
@@ -194,12 +211,36 @@ function Story() {
         />
       </StorySection>
 
+      <StorySection id="fast" title="It's fast because it reads from your machine." punch="and your accounts stay quiet">
+        <p>
+          Every account keeps <Doc to="howItWorks/liveInbox">one live connection to its platform</Doc>, the same push channel X&apos;s own app
+          listens on, and everything that comes in or goes out is written once to a local database on your machine. When your agent wants a
+          thread, it reads that database, not X.
+        </p>
+        <p>
+          So the only network traffic is your account&apos;s own client talking to the platform. No dashboard in the middle, no second login, no
+          polling. Fewer connections and fewer cold starts look less like a bot, so the account is less likely to get burnt.
+        </p>
+        <Receipt
+          title="Reading one chat, typical time"
+          rows={[
+            { label: 'An X thread, asked from X', value: '11 s' },
+            { label: 'The same thread, from the local database', value: '25 ms' },
+            { label: 'A Discord chat, asked from Discord', value: '91 s' },
+            { label: 'The same chat, from the local database', value: '0.6 ms', note: 'measured 7 November 2026' },
+          ]}
+        />
+      </StorySection>
+
       <StorySection id="own" title="We're in the age of owning your stuff." punch="your accounts, your agent, your machine">
         <p>
-          A few years ago you needed a SaaS dashboard to automate X DMs. Now an agent on your own laptop can read the thread, write in your voice
+          A few years ago you needed a SaaS dashboard to <XPage>automate X DMs</XPage>. Now an agent on your own laptop can read the thread, write in your voice
           and send through your own account. No seat fees, no rented accounts, nobody else holding your password.
         </p>
-        <p>That&apos;s why log is open source. Use it, fork it, and if it breaks, open an issue and we fix it in the open.</p>
+        <p>
+          That&apos;s why log is open source. <Doc to="getStarted/install">Install it</Doc>, fork it, and if it breaks, open an issue and we fix it in
+          the open.
+        </p>
       </StorySection>
 
       <StoryCta page={X_PAGE} href={LOG_REPO_URL} title="Run it on your own X account tonight." />
@@ -223,7 +264,6 @@ export function XreacherAlternativePage() {
       <Story />
       <Control />
       <PromptCta title="Try log on your own X DMs" ask={XREACHER_ALTERNATIVE.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
-      <MoreUseCases current={null} />
       <SiteFooter />
     </div>
   )
