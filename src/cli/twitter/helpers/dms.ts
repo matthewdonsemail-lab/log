@@ -57,7 +57,7 @@ const oneLine = (text: string | null | undefined, max = 140): string => {
 const whoOf = (thread: TwitterDmThread): string => thread.name || thread.with.map((p) => (p.handle ? `@${p.handle}` : p.userId)).join(", ") || "?";
 
 function threadLine(thread: TwitterDmThread, index: number): string {
-  const flags = [thread.box === "request" ? "request" : null, thread.unread ? "unread" : null, openedNoReply(thread) ? "they opened it, no reply yet: follow up" : thread.lastFromMe ? "you sent last" : reactedOnly(thread) ? "reacted, so they opened it: follow up" : "waiting on you"].filter(Boolean).join(", ");
+  const flags = [thread.box === "request" ? "request" : null, thread.unread ? "unread" : null, openedNoReply(thread) ? "they opened it, no reply yet: follow up" : thread.lastFromMe ? "you sent last" : reactedOnly(thread) ? "reacted, so they opened it: follow up" : thread.youReactedOnly ? "waiting on you (you only reacted)" : "waiting on you"].filter(Boolean).join(", ");
   return `  ${index + 1}. ${whoOf(thread)} · ${thread.lastAt ?? "?"} · ${flags}\n     ${thread.lastFromMe ? "you" : "them"}: ${oneLine(thread.lastText) || "(no text)"}\n     conversation ${(thread.conversationIds ?? [thread.conversationId]).join(" + ")}`;
 }
 
