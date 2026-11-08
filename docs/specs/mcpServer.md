@@ -112,7 +112,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-17: One warm context layer routes matt's prompts and puts the play back after compaction
 
-`scripts/contextLayer/service.ts` keeps the route index and its embedder loaded on `127.0.0.1` at `CONTEXT_PORT` (`src/contextLayer/service/types.ts`), and answers `/hook` with `hookAnswer` (`src/contextLayer/hook/client.ts`). The UserPromptSubmit hook for `scripts/hooks/useCases.ts` carries `service: "/hook"` in `src/agentHooks/registry/index.ts`, so `hookCommand` writes `serviceHookCommand`: a curl to the service, with the bun script after `||`. `routePrompt` in `src/useCases/router/client.ts`:
+`scripts/contextLayer/service.ts` keeps the route index and its embedder loaded on `127.0.0.1` at `CONTEXT_PORT` (`src/contextLayer/service/types.ts`), and answers `/hook` with `hookAnswer` (`src/contextLayer/hook/client.ts`). The UserPromptSubmit hook for `scripts/hooks/useCases.ts` carries `service: "/hook"` in `src/agentHooks/registry/index.ts`. For Codex, `hookCommand` writes `serviceHookCommand`: a curl to the service, with the bun script after `||`. Claude Code reaches it through the event's http hook (REQ-HOOKS-21), and `useCasesAnswer` calls the same `hookAnswer`. `routePrompt` in `src/useCases/router/client.ts`:
 - returns nothing for a text `isPrompt` refuses (`NOT_A_PROMPT`);
 - corrects words with `correctTypos` against the index's vocabulary;
 - embeds `windowsOf` the prompt;

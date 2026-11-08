@@ -6,78 +6,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/pageState.ts\"",
-            "timeout": 20
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/storage.ts\"",
+            "command": "bun",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/event.ts",
+              "SessionStart"
+            ],
             "timeout": 30
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/engines.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/knowledge.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/inbox.ts\"",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/queue.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/useCases.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/xLive.ts\"",
-            "timeout": 10
           }
         ]
       }
@@ -86,63 +20,9 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/pageState.ts\"",
-            "timeout": 20
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/storage.ts\"",
+            "type": "http",
+            "url": "http://127.0.0.1:47317/hooks/UserPromptSubmit",
             "timeout": 30
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/engines.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/inbox.ts\"",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "curl -sf --connect-timeout 0.2 --max-time 0.8 -X POST --data-binary @- http://127.0.0.1:47317/hook || bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/useCases.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/queue.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/xLive.ts\"",
-            "timeout": 10
           }
         ]
       }
@@ -152,38 +32,8 @@
         "matcher": "Bash|PowerShell|Monitor|mcp__log__.*",
         "hooks": [
           {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/inbox.ts\"",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|PowerShell|Monitor|mcp__log__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/queue.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|PowerShell|Monitor|mcp__log__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/xLive.ts\"",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|PowerShell|Monitor|mcp__log__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/pageState.ts\"",
+            "type": "http",
+            "url": "http://127.0.0.1:47317/hooks/PostToolUse",
             "timeout": 20
           }
         ]
@@ -195,7 +45,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/chatNames.ts\"",
+            "command": "bun",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/chatNames.ts"
+            ],
             "timeout": 10
           }
         ]
@@ -205,7 +58,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/liveLogs.ts\"",
+            "command": "bun",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/liveLogs.ts"
+            ],
             "timeout": 10
           }
         ]
@@ -215,8 +71,8 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/hooks/pageState.ts\"",
+            "type": "http",
+            "url": "http://127.0.0.1:47317/hooks/Stop",
             "timeout": 20
           }
         ]

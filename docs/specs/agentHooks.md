@@ -10,7 +10,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 
 ### REQ-HOOKS-01: One hook list writes both hosts' files
 
-The hooks are one list in the code. Claude Code's `.claude/settings.json` and Codex's `.codex/hooks.json` are both written from it, each hook as a command that runs its script from the repo, so both hosts run the same hooks.
+The hooks are one list in the code. Claude Code's `.claude/settings.json` and Codex's `.codex/hooks.json` are both written from it, so both hosts run the same hooks. Codex runs each hook as a command that runs its script from the repo. Claude Code reaches them as REQ-HOOKS-21 says.
 
 Checked by: code and SubQ
 
@@ -128,5 +128,17 @@ Checked by: code and SubQ
 ### REQ-HOOKS-20: A Discord, Slack or Instagram call names its chat, never its id
 
 The PreToolUse hook `scripts/hooks/chatNames.ts`, registered in `src/agentHooks/registry/index.ts` for the log MCP tools of discord, slack and instagram, runs `chatNameVerdict` from `src/agentHooks/chatNames/index.ts`: a `channel`, `chat` or `with` argument that `isBareId` calls an id is refused (exit 2) with how to name it instead (a person, a group, or a server channel as "<server> #<channel>"), and a name passes. Rule 155.
+
+Checked by: code and SubQ
+
+
+### REQ-HOOKS-21: Claude Code's hooks reach log through the warm service, and only the refusals start a process
+
+`claudeCodeHooks` in `src/agentHooks/registry/index.ts` writes one handler per event:
+- UserPromptSubmit, PostToolUse and Stop are each one `type: "http"` hook to the context service, at `HOOK_SERVICE_URL/<event>`;
+- SessionStart is one exec-form command, `bun` with `args` and no shell, running `EVENT_SCRIPT` (`scripts/hooks/event.ts`) with the event's name. It starts the service when it is down;
+- the two PreToolUse hooks in `REFUSING_HOOKS` (`chatNames`, `liveLogs`) stay their own exec-form `bun` processes, so a refusal still works when the service is down. `liveLogs` also starts the service when it is down.
+
+The service (`scripts/contextLayer/service.ts`) answers `/hooks/<event>` with `answerEvent` (`src/agentHooks/answers/client.ts`). That runs every hook of the event whose matcher fits the tool (`hooksForEvent`, never a refusing one) at the same time, merges their answers (`mergeAnswers`), and names a hook that throws in the context instead of failing the others. Each event writes a timing line. Inside the service, the code stamp and the uncommitted files come from `cachedFreshness`. `git status` reruns only when the stamp moved, or once a minute. Issue #99.
 
 Checked by: code and SubQ

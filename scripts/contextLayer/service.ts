@@ -8,6 +8,8 @@ import { listUseCases } from '../../src/mcp/server/helpers/index.ts'
 import { localEmbedder } from '../../src/search/conversations/helpers/embed.ts'
 import { EMBED_MODEL } from '../../src/search/conversations/types.ts'
 import { buildRouteIndex, routePrompt } from '../../src/useCases/router/index'
+import { answerEvent, cachedFreshness, useFreshnessSource } from '../../src/agentHooks/answers/index'
+import type { HookEvent } from '../../src/agentHooks/registry/index'
 import type { RouteIndex, Thresholds, Utterance } from '../../src/useCases/router/index'
 
 const repo = join(import.meta.dir, '..', '..')
@@ -63,6 +65,7 @@ setInterval(() => {
 }, SOURCE_CHECK_MS)
 
 const route = (prompt: string) => routePrompt(prompt, index, embed, thresholds)
+useFreshnessSource(cachedFreshness(repo))
 
 let server: ReturnType<typeof Bun.serve>
 try {
@@ -82,6 +85,15 @@ try {
       const body = hookOutput(result)
       logTiming({ event: result.event, provider: 'contextLayer', ms: performance.now() - started, chars: result.text.length, outcome: result.outcome })
       return new Response(body, { headers: { 'content-type': 'application/json' } })
+    }
+    const eventPath = /^\/hooks\/(SessionStart|UserPromptSubmit|PostToolUse|Stop)$/.exec(url.pathname)
+    if (eventPath && request.method === 'POST') {
+      const started = performance.now()
+      const raw = await request.text()
+      const answered = await answerEvent(eventPath[1] as HookEvent, raw, repo, route)
+      const chars = JSON.stringify(answered.body ?? '').length
+      logTiming({ event: answered.event, provider: 'hookEvent', ms: performance.now() - started, chars, outcome: answered.timings.map((t) => `${t.hook}${t.ok ? '' : '!'}:${Math.round(t.ms)}`).join(',') })
+      return answered.body ? Response.json(answered.body) : new Response('', { status: 200 })
     }
     if (url.pathname !== '/route' || request.method !== 'POST') return new Response('not found', { status: 404 })
     const { prompt } = (await request.json()) as { prompt?: string }

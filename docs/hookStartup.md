@@ -75,6 +75,18 @@ Found through the GitHub API (`gh api search/issues`), each read in full.
   - Their conclusion is to keep the in-process work small; what's left is process creation.
 - Repos VIBE BOT linked, for the long-lived worker pattern: [hieutrtr/claude-bridge](https://github.com/hieutrtr/claude-bridge), [fast-gateway-protocol/fgp](https://github.com/fast-gateway-protocol/fgp) and [nexvigilant/mcp-subprocess-pool](https://github.com/nexvigilant/mcp-subprocess-pool). These show the pattern only. None has independent measurements.
 
+## Built (issue #99, 2026-11-08)
+
+Items 1, 2 and 4 below are built. Measured against the warm service, isolated from the real watchers:
+
+| Path | p50 | p99 | p99.9 |
+| --- | --- | --- | --- |
+| Before: 4 PostToolUse hooks at once through Git Bash | 472 ms | 1377 ms | n/a |
+| After: PostToolUse as one http hook (n=2000) | 8.0 ms | 12.2 ms | 14.3 ms |
+| After: UserPromptSubmit as one http hook (n=300) | 9.6 ms | 15.0 ms | 17.4 ms |
+
+Through http, the prompt event first measured p50 100 ms. Two synchronous calls on the service's event loop caused it: the code-stamp walk (85.7 ms) and `git status` (85.5 ms). `cachedFreshness` now reads the stamp from the `fs.watch` watcher, and reruns `git status` only when the stamp moves or once a minute.
+
 ## What to change, biggest saving first
 
 1. **Hooks become `type: "http"` calls to the warm service.** The context service (rule 159) is already one long-lived Bun on `127.0.0.1:47317`. Today the prompt hook reaches it with `curl` through Git Bash, which starts two processes to avoid one. As an `http` hook it starts none.

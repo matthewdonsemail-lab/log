@@ -22,7 +22,7 @@ flowchart LR
 ```
 
 - **One service, kept warm.** `scripts/contextLayer/service.ts` (`src/contextLayer/service`) holds the embedding model and the route index, listens on `127.0.0.1:47317` (`LOG_CONTEXT_PORT`), and rebuilds itself when `docs/useCases` or the router fixtures change. A second copy exits, because the port is taken.
-- **A hook on the per-prompt path is a curl to the service** (`service` on its `AgentHook`, `serviceHookCommand`), with the `bun` script as the fallback after `||`. The fallback only starts the service. It never injects a guess.
+- **On Claude Code, every hook that only adds context is one `type: "http"` request per event to the service** (`/hooks/<event>`, `answerEvent`), and starts no process. Only the two refusing PreToolUse hooks start `bun`, directly, with no shell. On Codex, a hook on the per-prompt path is a curl to the service (`service` on its `AgentHook`, `serviceHookCommand`), with the `bun` script as the fallback after `||`. The fallback only starts the service. It never injects a guess.
 - **SessionStart is the one `bun` hook a session pays for.** It starts the service if it's down, and puts the session's play back from its own transcript (`sessionPlayOf`, `playReminder`). That covers `startup`, `resume`, `clear` and `compact`.
 
 ## The conventions
@@ -47,4 +47,4 @@ flowchart LR
 
 ## What moves next
 
-The other per-prompt hooks (engines, inbox, queue, xLive, storage, pageState) still each start `bun`. They move into the service one at a time, as providers behind the same `/hook` endpoint, each with its own timing line. After that, a prompt costs one curl. A provider that reads the platform is changed to read the .db first (convention 6).
+On Claude Code this is done (issue #99): engines, inbox, queue, xLive, storage, pageState, knowledge and useCases all answer from the service, so a prompt or tool call costs one local http request. Measured on 2026-11-08: PostToolUse p50 8.0 ms, p99 12.2 ms, p99.9 14.3 ms (n=2000); UserPromptSubmit p50 9.6 ms, p99 15.0 ms, p99.9 17.4 ms (n=300). Before, four PostToolUse hooks through Git Bash took p50 472 ms and p99 1377 ms. A provider that reads the platform is changed to read the .db first (convention 6).

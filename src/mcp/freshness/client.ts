@@ -110,7 +110,7 @@ function alive(pid: number): boolean {
   }
 }
 
-export function staleServerLine(root: string, file = serverStampFile()): string | null {
+export function staleServerLine(root: string, file = serverStampFile(), stampNow?: number): string | null {
   if (!existsSync(file)) return null;
   let started: { pid: number; startedAt: string; stamp: number };
   try {
@@ -119,7 +119,7 @@ export function staleServerLine(root: string, file = serverStampFile()): string 
     return null;
   }
   if (!alive(started.pid)) return null;
-  const now = codeStamp(root);
+  const now = stampNow ?? codeStamp(root);
   if (now <= started.stamp) return null;
   const proxy = readProxyState();
   if (proxy && alive(proxy.proxyPid)) {

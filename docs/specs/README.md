@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 42 domains, 471 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 42 domains, 472 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -72,6 +72,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
 - **REQ-HOOKS-19** Every event is named before matt sees it
 - **REQ-HOOKS-20** A Discord, Slack or Instagram call names its chat, never its id
+- **REQ-HOOKS-21** Claude Code's hooks reach log through the warm service, and only the refusals start a process
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
