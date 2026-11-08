@@ -5,7 +5,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { hostname } from 'node:os'
 import { addAlert, claimWatcher, killTree, processAlive, processStartedAt, releaseWatcher, sameProcess, watchHolder } from '../watch/index'
 import { appendEvent, asOwner, behindOf, db, lastEventAt, markGap, markStage, openGap, OwnerFencedError } from '../store/index'
-import { HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, STALE_CONFIRM_MS, STALE_MS } from './types'
+import { HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, NETWORK_FAILURE, OWN_FAILURE, PLATFORM_REFUSAL, STALE_CONFIRM_MS, STALE_MS } from './types'
 import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
 
 export function readSession(platform: string, account: string): RelaySession | null {
@@ -237,10 +237,24 @@ export function socketChange(event: Record<string, unknown>): 'dropped' | 'open'
   return null
 }
 
+export function networkFailure(detail: string): boolean {
+  return NETWORK_FAILURE.test(detail) && !PLATFORM_REFUSAL.test(detail)
+}
+
+export function notThePlatform(detail: string | null | undefined): boolean {
+  if (!detail || PLATFORM_REFUSAL.test(detail)) return false
+  return NETWORK_FAILURE.test(detail) || OWN_FAILURE.test(detail)
+}
+
 export function catchUpRunner(platform: string, account: string, catchUp: CatchUp | undefined, log: (line: string) => void = () => {}): { run: () => Promise<void>; settled: () => Promise<void> } {
   let running: Promise<void> | null = null
   const once = async () => {
-    const gap = behindOf(platform, account)
+    let gap = behindOf(platform, account)
+    if (gap?.status === 'refused' && notThePlatform(gap.detail)) {
+      markGap(gap.id, 'open', `reopened: the platform never refused it (${gap.detail})`)
+      log(`${platform} ${account}: the gap from ${gap.fromAt} was stopped by a network failure or our own error, not by the platform, so it is caught up again`)
+      gap = behindOf(platform, account)
+    }
     if (!gap || gap.status === 'refused') return
     if (!catchUp) {
       log(`${platform} ${account}: behind from ${gap.fromAt} (${gap.reason}), and this owner has no catch-up yet`)
@@ -251,6 +265,11 @@ export function catchUpRunner(platform: string, account: string, catchUp: CatchU
     log(`${platform} ${account}: catching up from ${gap.fromAt} (${gap.reason}) through its own session`)
     try {
       const got = await catchUp(gap)
+      if (got.refused && notThePlatform(got.refused)) {
+        markGap(gap.id, 'open', `the platform didn't refuse it (a network failure or our own error), so it is tried again at the next check: ${got.refused}`, got.appended)
+        log(`${platform} ${account}: catch-up failed without the platform refusing (${got.refused}); still behind, tried again at the next check`)
+        return
+      }
       if (got.refused) {
         markGap(gap.id, 'refused', got.refused, got.appended)
         log(`${platform} ${account}: catch-up refused: ${got.refused}; it stays behind until matt says so (rule 94)`)

@@ -1,14 +1,15 @@
+import { timedSync } from "../../../observability/timing/index.ts";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import type { TwitterDmMessage, TwitterDmThread, TwitterInboxSync, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { storeRead } from "../../../inbox/catchUp/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
 import { markBackfilled, readSourceFor, sourceLine, userIdOfHandle } from "../../../inbox/dbRead/index.ts";
-import { saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
+import { loadConversations, saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
-import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, waitingOnYou } from "../../../twitter/dm/person/index.ts";
+import { activityLine, activityOf, dropMirrors, followUpDue, mergeThreads, ONE_INBOX_NOTE, openedNoReply, reactedOnly, storedThreads, waitingOnYou } from "../../../twitter/dm/person/index.ts";
 import { notificationsFresh, notificationStorePath, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 import { withVoiceNotes } from "../../transcribe/index.ts";
@@ -89,11 +90,21 @@ export function syncLine(account: string, sync: TwitterInboxSync): string {
 }
 
 function keepForSearch(account: string, answer: TwitterSessionAnswer): number {
-  const conversations = (answer.conversations ?? []).map((c) => twitterConversationOf(account, c)).filter((c) => c.messages.length);
+  const conversations = timedSync("keep.shape", () => (answer.conversations ?? []).map((c) => twitterConversationOf(account, c)).filter((c) => c.messages.length));
   if (!conversations.length) return 0;
-  saveConversations(conversations);
-  if (answer.sync?.mode === "full" || (answer.sync?.newMessages ?? 0) > 0 || (answer.sync?.reopened ?? 0) > 0) twitterDmsDeps.reindex();
+  timedSync("keep.save", (span) => {
+    span.attrs.conversations = conversations.length;
+    span.attrs.messages = conversations.reduce((n, c) => n + c.messages.length, 0);
+    saveConversations(conversations);
+  });
+  if (answer.sync?.mode === "full" || (answer.sync?.newMessages ?? 0) > 0 || (answer.sync?.reopened ?? 0) > 0) timedSync("keep.reindexStart", () => twitterDmsDeps.reindex());
   return conversations.length;
+}
+
+export function withEveryStoredChat(account: string, answer: TwitterSessionAnswer, err: (line: string) => void = () => {}): TwitterSessionAnswer {
+  const stored = timedSync("dms.storedChats", () => storedThreads(loadConversations(undefined, { platform: "twitter" }).filter((c) => c.account === account)));
+  err(`${account}: every stored chat read from log.db too (${stored.length} people), so the list isn't only what X's newest pages returned`);
+  return { ...answer, threads: [...(answer.threads ?? []), ...stored] };
 }
 
 function onePerPerson(answer: TwitterSessionAnswer): TwitterSessionAnswer {
@@ -193,7 +204,8 @@ export const dmsCommand: Command = {
       const { conversations: _kept, ...answered } = raw.answer;
       const lean = answered.messages ? { ...answered, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: convoId ?? "" }, answered.messages, audioOf, context.err) } : answered;
       if (lean.ok && lean.messages) backfillThread(opened.account.accountName, lean.messages, context.now?.() ?? new Date());
-      const run = lean.ok && lean.threads ? { ...raw, answer: onePerPerson(lean) } : { ...raw, answer: lean };
+      const everyChat = waiting && lean.ok && lean.threads ? withEveryStoredChat(opened.account.accountName, lean, context.err) : lean;
+      const run = everyChat.ok && everyChat.threads ? { ...raw, answer: onePerPerson(everyChat) } : { ...raw, answer: everyChat };
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {
         const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter(waitingOnYou), followUps: run.answer.threads.filter(followUpDue) } : run.answer;

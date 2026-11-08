@@ -5,6 +5,7 @@ import type { GapRow } from '../store/index'
 import { BEHIND_WAIT_MS, READ_GAP_MS } from './types'
 import type { CatchUpResult, PlatformRead, ReadMessage } from './types'
 import { timed } from '../../observability/timing/index'
+import { notThePlatform } from '../relay/index'
 
 export function pacedWait(random: () => number = Math.random): Promise<void> {
   const [low, high] = READ_GAP_MS
@@ -71,7 +72,7 @@ export async function instagramCatchUp(account: PlatformAccount, gap: GapRow, re
 export function catchUpOneChat(platform: string, account: string, conversationId: string, read: () => { ok: boolean; messages?: ReadMessage[]; code?: string; detail?: string }, now: Date = new Date()): { ok: true; how: 'current' | 'chatRead'; stored: number } | { ok: false; refused: string } {
   const gap = behindOf(platform, account)
   if (!gap) return { ok: true, how: 'current', stored: 0 }
-  if (gap.status === 'refused') return { ok: false, refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so nothing was sent; nothing resumes on it until matt says so (rule 94)` }
+  if (gap.status === 'refused' && !notThePlatform(gap.detail)) return { ok: false, refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so nothing was sent; nothing resumes on it until matt says so (rule 94)` }
   const answer = read()
   if (!answer.ok) return { ok: false, refused: `>>> BEHIND: ${platform} ${account} is still catching up, and reading this one chat to catch it up was refused (${answer.code ?? 'refused'}: ${answer.detail ?? ''}), so nothing was sent (rule 94)` }
   const stored = (answer.messages ?? []).filter((m) => storeRead(platform, account, conversationId, 'dm', m, now, 'catchUp')).length
@@ -96,7 +97,7 @@ async function waitCaughtUpNow(platform: string, account: string, options: WaitO
   for (;;) {
     const gap = behindOf(platform, account)
     if (!gap) return { ok: true, waitedMs: now() - started }
-    if (gap.status === 'refused') return { ok: false, refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so its context is incomplete and nothing was sent; nothing resumes on it until matt says so (rule 94)` }
+    if (gap.status === 'refused' && !notThePlatform(gap.detail)) return { ok: false, refused: `>>> BEHIND: ${platform} ${account} has a gap from ${gap.fromAt} that its catch-up couldn't fill (${gap.detail ?? 'refused'}), so its context is incomplete and nothing was sent; nothing resumes on it until matt says so (rule 94)` }
     if (now() - started >= limit) return { ok: false, refused: `>>> BEHIND: ${platform} ${account} is still catching up from ${gap.fromAt} (${gap.reason}, ${gap.status}) after ${Math.round(limit / 1000)} s, so its context is incomplete and nothing was sent; send again once it has caught up` }
     await sleep(1000)
   }

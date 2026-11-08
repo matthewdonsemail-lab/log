@@ -1,3 +1,4 @@
+import { timedSync } from '../../observability/timing/index'
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -77,7 +78,10 @@ export function importOldConversations(handle: Database, root = join(homedir(), 
 }
 
 export function saveConversations(conversations: Conversation[], path = conversationsDbPath()): number {
-  withConversationsDb(path, (handle) => saveConversationRows(handle, applyTranscripts(conversations).conversations))
+  withConversationsDb(path, (handle) => {
+    const withText = timedSync('keep.transcripts', () => applyTranscripts(conversations).conversations)
+    timedSync('keep.rows', () => saveConversationRows(handle, withText))
+  })
   return conversations.length
 }
 
