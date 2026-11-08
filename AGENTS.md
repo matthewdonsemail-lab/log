@@ -2612,7 +2612,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
     proxy. Spec: `docs/specs/mcpReload.md`.
 
-168. 2026-11-08 · matt: "Implement the correct systems ... that achieve what
+169. 2026-11-08 · matt: "Implement the correct systems ... that achieve what
     we want", after a SubQ matrix over 17 GitHub systems that let a model
     understand media (openclaw first overall, screenpipe for the store and
     speed, RAG-Anything for silent video;

@@ -4,7 +4,7 @@ title: "Media described"
 
 # Media described
 
-Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview, before anyone replies, and anything not described yet is shown as such. No media file is kept: the engine's downloaded copy is deleted once its preview and text are in log.db. Rules 126, 131, 137, 138 and 168.
+Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview, before anyone replies, and anything not described yet is shown as such. No media file is kept: the engine's downloaded copy is deleted once its preview and text are in log.db. Rules 126, 131, 137, 138 and 169.
 
 ## The describer
 

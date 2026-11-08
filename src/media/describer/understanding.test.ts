@@ -25,7 +25,7 @@ const row = (id: number) => db().prepare("SELECT * FROM media WHERE id = ?").get
 const seen: (string | Uint8Array)[] = [];
 const vision: Describer = { model: "fakeVision", describe: async (input) => (seen.push(input), `scene ${seen.length}`) };
 
-describe("media becomes text any model reads, kept small in log.db (rule 168)", () => {
+describe("media becomes text any model reads, kept small in log.db (rule 169)", () => {
   test("scene cuts become spans: too-close cuts are dropped and at most the limit is kept", () => {
     expect(spansOf([], 10)).toEqual([{ start: 0, end: 10 }]);
     expect(spansOf([0.5, 4, 4.3, 9.7], 10)).toEqual([{ start: 0, end: 4 }, { start: 4, end: 10 }]);
