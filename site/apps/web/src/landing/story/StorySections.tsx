@@ -1,5 +1,9 @@
 import type { ReactNode } from 'react'
-import { HandArrow } from '../RepoLink'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { RepoLink } from '../RepoLink'
+import { PlayChat } from '../useCases/UseCasesPage'
+import type { PlatformPage } from '../useCases/platformPages'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
 export const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
@@ -8,18 +12,16 @@ export function StoryKicker({ children }: { children: ReactNode }) {
   return (
     <p className="text-2xl leading-snug text-[#0D2A4C] sm:text-3xl" style={HAND}>
       {children}
-      <HandArrow />
     </p>
   )
 }
 
 export function StorySection({ id, title, punch, children }: { id: string; title: ReactNode; punch: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="mx-auto w-full max-w-3xl px-4 py-12 md:px-6 md:py-16">
+    <section id={id} className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-12">
       <h2 className="text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] font-black leading-[1] tracking-[-0.035em] text-[#0D2A4C]">{title}</h2>
-      <p className="mt-3 text-xl text-[#2A8CFF] sm:text-2xl" style={HAND}>
+      <p className="mt-3 text-xl text-[#0D2A4C]/55 sm:text-2xl" style={HAND}>
         {punch}
-        <HandArrow />
       </p>
       <div className="mt-6 flex flex-col gap-5 text-[18px] leading-relaxed text-[#0D2A4C]/85 sm:text-[19px]">{children}</div>
     </section>
@@ -73,5 +75,25 @@ export function CompareTable({ them, us, rows }: { them: string; us: string; row
         </div>
       ))}
     </div>
+  )
+}
+
+export function StoryCta({ page, title, href }: { page: PlatformPage; title: ReactNode; href: string }) {
+  return (
+    <aside className="mx-auto w-full max-w-3xl px-4 py-6 md:px-6">
+      <div className="grid items-center gap-5 rounded-2xl bg-white p-5 shadow-[0_4px_0_#1A5FC8,0_12px_24px_-12px_rgba(13,42,76,0.35)] ring-1 ring-[#0D2A4C]/8 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] sm:p-6">
+        <div className="flex flex-col items-start gap-4">
+          <p className="text-[24px] font-black leading-tight tracking-[-0.02em] text-[#0D2A4C]">{title}</p>
+          <RepoLink
+            href={href}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#2A8CFF] px-5 py-3 text-[16px] font-bold text-white shadow-[0_3px_0_#1A5FC8] transition-transform hover:-translate-y-px"
+          >
+            Set up log, it&apos;s free
+            <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
+          </RepoLink>
+        </div>
+        <PlayChat page={page} offset={0} />
+      </div>
+    </aside>
   )
 }

@@ -7,19 +7,20 @@ import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { PLATFORMS } from '../PlatformSuite'
 import { LOG_REPO_URL, RepoLink, parseRepoUrl } from '../RepoLink'
-import { Dashed } from '../Control'
-import { DitherFade } from './DitherFade'
-import { HowItWorks } from './HowItWorks'
-import { MoreUseCases, PromptCta, ThreeSteps } from './UseCasesPage'
-import { LOG_VS_XREACHER } from './logVsXreacher'
-import { CompareTable, Receipt, STICKER, StoryKicker, StorySection } from '../story/StorySections'
+import { DitherFade } from '../useCases/DitherFade'
+import { HowItWorks } from '../useCases/HowItWorks'
+import { MoreUseCases, PromptCta, ThreeSteps } from '../useCases/UseCasesPage'
+import { pageForPlatform } from '../useCases/platformPages'
+import { CompareTable, Receipt, STICKER, StoryCta, StoryKicker, StorySection } from '../story/StorySections'
+import { XREACHER_ALTERNATIVE } from './xreacherAlternative'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
 const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const X = PLATFORMS.find((platform) => platform.id === 'x')!
-const TITLE = 'Xreacher alternative: log, the free open-source X DM tool'
+const X_PAGE = { ...pageForPlatform('x')!, play: XREACHER_ALTERNATIVE }
+const TITLE = 'Xreacher alternative: log, the free open-source tool to automate X DMs'
 const DESCRIPTION =
-  'I tried Xreacher to automate my X DMs and it never got going. So I built log: free, open source, your own accounts and your own agent. Here is what Xreacher costs, what accounts cost, and what we run instead.'
+  'Looking for an Xreacher alternative? I tried Xreacher to automate my X DMs and it never connected. Here is what it costs, what X accounts and proxies cost, and the free open-source tool I built instead.'
 
 function LogoChip() {
   return (
@@ -50,11 +51,7 @@ function Hero() {
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden bg-[#2A8CFF]">
         <div className="absolute inset-x-0 top-0 h-[46rem] bg-[radial-gradient(ellipse_130%_100%_at_50%_0%,rgba(92,167,255,0.8)_0%,transparent_80%)]" />
         <ClayClouds className="absolute inset-x-0 top-12 h-[26rem] [mask-image:linear-gradient(to_bottom,black_75%,transparent)] md:top-14 md:h-[36rem]" />
-        <DitherFade
-          stops={['#2A8CFF', '#9CCBFF', '#FFFFFF']}
-          cell={5}
-          className="absolute inset-x-0 bottom-0 h-40 w-full md:h-56"
-        />
+        <DitherFade stops={['#2A8CFF', '#9CCBFF', '#FFFFFF']} cell={5} className="absolute inset-x-0 bottom-0 h-40 w-full md:h-56" />
       </div>
       <div className="mx-auto w-full max-w-[86rem] px-4 pb-48 pt-72 md:px-6 md:pb-64 md:pt-[26rem]">
         <div className="grid items-end gap-8 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-12 lg:gap-16">
@@ -67,7 +64,8 @@ function Hero() {
               I wanted my X DMs automated. <span className="text-white/70">Xreacher never got going.</span>
             </p>
             <p className="text-lede text-white/85">
-              <LogoChip /> is free and open source. It reads your <span className="font-black text-white underline decoration-dashed underline-offset-4">X DMs and X Chat</span>, drafts in your voice and sends only when you say yes, from your own accounts on your own machine.
+              <LogoChip /> is free and open source. It reads your X DMs and X Chat, drafts in your voice and sends only when you say yes, from your
+              own accounts on your own machine.
             </p>
             <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
               <RepoLink
@@ -90,7 +88,7 @@ function Hero() {
 }
 
 function ThePlay() {
-  const play = LOG_VS_XREACHER
+  const play = XREACHER_ALTERNATIVE
   return (
     <section aria-label="The play" className="w-full bg-white">
       <div className="mx-auto w-full max-w-[86rem] px-4 pb-8 md:px-6">
@@ -110,38 +108,34 @@ function ThePlay() {
 
 function Story() {
   return (
-    <div id="story" className="w-full bg-white">
+    <article id="story" className="w-full bg-white">
       <div className="mx-auto w-full max-w-3xl px-4 pt-6 md:px-6">
         <StoryKicker>
           why would you <span className={STICKER}>pay</span> monthly to DM people from accounts you also have to buy?
         </StoryKicker>
       </div>
 
-      <StorySection id="looking" title="I was looking for exactly this." punch="something to run my X DMs for me">
+      <StorySection id="looking" title="I was looking for exactly this." punch="something to automate my X DMs">
         <p>
-          In July I wanted my X outreach automated: find the right people, open a conversation, follow up, and let me step in when
-          someone answers. Xreacher was the tool that kept coming up, so I signed up on <Dashed>17 July 2026</Dashed>.
+          In July I wanted my X outreach automated: find the right people, open a conversation, follow up, and let me step in when someone
+          answers. Xreacher was the tool that kept coming up, so I signed up on 17 July 2026.
         </p>
-        <p>
-          It covers X, Telegram and LinkedIn from one dashboard. Lead scraping, AI openers, follow-ups, a bot that answers replies. On
-          paper it was everything I wanted.
-        </p>
+        <p>It covers X, Telegram and LinkedIn from one dashboard, with lead scraping, AI openers, follow-ups and a bot that answers replies.</p>
       </StorySection>
 
       <StorySection id="tried" title="I put my details in. It didn't work." punch="not on X, not on Telegram">
         <p>
-          To connect an X account it wants your <Dashed>username, email, password and 2FA secret key</Dashed>, plus a proxy. The account has
-          to be at least 6 months old and on X Premium at $8 a month.
+          To connect an X account it wants your username, email, password and 2FA secret key, plus a proxy. The account has to be at least 6
+          months old and on X Premium at $8 a month.
         </p>
         <p>
-          I put it all in and the account never connected. Telegram didn&apos;t work for me either. The next day their email landed: &ldquo;Saw
-          you haven&apos;t connected your X account yet.&rdquo; My dashboard still says <Dashed>No campaign created yet</Dashed>, July 17 to today.
+          I put it all in and the account never connected. Telegram didn&apos;t work for me either. The next day their email landed: &ldquo;Saw you
+          haven&apos;t connected your X account yet.&rdquo; My dashboard still says no campaign created, from July to today.
         </p>
-        <p>
-          To be honest, it probably works now. They&apos;ve rebuilt a lot since. But back when I used it, it didn&apos;t, and I wasn&apos;t
-          going to keep paying to find out.
-        </p>
+        <p>To be honest, it probably works now. But back when I used it, it didn&apos;t.</p>
       </StorySection>
+
+      <StoryCta page={X_PAGE} href={LOG_REPO_URL} title="Want your X DMs automated without the dashboard?" />
 
       <StorySection id="price" title="Then I looked at the price." punch="and what you're paying for">
         <p>The monthly plans, from Xreacher&apos;s own pricing page:</p>
@@ -157,11 +151,11 @@ function Story() {
           total={{ label: 'log, any number of accounts', value: '$0' }}
         />
         <p>
-          That&apos;s before the accounts. Their emails sell you <Dashed>aged, warmed X accounts with Premium</Dashed> to send from, and pitch a
-          $297 call to fix your campaign.
+          That&apos;s before the accounts. Their emails sell you aged, warmed X accounts with Premium to send from, and pitch a $297 call to fix
+          your campaign.
         </p>
         <Receipt
-          title="X accounts, bought from Xreacher"
+          title="X accounts from Xreacher"
           rows={[
             { label: '1 to 49 accounts', value: '$10 each' },
             { label: '50 to 99', value: '$7 each' },
@@ -173,24 +167,23 @@ function Story() {
 
       <StorySection id="accounts" title="So I priced accounts myself." punch="it's the same market">
         <p>
-          We looked at who else sells X accounts. Public listings in November 2026 put fresh accounts at <Dashed>$5 to $20</Dashed>, aged
-          accounts with a few thousand followers at $50 to $300, and the cheapest single account we found at $2.59. Premium is another $8 a month
-          on every one of them.
+          We looked at who else sells X accounts. Public listings in November 2026 put fresh accounts at $5 to $20, aged accounts with a few
+          thousand followers at $50 to $300, and the cheapest single account we found at $2.59. Premium is another $8 a month on every one.
         </p>
         <p>
-          It&apos;s not a good deal anywhere. You&apos;re renting someone else&apos;s accounts to talk to people as if they were you, and paying
-          a monthly fee on top to press send.
+          It&apos;s not a good deal anywhere. You&apos;re renting someone else&apos;s accounts to talk to people as if they were you, and paying a
+          monthly fee on top to press send.
         </p>
       </StorySection>
 
       <StorySection id="proxies" title="And you bring your own proxies." punch="one more bill">
         <p>
-          Connect more than one account and Xreacher wants your own proxies, active and in the right format. That&apos;s a third thing to buy
-          and keep alive.
+          Connect more than one account and Xreacher wants your own proxies, active and in the right format. That&apos;s a third thing to buy and
+          keep alive.
         </p>
         <p>
-          With log, X doesn&apos;t need a proxy at all: every account talks to X directly, through one session, the way X&apos;s own web app
-          does. For the platforms that do need one, we use <Dashed>Byteful</Dashed>.
+          With log, X doesn&apos;t need a proxy at all: every account talks to X directly, through one session, the way X&apos;s own web app does.
+          For the platforms that do need one, we use Byteful.
         </p>
         <Receipt
           title="What we pay Byteful"
@@ -205,9 +198,9 @@ function Story() {
 
       <StorySection id="built" title="So I built my own." punch="it was free and cheap to run">
         <p>
-          log is a CLI and an MCP server. You point Claude Code, Codex or Cursor at it and say what you want: &ldquo;read my X DMs and X Chat,
-          draft a reply to Jay, and wait for my approval.&rdquo; It reads both X inboxes, checks the draft against how you actually write, and
-          sends nothing until you say yes.
+          log is the Xreacher alternative I wanted: a CLI and an MCP server. You point Claude Code, Codex or Cursor at it and say what you want:
+          &ldquo;read my X DMs and X Chat, draft a reply to Jay, and wait for my approval.&rdquo; It reads both X inboxes, checks the draft against
+          how you actually write, and sends nothing until you say yes.
         </p>
         <CompareTable
           them="Xreacher"
@@ -225,19 +218,18 @@ function Story() {
 
       <StorySection id="own" title="We're in the age of owning your stuff." punch="your accounts, your agent, your machine">
         <p>
-          A few years ago you needed a SaaS dashboard to automate DMs. Now an agent on your own laptop can read the thread, write in your voice
+          A few years ago you needed a SaaS dashboard to automate X DMs. Now an agent on your own laptop can read the thread, write in your voice
           and send through your own account. No seat fees, no rented accounts, nobody else holding your password.
         </p>
-        <p>
-          That&apos;s why log is open source. Use it, fork it, and if it breaks, open an issue and we fix it in the open.
-        </p>
+        <p>That&apos;s why log is open source. Use it, fork it, and if it breaks, open an issue and we fix it in the open.</p>
       </StorySection>
 
-    </div>
+      <StoryCta page={X_PAGE} href={LOG_REPO_URL} title="Run it on your own X account tonight." />
+    </article>
   )
 }
 
-export function LogVsXreacherPage() {
+export function XreacherAlternativePage() {
   useMeta()
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
@@ -252,8 +244,8 @@ export function LogVsXreacherPage() {
       <Hero />
       <Story />
       <ThePlay />
-      <ThreeSteps play={LOG_VS_XREACHER} platform={{ ...X, label: 'X account' }} icon={faXTwitter} />
-      <PromptCta title="Try log on your own X DMs" ask={LOG_VS_XREACHER.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
+      <ThreeSteps play={XREACHER_ALTERNATIVE} platform={{ ...X, label: 'X account' }} icon={faXTwitter} />
+      <PromptCta title="Try log on your own X DMs" ask={XREACHER_ALTERNATIVE.ask} isCommand={false} install="curl -fsSL https://log.listeningkit.com/install.sh | sh" />
       <MoreUseCases current={null} />
       <SiteFooter />
     </div>

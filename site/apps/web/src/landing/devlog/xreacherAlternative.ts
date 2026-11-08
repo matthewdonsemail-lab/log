@@ -1,6 +1,6 @@
-import type { Play } from './platformPages'
+import type { Play } from '../useCases/platformPages'
 
-export const LOG_VS_XREACHER: Play = {
+export const XREACHER_ALTERNATIVE: Play = {
   name: 'Read, draft, approve on X',
   ask: 'read my X DMs and X Chat, draft a reply to Jay, and wait for my approval',
   calls: ['twitterDms', 'voice', 'twitterDmLive'],
