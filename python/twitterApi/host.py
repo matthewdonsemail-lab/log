@@ -72,6 +72,14 @@ def live_host(account: str) -> dict[str, Any] | None:
     return info
 
 
+async def caller_gone(reader: asyncio.StreamReader) -> None:
+    try:
+        while await reader.read(4096):
+            pass
+    except (ConnectionError, OSError):
+        pass
+
+
 class Host:
     def __init__(self, account: str) -> None:
         self.account = account
@@ -85,6 +93,7 @@ class Host:
         self.writers: set[asyncio.StreamWriter] = set()
         self.port = 0
         self.serial = asyncio.Lock()
+        self.watches: dict[str, asyncio.Task[Any]] = {}
 
     def record(self) -> None:
         path = host_path(self.account)
@@ -105,7 +114,33 @@ class Host:
         out["xSession"] = {"pid": os.getpid(), "calls": self.calls, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.started))}
         return out
 
-    async def answer(self, spec: dict[str, Any], writer: asyncio.StreamWriter) -> dict[str, Any]:
+    async def watch(self, spec: dict[str, Any], reader: asyncio.StreamReader | None) -> dict[str, Any]:
+        action = str(spec.get("action"))
+        older = self.watches.get(action)
+        if older is not None and not older.done():
+            print(f"a new {action} arrived while one was still running: the older one stops, so the account keeps one watch", flush=True)
+            older.cancel()
+            await asyncio.gather(older, return_exceptions=True)
+        run = asyncio.ensure_future(e.run(spec))
+        self.watches[action] = run
+        gone = asyncio.ensure_future(caller_gone(reader)) if reader is not None else None
+        try:
+            done, _ = await asyncio.wait({run, gone} if gone else {run}, return_when=asyncio.FIRST_COMPLETED)
+            if run not in done:
+                print(f"the caller of {action} went away: its watch stops with it", flush=True)
+                run.cancel()
+                await asyncio.gather(run, return_exceptions=True)
+                return {"ok": False, "code": "watchCallerGone", "detail": f"the process that started {action} closed its connection, so the watch stopped"}
+            if run.cancelled():
+                return {"ok": False, "code": "watchReplaced", "detail": f"a newer {action} took over this account's one watch"}
+            return run.result()
+        finally:
+            if gone is not None:
+                gone.cancel()
+            if self.watches.get(action) is run:
+                self.watches.pop(action, None)
+
+    async def answer(self, spec: dict[str, Any], writer: asyncio.StreamWriter, reader: asyncio.StreamReader | None = None) -> dict[str, Any]:
         if spec.get("account") != self.account:
             return {"ok": False, "code": "xSessionHostRefused", "detail": f"this X session is {self.account}'s, not {spec.get('account')}'s"}
         timing.begin(spec.get("trace"))
@@ -115,7 +150,7 @@ class Host:
             if spec.get("action") in e.UNLOCKED:
                 self.watching += 1
                 try:
-                    return timing.attach(await e.run(spec))
+                    return timing.attach(await self.watch(spec, reader))
                 finally:
                     self.watching -= 1
             with timing.span("host.queue", active=self.active - 1):
@@ -135,7 +170,7 @@ class Host:
             if request.get("token") != self.token:
                 out = {"ok": False, "code": "xSessionHostRefused", "detail": "the call didn't carry this X session's token"}
             else:
-                out = await self.answer(request.get("spec") or {}, writer)
+                out = await self.answer(request.get("spec") or {}, writer, reader)
                 self.calls += 1
                 self.last = time.time()
                 self.record()
@@ -145,6 +180,8 @@ class Host:
         try:
             writer.write((json.dumps({"answer": out}, default=str) + "\n").encode("utf-8"))
             await writer.drain()
+        except (ConnectionError, OSError):
+            pass
         finally:
             self.writers.discard(writer)
             writer.close()
