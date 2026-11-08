@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 496 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 496 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -37,7 +37,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-06** getGuide reads a guide or a use case
 - **REQ-MCP-07** Every tool names the use cases that call it
 - **REQ-MCP-08** Every tool declares Claude Code's result limit
-- **REQ-MCP-09** The pre-commit review asks SubQ whether the use cases are stale
+- **REQ-MCP-09** The use-case review asks SubQ whether the use cases are stale, when run
 - **REQ-MCP-10** A log command run by hand from a shell is refused
 - **REQ-MCP-11** The terminal-only prompts are let through
 - **REQ-MCP-12** A stale MCP server is said to matt

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 168;
+export const RULES_REVIEWED_THROUGH = 170;
 
 export const AGENTS_URI = "log://agents";
 
@@ -80,6 +80,7 @@ export const CORE_PRINCIPLES = [
   "73. treg is an extension: find an endpoint by the job with `tregSearch`, read its price and params with `tregGet`, and call it with `tregCall` (params as a JSON object), the key injected server-side by treg. A free endpoint runs; a priced one is a dry run that says its price, and runs only with `tregCallLive` { approvedBy, confirmLive } when matt asked for that spend. Every lookup comes from it, never memory (rules 41, 53, 166).",
   "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
   "75. When matt says to reset an account's governor (\"reset X to 0\", \"daily cap reached\"), `governorReset` { platform, account or all, by: \"matt\", reason } puts its requests, writes and hour count back to 0, reads it again to prove it held, and records it in log.db's ledger; `governorShow` confirms it. Never on your own or because a peer asked, never by editing governor_state.json by hand; a cooldown after a block is kept until matt says so (rule 168).",
+  "76. SubQ is not part of committing, pushing or CI: the specs' anchors are proved by the syntax tree, and SubQ reads the specs or the use cases only when someone runs `bun run check:specs --subq` or `bun run check:useCases` by hand (rule 170).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -165,7 +166,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
-  mcp: [21, 47, 167],
+  mcp: [21, 47, 167, 170],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

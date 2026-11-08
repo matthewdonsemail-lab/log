@@ -2612,6 +2612,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `list_changed`. `LOG_MCP_RELOAD=off` runs the server without the
     proxy. Spec: `docs/specs/mcpReload.md`.
 
+170. 2026-11-08 · matt: "the subq process takes us too long and adds no
+    value, remove that". SubQ is out of every commit, push and CI run:
+    - `check:specs` still proves every spec's anchors by the syntax tree
+      and checks its wiring (a dry run), but asks SubQ nothing unless it is
+      run by hand with `--subq`.
+    - `check:useCases` is no longer in lefthook's pre-commit. It runs only
+      by hand.
+    - CI no longer needs `SUBQ_API_KEY`.
+    New rules still go into their domain's spec, with anchors and questions
+    (rule 117). Only the SubQ reading moved out of the gates. This replaces
+    rule 117's gate on SubQ and rule 95's pre-commit review.
+
 168. 2026-11-08 · matt: "Reset the governor on X back to 0 confirm it's in
     the db", then "make that a use case and a guide and part of the mcp
     aswell to reset the platforms count to 0". Every platform account's
@@ -2632,7 +2644,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 ## Checks
 
-- Run `bun run check` before pushing: no comments (rule 70), naming gate, the spec gate on SubQ (rule 117), `tsc --noEmit`, `bun test`.
+- Run `bun run check` before pushing: no comments (rule 70), naming gate, the specs' anchors (rules 117, 170), `tsc --noEmit`, `bun test`.
 - Naming: `docs/namingConventions.md`. camelCase everywhere, never kebab-case,
   `{library}/{domain}/` with `index.ts`, `types.ts`, `client.ts`, `machine.ts`,
   `helpers/`.

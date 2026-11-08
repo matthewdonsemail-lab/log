@@ -47,9 +47,6 @@ pre-commit:
     siteSkills:
       run: bun run check:siteSkills
 
-    useCases:
-      run: bun run check:useCases
-
     specs:
       run: bun run check:specs --staged
 
