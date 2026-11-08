@@ -1,3 +1,4 @@
+import { clearDeadQueueLockRows } from '../../twitter/queue/store/index'
 import { spawn, spawnSync } from 'node:child_process'
 import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { homedir, hostname } from 'node:os'
@@ -325,17 +326,8 @@ export function stopStaleWatchers(platform: string, accounts: readonly string[],
   return stopped
 }
 
-export function clearDeadQueueLocks(root: string = join(homedir(), '.logCli', 'queues'), alive: (pid: number) => boolean = processAlive): string[] {
-  if (!existsSync(root)) return []
-  const cleared: string[] = []
-  for (const name of readdirSync(root).filter((n) => n.endsWith('.lock'))) {
-    const path = join(root, name)
-    const pid = Number(readFileSync(path, 'utf8').trim()) || 0
-    if (alive(pid)) continue
-    rmSync(path, { force: true })
-    cleared.push(name)
-  }
-  return cleared
+export function clearDeadQueueLocks(_root: string = join(homedir(), '.logCli', 'queues'), alive: (pid: number) => boolean = processAlive): string[] {
+  return clearDeadQueueLockRows(alive)
 }
 
 export function startTwitterWatch(account: string, repo: string): number | null {

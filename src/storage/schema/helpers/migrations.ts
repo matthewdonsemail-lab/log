@@ -65,6 +65,16 @@ export const SEND_COLUMNS: readonly (readonly [string, string, string])[] = [
   ['claims', 'sendingSince', 'TEXT'],
 ]
 
+export const QUEUE_TABLES: readonly string[] = [
+  'CREATE TABLE IF NOT EXISTS queues (name TEXT PRIMARY KEY, account TEXT NOT NULL, body TEXT NOT NULL, version INTEGER NOT NULL, path TEXT NOT NULL, updatedAt TEXT NOT NULL) WITHOUT ROWID',
+  'CREATE TABLE IF NOT EXISTS queueLog (seq INTEGER PRIMARY KEY, name TEXT NOT NULL, at TEXT NOT NULL, line TEXT NOT NULL, source TEXT NOT NULL)',
+  'CREATE INDEX IF NOT EXISTS queueLogByName ON queueLog (name, seq)',
+  'CREATE TABLE IF NOT EXISTS queueIncoming (seq INTEGER PRIMARY KEY, name TEXT NOT NULL, addition TEXT NOT NULL, addedAt TEXT NOT NULL, takenAt TEXT)',
+  'CREATE INDEX IF NOT EXISTS queueIncomingWaiting ON queueIncoming (name, seq) WHERE takenAt IS NULL',
+  'CREATE TABLE IF NOT EXISTS queueLocks (name TEXT PRIMARY KEY, pid INTEGER NOT NULL, takenAt TEXT NOT NULL) WITHOUT ROWID',
+  'CREATE TABLE IF NOT EXISTS queueNudges (name TEXT PRIMARY KEY, replies INTEGER NOT NULL) WITHOUT ROWID',
+]
+
 export const MIN_READER_VERSION = 1
 
 export const MIGRATIONS: readonly Migration[] = [
@@ -153,6 +163,13 @@ export const MIGRATIONS: readonly Migration[] = [
     apply(handle) {
       handle.exec('CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID')
       handle.prepare("INSERT INTO meta (key, value) VALUES ('minReaderVersion', ?) ON CONFLICT(key) DO UPDATE SET value = MAX(CAST(meta.value AS INTEGER), CAST(excluded.value AS INTEGER))").run(String(MIN_READER_VERSION))
+    },
+  },
+  {
+    version: 12,
+    name: 'queueTables',
+    apply(handle) {
+      for (const statement of QUEUE_TABLES) handle.exec(statement)
     },
   },
 ]

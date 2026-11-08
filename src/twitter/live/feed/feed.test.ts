@@ -1,8 +1,9 @@
 import { describe, expect, test } from 'bun:test'
-import { appendFileSync, mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { newQueueEvents } from '../../queue/events/index'
+import { queueLog } from '../../queue/plan/index'
 import { importLiveFiles, liveEventId, newLiveEvents, xLiveContext } from './index'
 import { appendEvent } from '../../../inbox/store/index'
 
@@ -60,13 +61,14 @@ describe("X's live client state in the agent context, per Claude session (rule 1
 
   test("two Claude sessions each get the queue's events once", () => {
     const root = mkdtempSync(join(tmpdir(), 'queues'))
-    const log = join(root, 'q.log')
-    writeFileSync(log, '')
-    newQueueEvents(root, 'a')
-    newQueueEvents(root, 'b')
-    appendFileSync(log, '2026-11-01 19:52:08 HELD #31 @x: something happened\n')
-    expect(newQueueEvents(root, 'a').map((e) => e.kind)).toEqual(['held'])
-    expect(newQueueEvents(root, 'b').map((e) => e.kind)).toEqual(['held'])
-    expect(newQueueEvents(root, 'a')).toEqual([])
+    const queue = join(root, 'q.json')
+    const a = `a${Date.now()}`
+    const b = `b${Date.now()}`
+    newQueueEvents(root, a)
+    newQueueEvents(root, b)
+    queueLog(queue, 'HELD #31 @x: something happened', new Date('2026-11-01T19:52:08Z'))
+    expect(newQueueEvents(root, a).map((e) => e.kind)).toEqual(['held'])
+    expect(newQueueEvents(root, b).map((e) => e.kind)).toEqual(['held'])
+    expect(newQueueEvents(root, a)).toEqual([])
   })
 })

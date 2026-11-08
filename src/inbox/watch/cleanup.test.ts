@@ -3,7 +3,8 @@ import { existsSync, mkdirSync, mkdtempSync, utimesSync, writeFileSync } from "n
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { WATCHER_CODE, clearDeadQueueLocks, coolingDown, inboxContext, localTime, stopStaleWatchers } from "./index.ts";
-import { clearDeadLock, liveLock } from "../../twitter/queue/plan/index.ts";
+import { liveLock } from "../../twitter/queue/plan/index.ts";
+import { releaseQueueLock, takeQueueLock } from "../../twitter/queue/store/index.ts";
 
 beforeEach(() => {
   process.env.LOG_INBOX_STATE = mkdtempSync(join(tmpdir(), "inbox"));
@@ -47,20 +48,23 @@ describe("nothing runs stale (rule 108)", () => {
 
   test("a queue lock whose run died is cleared, a live one is kept", () => {
     const dir = mkdtempSync(join(tmpdir(), "queues"));
-    writeFileSync(join(dir, "dead.lock"), "24444");
-    writeFileSync(join(dir, "live.lock"), "555");
-    expect(clearDeadQueueLocks(dir, (pid) => pid === 555)).toEqual(["dead.lock"]);
-    expect(existsSync(join(dir, "live.lock"))).toBe(true);
+    takeQueueLock(join(dir, "dead.json"), 24444, () => false);
+    takeQueueLock(join(dir, "live.json"), 555, () => false);
+    const cleared = clearDeadQueueLocks(dir, (pid) => pid === 555 || pid === process.pid);
+    expect(cleared.some((name) => name.endsWith("/dead"))).toBe(true);
+    expect(liveLock(join(dir, "live.json"), (pid) => pid === 555)).toBe(true);
   });
 
   test("queue run, add and nudge take over a dead run's lock", () => {
     const dir = mkdtempSync(join(tmpdir(), "queue"));
     const queue = join(dir, "q.json");
-    writeFileSync(join(dir, "q.lock"), "24444");
+    takeQueueLock(queue, 24444, () => false);
     expect(liveLock(queue, () => false)).toBe(false);
-    writeFileSync(join(dir, "q.lock"), String(process.pid));
+    expect(takeQueueLock(queue, process.pid, () => false)).toEqual({ ok: true });
     expect(liveLock(queue)).toBe(true);
-    expect(clearDeadLock(join(dir, "q.lock"))).toBe(false);
+    expect(takeQueueLock(queue, 31337, (pid) => pid === process.pid)).toEqual({ ok: false, holder: process.pid });
+    releaseQueueLock(queue, process.pid);
+    expect(liveLock(queue)).toBe(false);
   });
 
   test("a new message says reply straight away when it fits, and the time is matt's own clock", () => {

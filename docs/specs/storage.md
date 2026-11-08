@@ -81,3 +81,11 @@ Checked by: code and SubQ
 Bulk writes commit in batches of about 1,000 rows. `saveConversationRows` groups conversations into transactions of `CONVERSATION_BATCH_MESSAGES` messages. `importOldLedgers` writes each old file in `inBatches` of `BACKFILL_BATCH` lines, recording how many lines it has done in `imports` in the same transaction (`importing`), so a crash resumes after them and nothing is imported twice. Migrations only change the schema: migration 3's data move is gone, and its work is done by the batched `untypedEvents` step. Migrations only add tables, columns and indexes. `meta.minReaderVersion` (`MIN_READER_VERSION`) says the oldest code that can read the file, and only a breaking migration raises it. Code meets a newer file by opening it as it is. It's refused (`SchemaTooNewError`) only when `minReaderVersionOf` is above its own version. Events that older code appended without typed rows are typed by `untypedEvents` on every open, and by each owner every `RECHECK_GAP_MS` (`sweepUntyped`, at most `SWEEP_LIMIT` at a time).
 
 Checked by: code and SubQ
+
+## The loose stores, moved in
+
+### REQ-STORAGE-12: The X queues live in log.db
+
+Each X queue is one document in `queues` (its JSON, its account and a version that rises with every save), keyed by its resolved path, so every command that names a queue by its file still finds it (`loadQueue`, `saveQueue`, through `readQueueBody` and `writeQueueBody`). What a run logs goes to `queueLog` (`queueLog`, `appendQueueLog`). The queue hook reads it with one cursor per Claude session (`queue:<session>`, `queueReader`) and shows the queue by its short name (`queueLabel`). Items added during a run are `queueIncoming` rows taken in one transaction. The run lock is a row in `queueLocks` that is taken over when its pid has died (`takeQueueLock`, `queueLockHolder`, `clearDeadQueueLockRows`), and a nudge is a row in `queueNudges`. A queue file already on disk is imported once with its `.log` and `.incoming.jsonl` (`importQueueFile`, `importQueueFiles`) and isn't read again. `queue build` refuses to overwrite a queue that is in the store or on disk.
+
+Checked by: code and SubQ

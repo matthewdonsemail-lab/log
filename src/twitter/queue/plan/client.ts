@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { appendFileSync, existsSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { addQueueIncoming, appendQueueLog, queueLabel, queueLockHolder, queueName, readQueueBody, takeQueueIncoming, writeQueueBody } from '../store/index'
 import { planSend } from '../../post/send/index'
 import { batchSameness, samenessLine } from '../../../voice/sameness/index'
 import type { BuildTarget, EventKind, PlanEvent, PlanOptions, Queue, QueueAction, QueueItem, Rng } from './types'
@@ -45,25 +45,18 @@ export function fromController(value: unknown): unknown {
 }
 
 export function loadQueue(path: string): Queue {
-  if (!existsSync(path)) throw new Error(`no queue at ${path}`)
-  const queue = fromController(JSON.parse(readFileSync(path, 'utf8'))) as Queue
+  const body = readQueueBody(path)
+  if (body === null) throw new Error(`no queue at ${path}`)
+  const queue = fromController(JSON.parse(body)) as Queue
   if (typeof queue.account !== 'string' || !Array.isArray(queue.items)) throw new Error(`${path} isn't a queue: it needs account and items`)
   return queue
 }
 
 export function saveQueue(path: string, queue: Queue): void {
-  const tmp = `${path}.tmp`
-  writeFileSync(tmp, JSON.stringify(queue, null, 1), 'utf8')
-  renameSync(tmp, path)
+  writeQueueBody(path, queue.account, JSON.stringify(queue, null, 1))
 }
 
-const stem = (path: string) => path.replace(/\.json$/i, '')
-
-export const logPathOf = (path: string) => `${stem(path)}.log`
-
-export const lockPathOf = (path: string) => `${stem(path)}.lock`
-
-export const nudgePathOf = (path: string) => `${stem(path)}.nudge`
+export const logPathOf = (path: string) => `queue log ${queueLabel(queueName(path))} in ~/.logCli/log.db`
 
 export function pidAlive(pid: number): boolean {
   if (!pid) return false
@@ -75,24 +68,12 @@ export function pidAlive(pid: number): boolean {
   }
 }
 
-export function clearDeadLock(lock: string, alive: (pid: number) => boolean = pidAlive): boolean {
-  if (!existsSync(lock)) return false
-  const pid = Number(readFileSync(lock, 'utf8').trim()) || 0
-  if (alive(pid)) return false
-  rmSync(lock, { force: true })
-  return true
-}
-
 export function liveLock(path: string, alive: (pid: number) => boolean = pidAlive): boolean {
-  const lock = lockPathOf(path)
-  clearDeadLock(lock, alive)
-  return existsSync(lock)
+  return queueLockHolder(path, alive) > 0
 }
 
 export function queueLog(path: string, line: string, now = new Date()): string {
-  const stamped = `${now.toISOString().replace('T', ' ').slice(0, 19)} ${line}`
-  appendFileSync(logPathOf(path), stamped + '\n', 'utf8')
-  return stamped
+  return appendQueueLog(path, line, now)
 }
 
 export function targetOfItem(item: Pick<QueueItem, 'action' | 'tweetUrl' | 'userId'>): string | undefined {
@@ -241,7 +222,6 @@ export function planQueue(queue: Queue, options: PlanOptions, rng: Rng, now: Dat
   return { ...queue, randomRun: { planned: now.toISOString(), window: options.window, minGap: options.minGap, events } }
 }
 
-export const incomingPathOf = (path: string) => `${stem(path)}.incoming.jsonl`
 
 export interface QueueAddition {
   action: QueueAction
@@ -332,15 +312,9 @@ export function editItem(queue: Queue, n: number, text: string, by: string, rng:
 }
 
 export function takeIncoming(path: string): QueueAddition[] {
-  const file = incomingPathOf(path)
-  if (!existsSync(file)) return []
-  const taking = `${file}.taking`
-  renameSync(file, taking)
-  const lines = readFileSync(taking, 'utf8').split(/\r?\n/).filter((l) => l.trim())
-  rmSync(taking, { force: true })
-  return lines.map((l) => JSON.parse(l) as QueueAddition)
+  return takeQueueIncoming(path) as QueueAddition[]
 }
 
 export function sendIncoming(path: string, addition: QueueAddition): void {
-  appendFileSync(incomingPathOf(path), JSON.stringify(addition) + '\n', 'utf8')
+  addQueueIncoming(path, addition)
 }

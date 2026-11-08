@@ -36,7 +36,7 @@ Checked by: SubQ
 
 ### REQ-QUEUE-05: One run per queue
 
-A run takes the queue's lock file and is refused with `queueBusy` while another live run holds it. A lock whose process is gone is cleared first.
+A run takes the queue's lock, a row in `queueLocks` in `log.db` (`takeQueueLock`), and is refused with `queueBusy` while another live run holds it. A lock whose process is gone is taken over. The run releases it when it ends (`releaseQueueLock`).
 
 Checked by: code and SubQ
 
@@ -44,7 +44,7 @@ Checked by: code and SubQ
 
 ### REQ-QUEUE-06: queue add hands new items to a running run
 
-When a run holds the queue's lock, `queue add` writes the addition to the queue's incoming file for the run to take, instead of changing the queue file itself.
+When a run holds the queue's lock, `queue add` hands the addition to the run as a `queueIncoming` row (`sendIncoming`), which the run takes in one transaction (`takeIncoming`), instead of changing the queue itself.
 
 Checked by: code and SubQ
 

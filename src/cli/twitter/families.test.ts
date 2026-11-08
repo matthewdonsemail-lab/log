@@ -5,7 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { TwitterEngineRun, TwitterEngineSpec, TwitterSessionAnswer } from "../../twitter/account/session/index.ts";
-import { fingerprint, loadQueue } from "../../twitter/queue/plan/index.ts";
+import { fingerprint, loadQueue, saveQueue } from "../../twitter/queue/plan/index.ts";
+import { queueLogLines } from "../../twitter/queue/store/index.ts";
 import type { Queue } from "../../twitter/queue/plan/index.ts";
 import { runCli } from "../runner/index.ts";
 import { twitterSendDeps } from "./helpers/send.ts";
@@ -307,9 +308,9 @@ describe("log twitter queue", () => {
     expect(queue.items.map((i) => i.tweetUrl)).toEqual([POST_A, POST_B, POST_C]);
     expect((await h.run(["twitter", "queue", "build", "--targets", f.targets, "--variations", f.lines, "--out", f.queue, "--account", "xTwo"])).err).toContain("never overwritten");
     await h.run(["twitter", "queue", "approve", f.queue, "--by", "matt"]);
-    const edited = JSON.parse(readFileSync(f.queue, "utf8")) as Queue;
+    const edited = loadQueue(f.queue);
     edited.items[0].text = "something else";
-    writeFileSync(f.queue, JSON.stringify(edited));
+    saveQueue(f.queue, edited);
     await h.run(["twitter", "queue", "plan", f.queue, "--window", "30m"]);
     expect((await h.run(["twitter", "queue", "run", f.queue, "--live"])).err).toContain("queueNotApproved");
     expect(h.calls).toEqual([]);
@@ -353,7 +354,7 @@ describe("log twitter queue", () => {
     expect(sends.every((c) => c.live === true && c.approvedBy === "matt")).toBe(true);
     expect(r.err).toContain("a network error, not x refusing");
     expect(r.err).toMatch(/state +retrying/);
-    expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("random run done: 2 replies sent, 1 skipped");
+    expect(queueLogLines(f.queue).join("\n")).toContain("random run done: 2 replies sent, 1 skipped");
     expect(existsSync(f.queue.replace(/\.json$/, ".lock"))).toBe(false);
   });
 
@@ -364,7 +365,7 @@ describe("log twitter queue", () => {
     expect(r.code).toBe(5);
     expect(h.calls.filter((c) => c.action !== "notifications" && c.action !== "inbox")).toHaveLength(1);
     expect(loadQueue(f.queue).items.filter((i) => i.status === "pending")).toHaveLength(3);
-    const log = readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8");
+    const log = queueLogLines(f.queue).join("\n");
     expect(log).toMatch(/STOPPED: REFUSED reply #\d+ @\S+: x answered at \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC: CouldNotTweet: \(344\)/);
     expect(log).toContain("Nothing goes out on @xTwo until matt starts a run again");
     expect(log).not.toContain("[cooling]");
@@ -429,7 +430,7 @@ describe("log twitter queue", () => {
     const code = await runCli(["twitter", "queue", "run", f.queue, "--live"], ctx as never);
     expect(code).toBe(5);
     expect(sent).toEqual([]);
-    expect(readFileSync(f.queue.replace(/\.json$/, ".log"), "utf8")).toContain("cancelled while waiting");
+    expect(queueLogLines(f.queue).join("\n")).toContain("cancelled while waiting");
   });
 
   test("check on a dm queue drops anyone already in an X Chat conversation (rule 87)", async () => {
