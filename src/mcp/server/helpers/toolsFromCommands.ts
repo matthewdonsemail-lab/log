@@ -103,6 +103,7 @@ function usageHeads(usage: string): string[] {
   return usage.split("\n").map((line) => line.replace(/^\s*Usage:\s*/, "").trim()).filter((line) => line.startsWith("log "));
 }
 
+const SPEND_LINE = "Live spends money (a priced lookup) but changes nothing on any account, so it is read-only and can run alongside other calls. Call it only when matt asked for that spend, with approvedBy and confirmLive: true (rule 41).";
 const LIVE_LINE = (place: string) => `Live on ${place}: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).`;
 
 function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
@@ -115,7 +116,7 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
     title,
     description: [
       `${form.summary}.`,
-      ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
+      ...(entry.live ? [entry.effect === "spend" ? SPEND_LINE : LIVE_LINE(platformLabel(command))] : []),
       command.summary,
       ...(options.full ? formUsage(command, form) : formUsage(command, form).filter((line) => line.startsWith("log "))),
       ...(NOTES[entry.tool] ?? []),
@@ -144,7 +145,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
     title,
     description: [
       `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
-      ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
+      ...(entry.live ? [entry.effect === "spend" ? SPEND_LINE : LIVE_LINE(platformLabel(command))] : []),
       command.summary,
       ...(options.full ? [command.usage] : usageHeads(command.usage)),
       ...(NOTES[command.name] ?? []),

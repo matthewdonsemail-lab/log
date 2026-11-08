@@ -4,6 +4,7 @@ import type { LogToolAnnotations } from "../types.ts";
 export const LIVE_SUFFIX = "Live";
 
 export function annotationsOf(effect: ToolEffect, live: boolean, title: string): LogToolAnnotations {
+  if (effect === "spend") return { title, readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true };
   if (live) return { title, readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true };
   switch (effect) {
     case "read":

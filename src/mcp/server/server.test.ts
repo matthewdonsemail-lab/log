@@ -70,13 +70,22 @@ describe("annotations and live tools", () => {
   test("every live tool is destructive, open-world and needs confirmLive; no other tool takes live or confirmLive", () => {
     for (const tool of tools) {
       const live = tool.name.endsWith("Live");
-      expect(tool.annotations.destructiveHint || !live).toBe(true);
-      if (live) expect(tool.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true, openWorldHint: true });
+      const spends = live && tool.description.includes("Live spends money");
+      if (spends) expect(tool.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false, openWorldHint: true });
+      else expect(tool.annotations.destructiveHint || !live).toBe(true);
+      if (live && !spends) expect(tool.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true, openWorldHint: true });
       if (live) expect(tool.inputSchema.required).toContain("confirmLive");
       if (!live) expect(tool.inputSchema.properties).not.toHaveProperty("confirmLive");
       if (!live) expect(tool.inputSchema.properties).not.toHaveProperty("live");
       if (live) expect(tools.some((t) => t.name === tool.name.slice(0, -4))).toBe(true);
     }
+  });
+
+  test("a priced lookup is read-only even live, so Claude Code can run it alongside other calls, and it still needs confirmLive", () => {
+    const tregLive = tools.find((t) => t.name === "tregCallLive")!;
+    expect(tregLive.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false });
+    expect(tregLive.inputSchema.required).toContain("confirmLive");
+    expect(tregLive.description).toContain("Live spends money");
   });
 
   test("reads are read-only, a browser on Facebook is open-world, a prune is destructive", () => {

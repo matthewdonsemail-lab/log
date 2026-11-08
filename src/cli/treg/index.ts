@@ -28,7 +28,7 @@ export const TREG_INPUT: CommandInput = {
     },
     {
       words: ["call"],
-      effect: "write",
+      effect: "spend",
       summary: "Call a treg endpoint, the key injected server-side: a free one runs, a priced one is a dry run saying its price unless live with approvedBy",
       positionals: [{ name: "id", kind: "string", required: true, description: "The endpoint id from search or get" }],
       flags: [

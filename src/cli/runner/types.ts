@@ -69,7 +69,7 @@ export interface PositionalSpec {
   required?: boolean;
 }
 
-export type ToolEffect = "read" | "write" | "delete" | "browser";
+export type ToolEffect = "read" | "write" | "delete" | "browser" | "spend";
 
 export interface InputForm {
   words: readonly string[];
