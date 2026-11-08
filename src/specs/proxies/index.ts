@@ -54,7 +54,7 @@ const anchors: RequirementAnchors = {
     { kind: 'symbol', file: BUDGET, name: 'trafficBudget' },
     { kind: 'value', file: BUDGET, name: 'DEFAULT_TRAFFIC_BUDGET_MB', equals: 1024 },
     { kind: 'symbol', file: TRAFFIC, name: 'trafficLedgerPath' },
-    { kind: 'string', file: TRAFFIC, includes: 'proxyTraffic.jsonl' },
+    { kind: 'string', file: TRAFFIC, includes: 'proxyTraffic' },
   ],
   'REQ-PROXY-09': [
     { kind: 'symbol', file: PERSONA_RUN, name: 'runPersonaSession' },
@@ -65,7 +65,7 @@ const anchors: RequirementAnchors = {
   ],
   'REQ-PROXY-11': [
     { kind: 'symbol', file: TRAFFIC, name: 'recordTraffic' },
-    { kind: 'string', file: TRAFFIC, includes: 'proxyTraffic.jsonl' },
+    { kind: 'string', file: TRAFFIC, includes: 'proxyTraffic' },
   ],
   'REQ-PROXY-12': [
     { kind: 'symbol', file: TRAFFIC, name: 'meterForProxy' },

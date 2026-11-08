@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'node:fs'
+import { getState, pruneState, putState } from '../../storage/state/index'
 import { join } from 'node:path'
 import type { Offsets, SessionOffsets } from './types'
 
@@ -17,23 +17,14 @@ export function sessionIdOf(raw: string): string {
 const sessionsDir = (dir: string) => join(dir, '.hookSessions')
 const sessionPath = (dir: string, session: string) => join(sessionsDir(dir), `${session}.json`)
 
+const offsetsKey = (dir: string, session: string) => `${dir}|${session}`
+
 export function readSessionOffsets(dir: string, session: string): SessionOffsets {
-  const path = sessionPath(dir, session)
-  if (!existsSync(path)) return { offsets: {}, firstLook: true }
-  try {
-    return { offsets: JSON.parse(readFileSync(path, 'utf8')) as Offsets, firstLook: false }
-  } catch {
-    return { offsets: {}, firstLook: true }
-  }
+  const row = getState<Offsets>('hookOffsets', offsetsKey(dir, session), { legacyFile: sessionPath(dir, session) })
+  return row ? { offsets: row.body, firstLook: false } : { offsets: {}, firstLook: true }
 }
 
 export function writeSessionOffsets(dir: string, session: string, offsets: Offsets, now: number = Date.now()): void {
-  mkdirSync(sessionsDir(dir), { recursive: true })
-  writeFileSync(sessionPath(dir, session), JSON.stringify(offsets))
-  for (const file of readdirSync(sessionsDir(dir))) {
-    const path = join(sessionsDir(dir), file)
-    try {
-      if (now - statSync(path).mtimeMs > KEEP_MS) unlinkSync(path)
-    } catch {}
-  }
+  putState('hookOffsets', offsetsKey(dir, session), offsets, now)
+  pruneState('hookOffsets', `${dir}|`, now - KEEP_MS)
 }

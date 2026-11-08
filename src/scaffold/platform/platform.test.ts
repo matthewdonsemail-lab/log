@@ -32,7 +32,7 @@ describe("the syntax-tree edits", () => {
 
 function copyOfRepo(): string {
   const root = mkdtempSync(join(tmpdir(), "newPlatform"));
-  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/client.ts", "src/cli/runner/helpers/commandIndex.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/mcp/server/helpers/guides.ts", "src/twenty/graphql/generated/schema.ts"]) {
+  for (const path of ["src/cli/runner/helpers/platforms.ts", "src/cli/runner/index.ts", "src/cli/runner/client.ts", "src/cli/runner/helpers/commandIndex.ts", "src/cli/runner/types.ts", "src/directApi/engine/client.ts", "src/mcp/server/helpers/agentRules.ts", "src/mcp/server/helpers/guides.ts", "src/twenty/graphql/generated/schema.ts", "src/storage/platform/helpers/extenders.ts"]) {
     mkdirSync(dirname(join(root, path)), { recursive: true });
     cpSync(join(REPO, path), join(root, path));
   }
@@ -60,6 +60,7 @@ describe("log new platform", () => {
     expect(read("src/mcp/server/helpers/agentRules.ts")).toContain(`${PROBE}Session: [13, 63, 64, 73, 83]`);
     for (const file of [`src/${PROBE}/account/session/client.ts`, `src/cli/${PROBE}/index.ts`, `src/cli/${PROBE}/${PROBE}.test.ts`, `python/${PROBE}Api/engine.py`, `python/${PROBE}Api/__init__.py`, `docs/platforms/${PROBE}/README.md`]) expect(existsSync(join(root, file))).toBe(true);
     expect(read(`src/${PROBE}/account/session/client.ts`)).toContain("sessionCookies: ['probe_session']");
+    expect(read("src/storage/platform/helpers/extenders.ts")).toContain(`${PROBE}: makeExtender({ platform: '${PROBE}', chatKind: () => 'dm' })`);
   });
 
   test("a new platform gets its spec and anchors, and every anchor is proved by the syntax tree on what was written", async () => {

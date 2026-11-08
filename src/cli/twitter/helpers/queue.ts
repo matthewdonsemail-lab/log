@@ -19,12 +19,10 @@ import {
   itemProblems,
   linesOf,
   loadQueue,
-  lockPathOf,
-  clearDeadLock,
   editItem,
   liveLock,
   logPathOf,
-  nudgePathOf,
+  pidAlive,
   planQueue,
   QUEUE_ACTIONS,
   toAPerson,
@@ -38,6 +36,7 @@ import {
   targetsOf,
 } from "../../../twitter/queue/plan/index.ts";
 import type { EventKind, Queue, QueueAction, QueueItem } from "../../../twitter/queue/plan/index.ts";
+import { addQueueNudge, queueExists, releaseQueueLock, takeQueueLock, takeQueueNudge } from "../../../twitter/queue/store/index.ts";
 import { runQueue } from "../../../twitter/queue/run/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -177,11 +176,7 @@ function showQueue(queue: Queue): string {
 }
 
 function takeNudge(path: string): number {
-  const file = nudgePathOf(path);
-  if (!existsSync(file)) return 0;
-  const n = Number(readFileSync(file, "utf8").trim() || 0);
-  rmSync(file, { force: true });
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+  return takeQueueNudge(path);
 }
 
 function buzz(args: { channel?: string; replyTo?: string; mentions: string[] }, content: string, mention: boolean): string {
@@ -220,16 +215,8 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
   }
   const opened = await openTwitterAccount(context, "twitter queue run", queue.account);
   if (!opened.ok) return opened.result;
-  const lock = lockPathOf(path);
-  clearDeadLock(lock);
-  let fd: number;
-  try {
-    fd = openSync(lock, "wx");
-  } catch {
-    return refuse("twitter queue run", "queueBusy", `${lock} is held`);
-  }
-  writeFileSync(fd, String(process.pid));
-  closeSync(fd);
+  const taken = takeQueueLock(path, process.pid, pidAlive);
+  if (!taken.ok) return refuse("twitter queue run", "queueBusy", `a run (pid ${taken.holder}) is already going on this queue`);
   const alertArgs = { channel: typeof flags["alertChannel"] === "string" ? (flags["alertChannel"] as string) : undefined, replyTo: typeof flags["alertReplyTo"] === "string" ? (flags["alertReplyTo"] as string) : undefined, mentions: typeof flags["alertMention"] === "string" ? (flags["alertMention"] as string).split(",").map((m) => m.trim()).filter(Boolean) : [] };
   const nowMs = () => (context.now?.() ?? new Date()).getTime();
   const log = (line: string) => context.err(queueLog(path, line, new Date(nowMs())));
@@ -282,7 +269,12 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
             log(`#${item.n} @${item.handle ?? "?"}: voice note made in matt's cloned voice, ${rendered.note.seconds} s`);
             const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
             if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
+            if (guard.part(0, `voice note: ${item.text}`) !== "go") {
+              guard.done("failed", "the claim on this chat was lost before the voice note went out");
+              return { ok: false, code: "chatClaimLost", detail: "the claim on this chat was lost before the voice note went out, so nothing was sent" };
+            }
             const answer = (await opened.engine({ action: "xchatVoice", userId: item.userId, path: rendered.note.path, seconds: rendered.note.seconds, live: true, approvedBy, chatPin, ...(flags["force"] === true ? { force: true } : {}) } as never)).answer;
+            if (answer.ok && answer.event === "sent") guard.partSent(0, `voice note: ${item.text}`, answer.messageId ? String(answer.messageId) : null);
             guard.done(answer.ok && answer.event === "sent" ? "sent" : "failed", answer.ok ? "voice note" : String(answer.code ?? ""));
             return answer;
           }
@@ -299,14 +291,15 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
           if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
           let parts: Awaited<ReturnType<typeof sendDmParts>>;
           try {
-            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId });
+            parts = await sendDmParts(context, opened.engine, spec, split, { account: opened.account.accountName, userId: item.userId }, guard);
           } catch (error) {
             guard.done("failed", error instanceof Error ? error.message : String(error));
             throw error;
           }
           const { answers, last, interrupted } = parts;
           const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
-          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}`);
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}${parts.lost ? ", then the claim on this chat was lost, so the rest was held" : ""}`);
+          if (!last) return { ok: false, code: "chatClaimLost", detail: "the claim on this chat was lost before anything was sent, so nothing went out" };
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           if (interrupted.length) {
             for (const line of dmInterruptedLines(opened.account.accountName, split, done, interrupted)) log(`#${item.n} @${item.handle ?? "?"}: ${line}`);
@@ -346,7 +339,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
     if (flags["json"]) return { code: result.state === "finished" ? 0 : 5, stdout: JSON.stringify({ ...result, counts, log: logPathOf(path) }, null, 2) };
     return { code: result.state === "finished" ? 0 : 5, stdout: `log twitter queue run: ${result.state}${result.reason ? `: ${result.reason}` : ""}. ${result.sent} replies sent, ${result.skipped} skipped. ${JSON.stringify(counts)} (log: ${logPathOf(path)})` };
   } finally {
-    rmSync(lock, { force: true });
+    releaseQueueLock(path, process.pid);
   }
 }
 
@@ -373,7 +366,7 @@ export const queueCommand: Command = {
     try {
       if (word === "build") {
         const out = flags["out"] as string;
-        if (existsSync(out)) return refuse("twitter queue build", "queueInvalid", `${out} exists; it is never overwritten`);
+        if (existsSync(out) || queueExists(out)) return refuse("twitter queue build", "queueInvalid", `${out} exists; it is never overwritten`);
         const files = String(flags["variations"] ?? "").split(",").map((f) => f.trim()).filter(Boolean);
         let targets;
         let lines: string[];
@@ -503,10 +496,9 @@ export const queueCommand: Command = {
       }
       if (replies < 1) return fail("--replies must be at least 1");
       if (!liveLock(file)) return refuse("twitter queue nudge", "queueBusy", "no run is going on this queue: start one with queue run --live first");
-      const have = existsSync(nudgePathOf(file)) ? Number(readFileSync(nudgePathOf(file), "utf8").trim() || 0) || 0 : 0;
-      writeFileSync(nudgePathOf(file), String(have + replies));
-      context.err(queueLog(file, `nudge: send the next ${have + replies} replies now`, now));
-      return { code: 0, stdout: `log twitter queue nudge: the run sends its next ${have + replies} replies now (log: ${logPathOf(file)}).` };
+      const total = addQueueNudge(file, replies);
+      context.err(queueLog(file, `nudge: send the next ${total} replies now`, now));
+      return { code: 0, stdout: `log twitter queue nudge: the run sends its next ${total} replies now (log: ${logPathOf(file)}).` };
     } catch (error) {
       return refuseError(`twitter queue ${word}`, error);
     }

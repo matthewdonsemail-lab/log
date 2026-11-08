@@ -1,28 +1,29 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { appendLedger, ledgerRows } from '../../storage/ledger'
+import { defaultDbPath } from '../../storage/schema'
 import type { CaptchaAttempt, SolverAvailability } from './types'
 
 export function ledgerPath(env: Record<string, string | undefined> = process.env): string {
-  return env.LOG_CAPTCHA_LEDGER || join(homedir(), '.logCli', 'captcha', 'attempts.jsonl')
+  return env.LOG_CAPTCHA_LEDGER || defaultDbPath(env)
 }
 
 export function appendAttempt(attempt: CaptchaAttempt, path = ledgerPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  appendFileSync(path, `${JSON.stringify(attempt)}\n`)
+  appendLedger({ kind: 'captchaAttempt', at: attempt.at, account: attempt.accountId, provider: attempt.solver, subject: attempt.kind, amount: attempt.accepted === null ? null : attempt.accepted ? 1 : 0, outcome: attempt.solved ? 'solved' : 'unsolved', code: attempt.code ?? null, detail: attempt.detail ?? null }, path)
 }
 
 export function readAttempts(path = ledgerPath()): CaptchaAttempt[] {
-  if (!existsSync(path)) return []
-  const out: CaptchaAttempt[] = []
-  for (const line of readFileSync(path, 'utf8').split('\n')) {
-    if (!line.trim()) continue
-    try {
-      out.push(JSON.parse(line) as CaptchaAttempt)
-    } catch {
-    }
-  }
-  return out
+  return ledgerRows('captchaAttempt', {}, path).map((r) => ({
+    at: r.at,
+    accountId: r.account ?? '',
+    kind: r.subject as CaptchaAttempt['kind'],
+    solver: r.provider as CaptchaAttempt['solver'],
+    solved: r.outcome === 'solved',
+    accepted: r.amount === null || r.amount === undefined ? null : r.amount === 1,
+    ...(r.code ? { code: r.code as CaptchaAttempt['code'] } : {}),
+    ...(r.detail ? { detail: r.detail } : {}),
+  }))
 }
 
 export function solverAvailability(

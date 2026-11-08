@@ -56,7 +56,7 @@ Checked by: SubQ
 
 ### REQ-PROXY-08: Each account has a 24 hour traffic budget of 1 GB by default
 
-An account's proxy traffic budget is 1024 MB over the last 24 hours, counted from the runs recorded for that account in `~/.logCli/proxyTraffic.jsonl`. `--trafficMb` sets another budget for the run.
+An account's proxy traffic budget is 1024 MB over the last 24 hours, counted from the runs recorded for that account in the `ledger` table in `~/.logCli/log.db` (kind `proxyTraffic`). `--trafficMb` sets another budget for the run.
 
 Checked by: code and SubQ
 
@@ -74,7 +74,7 @@ Checked by: code and SubQ
 
 ### REQ-PROXY-11: Each run's traffic is recorded
 
-At the end of a metered warm-up its traffic is read from the provider's counter and one line with the time, account, run and megabytes is appended to `~/.logCli/proxyTraffic.jsonl`.
+At the end of a metered warm-up its traffic is read from the provider's counter and one line with the time, account, run and megabytes is appended to the `ledger` table in `~/.logCli/log.db` (kind `proxyTraffic`).
 
 Checked by: code and SubQ
 

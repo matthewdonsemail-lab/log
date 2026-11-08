@@ -1,4 +1,5 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
+import { appendRecord, importRecordFile, readRecords } from '../../../storage/records/index'
 import { homedir } from 'node:os'
 import { dirname, extname, join, normalize, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -19,19 +20,13 @@ export function ratingsPath(env: Record<string, string | undefined> = process.en
 }
 
 export function readRatings(path = ratingsPath()): TasteRating[] {
-  if (!existsSync(path)) return []
-  return readFileSync(path, 'utf8').split('\n').filter(Boolean).flatMap((line) => {
-    try {
-      return [JSON.parse(line) as TasteRating]
-    } catch {
-      return []
-    }
-  })
+  importRecordFile('memeRating', path)
+  return readRecords<TasteRating>('memeRating')
 }
 
 export function addRating(rating: TasteRating, path = ratingsPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  appendFileSync(path, `${JSON.stringify(rating)}\n`)
+  importRecordFile('memeRating', path)
+  appendRecord('memeRating', rating as unknown as Record<string, unknown>)
 }
 
 const BRAND_TYPES: Record<string, string> = { '.css': 'text/css', '.js': 'text/javascript', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' }

@@ -30,7 +30,7 @@ Checked by: code and SubQ
 
 ### REQ-BALANCE-04: Each paid call's answer is kept
 
-The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients record each answer's status, time and, on a failure, what the provider said, in `~/.logCli/billing/answers.jsonl` (`LOG_BILLING_ANSWERS` moves it). A 402, or words like insufficient credit, payment required, quota exceeded or creation limit, mark the answer out of credit.
+The SubQ, Jina, Inworld, Fish Audio and AssemblyAI clients record each answer's status, time and, on a failure, what the provider said, in the `ledger` table in `~/.logCli/log.db` (kind `providerAnswer`) (`LOG_BILLING_ANSWERS` moves it). A 402, or words like insufficient credit, payment required, quota exceeded or creation limit, mark the answer out of credit.
 
 Checked by: code and SubQ
 

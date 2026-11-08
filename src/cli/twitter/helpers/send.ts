@@ -13,6 +13,7 @@ import type { TwitterEngineSpec } from "../../../twitter/account/session/index.t
 import { readProfiles, splitPlan } from "../../../voice/pairs/index.ts";
 import { incomingSince, interruptedLines } from "../../../inbox/watch/index.ts";
 import { guardSend } from "../../../inbox/claims/index.ts";
+import { latestSeq } from "../../../inbox/store/index.ts";
 import { waitCaughtUp } from "../../../inbox/catchUp/index.ts";
 import { gateDeps } from "./voice.ts";
 import type { InboxMessage } from "../../../inbox/watch/index.ts";
@@ -121,7 +122,13 @@ export function splitLine(plan: SplitPlan): string {
   return `${plan.parts.length === 1 ? "as one message" : `as ${plan.parts.length} messages, ${plan.gapSeconds} s apart`} (${plan.why})`;
 }
 
-export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">, engine: Engine, spec: TwitterEngineSpec, plan: SplitPlan, watch?: { account: string; userId: string }): Promise<{ answers: TwitterSessionAnswer[]; last: Awaited<ReturnType<Engine>>; interrupted: InboxMessage[] }> {
+export interface PartGuard {
+  part: (n: number, text: string) => "go" | "lost" | "alreadySent" | "movedOn";
+  partSent: (n: number, text: string, messageId?: string | null) => void;
+  heard: () => string[];
+}
+
+export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">, engine: Engine, spec: TwitterEngineSpec, plan: SplitPlan, watch?: { account: string; userId: string }, guard?: PartGuard): Promise<{ answers: TwitterSessionAnswer[]; last: Awaited<ReturnType<Engine>>; interrupted: InboxMessage[]; lost?: boolean; movedOn?: string[] }> {
   const sleep = context.sleep ?? ((ms: number) => new Promise<void>((done) => setTimeout(done, ms)));
   const answers: TwitterSessionAnswer[] = [];
   const startedAt = twitterSendDeps.now();
@@ -133,9 +140,17 @@ export async function sendDmParts(context: Pick<CommandContext, "err" | "sleep">
       if (watch) interrupted = twitterSendDeps.incoming(watch.account, watch.userId, startedAt);
       if (interrupted.length) break;
     }
+    const step = guard?.part(i, part) ?? "go";
+    if (step === "lost") return { answers, last: last!, interrupted, lost: true };
+    if (step === "movedOn") return { answers, last: last!, interrupted, movedOn: guard!.heard() };
+    if (step === "alreadySent") {
+      answers.push({ ok: true, event: "sent" } as TwitterSessionAnswer);
+      continue;
+    }
     last = await engine({ ...spec, text: part, ...(i && spec.media ? { media: undefined } : {}) });
     answers.push(last.answer);
     if (!last.answer.ok || last.answer.event !== "sent") break;
+    guard?.partSent(i, part, last.answer.messageId ? String(last.answer.messageId) : null);
     if (plan.parts.length > 1) context.err(`  ${i + 1}/${plan.parts.length} sent: ${part}`);
   }
   return { answers, last: last!, interrupted };
@@ -203,27 +218,31 @@ function sendCommand(shape: SendShape): Command {
           const spec = { ...(parsed.flags["force"] === true ? { ...plan.spec, force: true } : plan.spec), ...(groupPin ? { chatPin: groupPin } : {}) };
           const caught = await waitCaughtUp("twitter", account.accountName);
           if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
+          let readUpTo = latestSeq();
           if (parsed.flags["overGate"] === true) {
             const same = gateDeps.same({ platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "" });
             if (!same.ok) return refuse(label, "sameAsSent", same.refused);
             context.err(`${account.accountName}: --overGate: matt said to send this dm over the voice gate, so its read is skipped; the AI artifact check passed (rule 152)`);
           } else {
+            readUpTo = latestSeq();
             const voiced = await gateDeps.gate(context, { platform: "twitter", account: account.accountName, to: plan.target, text: plan.spec.text ?? "", userId: plan.target });
             if (!voiced.ok) return refuse(label, "voiceGateFailed", voiced.refused);
             context.err(voiced.line);
           }
-          const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target });
+          const guard = guardSend({ platform: "twitter", account: account.accountName, conversationId: plan.target }, undefined, { readUpTo });
           if (!guard.ok) return refuse(label, "chatClaimedElsewhere", guard.refused);
           let parts: Awaited<ReturnType<typeof sendDmParts>>;
           try {
-            parts = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target });
+            parts = await sendDmParts(context, engine, spec, split, { account: account.accountName, userId: plan.target }, guard);
           } catch (error) {
             guard.done("failed", error instanceof Error ? error.message : String(error));
             throw error;
           }
           const { answers, last, interrupted } = parts;
           const okParts = answers.filter((a) => a.ok && a.event === "sent").length;
-          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}: ${split.parts.slice(0, okParts).join(" / ").slice(0, 300)}`);
+          guard.done(interrupted.length ? "interrupted" : okParts === split.parts.length ? "sent" : "failed", `${okParts} of ${split.parts.length}${parts.lost ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${split.parts.slice(0, okParts).join(" / ").slice(0, 300)}`);
+          if (parts.movedOn?.length) return refuse(label, "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${parts.movedOn.map((m) => `  ${m}`).join("\n")}`);
+          if (!last) return refuse(label, "chatClaimLost", "the claim on this chat was lost before anything was sent, so nothing went out");
           const done = answers.filter((a) => a.ok && a.event === "sent").length;
           const code = done === split.parts.length ? 0 : 1;
           if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: account.accountName, action: shape.action, target: plan.target, approvedBy: plan.spec.approvedBy, split: { parts: split.parts, gapSeconds: split.gapSeconds, why: split.why }, sent: answers, interrupted, ...last.answer }, null, 2) };

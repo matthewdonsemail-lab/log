@@ -46,9 +46,26 @@ describe("one owner, every subscriber attached (rule 132)", () => {
     db().prepare("INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, port, token, subscribers) VALUES ('twitter', 'matthewsoldit', 4242, 'h', ?, ?, 'streaming', 1, 't', 0)").run(old, old);
     expect(sessionLive(readSession("twitter", "matthewsoldit"), Date.now(), () => true)).toBe(false);
     const killed: number[] = [];
-    expect(replaceHungOwners("twitter", ["matthewsoldit"], Date.now(), () => true, (pid) => killed.push(pid))).toEqual(["matthewsoldit"]);
+    const now = Date.now();
+    const sameStart = () => null;
+    expect(replaceHungOwners("twitter", ["matthewsoldit"], now, () => true, (pid) => killed.push(pid), sameStart)).toEqual([]);
+    expect(replaceHungOwners("twitter", ["matthewsoldit"], now + 5_000, () => true, (pid) => killed.push(pid), sameStart)).toEqual([]);
+    expect(killed).toEqual([]);
+    expect(replaceHungOwners("twitter", ["matthewsoldit"], now + 10_000, () => true, (pid) => killed.push(pid), sameStart)).toEqual(["matthewsoldit"]);
     expect(killed).toEqual([4242]);
     expect(takeAlerts("session").join("\n")).toContain("HUNGOWNER twitter matthewsoldit");
+  });
+
+  test("a quiet owner whose pid now belongs to another process is not killed", () => {
+    const old = new Date(Date.now() - 120_000).toISOString();
+    db().prepare("INSERT INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status, port, token, subscribers, pidStartedAt) VALUES ('slack', 'reused', 4343, 'h', ?, ?, 'streaming', 1, 't', 0, ?)").run(old, old, old);
+    const killed: number[] = [];
+    const now = Date.now();
+    const otherStart = () => new Date(now - 1_000).toISOString();
+    replaceHungOwners("slack", ["reused"], now, () => true, (pid) => killed.push(pid), otherStart);
+    expect(replaceHungOwners("slack", ["reused"], now + 10_000, () => true, (pid) => killed.push(pid), otherStart)).toEqual(["reused"]);
+    expect(killed).toEqual([]);
+    expect(takeAlerts("session").join("\n")).toContain("OWNERPIDREUSED slack reused");
   });
 
   test("the first watch owns the connection, and an inbox watch that loses is refused instead of opening a second", async () => {

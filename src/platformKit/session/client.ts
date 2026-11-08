@@ -1,3 +1,4 @@
+import { identifyAccount } from '../../inbox/store/index'
 import { spawn, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -184,5 +185,6 @@ export async function recordPlatformSession(twenty: TwentyClient, shape: Platfor
   if (cookiesBack) update.cookies = mergeCookieShape(account.cookies, run.refreshed!, cookieDomain)
   await twenty.update(SOCIAL_ACCOUNTS, account.id, update as never)
   writeLocalSession(account.accountName, state, now, platformStateRoot(shape.platform))
+  if (run.answer.ok && state === 'loggedIn' && run.answer.userId) identifyAccount(shape.platform, account.accountName, String(run.answer.userId), now)
   return [`${accountStore(account.id)}: ${account.accountName} sessionState ${state} (${shape.label}'s own answer)${cookiesBack ? ', its refreshed cookies merged back' : ''}.`]
 }

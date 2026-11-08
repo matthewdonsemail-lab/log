@@ -6,7 +6,7 @@ import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/i
 import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments } from "../../media/describer/index.ts";
 import { gateDeps } from "../twitter/helpers/voice.ts";
-import { recordPosition } from "../../inbox/store/index.ts";
+import { latestSeq, recordPosition } from "../../inbox/store/index.ts";
 import { slackCatchUp, storeRead, waitCaughtUp } from "../../inbox/catchUp/index.ts";
 import { guardSend } from "../../inbox/claims/index.ts";
 import type { InboxMessage } from "../../inbox/watch/index.ts";
@@ -310,7 +310,7 @@ export function slackToInboxOf(event: Record<string, unknown>): boolean {
 
 export function slackInboxMessageOf(account: string, event: Record<string, unknown>, now: Date) {
   const channel = String(event.channel ?? "");
-  return { platform: "slack", account, conversationId: channel, with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: channel.startsWith("D") ? "dm" : channel.startsWith("G") ? "group" : "mention", seenAt: now.toISOString(), workspace: String(event.workspace ?? "") };
+  return { platform: "slack", account, conversationId: channel, with: String(event.from ?? "?"), text: String(event.text ?? ""), at: String(event.at ?? now.toISOString()), box: channel.startsWith("D") ? "dm" : channel.startsWith("G") ? "group" : "mention", seenAt: now.toISOString(), workspace: String(event.workspace ?? ""), ...(event.ts ? { id: String(event.ts) } : {}), ...(event.user ? { senderId: String(event.user) } : {}), ...(event.threadTs ? { replyTo: String(event.threadTs) } : {}), ...(Array.isArray(event.attachments) && event.attachments.length ? { attachments: event.attachments as { name: string }[] } : {}) };
 }
 
 export const slackWatchCommand: Command = {
@@ -443,11 +443,13 @@ export const slackSendCommand: Command = {
       context.err(`${opened.account.accountName}: send to ${chat.label} ${planLine} on the direct-API engine, approved by ${approvedBy}`);
       const caught = await waitCaughtUp("slack", opened.account.accountName);
       if (!caught.ok) return refuse("slack send", "accountBehind", caught.refused);
+      const readUpTo = latestSeq();
       const voiced = await gateDeps.gate(context, { platform: "slack", account: opened.account.accountName, to: chat.label, text, conversationId: chat.id });
       if (!voiced.ok) return refuse("slack send", "voiceGateFailed", voiced.refused);
       context.err(voiced.line);
-      const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id });
+      const guard = guardSend({ platform: "slack", account: opened.account.accountName, conversationId: chat.id }, undefined, { readUpTo });
       if (!guard.ok) return refuse("slack send", "chatClaimedElsewhere", guard.refused);
+      let movedOn: string[] = [];
       const sent: PlatformAnswer[] = [];
       const startedAt = slackDeps.now();
       let interrupted: InboxMessage[] = [];
@@ -458,20 +460,31 @@ export const slackSendCommand: Command = {
           await slackDeps.wait(plan.gapSeconds * 1000);
           interrupted = slackDeps.incoming(opened.account.accountName, chat.id, startedAt);
           if (interrupted.length) break;
-          if (!guard.held()) {
-            fenced = true;
-            break;
-          }
+        }
+        const step = guard.part(i, part);
+        if (step === "lost") {
+          fenced = true;
+          break;
+        }
+        if (step === "movedOn") {
+          movedOn = guard.heard();
+          break;
+        }
+        if (step === "alreadySent") {
+          sent.push({ ok: true, event: "sent", sent: [] } as PlatformAnswer);
+          continue;
         }
         const run = context.directSlack!(opened.account, { action: "send", chat: chat.id, lines: [part], live: true, approvedBy, ...inWorkspace(opened.workspace) });
         sent.push(run.answer);
         if (!run.answer.ok) break;
+        guard.partSent(i, part, ((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? null);
         context.err(`  ${i + 1}/${plan.parts.length} sent ${((run.answer.sent as { ts?: string }[] | undefined) ?? [])[0]?.ts ?? ""}: ${part}`);
       }
       } finally {
         const ok = sent.filter((a) => a.ok).length;
         guard.done(interrupted.length ? "interrupted" : ok === plan.parts.length ? "sent" : "failed", `${ok} of ${plan.parts.length}${fenced ? ", then the claim on this chat was lost, so the rest was held" : ""}: ${plan.parts.slice(0, ok).join(" / ").slice(0, 300)}`);
       }
+      if (movedOn.length) return refuse("slack send", "chatMovedOn", `>>> THEY WROTE AFTER THE GATE READ THE CHAT: nothing was sent, so answer what they said first.\n${movedOn.map((m) => `  ${m}`).join("\n")}`);
       const done = sent.filter((a) => a.ok);
       const last = sent[sent.length - 1];
       const code = done.length === plan.parts.length ? 0 : 1;

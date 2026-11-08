@@ -1,12 +1,13 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { deleteState, getState, putState } from '../../storage/state/index'
 import { readSession, sessionLive } from '../relay/index'
 import { behindOf, db, positionsOf, recordPosition } from '../store/index'
 import { BACKFILL_SCOPE, CHAT_LIST_FRESH_MS } from './types'
 import type { DbMessage, ReadSource, ReadSourceDeps } from './types'
 import type { MessageAttachment } from '../catchUp/types'
 import { timed } from '../../observability/timing/index'
+import { chatIdOf } from '../../storage/platform/index'
 
 export const readSourceDeps: ReadSourceDeps = {
   live: (platform, account) => sessionLive(readSession(platform, account)),
@@ -36,15 +37,6 @@ export function markBackfilled(platform: string, account: string, chatKey: strin
   recordPosition(platform, account, now.toISOString(), `${BACKFILL_SCOPE}${chatKey}`, now)
 }
 
-function payloadOf(payload: string): { id?: unknown; attachments?: unknown } {
-  try {
-    const parsed = JSON.parse(payload) as unknown
-    return parsed && typeof parsed === 'object' ? (parsed as { id?: unknown; attachments?: unknown }) : {}
-  } catch {
-    return {}
-  }
-}
-
 function attachmentsOf(value: unknown): MessageAttachment[] | undefined {
   if (!Array.isArray(value)) return undefined
   return value.filter((a): a is MessageAttachment => !!a && typeof a === 'object' && typeof (a as { name?: unknown }).name === 'string').map((a) => ({ name: a.name, ...(a.type ? { type: a.type } : {}), ...(a.path ? { path: a.path } : {}), ...(a.error ? { error: a.error } : {}) }))
@@ -67,23 +59,26 @@ export function isVisualAttachment(a: MessageAttachment): boolean {
 }
 
 export function chatMessages(platform: string, account: string, conversationId: string, limit: number): DbMessage[] {
-  const rows = db()
-    .prepare("SELECT eventId, conversationId, type, withWho, text, payload, sourceAt, receivedAt FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type IN ('message', 'ownMessage') ORDER BY COALESCE(NULLIF(sourceAt, ''), receivedAt) DESC, seq DESC LIMIT ?")
-    .all(platform, account, conversationId, limit) as { eventId: string; conversationId: string; type: string; withWho: string; text: string; payload: string; sourceAt: string; receivedAt: string }[]
+  const chatId = chatIdOf(platform, account, conversationId)
+  const handle = db()
+  const rows = handle
+    .prepare('SELECT m.messageKey, m.platformMessageId, COALESCE(i.handle, m.senderLabel) AS senderLabel, m.senderUserId, m.fromOwner, m.sentAt, m.text FROM messages m LEFT JOIN identities i ON i.platform = m.senderPlatform AND i.userId = m.senderUserId WHERE m.chatId = ? ORDER BY m.sentAtMs DESC, m.seq DESC LIMIT ?')
+    .all(chatId, limit) as { messageKey: string; platformMessageId: string | null; senderLabel: string | null; senderUserId: string; fromOwner: number; sentAt: string; text: string }[]
+  const files = handle.prepare('SELECT name, contentType, path, error FROM attachments WHERE messageKey = ? ORDER BY n')
   return rows.reverse().map((r) => {
-    const payload = payloadOf(r.payload)
-    const attachments = attachmentsOf(payload.attachments)
-    return { id: payload.id == null ? r.eventId : String(payload.id), conversationId: r.conversationId, at: r.sourceAt || r.receivedAt, from: r.type === 'ownMessage' ? 'me' : r.withWho, fromMe: r.type === 'ownMessage', text: r.text, ...(attachments ? { attachments } : {}) }
+    const attachments = attachmentsOf((files.all(r.messageKey) as { name: string | null; contentType: string | null; path: string | null; error: string | null }[]).map((a) => ({ name: a.name, type: a.contentType ?? undefined, path: a.path ?? undefined, error: a.error ?? undefined })))
+    return { id: r.platformMessageId ?? r.messageKey.slice(chatId.length + 1), conversationId, at: r.sentAt, from: r.fromOwner ? 'me' : r.senderLabel ?? r.senderUserId, fromMe: r.fromOwner === 1, text: r.text, ...(attachments?.length ? { attachments } : {}) }
   })
 }
 
 export function chatMessageCount(platform: string, account: string, conversationId: string): number {
-  const row = db().prepare("SELECT COUNT(*) AS n FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type IN ('message', 'ownMessage')").get(platform, account, conversationId) as { n: number }
+  const row = db().prepare('SELECT COUNT(*) AS n FROM messages WHERE chatId = ?').get(chatIdOf(platform, account, conversationId)) as { n: number }
   return row.n
 }
 
 export function userIdOfHandle(platform: string, account: string, handle: string): string | null {
-  const row = db().prepare('SELECT userId FROM people WHERE platform = ? AND account = ? AND lower(handle) = lower(?) ORDER BY seenAt DESC LIMIT 1').get(platform, account, handle.replace(/^@/, '')) as { userId: string } | null
+  void account
+  const row = db().prepare('SELECT userId FROM handleAliases WHERE platform = ? AND handle = ? ORDER BY lastSeenAt DESC LIMIT 1').get(platform, handle.replace(/^@/, '').trim().toLowerCase()) as { userId: string } | null
   return row?.userId ?? null
 }
 
@@ -99,18 +94,16 @@ export function chatListPath(platform: string, account: string): string {
 }
 
 export function cachedChatList<T>(platform: string, account: string, now: number = Date.now()): T[] | null {
-  try {
-    const kept = JSON.parse(readFileSync(chatListPath(platform, account), 'utf8')) as { savedAt: number; chats: T[] }
-    return now - kept.savedAt < CHAT_LIST_FRESH_MS ? kept.chats : null
-  } catch {
-    return null
-  }
+  const kept = getState<{ savedAt: number; chats: T[] }>('chatList', `${platform}:${account}`, { legacyFile: chatListPath(platform, account) })?.body
+  return kept && now - kept.savedAt < CHAT_LIST_FRESH_MS ? kept.chats : null
 }
 
 export function saveChatList<T>(platform: string, account: string, chats: readonly T[], now: number = Date.now()): void {
-  const path = chatListPath(platform, account)
-  mkdirSync(dirname(path), { recursive: true })
-  writeFileSync(path, JSON.stringify({ savedAt: now, chats }))
+  putState('chatList', `${platform}:${account}`, { savedAt: now, chats }, now)
+}
+
+export function forgetChatList(platform: string, account: string): void {
+  deleteState('chatList', `${platform}:${account}`)
 }
 
 export function findInChatList<T, M extends { ok: boolean }>(platform: string, account: string, said: string, match: (chats: T[], said: string) => M, list: () => { ok: true; chats: T[] } | { ok: false; detail: string }): { from: 'cache' | 'platform'; found: M } | { from: 'platform'; failed: string } {

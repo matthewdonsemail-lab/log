@@ -52,8 +52,8 @@ const anchors: RequirementAnchors = {
   'REQ-WARMUP-05': [
     { kind: 'symbol', file: STAGE_LOG, name: 'appendStageLog' },
     { kind: 'symbol', file: STAGE_LOG, name: 'stageLogPath' },
-    { kind: 'string', file: STAGE_LOG, includes: 'stageLog.jsonl' },
-    { kind: 'string', file: STAGE_LOG, includes: '.logCli' },
+    { kind: 'uses', file: STAGE_LOG, name: 'appendRecord' },
+    { kind: 'uses', file: STAGE_LOG, name: 'importRecordFile' },
   ],
   'REQ-WARMUP-06': [
     { kind: 'symbol', file: REEL, name: 'REEL' },
@@ -137,7 +137,7 @@ export const warmup = {
     'REQ-WARMUP-02': noul('In record, when pageProblem finds nothing but ok is false (the reply of the step failed or never came), does the loop return from record right there, so that activity never reaches spans.push and saveFlows?'),
     'REQ-WARMUP-03': noul('Does runStages refuse a run with flowNotRecorded when loadFlow finds no flow for a picked activity, and otherwise does runWarmup run the flow of each activity through warmupMachine in the one session with gapMs between activities, 10 seconds when --gapSeconds is not given?'),
     'REQ-WARMUP-04': noul('Does warmupMachine go to its blocked final state when the issue of an activity is checkpointed, loginWall or restrictedPolicy, and carry on to the next activity when the issue is in NOTED_ISSUES?'),
-    'REQ-WARMUP-05': noul('Does every stage event in a stages run go through the stage function to appendStageLog, which appends one JSON line to stageLogPath()?'),
+    'REQ-WARMUP-05': noul('Does every stage event in a stages run go through the stage function to appendStageLog, which appends one stageLog record to log.db through appendRecord, the old file at stageLogPath() having been imported once?'),
     'REQ-WARMUP-06': noul('In REEL, does the unmute step (clickRole button Unmute) come right after openReels and before the first watch, and does the persona machine queue openReels then unmute before its first decide?'),
     'REQ-WARMUP-07': noul('In REEL, does every swipe step press button Next card with expect urlChanges true and urlMatches /reel/, does openComments expect shows heading Comments and closeComments expect hides heading Comments, and is the reply of each step checked with checkStep against its expect?'),
     'REQ-WARMUP-08': noul('Is the scrollComments step in REEL a scrollIn action whose args name the heading Comments?'),

@@ -38,11 +38,11 @@ src/agentHooks/                 the agent hooks (Claude Code, Codex) and what ea
 src/surface/                    the catalog of commands, MCP tools and hooks; the generated reference (`docs/reference.md`) and diagrams
 vendor/fbk/                     Facebook's direct-API client
 vendor/twikit/                  X's direct-API client, on curl_cffi
-vendor/rdvwr/                   Reddit's direct-API client, one pinned curl_cffi session (check:rdvwrTransport)
+vendor/reverseChud/             Reddit's direct-API client: 9xz/reversechud (TypeScript, pinned in UPSTREAM), one wreq-js session (check:reverseChudTransport), run by src/reddit/engine behind python/redditApi's governor; its own tests run apart from bun test
 vendor/twitterController/       the earlier X controller being ported
 python/directApi/               Facebook's direct-API engine (fbk)
 python/twitterApi/              X's engine (twikit)
-python/redditApi/               Reddit's engine (rdvwr)
+python/redditApi/               Reddit's engine: the governor in front, reverseChud behind it through src/reddit/engine
 python/platformKit/             what every platform's engine shares
 python/browser/                 every driver's opener (browserDriver.py), the proxy gate, the HAR recorder, headed launch
 python/session/                 the processes TypeScript runs: inspect, connect, publish, profile, the worker

@@ -271,7 +271,7 @@ log facebook warmup reel run --account <a> --persona --live [--likes] [--traffic
 - Reels streams video through the proxy: about 4.5 MB a reel (2026-10-20).
   A run is refused when the account used its `--trafficMb` (default 1 GB) in
   the last 24 hours, checks every 5 reels and stops at it; each run's use goes
-  to `~/.logCli/proxyTraffic.jsonl`.
+  to the `ledger` table in `~/.logCli/log.db` (kind `proxyTraffic`).
 - The creator's profile opens in its own tab: back to the reel closes it
   (`closeTab`). Stop a run with the browser left open (rule 35); if a session
   dies, close its AdsPower profile and clear its proxy, then log the close.

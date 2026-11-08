@@ -18,6 +18,7 @@ export const agentHooks = {
   description: 'The agent hooks: one list for both hosts, what each event does, and the check that refuses drift',
   specPath: 'docs/specs/agentHooks.md',
   codePaths: [
+    'src/storage/schema/client.ts',
     'src/agentHooks/registry/index.ts',
     'src/agentHooks/registry/types.ts',
     'src/agentHooks/pageState/index.ts',
@@ -52,6 +53,12 @@ export const agentHooks = {
       { kind: 'string', file: INBOX_WATCH, includes: '--inbox' },
       { kind: 'string', file: INBOX_HOOK, includes: 'discord' },
     ],
+    'REQ-HOOKS-21': [
+      { kind: 'symbol', file: 'src/agentHooks/registry/index.ts', name: 'claudeCodeHooks' },
+      { kind: 'symbol', file: 'src/agentHooks/answers/client.ts', name: 'answerEvent' },
+      { kind: 'symbol', file: 'src/agentHooks/answers/client.ts', name: 'cachedFreshness' },
+      { kind: 'string', file: 'scripts/contextLayer/service.ts', includes: 'hookEvent' },
+    ],
     'REQ-HOOKS-20': [
       { kind: 'symbol', file: 'src/agentHooks/chatNames/index.ts', name: 'chatNameVerdict' },
     ],
@@ -83,7 +90,7 @@ export const agentHooks = {
       { kind: 'symbol', file: INBOX_STORE, name: 'importPendingFile' },
       { kind: 'symbol', file: INBOX_CLAIMS, name: 'stillHeld' },
       { kind: 'symbol', file: INBOX_WATCH, name: 'takePending' },
-      { kind: 'string', file: INBOX_STORE, includes: 'PRAGMA journal_mode = WAL' },
+      { kind: 'string', file: 'src/storage/schema/client.ts', includes: 'PRAGMA journal_mode = WAL' },
       { kind: 'string', file: 'src/cli/discord/index.ts', includes: 'the claim on this chat was lost' },
       { kind: 'string', file: 'src/cli/slack/index.ts', includes: 'the claim on this chat was lost' },
     ],
@@ -163,7 +170,8 @@ export const agentHooks = {
     'REQ-HOOKS-15': noul('Does claimChat create one claim row per chat for the calling process inside an immediate transaction, refuse another live process holding the same chat (an X chat matched by the person id or the pair), renew its own and take over a claim whose process ended or whose expiresAt passed; does guardSend claim the chat before each discord, slack, twitter dm, queue dm and instagram send and release it as sent, interrupted or failed; does every claim, renewal, refusal, send and release go to the actions table through recordAction; and does the inbox hook put claimContext, each pushed message with its eventIdOf id and its claim state, in front of the agent?'),
     'REQ-HOOKS-14': noul('Does ownOrAttach make the watch that wins claimWatcher the one owner, opening a relay with openRelay that records its owners row (pid, hostname, startedAt, a lastHeartbeat refreshed every HEARTBEAT_MS, status, port, token, subscribers) and broadcasting every event to every subscriber that sent the token, while a watch that loses attaches through attachRelay to a live owner session or, when it is an inbox watch, is refused; and does replaceHungOwners stop an owner whose heartbeat is older than STALE_MS and write a hungOwner alert? Do the twitter chat, discord, slack and instagram watch commands all go through ownOrAttach?'),
     'REQ-HOOKS-13': noul('In src/inbox/watch/client.ts, does claimWatcher write the owners row with the watcher pid inside an immediate transaction, refuse a second watcher while the lock holder pid is alive by adding a duplicateWatcher alert row, and take over the row when the holder pid is dead; does ensureLiveWatchers skip starting a watcher while watchHolder returns a live holder; and does stopStaleWatchers stop a live lock holder as well as the pid file process? In scripts/hooks/inbox.ts, are the takeAlerts lines put first in the agent context under ONE PROCESS PER ACCOUNT?'),
-    'REQ-HOOKS-16': noul('Does appendEvent insert each event once by its eventId into the events table with an autoincrement seq inside an immediate transaction, store an event whose type is not in eventTypes with known 0 and add an unknownEventType alert through typeStatus, and time its received, appended and indexed stages; does takePending read events after the reader cursor and start a new reader at latestSeq; does importPendingFile import pending.jsonl only while events is empty; does claimChat give each new claim the next chatGenerations generation and stillHeld compare the holder and generation; do the discord and slack sends call guard.held() before every part after the first and stop when it is false; does releaseChat write its actions in the same transaction as deleting the claim; and does the relay broadcast drop a subscriber whose writableLength passes MAX_BUFFERED_BYTES?'),
+    'REQ-HOOKS-16': noul('Does appendEvent insert each event once by its eventId into the events table with an autoincrement seq inside an immediate transaction, store an event whose type is not in eventTypes with known 0 and add an unknownEventType alert through typeStatus, and time its received, appended and indexed stages; does takePending read events after the reader cursor and start a new reader at latestSeq; does importPendingFile import pending.jsonl only while events is empty; does claimChat give each new claim the next chatGenerations generation and stillHeld compare the holder and generation; do the discord and slack sends call guard.part before every part and stop when it is not go; does releaseChat write its actions in the same transaction as deleting the claim; and does the relay broadcast drop a subscriber whose writableLength passes MAX_BUFFERED_BYTES?'),
+    'REQ-HOOKS-21': noul('Does claudeCodeHooks in src/agentHooks/registry/index.ts write UserPromptSubmit, PostToolUse and Stop as one type http hook each to HOOK_SERVICE_URL/<event>, SessionStart as one command bun with args running EVENT_SCRIPT and the event name and no shell, and each hook in REFUSING_HOOKS as its own command bun with args; does scripts/hooks/event.ts start the service when it is down; does scripts/contextLayer/service.ts answer /hooks/<event> with answerEvent; does answerEvent run every hook hooksForEvent picks (matcher fits the tool, never one in REFUSING_HOOKS) with Promise.all, merge them with mergeAnswers and put a throwing hook name in the context instead of failing the event; and does cachedFreshness rerun its file listing only when the stamp changed or refreshMs passed?'),
     'REQ-HOOKS-20': noul('Is scripts/hooks/chatNames.ts registered in src/agentHooks/registry/index.ts as a PreToolUse hook for the log MCP discord, slack and instagram tools, and does chatNameVerdict in src/agentHooks/chatNames/index.ts refuse a channel, chat or with argument that isBareId calls an id with how to name it instead, while letting a name through?'),
     'REQ-HOOKS-19': noul('In src/inbox/store/client.ts, does appendEvent take the sender id with senderIdOf (senderId, userId, authorId, sender_id or user in the payload, or a with that isBareId calls an id) and a real handle with handleIn (with, from, handle, username or screenName that isBareId does not call an id), call personOf for the sender id when there is no handle before the INSERT, call rememberPerson with the sender id and handle, and mark the named stage only when the stored with is not a bare id; do personOf and handleOfUserId (and its xInboxHandleOf fallback) return null instead of any value isBareId calls an id; does rememberPerson refuse a handle isBareId calls an id; does namedLabel return the label when it is not a bare id and otherwise personOf or someone not named yet; and in src/inbox/watch/client.ts do messageOf and twitterThreads label people through namedLabel?'),
     'REQ-HOOKS-18': noul('In src/inbox/store/client.ts, does resumeGap change only a gap whose status is refused back to open, write the resumer and the earlier refusal into its detail, add a gapResumed alert, and return null without changing anything when the account has no gap or its gap is not refused; does the inbox command in src/cli/inbox/index.ts have a resume subcommand that needs --platform, --account and --by and calls resumeGap; and does ownOrAttach in src/inbox/relay/client.ts call catching.run on a setInterval of RECHECK_GAP_MS and clear that interval in its finally, while catchUpRunner still returns at once for a refused gap?'),
@@ -191,6 +199,7 @@ export const agentHooks = {
     'REQ-HOOKS-18': MET,
     'REQ-HOOKS-19': MET,
     'REQ-HOOKS-20': MET,
+    'REQ-HOOKS-21': MET,
     unspecifiedBehavior: NOT_VIOLATED,
   },
 }

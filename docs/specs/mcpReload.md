@@ -14,7 +14,7 @@ Checked by: code and SubQ
 
 ### REQ-RELOAD-02: A reload waits until nothing is running, then replays initialize
 
-`ReloadProxy.reloadDue` is true only when `codeStamp` is newer than the child's stamp, that stamp didn't already fail, no request is in flight and `jobsRunning` (jobs in `listJobs` whose pid is the child's, still running) is empty. Otherwise it records what it waits on (`waitingOn`). It runs on every request and on a timer (`tick`).
+`ReloadProxy.reloadDue` is true only when the code stamp is newer than the child's stamp, that stamp didn't already fail, no request is in flight and `jobsRunning` (jobs in `listJobs` whose pid is the child's, still running) is empty. Otherwise it records what it waits on (`waitingOn`). It runs on every request and on a timer (`tick`). The stamp it reads is cached (`codeStampWatcher`): reading it never walks the source tree. A file watcher marks it dirty when a `.ts` or `.py` file changes, and the timer walks the tree again only then, or once a minute in case a watch event was lost. So no tool call waits on the walk, which took about 79 ms per call (issue #99).
 - `reload` starts a new child and writes the saved `initialize` to it with its own id.
 - The child's answer to that id isn't forwarded.
 - When it comes, the proxy sends `notifications/initialized` to the new child, stops the old one (`killed`, so its exit isn't a crash), sends `notifications/tools/list_changed` to the client and passes on the lines it queued meanwhile.
@@ -29,6 +29,6 @@ Checked by: code and SubQ
 
 ### REQ-RELOAD-04: Its state is recorded and the hook reads it
 
-`runReloadProxy` writes the proxy's state to `reload.json` (`reloadStateFile`, `LOG_MCP_RELOAD_FILE`): the proxy and child pids, the child's stamp, the reloads, `waitingOn` and `lastError`. Each reload is logged to stderr and the live log. `staleServerLine` reads it (`readProxyState`). While the proxy is alive, it never tells matt to restart, only what the reload waits on or why the new code failed.
+`runReloadProxy` writes the proxy's state to log.db's `state` table (scope `mcpReload`, keyed by `reloadStateFile`, `LOG_MCP_RELOAD_FILE`, REQ-STORAGE-17): the proxy and child pids, the child's stamp, the reloads, `waitingOn` and `lastError`. Each reload is logged to stderr and the live log. `staleServerLine` reads it (`readProxyState`). While the proxy is alive, it never tells matt to restart, only what the reload waits on or why the new code failed.
 
 Checked by: code and SubQ

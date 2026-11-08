@@ -31,6 +31,9 @@ export interface AttachResult {
 
 export const HEARTBEAT_MS = 5_000
 export const STALE_MS = 60_000
+export const STALE_CONFIRM_MS = 10_000
+export const HEARTBEAT_RETRIES = 3
+export const HEARTBEAT_RETRY_MS = 250
 export const MAX_BUFFERED_BYTES = 1_000_000
 
 export type CatchUp = (gap: GapRow) => Promise<{ appended: number; refused?: string; detail?: string }>

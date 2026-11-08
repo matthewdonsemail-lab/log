@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { deleteState, getState, putState } from '../../../storage/state/index'
 import type { CloneStore, ProviderClone, VoiceProvider } from '../types'
 
 export function voiceDir(): string {
@@ -20,13 +20,8 @@ export function platformStateRoot(platform: string): string {
 }
 
 export function readClones(path = clonePath()): CloneStore {
-  if (!existsSync(path)) return { clones: {} }
-  try {
-    const stored = JSON.parse(readFileSync(path, 'utf8')) as CloneStore
-    return { clones: stored.clones ?? {} }
-  } catch {
-    return { clones: {} }
-  }
+  const stored = getState<CloneStore>('voiceClone', path, { legacyFile: path })?.body
+  return { clones: stored?.clones ?? {} }
 }
 
 export function readClone(provider: VoiceProvider, path = clonePath()): ProviderClone | null {
@@ -37,8 +32,11 @@ export function readClone(provider: VoiceProvider, path = clonePath()): Provider
 export function writeClone(clone: ProviderClone, path = clonePath()): void {
   const store = readClones(path)
   store.clones[clone.provider] = clone
-  mkdirSync(voiceDir(), { recursive: true })
-  writeFileSync(path, JSON.stringify(store, null, 2))
+  putState('voiceClone', path, store)
+}
+
+export function forgetClones(path = clonePath()): void {
+  deleteState('voiceClone', path)
 }
 
 export function stampOf(now: Date = new Date()): string {

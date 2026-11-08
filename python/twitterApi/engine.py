@@ -1248,17 +1248,6 @@ def badge_counts_of(answer: Any) -> dict[str, Any] | None:
     return counts if isinstance(counts, dict) else None
 
 
-def live_path(account: str) -> Path:
-    return state_dir(account) / "live.jsonl"
-
-
-def append_live(account: str, event: dict[str, Any]) -> None:
-    from datetime import datetime, timezone
-
-    with live_path(account).open("a", encoding="utf-8") as out:
-        out.write(json.dumps({"seenAt": datetime.now(timezone.utc).isoformat(), **event}, default=str) + "\n")
-
-
 def notification_rose(before: dict[str, Any] | None, after: dict[str, Any]) -> bool:
     return int(after.get("ntab_unread_count") or 0) > int((before or {}).get("ntab_unread_count") or 0)
 
@@ -1312,12 +1301,10 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
             answer, _ = await asyncio.wait_for(client.gql.gql_get(VIEWER_BADGE_COUNTS, {}, headers={**client._base_headers, **POLLING_HEADERS}), timeout=BADGE_POLL_TIMEOUT_SECONDS)
             counts = badge_counts_of(answer)
             if counts is not None and counts != last:
-                append_live(account, {"type": "badge", **counts})
                 live_line({"type": "badge", **counts})
                 if notification_rose(last, counts):
                     refused = False
                     for event in await asyncio.wait_for(new_notifications(client, cookies, spec, governor), timeout=BADGE_POLL_TIMEOUT_SECONDS * 2):
-                        append_live(account, event)
                         live_line(event)
                         refused = refused or event.get("type") == "notificationsRefused"
                     if refused:
@@ -1329,7 +1316,6 @@ async def badge_poll(client: Any, cookies: dict[str, str], spec: dict[str, Any],
             error = (redact(e, cookies) or type(e).__name__)[:200]
             if isinstance(e, asyncio.TimeoutError):
                 error = f"TimeoutError: no answer from x in {BADGE_POLL_TIMEOUT_SECONDS}s"
-            append_live(account, {"type": "pollRefused", "error": error})
             live_line({"type": "pollRefused", "error": error})
             if not network_only(error):
                 return

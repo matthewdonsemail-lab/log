@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { copyFileSync, existsSync, readFileSync, rmSync } from "node:fs";
 import { fishAudioProvider } from "../../extensions/fishAudio/index.ts";
 import { inworldProvider } from "../../extensions/inworld/index.ts";
-import { clonePath, paceOf, readClone, readClones, speedOf, voiceSettingsOf, voiceSteps, wordsOf, writeClone } from "../../extensions/voiceClone/index.ts";
+import { clonePath, forgetClones, paceOf, readClone, readClones, speedOf, voiceSettingsOf, voiceSteps, wordsOf, writeClone } from "../../extensions/voiceClone/index.ts";
 import type { Recording, VoiceFetch, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import { runCli } from "../runner/index.ts";
 import { cloneDeps, namedRecordings } from "./index.ts";
@@ -15,7 +15,7 @@ afterEach(() => {
   Object.assign(cloneDeps, original);
   Object.assign(voiceSteps, originalSteps);
   heardAs = (text) => text;
-  rmSync(clonePath(), { force: true });
+  forgetClones();
   delete process.env.LOG_VOICE_PROVIDER;
   delete process.env.LOG_VOICE_ACCENT;
   delete process.env.LOG_VOICE_LANGUAGE;

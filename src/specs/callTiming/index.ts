@@ -20,11 +20,12 @@ const CATCH_UP = 'src/inbox/catchUp/client.ts'
 const DB_READ = 'src/inbox/dbRead/client.ts'
 const CLAIMS = 'src/inbox/claims/client.ts'
 const STORE = 'src/inbox/store/client.ts'
+const SCHEMA_FILE = 'src/storage/schema/helpers/inbox.ts'
 
 export const callTiming = {
   description: 'Every call timed: a call id, every stage a span across Bun and Python, stored in log.db and reported as p50, p95 and p99',
   specPath: 'docs/specs/callTiming.md',
-  codePaths: [TIMING, REPORT, SHAPE, SERVER, BIN, COMMAND, PY, PLATFORM, TWITTER, FBK, X_ENGINE, X_HOST, KIT, IG_HOST, VOICE, CATCH_UP, DB_READ, CLAIMS, STORE],
+  codePaths: [TIMING, REPORT, SHAPE, SERVER, BIN, COMMAND, PY, PLATFORM, TWITTER, FBK, X_ENGINE, X_HOST, KIT, IG_HOST, VOICE, CATCH_UP, DB_READ, CLAIMS, STORE, SCHEMA_FILE],
   anchors: {
     'REQ-TIMING-01': [
       { kind: 'symbol', file: TIMING, name: 'timeCall' },
@@ -38,7 +39,7 @@ export const callTiming = {
       { kind: 'symbol', file: TIMING, name: 'timedEngineSync' },
       { kind: 'symbol', file: TIMING, name: 'harvestEngine' },
       { kind: 'uses', file: PLATFORM, name: 'timedEngineSync' },
-      { kind: 'uses', file: TWITTER, name: 'timedEngineSync' },
+      { kind: 'uses', file: TWITTER, name: 'timedEngine' },
       { kind: 'uses', file: FBK, name: 'timedEngineSync' },
       { kind: 'symbol', file: PY, name: 'instrument_curl' },
       { kind: 'symbol', file: PY, name: 'child_trace' },
@@ -54,7 +55,7 @@ export const callTiming = {
       { kind: 'string', file: CLAIMS, includes: 'inbox.claim' },
     ],
     'REQ-TIMING-04': [
-      { kind: 'string', file: STORE, includes: 'CREATE TABLE IF NOT EXISTS spans' },
+      { kind: 'string', file: SCHEMA_FILE, includes: 'CREATE TABLE IF NOT EXISTS spans' },
       { kind: 'symbol', file: REPORT, name: 'toolStats' },
       { kind: 'symbol', file: REPORT, name: 'waterfallLines' },
       { kind: 'symbol', file: COMMAND, name: 'timingCommand' },

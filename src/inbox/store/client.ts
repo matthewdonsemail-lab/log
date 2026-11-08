@@ -1,66 +1,76 @@
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { Database } from 'bun:sqlite'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, renameSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { defaultDbPath, openDatabase } from '../../storage/schema'
+import { accountIdentifiedEvent, attachmentsSeenEvent, eventIdFrom, identityLearnedEvent, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
-
-const SCHEMA = [
-  `CREATE TABLE IF NOT EXISTS events (seq INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL UNIQUE, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, known INTEGER NOT NULL DEFAULT 1, withWho TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', box TEXT NOT NULL DEFAULT '', payload TEXT NOT NULL DEFAULT '{}', sourceAt TEXT NOT NULL DEFAULT '', receivedAt TEXT NOT NULL, appendedAt TEXT NOT NULL, ownerPid INTEGER NOT NULL DEFAULT 0)`,
-  `CREATE INDEX IF NOT EXISTS eventsByChat ON events (platform, account, conversationId, seq)`,
-  `CREATE TABLE IF NOT EXISTS cursors (reader TEXT PRIMARY KEY, seq INTEGER NOT NULL, updatedAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS owners (platform TEXT NOT NULL, account TEXT NOT NULL, pid INTEGER NOT NULL, hostname TEXT NOT NULL DEFAULT '', startedAt TEXT NOT NULL, heartbeat TEXT NOT NULL, status TEXT NOT NULL, port INTEGER NOT NULL DEFAULT 0, token TEXT NOT NULL DEFAULT '', subscribers INTEGER NOT NULL DEFAULT 0, generation INTEGER NOT NULL DEFAULT 1, PRIMARY KEY (platform, account))`,
-  `CREATE TABLE IF NOT EXISTS claims (chatKey TEXT PRIMARY KEY, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL, parties TEXT NOT NULL, withWho TEXT, eventId TEXT, holder INTEGER NOT NULL, generation INTEGER NOT NULL, claimedAt TEXT NOT NULL, expiresAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS chatGenerations (chatKey TEXT PRIMARY KEY, generation INTEGER NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS actions (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, kind TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL, withWho TEXT, eventId TEXT, holder INTEGER NOT NULL, generation INTEGER, stateBefore TEXT, detail TEXT)`,
-  `CREATE INDEX IF NOT EXISTS actionsByChat ON actions (platform, account, conversationId, id)`,
-  `CREATE TABLE IF NOT EXISTS alerts (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, kind TEXT NOT NULL, detail TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS timings (eventId TEXT NOT NULL, stage TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY (eventId, stage))`,
-  `CREATE TABLE IF NOT EXISTS eventTypes (platform TEXT NOT NULL, type TEXT NOT NULL, status TEXT NOT NULL, firstSeenAt TEXT NOT NULL, sample TEXT NOT NULL DEFAULT '{}', PRIMARY KEY (platform, type))`,
-  `CREATE VIRTUAL TABLE IF NOT EXISTS searchIndex USING fts5(source, ref, platform, account, conversationId, text)`,
-  `CREATE TABLE IF NOT EXISTS positions (platform TEXT NOT NULL, account TEXT NOT NULL, scope TEXT NOT NULL DEFAULT '', position TEXT NOT NULL, updatedAt TEXT NOT NULL, PRIMARY KEY (platform, account, scope))`,
-  `CREATE TABLE IF NOT EXISTS gaps (id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT NOT NULL, account TEXT NOT NULL, fromAt TEXT NOT NULL, toAt TEXT, reason TEXT NOT NULL, status TEXT NOT NULL, detail TEXT, appended INTEGER NOT NULL DEFAULT 0, openedAt TEXT NOT NULL, closedAt TEXT)`,
-  `CREATE INDEX IF NOT EXISTS gapsOpen ON gaps (platform, account, status)`,
-  `CREATE TABLE IF NOT EXISTS embeddings (hash TEXT NOT NULL, model TEXT NOT NULL, dimensions INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'text', text TEXT NOT NULL, vector BLOB NOT NULL, createdAt TEXT NOT NULL, PRIMARY KEY (hash, model, dimensions))`,
-  `CREATE TABLE IF NOT EXISTS aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt TEXT NOT NULL)`,
-  `CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT NULL, describedAt TEXT, UNIQUE (eventId, name))`,
-  `CREATE INDEX IF NOT EXISTS mediaByStatus ON media (status, id)`,
-  `CREATE TABLE IF NOT EXISTS people (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, handle TEXT NOT NULL, name TEXT, seenAt TEXT NOT NULL, PRIMARY KEY (platform, account, userId))`,
-  `CREATE TABLE IF NOT EXISTS spans (spanId TEXT PRIMARY KEY, traceId TEXT NOT NULL, callId TEXT NOT NULL, parentId TEXT, tool TEXT NOT NULL, name TEXT NOT NULL, source TEXT NOT NULL, pid INTEGER NOT NULL, startedAt REAL NOT NULL, ms REAL NOT NULL, ok INTEGER NOT NULL, attrs TEXT NOT NULL DEFAULT '{}')`,
-  `CREATE INDEX IF NOT EXISTS spansByTool ON spans (tool, startedAt)`,
-  `CREATE INDEX IF NOT EXISTS spansByCall ON spans (callId)`,
-]
-
-const MIGRATIONS = [`ALTER TABLE events ADD COLUMN source TEXT NOT NULL DEFAULT 'live'`]
 
 let opened: { path: string; db: Database } | null = null
 
 export function dbPath(): string {
-  if (process.env.LOG_DB) return process.env.LOG_DB
-  if (process.env.LOG_INBOX_STATE) return join(process.env.LOG_INBOX_STATE, 'log.db')
-  return join(homedir(), '.logCli', 'log.db')
+  return defaultDbPath()
 }
 
 export function db(): Database {
   const path = dbPath()
   if (opened?.path === path) return opened.db
-  mkdirSync(dirname(path), { recursive: true })
-  const handle = new Database(path, { create: true })
-  handle.exec('PRAGMA journal_mode = WAL')
-  handle.exec('PRAGMA busy_timeout = 5000')
-  handle.exec('PRAGMA synchronous = NORMAL')
-  for (const statement of SCHEMA) handle.exec(statement)
-  for (const statement of MIGRATIONS) {
-    try {
-      handle.exec(statement)
-    } catch {}
-  }
+  const handle = openDatabase(path)
   const seed = handle.prepare(`INSERT INTO eventTypes (platform, type, status, firstSeenAt) VALUES (?, ?, 'known', ?) ON CONFLICT(platform, type) DO UPDATE SET status = 'known'`)
   const now = new Date().toISOString()
   for (const [platform, types] of Object.entries(KNOWN_TYPES)) for (const type of types) seed.run(platform, type, now)
   opened = { path, db: handle }
   return handle
+}
+
+export class OwnerFencedError extends Error {
+  readonly code = 'ownerFenced'
+}
+
+const fences = new Map<string, number>()
+
+export const ownerScope = new AsyncLocalStorage<{ platform: string; account: string }>()
+
+export function asOwner<T>(platform: string, account: string, work: () => T): T {
+  return ownerScope.run({ platform, account }, work)
+}
+
+export function holdFence(platform: string, account: string, generation: number): void {
+  fences.set(`${platform}:${account}`, generation)
+}
+
+export function dropFence(platform: string, account: string): void {
+  fences.delete(`${platform}:${account}`)
+}
+
+export function fenceOf(platform: string, account: string): number | null {
+  return fences.get(`${platform}:${account}`) ?? null
+}
+
+export function checkFence(handle: Database, platform: string, account: string): void {
+  const scope = ownerScope.getStore()
+  if (!scope || scope.platform !== platform || scope.account !== account) return
+  const generation = fenceOf(platform, account)
+  if (generation === null) return
+  const row = handle.prepare('SELECT generation, pid FROM owners WHERE platform = ? AND account = ?').get(platform, account) as { generation: number; pid: number } | null
+  if (row && row.generation === generation && row.pid === process.pid) return
+  throw new OwnerFencedError(`${platform} ${account}: this process (pid ${process.pid}) owned it as generation ${generation}, but ${row ? `pid ${row.pid} owns it now as generation ${row.generation}` : 'no owner row is left'}, so its write was refused`)
+}
+
+export function inWrite<T>(handle: Database, work: (handle: Database) => T): T {
+  if (handle.inTransaction) return work(handle)
+  handle.exec('BEGIN IMMEDIATE')
+  try {
+    const result = work(handle)
+    handle.exec('COMMIT')
+    return result
+  } catch (error) {
+    handle.exec('ROLLBACK')
+    throw error
+  }
 }
 
 export function immediate<T>(work: (handle: Database) => T): T {
@@ -76,8 +86,33 @@ export function immediate<T>(work: (handle: Database) => T): T {
   }
 }
 
-export function eventIdOf(event: { platform: string; account: string; conversationId: string; at: string; text: string }): string {
-  return createHash('sha1').update([event.platform, event.account, event.conversationId, event.at, event.text].join('|')).digest('hex').slice(0, 12)
+export function eventIdOf(event: { platform: string; account: string; conversationId: string; at: string; text: string; id?: string | null; messageKey?: string | null }): string {
+  return eventIdFrom({ ...event, messageKey: event.messageKey ?? messageKeyOf(event.platform, event.account, event.conversationId, event.id ?? null) })
+}
+
+export function adoptUnkeyed(event: { platform: string; account: string; conversationId: string; at: string; text: string; id: string }, extra: Record<string, unknown> = {}): boolean {
+  const messageKey = messageKeyOf(event.platform, event.account, event.conversationId, event.id)
+  if (!messageKey) return false
+  const legacy = eventIdOf({ platform: event.platform, account: event.account, conversationId: event.conversationId, at: event.at, text: event.text })
+  return immediate((handle) => {
+    if (handle.prepare('SELECT 1 FROM events WHERE messageKey = ?').get(messageKey)) return false
+    if (!handle.prepare('SELECT 1 FROM events WHERE eventId = ? AND messageKey IS NULL').get(legacy)) return false
+    const attachments = Array.isArray(extra.attachments) ? (extra.attachments as Record<string, unknown>[]) : []
+    insertEventRow(handle, attachmentsSeenEvent(event, `${event.platform}:${event.account}:${event.conversationId}:${legacy}`, attachments, event.id))
+    return true
+  })
+}
+
+export function afterGap(at: string | null | undefined, fromAt: string): boolean {
+  if (!at) return true
+  const a = msOf(at)
+  const b = msOf(fromAt)
+  return a !== null && b !== null ? a > b : at > fromAt
+}
+
+export function messageKeyOfEvent(input: { platform: string; account: string; conversationId?: string; type: string; payload?: unknown }): string | null {
+  if (!MESSAGE_TYPES.includes(input.type) || !input.payload || typeof input.payload !== 'object') return null
+  return messageKeyOf(input.platform, input.account, input.conversationId ?? '', platformMessageIdOf(input.payload as Record<string, unknown>))
 }
 
 export function markStage(eventId: string, stage: Stage, at: Date = new Date(), handle: Database = db()): void {
@@ -116,12 +151,7 @@ export interface AppendInput {
   source?: 'live' | 'catchUp' | 'backfill'
 }
 
-const BARE_ID = /^@?(?:\d{4,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i
-const SLACK_ID = /^[UWB](?=[A-Z0-9]*\d)[A-Z0-9]{8,}$/
-
-export function isBareId(label: string | null | undefined): boolean {
-  return !label || BARE_ID.test(label.trim()) || SLACK_ID.test(label.trim())
-}
+export { isBareId }
 
 const UNNAMED = 'someone not named yet'
 
@@ -139,14 +169,30 @@ function handleIn(input: AppendInput): string {
 
 export function rememberPerson(platform: string, account: string, userId: string, handle: string, name: string | null = null, now: Date = new Date(), on: Database = db()): void {
   if (!userId || !handle || isBareId(handle)) return
-  on.prepare('INSERT INTO people (platform, account, userId, handle, name, seenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, account, userId) DO UPDATE SET handle = excluded.handle, name = COALESCE(excluded.name, people.name), seenAt = excluded.seenAt').run(platform, account, userId, handle.replace(/^@/, ''), name, now.toISOString())
+  const learn = () => {
+    insertEventRow(on, identityLearnedEvent(platform, account, userId, handle, name, now.toISOString()), now)
+  }
+  if (on.inTransaction) learn()
+  else on.transaction(learn).immediate()
+}
+
+export function identifyAccount(platform: string, account: string, userId: string, now: Date = new Date(), on: Database = db()): boolean {
+  if (!userId) return false
+  const known = on.prepare('SELECT userId FROM accounts WHERE platform = ? AND account = ?').get(platform, account) as { userId: string } | null
+  if (known?.userId === String(userId)) return false
+  return on.transaction(() => insertEventRow(on, accountIdentifiedEvent(platform, account, String(userId), now.toISOString()), now) !== null).immediate()
+}
+
+export function handleOfIdentity(platform: string, userId: string, on: Database = db()): string | null {
+  const alias = on.prepare('SELECT handle FROM identities WHERE platform = ? AND userId = ?').get(platform, userId) as { handle: string | null } | null
+  return alias?.handle && !isBareId(alias.handle) ? alias.handle : null
 }
 
 export function personOf(platform: string, account: string, userId: string, on: Database = db()): string | null {
   if (!userId) return null
   const id = userId.replace(/^@/, '')
-  const row = on.prepare('SELECT handle FROM people WHERE platform = ? AND account = ? AND userId = ?').get(platform, account, id) as { handle: string } | null
-  if (row?.handle && !isBareId(row.handle)) return row.handle
+  const known = handleOfIdentity(platform, id, on)
+  if (known) return known
   const handle = handleOfUserId(platform, account, id)
   if (!handle || isBareId(handle)) return null
   rememberPerson(platform, account, id, handle, null, new Date(), on)
@@ -159,7 +205,13 @@ export function namedLabel(platform: string, account: string, label: string | nu
 }
 
 export function addToPayload(eventId: string, extra: Record<string, unknown>): boolean {
-  return immediate((handle) => handle.prepare('UPDATE events SET payload = json_patch(payload, ?) WHERE eventId = ?').run(JSON.stringify(extra), eventId).changes > 0)
+  return immediate((handle) => {
+    const target = handle.prepare('SELECT platform, account, conversationId, messageKey FROM events WHERE eventId = ?').get(eventId) as { platform: string; account: string; conversationId: string; messageKey: string | null } | null
+    if (!target) return false
+    const messageKey = target.messageKey ?? `${target.platform}:${target.account}:${target.conversationId}:${eventId}`
+    const attachments = Array.isArray(extra.attachments) ? (extra.attachments as Record<string, unknown>[]) : []
+    return insertEventRow(handle, attachmentsSeenEvent(target, messageKey, attachments)) !== null
+  })
 }
 
 export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: number; eventId: string; known: boolean } | null {
@@ -167,11 +219,14 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
   const senderId = senderIdOf(input)
   const handleGiven = handleIn(input)
   input = { ...input, with: handleGiven || (senderId ? personOf(input.platform, input.account, senderId) ?? input.with : input.with) }
-  const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}) })
+  const messageKey = messageKeyOfEvent(input)
+  const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}), messageKey })
   return immediate((handle) => {
+    checkFence(handle, input.platform, input.account)
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
-    const result = handle.prepare(`INSERT OR IGNORE INTO events (eventId, platform, account, conversationId, type, known, withWho, text, box, payload, sourceAt, receivedAt, appendedAt, ownerPid, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(eventId, input.platform, input.account, input.conversationId ?? '', input.type, known ? 1 : 0, input.with ?? '', input.text ?? '', input.box ?? '', JSON.stringify(input.payload ?? {}).slice(0, 20000), input.sourceAt ?? '', receivedAt, now.toISOString(), process.pid, input.source ?? 'live')
-    if (!result.changes) return null
+    const inserted = insertEventRow(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live', known }, now)
+    if (!inserted) return null
+    const result = { lastInsertRowid: inserted.seq }
     markStage(eventId, 'received', new Date(receivedAt), handle)
     markStage(eventId, 'appended', now, handle)
     if (senderId && handleGiven) rememberPerson(input.platform, input.account, senderId, handleGiven, null, now, handle)
@@ -207,6 +262,26 @@ export function searchStore(query: string, limit = 20): { source: string; ref: s
   return db().prepare('SELECT source, ref, platform, account, conversationId, text FROM searchIndex WHERE searchIndex MATCH ? ORDER BY rank LIMIT ?').all(terms.map((t) => `"${t}"`).join(' '), limit) as { source: string; ref: string; platform: string; account: string; conversationId: string; text: string }[]
 }
 
+export function retirePendingFile(path: string, handle: Database = db()): { retired: boolean; rows: number; added: number; unreadable: number } {
+  if (!existsSync(path)) return { retired: false, rows: 0, added: 0, unreadable: 0 }
+  const lines = readFileSync(path, 'utf8').split('\n').filter((l) => l.trim())
+  const found = handle.prepare("SELECT 1 FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND text = ? AND type = 'message' LIMIT 1")
+  let added = 0
+  let unreadable = 0
+  for (const line of lines) {
+    try {
+      const m = JSON.parse(line) as { platform: string; account: string; conversationId: string; with: string; text: string; at: string; box: string; seenAt: string }
+      if (found.get(m.platform, m.account, m.conversationId ?? '', m.text ?? '')) continue
+      if (appendEvent({ platform: m.platform, account: m.account, conversationId: m.conversationId, type: 'message', with: m.with, text: m.text, box: m.box, payload: m, sourceAt: m.at, receivedAt: m.seenAt || m.at, source: 'backfill' })) added++
+    } catch {
+      unreadable++
+    }
+  }
+  if (unreadable) return { retired: false, rows: lines.length, added, unreadable }
+  renameSync(path, `${path}.imported`)
+  return { retired: true, rows: lines.length, added, unreadable: 0 }
+}
+
 export function importPendingFile(path: string): number {
   if (!existsSync(path)) return 0
   if (latestSeq() > 0) return 0
@@ -221,7 +296,10 @@ export function importPendingFile(path: string): number {
 }
 
 export function recordPosition(platform: string, account: string, position: string, scope = '', now: Date = new Date()): void {
-  db().prepare('INSERT INTO positions (platform, account, scope, position, updatedAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, account, scope) DO UPDATE SET position = excluded.position, updatedAt = excluded.updatedAt').run(platform, account, scope, position, now.toISOString())
+  inWrite(db(), (handle) => {
+    checkFence(handle, platform, account)
+    handle.prepare('INSERT INTO positions (platform, account, scope, position, updatedAt) VALUES (?, ?, ?, ?, ?) ON CONFLICT(platform, account, scope) DO UPDATE SET position = excluded.position, updatedAt = excluded.updatedAt').run(platform, account, scope, position, now.toISOString())
+  })
 }
 
 export function positionsOf(platform: string, account: string): Record<string, string> {
@@ -234,19 +312,32 @@ export function openGapOf(platform: string, account: string, handle: Database = 
 }
 
 export function openGap(platform: string, account: string, fromAt: string, reason: string, now: Date = new Date(), handle: Database = db()): GapRow {
-  const held = openGapOf(platform, account, handle)
-  if (held) return held
-  const result = handle.prepare("INSERT INTO gaps (platform, account, fromAt, reason, status, openedAt) VALUES (?, ?, ?, ?, 'open', ?)").run(platform, account, fromAt, reason, now.toISOString())
-  addAlertRow({ platform, account, kind: 'gapOpened', detail: `${platform} ${account} is behind from ${fromAt} (${reason}): its owner catches up through its own session, and a send that needs its context waits for that` }, now, handle)
-  return handle.prepare('SELECT * FROM gaps WHERE id = ?').get(Number(result.lastInsertRowid)) as GapRow
+  return inWrite(handle, (h) => {
+    checkFence(h, platform, account)
+    const held = openGapOf(platform, account, h)
+    if (held) {
+      if (held.status === 'refused') return held
+      h.prepare('UPDATE gaps SET drops = drops + 1, detail = ? WHERE id = ?').run(`dropped again (${reason}) at ${now.toISOString()}${held.detail ? `; ${held.detail}` : ''}`, held.id)
+      return h.prepare('SELECT * FROM gaps WHERE id = ?').get(held.id) as GapRow
+    }
+    const result = h.prepare("INSERT INTO gaps (platform, account, fromAt, reason, status, openedAt) VALUES (?, ?, ?, ?, 'open', ?)").run(platform, account, fromAt, reason, now.toISOString())
+    addAlertRow({ platform, account, kind: 'gapOpened', detail: `${platform} ${account} is behind from ${fromAt} (${reason}): its owner catches up through its own session, and a send that needs its context waits for that` }, now, h)
+    return h.prepare('SELECT * FROM gaps WHERE id = ?').get(Number(result.lastInsertRowid)) as GapRow
+  })
 }
 
-export function markGap(id: number, status: GapStatus, detail: string | null = null, appended = 0, now: Date = new Date()): void {
-  const closing = status === 'closed'
-  const sql = closing ? 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ?, toAt = ?, closedAt = ? WHERE id = ?' : 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ? WHERE id = ?'
-  db().prepare(sql).run(...(closing ? [status, detail, appended, now.toISOString(), now.toISOString(), id] : [status, detail, appended, id]))
-  const gap = db().prepare('SELECT platform, account FROM gaps WHERE id = ?').get(id) as { platform: string; account: string } | null
-  if (gap && status === 'refused') addAlertRow({ platform: gap.platform, account: gap.account, kind: 'catchUpRefused', detail: `catching up ${gap.platform} ${gap.account} was refused: ${detail ?? ''}; it stays behind and nothing resumes until matt says so (rule 94)` }, now)
+export function markGap(id: number, status: GapStatus, detail: string | null = null, appended = 0, now: Date = new Date(), expectDrops: number | null = null): boolean {
+  return inWrite(db(), (handle) => {
+    const gap = handle.prepare('SELECT platform, account FROM gaps WHERE id = ?').get(id) as { platform: string; account: string } | null
+    if (gap) checkFence(handle, gap.platform, gap.account)
+    const closing = status === 'closed'
+    const guard = closing && expectDrops !== null ? " AND status = 'catchingUp' AND drops = ?" : ''
+    const sql = closing ? `UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ?, toAt = ?, closedAt = ? WHERE id = ?${guard}` : 'UPDATE gaps SET status = ?, detail = COALESCE(?, detail), appended = appended + ? WHERE id = ?'
+    const args = closing ? [status, detail, appended, now.toISOString(), now.toISOString(), id, ...(guard ? [expectDrops as number] : [])] : [status, detail, appended, id]
+    const changed = handle.prepare(sql).run(...args).changes > 0
+    if (gap && status === 'refused') addAlertRow({ platform: gap.platform, account: gap.account, kind: 'catchUpRefused', detail: `catching up ${gap.platform} ${gap.account} was refused: ${detail ?? ''}; it stays behind and nothing resumes until matt says so (rule 94)` }, now, handle)
+    return changed
+  })
 }
 
 export function resumeGap(platform: string, account: string, by: string, now: Date = new Date()): GapRow | null {

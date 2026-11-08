@@ -7,6 +7,9 @@ export interface ReadMessage {
   ts?: string
   at?: string
   from?: string | null
+  fromId?: string | null
+  userId?: string | null
+  senderId?: string | null
   fromMe?: boolean
   text?: string | null
   attachments?: MessageAttachment[]

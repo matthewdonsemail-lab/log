@@ -1,29 +1,22 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
+import { appendRecord, importRecordFile, readRecords } from '../../../../storage/records/index'
 import type { StageLogLine } from '../types'
 
 export function stageLogPath(env: Record<string, string | undefined> = process.env): string {
   return env.LOG_WARMUP_STAGE_LOG || join(homedir(), '.logCli', 'runs', 'warmup', 'stageLog.jsonl')
 }
 
+const accountOf = (body: Record<string, unknown>) => (typeof body.account === 'string' ? body.account : null)
+
 export function appendStageLog(line: StageLogLine, path = stageLogPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  appendFileSync(path, `${JSON.stringify(line)}\n`)
+  importRecordFile('stageLog', path, accountOf)
+  appendRecord('stageLog', line as unknown as Record<string, unknown>, line.account)
 }
 
 export function readStageLog(options: { account?: string; count?: number } = {}, path = stageLogPath()): StageLogLine[] {
-  if (!existsSync(path)) return []
-  const lines: StageLogLine[] = []
-  for (const raw of readFileSync(path, 'utf8').split(/\r?\n/)) {
-    if (!raw.trim()) continue
-    try {
-      const line = JSON.parse(raw) as StageLogLine
-      if (!options.account || line.account === options.account) lines.push(line)
-    } catch {
-    }
-  }
-  return lines.slice(-(options.count ?? 40))
+  importRecordFile('stageLog', path, accountOf)
+  return readRecords<StageLogLine>('stageLog', { ...(options.account ? { key: options.account } : {}), last: options.count ?? 40 })
 }
 
 export function renderStageLogLine(line: StageLogLine): string {

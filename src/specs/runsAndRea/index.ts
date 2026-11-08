@@ -89,7 +89,7 @@ export const runsAndRea = {
     'REQ-RUNS-13': [
       { kind: 'value', file: store, name: 'KEPT_FILES', equals: ['findings.md', 'steps.jsonl', 'settle.json'] },
       { kind: 'value', file: store, name: 'KEPT_RUN_FILES', equals: ['goalFindings.md', 'goalFindings.jsonl'] },
-      { kind: 'string', file: store, includes: 'pruned.jsonl' },
+      { kind: 'string', file: store, includes: 'prunedRun' },
       { kind: 'symbol', file: store, name: 'keepReadings' },
       { kind: 'symbol', file: 'src/browser/runStore/helpers/domainsInHar.ts', name: 'domainsInHar' },
     ],
@@ -114,7 +114,7 @@ export const runsAndRea = {
     'REQ-RUNS-10': noul('In listRuns, is keep left null, so that the run may go, only when the run is not open, has not changed within BUSY_MS of 10 minutes, has settle.json, and its session.har is not newer than docsBuiltAt?'),
     'REQ-RUNS-11': noul('Does pruneRuns delete a run folder only when options.apply is true, and does the runs prune subcommand pass apply only when the --apply flag is given?'),
     'REQ-RUNS-12': noul('When applying, does pruneRuns call backfillExchanges on the run first and skip the run, keeping it on disk, when any step failed to have its exchanges taken out?'),
-    'REQ-RUNS-13': noul('Does pruneRuns copy KEPT_FILES and, through keepReadings, every exchanges.json, reading.json and readingState.json of each step and the KEPT_RUN_FILES into runs/kept, write pruned.json with the domains of the run from domainsInHar, and append a line to runs/pruned.jsonl before deleting the run?'),
+    'REQ-RUNS-13': noul('Does pruneRuns copy KEPT_FILES and, through keepReadings, every exchanges.json, reading.json and readingState.json of each step and the KEPT_RUN_FILES into runs/kept, write pruned.json with the domains of the run from domainsInHar, and append a prunedRun record to log.db before deleting the run?'),
     'REQ-RUNS-14 warns': noul('In storageVerdict, is a line pushed when runsBytes is greater than RUNS_WARN_BYTES, another when freeBytes is less than DISK_WARN_BYTES, is null returned when no line was pushed, and does the returned text end with PRUNE_ADVICE?'),
     unspecifiedBehavior: noul('Does any of this code delete a run that rea has not settled or the docs do not hold, drop what a pruned run taught, or let a browser context run without recording a HAR, by a route the specification does not describe?'),
   },

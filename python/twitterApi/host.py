@@ -20,6 +20,7 @@ from platformKit import timing
 
 IDLE_SECONDS = 1800
 START_WAIT_SECONDS = 30.0
+REQUEST_LIMIT = 16 * 1024 * 1024
 CODE_ROOTS = (ROOT / "twitterApi", ROOT / "platformKit", ROOT.parent / "vendor" / "twikit" / "twikit")
 
 
@@ -196,7 +197,7 @@ class Host:
             return 1
         server = None
         try:
-            server = await asyncio.start_server(self.handle, "127.0.0.1", 0)
+            server = await asyncio.start_server(self.handle, "127.0.0.1", 0, limit=REQUEST_LIMIT)
             self.port = server.sockets[0].getsockname()[1]
             self.record()
             print(f"X session for {self.account} up: pid {os.getpid()}, port {self.port}", flush=True)

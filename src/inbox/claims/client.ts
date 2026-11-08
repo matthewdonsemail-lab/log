@@ -3,11 +3,12 @@ import { db, eventIdOf as storeEventIdOf, immediate, markStage } from '../store/
 import type { ClaimRow } from '../store/index'
 import { processAlive } from '../watch/index'
 import type { InboxMessage } from '../watch/index'
+import { createHash, randomBytes } from 'node:crypto'
 import { CLAIM_TTL_MS } from './types'
-import type { ActionRecord, ChatClaim, ChatRef } from './types'
+import type { ActionRecord, ChatClaim, ChatRef, PartStep, SendOptions } from './types'
 import { timedSync } from '../../observability/timing/index'
 
-export function eventIdOf(message: Pick<InboxMessage, 'platform' | 'account' | 'conversationId' | 'at' | 'text'>): string {
+export function eventIdOf(message: Pick<InboxMessage, 'platform' | 'account' | 'conversationId' | 'at' | 'text' | 'id'>): string {
   return storeEventIdOf(message)
 }
 
@@ -138,11 +139,74 @@ export function claimContext(messages: readonly InboxMessage[], now: Date = new 
   return ['>>> CLAIM BEFORE YOU ACT (rule 133): only the session that claims a chat answers it, and a send into a chat another session holds is refused. Read `inboxActions` { chat } first to see what was already done there.', ...lines].join('\n')
 }
 
-export type SendGuard = { ok: true; held: () => boolean; done: (outcome: 'sent' | 'interrupted' | 'failed', detail?: string) => void } | { ok: false; refused: string }
+export type SendGuard = { ok: true; opId: string; held: () => boolean; part: (n: number, text: string) => PartStep; partSent: (n: number, text: string, messageId?: string | null) => void; heard: () => string[]; done: (outcome: 'sent' | 'interrupted' | 'failed', detail?: string) => void } | { ok: false; refused: string }
 
-export function guardSend(ref: ChatRef, by: number = process.pid): SendGuard {
+export const textHashOf = (text: string): string => createHash('sha1').update(text.trim()).digest('hex').slice(0, 12)
+
+function holdsSend(handle: Database, claim: ChatClaim, opId: string, now: Date): boolean {
+  const row = handle.prepare('SELECT holder, generation, expiresAt, sendingOp FROM claims WHERE chatKey = ?').get(claim.key) as { holder: number; generation: number; expiresAt: string; sendingOp: string | null } | null
+  return !!row && row.holder === claim.by && row.generation === claim.generation && Date.parse(row.expiresAt) > now.getTime() && row.sendingOp === opId
+}
+
+export function echoedBefore(handle: Database, ref: ChatRef, text: string, opId: string): boolean {
+  const hash = textHashOf(text)
+  const intents = handle.prepare("SELECT at, detail FROM actions WHERE platform = ? AND account = ? AND conversationId = ? AND kind = 'intent' ORDER BY id DESC LIMIT 50").all(ref.platform, ref.account, ref.conversationId) as { at: string; detail: string | null }[]
+  for (const intent of intents) {
+    let detail: { op?: string; hash?: string } = {}
+    try {
+      detail = JSON.parse(intent.detail ?? '{}') as { op?: string; hash?: string }
+    } catch {}
+    if (detail.op === opId || detail.hash !== hash) continue
+    const finished = handle.prepare("SELECT 1 FROM actions WHERE kind = 'partSent' AND platform = ? AND account = ? AND conversationId = ? AND detail LIKE ?").get(ref.platform, ref.account, ref.conversationId, `%"op":"${detail.op}"%"hash":"${hash}"%`)
+    if (finished) continue
+    const echo = handle.prepare("SELECT 1 FROM events WHERE platform = ? AND account = ? AND conversationId = ? AND type = 'ownMessage' AND trim(text) = ? AND appendedAt >= ?").get(ref.platform, ref.account, ref.conversationId, text.trim(), intent.at)
+    if (echo) return true
+  }
+  return false
+}
+
+export function heardAfter(handle: Database, ref: ChatRef, readUpTo: number): string[] {
+  const parties = partiesOf(ref.platform, ref.conversationId)
+  const rows = handle.prepare("SELECT conversationId, withWho, text FROM events WHERE platform = ? AND account = ? AND type = 'message' AND seq > ? ORDER BY seq").all(ref.platform, ref.account, readUpTo) as { conversationId: string; withWho: string; text: string }[]
+  return rows.filter((r) => chatsMatch(ref.platform, partiesOf(ref.platform, r.conversationId), parties)).map((r) => `${r.withWho || 'they'}: ${r.text}`)
+}
+
+export function guardSend(ref: ChatRef, by: number = process.pid, options: SendOptions = {}): SendGuard {
   const claimed = claimChat(ref, by)
   if (!claimed.ok) return { ok: false, refused: `>>> CLAIMED ELSEWHERE: another session (pid ${claimed.holder.by}) holds ${ref.platform} ${ref.account}'s chat ${ref.with ? `with ${ref.with} ` : ''}until ${claimed.holder.expiresAt}, so nothing was sent; leave it to that session` }
+  const claim = claimed.claim
+  const opId = randomBytes(8).toString('hex')
+  const leased = immediate((handle) => {
+    const row = handle.prepare('SELECT sendingOp, sendingSince FROM claims WHERE chatKey = ?').get(claim.key) as { sendingOp: string | null; sendingSince: string | null } | null
+    const busy = row?.sendingOp && row.sendingSince && Date.now() - Date.parse(row.sendingSince) < CLAIM_TTL_MS
+    if (busy) return false
+    handle.prepare('UPDATE claims SET sendingOp = ?, sendingSince = ? WHERE chatKey = ?').run(opId, new Date().toISOString(), claim.key)
+    return true
+  })
+  if (!leased) return { ok: false, refused: `>>> A SEND IS ALREADY GOING OUT: this session (pid ${by}) is sending into ${ref.platform} ${ref.account}'s chat ${ref.with ? `with ${ref.with} ` : ''}in another call right now, so this one sent nothing; wait for it to finish` }
   if (ref.eventId) markStage(ref.eventId, 'actionStart')
-  return { ok: true, held: () => stillHeld(claimed.claim), done: (outcome, detail) => void releaseChat(ref, by, outcome, detail) }
+  let heardLate: string[] = []
+  const part = (n: number, text: string): PartStep =>
+    immediate((handle) => {
+      const now = new Date()
+      if (!holdsSend(handle, claim, opId, now)) return 'lost'
+      if (n === 0 && options.readUpTo !== undefined) {
+        heardLate = heardAfter(handle, ref, options.readUpTo)
+        if (heardLate.length) return 'movedOn'
+      }
+      if (echoedBefore(handle, ref, text, opId)) {
+        recordAction({ platform: ref.platform, account: ref.account, conversationId: ref.conversationId, with: ref.with, by, generation: claim.generation, kind: 'partSent', detail: JSON.stringify({ op: opId, part: n, hash: textHashOf(text), already: 'its echo was already in the chat, so it was not sent again' }) }, now, handle)
+        return 'alreadySent'
+      }
+      handle.prepare('UPDATE claims SET expiresAt = ? WHERE chatKey = ?').run(new Date(now.getTime() + CLAIM_TTL_MS).toISOString(), claim.key)
+      recordAction({ platform: ref.platform, account: ref.account, conversationId: ref.conversationId, with: ref.with, by, generation: claim.generation, kind: 'intent', detail: JSON.stringify({ op: opId, part: n, hash: textHashOf(text) }) }, now, handle)
+      return 'go'
+    })
+  const partSent = (n: number, text: string, messageId: string | null = null) =>
+    void immediate((handle) => recordAction({ platform: ref.platform, account: ref.account, conversationId: ref.conversationId, with: ref.with, by, generation: claim.generation, kind: 'partSent', detail: JSON.stringify({ op: opId, part: n, hash: textHashOf(text), ...(messageId ? { messageId } : {}) }) }, new Date(), handle))
+  const done = (outcome: 'sent' | 'interrupted' | 'failed', detail?: string) => {
+    immediate((handle) => handle.prepare('UPDATE claims SET sendingOp = NULL, sendingSince = NULL WHERE chatKey = ? AND sendingOp = ?').run(claim.key, opId))
+    releaseChat(ref, by, outcome, detail)
+  }
+  return { ok: true, opId, held: () => immediate((handle) => holdsSend(handle, claim, opId, new Date())), part, partSent, heard: () => heardLate, done }
 }

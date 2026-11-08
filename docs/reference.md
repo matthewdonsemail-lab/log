@@ -5,7 +5,7 @@ Generated from the code by `bun run docs:build`, so it always matches what `log`
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (18 commands of its own), Reddit (1 command of its own), Discord (8 commands of its own), LinkedIn (2 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+log-cli is platform-agnostic: 7 platforms so far, Facebook (23 commands of its own), X (18 commands of its own), Reddit (5 commands of its own), Discord (8 commands of its own), LinkedIn (2 commands of its own), Slack (9 commands of its own), Instagram (6 commands of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`, `log discord session`, `log linkedin session`, `log slack session`, `log instagram session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
 Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`log [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
@@ -32,10 +32,10 @@ flowchart LR
   p_twitter -->|"direct API: twitter session, twitter follows, twitter dms, twitter chat, twitter cookies, twitter followers, twitter notifications, twitter reply, twitter quote, twitter post, twitter like, twitter list, twitter repost, twitter follow, twitter dm, twitter react, twitter queue, twitter voice"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
   e_twikit --> api
   p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
-  p_reddit["Reddit (REDDIT): 1 command of its own"]
+  p_reddit["Reddit (REDDIT): 5 commands of its own"]
   twenty --> p_reddit
-  p_reddit -->|"direct API: reddit session"| e_rdvwr["rdvwr (vendor/rdvwr): the saved session, a governor per account"]
-  e_rdvwr --> api
+  p_reddit -->|"direct API: reddit session, reddit read, reddit post, reddit reply, reddit vote"| e_reverseChud["reverseChud (vendor/reverseChud): the saved session, a governor per account"]
+  e_reverseChud --> api
   p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
   b_reddit --> drivers
   p_discord["Discord (DISCORD): 8 commands of its own"]
@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, timing, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, treg, balance, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, treg, balance, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -94,7 +94,7 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, discord read, slack read"]
+  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, reddit read, discord read, slack read"]
   camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign, discord watch, slack watch, instagram watch"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
@@ -103,16 +103,16 @@ flowchart LR
 
 Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `timing`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `treg`, `balance`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `treg`, `balance`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 45 commands).
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through reverseChud (`vendor/reverseChud`), Discord through endcord (`vendor/endcord`), LinkedIn through openLinkedinApi (`vendor/openLinkedinApi`), Slack through gabrielSlack (`vendor/gabrielSlack`), Instagram through instagrapi (`vendor/instagrapi`). Every one reaches the network through one pinned browser-impersonating session: curl_cffi for the Python clients (`check:twikitTransport`), wreq-js for reverseChud (`check:reverseChudTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (7 clients, 49 commands).
 
 **Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
 
@@ -141,7 +141,11 @@ A command on the direct-API engine calls the platform's internal API with the ac
 
 **Reddit.** Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
-- `log reddit session`: the direct-API engine only (rdvwr, vendored in vendor/rdvwr, account.ping for the session check; no browser).
+- `log reddit session`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud, account.ping for the session check; no browser).
+- `log reddit read`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud, account.posts for the subreddits, posts, the home feed and one post; no browser).
+- `log reddit post`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud, posts.create for the a text post; no browser).
+- `log reddit reply`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud, posts.reply for the a comment or reply; no browser).
+- `log reddit vote`: the direct-API engine only (reverseChud, vendored in vendor/reverseChud, posts.vote for the a vote; no browser).
 
 **Discord.** Discord's own answer decides. Each account has its own governor under ~/.logCli/discord/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
@@ -189,12 +193,12 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 178 command tools + saved flows"]
+  mcp["MCP server log: 190 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 95 commands (COMMANDS)"]
+  runCli["runCli: 100 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
-  direct["Direct-API engine: fbk, twikit, rdvwr, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
+  direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
   browser["The account's browser (one per day, rule 35)"]
   api["The platform's internal API: its answer decides (rule 73)"]
   twenty[("Twenty: socialAccounts.sessionState, refreshed cookies")]
@@ -279,6 +283,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
 | [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 85, 30, 38, 39, 40, 41 |
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41 |
+| [`log storage`](#log-storage) | Check that log.db's typed tables are exactly what its events derive, and rebuild them from the events | any (none) | `--json` `--apply` | none | none | `storageVerify`, `storageRebuild` | PreToolUse, PostToolUse · PostToolUse | no | 73, 134, 30, 38, 39, 40, 41 |
 | [`log timing`](#log-timing) | Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall | any (none) | `--tool <name>` `--hours <n>` `--stages <n>` `--json` `--call <callId>` | none | none | `timing` | PreToolUse, PostToolUse · PostToolUse | no | 26, 73, 165, 30, 38, 39, 40, 41 |
 | [`log inbox`](#log-inbox) | Claim a chat before acting on it, release it, list the live claims, and read the log of every action taken in a chat | any (none) | `--platform <twitter|discord|slack|instagram>` `--account <a>` `--chat <conversationId|handle>` `--event <eventId>` `--json` `--by` `--limit <n>` | none | none | `inboxClaim`, `inboxRelease`, `inboxResume`, `inboxClaims`, `inboxActions` | PreToolUse, PostToolUse · PostToolUse | no | 94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 30, 38, 39, 40, 41 |
 | [`log media`](#log-media) | Describe every image, meme and video with one local vision model into the .db, so replies read what was sent | any (none) | `--json` `--wait <seconds>` | none | none | `mediaDescriber`, `mediaDescribe`, `mediaStatus` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 126, 131, 137, 138, 139, 30, 38, 39, 40, 41 |
@@ -297,7 +302,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rebuild` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 13, 26, 30, 93, 30, 38, 39, 40, 41 |
 | [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` `--build` `--from <posts.json>` `--noTaste` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 119, 120, 30, 38, 39, 40, 41 |
-| [`log treg`](#log-treg) | The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked) | any (none) | `--limit <n>` `--json` `--params` `--path <path>` `--method <GET|POST>` `--data` `--await` `--approvedBy <who>` `--live` | none | none | `tregSearch`, `tregGet`, `tregCall`, `tregCallLive` | PreToolUse, PostToolUse · PostToolUse | no | 41, 53, 106, 119, 166, 30, 38, 39, 40, 41 |
+| [`log treg`](#log-treg) | The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked) | any (none) | `--limit <n>` `--json` `--params` `--path <path>` `--method <GET|POST>` `--data` `--await` `--maxItems <n>` `--fields <a,b>` `--where <key=value>` `--raw` `--approvedBy <who>` `--live` | none | none | `tregSearch`, `tregGet`, `tregCall`, `tregCallLive` | PreToolUse, PostToolUse · PostToolUse | no | 41, 53, 106, 119, 166, 30, 38, 39, 40, 41 |
 | [`log balance`](#log-balance) | Every paid provider log calls, with what is left and which are out of credit | any (none) | `--provider <name>` `--json` | none | none | `balance` | PreToolUse, PostToolUse · PostToolUse | no | 41, 73, 94, 164, 30, 38, 39, 40, 41 |
 | [`log clone`](#log-clone) | matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voice notes, and words said in it to a local file | any (none) | `--provider` `--from <file>` `--apply` `--replace` `--json` `--text` `--model <model>` `--format` | none | none | `cloneVoice`, `cloneSpeak` | PreToolUse, PostToolUse · PostToolUse | no | 39, 41, 94, 106, 119, 142, 143, 145, 146, 147, 30, 38, 39, 40, 41 |
 | [`log transcribe`](#log-transcribe) | Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ | any (none) | `--platform` `--account <a>` `--list` `--noIndex` `--json` | none | none | `transcribe`, `transcribeFile` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41 |
@@ -315,6 +320,10 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--skipXChatCheck` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--force` `--keepOpen` `--live` `--replies <n>` `--n <n>` `--text` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueAdd`, `twitterQueueNudge`, `twitterQueueEdit` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 86, 87, 94, 104, 105, 107, 108, 109, 110, 111, 113, 114, 115, 121, 130, 133, 135, 136, 137, 138, 30, 38, 39, 40, 41 |
 | [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--hosts <a.com,b.com>` `--home <https://…>` `--noProxy` `--noBrowser` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
 | [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
+| [`log reddit read`](#log-reddit-read) | Find subreddits, and read a subreddit's newest posts with their links, through the account's direct-API engine | `reddit` first | `--account <accountName>` `--query <words>` `--json` `--subreddit <name>` `--days <n>` `--linksTo <host>` `--url <permalink>` `--limit <n>` | direct API only | the account's | `redditReadSubreddits`, `redditReadPosts`, `redditReadHome`, `redditReadPost` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 53, 63, 64, 73, 94, 110, 30, 38, 39, 40, 41 |
+| [`log reddit post`](#log-reddit-post) | Post a text post to a subreddit through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--subreddit <name>` `--title <title>` `--text <markdown>` `--flair <flair>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `redditPost`, `redditPostLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 10, 41, 63, 64, 73, 94, 30, 38, 39, 40, 41 |
+| [`log reddit reply`](#log-reddit-reply) | Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--url <post permalink>` `--text <text>` `--comment <t1_id>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `redditReply`, `redditReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 10, 41, 63, 64, 73, 94, 30, 38, 39, 40, 41 |
+| [`log reddit vote`](#log-reddit-vote) | Vote on a Reddit post or comment through the account's direct-API engine; a dry run unless --live | `reddit` first | `--account <accountName>` `--url <post permalink>` `--target <t3_id|t1_id>` `--direction` `--approvedBy <who>` `--live` `--json` | direct API only | none | `redditVote`, `redditVoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 63, 64, 73, 94, 30, 38, 39, 40, 41 |
 | [`log discord session`](#log-discord-session) | Check that Discord still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordSessionCheck` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
 | [`log discord chats`](#log-discord-chats) | List the account's DMs and group DMs with their ids, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--json` | direct API only | none | `discordChats` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | no | 13, 63, 64, 73, 83, 94, 30, 38, 39, 40, 41 |
 | [`log discord read`](#log-discord-read) | Read a Discord chat or channel's latest messages, on the direct-API engine, sending nothing | `discord` first | `--account <accountName>` `--channel <channelId|chat name>` `--limit <n>` `--after <messageId>` `--json` | direct API only | the account's | `discordRead` | PreToolUse, PostToolUse · PreToolUse, PostToolUse | yes: watch it | 13, 63, 64, 73, 83, 94, 126, 30, 38, 39, 40, 41 |
@@ -386,6 +395,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_storage["storage"]
     c_timing["timing"]
     c_inbox["inbox"]
     c_media["media"]
@@ -455,6 +465,10 @@ flowchart TB
   end
   subgraph g_reddit["Reddit"]
     c_redditSession["session"]
+    c_redditRead["read"]
+    c_redditPost["post"]
+    c_redditReply["reply"]
+    c_redditVote["vote"]
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
@@ -572,6 +586,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_storage
+  mcp --> c_storage
   cli --> c_timing
   mcp --> c_timing
   cli --> c_inbox
@@ -645,6 +661,15 @@ flowchart TB
   mcp --> c_new
   cli --> c_redditSession
   mcp --> c_redditSession
+  cli --> c_redditRead
+  mcp --> c_redditRead
+  c_redditRead --> live
+  cli --> c_redditPost
+  mcp --> c_redditPost
+  cli --> c_redditReply
+  mcp --> c_redditReply
+  cli --> c_redditVote
+  mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
   cli --> c_discordChats
@@ -1271,6 +1296,16 @@ log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, s
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 ```
 
+#### log storage
+
+Check that log.db's typed tables are exactly what its events derive, and rebuild them from the events MCP tools: `storageVerify`, `storageRebuild`, one per form, with named fields.
+
+```text
+log storage verify [--json]   (replays every event in ~/.logCli/log.db into a scratch copy and compares each typed table, row by row, with the live one; nothing is changed)
+log storage rebuild [--apply] [--json]   (clears the typed tables (messages, attachments, chats, identities, memberships, interactions) and replays every event into them in order, in one transaction; a verify unless --apply)
+The events are the record: every typed row is derived from them, so a rebuild loses nothing (docs/storageAgainstTheBook.md, item 2).
+```
+
 #### log timing
 
 Where the time goes in every call: p50, p95 and p99 per tool and per stage, from the timings every call stores in log.db, or one call as a waterfall MCP tools: `timing`, one per form, with named fields.
@@ -1465,7 +1500,7 @@ The treg extension: find an endpoint by the job, read it, and call it with the k
 ```text
 log treg search "<what you want done>" [--limit <n>] [--json]   (treg's catalog, found by the job: each endpoint's id, what it does and its price)
 log treg get <endpointId> [--json]   (one endpoint in full: its price, its params and a call that works)
-log treg call <endpointId> [--params '<json object>'] [--path <path>] [--method <GET|POST>] [--data '<body>'] [--await] [--approvedBy <who>] [--live] [--json]   (calls it through treg, the key injected server-side: a free endpoint runs; a priced one is a dry run that says its price unless --live with --approvedBy)
+log treg call <endpointId> [--params '<json object>'] [--path <path>] [--method <GET|POST>] [--data '<body>'] [--await] [--maxItems <n>] [--fields <a,b>] [--where <key=value>] [--raw] [--approvedBy <who>] [--live] [--json]   (calls it through treg, the key injected server-side: a free endpoint runs; a priced one is a dry run that says its price unless --live with --approvedBy; the answer drops treg's raw copy unless --raw, and --maxItems, --fields and --where trim every list in it)
 treg is an extension (docs/extensions/treg.md): every lookup comes from an external source through it (rule 53), and nothing that costs money runs unless matt asked (rule 41). It runs the treg CLI on this machine (TREG_BIN moves it); treg's balance is in log balance.
 ```
 
@@ -1476,7 +1511,7 @@ Every paid provider log calls, with what is left and which are out of credit MCP
 ```text
 log balance [--provider <name>] [--json]
 Every paid provider log calls, with what is left: subq, jina, inworld, fishAudio, assemblyAi, parallel, treg, twoCaptcha, byteful.
-A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (~/.logCli/billing/answers.jsonl). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.
+A provider with a balance API (Jina, Fish Audio, treg, 2Captcha, Byteful) is read from it. One without one (SubQ, Inworld, AssemblyAI, Parallel) shows its last answer to a real call, which log keeps for every call (the ledger table in ~/.logCli/log.db (kind providerAnswer)). A provider that answered it is out of credit shows outOfCredit, so a failing voice note or gate is seen as money, not a bug.
 Reading balances spends nothing (rule 41). Topping up is matt's: never done from log.
 ```
 
@@ -1487,7 +1522,7 @@ matt's voice, cloned once per provider (Inworld or Fish Audio) from his own voic
 ```text
 log clone voice [--provider inworld|fishAudio] [--from <file>[,<file>]] [--apply] [--replace] [--json]   (matt's voice, cloned once per provider from his own voice notes, or from recordings of his own he names with --from, each one's words read from a .txt beside it; without --apply it lists the recordings it would use; --replace makes it again and keeps the old voice id under previous)
 log clone speak --text "<words>" [--provider inworld|fishAudio] [--model <model>] [--format mp3|wav] [--json]   (the words in his cloned voice, to a file under ~/.logCli/voiceNotes; nothing is played or sent)
-Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in ~/.logCli/voice/clone.json. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).
+Voice cloning is provider-agnostic (docs/extensions/voiceClone.md): the provider is --provider, else LOG_VOICE_PROVIDER in .env.local, else inworld. Each provider is an extension of its own (src/extensions/inworld, src/extensions/fishAudio) behind one interface (src/extensions/voiceClone). The clone is made only from the voice notes matt sent himself (fromMe in the conversation store or his ownMessage in the .db), the shortest first, within the provider's limit (Inworld 3 to 30 s, Fish 10 to 60 s). Each provider's voice id is kept in log.db. A clone speaks with the provider's preferred model (Inworld inworld-tts-2, which takes emotion tags), else its cheapest, unless --model says otherwise, at LOG_VOICE_SPEED (default 1.15). The clone is made in matt's accent: LOG_VOICE_ACCENT (default Irish) as its description and LOG_VOICE_LANGUAGE (default en-IE, en-GB when Inworld refuses it) as its language, with each sample's AssemblyAI transcript when ~/.logCli/transcripts has one; no accent instruction is sent with the text. Every spoken file is shaped like matt's own voice notes (his room tone from his notes, phone squash, mic drift, saturation; breaths on inworld-tts-2) and listened back with AssemblyAI: a lexicon word said wrong is refused spokenMismatch, an acronym not in the lexicon pronunciationUnknown. A voice note goes out only when matt asks for one: log discord voice, log instagram voice or log slack voice (rules 142, 143, 145, 146, 147).
 ```
 
 #### log transcribe
@@ -1658,6 +1693,51 @@ Check that Reddit still accepts an account's saved session, on the direct-API en
 log reddit session check --account <accountName> [--json]
 Checks that Reddit still accepts the account's saved session, on the direct-API engine (no browser). Sends nothing.
 Reddit's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+```
+
+#### log reddit read
+
+Find subreddits, and read a subreddit's newest posts with their links, through the account's direct-API engine MCP tools: `redditReadSubreddits`, `redditReadPosts`, `redditReadHome`, `redditReadPost`, one per form, with named fields.
+
+```text
+log reddit read subreddits --account <accountName> --query <words> [--json]
+log reddit read posts --account <accountName> --subreddit <name> [--days <n>] [--linksTo <host>] [--json]
+log reddit read home --account <accountName> [--json]
+log reddit read post --account <accountName> --url <permalink> [--limit <n>] [--json]
+Reads Reddit through the account's direct-API engine (no browser), paced as reads. Sends nothing.
+home is the account's home feed, one page. post is one post with its comments (--limit, default 50), each comment with the id log reddit reply takes to answer it.
+subreddits finds communities by words. posts reads a subreddit's newest posts back --days (default 7), each with every link in it;
+--linksTo keeps only the posts linking to that host (github.com) and ranks them by score, then comments. A 429 stops the read and keeps what was read (rule 94).
+```
+
+#### log reddit post
+
+Post a text post to a subreddit through the account's direct-API engine; a dry run unless --live MCP tools: `redditPost`, `redditPostLive`, one per form, with named fields.
+
+```text
+log reddit post --account <accountName> --subreddit <name> --title <title> [--text <markdown>] [--flair <flair>] [--approvedBy <who>] [--live] [--json]
+Posts a text post to a subreddit through the account's direct-API engine (no browser). A dry run unless --live, which needs --approvedBy (rule 8).
+Reddit's composer asks for a reCAPTCHA Enterprise token, solved by 2Captcha (rule 10). The governor counts it as a write; Reddit's answer decides, and a refusal stops it with nothing retried (rule 94).
+```
+
+#### log reddit reply
+
+Comment on a Reddit post or reply to one of its comments through the account's direct-API engine; a dry run unless --live MCP tools: `redditReply`, `redditReplyLive`, one per form, with named fields.
+
+```text
+log reddit reply --account <accountName> --url <post permalink> --text <text> [--comment <t1_id>] [--approvedBy <who>] [--live] [--json]
+Comments on a post, or replies to one of its comments (--comment, an id from log reddit read post), through the account's direct-API engine (no browser).
+A dry run unless --live, which needs --approvedBy (rule 8). Reddit asks for a reCAPTCHA Enterprise token, solved by 2Captcha (rule 10). A refusal stops it with nothing retried (rule 94).
+```
+
+#### log reddit vote
+
+Vote on a Reddit post or comment through the account's direct-API engine; a dry run unless --live MCP tools: `redditVote`, `redditVoteLive`, one per form, with named fields.
+
+```text
+log reddit vote --account <accountName> (--url <post permalink> | --target <t3_id|t1_id>) [--direction up|down|none] [--approvedBy <who>] [--live] [--json]
+Votes on a post or comment through the account's direct-API engine (no browser): up (the default), down, or none to take a vote back.
+A dry run unless --live, which needs --approvedBy (rule 8). The governor counts it as a write; a refusal stops it with nothing retried (rule 94).
 ```
 
 #### log discord session

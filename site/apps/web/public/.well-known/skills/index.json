@@ -101,6 +101,14 @@
       "summary": "Bringing a new platform up, then vendoring its client"
     },
     {
+      "name": "log-reddit-contributor-maxxing",
+      "description": "Contributor maxxing: finding talented builders through what they share. A log play (docs/useCases/reddit/contributorMaxxing.md): Find talented people who are into the same things as the owner, through the GitHub repos they post on Reddit. Read a subreddit's last few days through the owner's Reddit account, keep the posts that link to GitHub, and rank them. It reads only. It posts, votes and messages nothing.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Contributor maxxing: finding talented builders through what they share"
+    },
+    {
       "name": "log-slack-dm-reply",
       "description": "Reading and answering a Slack DM. A log play (docs/useCases/slack/dmReply.md): Read what someone wrote to the account on Slack and answer it in matt's voice, on the account's own session, with no browser.",
       "files": [
@@ -235,6 +243,14 @@
         "SKILL.md"
       ],
       "summary": "Finding who needs something from you, or who matters"
+    },
+    {
+      "name": "log-web-competitor-traffic",
+      "description": "Competitor traffic: finding how to rank on your competitors' names. A log play (docs/useCases/web/competitorTraffic.md): Work out how a tool gets search and AI-search traffic from its competitors: what each competitor ranks for, who pays affiliate commission, what the people in the owner's DMs could link from, and what forums like BlackHatWorld say works this month. Then rank what to do first with a SubQ matrix and write it up. It reads and researches only. It publishes nothing and contacts nobody.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Competitor traffic: finding how to rank on your competitors' names"
     }
   ]
 }

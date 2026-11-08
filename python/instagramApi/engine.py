@@ -5,6 +5,7 @@ import contextvars
 import json
 import os
 import socket
+import sqlite3
 import sys
 import threading
 import time
@@ -241,26 +242,43 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
+def log_db_path() -> Path:
+    if os.environ.get("LOG_DB"):
+        return Path(os.environ["LOG_DB"])
+    if os.environ.get("LOG_INBOX_STATE"):
+        return Path(os.environ["LOG_INBOX_STATE"]) / "log.db"
+    return Path.home() / ".logCli" / "log.db"
+
+
 def heard_since(account: str, thread: str, since: str) -> list[dict[str, Any]]:
-    path = Path(os.environ.get("LOG_INBOX_STATE") or Path.home() / ".logCli" / "inbox") / "pending.jsonl"
+    path = log_db_path()
     if not account or not thread or not path.is_file():
         return []
+    try:
+        handle = sqlite3.connect(f"file:{path.as_posix()}?mode=ro", uri=True, timeout=5)
+    except sqlite3.Error:
+        return []
+    try:
+        rows = handle.execute(
+            "SELECT withWho, text, sourceAt, receivedAt, payload FROM events WHERE platform = 'instagram' AND account = ? AND conversationId = ? AND type = 'message' AND receivedAt > ? ORDER BY seq",
+            (account, thread, since),
+        ).fetchall()
+    except sqlite3.Error:
+        return []
+    finally:
+        handle.close()
     heard: list[dict[str, Any]] = []
     kept: set[tuple[str, str]] = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
-        try:
-            message = json.loads(line)
-        except ValueError:
-            continue
-        if message.get("platform") != "instagram" or message.get("account") != account or str(message.get("conversationId")) != thread:
-            continue
-        if str(message.get("seenAt") or message.get("at") or "") <= since:
-            continue
-        key = (str(message.get("at")), str(message.get("text")))
+    for who, text, source_at, received_at, payload in rows:
+        key = (str(source_at or received_at), str(text))
         if key in kept:
             continue
         kept.add(key)
-        heard.append(message)
+        try:
+            extra = json.loads(payload) if payload else {}
+        except ValueError:
+            extra = {}
+        heard.append({**(extra if isinstance(extra, dict) else {}), "platform": "instagram", "account": account, "conversationId": thread, "with": who, "text": text, "at": source_at or received_at, "seenAt": received_at})
     return heard
 
 

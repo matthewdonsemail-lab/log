@@ -1,0 +1,1902 @@
+{
+  "model": "subq-snap-preview",
+  "decisions": {
+    "D1": {
+      "stateChars": 52309,
+      "choices": {
+        "latency": {
+          "type": "choice",
+          "choice": "D",
+          "probabilities": {
+            "A": 0.0005587904597632587,
+            "B": 0.010359682142734528,
+            "C": 0.009077182039618492,
+            "D": 0.9176629781723022,
+            "E": 0.062341295182704926
+          },
+          "confidence": 0.8970787227153778
+        },
+        "refusalSafety": {
+          "type": "choice",
+          "choice": "E",
+          "probabilities": {
+            "A": 0.005900705233216286,
+            "B": 0.10393118113279343,
+            "C": 0.056130681186914444,
+            "D": 0.011931694112718105,
+            "E": 0.8221057057380676
+          },
+          "confidence": 0.7776321321725845
+        },
+        "windowsFit": {
+          "type": "choice",
+          "choice": "E",
+          "probabilities": {
+            "A": 0.005914448294788599,
+            "B": 0.06945456564426422,
+            "C": 0.025836599990725517,
+            "D": 0.43432456254959106,
+            "E": 0.4644697606563568
+          },
+          "confidence": 0.33058720082044596
+        },
+        "effort": {
+          "type": "choice",
+          "choice": "B",
+          "probabilities": {
+            "A": 0.007598172407597303,
+            "B": 0.3939814865589142,
+            "C": 0.04625915363430977,
+            "D": 0.18393690884113312,
+            "E": 0.36822426319122314
+          },
+          "confidence": 0.2424768581986427
+        },
+        "observability": {
+          "type": "choice",
+          "choice": "D",
+          "probabilities": {
+            "A": 0.002270885743200779,
+            "B": 0.05300801992416382,
+            "C": 0.011388937942683697,
+            "D": 0.7133125066757202,
+            "E": 0.2200196534395218
+          },
+          "confidence": 0.6416406333446503
+        },
+        "robustness": {
+          "type": "choice",
+          "choice": "E",
+          "probabilities": {
+            "A": 0.0038515254855155945,
+            "B": 0.13697442412376404,
+            "C": 0.052324626594781876,
+            "D": 0.013679908588528633,
+            "E": 0.7931694984436035
+          },
+          "confidence": 0.7414618730545044
+        },
+        "overall": {
+          "type": "choice",
+          "choice": "E",
+          "probabilities": {
+            "A": 0.0012026672484353185,
+            "B": 0.01427244208753109,
+            "C": 0.008048810064792633,
+            "D": 0.10622043907642365,
+            "E": 0.8702556490898132
+          },
+          "confidence": 0.8378195613622665
+        }
+      },
+      "scores": {
+        "A": {
+          "latency": {
+            "type": "score",
+            "score": 0.6794382398948073,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "100 to 300 ms",
+              "2": "30 to 100 ms",
+              "3": "5 to 30 ms",
+              "4": "Under 5 ms"
+            },
+            "probabilities": {
+              "0": 0.36894986033439636,
+              "1": 0.6029921174049377,
+              "2": 0.011655682697892189,
+              "3": 0.012474420480430126,
+              "4": 0.0039278739131987095
+            },
+            "confidence": 0.6522183285560459
+          },
+          "refusalSafety": {
+            "type": "score",
+            "score": 3.54395729675889,
+            "legend": {
+              "0": "A failure lets every bad call through",
+              "1": "Refusal depends on the service being up",
+              "2": "Refusal holds unless the service hangs",
+              "3": "Refusal holds but slowly",
+              "4": "Refusal always holds"
+            },
+            "probabilities": {
+              "0": 0.00677470164373517,
+              "1": 0.035831350833177567,
+              "2": 0.04213150590658188,
+              "3": 0.23718690872192383,
+              "4": 0.6780755519866943
+            },
+            "confidence": 0.6199643503253658
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.407048640307039,
+            "legend": {
+              "0": "Known broken on Windows",
+              "1": "Untested and risky",
+              "2": "Should work, untested",
+              "3": "Works, with caveats",
+              "4": "Tested and works"
+            },
+            "probabilities": {
+              "0": 0.009757054969668388,
+              "1": 0.007157872896641493,
+              "2": 0.01141663733869791,
+              "3": 0.5096160769462585,
+              "4": 0.4620523154735565
+            },
+            "confidence": 0.5691201137378812
+          },
+          "effort": {
+            "type": "score",
+            "score": 3.7670328938402236,
+            "legend": {
+              "0": "Rewrite of the hook layer and service",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "Settings only"
+            },
+            "probabilities": {
+              "0": 0.00303985015489161,
+              "1": 0.006717434618622065,
+              "2": 0.017960919067263603,
+              "3": 0.16473333537578583,
+              "4": 0.8075484037399292
+            },
+            "confidence": 0.8058609350118786
+          },
+          "observability": {
+            "type": "score",
+            "score": 1.2851957399398088,
+            "legend": {
+              "0": "Invisible",
+              "1": "Only in-process time",
+              "2": "Per process, not per event",
+              "3": "Per event at the service",
+              "4": "Per event, end to end, in spans"
+            },
+            "probabilities": {
+              "0": 0.08769740164279938,
+              "1": 0.5624818801879883,
+              "2": 0.3333233594894409,
+              "3": 0.009921882301568985,
+              "4": 0.006575373467057943
+            },
+            "confidence": 0.6161744615528733
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.811578121036291,
+            "legend": {
+              "0": "Breaks until a person fixes it",
+              "1": "Breaks until the next session",
+              "2": "Degrades silently",
+              "3": "Degrades loudly and recovers",
+              "4": "Unaffected"
+            },
+            "probabilities": {
+              "0": 0.004355583339929581,
+              "1": 0.013841498643159866,
+              "2": 0.01674392819404602,
+              "3": 0.09598737210035324,
+              "4": 0.8690716624259949
+            },
+            "confidence": 0.8429816185186306
+          }
+        },
+        "B": {
+          "latency": {
+            "type": "score",
+            "score": 1.3707517385482788,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "100 to 300 ms",
+              "2": "30 to 100 ms",
+              "3": "5 to 30 ms",
+              "4": "Under 5 ms"
+            },
+            "probabilities": {
+              "0": 0.0055229845456779,
+              "1": 0.7364102602005005,
+              "2": 0.1547888070344925,
+              "3": 0.08834811300039291,
+              "4": 0.014929881319403648
+            },
+            "confidence": 0.681835282050694
+          },
+          "refusalSafety": {
+            "type": "score",
+            "score": 3.882199148647487,
+            "legend": {
+              "0": "A failure lets every bad call through",
+              "1": "Refusal depends on the service being up",
+              "2": "Refusal holds unless the service hangs",
+              "3": "Refusal holds but slowly",
+              "4": "Refusal always holds"
+            },
+            "probabilities": {
+              "0": 0.0010016768937930465,
+              "1": 0.008567298762500286,
+              "2": 0.019961517304182053,
+              "3": 0.04816923290491104,
+              "4": 0.9223002791404724
+            },
+            "confidence": 0.9018326071867099
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.9208155346568674,
+            "legend": {
+              "0": "Known broken on Windows",
+              "1": "Untested and risky",
+              "2": "Should work, untested",
+              "3": "Works, with caveats",
+              "4": "Tested and works"
+            },
+            "probabilities": {
+              "0": 0.0006368137546814978,
+              "1": 0.0024149043019860983,
+              "2": 0.017413713037967682,
+              "3": 0.03456518054008484,
+              "4": 0.9449694156646729
+            },
+            "confidence": 0.934012854549413
+          },
+          "effort": {
+            "type": "score",
+            "score": 3.50264975335449,
+            "legend": {
+              "0": "Rewrite of the hook layer and service",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "Settings only"
+            },
+            "probabilities": {
+              "0": 0.0011658361181616783,
+              "1": 0.002236432395875454,
+              "2": 0.04939931258559227,
+              "3": 0.3871787488460541,
+              "4": 0.5600196123123169
+            },
+            "confidence": 0.5855416536020736
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.093329034745693,
+            "legend": {
+              "0": "Invisible",
+              "1": "Only in-process time",
+              "2": "Per process, not per event",
+              "3": "Per event at the service",
+              "4": "Per event, end to end, in spans"
+            },
+            "probabilities": {
+              "0": 0.006950821727514267,
+              "1": 0.12680679559707642,
+              "2": 0.7055593729019165,
+              "3": 0.08732817322015762,
+              "4": 0.07335474342107773
+            },
+            "confidence": 0.6877115840713183
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.8692683414556086,
+            "legend": {
+              "0": "Breaks until a person fixes it",
+              "1": "Breaks until the next session",
+              "2": "Degrades silently",
+              "3": "Degrades loudly and recovers",
+              "4": "Unaffected"
+            },
+            "probabilities": {
+              "0": 0.0013524913229048252,
+              "1": 0.004735988099128008,
+              "2": 0.010970366187393665,
+              "3": 0.08917271345853806,
+              "4": 0.8937683701515198
+            },
+            "confidence": 0.8910571871480594
+          }
+        },
+        "C": {
+          "latency": {
+            "type": "score",
+            "score": 1.7865604311227798,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "100 to 300 ms",
+              "2": "30 to 100 ms",
+              "3": "5 to 30 ms",
+              "4": "Under 5 ms"
+            },
+            "probabilities": {
+              "0": 0.005574626382440329,
+              "1": 0.4339880049228668,
+              "2": 0.353749543428421,
+              "3": 0.1816776543855667,
+              "4": 0.025010094046592712
+            },
+            "confidence": 0.33524186606518924
+          },
+          "refusalSafety": {
+            "type": "score",
+            "score": 3.6368198357522488,
+            "legend": {
+              "0": "A failure lets every bad call through",
+              "1": "Refusal depends on the service being up",
+              "2": "Refusal holds unless the service hangs",
+              "3": "Refusal holds but slowly",
+              "4": "Refusal always holds"
+            },
+            "probabilities": {
+              "0": 0.002377534983679652,
+              "1": 0.042434271425008774,
+              "2": 0.064512237906456,
+              "3": 0.09734264016151428,
+              "4": 0.7933332920074463
+            },
+            "confidence": 0.6973499415131906
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.057098826393485,
+            "legend": {
+              "0": "Known broken on Windows",
+              "1": "Untested and risky",
+              "2": "Should work, untested",
+              "3": "Works, with caveats",
+              "4": "Tested and works"
+            },
+            "probabilities": {
+              "0": 0.0020729193929582834,
+              "1": 0.015522947534918785,
+              "2": 0.2866708040237427,
+              "3": 0.3146992027759552,
+              "4": 0.38103416562080383
+            },
+            "confidence": 0.21424889083330823
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.133028421550989,
+            "legend": {
+              "0": "Rewrite of the hook layer and service",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "Settings only"
+            },
+            "probabilities": {
+              "0": 0.004833726212382317,
+              "1": 0.08394584059715271,
+              "2": 0.6992142200469971,
+              "3": 0.1973704993724823,
+              "4": 0.01463566068559885
+            },
+            "confidence": 0.7331207385286689
+          },
+          "observability": {
+            "type": "score",
+            "score": 1.9172124862670898,
+            "legend": {
+              "0": "Invisible",
+              "1": "Only in-process time",
+              "2": "Per process, not per event",
+              "3": "Per event at the service",
+              "4": "Per event, end to end, in spans"
+            },
+            "probabilities": {
+              "0": 0.010491353459656239,
+              "1": 0.3764723539352417,
+              "2": 0.35765722393989563,
+              "3": 0.1960906684398651,
+              "4": 0.05928841978311539
+            },
+            "confidence": 0.21817068864280975
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.6807238487526774,
+            "legend": {
+              "0": "Breaks until a person fixes it",
+              "1": "Breaks until the next session",
+              "2": "Degrades silently",
+              "3": "Degrades loudly and recovers",
+              "4": "Unaffected"
+            },
+            "probabilities": {
+              "0": 0.0023504451382905245,
+              "1": 0.01285580825060606,
+              "2": 0.03235788270831108,
+              "3": 0.20659136772155762,
+              "4": 0.7458445429801941
+            },
+            "confidence": 0.7339363846306999
+          }
+        },
+        "D": {
+          "latency": {
+            "type": "score",
+            "score": 3.9109058434842154,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "100 to 300 ms",
+              "2": "30 to 100 ms",
+              "3": "5 to 30 ms",
+              "4": "Under 5 ms"
+            },
+            "probabilities": {
+              "0": 0.0006594290025532246,
+              "1": 0.0010415142169222236,
+              "2": 0.002835411811247468,
+              "3": 0.07766099274158478,
+              "4": 0.917802631855011
+            },
+            "confidence": 0.9257549374791173
+          },
+          "refusalSafety": {
+            "type": "score",
+            "score": 0.760736895725131,
+            "legend": {
+              "0": "A failure lets every bad call through",
+              "1": "Refusal depends on the service being up",
+              "2": "Refusal holds unless the service hangs",
+              "3": "Refusal holds but slowly",
+              "4": "Refusal always holds"
+            },
+            "probabilities": {
+              "0": 0.33512717485427856,
+              "1": 0.6188842058181763,
+              "2": 0.01572360284626484,
+              "3": 0.010654626414179802,
+              "4": 0.01961040124297142
+            },
+            "confidence": 0.6408406381184856
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.9571635446045548,
+            "legend": {
+              "0": "Known broken on Windows",
+              "1": "Untested and risky",
+              "2": "Should work, untested",
+              "3": "Works, with caveats",
+              "4": "Tested and works"
+            },
+            "probabilities": {
+              "0": 0.0003890753723680973,
+              "1": 0.0008874789346009493,
+              "2": 0.005054578650742769,
+              "3": 0.028508396819233894,
+              "4": 0.9651604294776917
+            },
+            "confidence": 0.9643030896550044
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.3646955750882626,
+            "legend": {
+              "0": "Rewrite of the hook layer and service",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "Settings only"
+            },
+            "probabilities": {
+              "0": 0.0024292150046676397,
+              "1": 0.014654409140348434,
+              "2": 0.658971905708313,
+              "3": 0.26368066668510437,
+              "4": 0.06026383861899376
+            },
+            "confidence": 0.663565680772687
+          },
+          "observability": {
+            "type": "score",
+            "score": 3.3790932814590633,
+            "legend": {
+              "0": "Invisible",
+              "1": "Only in-process time",
+              "2": "Per process, not per event",
+              "3": "Per event at the service",
+              "4": "Per event, end to end, in spans"
+            },
+            "probabilities": {
+              "0": 0.001575225149281323,
+              "1": 0.004130620043724775,
+              "2": 0.0050903428345918655,
+              "3": 0.5920331478118896,
+              "4": 0.39717063307762146
+            },
+            "confidence": 0.6539600904604109
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.4673075079917908,
+            "legend": {
+              "0": "Breaks until a person fixes it",
+              "1": "Breaks until the next session",
+              "2": "Degrades silently",
+              "3": "Degrades loudly and recovers",
+              "4": "Unaffected"
+            },
+            "probabilities": {
+              "0": 0.008989773690700531,
+              "1": 0.08368051052093506,
+              "2": 0.37777644395828247,
+              "3": 0.49013903737068176,
+              "4": 0.03941424936056137
+            },
+            "confidence": 0.4903991371393204
+          }
+        },
+        "E": {
+          "latency": {
+            "type": "score",
+            "score": 2.688843697309494,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "100 to 300 ms",
+              "2": "30 to 100 ms",
+              "3": "5 to 30 ms",
+              "4": "Under 5 ms"
+            },
+            "probabilities": {
+              "0": 0.0018480217549949884,
+              "1": 0.01470048725605011,
+              "2": 0.3266899585723877,
+              "3": 0.606282651424408,
+              "4": 0.05047883465886116
+            },
+            "confidence": 0.6565718058263883
+          },
+          "refusalSafety": {
+            "type": "score",
+            "score": 3.8872358882799745,
+            "legend": {
+              "0": "A failure lets every bad call through",
+              "1": "Refusal depends on the service being up",
+              "2": "Refusal holds unless the service hangs",
+              "3": "Refusal holds but slowly",
+              "4": "Refusal always holds"
+            },
+            "probabilities": {
+              "0": 0.0008581949514336884,
+              "1": 0.005436805076897144,
+              "2": 0.0335097536444664,
+              "3": 0.026001233607530594,
+              "4": 0.9341939687728882
+            },
+            "confidence": 0.9060300533892587
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.8825570390326902,
+            "legend": {
+              "0": "Known broken on Windows",
+              "1": "Untested and risky",
+              "2": "Should work, untested",
+              "3": "Works, with caveats",
+              "4": "Tested and works"
+            },
+            "probabilities": {
+              "0": 0.0008297749445773661,
+              "1": 0.001255730981938541,
+              "2": 0.014153984375298023,
+              "3": 0.0820486843585968,
+              "4": 0.9017118215560913
+            },
+            "confidence": 0.902130878472235
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.465052189771086,
+            "legend": {
+              "0": "Rewrite of the hook layer and service",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "Settings only"
+            },
+            "probabilities": {
+              "0": 0.0025408382061868906,
+              "1": 0.00756120914593339,
+              "2": 0.5601988434791565,
+              "3": 0.3817030191421509,
+              "4": 0.04799605906009674
+            },
+            "confidence": 0.5913849809827904
+          },
+          "observability": {
+            "type": "score",
+            "score": 3.5803999199997634,
+            "legend": {
+              "0": "Invisible",
+              "1": "Only in-process time",
+              "2": "Per process, not per event",
+              "3": "Per event at the service",
+              "4": "Per event, end to end, in spans"
+            },
+            "probabilities": {
+              "0": 0.00179057486820966,
+              "1": 0.003336862428113818,
+              "2": 0.03018355555832386,
+              "3": 0.34206023812294006,
+              "4": 0.6226288080215454
+            },
+            "confidence": 0.6503331366693601
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.0940357805229723,
+            "legend": {
+              "0": "Breaks until a person fixes it",
+              "1": "Breaks until the next session",
+              "2": "Degrades silently",
+              "3": "Degrades loudly and recovers",
+              "4": "Unaffected"
+            },
+            "probabilities": {
+              "0": 0.002382524311542511,
+              "1": 0.006267479155212641,
+              "2": 0.042633675038814545,
+              "3": 0.7923644781112671,
+              "4": 0.15635187923908234
+            },
+            "confidence": 0.8177765953975419
+          }
+        }
+      }
+    },
+    "D2": {
+      "stateChars": 52719,
+      "choices": {
+        "latency": {
+          "type": "choice",
+          "choice": "D",
+          "probabilities": {
+            "A": 0.0062775993719697,
+            "B": 0.0021172789856791496,
+            "C": 0.08169878274202347,
+            "D": 0.8922472596168518,
+            "E": 0.004042663145810366,
+            "F": 0.002339667174965143,
+            "G": 0.0023452083114534616,
+            "H": 0.001986950170248747,
+            "I": 0.0069445217959582806
+          },
+          "confidence": 0.8787781670689583
+        },
+        "oneSession": {
+          "type": "choice",
+          "choice": "C",
+          "probabilities": {
+            "A": 0.14329427480697632,
+            "B": 0.006226731464266777,
+            "C": 0.4804503917694092,
+            "D": 0.32406163215637207,
+            "E": 0.006731799803674221,
+            "F": 0.005864397622644901,
+            "G": 0.0071608880534768105,
+            "H": 0.005072331987321377,
+            "I": 0.021137569099664688
+          },
+          "confidence": 0.4155066907405854
+        },
+        "robustness": {
+          "type": "choice",
+          "choice": "C",
+          "probabilities": {
+            "A": 0.018122876062989235,
+            "B": 0.006431428715586662,
+            "C": 0.5649710893630981,
+            "D": 0.39184558391571045,
+            "E": 0.0034399917349219322,
+            "F": 0.0038385982625186443,
+            "G": 0.003763597458600998,
+            "H": 0.003361152019351721,
+            "I": 0.004225735552608967
+          },
+          "confidence": 0.5105924755334854
+        },
+        "windowsFit": {
+          "type": "choice",
+          "choice": "D",
+          "probabilities": {
+            "A": 0.17208361625671387,
+            "B": 0.006128665991127491,
+            "C": 0.24172192811965942,
+            "D": 0.559465229511261,
+            "E": 0.00549828726798296,
+            "F": 0.003136457409709692,
+            "G": 0.00329623487778008,
+            "H": 0.0028380772564560175,
+            "I": 0.00583148468285799
+          },
+          "confidence": 0.5043983832001686
+        },
+        "effort": {
+          "type": "choice",
+          "choice": "C",
+          "probabilities": {
+            "A": 0.07058656960725784,
+            "B": 0.008780238218605518,
+            "C": 0.7974411249160767,
+            "D": 0.10689748823642731,
+            "E": 0.0035657393746078014,
+            "F": 0.0028647438157349825,
+            "G": 0.0034933118149638176,
+            "H": 0.0024457972031086683,
+            "I": 0.003924987278878689
+          },
+          "confidence": 0.7721212655305862
+        },
+        "observability": {
+          "type": "choice",
+          "choice": "C",
+          "probabilities": {
+            "A": 0.06871585547924042,
+            "B": 0.007638564798980951,
+            "C": 0.5068925619125366,
+            "D": 0.3954186737537384,
+            "E": 0.003546834457665682,
+            "F": 0.004204581491649151,
+            "G": 0.0042381444945931435,
+            "H": 0.003177525009959936,
+            "I": 0.006167198996990919
+          },
+          "confidence": 0.44525413215160375
+        },
+        "overall": {
+          "type": "choice",
+          "choice": "C",
+          "probabilities": {
+            "A": 0.0027376115322113037,
+            "B": 0.001405566930770874,
+            "C": 0.836301863193512,
+            "D": 0.15363158285617828,
+            "E": 0.0006240218062885106,
+            "F": 0.001148149138316512,
+            "G": 0.0012372793862596154,
+            "H": 0.0012137973681092262,
+            "I": 0.0017000462394207716
+          },
+          "confidence": 0.815839596092701
+        }
+      },
+      "scores": {
+        "A": {
+          "latency": {
+            "type": "score",
+            "score": 0.6290805861353874,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.7100856900215149,
+              "1": 0.07871510088443756,
+              "2": 0.11422307044267654,
+              "3": 0.06598535925149918,
+              "4": 0.03099081665277481
+            },
+            "confidence": 0.4757661782205105
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.811804941156879,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.0014047889271751046,
+              "1": 0.002845215843990445,
+              "2": 0.0058222278021276,
+              "3": 0.1623959243297577,
+              "4": 0.8275318741798401
+            },
+            "confidence": 0.8431706806877628
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.1468199463561177,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.0020674788393080235,
+              "1": 0.004201930947601795,
+              "2": 0.05798733979463577,
+              "3": 0.71632981300354,
+              "4": 0.21941347420215607
+            },
+            "confidence": 0.7566607396584004
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.9726210957742296,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.0005892901681363583,
+              "1": 0.0005721933557651937,
+              "2": 0.0038481613155454397,
+              "3": 0.01560901664197445,
+              "4": 0.9793813824653625
+            },
+            "confidence": 0.9771840999892447
+          },
+          "effort": {
+            "type": "score",
+            "score": 3.815187282860279,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.0016801872989162803,
+              "1": 0.006121687591075897,
+              "2": 0.041479699313640594,
+              "3": 0.07676753401756287,
+              "4": 0.8739508986473083
+            },
+            "confidence": 0.8459893794885526
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.8572716899216175,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.0030298284254968166,
+              "1": 0.010024327784776688,
+              "2": 0.18644750118255615,
+              "3": 0.7276409864425659,
+              "4": 0.07285735011100769
+            },
+            "confidence": 0.7596308398836602
+          }
+        },
+        "B": {
+          "latency": {
+            "type": "score",
+            "score": 0.05345894303172827,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.9706010818481445,
+              "1": 0.014775000512599945,
+              "2": 0.007782307453453541,
+              "3": 0.00424742978066206,
+              "4": 0.0025942595675587654
+            },
+            "confidence": 0.9554508808068931
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 0.3598123285919428,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.7560928463935852,
+              "1": 0.19158615171909332,
+              "2": 0.008454370312392712,
+              "3": 0.024149153381586075,
+              "4": 0.019717494025826454
+            },
+            "confidence": 0.7001563928400476
+          },
+          "robustness": {
+            "type": "score",
+            "score": 1.8887715637683868,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.10007531195878983,
+              "1": 0.11823372542858124,
+              "2": 0.633529543876648,
+              "3": 0.08916671574115753,
+              "4": 0.05899465084075928
+            },
+            "confidence": 0.5620496943593025
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.9034064325969666,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.006536219269037247,
+              "1": 0.0029601033311337233,
+              "2": 0.015629680827260017,
+              "3": 0.03030875325202942,
+              "4": 0.9445651769638062
+            },
+            "confidence": 0.9195055816865837
+          },
+          "effort": {
+            "type": "score",
+            "score": 3.7893843799829483,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.008538528345525265,
+              "1": 0.01808963716030121,
+              "2": 0.032135192304849625,
+              "3": 0.0579223707318306,
+              "4": 0.883314311504364
+            },
+            "confidence": 0.8244868498295546
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.5683836936950684,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.05143839120864868,
+              "1": 0.1337657868862152,
+              "2": 0.10856108367443085,
+              "3": 0.6074432730674744,
+              "4": 0.09879148006439209
+            },
+            "confidence": 0.47566724071900046
+          }
+        },
+        "C": {
+          "latency": {
+            "type": "score",
+            "score": 2.7650891104713082,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.0007573204929940403,
+              "1": 0.0011695446446537971,
+              "2": 0.24073782563209534,
+              "3": 0.7468973994255066,
+              "4": 0.010437929071485996
+            },
+            "confidence": 0.7868443287734408
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.849665550631471,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.0009618313633836806,
+              "1": 0.0015917617129161954,
+              "2": 0.007742841262370348,
+              "3": 0.12622615694999695,
+              "4": 0.8634774088859558
+            },
+            "confidence": 0.8747212916108158
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.212020111270249,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.001896100351586938,
+              "1": 0.003934589214622974,
+              "2": 0.07420822232961655,
+              "3": 0.6201751828193665,
+              "4": 0.29978588223457336
+            },
+            "confidence": 0.6770403466265027
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.941224761772901,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.0004354870179668069,
+              "1": 0.00044637778773903847,
+              "2": 0.013476923108100891,
+              "3": 0.02874024026095867,
+              "4": 0.956900954246521
+            },
+            "confidence": 0.9510206934064627
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.4593413919210434,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.0021632793359458447,
+              "1": 0.017251238226890564,
+              "2": 0.5102241635322571,
+              "3": 0.4598032236099243,
+              "4": 0.01055803894996643
+            },
+            "confidence": 0.5812524179928005
+          },
+          "observability": {
+            "type": "score",
+            "score": 3.0064441952854395,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.0012786005390807986,
+              "1": 0.003621751442551613,
+              "2": 0.10658185929059982,
+              "3": 0.7644122242927551,
+              "4": 0.12410551309585571
+            },
+            "confidence": 0.7985277692593323
+          }
+        },
+        "D": {
+          "latency": {
+            "type": "score",
+            "score": 3.1952070456172805,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.0005090385093353689,
+              "1": 0.00045158827560953796,
+              "2": 0.008022438734769821,
+              "3": 0.7853575348854065,
+              "4": 0.20565949380397797
+            },
+            "confidence": 0.8199064794850225
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.9071460847044364,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.000688687025103718,
+              "1": 0.0005908628227189183,
+              "2": 0.003679797751829028,
+              "3": 0.08096717298030853,
+              "4": 0.9140735268592834
+            },
+            "confidence": 0.9226215791228848
+          },
+          "robustness": {
+            "type": "score",
+            "score": 3.326834467705339,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.0015910642687231302,
+              "1": 0.0021766400896012783,
+              "2": 0.0415034145116806,
+              "3": 0.5772648453712463,
+              "4": 0.3774641156196594
+            },
+            "confidence": 0.64325499740274
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.7649048656458035,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.0007367237121798098,
+              "1": 0.000910127186216414,
+              "2": 0.04972755163908005,
+              "3": 0.12996286153793335,
+              "4": 0.8186627626419067
+            },
+            "confidence": 0.8040872989804484
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.206595000810921,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.0020188663620501757,
+              "1": 0.014915875159204006,
+              "2": 0.7639754414558411,
+              "3": 0.21263079345226288,
+              "4": 0.0064589655958116055
+            },
+            "confidence": 0.7962480562273413
+          },
+          "observability": {
+            "type": "score",
+            "score": 3.1895020939409733,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.000997485127300024,
+              "1": 0.0017385073006153107,
+              "2": 0.06752831488847733,
+              "3": 0.6662359237670898,
+              "4": 0.26349979639053345
+            },
+            "confidence": 0.7187520156148821
+          }
+        },
+        "E": {
+          "latency": {
+            "type": "score",
+            "score": 2.9700747337192297,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.015829134732484818,
+              "1": 0.010424507781863213,
+              "2": 0.05192470923066139,
+              "3": 0.8314861059188843,
+              "4": 0.09033562242984772
+            },
+            "confidence": 0.8245027071485916
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 0.14442179165780544,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.913934588432312,
+              "1": 0.04078321531414986,
+              "2": 0.03468968719244003,
+              "3": 0.008110477589070797,
+              "4": 0.0024819422978907824
+            },
+            "confidence": 0.8796485069518288
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.358085721731186,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.026548905298113823,
+              "1": 0.047681957483291626,
+              "2": 0.5475049018859863,
+              "3": 0.29766273498535156,
+              "4": 0.08060143887996674
+            },
+            "confidence": 0.5336288493126631
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 3.838915567379445,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.001974641578271985,
+              "1": 0.00223740516230464,
+              "2": 0.04131661355495453,
+              "3": 0.06384052336215973,
+              "4": 0.890630841255188
+            },
+            "confidence": 0.8657628897732744
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.0521329790353775,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.006849230267107487,
+              "1": 0.18389783799648285,
+              "2": 0.5737369656562805,
+              "3": 0.22130227088928223,
+              "4": 0.014213599264621735
+            },
+            "confidence": 0.6272285267089803
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.8729352205991745,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.0033705725800246,
+              "1": 0.013162150979042053,
+              "2": 0.19997912645339966,
+              "3": 0.6741377115249634,
+              "4": 0.10935042053461075
+            },
+            "confidence": 0.7118620277615264
+          }
+        },
+        "F": {
+          "latency": {
+            "type": "score",
+            "score": 2.88379826862365,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.0036564175970852375,
+              "1": 0.0094613553956151,
+              "2": 0.1456400454044342,
+              "3": 0.7819119095802307,
+              "4": 0.05933027341961861
+            },
+            "confidence": 0.8042814313278843
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.6139076753752306,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.0011793551966547966,
+              "1": 0.001204281230457127,
+              "2": 0.004863521084189415,
+              "3": 0.3680354058742523,
+              "4": 0.6247175335884094
+            },
+            "confidence": 0.6782560728994819
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.920303549617529,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.002163331024348736,
+              "1": 0.0054608844220638275,
+              "2": 0.12593233585357666,
+              "3": 0.8027960658073425,
+              "4": 0.06364744901657104
+            },
+            "confidence": 0.8275070443438987
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 1.2386167254298925,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.010335152968764305,
+              "1": 0.7950636744499207,
+              "2": 0.1428971290588379,
+              "3": 0.04905743524432182,
+              "4": 0.0026466217823326588
+            },
+            "confidence": 0.7839274851139635
+          },
+          "effort": {
+            "type": "score",
+            "score": 1.9182868441566825,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.0033728445414453745,
+              "1": 0.1988402158021927,
+              "2": 0.6763749122619629,
+              "3": 0.11895108222961426,
+              "4": 0.002460889285430312
+            },
+            "confidence": 0.725451028595368
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.706040970981121,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.0028321652207523584,
+              "1": 0.019768550992012024,
+              "2": 0.26433828473091125,
+              "3": 0.694648265838623,
+              "4": 0.018412763252854347
+            },
+            "confidence": 0.7243461286416277
+          }
+        },
+        "G": {
+          "latency": {
+            "type": "score",
+            "score": 2.9146678596735,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.006524345837533474,
+              "1": 0.016612663865089417,
+              "2": 0.14282727241516113,
+              "3": 0.7237419486045837,
+              "4": 0.11029370129108429
+            },
+            "confidence": 0.7450672175424794
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.8422427247278392,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.0013364879414439201,
+              "1": 0.0016349549405276775,
+              "2": 0.006914917379617691,
+              "3": 0.13367652893066406,
+              "4": 0.856437087059021
+            },
+            "confidence": 0.8685356831022848
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.9884287770837545,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.002361820312216878,
+              "1": 0.005560180172324181,
+              "2": 0.07412488013505936,
+              "3": 0.8371935486793518,
+              "4": 0.08075954765081406
+            },
+            "confidence": 0.8557581257773563
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 0.6954456195235252,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.38443371653556824,
+              "1": 0.5617817640304565,
+              "2": 0.03270024433732033,
+              "3": 0.016073910519480705,
+              "4": 0.005010408814996481
+            },
+            "confidence": 0.6130724930359671
+          },
+          "effort": {
+            "type": "score",
+            "score": 2.0379515951499343,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.0027049467898905277,
+              "1": 0.10144532471895218,
+              "2": 0.7531917691230774,
+              "3": 0.14050884544849396,
+              "4": 0.002149048959836364
+            },
+            "confidence": 0.79028153194425
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.871859966777265,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.0020622052252292633,
+              "1": 0.010127685032784939,
+              "2": 0.1321326345205307,
+              "3": 0.8252424597740173,
+              "4": 0.030434908345341682
+            },
+            "confidence": 0.8424920594940583
+          }
+        },
+        "H": {
+          "latency": {
+            "type": "score",
+            "score": 2.7416254840791225,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.009236977435648441,
+              "1": 0.04743289574980736,
+              "2": 0.2826221287250519,
+              "3": 0.513883650302887,
+              "4": 0.14682434499263763
+            },
+            "confidence": 0.539980668729792
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 3.5908459764905274,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.0028384604956954718,
+              "1": 0.004058385733515024,
+              "2": 0.011267011053860188,
+              "3": 0.36309123039245605,
+              "4": 0.618744969367981
+            },
+            "confidence": 0.6590381235970805
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.373881511390209,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.01063375174999237,
+              "1": 0.03822636604309082,
+              "2": 0.5432367920875549,
+              "3": 0.38243067264556885,
+              "4": 0.025472385808825493
+            },
+            "confidence": 0.5892755718280871
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 1.4729587640613317,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.06387642025947571,
+              "1": 0.46421676874160767,
+              "2": 0.41104036569595337,
+              "3": 0.056804172694683075,
+              "4": 0.00406218646094203
+            },
+            "confidence": 0.49940692439364887
+          },
+          "effort": {
+            "type": "score",
+            "score": 1.1793290476780385,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.020265324041247368,
+              "1": 0.8010781407356262,
+              "2": 0.15858995914459229,
+              "3": 0.019195782020688057,
+              "4": 0.000870910647790879
+            },
+            "confidence": 0.8167836840245096
+          },
+          "observability": {
+            "type": "score",
+            "score": 1.871423264965415,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.008797957561910152,
+              "1": 0.3908775746822357,
+              "2": 0.32822030782699585,
+              "3": 0.2643117904663086,
+              "4": 0.007792425807565451
+            },
+            "confidence": 0.2591507302131504
+          }
+        },
+        "I": {
+          "latency": {
+            "type": "score",
+            "score": 3.162881724536419,
+            "legend": {
+              "0": "Over 300 ms",
+              "1": "30 to 300 ms",
+              "2": "3 to 30 ms",
+              "3": "0.5 to 3 ms",
+              "4": "Under 0.5 ms"
+            },
+            "probabilities": {
+              "0": 0.029921868816018105,
+              "1": 0.02413725107908249,
+              "2": 0.1450091302394867,
+              "3": 0.35500091314315796,
+              "4": 0.4459308683872223
+            },
+            "confidence": 0.30240133156379057
+          },
+          "oneSession": {
+            "type": "score",
+            "score": 2.2612553536891937,
+            "legend": {
+              "0": "Breaks the rule",
+              "1": "Several sessions per account",
+              "2": "One per account, but killed by reloads",
+              "3": "One per account with caveats",
+              "4": "One per account, always"
+            },
+            "probabilities": {
+              "0": 0.13424795866012573,
+              "1": 0.047671347856521606,
+              "2": 0.3197196125984192,
+              "3": 0.41929948329925537,
+              "4": 0.0790615826845169
+            },
+            "confidence": 0.25261019418636954
+          },
+          "robustness": {
+            "type": "score",
+            "score": 2.472971275448799,
+            "legend": {
+              "0": "Fails silently",
+              "1": "Fails until a person acts",
+              "2": "Fails loudly, no recovery",
+              "3": "Recovers with a retry",
+              "4": "Recovers transparently and loudly"
+            },
+            "probabilities": {
+              "0": 0.050895076245069504,
+              "1": 0.08731676638126373,
+              "2": 0.3890661597251892,
+              "3": 0.28336602449417114,
+              "4": 0.1893560290336609
+            },
+            "confidence": 0.2906791654725869
+          },
+          "windowsFit": {
+            "type": "score",
+            "score": 1.3684375062584877,
+            "legend": {
+              "0": "Not supported",
+              "1": "Needs private or unsupported APIs",
+              "2": "Should work, untested",
+              "3": "Works with care",
+              "4": "Works, already used in log"
+            },
+            "probabilities": {
+              "0": 0.39287707209587097,
+              "1": 0.11392205208539963,
+              "2": 0.31014442443847656,
+              "3": 0.09799911081790924,
+              "4": 0.0850573182106018
+            },
+            "confidence": 0
+          },
+          "effort": {
+            "type": "score",
+            "score": 0.4403344006277621,
+            "legend": {
+              "0": "Months, a rewrite",
+              "1": "Large change",
+              "2": "Moderate change",
+              "3": "Small change",
+              "4": "No change"
+            },
+            "probabilities": {
+              "0": 0.6276617646217346,
+              "1": 0.3162640929222107,
+              "2": 0.04751506820321083,
+              "3": 0.005196114536374807,
+              "4": 0.0033629569225013256
+            },
+            "confidence": 0.6330546661435316
+          },
+          "observability": {
+            "type": "score",
+            "score": 2.727262645959854,
+            "legend": {
+              "0": "Invisible",
+              "1": "Total only",
+              "2": "Total plus host time",
+              "3": "Most stages",
+              "4": "Every stage, end to end"
+            },
+            "probabilities": {
+              "0": 0.08210597932338715,
+              "1": 0.1710997223854065,
+              "2": 0.07670842111110687,
+              "3": 0.2775975465774536,
+              "4": 0.39248836040496826
+            },
+            "confidence": 0
+          }
+        }
+      }
+    }
+  },
+  "claims": {
+    "hooksParallel": {
+      "type": "noul",
+      "noul": 0.9994704127311707
+    },
+    "argsNoShell": {
+      "type": "noul",
+      "noul": 0.9995285272598267
+    },
+    "httpInjects": {
+      "type": "noul",
+      "noul": 0.9994801878929138
+    },
+    "processDwarfsSyscall": {
+      "type": "noul",
+      "noul": 0.9996178150177002
+    },
+    "gitBashForkCost": {
+      "type": "noul",
+      "noul": 0.9968270659446716
+    },
+    "persistentSubMs": {
+      "type": "noul",
+      "noul": 0.9973579049110413
+    },
+    "freshConnectionMs": {
+      "type": "noul",
+      "noul": 0.9942800998687744
+    },
+    "transportsDifferLittle": {
+      "type": "noul",
+      "noul": 0.6914238929748535
+    },
+    "nagleNoStall": {
+      "type": "noul",
+      "noul": 0.9192388653755188
+    },
+    "hostConnectNotTcp": {
+      "type": "noul",
+      "noul": 0.99928218126297
+    },
+    "host64k": {
+      "type": "noul",
+      "noul": 0.999909520149231
+    },
+    "childHostBreaksRules": {
+      "type": "noul",
+      "noul": 0.9996815919876099
+    },
+    "eventLoopBlocking": {
+      "type": "noul",
+      "noul": 0.9996280670166016
+    },
+    "stampWalkPerCall": {
+      "type": "noul",
+      "noul": 0.999657154083252
+    },
+    "asyncioNoUnixWindows": {
+      "type": "noul",
+      "noul": 0.9985272884368896
+    }
+  },
+  "inputTokens": 263162
+}

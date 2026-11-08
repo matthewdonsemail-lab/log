@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { clonePath, voiceNotesDir, writeClone } from "../../extensions/voiceClone/index.ts";
+import { clonePath, forgetClones, voiceNotesDir, writeClone } from "../../extensions/voiceClone/index.ts";
 import type { Rendered, VoiceNotePlatform, VoiceProvider } from "../../extensions/voiceClone/index.ts";
 import type { PlatformEngineRun, PlatformEngineSpec } from "../../platformKit/session/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
@@ -57,7 +57,7 @@ beforeEach(() => {
 afterEach(() => {
   voiceNoteDeps.render = originalRender;
   gateDeps.gate = originalGate;
-  rmSync(clonePath(), { force: true });
+  forgetClones();
 });
 
 describe("log discord|instagram|slack voice (rule 142)", () => {
@@ -94,7 +94,7 @@ describe("log discord|instagram|slack voice (rule 142)", () => {
   });
 
   test("--live with no clone is refused before anything is made", async () => {
-    rmSync(clonePath(), { force: true });
+    forgetClones();
     const r = await run(["discord", "voice", "--account", "discordOne", "--channel", CHANNEL, "--text", "yo", "--approvedBy", "matt", "--live"]);
     expect(r.err + r.out).toContain("voiceCloneMissing");
     expect(rendered).toEqual([]);

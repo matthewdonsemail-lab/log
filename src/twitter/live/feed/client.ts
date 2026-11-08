@@ -1,12 +1,19 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import type { Database } from 'bun:sqlite'
+import { pushedEventId } from '../../../inbox/relay/index'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../../agentHooks/sessionOffsets/index'
+import { SHARED_SESSION } from '../../../agentHooks/sessionOffsets/index'
+import { db, latestSeq, readCursor, writeCursor } from '../../../inbox/store/index'
+import { insertEventRow } from '../../../storage/platform/index'
+import { BACKFILL_BATCH, inBatches } from '../../../storage/schema/helpers/backfill'
 import { twitterStateRoot } from '../../../directApi/engine/client'
 import { localTime } from '../../../inbox/watch/index'
 import { activityLine } from '../../dm/person/client'
 import type { AccountLive, LiveEvent } from './types'
 
 export const LIVE_FILE = 'live.jsonl'
+
+export const LIVE_TYPES: readonly string[] = ['badge', 'notification', 'notificationsRefused', 'pollRefused']
 
 export function eventsOf(text: string): LiveEvent[] {
   const events: LiveEvent[] = []
@@ -19,30 +26,63 @@ export function eventsOf(text: string): LiveEvent[] {
   return events
 }
 
-export function latestBadge(path: string): AccountLive['latest'] {
-  const events = eventsOf(readFileSync(path, 'utf8').slice(-20_000))
-  for (let i = events.length - 1; i >= 0; i--) {
-    const event = events[i]!
-    if (event.type === 'badge') return event
-  }
-  return null
+export function liveEventId(account: string, event: Record<string, unknown>): string {
+  return pushedEventId('twitter', account, String(event.type ?? ''), event, String(event.seenAt ?? ''))
 }
 
-export function newLiveEvents(root: string = twitterStateRoot(), session: string = SHARED_SESSION): AccountLive[] {
+export function importLiveFiles(root: string = twitterStateRoot(), handle: Database = db()): { account: string; lines: number; added: number }[] {
   if (!existsSync(root)) return []
-  const { offsets, firstLook } = readSessionOffsets(root, session)
-  const accounts: AccountLive[] = []
+  const out: { account: string; lines: number; added: number }[] = []
   for (const account of readdirSync(root)) {
     const path = join(root, account, LIVE_FILE)
     if (!existsSync(path)) continue
-    const size = statSync(path).size
-    const from = offsets[account] ?? (firstLook ? size : 0)
-    const events = size > from ? eventsOf(readFileSync(path, 'utf8').slice(from)) : []
-    offsets[account] = size
-    if (events.length || firstLook) accounts.push({ account, events, latest: latestBadge(path), firstLook })
+    const store = `liveFeed:${account}`
+    const done = handle.prepare('SELECT state FROM imports WHERE store = ?').get(store) as { state: string } | null
+    if (done?.state === 'done') continue
+    const events = eventsOf(readFileSync(path, 'utf8')) as unknown as Record<string, unknown>[]
+    let added = 0
+    inBatches(handle, events, BACKFILL_BATCH, (batch) => {
+      for (const event of batch) {
+        const type = String(event.type ?? '')
+        if (!LIVE_TYPES.includes(type)) continue
+        const { seenAt, ...rest } = event
+        const at = typeof seenAt === 'string' ? seenAt : new Date().toISOString()
+        if (insertEventRow(handle, { eventId: liveEventId(account, event), platform: 'twitter', account, conversationId: '', type, with: String(rest.handle ?? ''), text: '', box: '', payload: rest, sourceAt: String(rest.at ?? ''), receivedAt: at, source: 'import' })) added++
+      }
+    })
+    handle.prepare("INSERT INTO imports (store, state, files, rows, detail, startedAt, endedAt) VALUES (?, 'done', 1, ?, ?, ?, ?) ON CONFLICT(store) DO UPDATE SET state = 'done', rows = excluded.rows, detail = excluded.detail, endedAt = excluded.endedAt").run(store, added, path, new Date().toISOString(), new Date().toISOString())
+    out.push({ account, lines: events.length, added })
   }
-  writeSessionOffsets(root, session, offsets)
-  return accounts
+  return out
+}
+
+function liveEventOf(row: { type: string; payload: string; receivedAt: string }): LiveEvent {
+  let payload: Record<string, unknown> = {}
+  try {
+    payload = JSON.parse(row.payload) as Record<string, unknown>
+  } catch {}
+  return { ...payload, type: row.type, seenAt: row.receivedAt } as LiveEvent
+}
+
+export function latestBadgeOf(account: string, handle: Database = db()): AccountLive['latest'] {
+  const row = handle.prepare("SELECT type, payload, receivedAt FROM events WHERE platform = 'twitter' AND account = ? AND type = 'badge' ORDER BY seq DESC LIMIT 1").get(account) as { type: string; payload: string; receivedAt: string } | null
+  return row ? (liveEventOf(row) as AccountLive['latest']) : null
+}
+
+export const liveReader = (session: string) => `xLive:${session}`
+
+export function newLiveEvents(root: string = twitterStateRoot(), session: string = SHARED_SESSION, handle: Database = db()): AccountLive[] {
+  importLiveFiles(root, handle)
+  const reader = liveReader(session)
+  const cursor = readCursor(reader)
+  const firstLook = cursor === null
+  const last = latestSeq()
+  const rows = firstLook ? [] : (handle.prepare(`SELECT seq, account, type, payload, receivedAt FROM events WHERE platform = 'twitter' AND seq > ? AND type IN (${LIVE_TYPES.map(() => '?').join(', ')}) ORDER BY seq`).all(cursor, ...LIVE_TYPES) as { seq: number; account: string; type: string; payload: string; receivedAt: string }[])
+  writeCursor(reader, last)
+  const byAccount = new Map<string, LiveEvent[]>()
+  for (const row of rows) byAccount.set(row.account, [...(byAccount.get(row.account) ?? []), liveEventOf(row)])
+  const accounts = firstLook ? (handle.prepare("SELECT DISTINCT account FROM events WHERE platform = 'twitter' AND type = 'badge'").all() as { account: string }[]).map((r) => r.account) : [...byAccount.keys()]
+  return accounts.map((account) => ({ account, events: byAccount.get(account) ?? [], latest: latestBadgeOf(account, handle), firstLook }))
 }
 
 export function badgeLine(badge: NonNullable<AccountLive['latest']>): string {
@@ -66,7 +106,7 @@ export function liveEventLine(event: LiveEvent): string | null {
   return null
 }
 
-export const LIVE_MONITOR = `tail -n 0 -F ~/.logCli/twitter/*/live.jsonl | grep --line-buffered -E '"type": "(notification|pollRefused|notificationsRefused)"'`
+export const LIVE_MONITOR = 'bun scripts/inbox/followEvents.ts --platform twitter --types notification,pollRefused,notificationsRefused'
 
 const sayingOf = (a: AccountLive) => a.events.map(liveEventLine).filter((l): l is string => l !== null)
 

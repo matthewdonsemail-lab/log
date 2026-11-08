@@ -99,7 +99,7 @@ export async function runPersonaSession(
   if (!current) return { code: 1, stderr: `log facebook warmup: no open browser for ${account}` };
   const meter = context.trafficMeter ?? meterForProxy(options.proxy);
   const budget = trafficBudget(readTrafficLedger(), account, context.now?.() ?? new Date(), options.trafficMb ?? DEFAULT_TRAFFIC_BUDGET_MB);
-  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log facebook warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
+  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log facebook warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (the ledger table in ~/.logCli/log.db (kind proxyTraffic)).` };
   let startMb = 0;
   if (meter) {
     try {

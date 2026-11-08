@@ -15,6 +15,7 @@ flowchart TB
     c_errors["errors"]
     c_graph["graph"]
     c_runs["runs"]
+    c_storage["storage"]
     c_timing["timing"]
     c_inbox["inbox"]
     c_media["media"]
@@ -84,6 +85,10 @@ flowchart TB
   end
   subgraph g_reddit["Reddit"]
     c_redditSession["session"]
+    c_redditRead["read"]
+    c_redditPost["post"]
+    c_redditReply["reply"]
+    c_redditVote["vote"]
   end
   subgraph g_discord["Discord"]
     c_discordSession["session"]
@@ -201,6 +206,8 @@ flowchart TB
   c_capture --> live
   cli --> c_runs
   mcp --> c_runs
+  cli --> c_storage
+  mcp --> c_storage
   cli --> c_timing
   mcp --> c_timing
   cli --> c_inbox
@@ -274,6 +281,15 @@ flowchart TB
   mcp --> c_new
   cli --> c_redditSession
   mcp --> c_redditSession
+  cli --> c_redditRead
+  mcp --> c_redditRead
+  c_redditRead --> live
+  cli --> c_redditPost
+  mcp --> c_redditPost
+  cli --> c_redditReply
+  mcp --> c_redditReply
+  cli --> c_redditVote
+  mcp --> c_redditVote
   cli --> c_discordSession
   mcp --> c_discordSession
   cli --> c_discordChats

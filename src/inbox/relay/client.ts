@@ -1,10 +1,11 @@
+import { sweepUntyped } from '../../storage/schema/helpers/backfill'
 import { createConnection, createServer } from 'node:net'
 import type { AddressInfo, Socket } from 'node:net'
 import { createHash, randomBytes } from 'node:crypto'
 import { hostname } from 'node:os'
-import { addAlert, claimWatcher, killTree, processAlive, releaseWatcher, watchHolder } from '../watch/index'
-import { appendEvent, behindOf, db, lastEventAt, markGap, markStage, openGap } from '../store/index'
-import { HEARTBEAT_MS, MAX_BUFFERED_BYTES, STALE_MS } from './types'
+import { addAlert, claimWatcher, killTree, processAlive, processStartedAt, releaseWatcher, sameProcess, watchHolder } from '../watch/index'
+import { appendEvent, asOwner, behindOf, db, lastEventAt, markGap, markStage, openGap, OwnerFencedError } from '../store/index'
+import { HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, STALE_CONFIRM_MS, STALE_MS } from './types'
 import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
 
 export function readSession(platform: string, account: string): RelaySession | null {
@@ -25,8 +26,12 @@ export async function openRelay(platform: string, account: string, now: () => Da
   let status: RelayStatus = 'connecting'
   let port = 0
   db().prepare('INSERT OR IGNORE INTO owners (platform, account, pid, hostname, startedAt, heartbeat, status) VALUES (?, ?, ?, ?, ?, ?, ?)').run(platform, account, process.pid, hostname(), startedAt, startedAt, status)
-  const record = () => {
-    db().prepare('UPDATE owners SET heartbeat = ?, status = ?, port = ?, token = ?, subscribers = ? WHERE platform = ? AND account = ? AND pid = ?').run(now().toISOString(), status, port, token, clients.size, platform, account, process.pid)
+  const record = (tries = 0) => {
+    try {
+      db().prepare('UPDATE owners SET heartbeat = ?, status = ?, port = ?, token = ?, subscribers = ?, staleSeenAt = NULL WHERE platform = ? AND account = ? AND pid = ?').run(now().toISOString(), status, port, token, clients.size, platform, account, process.pid)
+    } catch (error) {
+      if (tries < HEARTBEAT_RETRIES && /SQLITE_BUSY|database is locked/i.test(String((error as { code?: string; message?: string }).code ?? (error as Error).message))) setTimeout(() => record(tries + 1), HEARTBEAT_RETRY_MS).unref?.()
+    }
   }
   const server = createServer((socket) => {
     let heard = ''
@@ -137,18 +142,29 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
   }
   const relay = await openRelay(platform, account)
   const catching = catchUpRunner(platform, account, options.catchUp, options.log)
-  void catching.run()
-  const recheck = setInterval(() => void catching.run(), RECHECK_GAP_MS)
+  const catchUpAsOwner = () => asOwner(platform, account, () => catching.run()).catch((error: unknown) => {
+    if (!(error instanceof OwnerFencedError)) throw error
+    fenced = true
+  })
+  let fenced = false
+  void catchUpAsOwner()
+  const recheck = setInterval(() => {
+    void catchUpAsOwner()
+    try {
+      sweepUntyped(db())
+    } catch {}
+  }, RECHECK_GAP_MS)
   try {
     const result = await options.run((event) => {
-      relay.setStatus('streaming')
-      const drop = socketChange(event)
-      if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
-      if (drop === 'open') void catching.run()
-      const type = pushedTypeOf(event)
-      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(event)}`).digest('hex').slice(0, 12) })
-      relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
-      if (stored) markStage(stored.eventId, 'relayed')
+      if (fenced) return
+      try {
+        asOwner(platform, account, () => ownerEmit(event))
+      } catch (error) {
+        if (!(error instanceof OwnerFencedError)) throw error
+        fenced = true
+        addAlert({ platform, account, kind: 'ownerFenced', detail: error.message })
+        options.log?.(`${platform} ${account}: ${error.message}; it writes nothing more`)
+      }
     })
     return { owner: true, result }
   } finally {
@@ -157,9 +173,20 @@ export async function ownOrAttach<R>(platform: string, account: string, options:
     await relay.close()
     releaseWatcher(platform, account)
   }
+
+  function ownerEmit(event: Record<string, unknown>): void {
+      relay.setStatus('streaming')
+      const drop = socketChange(event)
+      if (drop === 'dropped') openGap(platform, account, lastEventAt(platform, account) ?? new Date().toISOString(), 'socketDropped')
+      if (drop === 'open') void catchUpAsOwner()
+      const type = pushedTypeOf(event)
+      const stored = type === 'message' ? null : appendEvent({ platform, account, with: String(event.handle ?? event.from ?? ''), conversationId: String(event.conversationId ?? event.channelId ?? event.channel ?? event.thread ?? ''), type, payload: event, sourceAt: String(event.at ?? event.time ?? ''), eventId: pushedEventId(platform, account, type, event, new Date().toISOString()) })
+      relay.broadcast(stored ? { ...event, seq: stored.seq } : event)
+      if (stored) markStage(stored.eventId, 'relayed')
+  }
 }
 
-export function replaceHungOwners(platform: string, accounts: readonly string[], now: number = Date.now(), alive: (pid: number) => boolean = processAlive, kill: (pid: number) => void = killTree): string[] {
+export function replaceHungOwners(platform: string, accounts: readonly string[], now: number = Date.now(), alive: (pid: number) => boolean = processAlive, kill: (pid: number) => void = killTree, startedOf: (pid: number) => string | null = processStartedAt): string[] {
   const replaced: string[] = []
   for (const account of accounts) {
     const session = readSession(platform, account)
@@ -167,12 +194,30 @@ export function replaceHungOwners(platform: string, accounts: readonly string[],
     if (!session || !holder || session.pid !== holder) continue
     const quiet = now - Date.parse(session.lastHeartbeat)
     if (quiet < STALE_MS) continue
-    kill(holder)
+    const row = db().prepare('SELECT staleSeenAt, pidStartedAt FROM owners WHERE platform = ? AND account = ? AND pid = ?').get(platform, account, holder) as { staleSeenAt: string | null; pidStartedAt: string | null } | null
+    if (!row?.staleSeenAt) {
+      db().prepare('UPDATE owners SET staleSeenAt = ? WHERE platform = ? AND account = ? AND pid = ?').run(new Date(now).toISOString(), platform, account, holder)
+      continue
+    }
+    if (now - Date.parse(row.staleSeenAt) < STALE_CONFIRM_MS) continue
     db().prepare('DELETE FROM owners WHERE platform = ? AND account = ? AND pid = ?').run(platform, account, holder)
-    addAlert({ platform, account, kind: 'hungOwner', detail: `the ${platform} owner (pid ${holder}) sent no heartbeat for ${Math.round(quiet / 1000)} s, so it was stopped and the next start becomes the one owner` })
+    if (!sameProcess(row.pidStartedAt, startedOf(holder))) {
+      addAlert({ platform, account, kind: 'ownerPidReused', detail: `the ${platform} owner (pid ${holder}) is gone and its pid now belongs to another process, so nothing was killed and the next start becomes the one owner` })
+      replaced.push(account)
+      continue
+    }
+    kill(holder)
+    addAlert({ platform, account, kind: 'hungOwner', detail: `the ${platform} owner (pid ${holder}) sent no heartbeat for ${Math.round(quiet / 1000)} s, two readings apart, so it was stopped and the next start becomes the one owner` })
     replaced.push(account)
   }
   return replaced
+}
+
+export const TIMED_TYPES: readonly string[] = ['badge']
+
+export function pushedEventId(platform: string, account: string, type: string, event: Record<string, unknown>, at: string): string {
+  const { seenAt: _seen, ...rest } = event
+  return createHash('sha1').update(`${platform}|${account}|${type}|${JSON.stringify(rest)}${TIMED_TYPES.includes(type) ? `|${at}` : ''}`).digest('hex').slice(0, 12)
 }
 
 export function pushedTypeOf(event: Record<string, unknown>): string {
@@ -201,6 +246,7 @@ export function catchUpRunner(platform: string, account: string, catchUp: CatchU
       log(`${platform} ${account}: behind from ${gap.fromAt} (${gap.reason}), and this owner has no catch-up yet`)
       return
     }
+    const drops = gap.drops ?? 0
     markGap(gap.id, 'catchingUp')
     log(`${platform} ${account}: catching up from ${gap.fromAt} (${gap.reason}) through its own session`)
     try {
@@ -210,7 +256,11 @@ export function catchUpRunner(platform: string, account: string, catchUp: CatchU
         log(`${platform} ${account}: catch-up refused: ${got.refused}; it stays behind until matt says so (rule 94)`)
         return
       }
-      markGap(gap.id, 'closed', got.detail ?? null, got.appended)
+      if (!markGap(gap.id, 'closed', got.detail ?? null, got.appended, new Date(), drops)) {
+        markGap(gap.id, 'open', 'the socket dropped again while catching up, so the gap stays open and is caught up again')
+        log(`${platform} ${account}: dropped again while catching up, ${got.appended} event(s) added; catching up again`)
+        return
+      }
       log(`${platform} ${account}: caught up, ${got.appended} event(s) added from the gap`)
     } catch (error) {
       markGap(gap.id, 'open', error instanceof Error ? error.message : String(error))

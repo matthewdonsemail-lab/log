@@ -28,7 +28,7 @@ Checked by: code and SubQ
 
 ### REQ-TRANSCRIBE-04: A file is transcribed once
 
-Each transcript is kept by the sha256 of its file in `~/.logCli/transcripts`; a file whose hash is kept is answered from there and never sent to AssemblyAI again.
+Each transcript is kept by the sha256 of its file in the `transcripts` table of `log.db` (its whole answer in `body`), with which message it belongs to in `transcriptLinks`. A file whose hash is kept is answered from there and never sent to AssemblyAI again. The old `~/.logCli/transcripts` files are imported once (`importTranscriptFiles`).
 
 Checked by: code and SubQ
 

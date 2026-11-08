@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, statSync, watch } from "node:fs";
+import { getState, putState } from "../../storage/state/index.ts";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 
 const WATCHED = ["src", "python", join("vendor", "fbk", "src")];
 const CODE = /\.(ts|py)$/;
@@ -13,11 +14,7 @@ export interface ProxyState {
 }
 
 export function readProxyState(file = process.env.LOG_MCP_RELOAD_FILE || join(homedir(), ".logCli", "mcp", "reload.json")): ProxyState | null {
-  try {
-    return JSON.parse(readFileSync(file, "utf8")) as ProxyState;
-  } catch {
-    return null;
-  }
+  return getState<ProxyState>("mcpReload", file, { legacyFile: file })?.body ?? null;
 }
 
 export function serverStampFile(): string {
@@ -38,9 +35,66 @@ export function codeStamp(root: string): number {
   return newest;
 }
 
+export interface StampWatcher {
+  current(): number;
+  refresh(): boolean;
+  close(): void;
+}
+
+export interface StampWatcherDeps {
+  walk?: (root: string) => number;
+  watch?: (dir: string, onChange: (file: string | null) => void) => { close(): void } | null;
+  now?: () => number;
+  backstopMs?: number;
+}
+
+function watchTree(dir: string, onChange: (file: string | null) => void): { close(): void } | null {
+  try {
+    const watcher = watch(dir, { recursive: true }, (_event, file) => onChange(file ? String(file) : null));
+    watcher.on("error", () => onChange(null));
+    return watcher;
+  } catch {
+    return null;
+  }
+}
+
+export function codeStampWatcher(root: string, deps: StampWatcherDeps = {}): StampWatcher {
+  const walk = deps.walk ?? codeStamp;
+  const now = deps.now ?? Date.now;
+  const backstopMs = deps.backstopMs ?? 60_000;
+  let stamp = walk(root);
+  let walkedAt = now();
+  let dirty = false;
+  const watchers: { close(): void }[] = [];
+  let watching = true;
+  for (const sub of WATCHED) {
+    const dir = join(root, sub);
+    if (!existsSync(dir)) continue;
+    const handle = (deps.watch ?? watchTree)(dir, (file) => {
+      if (file === null || CODE.test(file)) dirty = true;
+    });
+    if (handle) watchers.push(handle);
+    else watching = false;
+  }
+  return {
+    current: () => stamp,
+    refresh() {
+      if (!dirty && watching && now() - walkedAt < backstopMs) return false;
+      dirty = false;
+      walkedAt = now();
+      const next = walk(root);
+      const changed = next !== stamp;
+      stamp = next;
+      return changed;
+    },
+    close() {
+      for (const handle of watchers) handle.close();
+    },
+  };
+}
+
 export function recordServerStart(root: string, file = serverStampFile()): void {
-  mkdirSync(dirname(file), { recursive: true });
-  writeFileSync(file, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString(), stamp: codeStamp(root) }));
+  putState("mcpServerStart", file, { pid: process.pid, startedAt: new Date().toISOString(), stamp: codeStamp(root) });
 }
 
 function alive(pid: number): boolean {
@@ -52,16 +106,11 @@ function alive(pid: number): boolean {
   }
 }
 
-export function staleServerLine(root: string, file = serverStampFile()): string | null {
-  if (!existsSync(file)) return null;
-  let started: { pid: number; startedAt: string; stamp: number };
-  try {
-    started = JSON.parse(readFileSync(file, "utf8"));
-  } catch {
-    return null;
-  }
+export function staleServerLine(root: string, file = serverStampFile(), stampNow?: number): string | null {
+  const started = getState<{ pid: number; startedAt: string; stamp: number }>("mcpServerStart", file, { legacyFile: file })?.body;
+  if (!started) return null;
   if (!alive(started.pid)) return null;
-  const now = codeStamp(root);
+  const now = stampNow ?? codeStamp(root);
   if (now <= started.stamp) return null;
   const proxy = readProxyState();
   if (proxy && alive(proxy.proxyPid)) {

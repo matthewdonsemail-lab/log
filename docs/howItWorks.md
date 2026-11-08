@@ -67,7 +67,7 @@ log is **platform-agnostic**. Each platform has its own engine:
   the account's home country.
 - **X:** session checks, follows, replies, quotes, likes, DMs and a reply
   queue. Direct API only (twikit, `vendor/twikit`): no proxy and no browser.
-- **Reddit:** the session check on its direct API (rdvwr, `vendor/rdvwr`), and
+- **Reddit:** the session check on its direct API (reverseChud, `vendor/reverseChud`), and
   `log inspect` in the account's browser with no proxy.
 
 A command that acts on one platform names it first: `log facebook publish`,

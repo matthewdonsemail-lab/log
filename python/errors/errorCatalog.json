@@ -1421,7 +1421,7 @@
       "publish.routingCaptcha"
     ],
     "publish": "needsPerson",
-    "action": "Clear it by hand. The ledger (~/.logCli/captcha/attempts.jsonl) shows each try."
+    "action": "Clear it by hand. The ledger (the ledger table in ~/.logCli/log.db (kind captchaAttempt)) shows each try."
   },
   "roundsUsed": {
     "layer": "captcha",
@@ -2512,6 +2512,15 @@
     ],
     "action": "Pass --params as a JSON object, e.g. {\"query\":\"kick streamer managers\",\"domain_type\":\"web\"}; log treg get lists the params the endpoint takes."
   },
+  "tregTrimInvalid": {
+    "layer": "runtime",
+    "meaning": "The trimming given to log treg call was malformed: --where wasn't key=value pairs, or --maxItems wasn't a whole number from 1 to 1000.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/treg"
+    ],
+    "action": "Pass --where as key=value[,key=value] (e.g. isReply=false), --maxItems as a whole number and --fields as comma-separated keys (e.g. id,text,createdUtc)."
+  },
   "logMcpRestarted": {
     "layer": "runtime",
     "meaning": "The log MCP server restarted while this call ran (it crashed, or its new code was swapped in), so the call's answer was lost. The proxy Claude Code talks to stayed up.",
@@ -2628,5 +2637,31 @@
       "python/discordApi"
     ],
     "action": "Put the file in OUTBOX (or ~/.logCli), keep it under 10 MB, and send again."
+  },
+  "chatMovedOn": {
+    "layer": "account",
+    "meaning": "Someone wrote in the chat after the voice gate read it, so the draft answers an older moment. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "inbox/claims",
+      "src/cli/discord",
+      "src/cli/slack",
+      "src/cli/twitter"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Read what they said (it is in the refusal), redraft to answer it, gate it and send again."
+  },
+  "chatClaimLost": {
+    "layer": "account",
+    "meaning": "The claim on this chat was lost (expired, taken over, or another send took it) before the first part went out. Nothing was sent.",
+    "retryable": true,
+    "raisedIn": [
+      "inbox/claims",
+      "src/cli/twitter"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Check `log inbox actions --chat <id>` for who holds it now; claim it again only if nobody else is answering, then send."
   }
 }

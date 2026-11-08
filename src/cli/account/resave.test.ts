@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ledgerRows } from "../../storage/ledger/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
@@ -43,7 +44,7 @@ describe("log facebook account resave", () => {
 describe("log facebook account resetOpens", () => {
   test("writes one dated reset per account and puts the host's opens back to 0, deleting nothing", async () => {
     const root = mkdtempSync(join(tmpdir(), "logReset"));
-    process.env.LOG_LAUNCH_RESETS = join(root, "launchResets.jsonl");
+    process.env.LOG_LAUNCH_RESETS = join(root, "ledger.db");
     process.env.LOG_HOST_DIR = join(root, "host");
     try {
       mkdirSync(join(root, "host", "needsLogin"), { recursive: true });
@@ -53,8 +54,8 @@ describe("log facebook account resetOpens", () => {
       expect(result.code).toBe(0);
       expect(result.out).toContain("needsLogin: opens reset at");
       expect(result.out).toContain("launch budget and host opens count from now");
-      const line = JSON.parse(readFileSync(join(root, "launchResets.jsonl"), "utf8").trim());
-      expect(line).toMatchObject({ account: "needsLogin", reason: "dev day" });
+      const [reset] = ledgerRows("launchReset", { account: "needsLogin" }, join(root, "ledger.db"));
+      expect(reset).toMatchObject({ account: "needsLogin", detail: "dev day", outcome: "reset" });
       expect(JSON.parse(readFileSync(join(root, "host", "needsLogin", "progress.json"), "utf8")).resume.opensToday).toBe(0);
     } finally {
       delete process.env.LOG_LAUNCH_RESETS;
@@ -65,7 +66,7 @@ describe("log facebook account resetOpens", () => {
   test("is refused while the account's browser is still open, and writes nothing", async () => {
     const root = mkdtempSync(join(tmpdir(), "logReset"));
     const before = process.env.LOG_INSPECT_CURRENT;
-    process.env.LOG_LAUNCH_RESETS = join(root, "launchResets.jsonl");
+    process.env.LOG_LAUNCH_RESETS = join(root, "ledger.db");
     process.env.LOG_INSPECT_CURRENT = join(root, "inspect", "current.json");
     try {
       mkdirSync(join(root, "inspect", "sessions"), { recursive: true });
@@ -73,7 +74,7 @@ describe("log facebook account resetOpens", () => {
       const result = await run(["facebook", "account", "resetOpens", "needsLogin"]);
       expect(result.code).toBe(1);
       expect(result.err).toContain("close every browser first");
-      expect(existsSync(join(root, "launchResets.jsonl"))).toBe(false);
+      expect(ledgerRows("launchReset", { account: "needsLogin" }, join(root, "ledger.db"))).toEqual([]);
     } finally {
       delete process.env.LOG_LAUNCH_RESETS;
       process.env.LOG_INSPECT_CURRENT = before;

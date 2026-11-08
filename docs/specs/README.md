@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 42 domains, 470 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 43 domains, 489 requirements. Each one is checked against its code by SubQ on every commit, push and pull request (rule 117, `bun run check:specs`). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -72,6 +72,7 @@ The agent hooks put log-cli's state in front of the agent (Claude Code or Codex)
 - **REQ-HOOKS-18** A refused catch-up resumes only on matt's word
 - **REQ-HOOKS-19** Every event is named before matt sees it
 - **REQ-HOOKS-20** A Discord, Slack or Instagram call names its chat, never its id
+- **REQ-HOOKS-21** Claude Code's hooks reach log through the warm service, and only the refusals start a process
 
 ## [Inspect rule one](./inspectRuleOne.md)
 
@@ -455,10 +456,10 @@ While an account's X Chat watch is open, its one session keeps X's own notificat
 
 - **REQ-XLIVE-01** The watch polls X's badge counts every 120 seconds
 - **REQ-XLIVE-02** A rise in unread notifications reads one page of new ones
-- **REQ-XLIVE-03** Every count and new event goes to live.jsonl
+- **REQ-XLIVE-03** Every count and new event goes into log.db
 - **REQ-XLIVE-04** A refused read stops the poll
 - **REQ-XLIVE-05** The X live hook puts new events in front of the agent
-- **REQ-XLIVE-06** Each Claude session reads from its own offsets
+- **REQ-XLIVE-06** Each Claude session reads from its own cursor
 - **REQ-XLIVE-07** A refused read is said to matt
 
 ## [Platform scaffold](./platformScaffold.md)
@@ -623,6 +624,7 @@ treg's catalog reached from log as an extension: endpoints found by the job, rea
 
 - **REQ-TREG-01** Search, get and call run the treg CLI, never a shell
 - **REQ-TREG-02** Nothing priced runs unless matt approved the spend
+- **REQ-TREG-03** A call's answer comes back trimmed
 
 ## [Instagram](./instagram.md)
 
@@ -685,3 +687,25 @@ What `log new platform slack` made, and what the platform's code must keep doing
 - **REQ-SLACK-03** Slack's own answer is what gets recorded
 - **REQ-SLACK-04** The platform is wired into the CLI and the direct-API routes
 - **REQ-SLACK-05** Slack is reached only through one curl_cffi session that impersonates Chrome
+
+## [Storage](./storage.md)
+
+How log keeps what it reads and does: one SQLite database, `~/.logCli/log.db`, with every message entering as an event and the typed tables built from those events. The order of work and the reasons, from Designing Data-Intensive Applications, are in `docs/storageAgainstTheBook.md`. Issues #96 and #97.
+
+- **REQ-STORAGE-01** Every time is stored as integer milliseconds, normalised once
+- **REQ-STORAGE-02** One stable key per message
+- **REQ-STORAGE-03** Old rows are filled in batches that resume
+- **REQ-STORAGE-04** Every typed row comes from an event
+- **REQ-STORAGE-05** Nothing a replay needs is cut or looked up again
+- **REQ-STORAGE-06** The typed tables can be rebuilt and verified from the events
+- **REQ-STORAGE-07** People and accounts have stable ids, and names live in one place
+- **REQ-STORAGE-08** A replaced owner's writes are refused by the database, not by its own good behaviour
+- **REQ-STORAGE-09** A gap is never closed over a newer drop
+- **REQ-STORAGE-10** Each part of a send is fenced by its claim
+- **REQ-STORAGE-11** Bulk work is short and resumable, and old and new code share the file
+- **REQ-STORAGE-12** The X queues live in log.db
+- **REQ-STORAGE-13** The MCP jobs live in log.db
+- **REQ-STORAGE-14** Transcripts live in log.db
+- **REQ-STORAGE-15** The small logs are records, and hook timings are spans
+- **REQ-STORAGE-16** Nothing new writes shared state outside log.db
+- **REQ-STORAGE-17** The small shared state is keyed rows in log.db

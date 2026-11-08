@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
+import { join } from 'node:path'
 import { liveLogVerdict } from '../../src/agentHooks/liveLog/index'
+import { readService, startService } from '../../src/contextLayer/service/client'
+
+if (!readService()) startService(join(import.meta.dir, '..', '..'))
 
 interface HookInput {
   tool_name?: string

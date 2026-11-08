@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { basename, join } from 'node:path'
-import { readSessionOffsets, SHARED_SESSION, writeSessionOffsets } from '../../../agentHooks/sessionOffsets/index'
+import { join } from 'node:path'
+import { SHARED_SESSION } from '../../../agentHooks/sessionOffsets/index'
+import { readCursor, writeCursor } from '../../../inbox/store/index'
+import { importQueueFiles, latestQueueLogSeq, queueLabel, queueLogAfter } from '../store/index'
 import { QUEUE_EVENT_PATTERNS } from './types'
 import type { QueueEvent } from './types'
 
@@ -15,24 +16,20 @@ export function eventOf(queue: string, line: string): QueueEvent | null {
   return null
 }
 
+export const queueReader = (session: string) => `queue:${session}`
+
 export function newQueueEvents(root = queuesRoot(), session: string = SHARED_SESSION): QueueEvent[] {
-  if (!existsSync(root)) return []
-  const { offsets, firstLook } = readSessionOffsets(root, session)
+  importQueueFiles(root)
+  const reader = queueReader(session)
+  const cursor = readCursor(reader)
+  const last = latestQueueLogSeq()
+  writeCursor(reader, last)
+  if (cursor === null) return []
   const events: QueueEvent[] = []
-  for (const file of readdirSync(root).filter((f) => f.endsWith('.log'))) {
-    const path = join(root, file)
-    const size = statSync(path).size
-    const from = offsets[file] ?? (firstLook ? size : 0)
-    if (size > from) {
-      const text = readFileSync(path, 'utf8').slice(from)
-      for (const line of text.split('\n')) {
-        const event = eventOf(basename(file, '.log'), line)
-        if (event) events.push(event)
-      }
-    }
-    offsets[file] = size
+  for (const row of queueLogAfter(cursor)) {
+    const event = eventOf(queueLabel(row.name), `${row.at} ${row.line}`)
+    if (event) events.push(event)
   }
-  writeSessionOffsets(root, session, offsets)
   return events
 }
 

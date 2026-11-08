@@ -72,4 +72,5 @@ export interface GapRow {
   appended: number
   openedAt: string
   closedAt: string | null
+  drops: number
 }

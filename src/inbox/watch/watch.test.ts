@@ -16,7 +16,7 @@ beforeEach(() => {
 describe("one watcher per account, never two (rule 131)", () => {
   test("the first watcher takes the account and a second one is refused loudly while the first lives", () => {
     const alive = (pid: number) => pid === 111 || pid === 222;
-    expect(claimWatcher("twitter", "matthewsoldit", 111, alive)).toEqual({ ok: true });
+    expect(claimWatcher("twitter", "matthewsoldit", 111, alive)).toMatchObject({ ok: true });
     expect(watchHolder("twitter", "matthewsoldit", alive)).toBe(111);
     expect(claimWatcher("twitter", "matthewsoldit", 222, alive)).toEqual({ ok: false, holder: 111 });
     const alerts = takeAlerts("sessionA");
@@ -25,8 +25,8 @@ describe("one watcher per account, never two (rule 131)", () => {
   });
 
   test("a dead holder's lock is taken over, and only the holder can release it", () => {
-    expect(claimWatcher("discord", "acct", 111, () => false)).toEqual({ ok: true });
-    expect(claimWatcher("discord", "acct", 333, (pid) => pid === 333)).toEqual({ ok: true });
+    expect(claimWatcher("discord", "acct", 111, () => false)).toMatchObject({ ok: true });
+    expect(claimWatcher("discord", "acct", 333, (pid) => pid === 333)).toMatchObject({ ok: true });
     releaseWatcher("discord", "acct", 111);
     expect(watchHolder("discord", "acct", (pid) => pid === 333)).toBe(333);
     releaseWatcher("discord", "acct", 333);
@@ -35,7 +35,7 @@ describe("one watcher per account, never two (rule 131)", () => {
 
   test("the hook never starts a second watcher while one holds the account", () => {
     const alive = (pid: number) => pid === 111;
-    expect(claimWatcher("slack", "mattSlack", 111, alive)).toEqual({ ok: true });
+    expect(claimWatcher("slack", "mattSlack", 111, alive)).toMatchObject({ ok: true });
     rmSync(join(process.env.LOG_INBOX_STATE!, "slack", "mattSlack", "watch.pid"), { force: true });
     let started = 0;
     expect(ensureLiveWatchers("slack", ["mattSlack"], () => ++started, alive)).toEqual([]);

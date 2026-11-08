@@ -1,5 +1,6 @@
 import { serviceHookCommand } from "../../contextLayer/service/client.ts";
-import type { AgentHook, HookHost } from "./types.ts";
+import { CONTEXT_PORT } from "../../contextLayer/service/types.ts";
+import type { AgentHook, HookEvent, HookHost } from "./types.ts";
 
 export type { AgentHook, HookEvent, HookHost } from "./types.ts";
 
@@ -19,6 +20,7 @@ const QUEUE = "scripts/hooks/queue.ts";
 const X_LIVE = "scripts/hooks/xLive.ts";
 const CHAT_NAMES = "scripts/hooks/chatNames.ts";
 const USE_CASES = "scripts/hooks/useCases.ts";
+export const EVENT_SCRIPT = "scripts/hooks/event.ts";
 
 export const AGENT_HOOKS: readonly AgentHook[] = [
   { event: "SessionStart", matcher: "startup|resume|clear|compact", script: PAGE_STATE, timeout: 20, why: "where every open browser is, the moment a session starts or comes back from compaction" },
@@ -50,7 +52,40 @@ export function hookCommand(host: HookHost, script: string, service?: string): s
   return service ? serviceHookCommand(service, bun) : bun;
 }
 
+export const HOOK_SERVICE_URL = `http://127.0.0.1:${CONTEXT_PORT}/hooks`;
+
+const SERVED_EVENTS: readonly HookEvent[] = ["UserPromptSubmit", "PostToolUse", "Stop"];
+
+const REFUSING: readonly string[] = [CHAT_NAMES, LIVE_LOGS];
+
+function execHook(script: string, timeout: number, extra: string[] = []): Record<string, unknown> {
+  return { type: "command", command: "bun", args: [`\${CLAUDE_PROJECT_DIR}/${script}`, ...extra], timeout };
+}
+
+export function joinedMatcher(hooks: readonly AgentHook[]): string | undefined {
+  if (hooks.some((h) => !h.matcher)) return undefined;
+  return [...new Set(hooks.flatMap((h) => (h.matcher as string).split("|")))].join("|");
+}
+
+export function claudeCodeHooks(hooks: readonly AgentHook[]): Record<string, unknown[]> {
+  const out: Record<string, unknown[]> = {};
+  const byEvent = new Map<HookEvent, AgentHook[]>();
+  for (const hook of hooks) byEvent.set(hook.event, [...(byEvent.get(hook.event) ?? []), hook]);
+  for (const [event, list] of byEvent) {
+    const refusing = list.filter((h) => REFUSING.includes(h.script));
+    const rest = list.filter((h) => !REFUSING.includes(h.script));
+    for (const hook of refusing) (out[event] ??= []).push({ ...(hook.matcher ? { matcher: hook.matcher } : {}), hooks: [execHook(hook.script, hook.timeout)] });
+    if (!rest.length) continue;
+    const matcher = joinedMatcher(rest);
+    const timeout = Math.max(...rest.map((h) => h.timeout));
+    const handler = SERVED_EVENTS.includes(event) ? { type: "http", url: `${HOOK_SERVICE_URL}/${event}`, timeout } : execHook(EVENT_SCRIPT, timeout, [event]);
+    (out[event] ??= []).push({ ...(matcher ? { matcher } : {}), hooks: [handler] });
+  }
+  return out;
+}
+
 export function hooksFor(host: HookHost, hooks: readonly AgentHook[] = AGENT_HOOKS): Record<string, unknown[]> {
+  if (host === "claudeCode") return claudeCodeHooks(hooks);
   const out: Record<string, unknown[]> = {};
   for (const hook of hooks) {
     const group = { ...(hook.matcher ? { matcher: hook.matcher } : {}), hooks: [{ type: "command", command: hookCommand(host, hook.script, hook.service), timeout: hook.timeout }] };
