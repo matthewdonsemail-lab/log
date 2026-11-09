@@ -15,8 +15,9 @@ export const QUICK_ANSWERS: Record<PageId, FaqItem[]> = {
   ],
   discord: [
     { q: 'What is log for Discord?', a: "A free, open-source tool that lets your AI agent read your Discord DMs, groups and channels and reply for you. It works through your own account and Discord's own live connection." },
+    { q: 'How do people make money with it on Discord?', a: 'Two ways. Answer the people asking for what you do in the servers you’re already in, so they DM you and book a call. Or run your own paid community, where every member is welcomed and every question answered.' },
     { q: 'How fast does my agent see a new message?', a: "The moment it lands. log holds Discord's own live connection open, so nothing waits on polling." },
-    { q: 'Can it reply with a meme?', a: 'Yes. When a meme fits the moment, your agent finds one and sends it in the chat, only when you say so.' },
+    { q: 'Can it reply with a meme or a voice note?', a: 'Yes. When a meme fits the moment your agent finds one, and a voice note goes out in your own cloned voice, only when you ask.' },
     COST,
   ],
   slack: [

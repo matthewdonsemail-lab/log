@@ -266,8 +266,8 @@ const INSTAGRAM_PLAY: Play = {
 }
 
 const DISCORD_PLAY: Play = {
-  name: 'Be the one who answers in your community',
-  ask: 'read growth-mates #marketing over the last 24 hours, who is asking for help with ads?',
+  name: 'Land clients from the servers you’re in',
+  ask: 'read growth-mates #help over the last 24 hours, who is asking for help with ads?',
   calls: ['discordRead', 'memelordSearch', 'voice', 'discordSendLive', 'discordReactLive'],
   outcome: [
     { label: 'Who asked, with the times', tag: 'the chat read back' },
@@ -276,8 +276,8 @@ const DISCORD_PLAY: Play = {
   ],
   steps: [
     { title: 'Ask who needs help', body: 'Your agent reads the channel back over the last day and finds who asked about what you do.' },
-    { title: 'log answers them', body: 'A reply that answers what they said, or a meme for the moment, checked against how you write there.' },
-    { title: 'They come to you', body: 'You become the one who answers in the chat, and the people with the problem message you.' },
+    { title: 'log answers them first', body: 'A reply that fixes what they asked, before anyone else in the server, checked against how you write there.' },
+    { title: 'They DM you', body: 'The people with the problem message you, and your agent books the call in your voice. That’s a client from a server you were already in.' },
   ],
   how: {
     steps: [
@@ -292,7 +292,7 @@ const DISCORD_PLAY: Play = {
       { who: 'deano', what: 'meme, shown inline', status: 'Sent' },
       { who: 'kai', what: 'answer about ads', status: 'Sent' },
     ],
-    done: 'Done. Everyone in the chat who asked for help with ads has an answer.',
+    done: 'Done. Everyone who asked for help with ads has an answer, and mila is booked for Thursday.',
   },
 }
 

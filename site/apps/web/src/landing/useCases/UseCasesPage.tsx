@@ -328,7 +328,7 @@ const HERO_LEDES: Record<string, string> = {
   x: 'Your agent reads **both your X inboxes** as one, sees **who is waiting on you** and who just engaged with your posts, and answers each of them **in your own voice**, so no lead goes cold.',
   instagram: 'Your agent answers **every DM about your offer** the moment it lands, with text, **a meme that fits** or a voice note, straight through Instagram with **no browser**, so interest turns into a conversation.',
   slack: 'Your agent reads your **client and community DMs** in every workspace, finds **who is asking for more**, and replies **one line at a time** in your voice, so the next job comes to you.',
-  discord: 'Your agent watches the **servers and DMs** you are in **live**, spots the people **asking for help**, and answers with words, **a meme that fits** or a voice note, so you are the name they remember.',
+  discord: 'People land clients and run paid communities on Discord. Your agent **watches every server you are in live**, answers whoever is **asking for what you do** before anyone else, and keeps **your own community** welcomed, answered and paying.',
   reddit: 'Your buyers describe their problem on Reddit every day. Your agent does **the research**: reads the subreddits they post in, sorts each thread into **a lead, one to join or a competitor mention**, and drafts a reply that gives value first. **You press send** from your real account.',
   all: 'log by ListeningKit lets your agent run **every use case** on every platform you market on, from **one ask** in plain words.',
 }
