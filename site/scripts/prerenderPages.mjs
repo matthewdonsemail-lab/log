@@ -78,6 +78,16 @@ for (const page of prerenderedPages()) {
   writeFileSync(out, pageHtml(template, { ...page, image: versioned(page.image) }))
   console.log(`prerendered: ${page.path} -> ${out.replace(dist, 'dist')}`)
 }
+const markdowns = []
+for (const page of prerenderedPages()) {
+  if (!page.markdown) continue
+  writeFileSync(join(dist, `${page.path.replace(/^\//, '')}.md`), page.markdown)
+  markdowns.push(page.markdown)
+  console.log(`markdown: ${page.path}.md`)
+}
+const llms = readFileSync(join(dist, 'llms.txt'), 'utf8')
+writeFileSync(join(dist, 'llms-full.txt'), `${llms.trim()}\n\n---\n\n${markdowns.join('\n---\n\n')}`)
+console.log('llms-full.txt written')
 const homeSchema = `<script type="application/ld+json" id="home-schema">${JSON.stringify(HOME_SCHEMA).replace(/</g, '\\u003c')}</script>`
 writeFileSync(join(dist, 'index.html'), template.replace('</head>', `    ${homeSchema}\n  </head>`))
 console.log('structured data: dist/index.html')

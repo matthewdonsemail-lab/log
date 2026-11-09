@@ -7,7 +7,7 @@ import sharePages from '../useCases/sharePages.json'
 import { PLATFORM_PAGES } from '../useCases/platformPages'
 import { QUICK_ANSWERS } from '../useCases/quickAnswers'
 import { PLATFORMS } from '../PlatformSuite'
-import { devlogIndexSchema, homeSchema, platformSchema } from '../structuredData'
+import { UPDATED, devlogIndexSchema, homeSchema, platformSchema } from '../structuredData'
 
 export type PrerenderedPage = {
   path: string
@@ -17,6 +17,7 @@ export type PrerenderedPage = {
   type: 'article' | 'website'
   schema: object | null
   body: string
+  markdown?: string
 }
 
 const BODIES: Record<string, { Story: ComponentType; schema: object }> = {
@@ -90,6 +91,27 @@ export function prerenderedPages(): PrerenderedPage[] {
         play: page.play,
         features: page.moments.map((moment) => moment.label),
       }),
+      markdown: [
+        `# ${share.title}`,
+        '',
+        `canonical_url: ${SITE}${page.path}`,
+        `last_updated: ${UPDATED}`,
+        `author: Matthew Don (https://x.com/matthewsoldit)`,
+        '',
+        share.description,
+        '',
+        `## The play: ${page.play.name}`,
+        '',
+        `Ask your agent: "${page.play.ask}"`,
+        '',
+        ...page.play.steps.map((step, index) => `${index + 1}. **${step.title}.** ${step.body}`),
+        '',
+        `## ${platform.label} with log: quick answers`,
+        '',
+        ...faq.flatMap((item) => [`### ${item.q}`, '', item.a, '']),
+        `Source and install: https://github.com/matthewdonsemail-lab/log`,
+        '',
+      ].join('\n'),
       body: renderToStaticMarkup(
         <main>
           <h1>{share.title}</h1>
@@ -103,6 +125,9 @@ export function prerenderedPages(): PrerenderedPage[] {
               </div>
             ))}
           </section>
+          <p>
+            By Matthew Don. Updated <time dateTime={UPDATED}>{UPDATED}</time>.
+          </p>
         </main>,
       ),
     }
