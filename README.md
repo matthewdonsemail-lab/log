@@ -263,6 +263,43 @@ A video with no sound, like motion graphics, says `no sound` and is told by what
 - [screenpipe](https://github.com/screenpipe/screenpipe): the text rows stay and the media goes.
 - [RAG-Anything](https://github.com/HKUDS/RAG-Anything): a video is told scene by scene, with the words on screen.
 
+### The models it uses
+
+Two models run on your own machine, with no key. Four are hosted, and each needs its key:
+
+| Model | Runs | What it does |
+|---|---|---|
+| all-MiniLM-L6-v2 (23 MB) | your machine | meaning search over every conversation, your voice index, matching what you typed to a play |
+| LFM2.5-VL-450M (352 MB) | your machine | describes every picture and video frame as text |
+| SubQ `subq-snap-1.1` | hosted, `SUBQ_API_KEY` | the voice gate: does a draft sound like you |
+| Jina embeddings v5 and reranker v3.5 | hosted, `JINA_API_KEY` | the AI tells check, and ranking a chat's history for the gate |
+| AssemblyAI | hosted, `ASSEMBLYAI_API_KEY` | what was said in a voice note or a video |
+| Inworld or Fish Audio | hosted, `INWORLD_API_KEY` or `FISH_API_KEY` | a voice note in your cloned voice, only when you ask |
+
+```mermaid
+flowchart LR
+  IN["A message arrives"] --> DB[("log.db")]
+  IN -->|picture or video| VL["LFM2.5-VL, your machine"] --> DB
+  IN -->|voice| AA["AssemblyAI"] --> DB
+  DB --> ML["MiniLM, your machine"] --> IDX["search and voice indexes"]
+  IDX --> DRAFT["your agent drafts"] --> GATE["voice gate: SubQ and Jina"] --> SEND["sent as you"]
+```
+
+**What your machine needs,** measured here on 2026-11-09 (16 threads, CPU only):
+- **A 64-bit machine.** There's no GPU: both local models run on the CPU.
+- **About 2 GB of free memory.** The picture model peaked at 1.25 GB and takes 6 to 7 s a picture. It stops itself past 4 GB.
+- **About 400 MB of disk** for the two models, downloaded the first time they're needed.
+- **ffmpeg on your PATH** for videos and voice notes.
+
+**Building the indexes** on a new machine, in this order:
+1. `log search index` reads every conversation once and builds the keyword and meaning indexes.
+2. `log voice index` builds your voice from what step 1 saved.
+3. `log voice aiIndex` builds the AI tells check.
+
+After that, new messages are added as they arrive, and pictures are described as they land.
+
+Each model, its numbers and how each index works: [docs/models.md](docs/models.md).
+
 ### Built on Designing Data-Intensive Applications
 
 The storage follows the ideas in Martin Kleppmann's *Designing Data-Intensive Applications* (DDIA):
@@ -326,7 +363,7 @@ The full docs are at **[log.listeningkit.com/docs](https://log.listeningkit.com/
 | Use cases | [the plays, step by step](docs/useCases/README.md) |
 | Platforms | [X](docs/platformGuides/x.md), [Discord](docs/platformGuides/discord.md), [Slack](docs/platformGuides/slack.md), [Facebook](docs/platformGuides/facebook.md), [Reddit](docs/platformGuides/reddit.md) and [LinkedIn](docs/platformGuides/linkedin.md) |
 | Reference | [every command, MCP tool and hook](docs/reference.md), [error codes](docs/errorCatalog.md), [agent guides](docs/guides) |
-| How it works | [how log decides what happened](docs/howItWorks.md), Twenty, browsers, proxies, each platform's API and the diagrams |
+| How it works | [how log decides what happened](docs/howItWorks.md), [the models it uses](docs/models.md), Twenty, browsers, proxies, each platform's API and the diagrams |
 
 Where each page sits is set in [docs/site.json](docs/site.json), and a commit check refuses a page that isn't placed.
 

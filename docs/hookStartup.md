@@ -87,25 +87,29 @@ Items 1, 2 and 4 below are built. Measured against the warm service, isolated fr
 
 Through http, the prompt event first measured p50 100 ms. Two synchronous calls on the service's event loop caused it: the code-stamp walk (85.7 ms) and `git status` (85.5 ms). `cachedFreshness` now reads the stamp from the `fs.watch` watcher, and reruns `git status` only when the stamp moves or once a minute.
 
-## What to change, biggest saving first
+## The changes, biggest saving first
 
-1. **Hooks become `type: "http"` calls to the warm service.** The context service (rule 159) is already one long-lived Bun on `127.0.0.1:47317`. Today the prompt hook reaches it with `curl` through Git Bash, which starts two processes to avoid one. As an `http` hook it starts none.
+Built (items 1, 2 and 4, measured in the table above):
+
+1. **Hooks are `type: "http"` calls to the warm service.** The context service (rule 159) is one long-lived Bun on `127.0.0.1:47317`. The prompt hook used to reach it with `curl` through Git Bash, which started two processes to avoid one. As an `http` hook it starts none.
    - The service answers `inbox`, `queue`, `xLive`, `pageState`, `storage`, `engines`, `knowledge` and `useCases` from its open `log.db` connection and warm caches.
-   - Expected: a few milliseconds per hook instead of about 200.
+   - Measured: 8.0 ms p50 for the PostToolUse group, down from 472 ms.
 2. **The two `PreToolUse` hooks start Bun directly** (`"command": "bun", "args": [...]`), with no Git Bash.
    - These refuse calls (rules 106, 155), so they have to work even when the service is down. A failed `http` hook is non-blocking, which would let a bad call through.
-   - Expected: about 80 ms instead of about 200.
    - Once the service has proved itself, they can move to `http` with `onFailure: "block"`.
+4. **The hook registry generates both forms.** `src/agentHooks/registry` writes `.claude/settings.json`, and Codex's file, as `http` or exec-form entries. `check:agentHooks` refuses a hook that would go through a shell.
+
+Still to do:
+
 3. **Discord, Slack and Reddit get the long-lived host that X and Instagram already have** (rules 105, 129): one Python process per account, imported once, each call a round trip.
    - Expected: saves about 750 ms per engine call.
-4. **The hook registry generates both forms.** `src/agentHooks/registry` writes `.claude/settings.json`, and Codex's file, as `http` or exec-form entries. `check:agentHooks` refuses a hook that would go through a shell.
 5. **Upgrade Bun when bun#48148 lands.** It matters for any child process started with its working folder in `%TEMP%`.
 6. **Not worth doing:** compiling hooks to an executable with bytecode (bun#21596).
 7. **matt's call, not ours:** Windows Defender exclusions for the Python and Bun installs and the repo might cut the per-file import cost. It's a security setting, so it's left to matt. Measure the import time before and after if he does it.
 
 ## Measuring it all the time
 
-The book's rule is to measure at the caller, as a distribution, with its tail (ch. 1). Today `~/.logCli/contextLayer/timings.jsonl` records only the context hook's in-process time, so nothing records what a hook really costs.
+The book's rule is to measure at the caller, as a distribution, with its tail (ch. 1). The table above was measured by hand. In normal running, `~/.logCli/contextLayer/timings.jsonl` records only the context hook's in-process time, so nothing yet records what each hook really costs from Claude Code's side. This is what would:
 
 - **Every hook invocation becomes a span** (`tool` = `hook:<name>`, `event`):
   - `bootMs` (`process.uptime()` at the script's first line, for the ones that still start a process);
