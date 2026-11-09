@@ -55,7 +55,7 @@ export const PLATFORMS: Platform[] = [
     id: 'discord',
     icon: faDiscord,
     label: 'Discord',
-    body: 'log **watches your servers live**, spots who is **asking for help**, and answers first with words, a meme or a voice note.',
+    body: 'log **watches your servers live**, answers whoever is **asking for what you do** first, books the call in their DMs, and keeps **your own community** answered.',
     example: 'log discord watch --account you',
     docsHref: '/docs/platforms/discord',
     does: [
