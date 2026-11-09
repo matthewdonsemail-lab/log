@@ -19,6 +19,7 @@ for p in (str(ROOT), str(VENDOR / "endcord")):
 from platformKit import engine as kit
 from platformKit import media
 from platformKit import reactions
+from discordApi import browserClient
 
 PLATFORM = "discord"
 LIBRARY = "vendor/endcord"
@@ -30,6 +31,14 @@ def client_of(token: str) -> Any:
     from endcord import client_properties as props
     from endcord import discord
 
+    if browserClient.current:
+
+        class BrowserDiscord(discord.Discord):
+            def get_my_id(self, exit_on_error: bool = False) -> Any:
+                browserClient.dress(self.header)
+                return super().get_my_id(exit_on_error)
+
+        return BrowserDiscord(token, None, browserClient.super_properties(), browserClient.user_agent())
     agent = props.get_user_agent()
     properties = props.encode_properties(props.add_user_agent(props.get_default_properties(), agent))
     return discord.Discord(token, None, properties, agent)
@@ -425,8 +434,8 @@ def watch_of(token: str, seconds: float, spec: dict[str, Any]) -> dict[str, Any]
     from endcord import gateway
 
     gateway.is_relevant_message = lambda *args, **kwargs: True
-    agent = props.get_user_agent()
-    properties = props.add_user_agent(props.get_default_properties(), agent)
+    agent = browserClient.user_agent() or props.get_user_agent()
+    properties = browserClient.gateway_properties() or props.add_user_agent(props.get_default_properties(), agent)
     socket = gateway.Gateway(token, None, props.add_for_gateway(properties), agent)
     threading.Thread(target=socket.connect, daemon=True).start()
     started = time.time()
@@ -647,7 +656,15 @@ async def voice_notes(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str
     return await asyncio.to_thread(voice_notes_of, token, spec)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes}
+def as_browser(action: Any) -> Any:
+    async def run(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+        browserClient.use(spec, cookies)
+        return await action(spec, cookies)
+
+    return run
+
+
+ACTIONS = {name: as_browser(action) for name, action in {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes}.items()}
 
 
 if __name__ == "__main__":
