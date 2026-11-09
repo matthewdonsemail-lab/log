@@ -27,6 +27,8 @@ import { GG_REVIEWS } from '../ggReviews'
 import '../RepoModal.css'
 import { USE_CASES, type ShowcaseId, type UseCase } from './useCaseCatalog'
 import { PLATFORM_PAGES, pageForPlatform, type Moment, type PageId, type PlatformPage, type Play } from './platformPages'
+import { QUICK_ANSWERS } from './quickAnswers'
+import { StoryFaq } from '../story/StorySections'
 
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
@@ -1172,6 +1174,11 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
         <LogWith />
         <JobGraph platform={platform} moments={page ? page.moments : []} />
       </CtaBand>
+      {page && platform ? (
+        <div className="quick-answers">
+          <StoryFaq title={`${platform.label} with log: quick answers`} items={QUICK_ANSWERS[page.id]} />
+        </div>
+      ) : null}
       <MoreUseCases current={page} />
       {page ? null : (
         <>
