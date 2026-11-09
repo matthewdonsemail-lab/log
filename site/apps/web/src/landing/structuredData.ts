@@ -6,6 +6,8 @@ import { HOME_ANSWERS, SETUP_STEPS } from './homeQuickAnswers'
 export const SITE = 'https://log.listeningkit.com'
 export const REPO_URL = 'https://github.com/matthewdonsemail-lab/log'
 export const COMMUNITY_URL = 'https://whop.com/checkout/plan_mfRXqGBMpZ4Jx'
+export const NPM_URL = 'https://www.npmjs.com/package/@listeningkit/log'
+export const UPDATED = typeof __BUILD_DATE__ === 'string' ? __BUILD_DATE__ : new Date().toISOString().slice(0, 10)
 
 const ORG_ID = `${SITE}/#organization`
 const APP_ID = `${SITE}/#software`
@@ -122,6 +124,8 @@ export function softwareApplication(featureList: string[] = []) {
     isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
     downloadUrl: REPO_URL,
+    sameAs: [REPO_URL, NPM_URL, SITE],
+    dateModified: UPDATED,
     installUrl: `${SITE}/docs/install`,
     image: `${SITE}/og/og.png`,
     author: { '@id': AUTHOR_ID },
@@ -148,16 +152,18 @@ export function breadcrumbs(trail: Crumb[]) {
   }
 }
 
-export function faqPage(faq: FaqItem[]) {
+export function faqPage(faq: FaqItem[], id?: string) {
   return {
     '@type': 'FAQPage',
+    ...(id ? { '@id': id } : {}),
     mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
   }
 }
 
-export function howTo(name: string, description: string, steps: { title: string; body: string }[]) {
+export function howTo(name: string, description: string, steps: { title: string; body: string }[], id?: string) {
   return {
     '@type': 'HowTo',
+    ...(id ? { '@id': id } : {}),
     name,
     description,
     tool: { '@type': 'HowToTool', name: 'log' },
@@ -212,7 +218,11 @@ export function platformSchema(page: PlatformSchemaInput) {
         isPartOf: { '@id': SITE_ID },
         about: { '@id': APP_ID },
         primaryImageOfPage: { '@type': 'ImageObject', url: page.image },
+        dateModified: UPDATED,
+        author: { '@id': AUTHOR_ID },
         breadcrumb: breadcrumbs([{ name: 'log', path: '/' }, { name: page.label, path: page.path }]),
+        mainEntity: { '@id': APP_ID },
+        hasPart: [{ '@id': `${url}#howto` }, { '@id': `${url}#faq` }],
         speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '.quick-answers'] },
         potentialAction: ACTIONS,
       },
@@ -222,8 +232,8 @@ export function platformSchema(page: PlatformSchemaInput) {
       WEBSITE,
       breadcrumbs([{ name: 'log', path: '/' }, { name: page.label, path: page.path }]),
       softwareApplication(page.features),
-      howTo(page.play.name, `Ask your agent: "${page.play.ask}"`, page.play.steps),
-      faqPage(page.faq),
+      howTo(page.play.name, `Ask your agent: "${page.play.ask}"`, page.play.steps, `${url}#howto`),
+      faqPage(page.faq, `${url}#faq`),
     ],
   }
 }

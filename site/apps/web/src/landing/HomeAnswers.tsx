@@ -1,5 +1,6 @@
 import { StoryFaq } from './story/StorySections'
 import { HOME_ANSWERS, SETUP_STEPS } from './homeQuickAnswers'
+import { UPDATED } from './structuredData'
 
 export function HomeAnswers() {
   return (
@@ -18,6 +19,15 @@ export function HomeAnswers() {
         </ol>
       </section>
       <StoryFaq title="log: quick answers" items={HOME_ANSWERS} />
+      <Byline />
     </div>
+  )
+}
+
+export function Byline() {
+  return (
+    <p className="mx-auto w-full max-w-3xl px-4 pb-10 text-[15px] text-[#0D2A4C]/60 md:px-6">
+      By <a href="https://x.com/matthewsoldit" className="font-bold text-[#0D2A4C]/80 underline decoration-dashed underline-offset-4">Matthew Don</a>, who built log and runs his own marketing on it. Updated <time dateTime={UPDATED}>{UPDATED}</time>.
+    </p>
   )
 }
