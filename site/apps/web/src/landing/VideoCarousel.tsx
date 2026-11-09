@@ -14,7 +14,7 @@ type Video = {
   poster: string
 }
 
-const VIDEOS: Video[] = [
+export const VIDEOS: Video[] = [
   {
     id: '2110714125777248467',
     hook: 'i found people just like me in 1.52M posts',
