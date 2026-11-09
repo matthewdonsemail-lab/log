@@ -427,6 +427,22 @@ function Reply({ item, delay }: { item: Extract<Item, { kind: 'reply' }>; delay:
   )
 }
 
+function RedditComment({ item, delay }: { item: Extract<Item, { kind: 'reply' }>; delay: number }) {
+  return (
+    <div className={`flex gap-2.5 rounded-md bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.12)] ${item.you ? 'ml-6 border-l-2 border-[#FF4500]' : ''}`}>
+      <Avatar name={item.who} size="size-7" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[12px]">
+          <span className="font-bold text-[#1A1A1B]">{item.who}</span> <span className="text-[#7C7C7C]">{item.you ? '· now' : '· 1h'}</span>
+        </p>
+        <p className="text-[14px] leading-snug text-[#1A1A1B]">
+          <Typed text={item.text} delay={delay} />
+        </p>
+      </div>
+    </div>
+  )
+}
+
 function RedditPost({ item }: { item: Extract<Item, { kind: 'redditPost' }> }) {
   return (
     <div className="flex flex-col gap-1.5 rounded-md bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.12)]">
@@ -489,7 +505,7 @@ function ItemView({ item, delay, phase, look }: { item: Item; delay: number; pha
   if (item.kind === 'meme') return <Meme item={item} look={look} />
   if (item.kind === 'voice') return <Voice item={item} look={look} />
   if (item.kind === 'post') return <Post item={item} />
-  if (item.kind === 'reply') return <Reply item={item} delay={delay} />
+  if (item.kind === 'reply') return look.bubbles === false && look.page === 'bg-[#DAE0E6]' ? <RedditComment item={item} delay={delay} /> : <Reply item={item} delay={delay} />
   if (item.kind === 'redditPost') return <RedditPost item={item} />
   if (item.kind === 'signedIn') return <SignedIn item={item} />
   if (item.kind === 'snapshot') return <Snapshot />
@@ -1406,9 +1422,9 @@ const REDDIT_POST: Item = {
 
 const REDDIT_SLIDES: Slide[] = [
   {
-    lead: 'Read your buyers',
-    sticker: 'in their own words.',
-    body: 'log reads the **subreddits** your buyers post in and finds the threads where they **describe their problem**, from your own account.',
+    lead: 'Automate the research,',
+    sticker: 'not the karma.',
+    body: 'log reads the **subreddits** your buyers post in and finds the threads where they **describe their problem**. That’s the half of Reddit worth automating.',
     story: {
       id: 'redditFind',
       chrome: 'reddit',
@@ -1426,7 +1442,7 @@ const REDDIT_SLIDES: Slide[] = [
   {
     lead: 'Answer with value,',
     sticker: 'never a link.',
-    body: 'Every comment is read first, so your reply adds what nobody has said yet, **in your own voice**, with no link to your product. You press send.',
+    body: 'Every comment is read first, so the draft adds what nobody has said yet, **in your own voice**, with no link to your product. The engagement stays human: **you press send** from your real account.',
     story: {
       id: 'redditAnswer',
       chrome: 'reddit',
@@ -1444,7 +1460,7 @@ const REDDIT_SLIDES: Slide[] = [
   {
     lead: 'Grow your own',
     sticker: 'subreddit.',
-    body: 'Your agent reads the subreddits your community cares about, posts **the day’s signal** to your own subreddit, and answers every comment on it.',
+    body: 'Like a daily brief: your agent reads the subreddits your community cares about, drafts **the day’s signal** for your own subreddit, and helps you answer every comment on it.',
     story: {
       id: 'redditCommunity',
       chrome: 'reddit',

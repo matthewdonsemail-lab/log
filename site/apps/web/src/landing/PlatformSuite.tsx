@@ -100,7 +100,7 @@ export const PLATFORMS: Platform[] = [
     id: 'reddit',
     icon: faReddit,
     label: 'Reddit',
-    body: 'log reads the **subreddits your buyers post in**, finds the threads worth answering and drafts a reply that **gives value first**, then grows **your own subreddit** with the day’s signal.',
+    body: 'log does **the research**: reads the subreddits your buyers post in, finds the leads and drafts a reply that **gives value first**. You press send from your real account.',
     example: 'log reddit session check --account you',
     docsHref: '/docs/platforms/reddit',
     does: [

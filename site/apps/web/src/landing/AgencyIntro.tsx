@@ -5,7 +5,7 @@ const WHY: Record<string, { name: string; why: string }> = {
   discord: { name: 'Discord', why: 'so when someone in a server you’re in asks for help, you’re the first to answer and the one they DM' },
   slack: { name: 'Slack', why: 'so the clients and communities you’re already in turn into your next jobs' },
   instagram: { name: 'Instagram', why: 'so everyone who DMs about your offer gets a real answer the moment it lands, not hours later' },
-  reddit: { name: 'Reddit', why: 'so you hear your buyers describe their problem and answer with value first, before anyone else' },
+  reddit: { name: 'Reddit', why: 'so the research is done for you and every reply you send from your real account is the one that helps' },
 }
 
 export function AgencyIntro({ platformId }: { platformId?: string }) {

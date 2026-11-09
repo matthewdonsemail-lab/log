@@ -315,9 +315,9 @@ const JOB_LINES: HeroLine[] = [
 const REDDIT_LINES: HeroLine[] = [
   { before: 'Do the whole job on', after: '' },
   { before: 'Read your buyers on', after: '' },
+  { before: 'Sort leads from noise on', after: '' },
   { before: 'Answer with value first on', after: '' },
   { before: 'Grow your own subreddit on', after: '' },
-  { before: 'Post the daily signal on', after: '' },
 ]
 
 const jobLines = (platform: Platform) => (platform.id === 'reddit' ? REDDIT_LINES : JOB_LINES)
@@ -329,7 +329,7 @@ const HERO_LEDES: Record<string, string> = {
   instagram: 'Your agent answers **every DM about your offer** the moment it lands, with text, **a meme that fits** or a voice note, straight through Instagram with **no browser**, so interest turns into a conversation.',
   slack: 'Your agent reads your **client and community DMs** in every workspace, finds **who is asking for more**, and replies **one line at a time** in your voice, so the next job comes to you.',
   discord: 'Your agent watches the **servers and DMs** you are in **live**, spots the people **asking for help**, and answers with words, **a meme that fits** or a voice note, so you are the name they remember.',
-  reddit: 'Your buyers describe their problem on Reddit every day. Your agent reads **the subreddits they post in**, finds the **threads worth answering** and drafts a reply that **gives value first**, in your voice, and you press send. It can grow **your own subreddit** too.',
+  reddit: 'Your buyers describe their problem on Reddit every day. Your agent does **the research**: reads the subreddits they post in, sorts each thread into **a lead, one to join or a competitor mention**, and drafts a reply that gives value first. **You press send** from your real account.',
   all: 'log by ListeningKit lets your agent run **every use case** on every platform you market on, from **one ask** in plain words.',
 }
 
