@@ -9,6 +9,8 @@ import { ReaLooksmaxxingPage } from './landing/useCases/ReaLooksmaxxingPage'
 import { XreacherAlternativePage } from './landing/devlog/XreacherAlternativePage'
 import { DevlogIndexPage } from './landing/devlog/DevlogIndexPage'
 import { ShareCardPage } from './landing/shareCard/ShareCardPage'
+import { McpPage } from './landing/mcp/McpPage'
+import { McpPromo } from './landing/mcp/McpPromo'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
 const createQueryClient = () => new QueryClient({
@@ -55,6 +57,7 @@ export function App() {
             <Route path="/slack" element={<UseCasesPage key="slack" platform="slack" />} />
             <Route path="/instagram" element={<UseCasesPage key="instagram" platform="instagram" />} />
             <Route path="/reddit" element={<UseCasesPage key="reddit" platform="reddit" />} />
+            <Route path="/mcp" element={<McpPage />} />
             <Route path="/rea-looksmaxxing" element={<ReaLooksmaxxingPage />} />
             <Route path="/devlog" element={<DevlogIndexPage />} />
             <Route path="/devlog/xreacher-alternative" element={<XreacherAlternativePage />} />
@@ -64,6 +67,7 @@ export function App() {
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <McpPromo />
         </Router>
       </ToastProvider>
     </QueryClientProvider>

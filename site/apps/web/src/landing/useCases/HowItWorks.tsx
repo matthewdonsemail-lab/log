@@ -284,6 +284,7 @@ export function HowItWorks({
   platformLabel,
   platformIcon,
   rows,
+  onWhite = false,
 }: {
   ask: string
   done: string
@@ -292,6 +293,7 @@ export function HowItWorks({
   platformLabel: string
   platformIcon: IconDefinition
   rows: HowRow[]
+  onWhite?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { amount: 0.3 })
@@ -331,7 +333,7 @@ export function HowItWorks({
   return (
     <div ref={ref} className="mx-auto mt-24 flex w-full max-w-6xl flex-col items-center text-left">
       <h2 className="text-title text-center text-[#0D2A4C]">
-        <span className="text-white">Ask your agent once.</span>
+        <span className={onWhite ? 'text-[#0D2A4C]' : 'text-white'}>Ask your agent once.</span>
         <br />
         <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">log runs the whole play.</span>
       </h2>

@@ -238,6 +238,51 @@ export function platformSchema(page: PlatformSchemaInput) {
   }
 }
 
+export type McpSchemaInput = {
+  path: string
+  title: string
+  description: string
+  image: string
+  faq: FaqItem[]
+  steps: readonly { title: string; body: string }[]
+  features: string[]
+}
+
+export function mcpSchema(page: McpSchemaInput) {
+  const url = `${SITE}${page.path}`
+  const trail = breadcrumbs([{ name: 'log', path: '/' }, { name: 'MCP', path: page.path }])
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': `${url}#webpage`,
+        url,
+        name: page.title,
+        description: page.description,
+        isPartOf: { '@id': SITE_ID },
+        about: { '@id': APP_ID },
+        primaryImageOfPage: { '@type': 'ImageObject', url: page.image },
+        dateModified: UPDATED,
+        author: { '@id': AUTHOR_ID },
+        breadcrumb: trail,
+        mainEntity: { '@id': APP_ID },
+        hasPart: [{ '@id': `${url}#howto` }, { '@id': `${url}#faq` }],
+        speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '.quick-answers'] },
+        potentialAction: ACTIONS,
+      },
+      ORGANIZATION,
+      AUTHOR,
+      COMMUNITY,
+      WEBSITE,
+      trail,
+      softwareApplication(page.features),
+      howTo('Set up the log MCP', 'Install log, add logMcp to your agent, then ask for the work in plain words.', [...page.steps], `${url}#howto`),
+      faqPage(page.faq, `${url}#faq`),
+    ],
+  }
+}
+
 export type DevlogEntry = { title: string; headline: string; description: string; path: string; image: string; published: string }
 
 export function devlogIndexSchema(title: string, description: string, entries: DevlogEntry[]) {
