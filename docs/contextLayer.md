@@ -12,11 +12,11 @@ What it measures, and why: `RESEARCH/LOG_CONTEXT_AUDIT_2026_11_07.md`. How other
 
 ```mermaid
 flowchart LR
-  P["matt's prompt"] --> C["curl (about 30 ms)"]
+  P["matt's prompt"] --> C["Claude Code: one http hook<br/>(p50 9.6 ms, no process)<br/>Codex: curl"]
   C --> S["context layer service<br/>127.0.0.1:47317, one per machine,<br/>model kept loaded"]
   S --> R["router: typo fix, meaning match<br/>over his own asks, fitted threshold"]
   R --> O[">>> PLAY MATCH, or nothing"]
-  C -. service down .-> B["bun fallback: starts the service, injects nothing"]
+  C -. "Codex, service down" .-> B["bun fallback: starts the service, injects nothing"]
   K["SessionStart (startup, resume, compact)"] --> T["the session's own transcript:<br/>last play loaded, last step run"]
   T --> A[">>> ACTIVE PLAY with steps done and to do"]
 ```
