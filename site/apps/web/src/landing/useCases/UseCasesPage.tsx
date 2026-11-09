@@ -312,24 +312,24 @@ const JOB_LINES: HeroLine[] = [
   { before: 'Follow up for you on', after: '' },
 ]
 
-const READ_ONLY_LINES: HeroLine[] = [
+const REDDIT_LINES: HeroLine[] = [
   { before: 'Do the whole job on', after: '' },
-  { before: 'Read every thread on', after: '' },
-  { before: 'Record each page on', after: '' },
-  { before: 'Find what people ask for on', after: '' },
-  { before: 'Never click a thing on', after: '' },
+  { before: 'Read your buyers on', after: '' },
+  { before: 'Answer with value first on', after: '' },
+  { before: 'Grow your own subreddit on', after: '' },
+  { before: 'Post the daily signal on', after: '' },
 ]
 
-const jobLines = (platform: Platform) => (platform.id === 'reddit' ? READ_ONLY_LINES : JOB_LINES)
+const jobLines = (platform: Platform) => (platform.id === 'reddit' ? REDDIT_LINES : JOB_LINES)
 
 const HERO_VERBS = ['prospect', 'engage', 'book', 'convert', 'sell']
 
 const HERO_LEDES: Record<string, string> = {
-  x: 'log by ListeningKit lets your agent read **both inboxes** as one, see **who is waiting on you**, and send your replies, posts and DMs **in your own voice**, the moment you say so.',
-  instagram: 'log by ListeningKit lets your agent answer every **DM** as it lands, with text or **a meme that fits**, straight through Instagram with **no browser**, the moment you say so.',
-  slack: 'log by ListeningKit lets your agent read your **DMs and group DMs** in every workspace, **watch them live**, and reply **one line at a time** in your voice, the moment you say so.',
-  discord: 'log by ListeningKit lets your agent read your **DMs, groups and channels**, **watch them live**, and reply with words or **a meme that fits**, the moment you say so.',
-  reddit: 'log by ListeningKit lets your agent keep your Reddit account **signed in** and run your **recorded steps** in its own browser, **a dry run** until you say go.',
+  x: 'Your agent reads **both your X inboxes** as one, sees **who is waiting on you** and who just engaged with your posts, and answers each of them **in your own voice**, so no lead goes cold.',
+  instagram: 'Your agent answers **every DM about your offer** the moment it lands, with text, **a meme that fits** or a voice note, straight through Instagram with **no browser**, so interest turns into a conversation.',
+  slack: 'Your agent reads your **client and community DMs** in every workspace, finds **who is asking for more**, and replies **one line at a time** in your voice, so the next job comes to you.',
+  discord: 'Your agent watches the **servers and DMs** you are in **live**, spots the people **asking for help**, and answers with words, **a meme that fits** or a voice note, so you are the name they remember.',
+  reddit: 'Your buyers describe their problem on Reddit every day. Your agent reads **the subreddits they post in**, finds the **threads worth answering** and drafts a reply that **gives value first**, in your voice, and you press send. It can grow **your own subreddit** too.',
   all: 'log by ListeningKit lets your agent run **every use case** on every platform you market on, from **one ask** in plain words.',
 }
 

@@ -32,8 +32,10 @@ export const QUICK_ANSWERS: Record<PageId, FaqItem[]> = {
     COST,
   ],
   reddit: [
-    { q: 'What is log for Reddit?', a: 'A free, open-source tool that keeps your Reddit account signed in and lets your AI agent run the steps you recorded, in the account’s own browser.' },
-    { q: 'Does it post without asking me?', a: 'No. Everything is a dry run until you say go.' },
+    { q: 'What is log for Reddit?', a: 'A free, open-source tool that lets your AI agent read the subreddits where your buyers describe their problem, find the threads worth answering, and draft a reply that gives value first, from your own Reddit account.' },
+    { q: 'Does it drop links to my product?', a: 'No. On Reddit the reply that helps is the one that wins, so your agent answers the problem in your own voice and you press send.' },
+    { q: 'Can it help grow my own subreddit?', a: 'Yes. Your agent can read the subreddits your community cares about, write the day’s signal as a post for your own subreddit, and answer the comments on it.' },
+    { q: 'Why bother with Reddit?', a: 'AI answer engines cite Reddit threads, so a genuinely useful answer there keeps getting found long after you post it.' },
     COST,
   ],
 }

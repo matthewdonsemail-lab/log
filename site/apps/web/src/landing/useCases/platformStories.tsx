@@ -1396,88 +1396,73 @@ const X_SLIDES: Slide[] = [
   },
 ]
 
+const REDDIT_POST: Item = {
+  id: 'rp',
+  kind: 'redditPost',
+  sub: 'r/smallbusiness',
+  title: 'Need a website that takes bookings. Where do I even start?',
+  text: 'Cleaning business, 2 vans. Losing jobs because people can’t book online.',
+}
+
 const REDDIT_SLIDES: Slide[] = [
   {
-    lead: 'The session,',
-    sticker: 'checked with Reddit.',
-    body: 'log checks the account’s saved session **with Reddit itself**. **Nothing is sent**.',
+    lead: 'Read your buyers',
+    sticker: 'in their own words.',
+    body: 'log reads the **subreddits** your buyers post in and finds the threads where they **describe their problem**, from your own account.',
     story: {
-      id: 'redditSession',
+      id: 'redditFind',
       chrome: 'reddit',
       phases: [
+        { caption: 'r/smallbusiness, this week', screen: 'post', title: 'r/smallbusiness', items: [REDDIT_POST] },
         {
-          caption: 'The saved session',
-          screen: 'home',
-          title: 'Home',
-          items: [],
-        },
-        {
-          caption: 'Reddit says signed in',
-          screen: 'home',
-          title: 'Home',
-          items: [{ id: 's1', kind: 'signedIn', name: 'your-account' }],
+          caption: 'Someone asking for what you sell',
+          screen: 'post',
+          title: 'r/smallbusiness',
+          items: [{ id: 'c1', kind: 'reply', who: 'u/vanlife_dan', text: 'just use wix lol' }],
         },
       ],
     },
   },
   {
-    lead: 'Its own browser,',
-    sticker: 'one step at a time.',
-    body: 'log opens the account’s own browser on Reddit and works **one step at a time**: go to a page, take a snapshot. Clicks and typing only with --live.',
+    lead: 'Answer with value,',
+    sticker: 'never a link.',
+    body: 'Every comment is read first, so your reply adds what nobody has said yet, **in your own voice**, with no link to your product. You press send.',
     story: {
-      id: 'redditInspect',
+      id: 'redditAnswer',
       chrome: 'reddit',
       phases: [
+        { caption: 'What’s been said', screen: 'post', title: 'r/smallbusiness', items: [REDDIT_POST, { id: 'c1', kind: 'reply', who: 'u/vanlife_dan', text: 'just use wix lol' }] },
         {
-          caption: 'Go to a page',
+          caption: 'Your answer, in your voice',
           screen: 'post',
           title: 'r/smallbusiness',
-          items: [
-            {
-              id: 'rp',
-              kind: 'redditPost',
-              sub: 'r/smallbusiness',
-              title: 'How did you find your first customers?',
-              text: 'Trying to work out what actually worked for people here before I spend anything.',
-            },
-          ],
-        },
-        {
-          caption: 'Snapshot, nothing clicked',
-          screen: 'post',
-          title: 'r/smallbusiness',
-          items: [{ id: 'snap', kind: 'snapshot' }],
+          items: [{ id: 'c2', kind: 'reply', who: 'You', you: true, text: 'wix will do it but the booking bit is where you lose people. put the calendar on the first screen and take a deposit so they don’t ghost' }],
         },
       ],
     },
   },
   {
-    lead: 'Recorded steps,',
-    sticker: 'run again.',
-    body: 'The steps you recorded run again on any account, **a dry run until --live**.',
+    lead: 'Grow your own',
+    sticker: 'subreddit.',
+    body: 'Your agent reads the subreddits your community cares about, posts **the day’s signal** to your own subreddit, and answers every comment on it.',
     story: {
-      id: 'redditFlow',
+      id: 'redditCommunity',
       chrome: 'reddit',
       phases: [
         {
-          caption: 'Step 1: the same page',
+          caption: 'Today’s signal, posted',
           screen: 'post',
-          title: 'r/smallbusiness',
-          items: [
-            {
-              id: 'rp',
-              kind: 'redditPost',
-              sub: 'r/smallbusiness',
-              title: 'How did you find your first customers?',
-              text: 'Trying to work out what actually worked for people here before I spend anything.',
-            },
-          ],
+          title: 'r/yourcommunity',
+          items: [{ id: 'd1', kind: 'redditPost', sub: 'r/yourcommunity', title: 'What small business owners asked for this week', text: '3 wanted online booking, 2 lost jobs to slow replies, 1 asked who does it for them.' }],
         },
         {
-          caption: 'Step 2: snapshot, a dry run',
+          caption: 'Every comment answered',
           screen: 'post',
-          title: 'r/smallbusiness',
-          items: [{ id: 'snap', kind: 'snapshot' }],
+          title: 'r/yourcommunity',
+          items: [
+            { id: 'd2', kind: 'reply', who: 'u/plumbpro', text: 'the slow replies one is so real' },
+            { id: 'd3', kind: 'reply', who: 'You', you: true, text: 'right, most of them were answering the next morning. the ones who replied in an hour got the job' },
+          ],
         },
       ],
     },

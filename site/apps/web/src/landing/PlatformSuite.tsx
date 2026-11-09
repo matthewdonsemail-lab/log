@@ -25,7 +25,7 @@ export const PLATFORMS: Platform[] = [
     id: 'x',
     icon: faXTwitter,
     label: 'X',
-    body: 'log reads **both inboxes**, shows who is **waiting on you**, and sends your replies, posts and DMs the moment you say so.',
+    body: 'log reads **both inboxes**, finds who is **waiting on you** and who engaged with your posts, and answers each one **in your voice** before the lead goes cold.',
     example: 'log twitter dms --account you --waiting',
     docsHref: '/docs/platforms/x',
     does: [
@@ -55,7 +55,7 @@ export const PLATFORMS: Platform[] = [
     id: 'discord',
     icon: faDiscord,
     label: 'Discord',
-    body: 'log reads your DMs, groups and channels, **watches live** and sends the messages for you.',
+    body: 'log **watches your servers live**, spots who is **asking for help**, and answers first with words, a meme or a voice note.',
     example: 'log discord watch --account you',
     docsHref: '/docs/platforms/discord',
     does: [
@@ -70,7 +70,7 @@ export const PLATFORMS: Platform[] = [
     id: 'slack',
     icon: faSlack,
     label: 'Slack',
-    body: 'log reads your **DMs and group DMs** in every workspace, **watches live** and sends your replies one line at a time.',
+    body: 'log reads your **client DMs** in every workspace, finds who **wants more work**, and replies one line at a time in your voice.',
     example: 'log slack read --account you --chat <who>',
     docsHref: '/docs/platforms/slack',
     does: [
@@ -85,7 +85,7 @@ export const PLATFORMS: Platform[] = [
     id: 'instagram',
     icon: faInstagram,
     label: 'Instagram',
-    body: 'log reads your **DMs**, **watches live** and sends text and memes straight through Instagram, with **no browser**.',
+    body: 'log answers **every DM about your offer** as it lands, with text, a meme or a voice note, straight through Instagram with **no browser**.',
     example: 'log instagram dms --account you --with <who>',
     docsHref: '/docs/useCases/instagram/dmReply',
     does: [
@@ -100,7 +100,7 @@ export const PLATFORMS: Platform[] = [
     id: 'reddit',
     icon: faReddit,
     label: 'Reddit',
-    body: 'log keeps your Reddit account **signed in** and runs your **recorded steps** again in its own browser.',
+    body: 'log reads the **subreddits your buyers post in**, finds the threads worth answering and drafts a reply that **gives value first**, then grows **your own subreddit** with the day’s signal.',
     example: 'log reddit session check --account you',
     docsHref: '/docs/platforms/reddit',
     does: [
