@@ -54,7 +54,7 @@ export function pageHtml(template, page) {
     page.schema ? `<script type="application/ld+json" id="devlog-schema">${JSON.stringify(page.schema).replace(/</g, '\\u003c')}</script>` : '',
   ].filter(Boolean).join('\n    ')
   html = html.replace('</head>', `    ${head}\n  </head>`)
-  return html.replace('<div id="root"></div>', `<div id="root">${page.body}</div>`)
+  return html.replace('<div id="root"></div>', `<div id="root"><div data-prerendered style="opacity:0;pointer-events:none">${page.body}</div></div>`)
 }
 
 const built = spawnSync('npx', ['vite', 'build', '--ssr', 'src/landing/devlog/prerender.tsx', '--outDir', 'dist-devlog-ssr', '--emptyOutDir'], {
