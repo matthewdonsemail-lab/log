@@ -1,4 +1,7 @@
 import type { FaqItem } from './story/StorySections'
+import { GG_REVIEWS } from './ggReviews'
+import { VIDEOS } from './VideoCarousel'
+import { HOME_ANSWERS, SETUP_STEPS } from './homeQuickAnswers'
 
 export const SITE = 'https://log.listeningkit.com'
 export const REPO_URL = 'https://github.com/matthewdonsemail-lab/log'
@@ -62,6 +65,47 @@ export const ACTIONS = [
   },
 ]
 
+
+const TWITTER_EPOCH = 1288834974657n
+
+export function tweetDate(id: string) {
+  return new Date(Number((BigInt(id) >> 22n) + TWITTER_EPOCH)).toISOString()
+}
+
+export function isoDuration(minutes: string) {
+  const [m, sec] = minutes.split(':').map(Number)
+  return `PT${m}M${sec}S`
+}
+
+export const REVIEWS = GG_REVIEWS.map((review) => ({
+  '@type': 'Review',
+  name: `${review.name} on X`,
+  reviewBody: review.quote.replace(/\*\*/g, ''),
+  author: { '@type': 'Person', name: review.name, url: `https://x.com/${review.handle.slice(1)}` },
+  itemReviewed: { '@id': APP_ID },
+}))
+
+export const VIDEO_OBJECTS = VIDEOS.map((video) => ({
+  '@type': 'VideoObject',
+  name: video.hook,
+  description: `${video.hook}. Matthew Don on how he uses log, posted on X.`,
+  thumbnailUrl: video.poster,
+  contentUrl: video.mp4,
+  embedUrl: `https://x.com/matthewsoldit/status/${video.id}`,
+  uploadDate: tweetDate(video.id),
+  duration: isoDuration(video.minutes),
+  author: { '@id': AUTHOR_ID },
+  about: { '@id': APP_ID },
+}))
+
+export const PLATFORM_LIST = [
+  { name: 'log for X (Twitter)', path: '/twitter' },
+  { name: 'log for Discord', path: '/discord' },
+  { name: 'log for Slack', path: '/slack' },
+  { name: 'log for Instagram', path: '/instagram' },
+  { name: 'log for Reddit', path: '/reddit' },
+]
+
 export function softwareApplication(featureList: string[] = []) {
   return {
     '@type': 'SoftwareApplication',
@@ -83,6 +127,7 @@ export function softwareApplication(featureList: string[] = []) {
     author: { '@id': AUTHOR_ID },
     publisher: { '@id': ORG_ID },
     ...(featureList.length ? { featureList } : {}),
+    review: REVIEWS,
     potentialAction: ACTIONS,
   }
 }
@@ -121,7 +166,25 @@ export function howTo(name: string, description: string, steps: { title: string;
 }
 
 export function homeSchema() {
-  return { '@context': 'https://schema.org', '@graph': [ORGANIZATION, AUTHOR, COMMUNITY, WEBSITE, softwareApplication()] }
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      ORGANIZATION,
+      AUTHOR,
+      COMMUNITY,
+      WEBSITE,
+      softwareApplication(),
+      breadcrumbs([{ name: 'log', path: '/' }]),
+      {
+        '@type': 'ItemList',
+        name: 'log on every platform',
+        itemListElement: PLATFORM_LIST.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: `${SITE}${item.path}` })),
+      },
+      howTo('Set up log', 'Install log, connect your accounts and connect your AI agent.', SETUP_STEPS),
+      faqPage(HOME_ANSWERS),
+      ...VIDEO_OBJECTS,
+    ],
+  }
 }
 
 export type PlatformSchemaInput = {
@@ -157,6 +220,7 @@ export function platformSchema(page: PlatformSchemaInput) {
       AUTHOR,
       COMMUNITY,
       WEBSITE,
+      breadcrumbs([{ name: 'log', path: '/' }, { name: page.label, path: page.path }]),
       softwareApplication(page.features),
       howTo(page.play.name, `Ask your agent: "${page.play.ask}"`, page.play.steps),
       faqPage(page.faq),
