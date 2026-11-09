@@ -28,6 +28,7 @@ import '../RepoModal.css'
 import { USE_CASES, type ShowcaseId, type UseCase } from './useCaseCatalog'
 import { PLATFORM_PAGES, pageForPlatform, type Moment, type PageId, type PlatformPage, type Play } from './platformPages'
 import { QUICK_ANSWERS } from './quickAnswers'
+import { AgencyIntro } from '../AgencyIntro'
 import { StoryFaq } from '../story/StorySections'
 
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
@@ -443,7 +444,17 @@ function Hero({ platform }: { platform: Platform | null }) {
           </div>
         </div>
         <div ref={frameRef} aria-hidden className="h-40 md:h-48" />
-        <div className="lk-repo relative mt-2 text-[#0D2A4C]" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
+        <AgencyIntro platformId={platform?.id} />
+        <HowItWorks
+          ask={howPage.play.ask}
+          done={howPage.play.how.done}
+          title={howPage.play.name}
+          steps={howPage.play.how.steps.map((moment) => ({ icon: iconOfMoment(moment, howPlatform), label: moment.label, tool: moment.tool }))}
+          platformLabel={howPlatform.label}
+          platformIcon={howPlatform.icon}
+          rows={howPage.play.how.rows}
+        />
+        <div className="lk-repo relative mt-20 text-[#0D2A4C] md:mt-32" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
           <p className="lk-hand mx-auto mb-5 max-w-6xl text-left text-2xl leading-[2.4rem] text-[#0D2A4C]">
             log&apos;s being <span className="lk-bluekey text-3xl">used</span> by leaders in{' '}
             {USED_BY.map(({ name, Icon }) => (
@@ -459,15 +470,6 @@ function Hero({ platform }: { platform: Platform | null }) {
           </p>
           <ReviewMarquee reviews={GG_REVIEWS} />
         </div>
-        <HowItWorks
-          ask={howPage.play.ask}
-          done={howPage.play.how.done}
-          title={howPage.play.name}
-          steps={howPage.play.how.steps.map((moment) => ({ icon: iconOfMoment(moment, howPlatform), label: moment.label, tool: moment.tool }))}
-          platformLabel={howPlatform.label}
-          platformIcon={howPlatform.icon}
-          rows={howPage.play.how.rows}
-        />
       </div>
     </section>
   )
