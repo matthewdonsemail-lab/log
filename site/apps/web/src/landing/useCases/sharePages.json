@@ -110,8 +110,8 @@
   {
     "slug": "reddit",
     "icon": "faReddit",
-    "title": "log for Reddit: your AI agent runs your Reddit account",
-    "description": "log by ListeningKit lets your agent keep your Reddit account signed in and run your recorded steps in its own browser, a dry run until you say go.",
+    "title": "log for Reddit: your AI agent reads your buyers and answers with value first",
+    "description": "log by ListeningKit lets your agent read the subreddits your buyers post in, find the threads worth answering, reply with value first in your voice, and grow your own subreddit.",
     "card": {
       "lead": "your",
       "name": "Reddit",

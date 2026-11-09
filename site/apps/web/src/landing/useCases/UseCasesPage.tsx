@@ -27,6 +27,9 @@ import { GG_REVIEWS } from '../ggReviews'
 import '../RepoModal.css'
 import { USE_CASES, type ShowcaseId, type UseCase } from './useCaseCatalog'
 import { PLATFORM_PAGES, pageForPlatform, type Moment, type PageId, type PlatformPage, type Play } from './platformPages'
+import { QUICK_ANSWERS } from './quickAnswers'
+import { AgencyIntro } from '../AgencyIntro'
+import { StoryFaq } from '../story/StorySections'
 
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
@@ -309,24 +312,24 @@ const JOB_LINES: HeroLine[] = [
   { before: 'Follow up for you on', after: '' },
 ]
 
-const READ_ONLY_LINES: HeroLine[] = [
+const REDDIT_LINES: HeroLine[] = [
   { before: 'Do the whole job on', after: '' },
-  { before: 'Read every thread on', after: '' },
-  { before: 'Record each page on', after: '' },
-  { before: 'Find what people ask for on', after: '' },
-  { before: 'Never click a thing on', after: '' },
+  { before: 'Read your buyers on', after: '' },
+  { before: 'Sort leads from noise on', after: '' },
+  { before: 'Answer with value first on', after: '' },
+  { before: 'Grow your own subreddit on', after: '' },
 ]
 
-const jobLines = (platform: Platform) => (platform.id === 'reddit' ? READ_ONLY_LINES : JOB_LINES)
+const jobLines = (platform: Platform) => (platform.id === 'reddit' ? REDDIT_LINES : JOB_LINES)
 
 const HERO_VERBS = ['prospect', 'engage', 'book', 'convert', 'sell']
 
 const HERO_LEDES: Record<string, string> = {
-  x: 'log by ListeningKit lets your agent read **both inboxes** as one, see **who is waiting on you**, and send your replies, posts and DMs **in your own voice**, the moment you say so.',
-  instagram: 'log by ListeningKit lets your agent answer every **DM** as it lands, with text or **a meme that fits**, straight through Instagram with **no browser**, the moment you say so.',
-  slack: 'log by ListeningKit lets your agent read your **DMs and group DMs** in every workspace, **watch them live**, and reply **one line at a time** in your voice, the moment you say so.',
-  discord: 'log by ListeningKit lets your agent read your **DMs, groups and channels**, **watch them live**, and reply with words or **a meme that fits**, the moment you say so.',
-  reddit: 'log by ListeningKit lets your agent keep your Reddit account **signed in** and run your **recorded steps** in its own browser, **a dry run** until you say go.',
+  x: 'Your agent reads **both your X inboxes** as one, sees **who is waiting on you** and who just engaged with your posts, and answers each of them **in your own voice**, so no lead goes cold.',
+  instagram: 'Your agent answers **every DM about your offer** the moment it lands, with text, **a meme that fits** or a voice note, straight through Instagram with **no browser**, so interest turns into a conversation.',
+  slack: 'Your agent reads your **client and community DMs** in every workspace, finds **who is asking for more**, and replies **one line at a time** in your voice, so the next job comes to you.',
+  discord: 'Your agent watches the **servers and DMs** you are in **live**, spots the people **asking for help**, and answers with words, **a meme that fits** or a voice note, so you are the name they remember.',
+  reddit: 'Your buyers describe their problem on Reddit every day. Your agent does **the research**: reads the subreddits they post in, sorts each thread into **a lead, one to join or a competitor mention**, and drafts a reply that gives value first. **You press send** from your real account.',
   all: 'log by ListeningKit lets your agent run **every use case** on every platform you market on, from **one ask** in plain words.',
 }
 
@@ -441,7 +444,17 @@ function Hero({ platform }: { platform: Platform | null }) {
           </div>
         </div>
         <div ref={frameRef} aria-hidden className="h-40 md:h-48" />
-        <div className="lk-repo relative mt-2 text-[#0D2A4C]" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
+        <AgencyIntro platformId={platform?.id} />
+        <HowItWorks
+          ask={howPage.play.ask}
+          done={howPage.play.how.done}
+          title={howPage.play.name}
+          steps={howPage.play.how.steps.map((moment) => ({ icon: iconOfMoment(moment, howPlatform), label: moment.label, tool: moment.tool }))}
+          platformLabel={howPlatform.label}
+          platformIcon={howPlatform.icon}
+          rows={howPage.play.how.rows}
+        />
+        <div className="lk-repo relative mt-20 text-[#0D2A4C] md:mt-32" style={{ '--lk-brand-deep': '#c8d5e6' } as CSSProperties}>
           <p className="lk-hand mx-auto mb-5 max-w-6xl text-left text-2xl leading-[2.4rem] text-[#0D2A4C]">
             log&apos;s being <span className="lk-bluekey text-3xl">used</span> by leaders in{' '}
             {USED_BY.map(({ name, Icon }) => (
@@ -457,15 +470,6 @@ function Hero({ platform }: { platform: Platform | null }) {
           </p>
           <ReviewMarquee reviews={GG_REVIEWS} />
         </div>
-        <HowItWorks
-          ask={howPage.play.ask}
-          done={howPage.play.how.done}
-          title={howPage.play.name}
-          steps={howPage.play.how.steps.map((moment) => ({ icon: iconOfMoment(moment, howPlatform), label: moment.label, tool: moment.tool }))}
-          platformLabel={howPlatform.label}
-          platformIcon={howPlatform.icon}
-          rows={howPage.play.how.rows}
-        />
       </div>
     </section>
   )
@@ -1172,6 +1176,11 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
         <LogWith />
         <JobGraph platform={platform} moments={page ? page.moments : []} />
       </CtaBand>
+      {page && platform ? (
+        <div className="quick-answers">
+          <StoryFaq title={`${platform.label} with log: quick answers`} items={QUICK_ANSWERS[page.id]} />
+        </div>
+      ) : null}
       <MoreUseCases current={page} />
       {page ? null : (
         <>

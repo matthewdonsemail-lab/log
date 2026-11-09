@@ -1,5 +1,6 @@
 import list from './articles.json'
 import type { FaqItem } from '../story/StorySections'
+import { AUTHOR, ORGANIZATION, breadcrumbs, faqPage, softwareApplication } from '../structuredData'
 
 export const SITE = 'https://log.listeningkit.com'
 
@@ -30,23 +31,31 @@ export function articleOf(slug: string): DevlogArticle {
 }
 
 export function articleSchema(article: DevlogArticle, faq: FaqItem[]) {
+  const path = devlogPath(article.slug)
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'Article',
+        '@type': 'BlogPosting',
         headline: article.headline,
+        name: article.title,
         description: article.description,
-        author: { '@type': 'Person', name: article.author, url: 'https://x.com/matthewsoldit' },
+        abstract: article.summary,
+        author: { '@id': AUTHOR['@id'] },
+        publisher: { '@id': ORGANIZATION['@id'] },
         datePublished: article.published,
         dateModified: article.published,
         image: `${SITE}${devlogImage(article.slug)}`,
-        mainEntityOfPage: `${SITE}${devlogPath(article.slug)}`,
+        mainEntityOfPage: `${SITE}${path}`,
+        isPartOf: { '@id': `${SITE}/devlog#blog` },
+        about: { '@id': `${SITE}/#software` },
+        speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '#faq'] },
       },
-      {
-        '@type': 'FAQPage',
-        mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
-      },
+      breadcrumbs([{ name: 'log', path: '/' }, { name: 'Devlog', path: '/devlog' }, { name: article.title, path }]),
+      ORGANIZATION,
+      AUTHOR,
+      softwareApplication(),
+      faqPage(faq),
     ],
   }
 }

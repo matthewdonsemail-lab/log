@@ -4,6 +4,10 @@ import { DEVLOG_ARTICLES, SITE, devlogImage, devlogPath } from './articles'
 import { DEVLOG_DESCRIPTION, DEVLOG_TITLE, DevlogList } from './DevlogIndexPage'
 import { XREACHER_SCHEMA, XreacherStory } from './XreacherAlternativePage'
 import sharePages from '../useCases/sharePages.json'
+import { PLATFORM_PAGES } from '../useCases/platformPages'
+import { QUICK_ANSWERS } from '../useCases/quickAnswers'
+import { PLATFORMS } from '../PlatformSuite'
+import { devlogIndexSchema, homeSchema, platformSchema } from '../structuredData'
 
 export type PrerenderedPage = {
   path: string
@@ -18,6 +22,8 @@ export type PrerenderedPage = {
 const BODIES: Record<string, { Story: ComponentType; schema: object }> = {
   'xreacher-alternative': { Story: XreacherStory, schema: XREACHER_SCHEMA },
 }
+
+export const HOME_SCHEMA = homeSchema()
 
 export function prerenderedPages(): PrerenderedPage[] {
   const articles = DEVLOG_ARTICLES.map((article) => {
@@ -49,7 +55,11 @@ export function prerenderedPages(): PrerenderedPage[] {
     description: DEVLOG_DESCRIPTION,
     image: latest ? `${SITE}${devlogImage(latest.slug)}` : `${SITE}/og/og.png`,
     type: 'website',
-    schema: null,
+    schema: devlogIndexSchema(
+      DEVLOG_TITLE,
+      DEVLOG_DESCRIPTION,
+      DEVLOG_ARTICLES.map((article) => ({ title: article.title, headline: article.headline, description: article.description, path: devlogPath(article.slug), image: `${SITE}${devlogImage(article.slug)}`, published: article.published })),
+    ),
     body: renderToStaticMarkup(
       <main>
         <h1>Devlog</h1>
@@ -57,14 +67,45 @@ export function prerenderedPages(): PrerenderedPage[] {
       </main>,
     ),
   }
-  const platforms: PrerenderedPage[] = sharePages.map((page) => ({
-    path: `/${page.slug}`,
-    title: page.title,
-    description: page.description,
-    image: `${SITE}/og/pages/${page.slug}.png`,
-    type: 'website',
-    schema: null,
-    body: '',
-  }))
+  const platforms: PrerenderedPage[] = sharePages.map((share) => {
+    const page = PLATFORM_PAGES.find((item) => item.id === share.slug)
+    if (!page) throw new Error(`share page ${share.slug} has no platform page`)
+    const platform = PLATFORMS.find((item) => item.id === page.platformId)
+    if (!platform) throw new Error(`platform page ${page.id} has no platform ${page.platformId}`)
+    const faq = QUICK_ANSWERS[page.id]
+    const image = `${SITE}/og/pages/${share.slug}.png`
+    return {
+      path: page.path,
+      title: share.title,
+      description: share.description,
+      image,
+      type: 'website' as const,
+      schema: platformSchema({
+        path: page.path,
+        label: platform.label,
+        title: share.title,
+        description: share.description,
+        image,
+        faq,
+        play: page.play,
+        features: page.moments.map((moment) => moment.label),
+      }),
+      body: renderToStaticMarkup(
+        <main>
+          <h1>{share.title}</h1>
+          <p>{share.description}</p>
+          <section className="quick-answers">
+            <h2>{platform.label} with log: quick answers</h2>
+            {faq.map((item) => (
+              <div key={item.q}>
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </section>
+        </main>,
+      ),
+    }
+  })
   return [index, ...articles, ...platforms]
 }

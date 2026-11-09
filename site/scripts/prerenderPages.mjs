@@ -65,7 +65,7 @@ const built = spawnSync('npx', ['vite', 'build', '--ssr', 'src/landing/devlog/pr
 if (built.status !== 0) throw new Error('the devlog prerender build failed')
 const entry = join(ssrOut, 'prerender.js')
 if (!existsSync(entry)) throw new Error(`the devlog prerender build left no ${entry}`)
-const { prerenderedPages } = await import(pathToFileURL(entry).href)
+const { prerenderedPages, HOME_SCHEMA } = await import(pathToFileURL(entry).href)
 const vercel = JSON.parse(readFileSync(join(root, '..', 'vercel.json'), 'utf8'))
 const sourceRegex = (source) => new RegExp(`^${source.replace(/:[a-zA-Z]+\(([^)]+)\)/g, '($1)').replace(/:[a-zA-Z]+\+?/g, '[^/]+')}$`)
 const routed = (path) => vercel.rewrites.some((rule) => rule.destination.endsWith('.html') && rule.destination !== '/index.html' && sourceRegex(rule.source).test(path))
@@ -78,4 +78,7 @@ for (const page of prerenderedPages()) {
   writeFileSync(out, pageHtml(template, { ...page, image: versioned(page.image) }))
   console.log(`prerendered: ${page.path} -> ${out.replace(dist, 'dist')}`)
 }
+const homeSchema = `<script type="application/ld+json" id="home-schema">${JSON.stringify(HOME_SCHEMA).replace(/</g, '\\u003c')}</script>`
+writeFileSync(join(dist, 'index.html'), template.replace('</head>', `    ${homeSchema}\n  </head>`))
+console.log('structured data: dist/index.html')
 rmSync(ssrOut, { recursive: true, force: true })
