@@ -1,0 +1,61 @@
+{
+  "log-hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/antigravity.ts SessionStart",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreInvocation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/antigravity.ts PreInvocation",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "run_command|mcp__log__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/antigravity.ts PreToolUse",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "run_command|mcp__log__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/antigravity.ts PostToolUse",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/antigravity.ts Stop",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
