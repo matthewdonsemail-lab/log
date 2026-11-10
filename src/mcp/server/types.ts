@@ -90,6 +90,7 @@ export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `log mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
   chat: "asks matt for the X Chat PIN in a Clack prompt (masked). He runs `log twitter chat pin --account <a>` in a terminal.",
   cookies: "asks for an account's session cookies in a Clack prompt (masked) and checks them with the platform before saving: an X account's auth_token, ct0 and twid, a LinkedIn account's, or a Slack account's d. Run `log twitter cookies save --account <handle>`, `log linkedin cookies save --account <publicId>` or `log slack cookies save --account <name>` in a terminal.",
+  runtime: "pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager.",
   messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `log facebook messenger pin --account <a>` in a terminal.",
 };
 

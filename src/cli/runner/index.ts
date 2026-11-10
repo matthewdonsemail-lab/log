@@ -21,6 +21,7 @@ import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
+import { runtimeCommand } from "../runtime/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
 import { tregCommand } from "../treg/index.ts";
 import { balanceCommand } from "../balance/index.ts";
@@ -108,6 +109,7 @@ export const COMMANDS: Command[] = [
   voiceCommand,
   searchCommand,
   kbCommand,
+  runtimeCommand,
   memelordCommand,
   tregCommand,
   balanceCommand,

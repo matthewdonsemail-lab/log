@@ -57,6 +57,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/observability/liveLog/index.ts': { writes: 1, kind: 'log' },
   'src/platformKit/session/client.ts': { writes: 6, kind: 'session' },
   'src/rea/capture/client.ts': { writes: 7, kind: 'capture' },
+  'src/runtime/bridge/client.ts': { writes: 1, kind: 'session' },
   'src/rea/facebookClient/client.ts': { writes: 6, kind: 'capture' },
   'src/rea/inspectMap/client.ts': { writes: 6, kind: 'capture' },
   'src/rea/platformClient/client.ts': { writes: 4, kind: 'capture' },

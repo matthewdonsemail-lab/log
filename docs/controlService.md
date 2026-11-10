@@ -75,9 +75,18 @@ The runtime opens the connection; nothing listens inside the workspace.
 
    It journals the operation id before any effect, and answers `reconcile` from that journal. The control service stores only the operation's id, tool, state and cursor, never its arguments or result.
 
+## The runtime side: `log runtime`
+
+Run in the workspace, never on the control service:
+
+1. `log runtime init --origin https://app.log.listeningkit.com` makes the private proof and prints the challenge hash.
+2. The console creates the pairing with that hash and shows a one-time token. `log runtime pair --token <t>` redeems it. The credential, the pinned dispatch key and the installation id go to `~/.logCli/runtime/binding.json` (`LOG_RUNTIME_DIR` moves it). It is owner-only on Linux; on Windows the folder's own permissions apply.
+3. `log runtime connect` keeps the bridge open and reconnects on its own (1, 2, 5, 10, 30 s). It stops for good on a revoked credential or workspace, or another protocol.
+
+Each dispatch is checked (signature, workspace, generation, expiry, request hash), journalled in `log.db`'s `operations` table (migration 18) before it runs, then run through the same handler as the log MCP tools. `accountsList` answers from the workspace's local accounts, with safe fields only. A repeat of the same operation id answers from the journal and never runs again. After a restart, a read left unfinished is marked `failed` and a write `unknown`, never replayed.
+
 ## Not built yet
 
-- The runtime side of the bridge in log (pair, connect, journal, run the tool).
 - MCP OAuth grants and live-write approvals (slice D).
 - Boat (slice E) and native account storage (slice A).
 - Usage, analytics and subscription answer nothing until their data exists.
