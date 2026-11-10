@@ -51,6 +51,15 @@ describe("the gate inside a send finds the chat's real replies by what the send 
     expect(chatIdFor(conversations, { platform: "twitter", userId: "1663390258099101696" })).toBe("twitter:shaw_gtm");
   });
 
+  test("an X copy of the chat with nobody named in it is never the chat a send is gated against", () => {
+    const copies = [
+      { platform: "twitter", account: "a", conversationId: "20891065-1974596626342686720", with: [], box: "inbox", messages: [] },
+      { platform: "twitter", account: "a", conversationId: "20891065:1974596626342686720", with: ["Nefer_L"], box: "xchat", messages: [] },
+    ] as unknown as Parameters<typeof chatIdFor>[0];
+    expect(chatIdFor(copies, { platform: "twitter", userId: "20891065" })).toBe("twitter:nefer_l");
+    expect(chatIdFor(copies.slice(0, 1), { platform: "twitter", userId: "20891065" })).toBeNull();
+  });
+
   test("another platform's send finds its chat by the conversation id, never another platform's chat of the same name", () => {
     expect(chatIdFor(conversations, { platform: "discord", conversationId: "1565734133609668780" })).toBe("discord:1565734133609668780");
     expect(chatIdFor(conversations, { platform: "slack", handle: "rvaclassic" })).toBeNull();

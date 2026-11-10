@@ -5,6 +5,8 @@ import type { TwitterDmMessage, TwitterDmThread, TwitterInboxSync, TwitterSessio
 import { storeRead } from "../../../inbox/catchUp/index.ts";
 import { chatContextOf } from "../../../inbox/context/index.ts";
 import { markBackfilled, readSourceFor, sourceLine, userIdOfHandle } from "../../../inbox/dbRead/index.ts";
+import { lastWordOf, personKeyOf } from "../../../inbox/lastWord/index.ts";
+import type { LastWord } from "../../../inbox/lastWord/index.ts";
 import { loadConversations, saveConversations, twitterConversationOf } from "../../../search/conversations/index.ts";
 import { localAccountId, twitterStateRoot } from "../../../directApi/engine/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -112,6 +114,33 @@ function onePerPerson(answer: TwitterSessionAnswer): TwitterSessionAnswer {
   return { ...answer, threads, waitingOnYou: threads.filter(waitingOnYou).length, reactedToYou: threads.filter(followUpDue).length };
 }
 
+const threadOfWord = (word: LastWord): TwitterDmThread => ({
+  conversationId: word.conversationIds[0] ?? word.personKey,
+  conversationIds: word.conversationIds,
+  box: "inbox",
+  type: word.kind === "group" ? "group" : "oneToOne",
+  with: [{ handle: word.with, userId: "" }],
+  lastAt: word.lastAt,
+  lastFromMe: word.lastFromMe,
+  lastText: word.lastText,
+  unread: false,
+  messagesLoaded: 0,
+});
+
+export function withDbLastWord(answer: TwitterSessionAnswer, words: readonly LastWord[]): TwitterSessionAnswer {
+  const byPerson = new Map(words.map((w) => [w.personKey, w]));
+  const seen = new Set<string>();
+  const threads = (answer.threads ?? []).map((t) => {
+    const word = [t.conversationId, ...(t.conversationIds ?? [])].map((id) => byPerson.get(personKeyOf(id))).find(Boolean);
+    if (!word) return t;
+    seen.add(word.personKey);
+    return { ...t, lastAt: word.lastAt, lastFromMe: word.lastFromMe, lastText: word.lastText, youReactedOnly: word.youReactedOnly || undefined, openedByThem: word.lastFromMe ? t.openedByThem : false };
+  });
+  const missing = words.filter((w) => !seen.has(w.personKey)).map(threadOfWord);
+  const all = [...threads, ...missing].sort((x, y) => Date.parse(y.lastAt ?? "") - Date.parse(x.lastAt ?? ""));
+  return { ...answer, threads: all, waitingOnYou: all.filter(waitingOnYou).length, reactedToYou: all.filter(followUpDue).length };
+}
+
 export const dmsCommand: Command = {
   usage: DMS_USAGE,
   platform: "twitter",
@@ -205,7 +234,9 @@ export const dmsCommand: Command = {
       const lean = answered.messages ? { ...answered, messages: await withVoiceNotes({ platform: "twitter", account: opened.account.accountName, conversationId: convoId ?? "" }, answered.messages, audioOf, context.err) } : answered;
       if (lean.ok && lean.messages) backfillThread(opened.account.accountName, lean.messages, context.now?.() ?? new Date());
       const everyChat = waiting && lean.ok && lean.threads ? withEveryStoredChat(opened.account.accountName, lean, context.err) : lean;
-      const run = everyChat.ok && everyChat.threads ? { ...raw, answer: onePerPerson(everyChat) } : { ...raw, answer: everyChat };
+      const words = everyChat.ok && everyChat.threads ? lastWordOf({ platform: "twitter", account: opened.account.accountName }) : [];
+      if (words.length) context.err(`${opened.account.accountName}: who wrote last is read from log.db by time (${words.length} people, each one's old DM and X Chat judged together)`);
+      const run = everyChat.ok && everyChat.threads ? { ...raw, answer: withDbLastWord(onePerPerson(everyChat), words) } : { ...raw, answer: everyChat };
       const code = run.answer.ok ? 0 : 1;
       if (parsed.flags["json"]) {
         const answer = waiting && run.answer.threads ? { ...run.answer, threads: run.answer.threads.filter(waitingOnYou), followUps: run.answer.threads.filter(followUpDue) } : run.answer;

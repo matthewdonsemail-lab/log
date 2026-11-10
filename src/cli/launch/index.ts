@@ -19,8 +19,10 @@ import { COMMAND_INDEX } from "../runner/helpers/commandIndex.ts";
 import { PLATFORM_LABELS } from "../runner/helpers/platforms.ts";
 import type { Platform } from "../runner/helpers/platforms.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { ADSPOWER_SETUP, agentSetupText, browserSignInSteps, needsBrowser, parseLaunchArgs, platformOfTwenty, platformOption, setEnvValue, SETUP_EXTENSIONS, setupSummary, shouldPrompt, signInRouteOf, START_ACTIONS, START_PLATFORMS, twentyReady } from "./helpers/index.ts";
-import type { LaunchTTY, SetupExtension, SetupOutcome } from "./helpers/index.ts";
+import { installOpenCode, opencodeConfigDir } from "../../agentHooks/opencode/index.ts";
+import type { HarnessInstall } from "../../agentHooks/opencode/index.ts";
+import { ADSPOWER_SETUP, agentSetupText, browserSignInSteps, needsBrowser, parseLaunchArgs, platformOfTwenty, platformOption, setEnvValue, SETUP_EXTENSIONS, SETUP_HARNESSES, setupSummary, shouldPrompt, signInRouteOf, START_ACTIONS, START_PLATFORMS, twentyReady } from "./helpers/index.ts";
+import type { LaunchTTY, SetupExtension, SetupHarness, SetupOutcome } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
@@ -48,6 +50,8 @@ export const launchDeps: {
   openUrl: (url: string) => boolean;
   runInTerminal: (command: string, args: readonly string[]) => { found: boolean; code: number };
   adsPowerUp: () => Promise<boolean>;
+  harnesses: () => readonly SetupHarness[];
+  installHarness: (harness: SetupHarness) => HarnessInstall;
   envFile: () => string;
   readEnv: (file: string) => string;
   writeEnv: (file: string, text: string) => void;
@@ -80,6 +84,8 @@ export const launchDeps: {
       return false;
     }
   },
+  harnesses: () => (existsSync(opencodeConfigDir()) ? SETUP_HARNESSES : []),
+  installHarness: () => installOpenCode(),
   envFile: () => userEnvPath(),
   readEnv: (file) => (existsSync(file) ? readFileSync(file, "utf8") : ""),
   writeEnv: (file, text) => {
@@ -268,6 +274,16 @@ async function setUpAdsPower(context: CommandContext): Promise<SetupOutcome | nu
     : { label: ADSPOWER_SETUP.label, ok: false, detail: "its Local API didn't answer: open AdsPower and turn on its Local API (Automation, API)" };
 }
 
+async function setUpHarness(harness: SetupHarness): Promise<SetupOutcome> {
+  try {
+    const got = launchDeps.installHarness(harness);
+    const detail = got.changed ? `wired: ${got.configPath}` : `already wired: ${got.configPath}`;
+    return { label: harness.label, ok: true, detail: `${detail}, hooks in ${got.pluginDir}` };
+  } catch (error) {
+    return { label: harness.label, ok: false, detail: `couldn't wire it: ${String(error).slice(0, 200)}` };
+  }
+}
+
 async function runSetup(context: CommandContext): Promise<CommandResult> {
   const outcomes: SetupOutcome[] = [];
   context.out(`Your settings and keys go in ${launchDeps.envFile()}. Space picks, Enter goes on.`);
@@ -295,6 +311,16 @@ async function runSetup(context: CommandContext): Promise<CommandResult> {
     const outcome = await setUpExtension(context, extension);
     if (outcome === null) return { code: 1 };
     outcomes.push(outcome);
+  }
+  const offered = launchDeps.harnesses();
+  if (offered.length) {
+    const wired = await pickMany({
+      message: "Which agent harnesses should log wire itself into?",
+      options: offered.map((harness) => ({ value: harness.id, label: harness.label, hint: harness.adds })),
+      required: false,
+    });
+    if (wired === null) return { code: 1 };
+    for (const harness of offered.filter((h) => wired.includes(h.id))) outcomes.push(await setUpHarness(harness));
   }
   context.out(`\n${setupSummary(outcomes, launchDeps.envFile())}`);
   return { code: 0 };

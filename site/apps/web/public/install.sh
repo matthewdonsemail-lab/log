@@ -108,6 +108,13 @@ say "done. Your settings are in $ENV_FILE and your accounts will live in $LOG_HO
 log --help >/dev/null 2>&1 && say "log is on your PATH" || say "open a new terminal so 'log' is on your PATH"
 install_skills
 
+OPENCODE_DIR="$HOME/.config/opencode"
+OPENCODE_INSTALL="$ROOT/scripts/opencode/install.ts"
+if [ -d "$OPENCODE_DIR" ] && [ -f "$OPENCODE_INSTALL" ]; then
+  say "wiring OpenCode: log's tools native (not Code Mode) and its hooks running"
+  bun "$OPENCODE_INSTALL"
+fi
+
 LOG_BIN=$(command -v log 2>/dev/null || printf '%s' "${BUN_INSTALL:-$HOME/.bun}/bin/log")
 if [ "${LOG_SETUP:-1}" != 0 ] && [ -x "$LOG_BIN" ] && [ -r /dev/tty ] && [ -w /dev/tty ]; then
   say "setting log up: pick your platforms, sign them in, and add extensions"

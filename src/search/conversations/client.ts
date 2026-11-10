@@ -97,7 +97,27 @@ export function loadConversations(path = conversationsDbPath(), filter: { platfo
     loaded.set(path, { stamp, conversations })
     return conversations
   })
-  return filter.platform ? all.filter((c) => c.platform === filter.platform) : all
+  const named = withSiblingNames(all)
+  return filter.platform ? named.filter((c) => c.platform === filter.platform) : named
+}
+
+const pairKeyOf = (conversationId: string): string | null => {
+  const pair = conversationId.match(/^(\d+)[-:](\d+)$/)
+  return pair ? [pair[1], pair[2]].sort().join('-') : null
+}
+
+export function withSiblingNames(conversations: readonly Conversation[]): Conversation[] {
+  const names = new Map<string, string[]>()
+  for (const c of conversations) {
+    const key = c.platform === 'twitter' ? pairKeyOf(c.conversationId) : null
+    if (key && c.with.some(Boolean)) names.set(`${c.account} ${key}`, c.with)
+  }
+  return conversations.map((c) => {
+    if (c.platform !== 'twitter' || c.with.some(Boolean)) return c
+    const key = pairKeyOf(c.conversationId)
+    const sibling = key ? names.get(`${c.account} ${key}`) : undefined
+    return sibling ? { ...c, with: sibling } : c
+  })
 }
 
 function queryTerms(query: string): string[][] {

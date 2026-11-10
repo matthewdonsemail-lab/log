@@ -31,6 +31,36 @@ In `~/.cursor/mcp.json` (or `.cursor/mcp.json` in a project):
 }
 ```
 
+## Antigravity (App, CLI, IDE)
+
+In `.agents/mcp_config.json` (workspace-level) or `~/.gemini/config/mcp_config.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "log": {
+      "command": "bun",
+      "args": ["bin/logMcp.ts"],
+      "timeoutSeconds": 300
+    }
+  }
+}
+```
+
+Or if `logMcp` is installed on your `PATH`:
+
+```json
+{
+  "mcpServers": {
+    "log": {
+      "command": "logMcp"
+    }
+  }
+}
+```
+
+In Antigravity IDE or App, you can also open the agent panel's top-right menu (**...**) > **MCP Servers** > **Manage MCP Servers** > **View raw config** to edit `mcp_config.json` directly.
+
 ## Any other MCP client
 
 Run `logMcp` as a stdio server, with no arguments. It reads your settings from `~/.logCli/.env`, like `log` does.
