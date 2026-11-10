@@ -4,19 +4,19 @@ title: "MCP server"
 
 # MCP server
 
-The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Rules 47, 95 and 106 (rule 95 replaces rule 47's long instructions with short ones that send the agent to the full guide; rule 76 puts rule one first).
+The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Active rules 47, 55, 73, 158, 163 and 176 govern current guidance. Retired citations are consolidated into active rules; historical snapshots never restore superseded scope.
 
 ## What the server carries
 
 ### REQ-MCP-01: The instructions carry the core rules, rule one first
 
-The server's instructions, sent at initialize, list the core rules each with its rule number, and the first of them is rule one ("if we don't know, we do this", rules 73-76), followed by rule 30.
+The server's instructions, sent at initialize, list the core rules each with its rule number, and the first of them is rule one ("if we don't know, we do this", rule 73), followed by rule 30.
 
 Checked by: code and SubQ
 
 ### REQ-MCP-02: The instructions send the agent to the full guide first
 
-The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session. Rule 95.
+The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session. Active rule 158.
 
 Checked by: code (anchors)
 
@@ -28,7 +28,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-04: Every tool names the rules it falls under
 
-Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41).
+Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41). `currentRuleIds` resolves retired references to the active ids documented in ruleHistory/index.md. Generated guides use active rule text and distinguish current legacy command behavior from the native hosted target; active rules 171/172/175 govern the data boundary.
 
 Checked by: code and SubQ
 
@@ -68,7 +68,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-10: A log command run by hand from a shell is refused
 
-The PreToolUse hook refuses a shell command that runs `log …` or `bun bin/log.ts …`, and names the MCP tool route instead. Rule 106.
+The PreToolUse hook refuses a shell command that runs `log …` or `bun bin/log.ts …`, and names the MCP tool route instead. Active rule 163.
 
 Checked by: code and SubQ
 
@@ -88,7 +88,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-13: Uncommitted local changes are said loudly
 
-The engines hook lists the uncommitted changes in log-cli's code (src, python, vendor, bin, scripts, package.json) under `>>> UNCOMMITTED LOCAL CHANGES`, and says to read each one's diff and never overwrite, revert, stage, publish or ship them without matt. Rule 106.
+The engines hook lists the uncommitted changes in log-cli's code (src, python, vendor, bin, scripts, package.json) under `>>> UNCOMMITTED LOCAL CHANGES`, and says to read each one's diff and never overwrite, revert, stage, publish or ship them without matt. Active rule 163.
 
 Checked by: code and SubQ
 

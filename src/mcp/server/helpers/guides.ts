@@ -1,3 +1,4 @@
+import { currentRuleIds } from "./agentRules.ts";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { Command } from "../../../cli/runner/types.ts";
@@ -168,8 +169,9 @@ export interface GuideInput {
 export function renderGuide(input: GuideInput): string {
   const topic = GUIDE_TOPICS[input.topic];
   const rules = agentsRules(input.agentsMd);
-  const cited = [...new Set([...(input.rules ?? []), ...input.tools.flatMap(input.rulesOf)])].sort((a, b) => a - b);
-  const out: string[] = [`# ${input.topic}`, "", `${topic.about}.`, "", `Written by \`bun run docs:build\` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.`, ""];
+  const cited = currentRuleIds([...(input.rules ?? []), ...input.tools.flatMap(input.rulesOf)]).sort((a, b) => a - b);
+  const out: string[] = [`# ${input.topic}`, "", `${topic.about}.`, "", `Written by \`bun run docs:build\` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.`, ""];
+  out.push("## Current scope", "", "This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.", "");
   if (input.extra?.length) out.push(...input.extra, "");
   if (input.tools.length) {
     out.push("## The tools in this guide", "", "| Tool | What it does |", "|---|---|", ...input.tools.map((t) => `| \`${t.name}\` | ${t.title ?? ""} |`), "");
@@ -183,7 +185,7 @@ export function renderGuide(input: GuideInput): string {
     for (const tool of input.tools) out.push(`### \`${tool.name}\``, "", tool.description, "");
   }
   if (cited.length) {
-    out.push("## The rules these tools fall under, in full", "", "From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.", "");
+    out.push("## The rules these tools fall under, in full", "", "From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.", "");
     for (const n of cited) if (rules.has(n)) out.push(`**Rule ${n}.** ${rules.get(n)}`, "");
   }
   return `${out.join("\n").replace(/\n{3,}/g, "\n\n").trim()}\n`;

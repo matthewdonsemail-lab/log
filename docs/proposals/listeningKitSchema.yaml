@@ -1,0 +1,4711 @@
+schemaVersion: 2
+status: proposedImplementationContract
+asOf: '2026-11-11'
+sourceRevision: 4004558bdafcace630686df994d91254130659ab
+purpose: 'Native Log specification: existing workspace SQLite is the private data foundation; hosted PostgreSQL
+  owns identity, authorization and routing only.'
+conventions:
+  fieldNames: camelCase
+  uuid: UUID stored as PostgreSQL uuid or canonical SQLite text
+  timestampUtc: UTC timestamp; PostgreSQL timestamptz, new SQLite fields epoch milliseconds via repository codec
+  existingTimeFields: Preserve current text and integer columns; normalize at DTO boundary without destructive rewrites.
+  json: Validated against named contract; private payload JSON is prohibited in central metadata.
+  tokenHash: Hash of high-entropy random token; raw secret issued once.
+  newForeignKeys: Enforce within one store; opaque ids across stores require application checks, not SQL FKs.
+  deletion: Restrict by default; revoke access separately from deleting private records.
+  versioning: YAML version is specification version, independent from current SQLite user_version 17.
+  defaults: Unspecified means required explicit input or migration mapping, not a guessed SQL default.
+ownership:
+  control: Hosted FastAPI/SQLModel/PostgreSQL identity, authorization and minimal routing.
+  workspace: 'Selected persistent cloud runtime: SQLite log.db plus protected files.'
+  browserHost: Where AdsPower actually runs; provided host holds its own protected profiles and management credential.
+  client: Transient authorized console/AI results; clear old-team caches on team switch.
+  crossStoreTransactions: None. Use operation identity, idempotency, fencing and reconciliation.
+sources:
+  sqlite:
+  - src/storage/schema/helpers/inbox.ts
+  - src/storage/schema/helpers/platformTables.ts
+  - src/storage/schema/helpers/migrations.ts
+  - src/storage/schema/client.ts
+  domains:
+  - src/storage/platform/types.ts
+  - src/platformKit/session/types.ts
+  - src/platformKit/session/client.ts
+  - src/directApi/governor/client.ts
+  decisions:
+  - docs/proposals/listeningKitNativeData.md
+  - docs/proposals/listeningKitInstanceContracts.md
+  - docs/proposals/listeningKitAdsPower.md
+  - docs/proposals/listeningKitTwentyCutover.md
+  tregReference: docs/proposals/listeningKitTregArchitecture.md contains pinned Treg file links; these Log additions
+    are not claimed to exist in Treg.
+  ddia: docs/datamodel/Designing Data-Intensive Applications.md
+control:
+  engine: PostgreSQL
+  status: proposed
+  migrationOwner: control backend
+  migrationPath: python/controlService/migrations/versions; backend-owned Alembic revisions
+  tables:
+    users:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        email:
+          type: text
+          nullable: false
+        emailCanonical:
+          type: text
+          nullable: false
+        emailVerifiedAt:
+          type: timestampUtc
+          nullable: true
+        suspended:
+          type: boolean
+          nullable: false
+          default: false
+        tokenVersion:
+          type: integer
+          nullable: false
+      primaryKey:
+      - id
+      unique:
+      - - emailCanonical
+      indexes: []
+    teams:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        name:
+          type: text
+          nullable: false
+        slug:
+          type: text
+          nullable: false
+        suspended:
+          type: boolean
+          nullable: false
+          default: false
+        authzVersion:
+          type: integer
+          nullable: false
+      primaryKey:
+      - id
+      unique:
+      - - slug
+      indexes: []
+    memberships:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        userId:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        role:
+          type: enum
+          nullable: false
+          values:
+          - owner
+          - admin
+          - member
+        status:
+          type: enum
+          nullable: false
+          values:
+          - active
+          - revoked
+        version:
+          type: integer
+          nullable: false
+      primaryKey:
+      - id
+      unique:
+      - - teamId
+        - userId
+      indexes:
+      - - userId
+        - status
+    invites:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        emailCanonical:
+          type: text
+          nullable: false
+        role:
+          type: enum
+          nullable: false
+          values:
+          - admin
+          - member
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        invitedBy:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        acceptedAt:
+          type: timestampUtc
+          nullable: true
+        acceptedBy:
+          type: uuid
+          nullable: true
+          references: users.id
+          onDelete: restrict
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      indexes:
+      - - teamId
+        - emailCanonical
+    emailChallenges:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        emailCanonical:
+          type: text
+          nullable: false
+        purpose:
+          type: enum
+          nullable: false
+          values:
+          - signIn
+        codeVerifier:
+          type: keyedHash
+          nullable: false
+          expose: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        attempts:
+          type: integer
+          nullable: false
+        maxAttempts:
+          type: integer
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+        supersededAt:
+          type: timestampUtc
+          nullable: true
+        returnContextId:
+          type: uuid
+          nullable: true
+          validation: If supplied resolve a live authorizationRequests.id; never trust unknown context id.
+        safeReturnPath:
+          type: text
+          nullable: true
+          validation: Relative allowlisted frontend route only; no arbitrary external redirect or private payload.
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - emailCanonical
+        - purpose
+        - expiresAt
+      notes:
+      - Short OTP verifier uses server-held pepper; random challenge id alone is not proof of email ownership.
+      - Raw codes and email bodies never enter logs; resend and verify are rate limited.
+    websiteSessions:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        userId:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        selectedTeamId:
+          type: uuid
+          nullable: true
+          references: teams.id
+          onDelete: restrict
+        issuedTokenVersion:
+          type: integer
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        lastSeenAt:
+          type: timestampUtc
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      indexes:
+      - - userId
+        - revokedAt
+      notes:
+      - Selection is a preference; every operation still checks membership.
+    oauthClients:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        clientId:
+          type: text
+          nullable: false
+        name:
+          type: text
+          nullable: false
+        kind:
+          type: enum
+          nullable: false
+          values:
+          - public
+          - confidential
+        redirectUris:
+          type: json
+          nullable: false
+          schema: redirectUris
+        clientSecretHash:
+          type: tokenHash
+          nullable: true
+          expose: false
+        registrationStatus:
+          type: enum
+          nullable: false
+          values:
+          - active
+          - revoked
+      primaryKey:
+      - id
+      unique:
+      - - clientId
+      indexes: []
+    authorizationRequests:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        clientId:
+          type: uuid
+          nullable: false
+          references: oauthClients.id
+          onDelete: restrict
+        userId:
+          type: uuid
+          nullable: true
+          references: users.id
+          onDelete: restrict
+        teamId:
+          type: uuid
+          nullable: true
+          references: teams.id
+          onDelete: restrict
+        redirectUri:
+          type: text
+          nullable: false
+        clientState:
+          type: text
+          nullable: true
+          expose: false
+        codeChallenge:
+          type: text
+          nullable: false
+        codeChallengeMethod:
+          type: enum
+          nullable: false
+          values:
+          - S256
+        resource:
+          type: text
+          nullable: false
+        scopes:
+          type: json
+          nullable: false
+          schema: scopes
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes: []
+      notes:
+      - Validate redirect/resource against registration before persisting; only bounded allowlisted authorization
+        context, no tool payload.
+    oauthGrants:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        userId:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        clientId:
+          type: uuid
+          nullable: false
+          references: oauthClients.id
+          onDelete: restrict
+        resource:
+          type: text
+          nullable: false
+        scopes:
+          type: json
+          nullable: false
+          schema: scopes
+        authzVersion:
+          type: integer
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - teamId
+        - userId
+        - clientId
+    authorizationCodes:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        codeHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        requestId:
+          type: uuid
+          nullable: false
+          references: authorizationRequests.id
+          onDelete: restrict
+        grantId:
+          type: uuid
+          nullable: false
+          references: oauthGrants.id
+          onDelete: restrict
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - codeHash
+      indexes: []
+      notes:
+      - Consume atomically with PKCE verification and token issuance.
+    oauthRefreshTokens:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        grantId:
+          type: uuid
+          nullable: false
+          references: oauthGrants.id
+          onDelete: restrict
+        familyId:
+          type: uuid
+          nullable: false
+        parentId:
+          type: uuid
+          nullable: true
+          references: oauthRefreshTokens.id
+          onDelete: restrict
+        issuedTeamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      - - parentId
+      indexes:
+      - - familyId
+      notes:
+      - Issued team is immutable; reuse revokes family. Team switch requires consent/new authorization in V1.
+      - Nullable unique parent permits root tokens but prevents two valid successor rows.
+    oauthAccessTokens:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        grantId:
+          type: uuid
+          nullable: false
+          references: oauthGrants.id
+          onDelete: restrict
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      indexes: []
+      notes:
+      - V1 recommended opaque tokens so authorization/revocation has one server authority. No private payload claims.
+    cliAuthorizations:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        deviceCodeHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        userCodeVerifier:
+          type: keyedHash
+          nullable: false
+          expose: false
+        clientId:
+          type: uuid
+          nullable: false
+          references: oauthClients.id
+          onDelete: restrict
+        grantId:
+          type: uuid
+          nullable: true
+          references: oauthGrants.id
+          onDelete: restrict
+        status:
+          type: enum
+          nullable: false
+          values:
+          - pending
+          - approved
+          - denied
+          - consumed
+          - expired
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        pollIntervalSeconds:
+          type: integer
+          nullable: false
+        lastPolledAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - deviceCodeHash
+      indexes: []
+      notes:
+      - Recommended remote CLI device flow; approval creates the same scoped grant authority, not platform login.
+    providerConnections:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        provider:
+          type: enum
+          nullable: false
+          values:
+          - boat
+        credentialCiphertext:
+          type: ciphertext
+          nullable: false
+          expose: false
+        encryptionKeyVersion:
+          type: text
+          nullable: false
+        createdBy:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        status:
+          type: enum
+          nullable: false
+          values:
+          - active
+          - invalid
+          - revoked
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - teamId
+        - status
+      notes:
+      - Only accepted Boat control credential is stored encrypted here; no platform or AdsPower key.
+    workspaces:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        createdBy:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        provider:
+          type: enum
+          nullable: false
+          values:
+          - ownCloud
+          - boat
+        providerConnectionId:
+          type: uuid
+          nullable: true
+          references: providerConnections.id
+          onDelete: restrict
+        providerRuntimeId:
+          type: opaqueId
+          nullable: true
+        installationId:
+          type: uuid
+          nullable: true
+        status:
+          type: enum
+          nullable: false
+          values:
+          - pending
+          - connecting
+          - ready
+          - offline
+          - incompatible
+          - revoked
+        runtimeVersion:
+          type: text
+          nullable: true
+        protocolVersion:
+          type: integer
+          nullable: true
+        schemaVersion:
+          type: integer
+          nullable: true
+        connectionGeneration:
+          type: integer
+          nullable: false
+        capabilitySummary:
+          type: json
+          nullable: false
+          schema: capabilitySummary
+        lastContactAt:
+          type: timestampUtc
+          nullable: true
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - id
+        - teamId
+      indexes:
+      - - teamId
+        - status
+      notes:
+      - No private filesystem paths, account handles, profile ids or account inventory.
+      - Provider runtime id is routing metadata only.
+    teamWorkspaceSelections:
+      fields:
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        selectedBy:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        selectedAt:
+          type: timestampUtc
+          nullable: false
+        generation:
+          type: integer
+          nullable: false
+      primaryKey:
+      - teamId
+      unique:
+      - - workspaceId
+      indexes: []
+      constraints:
+      - Composite FK (workspaceId, teamId) -> workspaces(id, teamId).
+      - Exactly one selected workspace per team at a time; selection is transactional.
+    workspacePairings:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        approvedBy:
+          type: uuid
+          nullable: false
+          references: users.id
+          onDelete: restrict
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        challengeHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      indexes: []
+      constraints:
+      - workspace.teamId must equal teamId in same transaction.
+    runtimeCredentials:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        tokenHash:
+          type: tokenHash
+          nullable: false
+          secretClass: verifier
+          expose: false
+        generation:
+          type: integer
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - tokenHash
+      indexes:
+      - - workspaceId
+        - generation
+      notes:
+      - Secret returned only once to runtime and saved in its private credential store.
+    workspaceLeases:
+      fields:
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        holderId:
+          type: opaqueId
+          nullable: false
+        generation:
+          type: integer
+          nullable: false
+        acquiredAt:
+          type: timestampUtc
+          nullable: false
+        heartbeatAt:
+          type: timestampUtc
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+      primaryKey:
+      - workspaceId
+      unique: []
+      indexes: []
+      constraints:
+      - Monotonic fencing generation; expired holder cannot dispatch or commit a new operation.
+    browserConnections:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        mode:
+          type: enum
+          nullable: false
+          values:
+          - provided
+          - own
+        browserHostRoute:
+          type: opaqueId
+          nullable: true
+        status:
+          type: enum
+          nullable: false
+          values:
+          - pending
+          - ready
+          - offline
+          - revoked
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - teamId
+        - workspaceId
+      constraints:
+      - workspace belongs to team.
+      notes:
+      - Opaque host route only; management key, profile id and profile assignment remain private to actual browser
+        host/workspace.
+    operationMetadata:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        grantId:
+          type: uuid
+          nullable: true
+          references: oauthGrants.id
+          onDelete: restrict
+        actorUserId:
+          type: uuid
+          nullable: true
+          references: users.id
+          onDelete: restrict
+        tool:
+          type: text
+          nullable: false
+        state:
+          type: enum
+          nullable: false
+          values:
+          - accepted
+          - dispatched
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - unknown
+        routeGeneration:
+          type: integer
+          nullable: false
+        progressCursor:
+          type: opaqueId
+          nullable: true
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - teamId
+        - createdAt
+      - - workspaceId
+        - state
+      - - expiresAt
+      constraints:
+      - Require actorUserId or grantId; all supplied authorities belong to the same team.
+      notes:
+      - 'Strict column allowlist: no args, result, account id/name, error text, private paths or HAR.'
+      - Tool is registered tool identifier only, never user-generated title.
+    usageBuckets:
+      fields:
+        teamId:
+          type: uuid
+          nullable: false
+          references: teams.id
+          onDelete: restrict
+        workspaceId:
+          type: uuid
+          nullable: false
+          references: workspaces.id
+          onDelete: restrict
+        tool:
+          type: text
+          nullable: false
+        bucketStart:
+          type: timestampUtc
+          nullable: false
+        callCount:
+          type: integer
+          nullable: false
+        failureCount:
+          type: integer
+          nullable: false
+        totalDurationMs:
+          type: bigInteger
+          nullable: false
+      primaryKey:
+      - teamId
+      - workspaceId
+      - tool
+      - bucketStart
+      unique: []
+      indexes: []
+      notes:
+      - Only operational counts/timing; no platform activity ledger or message-derived analytics.
+    controlAudit:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: true
+          references: teams.id
+          onDelete: restrict
+        actorUserId:
+          type: uuid
+          nullable: true
+          references: users.id
+          onDelete: restrict
+        action:
+          type: enum
+          nullable: false
+          values:
+          - signIn
+          - signOut
+          - invite
+          - membershipChange
+          - grantRevoked
+          - pairing
+          - workspaceSelected
+          - runtimeRevoked
+          - providerChanged
+        subjectType:
+          type: enum
+          nullable: false
+          values:
+          - user
+          - team
+          - grant
+          - workspace
+          - providerConnection
+        subjectId:
+          type: uuid
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+      primaryKey:
+      - id
+      unique: []
+      indexes:
+      - - teamId
+        - createdAt
+      notes:
+      - No arbitrary detail/body field. Subject references are polymorphic control ids, validated by action.
+workspace:
+  engine: SQLite
+  databaseResolution:
+  - LOG_DB
+  - LOG_INBOX_STATE/log.db
+  - ~/.logCli/log.db
+  currentSchemaVersion: 17
+  migrationOwner: runtime backend
+  migrationPath: src/storage/schema/helpers/migrations.ts; append only after schema review
+  existingMigrations:
+  - version: 1
+    name: inboxBaseline
+  - version: 2
+    name: platformTables
+  - version: 3
+    name: typeStoredEvents
+  - version: 4
+    name: ledgerColumns
+  - version: 5
+    name: chatBoxAndMemberOrder
+  - version: 6
+    name: integerTimesAndMessageKeys
+  - version: 7
+    name: eventsAsTheRecord
+  - version: 8
+    name: stableIdentities
+  - version: 9
+    name: fencedOwnersAndGaps
+  - version: 10
+    name: fencedSends
+  - version: 11
+    name: readerVersion
+  - version: 12
+    name: queueTables
+  - version: 13
+    name: jobTables
+  - version: 14
+    name: transcriptBodies
+  - version: 15
+    name: records
+  - version: 16
+    name: state
+  - version: 17
+    name: mediaRepresentation
+  existingTables:
+    accounts:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE accounts (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, learnedAt
+        TEXT NOT NULL, PRIMARY KEY (platform, account)) WITHOUT ROWID
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        userId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        learnedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    actions:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE actions (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, kind TEXT NOT NULL,
+        platform TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL, withWho TEXT, eventId TEXT,
+        holder INTEGER NOT NULL, generation INTEGER, stateBefore TEXT, detail TEXT)
+      fields:
+        id:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        withWho:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        eventId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        holder:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        generation:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        stateBefore:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    aiIndexes:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE aiIndexes (name TEXT PRIMARY KEY, model TEXT NOT NULL, meta TEXT NOT NULL, builtAt
+        TEXT NOT NULL)
+      fields:
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        model:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        meta:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        builtAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    alerts:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE alerts (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, platform TEXT NOT
+        NULL, account TEXT NOT NULL, kind TEXT NOT NULL, detail TEXT NOT NULL)
+      fields:
+        id:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    attachments:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE attachments (messageKey TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL, name
+        TEXT, contentType TEXT, url TEXT, hash TEXT, durationMs INTEGER, describedHash TEXT, path TEXT, error TEXT,
+        PRIMARY KEY (messageKey, n)) WITHOUT ROWID
+      fields:
+        messageKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        n:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        name:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        contentType:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        url:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        hash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        durationMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        describedHash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        path:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        error:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    blobChunks:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE blobChunks (hash TEXT NOT NULL, n INTEGER NOT NULL, bytes BLOB NOT NULL, PRIMARY KEY
+        (hash, n)) WITHOUT ROWID
+      fields:
+        hash:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        n:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        bytes:
+          sqlType: BLOB
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    blobs:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE blobs (hash TEXT PRIMARY KEY, kind TEXT NOT NULL, codec TEXT NOT NULL, size INTEGER
+        NOT NULL, storedSize INTEGER NOT NULL, chunks INTEGER NOT NULL DEFAULT 0, bytes BLOB, createdAt TEXT NOT
+        NULL) WITHOUT ROWID
+      fields:
+        hash:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        codec:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        size:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        storedSize:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        chunks:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        bytes:
+          sqlType: BLOB
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        createdAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    chatGenerations:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE chatGenerations (chatKey TEXT PRIMARY KEY, generation INTEGER NOT NULL)
+      fields:
+        chatKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        generation:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    chats:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE chats (chatId TEXT PRIMARY KEY, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId
+        TEXT NOT NULL, kind TEXT NOT NULL, name TEXT, serverId TEXT, lastMessageAt TEXT, backfilledAt TEXT, box
+        TEXT, lastMessageAtMs INTEGER, UNIQUE (platform, account, conversationId)) WITHOUT ROWID
+      fields:
+        chatId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        name:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        serverId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        lastMessageAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        backfilledAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        box:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        lastMessageAtMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    claims:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE claims (chatKey TEXT PRIMARY KEY, platform TEXT NOT NULL, account TEXT NOT NULL, conversationId
+        TEXT NOT NULL, parties TEXT NOT NULL, withWho TEXT, eventId TEXT, holder INTEGER NOT NULL, generation INTEGER
+        NOT NULL, claimedAt TEXT NOT NULL, expiresAt TEXT NOT NULL, sendingOp TEXT, sendingSince TEXT)
+      fields:
+        chatKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        parties:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        withWho:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        eventId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        holder:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        generation:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        claimedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        expiresAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        sendingOp:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        sendingSince:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    cursors:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE cursors (reader TEXT PRIMARY KEY, seq INTEGER NOT NULL, updatedAt TEXT NOT NULL)
+      fields:
+        reader:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        updatedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    embeddings:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE embeddings (hash TEXT NOT NULL, model TEXT NOT NULL, dimensions INTEGER NOT NULL,
+        kind TEXT NOT NULL DEFAULT 'text', text TEXT NOT NULL, vector BLOB NOT NULL, createdAt TEXT NOT NULL, PRIMARY
+        KEY (hash, model, dimensions))
+      fields:
+        hash:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        model:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        dimensions:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 3
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: '''text'''
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        vector:
+          sqlType: BLOB
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        createdAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    eventTypes:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE eventTypes (platform TEXT NOT NULL, type TEXT NOT NULL, status TEXT NOT NULL, firstSeenAt
+        TEXT NOT NULL, sample TEXT NOT NULL DEFAULT '{}', PRIMARY KEY (platform, type))
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        type:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        status:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        firstSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        sample:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: '''{}'''
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    events:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE events (seq INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL UNIQUE, platform
+        TEXT NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, known
+        INTEGER NOT NULL DEFAULT 1, withWho TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', box TEXT NOT
+        NULL DEFAULT '', payload TEXT NOT NULL DEFAULT '{}', sourceAt TEXT NOT NULL DEFAULT '', receivedAt TEXT
+        NOT NULL, appendedAt TEXT NOT NULL, ownerPid INTEGER NOT NULL DEFAULT 0, source TEXT NOT NULL DEFAULT 'live',
+        sourceAtMs INTEGER, receivedAtMs INTEGER, messageKey TEXT, rawHash TEXT, ownerId TEXT, typedAt INTEGER)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        eventId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        type:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        known:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '1'
+          primaryKeyOrder: 0
+        withWho:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        box:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        payload:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: '''{}'''
+          primaryKeyOrder: 0
+        sourceAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        receivedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        appendedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        ownerPid:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: '''live'''
+          primaryKeyOrder: 0
+        sourceAtMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        receivedAtMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        messageKey:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        rawHash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        ownerId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        typedAt:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    gaps:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE gaps (id INTEGER PRIMARY KEY AUTOINCREMENT, platform TEXT NOT NULL, account TEXT NOT
+        NULL, fromAt TEXT NOT NULL, toAt TEXT, reason TEXT NOT NULL, status TEXT NOT NULL, detail TEXT, appended
+        INTEGER NOT NULL DEFAULT 0, openedAt TEXT NOT NULL, closedAt TEXT, drops INTEGER NOT NULL DEFAULT 0)
+      fields:
+        id:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        fromAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        toAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        reason:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        status:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        appended:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        openedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        closedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        drops:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    handleAliases:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE handleAliases (platform TEXT NOT NULL, handle TEXT NOT NULL, userId TEXT NOT NULL,
+        firstSeenAt TEXT NOT NULL, lastSeenAt TEXT NOT NULL, PRIMARY KEY (platform, handle, userId)) WITHOUT ROWID
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        handle:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        userId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 3
+        firstSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        lastSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    identities:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE identities (platform TEXT NOT NULL, userId TEXT NOT NULL, handle TEXT, displayName
+        TEXT, personId TEXT, firstSeenAt TEXT NOT NULL, lastSeenAt TEXT NOT NULL, PRIMARY KEY (platform, userId))
+        WITHOUT ROWID
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        userId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        handle:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        displayName:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        personId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        firstSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        lastSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    identityMerges:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE identityMerges (seq INTEGER PRIMARY KEY, platform TEXT NOT NULL, fromId TEXT NOT NULL,
+        toId TEXT NOT NULL, at TEXT NOT NULL, reason TEXT NOT NULL)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        fromId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        toId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        reason:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    imports:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE imports (store TEXT PRIMARY KEY, state TEXT NOT NULL, files INTEGER NOT NULL DEFAULT
+        0, rows INTEGER NOT NULL DEFAULT 0, detail TEXT, startedAt TEXT NOT NULL, endedAt TEXT) WITHOUT ROWID
+      fields:
+        store:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        state:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        files:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        rows:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        startedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        endedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    interactions:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE interactions (seq INTEGER PRIMARY KEY, interactionKey TEXT NOT NULL UNIQUE, platform
+        TEXT NOT NULL, account TEXT NOT NULL, kind TEXT NOT NULL, actorUserId TEXT NOT NULL, targetRef TEXT, targetText
+        TEXT, text TEXT, at TEXT NOT NULL, rawHash TEXT, atMs INTEGER, extenderVersion INTEGER)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        interactionKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        actorUserId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        targetRef:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        targetText:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        rawHash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        atMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        extenderVersion:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    jobLines:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE jobLines (jobId TEXT NOT NULL, n INTEGER NOT NULL, at TEXT NOT NULL, source TEXT NOT
+        NULL, line TEXT NOT NULL, PRIMARY KEY (jobId, n)) WITHOUT ROWID
+      fields:
+        jobId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        n:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        line:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    jobs:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE jobs (id TEXT PRIMARY KEY, tool TEXT NOT NULL, argv TEXT NOT NULL, account TEXT, live
+        INTEGER NOT NULL, pid INTEGER NOT NULL, startedAt TEXT NOT NULL, endedAt TEXT, status TEXT NOT NULL, cancelRequested
+        INTEGER NOT NULL DEFAULT 0, result TEXT, text TEXT) WITHOUT ROWID
+      fields:
+        id:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        tool:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        argv:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        live:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        pid:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        startedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        endedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        status:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        cancelRequested:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        result:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    ledger:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE ledger (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, provider TEXT, platform TEXT,
+        account TEXT, subject TEXT, at TEXT NOT NULL, amount REAL, unit TEXT, outcome TEXT NOT NULL, code TEXT,
+        detail TEXT, atMs INTEGER)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        provider:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        subject:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        amount:
+          sqlType: REAL
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        unit:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        outcome:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        code:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        atMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    media:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE media (id INTEGER PRIMARY KEY AUTOINCREMENT, eventId TEXT NOT NULL, platform TEXT
+        NOT NULL, account TEXT NOT NULL, conversationId TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL, name TEXT
+        NOT NULL, path TEXT, status TEXT NOT NULL, description TEXT, model TEXT, detail TEXT, createdAt TEXT NOT
+        NULL, describedAt TEXT, sha256 TEXT, sizeBytes INTEGER, durationMs INTEGER, width INTEGER, height INTEGER,
+        preview BLOB, previewMime TEXT, scenes TEXT, transcript TEXT, providers TEXT, fileRemovedAt TEXT, UNIQUE
+        (eventId, name))
+      fields:
+        id:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        eventId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        path:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        status:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        description:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        model:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        detail:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        createdAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        describedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        sha256:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        sizeBytes:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        durationMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        width:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        height:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        preview:
+          sqlType: BLOB
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        previewMime:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        scenes:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        transcript:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        providers:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        fileRemovedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    memberships:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE memberships (platform TEXT NOT NULL, roomId TEXT NOT NULL, userId TEXT NOT NULL, firstSeenAt
+        TEXT NOT NULL, lastSeenAt TEXT NOT NULL, position INTEGER, PRIMARY KEY (platform, roomId, userId)) WITHOUT
+        ROWID
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        roomId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        userId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 3
+        firstSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        lastSeenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        position:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    messages:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE messages (seq INTEGER PRIMARY KEY, messageKey TEXT NOT NULL UNIQUE, chatId TEXT NOT
+        NULL, platformMessageId TEXT, senderPlatform TEXT NOT NULL, senderUserId TEXT NOT NULL, senderLabel TEXT,
+        fromOwner INTEGER NOT NULL, sentAt TEXT NOT NULL, text TEXT NOT NULL DEFAULT '', replyToKey TEXT, source
+        TEXT NOT NULL, rawHash TEXT, receivedAt TEXT NOT NULL, sentAtMs INTEGER, receivedAtMs INTEGER, timeSource
+        TEXT, extenderVersion INTEGER)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        messageKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        chatId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        platformMessageId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        senderPlatform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        senderUserId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        senderLabel:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        fromOwner:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        sentAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        replyToKey:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        rawHash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        receivedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        sentAtMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        receivedAtMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        timeSource:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        extenderVersion:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    meta:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID
+      fields:
+        key:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        value:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    owners:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE owners (platform TEXT NOT NULL, account TEXT NOT NULL, pid INTEGER NOT NULL, hostname
+        TEXT NOT NULL DEFAULT '', startedAt TEXT NOT NULL, heartbeat TEXT NOT NULL, status TEXT NOT NULL, port INTEGER
+        NOT NULL DEFAULT 0, token TEXT NOT NULL DEFAULT '', subscribers INTEGER NOT NULL DEFAULT 0, generation INTEGER
+        NOT NULL DEFAULT 1, pidStartedAt TEXT, staleSeenAt TEXT, PRIMARY KEY (platform, account))
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        pid:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        hostname:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        startedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        heartbeat:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        status:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        port:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        token:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 0
+        subscribers:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '0'
+          primaryKeyOrder: 0
+        generation:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: '1'
+          primaryKeyOrder: 0
+        pidStartedAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        staleSeenAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    people:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE people (platform TEXT NOT NULL, account TEXT NOT NULL, userId TEXT NOT NULL, handle
+        TEXT NOT NULL, name TEXT, seenAt TEXT NOT NULL, PRIMARY KEY (platform, account, userId))
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        userId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 3
+        handle:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        name:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        seenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    positions:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE positions (platform TEXT NOT NULL, account TEXT NOT NULL, scope TEXT NOT NULL DEFAULT
+        '', position TEXT NOT NULL, updatedAt TEXT NOT NULL, PRIMARY KEY (platform, account, scope))
+      fields:
+        platform:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        scope:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: ''''''
+          primaryKeyOrder: 3
+        position:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        updatedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    queueIncoming:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE queueIncoming (seq INTEGER PRIMARY KEY, name TEXT NOT NULL, addition TEXT NOT NULL,
+        addedAt TEXT NOT NULL, takenAt TEXT)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        addition:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        addedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        takenAt:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    queueLocks:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE queueLocks (name TEXT PRIMARY KEY, pid INTEGER NOT NULL, takenAt TEXT NOT NULL) WITHOUT
+        ROWID
+      fields:
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        pid:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        takenAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    queueLog:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE queueLog (seq INTEGER PRIMARY KEY, name TEXT NOT NULL, at TEXT NOT NULL, line TEXT
+        NOT NULL, source TEXT NOT NULL)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        line:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    queueNudges:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE queueNudges (name TEXT PRIMARY KEY, replies INTEGER NOT NULL) WITHOUT ROWID
+      fields:
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        replies:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    queues:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE queues (name TEXT PRIMARY KEY, account TEXT NOT NULL, body TEXT NOT NULL, version
+        INTEGER NOT NULL, path TEXT NOT NULL, updatedAt TEXT NOT NULL) WITHOUT ROWID
+      fields:
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        account:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        body:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        version:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        path:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        updatedAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    records:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE records (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, key TEXT, at TEXT NOT NULL,
+        body TEXT NOT NULL, source TEXT NOT NULL)
+      fields:
+        seq:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        kind:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        key:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        body:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    searchIndex:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE VIRTUAL TABLE searchIndex USING fts5(source, ref, platform, account, conversationId, text)
+      fields:
+        source:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        ref:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        platform:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        account:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        conversationId:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        text:
+          sqlType: ''
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    spans:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE spans (spanId TEXT PRIMARY KEY, traceId TEXT NOT NULL, callId TEXT NOT NULL, parentId
+        TEXT, tool TEXT NOT NULL, name TEXT NOT NULL, source TEXT NOT NULL, pid INTEGER NOT NULL, startedAt REAL
+        NOT NULL, ms REAL NOT NULL, ok INTEGER NOT NULL, attrs TEXT NOT NULL DEFAULT '{}')
+      fields:
+        spanId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        traceId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        callId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        parentId:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        tool:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        name:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        source:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        pid:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        startedAt:
+          sqlType: REAL
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        ms:
+          sqlType: REAL
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        ok:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        attrs:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: '''{}'''
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    state:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE state (scope TEXT NOT NULL, key TEXT NOT NULL, body TEXT NOT NULL, updatedAt INTEGER
+        NOT NULL, PRIMARY KEY (scope, key)) WITHOUT ROWID
+      fields:
+        scope:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        key:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        body:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        updatedAt:
+          sqlType: INTEGER
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    timings:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE timings (eventId TEXT NOT NULL, stage TEXT NOT NULL, at TEXT NOT NULL, PRIMARY KEY
+        (eventId, stage))
+      fields:
+        eventId:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        stage:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 2
+        at:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    transcriptLinks:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE transcriptLinks (linkKey TEXT PRIMARY KEY, audioHash TEXT NOT NULL) WITHOUT ROWID
+      fields:
+        linkKey:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        audioHash:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+    transcripts:
+      status: existing
+      authority: workspace
+      sourceSql: CREATE TABLE transcripts (audioHash TEXT PRIMARY KEY, provider TEXT NOT NULL, text TEXT NOT NULL,
+        wordsHash TEXT, durationMs INTEGER, createdAt TEXT NOT NULL, body TEXT) WITHOUT ROWID
+      fields:
+        audioHash:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 1
+        provider:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        text:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        wordsHash:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        durationMs:
+          sqlType: INTEGER
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+        createdAt:
+          sqlType: TEXT
+          nullable: false
+          defaultSql: null
+          primaryKeyOrder: 0
+        body:
+          sqlType: TEXT
+          nullable: true
+          defaultSql: null
+          primaryKeyOrder: 0
+      foreignKeys: []
+      notes:
+      - Existing logical relationships are not automatically enforced SQL foreign keys.
+  existingIndexes:
+  - name: actionsByChat
+    sql: CREATE INDEX actionsByChat ON actions (platform, account, conversationId, id)
+  - name: eventsByChat
+    sql: CREATE INDEX eventsByChat ON events (platform, account, conversationId, seq)
+  - name: eventsByConversation
+    sql: CREATE INDEX eventsByConversation ON events (conversationId, seq)
+  - name: eventsByMessageKey
+    sql: CREATE UNIQUE INDEX eventsByMessageKey ON events (messageKey) WHERE messageKey IS NOT NULL
+  - name: eventsUntyped
+    sql: CREATE INDEX eventsUntyped ON events (seq) WHERE typedAt IS NULL
+  - name: eventsWithoutTime
+    sql: CREATE INDEX eventsWithoutTime ON events (seq) WHERE receivedAtMs IS NULL
+  - name: gapsOneOpen
+    sql: CREATE UNIQUE INDEX gapsOneOpen ON gaps (platform, account) WHERE status IN ('open', 'catchingUp', 'refused')
+  - name: gapsOpen
+    sql: CREATE INDEX gapsOpen ON gaps (platform, account, status)
+  - name: handleAliasesByUser
+    sql: CREATE INDEX handleAliasesByUser ON handleAliases (platform, userId)
+  - name: identitiesByHandle
+    sql: CREATE INDEX identitiesByHandle ON identities (platform, handle)
+  - name: identitiesByPerson
+    sql: CREATE INDEX identitiesByPerson ON identities (personId)
+  - name: interactionsByAccountTime
+    sql: CREATE INDEX interactionsByAccountTime ON interactions (platform, account, atMs)
+  - name: interactionsByActorTime
+    sql: CREATE INDEX interactionsByActorTime ON interactions (platform, actorUserId, atMs)
+  - name: jobsByAccount
+    sql: CREATE INDEX jobsByAccount ON jobs (account, status, startedAt)
+  - name: jobsByStart
+    sql: CREATE INDEX jobsByStart ON jobs (startedAt)
+  - name: ledgerByAccountTime
+    sql: CREATE INDEX ledgerByAccountTime ON ledger (kind, platform, account, atMs)
+  - name: ledgerByKindTime
+    sql: CREATE INDEX ledgerByKindTime ON ledger (kind, atMs)
+  - name: mediaByEvent
+    sql: CREATE INDEX mediaByEvent ON media (eventId)
+  - name: mediaByPath
+    sql: CREATE INDEX mediaByPath ON media (path)
+  - name: mediaByStatus
+    sql: CREATE INDEX mediaByStatus ON media (status, id)
+  - name: membershipsByUser
+    sql: CREATE INDEX membershipsByUser ON memberships (platform, userId)
+  - name: messagesByChatTime
+    sql: CREATE INDEX messagesByChatTime ON messages (chatId, sentAtMs, seq)
+  - name: messagesBySenderTime
+    sql: CREATE INDEX messagesBySenderTime ON messages (senderPlatform, senderUserId, sentAtMs, seq)
+  - name: messagesByTime
+    sql: CREATE INDEX messagesByTime ON messages (sentAtMs, seq)
+  - name: queueIncomingWaiting
+    sql: CREATE INDEX queueIncomingWaiting ON queueIncoming (name, seq) WHERE takenAt IS NULL
+  - name: queueLogByName
+    sql: CREATE INDEX queueLogByName ON queueLog (name, seq)
+  - name: recordsByKind
+    sql: CREATE INDEX recordsByKind ON records (kind, key, seq)
+  - name: spansByCall
+    sql: CREATE INDEX spansByCall ON spans (callId)
+  - name: spansByTool
+    sql: CREATE INDEX spansByTool ON spans (tool, startedAt)
+  ftsInternals: searchIndex FTS5 shadow tables generated by SQLite; intentionally excluded as independent domain
+    entities.
+  proposedTables:
+    runtimeBindings:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        workspaceId:
+          type: uuid
+          nullable: false
+        teamId:
+          type: uuid
+          nullable: false
+        installationId:
+          type: uuid
+          nullable: false
+        protocolVersion:
+          type: integer
+          nullable: false
+        credentialSecretId:
+          type: uuid
+          nullable: false
+          references: secrets.id
+          onDelete: restrict
+        routeGeneration:
+          type: integer
+          nullable: false
+      primaryKey:
+      - id
+      unique:
+      - - workspaceId
+      - - installationId
+      indexes: []
+      notes:
+      - Control ids are opaque external references, not cross-database SQL FKs.
+    secrets:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        kind:
+          type: enum
+          nullable: false
+          values:
+          - platformLogin
+          - platformSession
+          - proxy
+          - deviceProfile
+          - adsPower
+          - providerApi
+          - runtimeCredential
+        ciphertext:
+          type: ciphertext
+          nullable: false
+          expose: false
+        keyVersion:
+          type: text
+          nullable: false
+        version:
+          type: integer
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes: []
+      notes:
+      - Workspace key stays outside DB/backups; OS ACLs and encrypted backups required. Secret reads confined to
+        execution adapters.
+    browserProfiles:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        connectionId:
+          type: uuid
+          nullable: false
+        mode:
+          type: enum
+          nullable: false
+          values:
+          - provided
+          - own
+        driver:
+          type: enum
+          nullable: false
+          values:
+          - adsPower
+          - camoufox
+        profileId:
+          type: text
+          nullable: false
+        browserLocation:
+          type: enum
+          nullable: false
+          values:
+          - workspace
+          - providedHost
+        localProfilePath:
+          type: text
+          nullable: true
+        hostAssignmentRef:
+          type: opaqueId
+          nullable: true
+        keySecretId:
+          type: uuid
+          nullable: true
+          references: secrets.id
+          onDelete: restrict
+        status:
+          type: text
+          nullable: false
+        platformAccountId:
+          type: uuid
+          nullable: false
+          references: platformAccounts.id
+          onDelete: restrict
+      primaryKey:
+      - id
+      unique:
+      - - platformAccountId
+      indexes: []
+      notes:
+      - connectionId refers logically to central browserConnections; profile details never sync centrally.
+      - Provided-host assignments and management secrets stay on that host, as separately modeled below.
+    operations:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        operationId:
+          type: uuid
+          nullable: false
+        requesterUserId:
+          type: uuid
+          nullable: true
+        grantId:
+          type: uuid
+          nullable: true
+        teamId:
+          type: uuid
+          nullable: false
+        workspaceId:
+          type: uuid
+          nullable: false
+        idempotencyKey:
+          type: text
+          nullable: false
+        requestHash:
+          type: text
+          nullable: false
+        tool:
+          type: text
+          nullable: false
+        args:
+          type: json
+          nullable: false
+          schema: toolArguments
+        state:
+          type: enum
+          nullable: false
+          values:
+          - accepted
+          - running
+          - succeeded
+          - failed
+          - cancelled
+          - unknown
+        generation:
+          type: integer
+          nullable: false
+        live:
+          type: boolean
+          nullable: false
+          default: false
+        jobId:
+          type: text
+          nullable: true
+          references: existing.jobs.id
+        result:
+          type: json
+          nullable: true
+          schema: toolResult
+        error:
+          type: json
+          nullable: true
+          schema: privateError
+        evidenceRef:
+          type: text
+          nullable: true
+        startedAt:
+          type: timestampUtc
+          nullable: true
+        endedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique:
+      - - operationId
+      - - teamId
+        - idempotencyKey
+      indexes: []
+      notes:
+      - Actor/control ids are logical external bindings; runtime checks signed current authority.
+      - Persist acceptance before external effects. Same idempotency key with different request hash is a conflict.
+        Unknown write outcome requires evidence reconciliation.
+      - The operation is an envelope linked to an existing job when asynchronous. Job progress stays in jobLines;
+        do not mirror it into a second scheduler. Synchronous calls may have no jobId.
+    liveApprovals:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        operationId:
+          type: uuid
+          nullable: false
+          references: operations.id
+          onDelete: restrict
+        actorUserId:
+          type: uuid
+          nullable: false
+        requestHash:
+          type: text
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        consumedAt:
+          type: timestampUtc
+          nullable: true
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      primaryKey:
+      - id
+      unique: []
+      indexes: []
+      notes:
+      - Approval bound to exact operation/action/arguments and current authorization; cannot authorize different
+        writes.
+    platformAccounts:
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        updatedAt:
+          type: timestampUtc
+          nullable: false
+        platform:
+          type: text
+          nullable: false
+        account:
+          type: text
+          nullable: false
+        displayName:
+          type: text
+          nullable: true
+        status:
+          type: enum
+          nullable: false
+          values:
+          - active
+          - paused
+          - needsLogin
+          - restricted
+          - deactivated
+        revision:
+          type: integer
+          nullable: false
+        settings:
+          type: json
+          nullable: false
+          schema: accountSettings
+        loginSecretId:
+          type: uuid
+          nullable: true
+          references: secrets.id
+          onDelete: restrict
+        sessionSecretId:
+          type: uuid
+          nullable: true
+          references: secrets.id
+          onDelete: restrict
+        proxySecretId:
+          type: uuid
+          nullable: true
+          references: secrets.id
+          onDelete: restrict
+        deviceSecretId:
+          type: uuid
+          nullable: true
+          references: secrets.id
+          onDelete: restrict
+      primaryKey:
+      - id
+      unique:
+      - - platform
+        - account
+      indexes: []
+      notes:
+      - New private configuration registry; not a copy of a legacy account object.
+      - Existing accounts(platform,account) remains the observed userId mapping; chats/messages keep their current
+        keys.
+      - account is the existing engine identity key, not a user-facing mutable label. Rename requires explicit alias/rekey
+        reconciliation; displayName can change independently.
+      - Status is a normalized execution gate. Platform-specific states remain private engine observations; do not
+        discard their evidence.
+      - Optional credential references are resolved only by the relevant adapter. A platform without browser cookies
+        does not need a browser-shaped session.
+  existingStateScopes:
+  - hookMemory
+  - lastHook
+  - hookOffsets
+  - contextService
+  - contextServiceStarting
+  - memeTaste
+  - voiceClone
+  - chatList
+  - mcpServerStart
+  - mcpReload
+  - voicePasses
+  existingStatePolicy: Keep current state scopes private. records/state are not an excuse for unvalidated new entity
+    storage; new domain data uses declared repositories.
+  existingTableRoles:
+    systemOfRecord:
+    - events
+    - records
+    - state
+    - ledger
+    derivedOrObservedViews:
+    - identities
+    - chats
+    - messages
+    - attachments
+    - interactions
+    - memberships
+    - people
+    - handleAliases
+    - accounts
+    - identityMerges
+    coordinationAndRecovery:
+    - owners
+    - claims
+    - chatGenerations
+    - actions
+    - alerts
+    - timings
+    - eventTypes
+    - positions
+    - gaps
+    - cursors
+    - imports
+    - meta
+    privateSearchAndMedia:
+    - searchIndex
+    - embeddings
+    - aiIndexes
+    - media
+    - blobs
+    - blobChunks
+    - transcripts
+    - transcriptLinks
+    durableExecution:
+    - queues
+    - queueLog
+    - queueIncoming
+    - queueLocks
+    - queueNudges
+    - jobs
+    - jobLines
+    privateDiagnostics:
+    - spans
+  projectionPolicy: Only projections with proven event/source coverage are rebuildable. Preserve source-owned workflow
+    edits separately; replay must not erase them.
+  existingNoSqlFkPolicy: Snapshot preserves current foreign key declarations exactly. New constraints apply only
+    through explicit compatible migrations; existing identity relationships are not silently rekeyed or retrofitted.
+  fileStores:
+  - name: accountConfiguration
+    current: LOG_LOCAL_ACCOUNTS or ~/.logCli/localAccounts.json
+    target: Explicit import of only current platform/account configuration into platformAccounts and secrets; preserve
+      stable identity keys. Imported JSON becomes retained read-only evidence after writer cutover.
+    authority: workspace
+  - name: platformState
+    current: platformStateRoot and per-account governor_state.json
+    target: Keep current private files and their meaning through scoped adapters; no second governor or lifecycle
+      table.
+    authority: workspace
+  - name: browserProfiles
+    current: Installation-managed browser profile directory
+    target: Keep actual profile files beside browser installation, with broker leases when provided remotely.
+    authority: actual browser host
+  - name: capturesAndMedia
+    current: Existing runs, media, blob, transcript and search storage
+    target: Keep current private paths and SQLite references; no new artifact or message body catalog.
+    authority: workspace or actual browser host
+  - name: configurationAndSecrets
+    current: Existing private platform/config/session files
+    target: Native credential adapter resolves protected paths or encrypted secrets by kind; hosted Boat connection
+      remains the accepted control exception.
+    authority: workspace
+  nativeIdentityContract:
+    keys: Preserve (platform, account), chatId, messageKey, eventId and event seq exactly as existing ingestion
+      defines them.
+    accounts: Existing accounts maps a platform/account key to its observed upstream userId; platformAccounts adds
+      configuration and secret references only.
+    memberships: SQLite memberships means platform room membership. Control memberships means website team authorization.
+      These remain separate stores.
+    extenders: PlatformExtender maps EventInput through toChat, toIdentities, toMessage, toAttachments and toInteraction.
+      No per-platform duplicate message schema.
+    recordsAndState: Keep existing RecordKind and StateScope unions; adding a new kind/scope requires a separately
+      reviewed code migration.
+    jobsAndQueues: Use existing jobs/jobLines and queues/queueLog/queueIncoming/queueLocks/queueNudges. operations
+      is the hosted dispatch idempotency/authorization envelope, not a replacement scheduler or duplicate job log.
+    sessions: Current PlatformAccount aliases FacebookAccount and findPlatformAccount queries Twenty. Replace this
+      execution boundary with the native account repository; change session refresh writes too. This is proposed
+      work, not current native capability.
+  existingGovernorPolicy: Preserve governor_state.json and source field units/buckets. Access through the selected
+    workspace/account adapter. No imported counters in a parallel table and no automatic reset.
+schemas:
+  redirectUris:
+    type: array
+    items: absoluteUri
+    maxItems: 20
+    validation: Exact registered redirects; HTTPS except supported loopback CLI redirects.
+  scopes:
+    type: array
+    items: registeredScope
+    uniqueItems: true
+    validation: Reject unsupported scopes; never widen during refresh.
+  tags:
+    type: array
+    items: text
+    maxItems: 100
+  fieldNames:
+    type: array
+    items: text
+  capabilitySummary:
+    type: object
+    additionalProperties: false
+    fields:
+      persistentStorage: boolean
+      browserAvailable: boolean
+      driver: adsPower | camoufox | none
+      protocolVersion: integer
+      checkedAt: timestampUtc
+      status: pending | passed | failed
+    notes:
+    - Only safe capability summary centrally. Detailed paths/probe output stay private.
+    - ChatGPT/Claude connection is not capability evidence.
+  accountSettings:
+    type: object
+    additionalProperties: false
+    fields:
+      homeCountry: countryCode?
+      homeTimezone: text?
+      activeHoursStart: decimal?
+      activeHoursEnd: decimal?
+      requestsPerHour: integer?
+      requestsPerDay: integer?
+      writesPerDay: integer?
+    notes:
+    - Optional operational configuration only; do not invent defaults that reset existing limits.
+    - Platform adapter validates supported settings. Platform-specific capabilities are not universal account columns.
+    - Browser/profile binding is separate; session and login material never appears in this object.
+  platformLogin:
+    type: adapterValidatedSecret
+    discriminator: platform
+    notes:
+    - Only credentials required by the selected platform adapter, encrypted in the workspace. No universal CRM,
+      phone or provider-specific credential schema.
+    - Secret values never appear in console list DTOs or hosted metadata.
+  platformSession:
+    type: adapterValidatedSecret
+    discriminator: platform
+    notes:
+    - Preserve the engine session representation, including cookies/storage only where used.
+    - Session refresh has one private writer and optimistic version checks; never silently overwrite a newer session.
+  toolArguments:
+    type: object
+    source: Registered command input schema
+    validation: Tool-specific validator, bounded sizes, no universal arbitrary executable payload; private to workspace.
+  toolResult:
+    type: object
+    source: Registered command result schema
+    validation: Tool-specific result, redact secrets, artifact handles instead of arbitrary filesystem URLs.
+  privateError:
+    type: object
+    additionalProperties: false
+    fields:
+      code: registeredErrorCode
+      message: text
+      evidenceRef: privateCaptureRef?
+  BridgeHello:
+    type: object
+    additionalProperties: false
+    fields:
+      workspaceId: uuid
+      installationId: uuid
+      protocolVersion: integer
+      runtimeVersion: text
+      schemaVersion: integer
+      capabilities: capabilitySummary
+      lastProgressCursor: opaqueId?
+    notes:
+    - Authenticate transport with runtime credential; credential is not a logged body field.
+  BridgeEnvelope:
+    type: object
+    additionalProperties: false
+    fields:
+      protocolVersion: integer
+      kind: dispatch | accepted | progress | result | reconcile | cancel | heartbeat
+      workspaceId: uuid
+      routeGeneration: integer
+      operationId: uuid?
+      sequence: integer?
+      authority: ExecutionAuthority?
+      payload: toolArguments | toolResult | privateError | null
+    notes:
+    - Transient payload only at gateway. Durable args/results exist only in workspace operations/jobs.
+    - Bound memory buffers, payload size and lifetime; reject overflow. No SQL payload fallback.
+  ExecutionAuthority:
+    type: object
+    additionalProperties: false
+    fields:
+      teamId: uuid
+      workspaceId: uuid
+      actorUserId: uuid?
+      grantId: uuid?
+      tool: registeredTool
+      requestHash: text
+      routeGeneration: integer
+      authzVersion: integer
+      issuedAt: timestampUtc
+      expiresAt: timestampUtc
+      signature: text
+    notes:
+    - Authenticated signed dispatch envelope; grant revocation/membership checked immediately before dispatch.
+    - Runtime rechecks lease/generation/expiry and exact request hash before side effects. Long-running operations
+      need renewed current authority at write boundaries.
+  ProviderConnectionView:
+    type: object
+    additionalProperties: false
+    fields:
+      id: uuid
+      provider: boat
+      status: text
+browserHost:
+  status: proposedForProvidedMode
+  engine: private SQLite on actual browser host; reuse same-host workspace DB when it is the same installation
+  managementSecret: protected host secret outside central DB and outside client-visible API
+  tables:
+    profileAssignments:
+      primaryKey:
+      - id
+      fields:
+        id:
+          type: uuid
+          nullable: false
+        connectionId:
+          type: uuid
+          nullable: false
+        workspaceId:
+          type: uuid
+          nullable: false
+        browserHostId:
+          type: opaqueId
+          nullable: false
+        profileId:
+          type: text
+          nullable: false
+        generation:
+          type: integer
+          nullable: false
+        status:
+          type: enum
+          nullable: false
+          values:
+          - assigned
+          - revoked
+        createdAt:
+          type: timestampUtc
+          nullable: false
+        revokedAt:
+          type: timestampUtc
+          nullable: true
+      unique:
+      - - browserHostId
+        - profileId
+      notes:
+      - V1 reserve profile to one workspace; controlled reassignment revokes prior lease and advances generation.
+      - Opaque workspace/connection refs validated via authenticated broker authority, not cross-store FK.
+    profileLeases:
+      primaryKey:
+      - assignmentId
+      fields:
+        assignmentId:
+          type: uuid
+          nullable: false
+          references: profileAssignments.id
+        holderId:
+          type: opaqueId
+          nullable: false
+        generation:
+          type: integer
+          nullable: false
+        expiresAt:
+          type: timestampUtc
+          nullable: false
+        heartbeatAt:
+          type: timestampUtc
+          nullable: false
+      notes:
+      - Enforce lease on every browser action; prevent old runtime controlling profile after reassignment.
+  connectionPolicy: Local API/CDP loopback/private only; scoped broker channel never returns management credential
+    to console/AI.
+  strictBoundary: When browser runs on provided host, profiles/captures there are outside workspace-only browser-storage
+    boundary; disclose before user connects.
+apiContracts:
+  status: proposed; no routes claimed implemented
+  base: /api/v1
+  wire:
+    fieldNames: camelCase
+    timestamps: RFC3339 UTC
+    ids: opaque strings
+    money: decimal strings
+    pagination: cursor + limit; stable order; opaque cursor scoped to team/workspace/query
+    writes: Idempotency-Key for accepted operations; If-Match revision for editable records
+    errors: ErrorView; central safe error codes only; private detail relayed only to current authorized caller
+    browserAuth: Secure HttpOnly SameSite cookie; CSRF protection and exact origin validation on state-changing
+      session routes
+    mcpAuth: OAuth bearer audience/resource + scopes + membership + team grant
+    cache: Cache-Control no-store for private/auth responses; frontend clears scoped state and cancels old queries
+      on team/workspace switch
+    protocolBoundary: OAuth/MCP standards retain their mandated field names (e.g. grant_type); convert once at application
+      boundary. Internal models/Log DTOs use camelCase.
+  dto:
+    SessionView:
+      type: object
+      additionalProperties: false
+      fields:
+        user: UserView
+        teams: TeamView[]
+        selectedTeamId: uuid?
+        expiresAt: timestampUtc
+    UserView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        email: text
+        emailVerified: boolean
+    TeamView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        name: text
+        slug: text
+        role: owner | admin | member
+    AuthChallengeView:
+      type: object
+      additionalProperties: false
+      fields:
+        challengeId: uuid
+        expiresAt: timestampUtc
+        retryAfterSeconds: integer
+      notes:
+      - Neutral response regardless of account existence. Backend does not persist OTP in plaintext.
+    WorkspaceView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        provider: ownCloud | boat
+        status: workspaceStatus
+        selected: boolean
+        lastContactAt: timestampUtc?
+        capabilities: capabilitySummary
+        browserConnection: BrowserConnectionView?
+    BrowserConnectionView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        mode: provided | own
+        status: text
+        browserLocation: workspace | providedHost
+        boundaryNotice: text?
+    AccountView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        platform: text
+        displayName: text?
+        status: text
+        sessionState: text?
+        browserLocation: text?
+        revision: integer
+        account: text
+    OperationView:
+      type: object
+      additionalProperties: false
+      fields:
+        operationId: uuid
+        state: operationState
+        progressCursor: opaqueId?
+        result: toolResult?
+        error: privateError?
+    OperationMetadataView:
+      type: object
+      additionalProperties: false
+      fields:
+        operationId: uuid
+        state: operationState
+        updatedAt: timestampUtc
+    UsageView:
+      type: object
+      additionalProperties: false
+      fields:
+        source: control
+        from: timestampUtc
+        to: timestampUtc
+        tool: text
+        callCount: integer
+        failureCount: integer
+        totalDurationMs: integer
+    SubscriptionView:
+      type: object
+      additionalProperties: false
+      fields:
+        status: notConfigured
+        source: none
+      notes:
+      - No new billing provider or payment tables; use actual billing authority when separately specified. AI subscription
+        does not imply Log/Boat entitlement.
+    ErrorView:
+      type: object
+      additionalProperties: false
+      fields:
+        code: errorCode
+        requestId: opaqueId
+        retryAfterSeconds: integer?
+        safeMessage: text?
+    MemberView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        userId: uuid
+        email: text
+        role: role
+        status: membershipStatus
+    InviteView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        email: text
+        role: role
+        expiresAt: timestampUtc
+        status: pending | accepted | revoked | expired
+    ProviderConnectionView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        provider: boat
+        status: text
+    PairingView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        token: secretOnce
+        expiresAt: timestampUtc
+        workspaceId: uuid
+    RuntimeCredentialView:
+      type: object
+      additionalProperties: false
+      fields:
+        workspaceId: uuid
+        credential: secretOnce
+        generation: integer
+        expiresAt: timestampUtc
+    GrantView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        clientName: text
+        userId: uuid
+        teamId: uuid
+        scopes: scopes
+        revokedAt: timestampUtc?
+    ApprovalView:
+      type: object
+      additionalProperties: false
+      fields:
+        id: uuid
+        operationId: uuid
+        expiresAt: timestampUtc
+  endpoints:
+  - method: POST
+    path: /auth/email/start
+    authorization: public + rate limit
+    request:
+      email: text
+      returnContextId: uuid?
+    response: AuthChallengeView
+    authority: control.emailChallenges
+    notes:
+    - Same response shape for existing/new addresses; code delivery failure is recoverable and never logs code.
+  - method: POST
+    path: /auth/email/verify
+    authorization: public + challenge attempt budget
+    request:
+      challengeId: uuid
+      code: text
+    response: SessionView + session cookie
+    authority: control users/session transaction
+  - method: GET
+    path: /session
+    authorization: website session
+    request: null
+    response: SessionView
+    authority: control
+  - method: POST
+    path: /auth/logout
+    authorization: website session + CSRF
+    request: {}
+    response: '204'
+    authority: control.websiteSessions
+  - method: POST
+    path: /teams
+    authorization: verified website session
+    request:
+      name: text
+      slug: text
+    response: TeamView
+    authority: control teams + owner membership atomic
+  - method: POST
+    path: /session/team
+    authorization: website session + current membership
+    request:
+      teamId: uuid
+    response: SessionView
+    authority: control.websiteSessions
+    notes:
+    - This changes website selection only, never another client grant.
+  - method: GET
+    path: /teams/{teamId}/members
+    authorization: team membership
+    request: null
+    response: MemberView[]
+    authority: control.memberships
+  - method: PATCH
+    path: /teams/{teamId}/members/{membershipId}
+    authorization: owner/admin constrained role management
+    request:
+      role: role?
+      status: membershipStatus?
+    response: MemberView
+    authority: control.memberships
+    notes:
+    - Only owner manages owner role; cannot remove/demote last owner.
+  - method: POST
+    path: /teams/{teamId}/invites
+    authorization: owner/admin
+    request:
+      email: text
+      role: admin | member
+    response: InviteView
+    authority: control.invites
+    notes:
+    - Token sent to intended address; invite DTO does not return tokenHash.
+  - method: POST
+    path: /invites/accept
+    authorization: verified session + invited email
+    request:
+      token: secret
+    response: TeamView
+    authority: control invite consume + membership create atomic
+  - method: GET
+    path: /teams/{teamId}/workspaces
+    authorization: team membership
+    request: null
+    response: WorkspaceView[]
+    authority: control.workspaces
+  - method: POST
+    path: /teams/{teamId}/workspaces
+    authorization: owner/admin
+    request:
+      provider: ownCloud | boat
+      providerConnectionId: uuid?
+    response: WorkspaceView
+    authority: control.workspaces
+    notes:
+    - Boat creation uses explicit provider connection and authorized provisioning; no assumed paid allocation in
+      this specification.
+  - method: POST
+    path: /teams/{teamId}/workspaceSelection
+    authorization: owner/admin
+    request:
+      workspaceId: uuid
+      expectedGeneration: integer
+    response: WorkspaceView
+    authority: control selection + fencing
+    notes:
+    - Reconcile/quiesce old active runtime before accepting effects on new route.
+  - method: POST
+    path: /teams/{teamId}/providerConnections
+    authorization: owner/admin
+    request:
+      provider: boat
+      credential: secret
+    response: ProviderConnectionView
+    authority: encrypted control providerConnections
+    notes:
+    - Credential input only; redact and never echo.
+  - method: DELETE
+    path: /teams/{teamId}/providerConnections/{id}
+    authorization: owner/admin
+    request: {}
+    response: 204 revocation
+    authority: control.providerConnections
+    notes:
+    - Disconnect access; do not delete workspace data or implicitly destroy provider runtime.
+  - method: POST
+    path: /teams/{teamId}/workspaces/{workspaceId}/pairings
+    authorization: owner/admin
+    request:
+      challengeHash: text
+    response: PairingView with one-time token
+    authority: control.workspacePairings
+  - method: POST
+    path: /runtime/pair
+    authorization: single-use pairing token + challenge proof
+    request:
+      pairingToken: secret
+      challengeProof: secret
+      installationId: uuid
+    response: RuntimeCredentialView (secret once)
+    authority: control pairing consume + runtimeCredential transaction
+  - method: WSS
+    path: /runtime/bridge
+    authorization: runtime credential + active fenced lease
+    request:
+      handshake: BridgeHello
+    response: BridgeEnvelope stream
+    authority: control route; workspace execution
+    notes:
+    - Runtime initiates outbound connection; no public inbound listener required at runtime.
+  - method: POST
+    path: /teams/{teamId}/browserConnections
+    authorization: owner/admin
+    request:
+      workspaceId: uuid
+      mode: provided | own
+    response: BrowserConnectionView
+    authority: control opaque browser connection
+    notes:
+    - User-owned ADSPOWER_HOST/API_KEY saved beside installation via private bootstrap, never central request fields.
+  - method: GET
+    path: /teams/{teamId}/accounts
+    authorization: team membership + selected ready workspace
+    request:
+      cursor: text?
+      limit: integer?
+    response: AccountView[] + cursor
+    authority: workspace.platformAccounts via transient relay
+  - method: POST
+    path: /teams/{teamId}/operations
+    authorization: current membership + tool permissions
+    request:
+      operationId: uuid
+      tool: registeredTool
+      args: toolArguments
+      liveApprovalId: uuid?
+    response: OperationView
+    authority: workspace.operations; central metadata only
+  - method: GET
+    path: /teams/{teamId}/operations/{operationId}
+    authorization: same team + resource permission
+    request: null
+    response: OperationView
+    authority: workspace journal via relay
+    notes:
+    - If offline return offline + safe metadata; cannot return private cached result from control.
+  - method: POST
+    path: /teams/{teamId}/operations/{operationId}/cancel
+    authorization: current resource permission
+    request: {}
+    response: OperationView
+    authority: workspace
+    notes:
+    - Cancellation requested is not proof external effect did not happen.
+  - method: GET
+    path: /teams/{teamId}/usage
+    authorization: team membership
+    request:
+      from: timestampUtc
+      to: timestampUtc
+    response: UsageView[]
+    authority: control.usageBuckets
+  - method: GET
+    path: /teams/{teamId}/analytics
+    authorization: team membership + ready workspace
+    request:
+      from: timestampUtc
+      to: timestampUtc
+    response: registered analytics DTO + provenance
+    authority: workspace via relay
+  - method: GET
+    path: /teams/{teamId}/subscription
+    authorization: team membership
+    request: null
+    response: SubscriptionView
+    authority: not configured; no fabricated billing status
+  - method: GET
+    path: /.well-known/oauth-authorization-server
+    authorization: public
+    request: null
+    response: OAuth metadata
+    authority: control
+    baseOverride: /
+  - method: GET
+    path: /.well-known/oauth-protected-resource
+    authorization: public
+    request: null
+    response: MCP resource metadata
+    authority: control
+    baseOverride: /
+  - method: GET
+    path: /oauth/authorize
+    authorization: website session; verify registered client
+    request:
+      client_id: text
+      redirect_uri: uri
+      code_challenge: text
+      resource: uri
+      scope: text
+      state: text?
+    response: sign-in/team/consent redirect or code
+    authority: control
+    baseOverride: /
+  - method: POST
+    path: /oauth/token
+    authorization: code + PKCE OR refresh token
+    request:
+      grant_type: authorization_code | refresh_token | urn:ietf:params:oauth:grant-type:device_code
+      client_id: registered client id
+      code: authorization code?
+      code_verifier: PKCE verifier?
+      redirect_uri: registered redirect?
+      refresh_token: refresh secret?
+      device_code: device secret?
+    response: OAuth tokens
+    authority: control
+    baseOverride: /
+  - method: POST
+    path: /oauth/revoke
+    authorization: matching credential/client authority
+    request:
+      token: secret
+    response: '200'
+    authority: control
+    baseOverride: /
+  - method: POST
+    path: /oauth/register
+    authorization: client registration policy + rate limit
+    request: validated OAuth client metadata
+    response: client registration response
+    authority: control.oauthClients
+    baseOverride: /
+  - method: POST
+    path: /oauth/device/authorize
+    authorization: registered CLI client
+    request: client metadata
+    response: device/user code + polling interval
+    authority: control.cliAuthorizations
+    baseOverride: /
+  - method: POST
+    path: /mcp
+    authorization: valid MCP grant + membership + audience
+    request: MCP JSON-RPC
+    response: registered tool result; transient
+    authority: workspace execution through scoped dispatcher
+    baseOverride: /
+  - method: GET
+    path: /teams/{teamId}/grants
+    authorization: current team membership; admin all, member own
+    request: null
+    response: GrantView[]
+    authority: control.oauthGrants
+  - method: POST
+    path: /teams/{teamId}/grants/{grantId}/revoke
+    authorization: owner/admin or grant owner
+    request: {}
+    response: '204'
+    authority: control grant + access/refresh revocation
+  - method: POST
+    path: /teams/{teamId}/workspaces/{workspaceId}/revoke
+    authorization: owner/admin
+    request: {}
+    response: WorkspaceView
+    authority: control runtime credentials/lease/route
+  - method: POST
+    path: /teams/{teamId}/operations/{operationId}/approval
+    authorization: current membership + exact write permission + explicit user authorization
+    request:
+      requestHash: text
+    response: ApprovalView
+    authority: workspace.liveApprovals
+  - method: POST
+    path: /teams/{teamId}/invites/{inviteId}/revoke
+    authorization: owner/admin
+    request: {}
+    response: '204'
+    authority: control.invites
+  errorCodes:
+  - invalidInput
+  - unauthenticated
+  - forbidden
+  - expiredChallenge
+  - invalidCode
+  - tooManyAttempts
+  - inviteExpired
+  - inviteWrongEmail
+  - lastOwnerRequired
+  - workspaceOffline
+  - workspaceNotSelected
+  - workspaceIncompatible
+  - runtimeRevoked
+  - leaseStale
+  - idempotencyConflict
+  - approvalRequired
+  - approvalExpired
+  - operationUnknown
+  - schemaIncompatible
+  - providerUnavailable
+  - billingNotConfigured
+  permissions:
+    owner:
+    - teamAdmin
+    - invite
+    - membershipAdmin
+    - providerAdmin
+    - workspaceAdmin
+    - browserAdmin
+    - readTools
+    - approvedWriteTools
+    - grantRevoke
+    admin:
+    - invite
+    - nonOwnerMembershipAdmin
+    - providerAdmin
+    - workspaceAdmin
+    - browserAdmin
+    - readTools
+    - approvedWriteTools
+    member:
+    - readTools
+    - approvedWriteTools
+    - ownGrantRevoke
+    rule: Effective permission is intersection of current team role, client grant tool/scopes and exact live approval.
+      A role alone never bypasses existing live/governor/account gates.
+  domainDispatch:
+    accounts: workspace.platformAccounts + secret adapters; observed identity stays in existing accounts
+    inbox: existing chats/messages/identities/attachments/interactions/memberships through PlatformExtender
+    jobs: operations as request envelope; existing jobs/jobLines and queues for actual execution
+    browser: browserProfiles + actual browser host broker
+    rule: Console and AI clients use the same registered dispatcher. No arbitrary SQL endpoint. Deferred legacy
+      domains are not part of the native V1 tool surface.
+  bodySchemaPolicy: Inline request shapes are named implementation contracts, not a ready OpenAPI file. Backend
+    emits OpenAPI after Pydantic validators are implemented; frontend generated types then consume it.
+frontend:
+  status: proposed
+  framework: existing React site
+  routes:
+  - path: /sign-in
+    view: email entry
+    backend:
+    - POST /auth/email/start
+    states:
+    - idle
+    - sending
+    - codeRequired
+    - rateLimited
+    - deliveryFailed
+  - path: /verify
+    view: OTP verification
+    backend:
+    - POST /auth/email/verify
+    states:
+    - waiting
+    - verifying
+    - invalidCode
+    - expiredChallenge
+    - signedIn
+  - path: /teams
+    view: create/join/select team
+    backend:
+    - GET /session
+    - POST /teams
+    - POST /session/team
+    - POST /invites/accept
+    states:
+    - noMembership
+    - selectTeam
+    - inviteExpired
+    - inviteWrongEmail
+    - ready
+  - path: /console/accounts
+    view: workspace status and private account list
+    backend:
+    - GET /teams/{teamId}/workspaces
+    - GET /teams/{teamId}/accounts
+    - POST /teams/{teamId}/operations
+    states:
+    - setupRequired
+    - loading
+    - ready
+    - offline
+    - incompatible
+    - error
+  - path: /console/settings
+    view: profile/team/members/provider/workspace/browser setup and revocation
+    backend:
+    - GET /session
+    - team membership/invite endpoints
+    - workspace/pairing/browser/provider endpoints
+    states:
+    - loading
+    - ready
+    - saving
+    - conflict
+    - error
+  - path: /console/usage
+    view: minimal service counts/timing
+    backend:
+    - GET /teams/{teamId}/usage
+    states:
+    - loading
+    - ready
+    - empty
+    - error
+  - path: /console/analytics
+    view: private workspace metrics with provenance
+    backend:
+    - GET /teams/{teamId}/analytics
+    states:
+    - loading
+    - ready
+    - empty
+    - offline
+    - error
+  - path: /console/subscription
+    view: actual billing availability
+    backend:
+    - GET /teams/{teamId}/subscription
+    states:
+    - notConfigured
+  - path: /console/mcp
+    view: connect client, consent and revoke grants
+    backend:
+    - OAuth routes
+    - grant list/revoke endpoints
+    states:
+    - signedOut
+    - selectTeam
+    - consentRequired
+    - authorized
+    - revoked
+    - workspaceOffline
+  routeAliases:
+    /login: /sign-in
+    /console: /console/accounts
+    /workspaces: workspace setup in /console/settings
+    /mcp: /console/mcp
+  rules:
+  - Protected pages retain only validated internal return paths.
+  - No credential fields in account DTOs; platform login happens through the authorized workspace operation/browser
+    flow.
+  - Never display cached private results from a prior user/team/workspace after context switch.
+  - Offline shows unavailable, not zero accounts or fabricated empty analytics.
+  - AI generated UI consumes same DTO/tool contracts; no second user/team/session model.
+consistency:
+  controlTransactions:
+  - Create team + owner membership atomically.
+  - Accept invite + membership once; verified email matches invite.
+  - Consume OTP + create/resume user + session atomically.
+  - Consume authorization code / rotate refresh token once.
+  - Select workspace + advance generation + revoke stale dispatch route atomically.
+  - Runtime lease acquire/renew uses compare-and-swap fencing generation.
+  workspaceTransactions:
+  - Insert operation + dedupe key before dispatch; same key/different hash refuses.
+  - Commit platform observation with required event/projection changes according to current ingestion semantics.
+  - Persist refreshed session only after confirmed platform response.
+  - Consume write approval before external effect, record outcome/unknown separately.
+  - Import native account configuration with stable platform/account keys; stop the prior writer before activating
+    the new repository.
+  crossStore: No distributed transaction assumption. Host metadata is a routing view; workspace operations journal
+    decides actual effect/result. Host timeout is not platform failure.
+  tenantChecks: Every path/body id resolved within current team/workspace. Composite SQL constraints where possible
+    plus application checks on polymorphic/external refs.
+  newSqlitePragmas: Enable foreign_keys on every connection for new enforced references after compatible migration;
+    existing snapshot remains unchanged until implementation.
+  optimisticConcurrency: revision/If-Match for mutable native records; return conflict instead of lost update.
+  refreshConcurrency: Lock token/family row or atomic update; reuse detection cannot mint two successors.
+retention:
+  status: recommended V1 constants; must be implemented/configured before release
+  emailCodeSeconds: 600
+  authorizationCodeSeconds: 60
+  pairingSeconds: 600
+  accessTokenSeconds: 3600
+  refreshTokenDays: 30
+  websiteSessionDays: 30
+  leaseSeconds: 60
+  leaseHeartbeatSeconds: 20
+  operationMetadataDays: 7
+  controlAuditDays: 30
+  usageBucketDays: 90
+  transientRelayBufferSeconds: 60
+  transientRelayBufferMaxBytes: 8388608
+  privateData: No automatic private-record deletion introduced; explicit per-workspace retention for captures/media/results/backups
+    and retained imports.
+  expiredAuth: Consume/revoke immediately; retention cleanup never restores validity.
+  sourceNote: Access/refresh/code defaults match current MCP constants; other values are proposed defaults, not
+    previously approved infrastructure settings.
+migrationPlan:
+  control: Versioned backend-owned SQLModel/Alembic migrations under python/controlService/migrations/versions;
+    no schema auto-create in production startup.
+  workspace: Append to current migration list; allocate next version from HEAD when implementing, not from this
+    snapshot. Respect minReaderVersion and transactional migration behavior.
+  sourceSnapshot: Existing definitions reflect checked-in migrations, not a dump of Matt private database.
+  order:
+  - Preserve current SQLite schema and identify active account/session read and refresh-write boundaries.
+  - Implement platformAccounts and secret adapters; preserve current identity keys, queues, jobs, governors and
+    browser storage.
+  - Implement hosted identity/team OTP sessions and scoped grants.
+  - Implement pairing, fencing, outbound bridge and operations request envelope using existing execution machinery.
+  - Implement frontend DTOs/routes and CLI authorization; hide deferred features from native tool surface.
+  - Reconcile active account configuration, update generators/guides/defaults and perform controlled writer cutover.
+  recovery: Snapshot DB consistently with WAL and mounted private files; encryption key handled separately. Restore
+    to same workspace identity with old runtime fenced before resuming.
+  acceptance:
+  - No central table or log stores private account/message/tool payload.
+  - Tenant mismatch, revoked membership/grant and stale generation all refuse execution.
+  - Existing event/projection schemas preserved; unknown side effects reconcile before retry.
+  - Complete new-user and returning-user flow resolves offline/setup states accurately.
+  - No Agency-prefixed native model, legacy field inventory or CRM/SMS/listing data model; every new private table
+    has a role missing from existing SQLite.
+  implementationStatus: No migrations, deployments or application code changes performed by this schema specification.
+  importBoundary: Legacy export types are permitted only inside an explicit importer for an active supported capability.
+    Do not port old domains merely because their types exist. Deferred domains require a separate specification
+    when resumed.
+deploymentConfig:
+  status: proposed names/roles; not consumed by current code unless already noted
+  control:
+    databaseUrl: PostgreSQL connection secret
+    sessionSecret: SESSION_SECRET; independent server-side website session key outside DB
+    otpPepper: OTP_PEPPER; independent server-side email-code verifier key outside DB
+    providerEncryptionKey: key outside PostgreSQL/backups; versioned
+    dispatchSigningKey: DISPATCH_SIGNING_KEY; private key outside DB; runtime verifies pinned public trust
+    emailApiKey: accepted Resend secret
+    emailFrom: verified sending identity from provisioning
+    publicAppOrigin: single configured HTTPS application origin
+    mcpResourceUrl: registered HTTPS resource/audience; exact origins and redirects
+  workspace:
+    LOG_DB: existing SQLite path override
+    LOG_INBOX_STATE: existing alternate root
+    LOG_HOME: existing runtime state root; inventory callers instead of assuming it covers all paths
+    workspaceCredential: protected paired runtime secret
+    workspaceEncryptionKey: outside DB, separately recoverable
+    ADSPOWER_HOST: existing, private installation endpoint
+    ADSPOWER_API_KEY: existing, local installation secret; no control DB copy
+  bootstrap:
+  - Resolve persistent state and actual browser roots; refuse ephemeral storage for persistent runtime readiness.
+  - Create or resume installation identity without regenerating account profiles.
+  - Apply compatible native migrations; refuse incompatible reader.
+  - Pair/exchange one-time authority, save secret with restrictive ACL.
+  - Probe capabilities, acquire active lease and open outbound bridge.
+  - Resume/reconcile private jobs under current permissions; never blindly replay unknown writes.
+  notRequired:
+  - legacy Twenty credentials for native startup
+  - AI provider website OAuth for initial email sign-in
+  - another default private database server
+scope:
+  basis:
+  - Existing log.db schema and PlatformExtender ingestion contract
+  - Existing private .logCli engine/session files
+  - Accepted hosted identity, team, pairing and routing contracts
+  deferred:
+  - Old listing and campaign features and their migration
+  - CRM and SMS-specific data models
+  - Separate knowledge-domain redesign
+  rule: Do not derive native tables or fields from generated Twenty objects. Legacy import is an isolated adapter,
+    never the target schema.

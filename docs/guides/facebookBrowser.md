@@ -2,7 +2,11 @@
 
 An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -505,7 +509,7 @@ Usage: log adsPower status
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }), getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 42, 44, 78, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 44, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `localAccount`
 
@@ -518,7 +522,7 @@ A local account lives in ~/.logCli/localAccounts.json (LOG_LOCAL_ACCOUNTS moves 
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "slack/dmReply" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 13, 42, 44, 78, 84, 97, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 44, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `lifecycle`
 
@@ -540,7 +544,7 @@ Usage: log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noP
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 12, 18, 24, 33, 35, 37, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `doctor`
 
@@ -550,7 +554,7 @@ Usage: log facebook doctor [--json]
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 12, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `connect`
 
@@ -562,7 +566,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass`
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 12, 18, 21, 23, 24, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `profile`
 
@@ -573,7 +577,7 @@ Without --live it only reads the profile and lists its controls in the run's pro
 Pass the arguments after the command name in `args`, e.g. ["--json"]. It never takes --live: that is `profileLive`. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 28, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `profileLive`
 
@@ -586,7 +590,7 @@ Pass the arguments after the command name in `args`, with --live. `--bypass` (ou
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 28, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `hostStart`
 
@@ -596,7 +600,7 @@ log facebook host start --account <accountName> [--live] [--likes] [--bypass] [-
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `hostStartLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 18, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `hostStartLive`
 
@@ -608,7 +612,7 @@ Fill the named fields; each value goes through whole. `bypass` (outside the acco
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 18, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `hostSend`
 
@@ -618,7 +622,7 @@ log facebook host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOW
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 18, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `hostStatus`
 
@@ -628,7 +632,7 @@ log facebook host status [--account <accountName>]
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 18, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectStart`
 
@@ -640,7 +644,7 @@ Fill the named fields; each value goes through whole. `bypass` (outside the acco
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectDo`
 
@@ -652,7 +656,7 @@ Fill the named fields; each value goes through whole. What acts on Facebook is `
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectDoLive`
 
@@ -665,7 +669,7 @@ Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/groupChatRead" }), getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectRead`
 
@@ -675,7 +679,7 @@ log inspect read <stepFolder> --account <accountName> [--goal <text>] [--json]  
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectMap`
 
@@ -685,7 +689,7 @@ log inspect map [<runDir>] [--all]  (the recorded steps as states and transition
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectGoal`
 
@@ -695,7 +699,7 @@ log inspect goal [--set <text>] [--account <accountName>] [--json]   (the sessio
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectFinding`
 
@@ -706,7 +710,7 @@ log inspect finding --fixes <n> --fix <text> [--account <accountName>]   (how fi
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `inspectSessions`
 
@@ -716,7 +720,7 @@ log inspect sessions   (the open sessions)
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `check`
 
@@ -727,7 +731,7 @@ Fill the named fields; each value goes through whole. `bypass` (outside the acco
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }), getGuide({ useCase: "twitter/engagementReplies" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 8, 13, 18, 22, 29, 35, 69, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 175, 35, 19, 29, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `scan`
 
@@ -737,7 +741,7 @@ Usage: log facebook scan --account <accountName> [--json] [--bypass]
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 12, 18, 22, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `status`
 
@@ -747,7 +751,7 @@ Usage: log facebook status <listingId> --account <accountName> [--json] [--bypas
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 12, 18, 22, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `watch`
 
@@ -757,7 +761,7 @@ Usage: log facebook watch --account <accountName> [--checks <n>] [--interval <mi
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 6, 18, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 6, 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `browsers`
 
@@ -766,7 +770,7 @@ Where every open browser is: its page, the known page state it sits on, the call
 log browsers [--json]   (every open browser: its step and page, the known page state it sits on, the call that resolves it, and what only matt can clear)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
-AGENTS.md (log://agents): rules 29, 35, 54, 55, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 35, 55, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `logout`
 
@@ -788,78 +792,38 @@ AGENTS.md (log://agents): rules 30, 38, 39, 40, 41. When matt says to do somethi
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `src/observability/trace`).
+**Rule 6.** 2026-10-18 · Processes that run over time use XState machines and observable stages through the existing CLI/trace infrastructure.
 
-**Rule 8.** 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted unless matt asks for it.
+**Rule 8.** 2026-10-18 · Platform actions require the user authorization their tool defines. Send, post, react, join, edit and delete only when authorized; preserve explicit live confirmation, governor and account gates. Ordinary reads do not need new approval.
 
-**Rule 12.** 2026-10-18 · No browser opens for an account unless its proxy is attached and its exit IP is in the account's country (`python/browser/proxyGate.py`). There is no exception: not dry runs, not signing in (matt: "never, ever open" without one). Listings must be in the account's country, and the form's location must be picked in that country. How it works: `docs/proxies.md`.
+**Rule 19.** 2026-10-18 · Every browser action records its raw HAR and timed step evidence, with no switch to disable capture. Raw private captures may contain credentials. Keep them in the selected private runtime/browser-host storage, never in git, central payload logs or user-facing output. Retention/pruning must preserve required analysis evidence.
 
-**Rule 13.** 2026-10-18 · Twenty is the only place accounts and listings live: Facebook accounts are `socialAccounts` (platform FACEBOOK), listings are `agencyListings`. Never delete either: a banned or dead account keeps its record with its status, and its campaign listings get replacement accounts in the same country (`docs/accountsAndListings.md`). Fields are only ever added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the twitter-controller keeps working.
+**Rule 26.** 2026-10-19 · Stream progress while work runs, one meaningful line per stage, with the run log retained. Explain stages in plain words; do not leave the user waiting silently for a final buffered result.
 
-**Rule 17.** 2026-10-18 · Launch self-check: before any page loads, the gate checks in the page and a worker that the timezone is the exit IP's, the language and Intl locale are the pinned locale, and the browser's exit IP is the checked one. Any mismatch closes the browser before Facebook loads.
+**Rule 29.** 2026-10-19 · Record a browser page with the existing inspect tool before implementing actions on it. Preserve per-step snapshots, screenshots, HAR and the reading of the internal calls.
 
-**Rule 18.** 2026-10-18 · No run outside the account's local waking hours (08:00-22:00 in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish, scan, status, watch, campaign run and connect are refused with `outsideActiveHours`. Daily caps count the account's local day.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 21.** 2026-10-19 · matt asked for auto-login: `log connect --noPrompt` (always, over MCP) signs in by itself with the account's Twenty email, password and totpSecret, typing the current authenticator code on the two-step page (`python/login/autoLogin.py`). They are read only by `twenty.loginSecrets`, for that run, into the run folder's `login.json` (0600, deleted with it), and are never printed or logged. Every vendor order in `docs/vendors/*.txt` (git-ignored) is imported with all its fields by `scripts/twenty/importVendorAccounts.mjs`, which shows each field only as `<set>` or `<empty>`.
+**Rule 35.** 2026-10-19 · Browser work uses one account browser through its active day, with actions as tabs/steps; close only for a logged lifecycle reason. Preserve existing proxy-country, locale/timezone, device/profile, headed visibility, capture, active-hours and launch-budget gates. Keep checkpoint stops and account-specific constraints in the browser/flow guides. Do not create a fresh browser per action.
 
-**Rule 22.** 2026-10-19 · Every action records a HAR, with no way to turn it off. The proxy gate puts a raw HAR recorder (rule 19) on every browser context, and refuses a context without a capture folder (`captureMissing`). That covers connect, scan, status, each watch check and publish. Each run keeps `~/.logCli/runs/<action>/<time>_<account>/firefox` (publish: its run folder): `session.har`, `steps.jsonl` (every action the run logged, timed), and `steps/NN_<action>.har`, one per step, each read by the local rea (`settleRunCapture`). Never committed.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 23.** 2026-10-19 · matt: "whatever Listaro did we go with that path". `log connect` is the connect machine (`src/marketplace/connect`), and every sign-in page takes Listaro_backup's path (`src/lib/auto-login`, `src/lib/fb-login-helper.ts`): the cookie banner is accepted, "Find your account" submitted once, "We suspect automated behaviour" dismissed, login captchas solved (rule 10's solvers), two-step and trust-device answered, signed in only with c_user and xs, then the Marketplace check. For connect this narrows rule 10: only identity, photo, video and SMS checkpoints go to a person. `src/marketplace/connect/machine.test.ts`.
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 24.** 2026-10-19 · matt: "fix them issues now" (the launch budget from RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md). One account's browser opens on Facebook at most 8 times per local day, dry runs counted, at least 10 minutes apart. A launch counts once it passed the gate ("Self-check passed" in its `steps.jsonl`). Refused before anything opens: `launchTooSoon`, `launchBudgetSpent` (`src/browser/run/helpers/launchBudget.ts`). `--bypass` doesn't skip it; only a publish against the saved fixture form (`--formUrl file://...`) isn't counted. A publish meets a login wall or checkpoint in its own browser (the connect steps run there), never in a second launch.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 26.** 2026-10-19 · matt: "I always want to see what is going on." Every process that runs over time writes a progress line per stage as it happens (never only at the end) and to a log file in its folder. Agents run long commands so the lines stream live (Claude Code: Monitor, never piped through `tail`/`head`).
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 28.** 2026-10-19 · matt asked for profile setup: `log profile setup --account <a>` sets the account's profile picture and cover photo from Twenty (`socialAccounts.profilePhoto`, `coverPhoto`; a URL or path, fetched through the account's proxy and varied, `src/media/photo`), both in one run (matt's choice), through the profile machine (`src/marketplace/profile`, `python/session/profileSession.py`). A dry run unless `--live`; the dry run lists every control the profile page has in `profileFound.txt`, and the clicks are checked against it before the first `--live` (rule 25). It is a launch like any other (rules 11-12, 15-18, 22, 24). 2026-10-19, matt also chose to rename the profile (`socialAccounts.profileName`, first "Allentown Trash"), knowing Facebook reviews names and allows about one change per 60 days: the dry run reads the name page (`nameFound.txt`), and the rename is built from that recording before any `--live` renames. Bio and every other profile field stay read-only (rule 8).
+**Rule 44.** 2026-10-20 · Keep browser-independent actions on the shared Playwright layer. AdsPower is a driver; shared gates, recording, motion and flows must not be forked per browser.
 
-**Rule 29.** 2026-10-19 · matt: look before writing code for a page. `log inspect start --account <a>` opens one gated, headed Camoufox (async API, same launch and gates as every run) and keeps it open; `log inspect do <action>` runs one step (goto, snapshot, back, wait; click, type, press only with `--live`, rule 8). Each step records, in order, as it happens: the accessibility snapshot with element refs (camofox-mcp's model, `aria_snapshot(mode="ai")`), a screenshot, its own HAR, and rea's reading of that HAR at once. Code that clicks on a page is written from an inspect recording of that page, never before one.
+**Rule 55.** 2026-10-20 · Keep CLI commands, MCP catalog/tools, hooks and generated documentation aligned. Change their source and regenerate the affected surfaces; do not hand-edit generated guides.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
-**Rule 33.** 2026-10-19 · matt: the proxy speed limit is set per run, not hardcoded: `--proxyMs <ms>` on any log command (and `proxyMs` on the flow MCP tools) sets `LOG_PROXY_MAX_MS` for that run, which the Python gate and `log proxy` both read. Default 2500 ms; 500-60000 allowed.
+**Rule 79.** 2026-10-25 · Flow controls must match deterministically by the recorded role/name and scope; ambiguous, missing or disabled controls refuse. Await the confirming API answer. Known resolvable states follow their recorded resolver; checkpoints/refusals remain stops.
 
-**Rule 35.** 2026-10-19 · matt: the browser stays open. One browser per account, opened once per local day by its host and kept open through the account's active hours; every action is a tab in it; it closes only for a logged reason (end of active hours, shutdown, checkpoint or restriction, account lost, a crash reopened once). Every account runs one lifecycle machine (`src/marketplace/lifecycle`, XState) across an onboarding lane (with a day's warm-up after profile and name) and a host lane. Top of this file.
+**Rule 117.** 2026-11-02 · Current behavior belongs in its domain spec with code anchors; generator/wiring changes update that spec and relevant use cases. Distinguish implemented anchors from future design. Rule 170 governs which checks run automatically.
 
-**Rule 37.** 2026-10-19 · matt: "close, then reset every single one of the opens". `log account resetOpens <a>|all [--reason]` restarts the count of today's launches (rule 24) and the host's opens (rule 35), only when matt asks, with every browser closed first. It deletes nothing: it writes one dated line to `~/.logCli/launchResets.jsonl`, and launches before that line stop counting. The 10-minute gap and the 8 a day apply again from the reset.
-
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
-
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
-
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
-
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
-
-**Rule 42.** 2026-10-19 · matt: the browser moves to AdsPower (SubQ's pick on our recorded issues, and Listaro's browser), and Camoufox stays for later. Twenty's socialAccounts logic is unchanged. The browser is a driver: `src/browser/driver` is one XState machine for every browser (prepare, gate, start, selfCheck, open, close), so a new browser is one more driver and can't skip rules 12 and 17. Listaro's AdsPower client is ported to `src/browser/adsPower`. `log adsPower sync --apply` gives each account one profile, linked in `socialAccounts.adsPowerProfileId`, with `browserDriver` picking the driver (empty: camoufox). A profile holds no proxy, password, cookies or 2FA key. The proxy goes on only to open and comes off at close. No AdsPower browser opens on Facebook until its gate, self-check and HAR recording (rule 22) are wired (`docs/adsPower.md`).
-
-**Rule 44.** 2026-10-20 · matt: every browser has parity, through one Playwright layer. AdsPower (Chromium, attached over CDP) and Camoufox (Firefox, launched) are both driven with Playwright's async API, never Puppeteer. AdsPower's `ws.puppeteer` is only the name of the CDP websocket it returns. `python/browser/browserDriver.py` opens either and hands every session the same context. So the proxy gate (`gate_attached`), the self-check (`check_attached`), the session HAR (`harRecorder.SessionHar`), HumanMouse, scrollMotion, the flows and the warm-up are the same code on both. This replaces rule 42's "not wired yet". Each browser is a domain of its own, `src/browser/<name>`, holding its capability row, driver and tests. The `browserParity` check in lefthook pre-commit (`bun run check:browsers`) refuses a browser missing its domain, row, driver, tests, Python opener or `docs/browsers.md` column. `notBuilt` is listed, never refused. Listaro's AdsPower rules carry over (`docs/browsers.md`): never close the profile's context, inject no scripts, and let the profile keep its own cookies.
-
-**Rule 48.** 2026-10-20 · matt: what a platform's client does is documented by platform first, then domain: `docs/platforms/<platform>/<domain>/<request>.md` (was `docs/facebookClient/`; Facebook is `docs/platforms/facebook/`, and its group requests have a `groups` domain of their own). A new platform or domain is explored with `log inspect` and gets its own folder beside Facebook's. Over MCP, any call that runs long is watched live: the caller starts a Monitor on `~/.logCli/mcp/<day>.log` before it (rule 26), as the server's instructions and each long tool's description say.
-
-**Rule 54.** 2026-10-20 · (checkpoints: replaced by rule 118, matt 2026-11-02) matt: a known state is resolved, never a reason to stop. When a page lands on a state log-cli already knows (a checkpoint's first page, a text captcha, the Remember password prompt, the login form, two-step, "automated behaviour"), its resolver runs: press the checkpoint's Continue (plain text, by its ref), `solve` the captcha (2Captcha, then Continue), Not now, signIn, code. Only what a person must clear stops an account (a video selfie, an ID or photo, a disabled account; rules 10, 23), and that is said to matt. A Claude Code hook (`.claude/settings.json`, `scripts/hooks/pageState.ts`) reads the latest step of every open browser after each tool call and each prompt, matches it against the known states (`pageStateOf`, `src/browser/flow/helpers/pageState.ts`) and puts the state and its resolver into the agent's context. A state not mapped yet is pressed through (its Continue) and added to the map.
-
-**Rule 55.** 2026-10-20 · matt: the CLI, the MCP tools, the agent hooks and the live log line up, and a commit is refused when they don't. One hook list (`src/agentHooks/registry`) writes both hosts' files, Claude Code's `.claude/settings.json` and Codex's `.codex/hooks.json`: SessionStart and UserPromptSubmit say where every open browser is; PostToolUse (Bash, PowerShell, Monitor, every `mcp__log__` tool) gives a known state its resolver, and a failed step is an unconfirmed page (snapshot, then resolve); Stop keeps the turn going while a browser sits on a state log-cli resolves itself (rule 54), never on a person's state, and never twice on the same unchanged one; PreToolUse refuses a log run piped through tail/head (rule 26). The terminal CLI writes the same live log as the MCP, `~/.logCli/mcp/<day>.log`, so one Monitor shows a run however it started. lefthook's `agentHooks` (`bun run check:agentHooks`, pre-commit and pre-push) refuses drift: both hosts' files, every command an MCP tool or terminal-only, every MCP tool hooked, every hook script answering its events, every resolver a real command (`skills/agentHooks/SKILL.md`).
-
-**Rule 68.** 2026-10-22 · matt: the Marketplace location is typed as "City, State" with the state written out in full ("Bethlehem, Pennsylvania", never "PA"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (Bethlehem, inspect 20261022T105341 and 20261022T110738). `setLocation` writes a US state code out, picks the option Facebook's own answer names as the place typed, clicks it, and sets nothing when none matches. A listing is published from the account's open AdsPower browser by the recorded flow `marketplaceListingPublish` (location, Create, photos, title, price, category, condition, description, Next, Publish; never Boost, rule 41), not by a second browser. "Discover more when you shop" (partner listings, a European location) is a known page state, pressed through with Update.
-
-**Rule 69.** 2026-10-22 · matt: once a listing is live, the account is checked on a schedule. The host's check (every watch round, in the browser it holds) reads Marketplace status (may it still sell: anything but full access is the account's `suspended` issue), each listing's state on Selling into Twenty (active, being reviewed, sold, rejected), and the seller inbox's chats, each from its step's own recording, nothing clicked. `log facebook check --account <a>` runs it once by hand. A chat's fields are mapped from the first recording of a real one (rule 29); until then chats are counted and kept as sent. `src/facebook/marketplace/check`. The page-state hook resolves it with that flow when the account's PIN is in Twenty, and flags it to matt only when it isn't (the session records a yes or no when it opens, never the PIN). "Enter your PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from Twenty and each step recorded until it is a flow.
-
-**Rule 72.** 2026-10-23 · matt: a Marketplace location is never abbreviated. It is typed as "City, State" with the state written out ("Bethlehem, Pennsylvania") or "City, Country" ("Galway, Ireland"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (rule 68). A check blocks before any action: a place with an acronym, a state code, a zip or any number, or no state or country is refused with `locationAbbreviated` (`placeProblem`, `src/facebook/marketplace/location`; `python/location/placeName.py` in the sessions), in a listing's `locationQuery` (`listing create`, `lint`, `publish`, `campaign fill`), `log inspect do setLocation`, a flow's `location`, and the host's setLocation, which types the listing's `locationQuery` and never a zip. A written-out state counts as the US for the country check.
-
-**Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
-
-**Rule 74.** 2026-10-23 · matt: in the inspect flow, a state we can't decide is read by SubQ with everything around it, and said loudly to the agent. Only `log inspect` does this, because it is where flows are made to be run again and again. Every inspect step's internal API calls are taken out of its recording by code, with what was sent and what came back, in seconds from the step's first request (`exchanges.json`, `exchanges.md`). A step no known state names (`pageStateOf`) is collated into one bundle: the goal (`--goal`), the account (home, platform, browser, the proxy's exit), what we did (the action, the mouse, how long it took), every internal API call, the page text, the screenshot and the earlier steps. SubQ's Decisions API (`subq-snap-1.1`, up to 128 questions, a 384K-token context) is asked what it means, not what to do next: whether the goal was met, whether everything fits the account, whether something should never have come up, whether the page agrees with the API, whether our action caused it, and what each call says about the goal. The reading is printed first in the step's result and put into the agent's context by the page-state hook (`>>> UNKNOWN STATE`), so it is named before the flow goes on. The same works on any platform. `log inspect read <stepFolder>` reads a recorded step again. `src/subq/stepReading`.
-
-**Rule 75.** 2026-10-23 · matt: the loud events trigger a Claude hook, and the model keeps going until the goal is done, with what went wrong written down as P.E.E. An inspect session has a goal (`--goal` on `start`, or `log inspect goal --set`). The goal is reached when a step's SubQ reading says so (`goalMet` at least 0.5). Until then the page-state hook's Stop event holds the turn ("Keep going with the next inspect step"), and puts the goal into the agent's context after each tool call when it changes. A step whose reading says it went wrong (wrong result, stopped by the platform, unclear, or SubQ failed) needs its finding before the next step: **Point**, the issue in one sentence; **Evidence**, quoted from the step's reading (the calls SubQ flagged, with what was sent and what came back), plus any of your own; **Explain**, why the evidence shows it and what caused it (`log inspect finding --step --point --explain`). Once the goal is reached, the turn is held until every finding says how it was fixed (`log inspect finding --fixes <n> --fix`). They are kept in the run as `goalFindings.jsonl` and `goalFindings.md`; `log inspect goal` shows them. What only a person can clear never holds the turn: it is said to matt. The hook holds the turn once per unchanged state, never twice on the same one. `src/browser/inspect/helpers/goal.ts`.
-
-**Rule 78.** 2026-10-24 · matt: a deactivated account gives its AdsPower profile back, and another account takes the slot (AdsPower holds 22). When an account is DEACTIVATED, by `log facebook account status <a> DEACTIVATED` or in Twenty, its profile is deleted from AdsPower and `adsPowerProfileId` cleared; the account's row stays (rule 13). The status command does it at once and runs the sync, so an account waiting for a profile is given the freed one. `log adsPower sync --apply` releases first, then makes profiles, so a status set in Twenty is caught there. matt: "I just want to do Pennsylvania": only accounts whose home is in `LOG_ADSPOWER_HOMES` (`.env.local`, `US`; or `--homes`) hold a profile, and the others give theirs back the same way. Nothing else about them changes. `src/browser/adsPower`, `docs/adsPower.md`.
-
-**Rule 79.** 2026-10-25 · matt: "we can't do that in production, that's why we need it deterministic." A flow step never depends on a page's exact wording or a person stepping in. A control is picked by one scored match (`python/browser/controlMatch.py`): its role, then its name as the accessible name, aria-label, label, text or placeholder, case and spacing ignored, inside the dialog the step names (`within`, taken from the recording's snapshot) or an open dialog over the page behind it; two equal matches are refused (`controlAmbiguous`), none is `controlMissing`, a disabled one is waited for (`controlDisabled`). Every step waits for the call it must cause (`expect`: a mutation, a plain endpoint such as `profilePictureUpload`, or a dialog query) and checks its answer (rule 73) before the next one fires. `log facebook preflight` says before any browser opens what would stop each account (home timezone, hours, proxy country and speed, the browser kernel, launches and host opens left, a session left open, its picture on disk); `--apply` downloads a missing kernel and the host waits for one. A session whose process is gone is dropped. Snapshot excerpts of each page version are test fixtures (`python/fixtures/controls/`). Before a flow's first click it clears the known overlays with Escape, each checked: the browser-notifications notice (gone from the page) and an ended "What happened" notice (`useAccountStatusClearEnrollmentEntryPointActionMutation` answers `xfb_ixt_gateway_clear_flow: true`); one that stays stops the flow with `overlayNotCleared`.
-
-**Rule 82.** 2026-10-25 · matt: "we need to make it auto switch when that happens to checkpointed", and later the same day "if I said it got checkpointed then we just deactivate it". An open browser reports every page it lands on (`navigations.jsonl` in its run), and the session behind it sets the account to DEACTIVATED in Twenty, reason `checkpointed`, the moment one is a `/checkpoint` page, between steps as well as during them, with the page and the time as the detail; its listings are marked lost, as the direct-API engine does. Its AdsPower profile is given back by the next `log adsPower sync --apply` (rule 78), never from under the open browser. An account already DEACTIVATED is left as it is. `src/cli/inspect/helpers/watchCheckpoint.ts`.
-
-**Rule 84.** 2026-10-25 · matt: `log inspect` and the account's AdsPower browser work on every platform, not only Facebook, so a new platform is explored the same way (rules 29, 48). One table says what each platform is, `PLATFORM_SITES` (`src/cli/runner/helpers/platforms.ts`): its Twenty value, cookie domain, hosts, home page, whether it needs a proxy and whether it has a browser path. Facebook needs its proxy (rule 12, unchanged; the gate refuses a direct run for it); X has no browser path (rule 80). matt, for Reddit: "no proxy, like X": a platform marked `proxy: none` opens its AdsPower profile with no proxy, the gate reads this machine's own exit and the profile's timezone follows it; an account with no home runs in en-US on the machine's timezone. `log inspect` goes only to known platforms' hosts, opens on the account's platform home, carries the account's own cookies in, and names each internal call by Facebook's friendly name or a GraphQL `operationName`/`operation`, else its path. `log adsPower sync` gives a profile to every browser platform's accounts (a no-proxy one needs no home). A row whose `accountName` is empty is found by its `name`. `log new platform` writes the platform's row (`--hosts`, `--home`, `--noProxy`, `--noBrowser`), and `check:platforms` refuses a platform without one.
-
-**Rule 97.** 2026-10-31 · matt: "the ability to have everything done locally". Accounts live in a local file, `~/.logCli/localAccounts.json` (`LOG_LOCAL_ACCOUNTS` moves it), on every platform, and this narrows rule 13 for accounts only. `log localAccount pull` copies every Twenty account in, cookies and login included, each keeping its Twenty id so its listings and groups still find it; `add` makes one Twenty never had (with its AdsPower profile); `list` shows them. `LOG_ACCOUNTS=local` (`.env.local`) leaves Twenty out of accounts entirely, and a session a run captures or refreshes is saved back to the file. Listings, groups and conversations stay in Twenty.
+**Rule 175.** 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.

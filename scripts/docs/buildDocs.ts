@@ -128,7 +128,7 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
             "",
             `- With a shell (Claude Code, Codex): ${longRunLine({ shell: true })}`,
             `- Without one (claude.ai, Duet): ${longRunLine({ shell: false })}`,
-            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 54) and what only matt can clear (`needsMatt`).",
+            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 79) and what only matt can clear (`needsMatt`).",
             "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
           ]
         : theirs.length

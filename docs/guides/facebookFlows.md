@@ -2,7 +2,11 @@
 
 Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -437,7 +441,7 @@ Usage: log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename 
 Pass the arguments after the command name in `args`, e.g. ["--json"]. It never takes --live: that is `flowLive`. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowLive`
 
@@ -450,7 +454,7 @@ Usage: log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename 
 Pass the arguments after the command name in `args`, with --live. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `warmup`
 
@@ -472,7 +476,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. It never t
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 25, 26, 29, 31, 63, 55, 1, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `warmupLive`
 
@@ -495,7 +499,7 @@ Pass the arguments after the command name in `args`, with --live or --likes. `--
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 25, 26, 29, 31, 63, 55, 1, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowDeletePost`
 
@@ -504,7 +508,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live).
 Steps: gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowDeletePostLive`
 
@@ -514,7 +518,7 @@ Delete the newest post on the account's own profile: its Actions menu, Move to b
 Steps: gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowFacebookLanguageEnglish`
 
@@ -523,7 +527,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic.
 Steps: gotosettings → click → clickEnglishUs → click. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowFacebookLanguageEnglishLive`
 
@@ -533,7 +537,7 @@ Switch the account's Facebook language to English (US): Settings, Language and r
 Steps: gotosettings → click → clickEnglishUs → click. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupHeaderMenus`
 
@@ -542,7 +546,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked
 Steps: gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupHeaderMenusLive`
 
@@ -552,7 +556,7 @@ Open and close the group header's search, More menu, Joined menu, Invite dialog 
 Steps: gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupMembers`
 
@@ -561,7 +565,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction
 Steps: gotogroupsJunkremovalwinners → gotogroupsJunkremovalwinnersMembers → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupMembersLive`
 
@@ -571,7 +575,7 @@ Open a group's People tab and scroll it read-only so Facebook loads the member l
 Steps: gotogroupsJunkremovalwinners → gotogroupsJunkremovalwinnersMembers → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupPostComments`
 
@@ -580,7 +584,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only
 Steps: gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupPostCommentsLive`
 
@@ -590,7 +594,7 @@ On a group's Open questions tab, open a post's comments, switch the sort to All 
 Steps: gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupPostDialog`
 
@@ -599,7 +603,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it
 Steps: gotogroups → clickLeaveAComment → clickClose. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupPostDialogLive`
 
@@ -609,7 +613,7 @@ On a group's Discussion feed, open a post in its dialog with Leave a comment (th
 Steps: gotogroups → clickLeaveAComment → clickClose. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupTabs`
 
@@ -618,7 +622,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only
 Steps: gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowGroupTabsLive`
 
@@ -628,7 +632,7 @@ Open each tab of a group the account is in (Featured, Open questions, People, Ev
 Steps: gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMarketplaceListingDelete`
 
@@ -637,7 +641,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then "No, haven't sold" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing 1425935622848350).
 Steps: gotomarketplaceYouSelling → clickMoreOptions → clickDeleteListing → clickDelete → clickNoHavenTSold → clickNext. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMarketplaceListingDeleteLive`
 
@@ -647,7 +651,7 @@ Delete one Marketplace listing from the Selling page: its More options menu, Del
 Steps: gotomarketplaceYouSelling → clickMoreOptions → clickDeleteListing → clickDelete → clickNoHavenTSold → clickNext. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMarketplaceListingPublish`
 
@@ -656,7 +660,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review).
 Steps: gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadAddPhotosOrDrag → uploadAddPhoto → fillTitle → fillPrice → clickCategory → clickMiscellaneous → clickCondition → clickNew → fillDescription → clickNext → clickPublish → clickClose. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMarketplaceListingPublishLive`
 
@@ -667,7 +671,7 @@ Steps: gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadA
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMessengerPinCreate`
 
@@ -676,7 +680,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22.
 Steps: gotomessages → clickCreatePin → pin → pin. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowMessengerPinCreateLive`
 
@@ -686,7 +690,7 @@ Messenger's Create a PIN: open /messages/, press Create PIN, type the account's 
 Steps: gotomessages → clickCreatePin → pin → pin. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowPostComment`
 
@@ -695,7 +699,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live).
 Steps: gotoprofilePhp → fillWriteAComment → clickPostComment. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowPostCommentLive`
 
@@ -705,7 +709,7 @@ Comment on the newest post on the account's own profile: type in its Write a com
 Steps: gotoprofilePhp → fillWriteAComment → clickPostComment. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfilePhotoPost`
 
@@ -714,7 +718,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).
 Steps: gotoprofilePhp → uploadPhotoVideo → clickPost. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfilePhotoPostLive`
 
@@ -724,7 +728,7 @@ Post a photo on the account's own profile: Photo/video hands the file to the cho
 Steps: gotoprofilePhp → uploadPhotoVideo → clickPost. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfilePost`
 
@@ -733,7 +737,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).
 Steps: gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfilePostLive`
 
@@ -743,7 +747,7 @@ Post text on the account's own profile: open the composer, type the text, Post, 
 Steps: gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfileSetup`
 
@@ -752,7 +756,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done.
 Steps: gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowProfileSetupLive`
 
@@ -762,7 +766,7 @@ Give an account its profile picture, cover photo and name, as recorded on Lancas
 Steps: gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupCreateAccessCheck`
 
@@ -771,7 +775,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupCreateAccessCheckLive`
 
@@ -781,7 +785,7 @@ Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recor
 Steps: gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupFeedBrowse`
 
@@ -790,7 +794,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35).
 Steps: goto → dwell → scroll → gotomarketplace → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupFeedBrowseLive`
 
@@ -800,7 +804,7 @@ Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 6
 Steps: goto → dwell → scroll → gotomarketplace → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupMarketplaceBrowse`
 
@@ -809,7 +813,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35).
 Steps: gotomarketplace → dwell → scroll → openAny. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupMarketplaceBrowseLive`
 
@@ -819,7 +823,7 @@ Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recor
 Steps: gotomarketplace → dwell → scroll → openAny. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupMessagesVisit`
 
@@ -828,7 +832,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupMessagesVisitLive`
 
@@ -838,7 +842,7 @@ Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-2
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupSellingVisit`
 
@@ -847,7 +851,7 @@ A dry run: lists the steps and opens nothing. What runs them on Facebook is `flo
 Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell. Every step is recorded (snapshot, screenshot, HAR, rea).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `flowWarmupSellingVisitLive`
 
@@ -857,60 +861,42 @@ Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-24
 Steps: gotomarketplace → scroll → gotomarketplaceYouSelling → dwell. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
-AGENTS.md (log://agents): rules 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 8.** 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted unless matt asks for it.
+**Rule 1.** 2026-10-18 · Use camelCase for owned files, folders, values, ids, statuses and error codes. Convert external naming once at the boundary. See docs/namingConventions.md.
 
-**Rule 18.** 2026-10-18 · No run outside the account's local waking hours (08:00-22:00 in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish, scan, status, watch, campaign run and connect are refused with `outsideActiveHours`. Daily caps count the account's local day.
+**Rule 2.** 2026-10-18 · Put platform code under src/<platform>/<area>/<domain>; shared code stays in its shared library/domain. Use index.ts, types.ts, client.ts, machine.ts and helpers where appropriate. Keep scripts and Python in domain folders.
 
-**Rule 20.** 2026-10-19 · matt asked for `--bypass`: on publish, scan, status, watch, campaign run and connect it skips rule 18's waking hours for that run, and nothing else. The proxy gate, home locale, device and launch self-check (rules 11, 12, 15-17) still run, and `--live` still needs matt (rule 10). It is never on by default; pass it only when matt asks for a run outside the account's hours.
+**Rule 8.** 2026-10-18 · Platform actions require the user authorization their tool defines. Send, post, react, join, edit and delete only when authorized; preserve explicit live confirmation, governor and account gates. Ordinary reads do not need new approval.
 
-**Rule 25.** 2026-10-19 · matt: a run that fails or hangs is fixed from its own recording, never by guessing. Read its HAR with rea (timeline, cause line, compare runs), then fix the machine. The outline is at the top of this file.
+**Rule 25.** 2026-10-19 · Fix failed or unfamiliar behavior from its own recorded action/request/response timeline. Identify the first response deciding the outcome, compare evidence, then change the machine. Do not infer success from a screen, timer or completed tool call.
 
-**Rule 26.** 2026-10-19 · matt: "I always want to see what is going on." Every process that runs over time writes a progress line per stage as it happens (never only at the end) and to a log file in its folder. Agents run long commands so the lines stream live (Claude Code: Monitor, never piped through `tail`/`head`).
+**Rule 26.** 2026-10-19 · Stream progress while work runs, one meaningful line per stage, with the run log retained. Explain stages in plain words; do not leave the user waiting silently for a final buffered result.
 
-**Rule 29.** 2026-10-19 · matt: look before writing code for a page. `log inspect start --account <a>` opens one gated, headed Camoufox (async API, same launch and gates as every run) and keeps it open; `log inspect do <action>` runs one step (goto, snapshot, back, wait; click, type, press only with `--live`, rule 8). Each step records, in order, as it happens: the accessibility snapshot with element refs (camofox-mcp's model, `aria_snapshot(mode="ai")`), a screenshot, its own HAR, and rea's reading of that HAR at once. Code that clicks on a page is written from an inspect recording of that page, never before one.
+**Rule 29.** 2026-10-19 · Record a browser page with the existing inspect tool before implementing actions on it. Preserve per-step snapshots, screenshots, HAR and the reading of the internal calls.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 31.** 2026-10-19 · matt: a recorded procedure becomes the whole pipeline, not a one-off. `log inspect` records it (rule 29); `log flow fromInspect` turns the recording into a flow definition (each step's element by role and name from the snapshot it acted on, each step's confirming request from what it sent, rea's Evidence per step, `src/browser/flow/definitions/<name>.json`); `log flow docs` writes its documentation (`docs/platforms/facebook/flows/<name>.md`, linked to each request's doc); `createFlowMachine` makes it an XState machine; `log flow run <name> --account <a> --set …` runs it on any account (dry run unless `--live`), recording every step again; and every saved flow is an MCP tool of its own (`flowProfileSetup`). The docs gate requires each flow's doc.
+**Rule 31.** 2026-10-19 · Turn a repeatable recorded browser procedure into its flow, deterministic machine, documentation and matching CLI/MCP surface. Confirm each consequential step by the request and answer it causes.
 
-**Rule 32.** 2026-10-19 · matt: the cursor moves as his own hand does, measured, not guessed. `python/human/recordMouse.py` recorded his mouse on a Facebook page (60 s, ~/.logCli/mouse/20261019T192448.json); `python/human/humanMouse.py` is fitted to it: one continuous velocity profile per move (Bezier path, speed peak in the first third, long settle, 0.42-0.45 s for 400-800 px), overshoot of 10-60 px and return in about half of reaches, loose 80-350 px loops around what is looked at, pauses of 0.1-1.5 s, still ~25 % of the time. The same module drives every session: the async inspect/flow sessions (idle loop between steps, preempted by any step) and the sync publish/connect/profile sessions (`Session.mouse.look()` before each step, every click through `human_click`). Those sessions launch with `own_trajectory=True`: humanize stays on (rule 11) with its per-hop curve capped at 20 ms, because its 0.6 s cap cost 100 ms per 5 px hop and made every move crawl. Each step saves its samples (`mouseSamples.json`) so `recordMouse.py --analyze` measures ours the way it measured his. Nothing is injected into the page.
+**Rule 35.** 2026-10-19 · Browser work uses one account browser through its active day, with actions as tabs/steps; close only for a logged lifecycle reason. Preserve existing proxy-country, locale/timezone, device/profile, headed visibility, capture, active-hours and launch-budget gates. Keep checkpoint stops and account-specific constraints in the browser/flow guides. Do not create a fresh browser per action.
 
-**Rule 35.** 2026-10-19 · matt: the browser stays open. One browser per account, opened once per local day by its host and kept open through the account's active hours; every action is a tab in it; it closes only for a logged reason (end of active hours, shutdown, checkpoint or restriction, account lost, a crash reopened once). Every account runs one lifecycle machine (`src/marketplace/lifecycle`, XState) across an onboarding lane (with a day's warm-up after profile and name) and a host lane. Top of this file.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 36.** 2026-10-19 · matt: the warm-up is recorded and watched, then wrapped. Each of Listaro's five warm-up activities (`account-warmup.ts` stages 1-5) is done through `log inspect` in a headed session, recorded step by step, turned into a flow and its XState machine (`warmupFeedBrowse`…), and wrapped as `log warmup`: `record` (once), `run` (the warm-up machine runs each flow in turn in one open browser) and `feed` (the activity feed, live). Warm-up steps are `scroll`, `openAny`, `clickAny`, `dwell`, their ranges drawn each run; the likes need `--likes` (rule 8).
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
+**Rule 55.** 2026-10-20 · Keep CLI commands, MCP catalog/tools, hooks and generated documentation aligned. Change their source and regenerate the affected surfaces; do not hand-edit generated guides.
 
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
+**Rule 63.** 2026-10-22 · Platform commands are log <platform> <command> <what>. Shared commands remain shared. Preserve the naming boundary described in docs/commandNaming.md.
 
-**Rule 49.** 2026-10-20 · matt: the warm-up is by platform, then activity: `log warmup <platform> <activity>`, first `log warmup facebook reel` (`src/warmup/<platform>`, the library the warm-up and the domain the platform). It opens the account's browser (`inspect start --detach`) primed with the activity and runs its steps as a flow of events, each recorded (rule 22). A warm-up spans many activities; each is a unit of its own, so it is watched alone, and every step says what it must achieve (a swipe changes the reel's URL, the comments show their heading): each run writes the outline of the steps that didn't (`warmup_<platform>_<activity>.json`), and the steps are fixed from that recording (rule 25). Reels: sound on first (they start muted: nobody watches a reel with the audio off); most reels get a glance and a skip, often a few in a row, and only some are watched (`--skip`, default 0.6); on those: Next card, the comments opened, scrolled (the wheel over the panel, `scrollIn`) and closed, the creator's profile, a like only with --likes (rule 8); a session is drawn from ranges (`plan`). Its requests are in `docs/platforms/facebook/reels/` (rule 48).
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
-**Rule 50.** 2026-10-20 · matt: the Reels warm-up builds the persona's For you feed by engaging with what it would engage with, from the datasets (the persona-conditioned Reels handoff he collated; `~/.logCli/datasets/SOURCES.md`). `log warmup facebook reel run --persona` keeps one persona per account (the three datasets he named), one real viewer from KuaiRand-1K (`src/warmup/viewer`, matched to the persona's scroll speed) and one persona pack (`buildPersonaPack`): every dataset gives a trait, said in its provenance, real or synthetic, including what the persona is into (`interests`). Each reel, the moment it lands, is read by SubQ from its frame (matt: SubQ analyses the images), with the caption and the persona: what it is, whether it is this persona's kind of content, the one action they'd pick. The action orderer (`planReel`, deterministic from the seed) then plans it: the watch is the viewer's next real play scaled by the interest effect measured on KuaiRand-Pure's random log (their kind ×1.10-1.67, outside ×0.90-0.99; likes ×1.28 against ×0.95, comments ×1.40 against ×0.93, `scripts/datasets/buildInterestEffect.ts`), and at most one action (U = p × interest effect × segment weight × attention fit, a like cooldown of 3 reels, only what the run allows, rule 8), a close call settled by the read's pick. The watch counts from when the reel landed, so SubQ's answer is the glance. rea still reads each step at once without holding up the next (`reaLater`, rule 29); a dwell doesn't wait for the network, a swipe only for the next reel's URL, and the cursor rests on Next card between quick swipes. Save, follow and share aren't built ([#46](https://github.com/matthewdonsemail-lab/log/issues/46)).
-
-**Rule 51.** 2026-10-20 · matt: proxy traffic is money. Reels ran 2Captcha's traffic out (about 4.5 MB a reel through the residential proxy), so each account has a budget of its own traffic for 24 hours, 1 GB by default (`--trafficMb`). A warm-up reads 2Captcha's counter before and after, refuses to start over the budget (`trafficBudgetSpent`), checks every 5 reels and stops at it, and writes each run's use to `~/.logCli/proxyTraffic.jsonl` (`src/proxyVendor/traffic`).
-
-**Rule 54.** 2026-10-20 · (checkpoints: replaced by rule 118, matt 2026-11-02) matt: a known state is resolved, never a reason to stop. When a page lands on a state log-cli already knows (a checkpoint's first page, a text captcha, the Remember password prompt, the login form, two-step, "automated behaviour"), its resolver runs: press the checkpoint's Continue (plain text, by its ref), `solve` the captcha (2Captcha, then Continue), Not now, signIn, code. Only what a person must clear stops an account (a video selfie, an ID or photo, a disabled account; rules 10, 23), and that is said to matt. A Claude Code hook (`.claude/settings.json`, `scripts/hooks/pageState.ts`) reads the latest step of every open browser after each tool call and each prompt, matches it against the known states (`pageStateOf`, `src/browser/flow/helpers/pageState.ts`) and puts the state and its resolver into the agent's context. A state not mapped yet is pressed through (its Continue) and added to the map.
-
-**Rule 55.** 2026-10-20 · matt: the CLI, the MCP tools, the agent hooks and the live log line up, and a commit is refused when they don't. One hook list (`src/agentHooks/registry`) writes both hosts' files, Claude Code's `.claude/settings.json` and Codex's `.codex/hooks.json`: SessionStart and UserPromptSubmit say where every open browser is; PostToolUse (Bash, PowerShell, Monitor, every `mcp__log__` tool) gives a known state its resolver, and a failed step is an unconfirmed page (snapshot, then resolve); Stop keeps the turn going while a browser sits on a state log-cli resolves itself (rule 54), never on a person's state, and never twice on the same unchanged one; PreToolUse refuses a log run piped through tail/head (rule 26). The terminal CLI writes the same live log as the MCP, `~/.logCli/mcp/<day>.log`, so one Monitor shows a run however it started. lefthook's `agentHooks` (`bun run check:agentHooks`, pre-commit and pre-push) refuses drift: both hosts' files, every command an MCP tool or terminal-only, every MCP tool hooked, every hook script answering its events, every resolver a real command (`skills/agentHooks/SKILL.md`).
-
-**Rule 60.** 2026-10-20 · matt: log-cli is platform-agnostic as well as browser-agnostic. Facebook (Marketplace and groups) is the first platform, and what is scoped by platform names it in every form: `log warmup <platform> <activity>`, with no form that skips the platform. Listaro's five Facebook activities are the Facebook activity `stages`: `log warmup facebook stages plan|record|run|log` (was `log warmup plan|record|run|feed`; those are refused with the form they became), their code in `src/warmup/facebookStages` (was `src/marketplace/warmup`), and their log the stage log (`~/.logCli/runs/warmup/stageLog.jsonl`, was the "activity feed", which clashed with the Facebook feed activity). Every command declares its platform (`Command.platform`: `facebook`, `any` or `byArgument`, a typecheck error without one), the README shows it in its Platform column, and `check:docs` refuses a `byArgument` command with a usage line that doesn't name the platform. The Facebook-only commands that don't yet take the platform in their name are listed in issue #20 (github.com/matthewdonsemail-lab/log-cli/issues/20), to be scoped as matt decides.
-
-**Rule 64.** 2026-10-22 · matt: the code is by platform first, as the commands are, "because each has different approaches": `src/<platform>/<area>/<domain>`. Facebook's groups are `src/facebook/group/{join,read,answer}` (were `src/group/…`, rule 45) and its warm-up `src/facebook/warmup/activities` and `src/facebook/warmup/stages` (were `src/warmup/facebook` and `src/warmup/facebookStages`, rule 49). What every platform's warm-up draws from stays shared: `src/warmup/persona`, `src/warmup/viewer`. Each area has an `index.ts` (`check:naming`). Top of this file.
-
-**Rule 68.** 2026-10-22 · matt: the Marketplace location is typed as "City, State" with the state written out in full ("Bethlehem, Pennsylvania", never "PA"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (Bethlehem, inspect 20261022T105341 and 20261022T110738). `setLocation` writes a US state code out, picks the option Facebook's own answer names as the place typed, clicks it, and sets nothing when none matches. A listing is published from the account's open AdsPower browser by the recorded flow `marketplaceListingPublish` (location, Create, photos, title, price, category, condition, description, Next, Publish; never Boost, rule 41), not by a second browser. "Discover more when you shop" (partner listings, a European location) is a known page state, pressed through with Update.
-
-**Rule 72.** 2026-10-23 · matt: a Marketplace location is never abbreviated. It is typed as "City, State" with the state written out ("Bethlehem, Pennsylvania") or "City, Country" ("Galway, Ireland"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (rule 68). A check blocks before any action: a place with an acronym, a state code, a zip or any number, or no state or country is refused with `locationAbbreviated` (`placeProblem`, `src/facebook/marketplace/location`; `python/location/placeName.py` in the sessions), in a listing's `locationQuery` (`listing create`, `lint`, `publish`, `campaign fill`), `log inspect do setLocation`, a flow's `location`, and the host's setLocation, which types the listing's `locationQuery` and never a zip. A written-out state counts as the US for the country check.
-
-**Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
-
-**Rule 79.** 2026-10-25 · matt: "we can't do that in production, that's why we need it deterministic." A flow step never depends on a page's exact wording or a person stepping in. A control is picked by one scored match (`python/browser/controlMatch.py`): its role, then its name as the accessible name, aria-label, label, text or placeholder, case and spacing ignored, inside the dialog the step names (`within`, taken from the recording's snapshot) or an open dialog over the page behind it; two equal matches are refused (`controlAmbiguous`), none is `controlMissing`, a disabled one is waited for (`controlDisabled`). Every step waits for the call it must cause (`expect`: a mutation, a plain endpoint such as `profilePictureUpload`, or a dialog query) and checks its answer (rule 73) before the next one fires. `log facebook preflight` says before any browser opens what would stop each account (home timezone, hours, proxy country and speed, the browser kernel, launches and host opens left, a session left open, its picture on disk); `--apply` downloads a missing kernel and the host waits for one. A session whose process is gone is dropped. Snapshot excerpts of each page version are test fixtures (`python/fixtures/controls/`). Before a flow's first click it clears the known overlays with Escape, each checked: the browser-notifications notice (gone from the page) and an ended "What happened" notice (`useAccountStatusClearEnrollmentEntryPointActionMutation` answers `xfb_ixt_gateway_clear_flow: true`); one that stays stops the flow with `overlayNotCleared`.
+**Rule 79.** 2026-10-25 · Flow controls must match deterministically by the recorded role/name and scope; ambiguous, missing or disabled controls refuse. Await the confirming API answer. Known resolvable states follow their recorded resolver; checkpoints/refusals remain stops.

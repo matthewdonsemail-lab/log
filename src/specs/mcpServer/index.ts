@@ -50,8 +50,8 @@ export const mcpServer = {
   anchors: {
     'REQ-MCP-01': [
       { kind: 'symbol', file: RULES, name: 'SERVER_INSTRUCTIONS' },
-      { kind: 'string', file: RULES, includes: "Rule one, above every other: if we don't know, we do this" },
-      { kind: 'string', file: RULES, includes: '(rules 73-76)' },
+      { kind: 'string', file: RULES, includes: "Rule one: if we don't know, we do this" },
+      { kind: 'string', file: RULES, includes: '(rule 73)' },
       { kind: 'string', file: RULES, includes: '(rule 30)' },
     ],
     'REQ-MCP-02': [
@@ -67,6 +67,7 @@ export const mcpServer = {
     'REQ-MCP-04': [
       { kind: 'value', file: RULES, name: 'EVERY_TOOL_RULES', equals: [30, 38, 39, 40, 41] },
       { kind: 'symbol', file: RULES, name: 'COMMAND_RULES' },
+      { kind: 'symbol', file: RULES, name: 'currentRuleIds' },
       { kind: 'symbol', file: RULES, name: 'rulesLine' },
     ],
     'REQ-MCP-05': [

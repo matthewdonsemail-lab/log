@@ -40,7 +40,7 @@ describe("AGENTS.md in the MCP server", () => {
     expect(instructions).toBe(SERVER_INSTRUCTIONS);
     const principles = instructions.split("\n").filter((l) => /^\d+\./.test(l));
     expect(principles[0]).toContain("if we don't know, we do this");
-    expect(principles[0]).toContain("(rules 73-76)");
+    expect(principles[0]).toContain("(rule 73)");
     expect(principles[1]).toContain("do it completely");
     expect(instructions).toContain(AGENTS_URI);
     await client.close();
@@ -50,7 +50,7 @@ describe("AGENTS.md in the MCP server", () => {
     const client = await connected();
     const { tools } = await client.listTools();
     for (const tool of tools.filter((t) => t.name !== "getGuide")) expect((tool.description ?? "").split("\n").at(-1)).toMatch(/^AGENTS\.md \(log:\/\/agents\): rules [\d, ]+\. When matt says to do something, do it completely \(rule 30\)\.$/);
-    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41");
+    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 35, 25, 26, 29, 175, 2, 73, 30, 38, 39, 40, 41");
     await client.close();
   });
 

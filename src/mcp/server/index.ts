@@ -49,7 +49,7 @@ export function browserLines(views: BrowserView[]): string[] {
     : "Browsers: none open.";
   const matt = views.find((v) => v.needsMatt)?.needsMatt;
   const next = views.find((v) => v.next)?.next;
-  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 54: a known state is resolved, never a reason to stop).`] : [])];
+  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 79: a known state is resolved, never a reason to stop).`] : [])];
 }
 
 function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers, images: readonly ToolImage[] = []): CallToolResult {
