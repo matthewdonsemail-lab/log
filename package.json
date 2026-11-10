@@ -14,6 +14,7 @@
     "vendor",
     "scripts",
     "docs",
+    ".opencode",
     "skills",
     "skills.md",
     "AGENTS.md",

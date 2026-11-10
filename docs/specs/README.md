@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 500 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 501 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -377,6 +377,7 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
 - **REQ-CONTEXT-10** The context before a send is read from the .db once the account has caught up
 - **REQ-CONTEXT-11** A read for one chat or person answers from the .db, and the platform only fills it
+- **REQ-CONTEXT-12** Who wrote last is one rule over the .db, in time order, on every platform
 
 ## [Voice gate](./voiceGate.md)
 

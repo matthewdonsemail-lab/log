@@ -3,7 +3,7 @@ import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import type { CommandContext } from "../runner/types.ts";
-import { launchDeps, parseLaunchArgs, runLaunch, setEnvValue, setupSummary, shouldPrompt } from "./index.ts";
+import { launchDeps, parseLaunchArgs, runLaunch, setEnvValue, setupSummary, shouldPrompt, SETUP_HARNESSES } from "./index.ts";
 
 const real = { ...launchDeps };
 afterEach(() => Object.assign(launchDeps, real));
@@ -272,6 +272,8 @@ describe("log launch --setup", () => {
     launchDeps.openUrl = (url) => (opened.push(url), true);
     launchDeps.runInTerminal = (command, args) => (ran.push([command, ...args].join(" ")), { found: tregFound, code: 0 });
     launchDeps.adsPowerUp = async () => adsPowerUp;
+    launchDeps.harnesses = () => [];
+    launchDeps.installHarness = () => ({ configPath: "/home/.config/opencode/opencode.jsonc", changed: true, pluginDir: "/home/.config/opencode/plugins/logHooks", pluginFiles: [] });
     launchDeps.envFile = () => "/home/.logCli/.env";
     launchDeps.readEnv = (file) => files[file] ?? "";
     launchDeps.writeEnv = (file, text) => void (files[file] = text);
@@ -328,6 +330,21 @@ describe("log launch --setup", () => {
     const { context, out } = capture();
     expect((await runLaunch(context, ["--setup"])).code).toBe(0);
     expect(out.join("\n")).toContain("treg isn't installed: install it from https://treg.to/?ref=matthewdonse-aebsh");
+  });
+
+  test("offers the agent harnesses it can wire itself into, and says where it put each one", async () => {
+    stubPrompts([[], [], ["opencode"]]);
+    setupRig();
+    launchDeps.harnesses = () => SETUP_HARNESSES;
+    const installed: string[] = [];
+    launchDeps.installHarness = (harness) => {
+      installed.push(harness.id);
+      return { configPath: "/home/.config/opencode/opencode.jsonc", changed: true, pluginDir: "/home/.config/opencode/plugins/logHooks", pluginFiles: [] };
+    };
+    const { context, out } = capture();
+    expect((await runLaunch(context, ["--setup"])).code).toBe(0);
+    expect(installed).toEqual(["opencode"]);
+    expect(out.join("\n")).toContain("OpenCode: wired: /home/.config/opencode/opencode.jsonc");
   });
 
   test("setEnvValue replaces a key in place or adds it at the end", () => {

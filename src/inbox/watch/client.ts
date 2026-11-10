@@ -7,8 +7,9 @@ import { twitterStateRoot } from '../../directApi/engine/index'
 import { personKeyOf } from '../../twitter/dm/person/index'
 import { SHARED_SESSION } from '../../agentHooks/sessionOffsets/index'
 import { mediaLine, mediaOf } from '../../media/describer/index'
-import { addAlertRow, appendEvent, db, dropFence, holdFence, eventIdOf, eventsAfter, immediate, importPendingFile, retirePendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, writeCursor } from '../store/index'
+import { addAlertRow, appendEvent, db, dropFence, holdFence, eventIdOf, eventsAfter, immediate, importPendingFile, retirePendingFile, lastEventAt, latestSeq, markStage, namedLabel, openGap, readCursor, UNNAMED, writeCursor } from '../store/index'
 import type { StoredEvent } from '../store/index'
+import { lastWordOf, waitingOf } from '../lastWord/index'
 import { POLL_LOCK_SECONDS, POLL_MAX_SECONDS, POLL_MIN_SECONDS } from './types'
 import type { InboxMessage, InboxReader, InboxThread, PollPlan, SeenThreads } from './types'
 
@@ -268,11 +269,13 @@ export function ensureLiveWatchers(platform: string, accounts: readonly string[]
   return started
 }
 
+const OWNER_CODE: readonly string[] = [join('src', 'inbox'), join('src', 'platformKit'), join('src', 'directApi')]
+
 export const WATCHER_CODE: Record<string, readonly string[]> = {
-  twitter: [join('python', 'twitterApi'), join('python', 'platformKit'), join('vendor', 'twikit', 'twikit')],
-  discord: [join('python', 'discordApi'), join('python', 'platformKit'), join('vendor', 'endcord', 'endcord')],
-  slack: [join('python', 'slackApi'), join('python', 'platformKit'), join('vendor', 'gabrielSlack', 'gabriel')],
-  instagram: [join('python', 'instagramApi'), join('python', 'platformKit'), join('vendor', 'instagrapi', 'instagrapi')],
+  twitter: [...OWNER_CODE, join('python', 'twitterApi'), join('python', 'platformKit'), join('vendor', 'twikit', 'twikit')],
+  discord: [...OWNER_CODE, join('python', 'discordApi'), join('python', 'platformKit'), join('vendor', 'endcord', 'endcord')],
+  slack: [...OWNER_CODE, join('python', 'slackApi'), join('python', 'platformKit'), join('vendor', 'gabrielSlack', 'gabriel')],
+  instagram: [...OWNER_CODE, join('python', 'instagramApi'), join('python', 'platformKit'), join('vendor', 'instagrapi', 'instagrapi')],
 }
 const CODE_FILE = /\.(ts|py)$/
 const stampPath = (platform: string) => join(inboxRoot(), platform, 'codeStamp.json')
@@ -498,6 +501,11 @@ export interface StoredWaiting {
 
 export function storedWaiting(account: string, root: string = twitterStateRoot(), limit = 12): { syncedAt: string | null; waiting: StoredWaiting[]; total: number } {
   const state = readJson<{ syncedAt?: string | null; userId?: string; xchat?: Record<string, StoredConversation> } | null>(join(root, account, 'inboxSync.json'), null)
+  const words = lastWordOf({ platform: 'twitter', account })
+  if (words.length) {
+    const { waiting } = waitingOf(words)
+    return { syncedAt: state?.syncedAt ?? waiting[0]?.lastAt ?? null, waiting: waiting.slice(0, limit).map((w) => ({ conversationId: w.conversationIds[0] ?? w.personKey, with: w.kind === 'dm' && w.with !== UNNAMED ? `@${w.with}` : w.with, at: w.lastAt, text: w.lastText })), total: waiting.length }
+  }
   if (!state?.xchat || !state.userId) return { syncedAt: null, waiting: [], total: 0 }
   const rows: (StoredWaiting & { ms: number })[] = []
   for (const [conversationId, c] of Object.entries(state.xchat)) {

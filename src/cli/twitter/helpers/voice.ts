@@ -3,7 +3,8 @@ import { timed, timedSync } from "../../../observability/timing/index.ts";
 import { incomingSince } from "../../../inbox/watch/index.ts";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { roomOf } from "../../../voice/room/index.ts";
-import type { Room } from "../../../voice/room/index.ts";
+import type { Room, RoomKind } from "../../../voice/room/index.ts";
+import { NOT_SAID, REACTION } from "../../../inbox/lastWord/index.ts";
 import { join } from "node:path";
 import { storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
 import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
@@ -341,7 +342,7 @@ export function failedParts(reading: GateReading): string[] {
 }
 
 export function chatIdFor(conversations: readonly Conversation[], send: { platform: string; conversationId?: string | null; userId?: string | null; handle?: string | null }): string | null {
-  const mine = conversations.filter((c) => c.platform === send.platform);
+  const mine = conversations.filter((c) => c.platform === send.platform && (c.platform !== "twitter" || c.with.some(Boolean)));
   const parties = (id: string) => id.split(/[-:]/).filter(Boolean);
   const found = mine.find((c) => !!send.conversationId && c.conversationId === send.conversationId)
     ?? (send.platform === "twitter" && send.userId ? mine.find((c) => parties(c.conversationId).includes(String(send.userId))) : undefined)
@@ -361,6 +362,16 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
   const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
   const lastOfMine = sorted.map((m) => m.fromMe).lastIndexOf(true);
   return sorted.slice(lastOfMine + 1).map((m) => m.text).join("\n");
+}
+
+export function saidOnly<T extends { text?: string | null }>(messages: readonly T[]): T[] {
+  return messages.filter((m) => !REACTION.test(String(m.text ?? "").trim()) && !NOT_SAID.test(String(m.text ?? "").trim()));
+}
+
+export function roomKindOf(send: { platform: string; conversationId?: string | null; handle?: string | null; userId?: string | null }): RoomKind {
+  if (send.platform !== "twitter") return "unknown";
+  if (send.conversationId?.startsWith("g")) return "group";
+  return send.conversationId || send.handle || send.userId ? "dm" : "unknown";
 }
 
 type GateSend = { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined; brief?: boolean; files?: readonly string[] };
@@ -383,9 +394,9 @@ async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ o
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const handle = send.handle || (send.userId ? personOf(send.platform, send.account, String(send.userId)) : null);
   const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
-  const held = timedSync("voice.chatContext", () => chatContextOf(send.platform, send.account, who).messages);
+  const held = timedSync("voice.chatContext", () => saidOnly(chatContextOf(send.platform, send.account, who).messages));
   const said = send.said ?? momentAnswered(held);
-  const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, roomKindOf(send), held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
   const ranked = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const evidence = await timed("voice.evidence", () => chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text));
   const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
@@ -400,8 +411,8 @@ export async function gateBrief(send: { platform: string; account: string; to: s
   const scrambler = voiceDeps.scrambler(send.text);
   if (scrambler.suspicious) return { ok: false, refused: `>>> BRIEF GATE FAILED for ${send.to}, nothing was sent: ${scramblerLine(scrambler)}` };
   const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
-  const held = chatContextOf(send.platform, send.account, who).messages;
-  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const held = saidOnly(chatContextOf(send.platform, send.account, who).messages);
+  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, roomKindOf(send), held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
   const conversation = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [momentAnswered(held), send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const guide = readGuide();
   const reading = await timed("voice.briefReading", () => readBrief({ to: send.to, text: send.text, conversation, ...(room ? { room } : {}), attached: attachedOf(send.files ?? []), ...(guide ? { howMattWrites: guide } : {}) }, voiceDeps.decisions()));

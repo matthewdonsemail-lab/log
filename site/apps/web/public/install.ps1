@@ -95,6 +95,13 @@ Say "done. Your settings are in $EnvFile and your accounts will live in $LogHome
 if (Get-Command log -ErrorAction SilentlyContinue) { Say "log is on your PATH" } else { Say "open a new terminal so 'log' is on your PATH" }
 InstallSkills
 
+$OpenCodeDir = Join-Path $HOME ".config\opencode"
+$OpenCodeInstall = Join-Path $Root "scripts\opencode\install.ts"
+if ((Test-Path $OpenCodeDir) -and (Test-Path $OpenCodeInstall)) {
+  Say "wiring OpenCode: log's tools native (not Code Mode) and its hooks running"
+  & bun $OpenCodeInstall
+}
+
 $BunHome = if ($env:BUN_INSTALL) { $env:BUN_INSTALL } else { Join-Path $HOME ".bun" }
 $LogBin = if (Get-Command log -ErrorAction SilentlyContinue) { (Get-Command log).Source } else { Join-Path $BunHome "bin\log.exe" }
 if ($env:LOG_SETUP -ne "0" -and (Test-Path $LogBin) -and [Environment]::UserInteractive -and -not [Console]::IsInputRedirected) {
