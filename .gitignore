@@ -20,6 +20,7 @@ readings.jsonl
 # (vendor kebab-case names, kept out of git per rule 1; skills/adsPower/SKILL.md says how to reinstall)
 .agents/*
 !.agents/mcp_config.json
+!.agents/hooks.json
 .claude/skills/adspower-browser
 skills/adspower-browser
 skills-lock.json
