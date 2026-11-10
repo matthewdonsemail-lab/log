@@ -65,5 +65,6 @@
       ]
     }
   ],
-  "private": ["decisions", "identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation", "vendors", "infra", "site.json"]
+  "private": ["decisions", "identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation",
+        "datamodel", "vendors", "infra", "site.json"]
 }

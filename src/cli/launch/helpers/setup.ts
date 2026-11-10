@@ -54,6 +54,16 @@ export const ADSPOWER_SETUP = {
   keyHint: "AdsPower, API, the Local API key (leave empty if the Local API has no key)",
 } as const;
 
+export const SETUP_HARNESSES = [
+  {
+    id: "opencode",
+    label: "OpenCode",
+    adds: "log's tools as native tools (never Code Mode) and the hooks running, in ~/.config/opencode",
+  },
+] as const;
+
+export type SetupHarness = (typeof SETUP_HARNESSES)[number];
+
 export function needsBrowser(platforms: readonly Platform[]): boolean {
   return platforms.some((platform) => PLATFORM_SITES[platform].browser);
 }

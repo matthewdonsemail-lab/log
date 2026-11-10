@@ -33,4 +33,12 @@ describe('matt phrasing', () => {
     const echoed = readPhrases('yo lad whats the craic with the pageant thing', index, 'pageant thing')
     expect(echoed.unfamiliar.some((pair) => pair.includes('pageant'))).toBe(false)
   })
+
+  test('their everyday words are still his: a long message from them never strips the draft down to its rare pairs', () => {
+    const index = buildPhraseIndex([...MATT, ...MATT, ...MATT])
+    const draft = 'yo lad whats the craic what are you building'
+    const alone = readPhrases(draft, index)
+    const answering = readPhrases(draft, index, 'what are you building lad, whats the craic with the pageant thing')
+    expect(answering.familiarity).toBe(alone.familiarity)
+  })
 })

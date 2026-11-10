@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { BASELINE_SAMPLE, FAMILIAR_MIN_USES, FAMILIARITY_FLOOR, MIN_WORDS } from './types'
+import { BASELINE_SAMPLE, FAMILIAR_MIN_USES, FAMILIARITY_FLOOR, MIN_WORDS, OWN_WORD_USES } from './types'
 import type { PhraseBaseline, PhraseIndex, PhraseReading } from './types'
 
 export function wordsOf(text: string): string[] {
@@ -49,8 +49,20 @@ export function openPhraseIndex(dir: string): PhraseIndex | null {
   return existsSync(path) ? (JSON.parse(readFileSync(path, 'utf8')) as PhraseIndex) : null
 }
 
+const wordUses = new WeakMap<PhraseIndex, Map<string, number>>()
+
+export function usesOfWord(index: PhraseIndex, word: string): number {
+  let uses = wordUses.get(index)
+  if (!uses) {
+    uses = new Map()
+    for (const [pair, count] of Object.entries(index.wordPairs)) for (const w of pair.split(' ')) uses.set(w, (uses.get(w) ?? 0) + count)
+    wordUses.set(index, uses)
+  }
+  return uses.get(word) ?? 0
+}
+
 export function readPhrases(text: string, index: PhraseIndex, theirText = ''): PhraseReading {
-  const theirs = new Set(wordsOf(theirText))
+  const theirs = new Set(wordsOf(theirText).filter((word) => usesOfWord(index, word) < OWN_WORD_USES))
   const pairs = wordPairsOf(wordsOf(text)).filter((pair) => !pair.split(' ').some((word) => theirs.has(word)))
   const floor = index.baseline[FAMILIARITY_FLOOR]
   if (pairs.length < MIN_WORDS - 1) return { familiarity: null, floor, unfamiliar: [], pass: true }

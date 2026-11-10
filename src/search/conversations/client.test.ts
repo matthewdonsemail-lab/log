@@ -2,7 +2,7 @@ import { afterAll, describe, expect, test } from 'bun:test'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { benchmark, buildIndex, chunksOf, hashEmbedder, loadConversations, openIndex, percentiles, reciprocalRankFusion, saveConversations, search, updateIndex } from './index'
+import { benchmark, buildIndex, chunksOf, hashEmbedder, loadConversations, openIndex, percentiles, reciprocalRankFusion, saveConversations, search, updateIndex, withSiblingNames } from './index'
 import type { Conversation } from './index'
 
 const dir = mkdtempSync(join(tmpdir(), 'convSearch'))
@@ -84,5 +84,18 @@ describe('updating the index with only what changed', () => {
     await index.close()
     expect(hits[0].chunk.with).toEqual(['jeffrey_ho'])
     expect(hits[0].chunk.text).toContain('sending the pool owners list over tonight')
+  })
+})
+
+describe('an X chat copy saved without a name takes the name of its other copy', () => {
+  test('the old DM copy of a person is named from their X Chat copy, so the owner side of it is found by their handle', () => {
+    const copies: Conversation[] = [
+      { platform: 'twitter', account: 'a', conversationId: '20891065-1974596626342686720', box: 'inbox', with: [], messages: [{ id: '1', at: '2026-11-02T19:18:00Z', from: null, fromMe: true, text: 'thats the whole avengers thing' }] },
+      { platform: 'twitter', account: 'a', conversationId: '20891065:1974596626342686720', box: 'xchat', with: ['Nefer_L'], messages: [] },
+      { platform: 'twitter', account: 'b', conversationId: '20891065-1974596626342686720', box: 'inbox', with: [], messages: [] },
+    ]
+    const named = withSiblingNames(copies)
+    expect(named[0].with).toEqual(['Nefer_L'])
+    expect(named[2].with).toEqual([])
   })
 })

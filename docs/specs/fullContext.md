@@ -85,3 +85,16 @@ Checked by: code and SubQ
 `log discord read` takes a server channel from Discord, because the watcher keeps only mentions and replies from one. A DM or group comes from `chatMessages`, filtered by `--after`, with no engine call. A platform read stores what it read and marks the chat backfilled. `log twitter dms --with` (without `--full` or `--force`) decides the same, before the X session is opened. On the .db path it takes the person's messages from `chatContextOf` (handle, and user id from `userIdOfHandle`) and their activity from the kept notification store, calling no engine action. A platform read marks `with:<handle>` backfilled after `backfillThread`. Finding a Discord chat by name (`findInChatList`) matches the kept chat list first (`cachedChatList`, fresh for `CHAT_LIST_FRESH_MS`), and lists from Discord (then keeps the list) only when the name isn't in it: `log discord read`, `send`, `delete`, `react` and `voice`. Each read says where its answer came from (`sourceLine`). matt, 2026-11-07. Rule 160. matt, 2026-11-07, after a read of 8 messages waited 37 s on a catch-up: "we're not achieving p99", so a read never waits on a catch-up.
 
 Checked by: code and SubQ
+
+### REQ-CONTEXT-12: Who wrote last is one rule over the .db, in time order, on every platform
+
+`lastWordOf` in `src/inbox/lastWord/client.ts` decides who wrote last for every DM and group in `log.db`, on every platform, from each chat's newest messages (`RECENT_PER_CHAT`):
+- messages are taken in time order (`sentAtMs`, then `seq` for the same moment), never the order they were stored in, since a backfill stores older messages after live ones;
+- one person's chats are judged together (`personKeyOf`: an X user's old DM `a-b` and X Chat `a:b`);
+- a text of `MIN_MIRROR_CHARS` or more that appears from both sides is counted once, as whoever sent its earliest copy (`withoutMirrors`): matt's opener mirrored into X Chat with the other person as sender is still his;
+- reactions, read markers, "could not open" and call or channel notices (`NOT_SAID`) are never the last word; an empty message is (a voice note, image or sticker);
+- their reaction after matt's last message is a follow-up (`followUp`), never a reply waiting on him; matt's reaction alone after theirs leaves them waiting (`youReactedOnly`).
+
+A "DM" with more than one other sender is a group. `log inbox waiting` (MCP `inboxWaiting`) lists it for every platform and account. `log twitter dms --waiting` takes each person's last word from it over X's pages and the saved files (`withDbLastWord`), and the SessionStart hook's X list (`storedWaiting`) reads it too. matt, 2026-11-08, after the waiting list showed @W2Warrior and @wolfie_ as waiting when he had written last: "fix who i last message and who is last to message me in order of the database".
+
+Checked by: code and SubQ
