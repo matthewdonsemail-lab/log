@@ -20,6 +20,7 @@ Migrations run once, as their own step, with `MIGRATION_DATABASE_URL`. The servi
 | `DATABASE_URL` | The service's own PostgreSQL login (`postgres://` and `postgresql://` both work). |
 | `MIGRATION_DATABASE_URL` | The login that owns the schema, used only by Alembic. |
 | `SESSION_SECRET` | Signs the CSRF token tied to each session. |
+| `DISPATCH_SIGNING_KEY` | Ed25519 seed, 32 bytes as base64 (`openssl rand -base64 32`). Signs every dispatch; runtimes pin its public key from `GET /runtime/dispatchKey`. Kept apart from runtime credentials. |
 | `OTP_PEPPER` | Keys the stored sign-in code verifiers, so a database copy can't check codes. |
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, `AUTH_EMAIL_REPLY_TO` | Resend, for sign-in codes and invites. Without them a code can't be sent and `/auth/email/start` answers `deliveryFailed`. |
 
@@ -41,9 +42,43 @@ All under `/api/v1`, camelCase JSON, `Cache-Control: no-store`. Errors are `Erro
 | `POST /teams/{teamId}/invites/{inviteId}/revoke` | owner, admin | Withdraws a pending invite. |
 | `POST /invites/accept` `{ token }` | verified, invited address | Joins once. A used, withdrawn or expired link is `inviteExpired`; another address is `inviteWrongEmail`. |
 | `GET /healthz` | anyone | Checks the database answers. |
+| `GET /teams/{teamId}/workspaces` | member | `WorkspaceView[]`. `ready` only while its runtime is connected now; otherwise `offline`. |
+| `POST /teams/{teamId}/workspaces` `{ provider }` | owner, admin | `ownCloud` only for now; `boat` answers `providerUnavailable`. The team's first workspace is selected. |
+| `POST /teams/{teamId}/workspaceSelection` `{ workspaceId, expectedGeneration }` | owner, admin | Switches the team's one active workspace. A stale `expectedGeneration` is `conflict`. |
+| `POST /teams/{teamId}/workspaces/{workspaceId}/pairings` `{ challengeHash }` | owner, admin | A one-time pairing token, 10 minutes, shown once. `challengeHash` is sha256 hex of a proof only the runtime holds. A new pairing withdraws older unused ones. |
+| `POST /teams/{teamId}/workspaces/{workspaceId}/revoke` | owner, admin | Revokes the workspace, its credentials and pairings, and drops its bridge. |
+| `POST /runtime/pair` `{ pairingToken, challengeProof, installationId }` | the runtime | Consumes the token once and returns the runtime credential (`RuntimeCredentialView`, shown once, 90 days). Older credentials are revoked. |
+| `GET /runtime/dispatchKey` | anyone | The dispatch public key, protocol version and bridge URL. |
+| `WSS /bridge` (also `/api/v1/runtime/bridge`) | the runtime | The outbound connection, below. |
+| `POST /teams/{teamId}/operations` `{ operationId, tool, args }` | member | Sends a registered read tool to the selected workspace and waits up to 25 s for its result. Live write tools answer `approvalRequired` until approvals exist. The same `operationId` again reconciles and never dispatches twice; with another tool it is `idempotencyConflict`. |
+| `GET /teams/{teamId}/operations/{operationId}` | its actor, owner | Asks the runtime's journal. Offline: the stored state plus `workspaceOffline`. |
+| `POST /teams/{teamId}/operations/{operationId}/cancel` | its actor, owner | Asks the runtime to stop at a safe point. It is not proof nothing happened. |
+| `GET /teams/{teamId}/accounts` | member | Runs `accountsList` on the workspace: `{ accounts, cursor }`. |
 
 Every state-changing call from a signed-in browser sends the `logCsrf` cookie's value back in the `x-csrf-token` header. Every team route checks current active membership; a team id in the path or body grants nothing by itself. Revoking a membership removes access on the next call.
 
+## The bridge
+
+The runtime opens the connection; nothing listens inside the workspace.
+
+1. Connect to `wss://<origin>/bridge` with `Authorization: Bearer <runtime credential>`.
+2. Send `BridgeHello`: `{ workspaceId, installationId, protocolVersion: 1, runtimeVersion, schemaVersion, capabilities }`. Both ids must match the pairing. Only the `capabilitySummary` fields are kept. Another protocol marks the workspace `incompatible` (close 4426).
+3. The service answers with a `heartbeat` envelope carrying the lease's `routeGeneration`, `leaseSeconds` (60) and `heartbeatSeconds` (20). A newer connection from the same workspace fences this one (close 4409).
+4. Every envelope is `{ protocolVersion, kind, workspaceId, routeGeneration, operationId?, sequence?, authority?, payload }`, at most 8 MB. A wrong `routeGeneration` closes the connection.
+   - The service sends `dispatch` (payload `{ tool, args }` plus a signed `authority`), `reconcile` and `cancel`.
+   - The runtime sends `heartbeat` every 20 s, `accepted`, `progress` and `result`. The `result` payload is `{ state, result?, error?, progressCursor? }`.
+5. Before acting on `dispatch`, the runtime checks:
+   - The `authority` signature against the pinned dispatch key, over the canonical JSON (sorted keys, no spaces) of every field but `signature`.
+   - `expiresAt` hasn't passed.
+   - `routeGeneration` is its own.
+   - `requestHash` is sha256 of `{"args":…,"tool":…}`.
+
+   It journals the operation id before any effect, and answers `reconcile` from that journal. The control service stores only the operation's id, tool, state and cursor, never its arguments or result.
+
 ## Not built yet
 
-Workspaces, pairing, the runtime bridge, operations, MCP OAuth grants and the console's account view (slices C and D), and native account storage (slice A). Usage, analytics and subscription answer nothing until their data exists.
+- The runtime side of the bridge in log (pair, connect, journal, run the tool).
+- MCP OAuth grants and live-write approvals (slice D).
+- Boat (slice E) and native account storage (slice A).
+- Usage, analytics and subscription answer nothing until their data exists.
+- One replica only: live connections are held in memory.

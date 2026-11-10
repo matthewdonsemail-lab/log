@@ -17,6 +17,14 @@ STATUS = {
     "inviteWrongEmail": 403,
     "lastOwnerRequired": 409,
     "deliveryFailed": 502,
+    "workspaceNotSelected": 409,
+    "workspaceOffline": 503,
+    "workspaceIncompatible": 409,
+    "runtimeRevoked": 403,
+    "leaseStale": 409,
+    "approvalRequired": 403,
+    "idempotencyConflict": 409,
+    "providerUnavailable": 501,
 }
 
 

@@ -12,6 +12,15 @@ RESEND_COOLDOWN_SECONDS = 30
 SESSION_COOKIE = "logSession"
 CSRF_COOKIE = "logCsrf"
 CSRF_HEADER = "x-csrf-token"
+PAIRING_SECONDS = 600
+RUNTIME_CREDENTIAL_DAYS = 90
+LEASE_SECONDS = 60
+LEASE_HEARTBEAT_SECONDS = 20
+OPERATION_METADATA_DAYS = 7
+AUTHORITY_SECONDS = 120
+DISPATCH_WAIT_SECONDS = 25
+PROTOCOL_VERSION = 1
+MAX_ENVELOPE_BYTES = 8388608
 
 
 @dataclass(frozen=True)
@@ -20,6 +29,7 @@ class Settings:
     databaseUrl: str
     sessionSecret: str
     otpPepper: str
+    dispatchSigningKey: str
     resendApiKey: str | None
     authEmailFrom: str | None
     authEmailReplyTo: str | None
@@ -31,7 +41,7 @@ class Settings:
 
     @property
     def bridgePublicUrl(self) -> str:
-        return os.environ.get("BRIDGE_PUBLIC_URL") or f"{self.appOrigin.replace('https://', 'wss://').replace('http://', 'ws://')}/bridge"
+        return os.environ.get("BRIDGE_PUBLIC_URL") or f"{self.appOrigin.replace('https://', 'wss://', 1).replace('http://', 'ws://', 1)}/bridge"
 
 
 class MissingSetting(RuntimeError):
@@ -52,6 +62,7 @@ def load_settings() -> Settings:
         databaseUrl=required("DATABASE_URL"),
         sessionSecret=required("SESSION_SECRET"),
         otpPepper=required("OTP_PEPPER"),
+        dispatchSigningKey=required("DISPATCH_SIGNING_KEY"),
         resendApiKey=os.environ.get("RESEND_API_KEY") or None,
         authEmailFrom=os.environ.get("AUTH_EMAIL_FROM") or None,
         authEmailReplyTo=os.environ.get("AUTH_EMAIL_REPLY_TO") or None,

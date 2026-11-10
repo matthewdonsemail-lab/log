@@ -110,3 +110,62 @@ def invite_status(invite: Invite) -> str:
 
 def invite_view(invite: Invite) -> InviteView:
     return InviteView(id=str(invite.id), email=invite.emailCanonical, role=invite.role, expiresAt=aware(invite.expiresAt), status=invite_status(invite))
+
+
+class WorkspaceView(Strict):
+    id: str
+    provider: str
+    status: str
+    selected: bool
+    lastContactAt: datetime | None
+    capabilities: dict | None
+    browserConnection: dict | None
+
+
+class WorkspaceCreate(Strict):
+    provider: str = Field(pattern=r"^(ownCloud|boat)$")
+    providerConnectionId: str | None = None
+
+
+class WorkspaceSelect(Strict):
+    workspaceId: str
+    expectedGeneration: int = Field(ge=0)
+
+
+class PairingCreate(Strict):
+    challengeHash: str = Field(min_length=64, max_length=64)
+
+
+class PairingView(Strict):
+    id: str
+    token: str
+    expiresAt: datetime
+    workspaceId: str
+
+
+class RuntimePair(Strict):
+    pairingToken: str = Field(min_length=16, max_length=128)
+    challengeProof: str = Field(min_length=16, max_length=256)
+    installationId: str
+
+
+class RuntimeCredentialView(Strict):
+    workspaceId: str
+    credential: str
+    generation: int
+    expiresAt: datetime
+
+
+class OperationCreate(Strict):
+    operationId: str
+    tool: str = Field(min_length=1, max_length=80, pattern=r"^[a-zA-Z][a-zA-Z0-9]*$")
+    args: dict = Field(default_factory=dict)
+    liveApprovalId: str | None = None
+
+
+class OperationView(Strict):
+    operationId: str
+    state: str
+    progressCursor: str | None = None
+    result: dict | list | None = None
+    error: dict | None = None
