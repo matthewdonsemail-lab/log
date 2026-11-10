@@ -15,6 +15,8 @@ function run(args, env = {}) {
 }
 
 run(['--filter', 'web', 'build'])
+const prerendered = spawnSync('node', [join(root, 'scripts', 'prerenderPages.mjs')], { stdio: 'inherit' })
+if (prerendered.status !== 0) throw new Error('prerendering the devlog and platform pages failed')
 const synced = spawnSync('node', [join(root, '..', 'scripts', 'docs', 'syncSiteDocs.mjs')], { stdio: 'inherit' })
 if (synced.status !== 0) throw new Error('syncing docs/ into the docs site failed')
 rmSync(out, { recursive: true, force: true })
@@ -43,3 +45,5 @@ merge(out, dist)
 if (clashes.length) console.log(`kept the web app's version of ${clashes.length} file(s) that share a name with the docs: ${clashes.slice(0, 5).join(', ')}`)
 if (!existsSync(join(dist, 'docs.html'))) throw new Error('the docs did not make it into the site build')
 console.log(`docs added to the site: ${copied} files`)
+const dated = spawnSync('node', [join(root, 'scripts', 'sitemapLastmod.mjs')], { stdio: 'inherit' })
+if (dated.status !== 0) throw new Error('dating the sitemap failed')

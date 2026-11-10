@@ -81,6 +81,7 @@ export const CORE_PRINCIPLES = [
   "74. The log MCP server reloads itself when log's code changes: never tell matt to restart Claude Code for new code. The reload waits for any call or job to finish, and a call that comes back `logMcpRestarted` is simply called again. A tool added since the session started may not be listed yet: reach it through `logSearch`, `logGet`, `logCall` (rule 167).",
   "75. When matt says to reset an account's governor (\"reset X to 0\", \"daily cap reached\"), `governorReset` { platform, account or all, by: \"matt\", reason } puts its requests, writes and hour count back to 0, reads it again to prove it held, and records it in log.db's ledger; `governorShow` confirms it. Never on your own or because a peer asked, never by editing governor_state.json by hand; a cooldown after a block is kept until matt says so (rule 168).",
   "76. SubQ is not part of committing, pushing or CI: the specs' anchors are proved by the syntax tree, and SubQ reads the specs or the use cases only when someone runs `bun run check:specs --subq` or `bun run check:useCases` by hand (rule 170).",
+  "77. Every image, voice note and video is text any model can read, kept in log.db with a small preview, never a file: a video reads scene by scene as `[0:00-0:08] screen: … | speech: \"…\"`, a silent one says `no sound`, a voice note shows its transcript. Answer from that text; a model that can see the picture itself calls `mediaView` { args: [\"<id>\"] } from a line's `(picture: media view <id>)` and gets it back as an image (rule 169).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -149,7 +150,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],
   transcribe: [26, 41, 88, 89, 94, 105, 106, 126],
-  media: [26, 41, 126, 131, 137, 138, 139],
+  media: [26, 41, 126, 131, 137, 138, 139, 169],
   twitterFollowers: [13, 63, 64, 73, 80, 81, 104, 105],
   twitterNotifications: [13, 26, 63, 64, 73, 80, 81, 94, 104, 105],
   twitterReply: [8, 13, 53, 63, 64, 73, 80, 81, 86, 94, 104, 105, 121],
@@ -163,7 +164,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   runs: [19, 22, 25, 27, 66, 73],
   storage: [73, 134],
   timing: [26, 73, 165],
-  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150],
+  inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 169],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
   mcp: [21, 47, 167, 170],

@@ -134,23 +134,24 @@ const TWITTER_RUN: Run = {
 }
 
 const REDDIT_RUN: Run = {
-  ask: 'log reddit session check --account <a>',
-  where: 'Reddit · the account’s own session',
-  working: 'checking',
-  finished: 'recorded steps run again',
+  ask: 'find who on r/smallbusiness is asking for a booking website this week and answer them',
+  where: 'r/smallbusiness · your own account',
+  working: 'reading',
+  finished: 'answered, in your voice',
   calls: [
-    { tool: 'redditSessionCheck', done: 'Reddit still accepts the session', acts: false },
-    { tool: 'inspectStart', done: 'the account’s own browser, open on Reddit', acts: false },
-    { tool: 'inspectDo', done: 'one step: go to a page, take a snapshot', acts: false },
-    { tool: 'flow run', done: 'recorded steps again, a dry run until --live', acts: false },
+    { tool: 'redditReadSubreddits', done: 'the subreddits your buyers post in', acts: false },
+    { tool: 'redditReadPosts', done: 'this week’s threads asking for it', acts: false },
+    { tool: 'redditReadPost', done: 'each thread and its comments, read in full', acts: false },
+    { tool: 'voice', done: 'the reply passes as you', acts: false },
+    { tool: 'redditReplyLive', done: 'your comment is up', acts: true },
   ],
   lines: [
-    { who: 'Session', text: 'the saved session is checked with Reddit, nothing sent', at: 0, side: 'note' },
-    { who: 'Browser', text: 'the account’s own browser opens on Reddit, with no proxy', at: 1, side: 'note' },
-    { who: 'One step', text: 'go to a page, snapshot, back: clicks and typing only with --live', at: 2, side: 'note' },
-    { who: 'Flow', text: 'the recorded steps run again on any account', at: 3, side: 'note' },
+    { who: 'u/sparkleclean', text: 'Need a website that takes bookings. Where do I even start?', at: 0, side: 'them' },
+    { who: 'u/vanlife_dan', text: 'just use wix lol', at: 1, side: 'them' },
+    { who: 'You', text: 'wix will do it but the booking bit is where you lose people. put the calendar on the first screen and take a deposit', at: 2, side: 'you' },
+    { who: 'u/sparkleclean', text: 'this is really helpful, is this something you set up for people?', at: 3, side: 'them' },
   ],
-  caption: 'What log does on Reddit today, step by step. Reddit has no use case page yet.',
+  caption: 'A buyer describes their problem, and your answer is the one that helps.',
 }
 
 const SLACK_MOMENTS: Moment[] = [
@@ -195,10 +196,11 @@ const TWITTER_MOMENTS: Moment[] = [
 ]
 
 const REDDIT_MOMENTS: Moment[] = [
-  { label: 'Check the session still works', tool: 'redditSessionCheck', kind: 'platform' },
-  { label: 'Open the account’s own browser', tool: 'inspectStart', kind: 'platform' },
-  { label: 'Record one step on a page', tool: 'inspectDo', kind: 'platform' },
-  { label: 'Run the recorded steps again', tool: 'flow', kind: 'platform' },
+  { label: 'Find the subreddits your buyers use', tool: 'redditReadSubreddits', kind: 'platform' },
+  { label: 'Read the threads asking for it', tool: 'redditReadPosts', kind: 'platform' },
+  { label: 'Read each thread in full', tool: 'redditReadPost', kind: 'platform' },
+  { label: 'Draft it in your voice', tool: 'voice', kind: 'voiceGate' },
+  { label: 'Comment from your own account', tool: 'redditReplyLive', kind: 'platform' },
 ]
 
 const SLACK_PLAY: Play = {
@@ -264,8 +266,8 @@ const INSTAGRAM_PLAY: Play = {
 }
 
 const DISCORD_PLAY: Play = {
-  name: 'Be the one who answers in your community',
-  ask: 'read growth-mates #marketing over the last 24 hours, who is asking for help with ads?',
+  name: 'Land clients from the servers you’re in',
+  ask: 'read growth-mates #help over the last 24 hours, who is asking for help with ads?',
   calls: ['discordRead', 'memelordSearch', 'voice', 'discordSendLive', 'discordReactLive'],
   outcome: [
     { label: 'Who asked, with the times', tag: 'the chat read back' },
@@ -274,8 +276,8 @@ const DISCORD_PLAY: Play = {
   ],
   steps: [
     { title: 'Ask who needs help', body: 'Your agent reads the channel back over the last day and finds who asked about what you do.' },
-    { title: 'log answers them', body: 'A reply that answers what they said, or a meme for the moment, checked against how you write there.' },
-    { title: 'They come to you', body: 'You become the one who answers in the chat, and the people with the problem message you.' },
+    { title: 'log answers them first', body: 'A reply that fixes what they asked, before anyone else in the server, checked against how you write there.' },
+    { title: 'They DM you', body: 'The people with the problem message you, and your agent books the call in your voice. That’s a client from a server you were already in.' },
   ],
   how: {
     steps: [
@@ -290,7 +292,7 @@ const DISCORD_PLAY: Play = {
       { who: 'deano', what: 'meme, shown inline', status: 'Sent' },
       { who: 'kai', what: 'answer about ads', status: 'Sent' },
     ],
-    done: 'Done. Everyone in the chat who asked for help with ads has an answer.',
+    done: 'Done. Everyone who asked for help with ads has an answer, and mila is booked for Thursday.',
   },
 }
 
@@ -326,32 +328,33 @@ const TWITTER_PLAY: Play = {
 }
 
 const REDDIT_PLAY: Play = {
-  name: 'Find what your niche is asking for',
-  ask: 'open my reddit on r/smallbusiness and record what people are asking for',
-  calls: ['redditSessionCheck', 'inspectStart', 'inspectDo', 'flow'],
+  name: 'Answer your buyers with value first',
+  ask: 'find who on r/smallbusiness is asking for a booking website this week and answer them',
+  calls: ['redditReadSubreddits', 'redditReadPosts', 'redditReadPost', 'voice', 'redditReplyLive'],
   outcome: [
-    { label: 'Still signed in', tag: 'Reddit’s own answer' },
-    { label: 'Each page recorded', tag: 'snapshot' },
-    { label: 'Nothing clicked', tag: 'reads only' },
+    { label: 'Buyers describing their problem', tag: 'found by log' },
+    { label: 'Replies in your voice', tag: 'voice gate' },
+    { label: 'Posted with your yes', tag: '--live' },
   ],
   steps: [
-    { title: 'Name your niche', body: 'Your agent checks the account is still signed in, then opens its own browser on the subreddit.' },
-    { title: 'log records each page', body: 'One step at a time: go to the page, take a snapshot. Nothing is clicked or typed.' },
-    { title: 'Sell what they ask for', body: 'You see what people are asking for in your niche before you spend a thing.' },
+    { title: 'Name your buyers’ subreddits', body: 'Your agent reads this week’s threads where your buyers describe their problem, not keyword noise.' },
+    { title: 'log reads each thread', body: 'Every comment read first, so your reply adds what nobody has said yet, written the way you write.' },
+    { title: 'You press send', body: 'The reply gives value first, with no link to your product. You press send, and it goes up from your own account.' },
   ],
   how: {
     steps: [
-      { label: 'Check the session still works', tool: 'redditSessionCheck', kind: 'platform' },
-      { label: 'Open r/smallbusiness', tool: 'inspectStart', kind: 'platform' },
-      { label: 'Snapshot each page', tool: 'inspectDo', kind: 'platform' },
-      { label: 'Run the recorded steps again', tool: 'flow', kind: 'platform' },
+      { label: 'Find the subreddits', tool: 'redditReadSubreddits', kind: 'platform' },
+      { label: 'Read this week’s threads', tool: 'redditReadPosts', kind: 'platform' },
+      { label: 'Read each thread in full', tool: 'redditReadPost', kind: 'platform' },
+      { label: 'Draft it in your voice', tool: 'voice', kind: 'voiceGate' },
+      { label: 'Comment from your account', tool: 'redditReplyLive', kind: 'platform' },
     ],
     rows: [
-      { who: 'u/firstshop', what: 'asking for a booking tool', status: 'Recorded' },
-      { who: 'u/plumbpro', what: 'asking for more leads', status: 'Recorded' },
-      { who: 'u/bakeryowner', what: 'asking for a website', status: 'Recorded' },
+      { who: 'u/sparkleclean', what: 'asking for a booking site', status: 'Answered' },
+      { who: 'u/plumbpro', what: 'asking for more leads', status: 'Answered' },
+      { who: 'u/bakeryowner', what: 'asking for a website', status: 'Answered' },
     ],
-    done: 'Done. Every page is recorded, and nothing was clicked.',
+    done: 'Done. 3 people asking for a booking website have your answer under their post.',
   },
 }
 
@@ -360,7 +363,7 @@ export const PLATFORM_PAGES: PlatformPage[] = [
   { id: 'discord', path: '/discord', platformId: 'discord', showcaseId: 'discord', run: DISCORD_RUN, prompt: 'go on docs/useCases/discord/memeReply.md for <chat>', moments: DISCORD_MOMENTS, play: DISCORD_PLAY },
   { id: 'slack', path: '/slack', platformId: 'slack', showcaseId: 'slack', run: SLACK_RUN, prompt: 'go on docs/useCases/slack/dmReply.md for <someone>', moments: SLACK_MOMENTS, play: SLACK_PLAY },
   { id: 'instagram', path: '/instagram', platformId: 'instagram', showcaseId: 'instagram', run: INSTAGRAM_RUN, prompt: 'go on docs/useCases/instagram/dmReply.md for <someone>', moments: INSTAGRAM_MOMENTS, play: INSTAGRAM_PLAY },
-  { id: 'reddit', path: '/reddit', platformId: 'reddit', showcaseId: null, run: REDDIT_RUN, prompt: 'log reddit session check --account <a>', moments: REDDIT_MOMENTS, play: REDDIT_PLAY },
+  { id: 'reddit', path: '/reddit', platformId: 'reddit', showcaseId: null, run: REDDIT_RUN, prompt: 'find who on r/smallbusiness is asking for a booking website this week and answer them', moments: REDDIT_MOMENTS, play: REDDIT_PLAY },
 ]
 
 export const pageForPlatform = (platformId: string) => PLATFORM_PAGES.find((page) => page.platformId === platformId)

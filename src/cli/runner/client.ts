@@ -38,6 +38,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
+    image: overrides.image,
     now: overrides.now ?? (() => new Date()),
     sleep: overrides.sleep,
     cancelled: overrides.cancelled,

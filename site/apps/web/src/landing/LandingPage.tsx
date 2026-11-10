@@ -4,6 +4,7 @@ import { SiteFooter } from './SiteFooter'
 import { ClayClouds } from './ClayClouds'
 import { Control } from './Control'
 import { GoGettersCta } from './GoGettersCta'
+import { HomeAnswers } from './HomeAnswers'
 import { Header } from './Header'
 import { HowWeThink } from './HowWeThink'
 import { ListeningIntro } from './ListeningIntro'
@@ -158,6 +159,7 @@ export function LandingPage() {
       <OtherCases />
       <Unemployed />
       <Rasputin />
+      <HomeAnswers />
       <SiteFooter />
     </div>
   )

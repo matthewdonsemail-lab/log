@@ -41,25 +41,29 @@ const INSTAGRAM: SessionEvent[] = [
 ]
 
 const DISCORD: SessionEvent[] = [
-  { kind: 'user', text: 'read the marketing chat over the last 3 hours' },
-  { kind: 'tool', name: 'getGuide', args: '{ useCase: "discord/groupChatRead" }', result: ['groupChatRead: read back past the window → who said what, with times'] },
-  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "growth-mates #marketing", limit: "50" }', result: ['50 messages back to 1:04 PM', 'mila 3:58 PM: anyone tried the new ads manager?', 'deano 4:01 PM: yeah, cut our cost per lead in half'] },
-  { kind: 'assistant', text: 'In the last 3 hours: deano says the new ads manager halved his cost per lead, and mila can’t believe it worked. Nothing was decided yet.' },
-  { kind: 'user', text: 'respond with a meme' },
-  { kind: 'tool', name: 'memelordSearch', args: '{ query: ["wait it actually worked"], method: "combined", limit: "8" }', result: ['Surprised Snoop Dogg', 'Confused John Cena'] },
-  { kind: 'tool', name: 'voice', args: '{ to: "#marketing", with: "#marketing", context: "mila surprised it worked", text: "<media url>" }', result: ['#marketing PASS: fits the room 0.94'] },
-  { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "1550…2243", text: "<media url>", approvedBy: "you", confirmLive: true }', result: ['sent, id 1568…9031', 'Discord shows it inline'] },
-  { kind: 'assistant', text: 'Dropped Surprised Snoop Dogg on mila’s message in #marketing. Discord shows it inline.' },
+  { kind: 'user', text: 'who in growth-mates #help asked for help with ads today? answer them' },
+  { kind: 'tool', name: 'getGuide', args: '{ useCase: "discord/channelReply" }', result: ['channelReply: read the chat → draft → gate → send'] },
+  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "growth-mates #help", limit: "50" }', result: ['50 messages back to 9:12 AM', 'mila 1:58 PM: our ads stopped working overnight, anyone here fix this for money?', 'deano 2:01 PM: turn it off and on again lol'] },
+  { kind: 'assistant', text: 'mila’s ads stopped overnight and she’ll pay for a fix. The only answer is a joke. Drafting the real one.' },
+  { kind: 'tool', name: 'voice', args: '{ to: "#help", with: "growth-mates #help", context: "mila: ads stopped overnight", text: "the pixel probably dropped after the update…" }', result: ['#help PASS: fits the room 0.95 · answers them 0.97'] },
+  { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "growth-mates #help", approvedBy: "you", confirmLive: true }', result: ['sent, Discord answered with its id'] },
+  { kind: 'user', text: 'she dmed me, book her in' },
+  { kind: 'tool', name: 'discordRead', args: '{ account: "you", channel: "mila", limit: "20" }', result: ['mila: that was it lol. can you look at the rest of our setup?'] },
+  { kind: 'tool', name: 'voice', args: '{ to: "mila", with: "mila", text: "yeah course, thursday work for a quick call?" }', result: ['mila PASS: voice 0.96 · answers them 0.98'] },
+  { kind: 'tool', name: 'discordSendLive', args: '{ account: "you", channel: "mila", approvedBy: "you", confirmLive: true }', result: ['sent', 'mila: thursday works'] },
+  { kind: 'assistant', text: 'Answered mila first in #help, and she’s booked for Thursday. That’s a client from a server you were already in.' },
 ]
 
 const REDDIT: SessionEvent[] = [
-  { kind: 'user', text: 'is my reddit still signed in' },
-  { kind: 'tool', name: 'redditSessionCheck', args: '{ account: "you" }', result: ['Reddit says loggedIn', 'nothing sent'] },
-  { kind: 'assistant', text: 'Reddit still accepts the saved session.' },
-  { kind: 'user', text: 'open it and look at r/smallbusiness' },
-  { kind: 'tool', name: 'inspectStart', args: '{ account: "you" }', result: ['the account’s own browser is open on Reddit', 'no proxy, its own timezone'] },
-  { kind: 'tool', name: 'inspectDo', args: '{ action: "goto", url: "reddit.com/r/smallbusiness" }', result: ['on r/smallbusiness', 'snapshot taken, nothing clicked'] },
-  { kind: 'assistant', text: 'The account’s browser is on r/smallbusiness and the page is recorded. Nothing was clicked: clicks and typing only happen with --live.' },
+  { kind: 'user', text: 'find who on r/smallbusiness is asking for a booking website this week and answer them' },
+  { kind: 'tool', name: 'redditReadSubreddits', args: '{ account: "you", query: "small business owners" }', result: ['r/smallbusiness, r/Entrepreneur, r/sweatystartup', 'each with its members and what it is about'] },
+  { kind: 'tool', name: 'redditReadPosts', args: '{ account: "you", subreddit: "smallbusiness", days: "7" }', result: ['this week’s posts, 3 asking for a booking website', 'u/sparkleclean: Need a website that takes bookings. Where do I even start?'] },
+  { kind: 'tool', name: 'redditReadPost', args: '{ account: "you", post: "1oq…k2" }', result: ['2 vans, losing jobs because people can’t book online', 'u/vanlife_dan: just use wix lol'] },
+  { kind: 'assistant', text: 'u/sparkleclean runs a cleaning business with 2 vans and is losing jobs because people can’t book online. The only answer so far is "just use wix". Drafting what nobody has said yet.' },
+  { kind: 'tool', name: 'voice', args: '{ to: "sparkleclean", context: "losing jobs, no online booking", text: "wix will do it but the booking bit is where you lose people…" }', result: ['sparkleclean PASS: voice 0.95 · answers them 0.96'] },
+  { kind: 'tool', name: 'redditReplyLive', args: '{ account: "you", post: "1oq…k2", text: "…", approvedBy: "you", confirmLive: true }', result: ['commented, Reddit answered with its id'] },
+  { kind: 'tool', name: 'redditVoteLive', args: '{ account: "you", id: "1oq…k2", direction: "up", approvedBy: "you", confirmLive: true }', result: ['upvoted'] },
+  { kind: 'assistant', text: 'Answered u/sparkleclean with the fix nobody else gave, no link to your product, and upvoted the post. The other 2 threads are next, minutes apart.' },
 ]
 
 const REA_LOOKSMAXXING: SessionEvent[] = [
@@ -82,8 +86,8 @@ const REA_LOOKSMAXXING: SessionEvent[] = [
 export const PLATFORM_SESSIONS: Record<string, PlatformSession> = {
   slack: { thread: 'Reply to Priya on Slack', recents: ['Reply to Priya on Slack', 'Read the team DMs', 'React to her answer'], events: SLACK },
   instagram: { thread: 'Answer my Instagram DMs', recents: ['Answer my Instagram DMs', 'Send Maya a meme', 'Voice note to Maya'], events: INSTAGRAM },
-  discord: { thread: 'Catch up on #marketing', recents: ['Catch up on #marketing', 'Meme in the chat', 'Voice note to the group'], events: DISCORD },
+  discord: { thread: 'Answer #help, book mila', recents: ['Answer #help, book mila', 'Welcome the new members', 'Voice note to the group'], events: DISCORD },
   x: { thread: 'Answer my X DMs', recents: ['X inbox follow-ups', 'Network maxing', 'Reply to the comments'], events: SESSION },
   reaLooksmaxxing: { thread: '/rea-looksmaxxing', recents: ['/rea-looksmaxxing', 'Answer the replies', 'Funnel to the Discord'], events: REA_LOOKSMAXXING },
-  reddit: { thread: 'Check my Reddit', recents: ['Check my Reddit', 'Look at r/smallbusiness', 'Run the recorded steps'], events: REDDIT },
+  reddit: { thread: 'Answer r/smallbusiness', recents: ['Answer r/smallbusiness', 'Find my subreddits', 'Reply to the comments'], events: REDDIT },
 }

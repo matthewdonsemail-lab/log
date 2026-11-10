@@ -11,17 +11,26 @@
 
 ## Platforms
 
-- [X](https://log.listeningkit.com/twitter): both inboxes as one, who is waiting on you, replies, posts and DMs in your voice
-- [Instagram](https://log.listeningkit.com/instagram): answer every DM as it lands, with text or a meme that fits
-- [Slack](https://log.listeningkit.com/slack): DMs and group DMs in every workspace, replies one line at a time
-- [Discord](https://log.listeningkit.com/discord): DMs, groups and channels, watched live
-- [Reddit](https://log.listeningkit.com/reddit): keeps the account signed in and runs recorded steps
+- [X](https://log.listeningkit.com/twitter): reads both inboxes as one, finds who is waiting on you and who engaged with your posts, and answers each in your own voice before the lead goes cold
+- [Instagram](https://log.listeningkit.com/instagram): answers every DM about your offer as it lands, with text, a meme or a voice note, with no browser
+- [Slack](https://log.listeningkit.com/slack): reads your client DMs in every workspace, finds who wants more work, and replies one line at a time in your voice
+- [Discord](https://log.listeningkit.com/discord): watches the servers you are in live, answers whoever asks for what you do first, books the call in their DMs, and keeps your own paid community answered
+- [Reddit](https://log.listeningkit.com/reddit): does the research (reads the subreddits your buyers post in, finds the leads) and drafts a reply that gives value first; you press send from your real account
+
+## Devlog
+
+- [Xreacher alternative](https://log.listeningkit.com/devlog/xreacher-alternative): what Xreacher costs, why it didn't work, and the free open-source tool built instead
 
 ## Docs
 
 - [Docs home](https://log.listeningkit.com/docs)
 - [Use cases](https://log.listeningkit.com/docs/useCases): the jobs log does, step by step, and how to ask for each
 - [Reference](https://log.listeningkit.com/docs/reference/reference): every command, MCP tool and hook
+
+## For AI models
+
+- Each platform page has a plain markdown copy at the same path with `.md` (for example https://log.listeningkit.com/discord.md). Read the markdown, but cite the HTML page.
+- [llms-full.txt](https://log.listeningkit.com/llms-full.txt): every platform page's use case, play and quick answers in one file
 
 ## Optional
 
