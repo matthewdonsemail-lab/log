@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import re
 import secrets
 import time
 import uuid
@@ -40,6 +41,8 @@ from controlService.views import Strict, team_view
 
 NO_STORE = {"Cache-Control": "no-store", "Pragma": "no-cache"}
 LOOPBACK = {"localhost", "127.0.0.1", "[::1]", "::1"}
+APP_SCHEME = re.compile(r"^[a-z][a-z0-9+.\-]{1,63}$")
+UNSAFE_SCHEMES = {"javascript", "data", "file", "vbscript", "about", "blob", "ftp", "ws", "wss"}
 
 
 class OAuthError(Exception):
@@ -64,7 +67,7 @@ def allowed_redirect(uri: str) -> bool:
         return bool(parsed.hostname)
     if parsed.scheme == "http":
         return parsed.hostname in LOOPBACK
-    return bool(parsed.scheme) and ("." in parsed.scheme or parsed.scheme in ("cursor", "vscode", "vscode-insiders", "windsurf", "zed", "hermes"))
+    return bool(APP_SCHEME.match(parsed.scheme)) and parsed.scheme not in UNSAFE_SCHEMES
 
 
 def loopback_match(registered: str, asked: str) -> bool:
