@@ -1,0 +1,48 @@
+import uuid
+
+from fastapi import Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+STATUS = {
+    "invalidInput": 400,
+    "unauthenticated": 401,
+    "forbidden": 403,
+    "notFound": 404,
+    "conflict": 409,
+    "expiredChallenge": 410,
+    "invalidCode": 400,
+    "tooManyAttempts": 429,
+    "inviteExpired": 410,
+    "inviteWrongEmail": 403,
+    "lastOwnerRequired": 409,
+    "deliveryFailed": 502,
+}
+
+
+class ApiError(Exception):
+    def __init__(self, code: str, safeMessage: str | None = None, retryAfterSeconds: int | None = None):
+        self.code = code
+        self.safeMessage = safeMessage
+        self.retryAfterSeconds = retryAfterSeconds
+
+
+def error_view(code: str, safeMessage: str | None = None, retryAfterSeconds: int | None = None) -> dict:
+    view = {"code": code, "requestId": uuid.uuid4().hex}
+    if retryAfterSeconds is not None:
+        view["retryAfterSeconds"] = retryAfterSeconds
+    if safeMessage:
+        view["safeMessage"] = safeMessage
+    return view
+
+
+async def api_error_handler(_: Request, error: ApiError) -> JSONResponse:
+    headers = {"Cache-Control": "no-store"}
+    if error.retryAfterSeconds is not None:
+        headers["Retry-After"] = str(error.retryAfterSeconds)
+    return JSONResponse(error_view(error.code, error.safeMessage, error.retryAfterSeconds), status_code=STATUS.get(error.code, 400), headers=headers)
+
+
+async def validation_error_handler(_: Request, error: RequestValidationError) -> JSONResponse:
+    fields = sorted({".".join(str(part) for part in item.get("loc", [])[1:]) for item in error.errors()})
+    return JSONResponse(error_view("invalidInput", f"check {', '.join(fields)}" if fields else None), status_code=400, headers={"Cache-Control": "no-store"})
