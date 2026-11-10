@@ -1,5 +1,6 @@
 node_modules/
 .scratch/
+.worktrees/
 .env
 .env.local
 __pycache__/

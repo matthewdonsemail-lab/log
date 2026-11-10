@@ -28,13 +28,28 @@ function refusedOf(run: PlatformEngineRun): string | null {
   return run.answer.ok ? null : `${run.answer.code ?? 'refused'}: ${run.answer.detail ?? ''}`
 }
 
+const ACCOUNT_REFUSAL = /\b(?:401|429)\b|rateLimited|unauthorized|tokenRevoked|authRequired/i
+
+const CHAT_ACCESS_REFUSAL = /Missing Access|Missing Permissions|Unknown Channel|\b(?:50001|10003|50013)\b|\b403\b[^:]*\bchannel\b/i
+
+export function chatRefusalIsLocal(refused: string): boolean {
+  return CHAT_ACCESS_REFUSAL.test(refused) && !ACCOUNT_REFUSAL.test(refused)
+}
+
 async function readChats(platform: string, account: PlatformAccount, gap: GapRow, read: PlatformRead, chats: { chat: string; box: string; spec: PlatformEngineSpec; position: (m: ReadMessage) => string | null }[], now: Date, wait: () => Promise<void>): Promise<CatchUpResult> {
   let appended = 0
+  const skipped: string[] = []
   for (const [i, c] of chats.entries()) {
     if (i) await wait()
     const run = read(account, { ...c.spec, catchUp: true } as PlatformEngineSpec)
     const refused = refusedOf(run)
-    if (refused) return { appended, refused: `reading ${c.chat}: ${refused}` }
+    if (refused) {
+      if (chatRefusalIsLocal(refused)) {
+        skipped.push(`${c.chat}: ${refused}`)
+        continue
+      }
+      return { appended, refused: `reading ${c.chat}: ${refused}`, skipped }
+    }
     const messages = ((run.answer.messages as ReadMessage[] | undefined) ?? []).filter((m) => afterGap(m.at, gap.fromAt))
     let last: string | null = null
     for (const m of messages) {
@@ -43,7 +58,8 @@ async function readChats(platform: string, account: PlatformAccount, gap: GapRow
     }
     if (last) recordPosition(platform, account.accountName, last, c.chat, now)
   }
-  return { appended, detail: `${chats.length} chat(s) read after their saved position` }
+  const summary = `${chats.length - skipped.length} chat(s) read after their saved position`
+  return { appended, skipped: skipped.length ? skipped : undefined, detail: skipped.length ? `${summary}; ${skipped.length} skipped without access: ${skipped.join('; ')}` : summary }
 }
 
 export function discordCatchUp(account: PlatformAccount, gap: GapRow, read: PlatformRead, now: Date = new Date(), wait: () => Promise<void> = pacedWait): Promise<CatchUpResult> {

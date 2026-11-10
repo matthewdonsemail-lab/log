@@ -42,4 +42,6 @@ export const NETWORK_FAILURE = /could not resolve host|curl: \((6|7|28|35|52|55|
 
 export const PLATFORM_REFUSAL = /\b(429|226|344)\b|soft.?block|rate.?limit|too many requests|governorBlocked|suspended|locked/i
 
+export const CHAT_ACCESS_REFUSAL = /Missing Access|Missing Permissions|Unknown Channel|\b(?:50001|10003|50013)\b|\b403\b[^:]*\bchannel\b/i
+
 export const OWN_FAILURE = /xSessionHostError|instagramSessionHostError|NameError|is not defined|Traceback|AttributeError|TypeError/
