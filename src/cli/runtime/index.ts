@@ -49,9 +49,19 @@ export function accountsList(args: Record<string, unknown>): ResultPayload {
   return { state: "succeeded", result: { accounts, cursor: start + limit < rows.length ? String(start + limit) : null } };
 }
 
+export async function toolManifest(args: Record<string, unknown>): Promise<ResultPayload> {
+  const names = new Set(Array.isArray(args.names) ? args.names.map(String) : []);
+  const [{ COMMANDS }, { toolsFromCommands }] = await Promise.all([import("../runner/index.ts"), import("../../mcp/server/helpers/index.ts")]);
+  const tools = toolsFromCommands(COMMANDS, { shell: false })
+    .filter((tool) => names.has(tool.name))
+    .map((tool) => ({ name: tool.name, title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations }));
+  return { state: "succeeded", result: { tools } };
+}
+
 export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args) => {
     if (tool === "accountsList") return accountsList(args);
+    if (tool === "toolManifest") return toolManifest(args);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, next: _next, ...result } = content;

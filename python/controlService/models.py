@@ -236,3 +236,98 @@ class OperationMetadata(SQLModel, table=True):
     createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
     updatedAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
     expiresAt: datetime = Field(sa_column=stamp())
+
+
+class ClientKind(str, Enum):
+    public = "public"
+    confidential = "confidential"
+
+
+class RegistrationStatus(str, Enum):
+    active = "active"
+    revoked = "revoked"
+
+
+class OauthClient(SQLModel, table=True):
+    __tablename__ = "oauthClients"
+    __table_args__ = (UniqueConstraint("clientId"),)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    updatedAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    clientId: str
+    name: str
+    kind: ClientKind = ClientKind.public
+    redirectUris: list = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    clientSecretHash: str | None = None
+    registrationStatus: RegistrationStatus = RegistrationStatus.active
+
+
+class AuthorizationRequest(SQLModel, table=True):
+    __tablename__ = "authorizationRequests"
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    updatedAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    clientId: uuid.UUID = Field(foreign_key="oauthClients.id", ondelete="RESTRICT")
+    userId: uuid.UUID | None = Field(default=None, foreign_key="users.id", ondelete="RESTRICT")
+    teamId: uuid.UUID | None = Field(default=None, foreign_key="teams.id", ondelete="RESTRICT")
+    redirectUri: str
+    clientState: str | None = None
+    codeChallenge: str
+    codeChallengeMethod: str = "S256"
+    resource: str
+    scopes: list = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    expiresAt: datetime = Field(sa_column=stamp())
+    consumedAt: datetime | None = Field(default=None, sa_column=optionalStamp())
+
+
+class OauthGrant(SQLModel, table=True):
+    __tablename__ = "oauthGrants"
+    __table_args__ = (Index("ixOauthGrantsTeamUserClient", "teamId", "userId", "clientId"),)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    updatedAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    userId: uuid.UUID = Field(foreign_key="users.id", ondelete="RESTRICT")
+    teamId: uuid.UUID = Field(foreign_key="teams.id", ondelete="RESTRICT")
+    clientId: uuid.UUID = Field(foreign_key="oauthClients.id", ondelete="RESTRICT")
+    resource: str
+    scopes: list = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    authzVersion: int
+    revokedAt: datetime | None = Field(default=None, sa_column=optionalStamp())
+
+
+class AuthorizationCode(SQLModel, table=True):
+    __tablename__ = "authorizationCodes"
+    __table_args__ = (UniqueConstraint("codeHash"),)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    codeHash: str
+    requestId: uuid.UUID = Field(foreign_key="authorizationRequests.id", ondelete="RESTRICT")
+    grantId: uuid.UUID = Field(foreign_key="oauthGrants.id", ondelete="RESTRICT")
+    expiresAt: datetime = Field(sa_column=stamp())
+    consumedAt: datetime | None = Field(default=None, sa_column=optionalStamp())
+
+
+class OauthRefreshToken(SQLModel, table=True):
+    __tablename__ = "oauthRefreshTokens"
+    __table_args__ = (UniqueConstraint("tokenHash"), UniqueConstraint("parentId"), Index("ixOauthRefreshTokensFamily", "familyId"))
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    tokenHash: str
+    grantId: uuid.UUID = Field(foreign_key="oauthGrants.id", ondelete="RESTRICT")
+    familyId: uuid.UUID
+    parentId: uuid.UUID | None = Field(default=None, foreign_key="oauthRefreshTokens.id", ondelete="RESTRICT")
+    issuedTeamId: uuid.UUID = Field(foreign_key="teams.id", ondelete="RESTRICT")
+    expiresAt: datetime = Field(sa_column=stamp())
+    consumedAt: datetime | None = Field(default=None, sa_column=optionalStamp())
+    revokedAt: datetime | None = Field(default=None, sa_column=optionalStamp())
+
+
+class OauthAccessToken(SQLModel, table=True):
+    __tablename__ = "oauthAccessTokens"
+    __table_args__ = (UniqueConstraint("tokenHash"),)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    createdAt: datetime = Field(default_factory=utcnow, sa_column=stamp())
+    tokenHash: str
+    grantId: uuid.UUID = Field(foreign_key="oauthGrants.id", ondelete="RESTRICT")
+    expiresAt: datetime = Field(sa_column=stamp())
+    revokedAt: datetime | None = Field(default=None, sa_column=optionalStamp())

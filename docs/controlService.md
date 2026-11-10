@@ -57,6 +57,27 @@ All under `/api/v1`, camelCase JSON, `Cache-Control: no-store`. Errors are `Erro
 
 Every state-changing call from a signed-in browser sends the `logCsrf` cookie's value back in the `x-csrf-token` header. Every team route checks current active membership; a team id in the path or body grants nothing by itself. Revoking a membership removes access on the next call.
 
+## Connecting an AI client (MCP)
+
+`https://app.log.listeningkit.com/mcp` is the one MCP address for Claude, ChatGPT, Cursor, Codex and Hermes. A client finds everything from a 401.
+
+1. **Discovery.** `POST /mcp` without a token answers 401 with `WWW-Authenticate: Bearer resource_metadata=".../.well-known/oauth-protected-resource"`. That document names this origin as the authorization server, and `/.well-known/oauth-authorization-server` lists the endpoints. Only `code` with PKCE S256 is supported, for public clients.
+2. **Registration.** `POST /oauth/register` (dynamic client registration) takes `redirect_uris`: https, loopback http (any port matches), or an app's own scheme (`cursor://`, `vscode://`, reverse-DNS). It allows 30 a hour per address.
+3. **Authorize.** `GET /oauth/authorize` checks the client, the exact redirect, `code_challenge_method=S256`, `resource` (this MCP only) and `scope` (`log:read`, `log:write`; default `log:read`). It then sends the person to **`/console/mcp?request=<id>`** (the frontend). A bad client or redirect is never redirected to.
+4. **Consent, on the frontend's `/console/mcp`:**
+   - `GET /api/v1/oauth/requests/{id}` (signed in) returns `{ clientName, redirectHost, scopes, resource, expiresAt, teams, selectedTeamId }`.
+   - `POST /api/v1/oauth/requests/{id}/approve` `{ teamId }` (CSRF) returns `{ redirectTo }`. Send the browser there; it carries the code and the client's `state`.
+   - `POST .../deny` returns `{ redirectTo }` with `access_denied`.
+   - A request lasts 10 minutes and works once. Not signed in yet: send them to `/sign-in` with `returnPath=/console/mcp?request=<id>`.
+5. **Token.** `POST /oauth/token` handles `authorization_code` (60 s, once, PKCE checked; a reused code revokes its grant) and `refresh_token`. A refresh rotates the token, never widens scope, and is bound to the team it was issued for. Reusing an old refresh token revokes its whole family and the access tokens. Access tokens are opaque and last 1 hour; refresh tokens last 30 days. `POST /oauth/revoke` revokes a token.
+6. **Calls.** `POST /mcp` (JSON-RPC, JSON answers) supports `initialize`, `ping`, `tools/list` and `tools/call`.
+   - Every call rechecks the token, the grant and current team membership. Removing someone, or revoking the grant, cuts them off on the next call.
+   - `tools/list` comes from the connected workspace's real log tools, limited to the registered read tools, plus `accountsList`. Offline, it is the same names with short descriptions.
+   - `tools/call` runs through the same dispatcher as the console, with the grant in its signed authority. Write tools stay refused until approvals exist.
+7. **Grants.** `GET /api/v1/teams/{teamId}/grants` lists them (owners and admins see all, members their own). `POST /api/v1/teams/{teamId}/grants/{grantId}/revoke` revokes one with its tokens.
+
+A grant belongs to the one team picked at consent. Switching team on the website never moves it; connect again to use another team.
+
 ## The bridge
 
 The runtime opens the connection; nothing listens inside the workspace.
@@ -87,7 +108,7 @@ Each dispatch is checked (signature, workspace, generation, expiry, request hash
 
 ## Not built yet
 
-- MCP OAuth grants and live-write approvals (slice D).
+- Live-write approvals (`liveApprovals`, the approval route) and the device flow for remote CLIs (slice D).
 - Boat (slice E) and native account storage (slice A).
 - Usage, analytics and subscription answer nothing until their data exists.
 - One replica only: live connections are held in memory.

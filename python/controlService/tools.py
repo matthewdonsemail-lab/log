@@ -1,5 +1,6 @@
 READ_TOOLS = frozenset({
     "accountsList",
+    "toolManifest",
     "twitterSessionCheck",
     "discordSessionCheck",
     "linkedinSessionCheck",
