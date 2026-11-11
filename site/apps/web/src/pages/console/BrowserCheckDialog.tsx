@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { useMachine } from '@xstate/react'
+import { TextMorph } from 'torph/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDesktop, faXmark, faSpinner, faCheck, faArrowLeft, faRotateRight, faLock, faArrowPointer } from '@fortawesome/free-solid-svg-icons'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
@@ -9,6 +10,32 @@ import type { BrowserPhase } from './browserCheckTypes'
 
 const phaseLabels: Record<BrowserPhase, string> = { profileSetupBlocked: 'Browser profile setup blocked', operationUncertain: 'Browser operation not confirmed', serviceUnavailable: 'Browser service unavailable', launchCooldown: 'Browser launch is cooling down', waitingForOwner: 'Account browser is already in use', launchBlocked: 'Browser launch blocked', launchUncertain: 'Browser launch not confirmed', providerSetupRequired: 'Browser setup required', profileRequired: 'Browser profile required', browserMissing: 'Browser is not running', viewerUnavailable: 'Browser view unavailable', ready: 'Browser connected', signInRequired: 'Sign-in required', needsResolution: 'Check needs resolving', needsAttention: 'Your attention is required', stopped: 'Browser check stopped', unknown: 'Session not verified', verified: 'Session verified', busy: 'Browser is working…' }
 const phaseNotes: Partial<Record<BrowserPhase, string>> = { profileSetupBlocked: 'Review the account country and AdsPower settings.', operationUncertain: 'The runtime has not confirmed the last operation.', serviceUnavailable: 'The browser service could not return its current state.', providerSetupRequired: 'Configure AdsPower in Extensions.', profileRequired: 'Link this account to its own AdsPower profile.', browserMissing: 'Open the account’s saved browser to check its session.', viewerUnavailable: 'This running session does not have a browser viewer. Its browser has been left open.', signInRequired: 'Click a field in the browser to enter your sign-in details.', needsResolution: 'Resolve the recorded check, then verify the session.', needsAttention: 'This check needs a person. Continuation is stopped.', stopped: 'The account or browser has a recorded stop. It cannot continue.', unknown: 'Check the session before continuing.', verified: 'The session was confirmed from recorded platform evidence.' }
+
+const loadingLines = [
+  'Waking the browser up…',
+  'Untangling the tabs…',
+  'Asking the page to hurry…',
+  'Counting pixels, nearly done…',
+  'Polishing the frames…',
+  'Talking the server round…',
+  'Almost there, promise…',
+]
+
+function LoadingLine({ active }: { active: boolean }) {
+  const [index, setIndex] = useState(() => Math.floor(Math.random() * loadingLines.length))
+  useEffect(() => {
+    if (!active) return
+    const timer = window.setInterval(() => setIndex((current) => (current + 1) % loadingLines.length), 2400)
+    return () => window.clearInterval(timer)
+  }, [active])
+  return (
+    <span aria-hidden="true" className="block">
+      <TextMorph as="span" duration={420} className="text-xl font-bold text-white sm:text-2xl">
+        {loadingLines[index]}
+      </TextMorph>
+    </span>
+  )
+}
 
 export function BrowserCheckDialog({ account, onClose, onResolved }: { account: LocalConnection; onClose: () => void; onResolved: () => void; onConfigureProvider: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)
@@ -31,6 +58,7 @@ export function BrowserCheckDialog({ account, onClose, onResolved }: { account: 
   const active = snapshot.matches({ session: 'viewing' })
   const connected = hasFrame && snapshot.matches('session') && !failed && !starting && !reconnecting
   const navigationAllowed = active && connected && view?.canNavigate === true && !pending
+  const stream = view?.stream ?? null
   const inputAllowed = active && hasFrame && view?.canInteract === true
   const keyboardAllowed = !snapshot.context.closeRequested && hasFrame && view?.canInteract === true && !failed
   const checking = snapshot.matches({ session: 'checking' })
@@ -80,9 +108,9 @@ export function BrowserCheckDialog({ account, onClose, onResolved }: { account: 
     </header>
     <div role="status" aria-live="polite" className="sr-only"><FontAwesomeIcon icon={busy ? faSpinner : phase === 'verified' && !failed ? faCheck : faDesktop} className={`size-4 shrink-0 ${busy ? 'animate-spin motion-reduce:animate-none text-[#2A8CFF]' : failed || phase === 'stopped' || phase === 'needsAttention' ? 'text-red-600' : 'text-slate-500'}`} />{label}</div>
     <div className="relative m-4 flex min-h-72 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 sm:min-h-96">
-      <canvas ref={canvas} width={1280} height={800} role="application" aria-label={`${account.name} browser. Click and type directly into the browser.`} tabIndex={hasFrame ? 0 : -1} className={`h-auto max-h-[60dvh] w-auto max-w-full outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${hasFrame ? '' : 'invisible'} ${inputAllowed ? 'cursor-pointer' : 'cursor-default'}`} onClick={(event) => { if (!inputAllowed) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.focus(); setHasControl(true); enqueue({ type: 'click', x: (event.clientX - rect.left) * event.currentTarget.width / rect.width, y: (event.clientY - rect.top) * event.currentTarget.height / rect.height }) }} onPaste={(event) => { if (!keyboardAllowed) return; setHasControl(true); event.preventDefault(); const value = event.clipboardData.getData('text'); if (value && value.length <= 2048) enqueue({ type: 'text', text: value }) }} onKeyDown={(event) => { if (!keyboardAllowed || event.nativeEvent.isComposing || event.altKey || event.metaKey || event.ctrlKey) return; setHasControl(true); if (event.key.length === 1) { event.preventDefault(); enqueue({ type: 'text', text: event.key }) } else if (['Enter', 'Tab', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) { event.preventDefault(); enqueue({ type: 'key', key: event.key }) } }} />
+      {stream ? <div className="relative w-full" style={{ aspectRatio: `${stream.page.width} / ${stream.page.height}` }}><iframe src={stream.url} title={`${account.name} browser stream`} className="absolute inset-0 size-full rounded-lg border-0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" /><div role="application" aria-label={`${account.name} browser. Click and type directly into the browser.`} tabIndex={hasFrame ? 0 : -1} className={`absolute inset-0 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${inputAllowed ? 'cursor-pointer' : 'cursor-default'}`} onClick={(event) => { if (!inputAllowed) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.focus(); setHasControl(true); enqueue({ type: 'click', x: (event.clientX - rect.left) * stream.page.width / rect.width, y: (event.clientY - rect.top) * stream.page.height / rect.height }) }} onPaste={(event) => { if (!keyboardAllowed) return; setHasControl(true); event.preventDefault(); const value = event.clipboardData.getData('text'); if (value && value.length <= 2048) enqueue({ type: 'text', text: value }) }} onKeyDown={(event) => { if (!keyboardAllowed || event.nativeEvent.isComposing || event.altKey || event.metaKey || event.ctrlKey) return; setHasControl(true); if (event.key.length === 1) { event.preventDefault(); enqueue({ type: 'text', text: event.key }) } else if (['Enter', 'Tab', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) { event.preventDefault(); enqueue({ type: 'key', key: event.key }) } }} /></div> : <canvas ref={canvas} width={1280} height={800} role="application" aria-label={`${account.name} browser. Click and type directly into the browser.`} tabIndex={hasFrame ? 0 : -1} className={`h-auto max-h-[60dvh] w-auto max-w-full outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${hasFrame ? '' : 'invisible'} ${inputAllowed ? 'cursor-pointer' : 'cursor-default'}`} onClick={(event) => { if (!inputAllowed) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.focus(); setHasControl(true); enqueue({ type: 'click', x: (event.clientX - rect.left) * event.currentTarget.width / rect.width, y: (event.clientY - rect.top) * event.currentTarget.height / rect.height }) }} onPaste={(event) => { if (!keyboardAllowed) return; setHasControl(true); event.preventDefault(); const value = event.clipboardData.getData('text'); if (value && value.length <= 2048) enqueue({ type: 'text', text: value }) }} onKeyDown={(event) => { if (!keyboardAllowed || event.nativeEvent.isComposing || event.altKey || event.metaKey || event.ctrlKey) return; setHasControl(true); if (event.key.length === 1) { event.preventDefault(); enqueue({ type: 'text', text: event.key }) } else if (['Enter', 'Tab', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) { event.preventDefault(); enqueue({ type: 'key', key: event.key }) } }} />}
       {inputAllowed && !busy && !hasControl ? <button type="button" onClick={() => { setHasControl(true); canvas.current?.focus() }} className="absolute left-1/2 top-5 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full border border-blue-200 bg-white/95 px-4 py-2.5 text-sm font-semibold text-[#0D2A4C] shadow-md backdrop-blur-sm transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"><FontAwesomeIcon icon={faArrowPointer} className="size-3.5 text-[#2A8CFF]" />Click to take control</button> : null}
-      {!hasFrame || busy || failed ? <div className={`absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center ${hasFrame ? 'bg-white/85' : 'bg-slate-100'}`}>{busy ? <FontAwesomeIcon icon={faSpinner} className="size-6 animate-spin motion-reduce:animate-none text-[#2A8CFF]" /> : <FontAwesomeIcon icon={faDesktop} className="size-8 text-slate-400" />}<p className="text-sm font-semibold text-slate-700">{label}</p>{!busy ? <p className="max-w-md text-sm leading-6 text-slate-500">{failed ? error === 'browserProfileHomeExcluded' ? 'This account’s home country is outside LOG_ADSPOWER_HOMES. Profile creation was skipped.' : disconnected ? 'No browser frames were received after five attempts. Check the console for the connection stage and error. An existing browser session may not support the viewer yet.' : 'The check has not been confirmed.' : phase ? phaseNotes[phase] : null}</p> : null}</div> : null}
+      {!hasFrame || busy || failed ? <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center" style={{ background: 'radial-gradient(at 50% 0%, #4FA6FF 0%, #2A8CFF 55%, #1F78F0 100%)' }}>{busy ? <FontAwesomeIcon icon={faSpinner} className="size-7 animate-spin motion-reduce:animate-none text-white" /> : <FontAwesomeIcon icon={faDesktop} className="size-8 text-white/80" />}{busy ? <LoadingLine active={busy} /> : null}<p className="text-base font-semibold text-white">{label}</p>{!busy ? <p className="max-w-md text-sm leading-6 text-white/85">{failed ? error === 'browserProfileHomeExcluded' ? 'This account’s home country is outside LOG_ADSPOWER_HOMES. Profile creation was skipped.' : disconnected ? 'No browser frames were received after five attempts. Check the console for the connection stage and error. An existing browser session may not support the viewer yet.' : 'The check has not been confirmed.' : phase ? phaseNotes[phase] : null}</p> : null}</div> : null}
     </div>
   </dialog>
 }

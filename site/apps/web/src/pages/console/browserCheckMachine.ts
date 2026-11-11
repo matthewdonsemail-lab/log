@@ -21,6 +21,7 @@ export const browserCheckMachine = setup({
     request: fromPromise(({ input, signal }: { input: RequestInput; signal: AbortSignal }) => requestBrowser(input.context.accountId, input.operation, input.context.view, input.context.input, signal)),
     stream: fromCallback<Event, Context>(({ input, sendBack }) => {
       const controller = new AbortController()
+      if (input.view?.stream) { sendBack({ type: 'FRAME_READY' }); return () => controller.abort() }
       void (async () => {
         let nextStatus = 0
         while (!controller.signal.aborted) {

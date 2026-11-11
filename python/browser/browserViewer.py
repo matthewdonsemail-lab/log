@@ -8,6 +8,7 @@ import re
 import secrets
 from pathlib import Path
 from typing import Any
+from browser import streamSurface
 from login.autoLogin import classify
 
 class BrowserViewer:
@@ -43,7 +44,7 @@ class BrowserViewer:
         state = classify(signals["url"], signals["heading"], signals["text"], password_field=signals["password"], code_field=signals["code"], login_markers=False, session_cookies=False, captcha=False)
         blocked = bool(re.search(r"/checkpoint|/account/disabled", signals["url"], re.I)) or state in {"disabled", "checkpoint", "videoSelfie", "automatedBehaviour", "captcha"}
         revision = hashlib.sha256(json.dumps([signals["url"], signals["text"], self.owner.index, self.inputRevision, self.owner.recorder.seen()], ensure_ascii=True).encode()).hexdigest()
-        return {"generation": self.generation, "revision": revision, "state": state, "url": signals["url"], "historyLength": signals["historyLength"], "blocked": blocked, "inputAllowed": not blocked and state in {"loginForm", "wrongPassword", "findAccount", "twoStepCode", "twoStepMethod", "trustDevice", "saveLogin", "continueAs"}, "width": signals["width"], "height": signals["height"], "busy": self.owner.controlLock.locked()}
+        return {"generation": self.generation, "revision": revision, "state": state, "url": signals["url"], "historyLength": signals["historyLength"], "blocked": blocked, "inputAllowed": not blocked and state in {"loginForm", "wrongPassword", "findAccount", "twoStepCode", "twoStepMethod", "trustDevice", "saveLogin", "continueAs"}, "width": signals["width"], "height": signals["height"], "busy": self.owner.controlLock.locked(), "stream": await streamSurface.surface(self.owner)}
 
     async def input(self, data: dict[str, Any]) -> dict[str, Any]:
         if self.owner.controlLock.locked():

@@ -14,11 +14,26 @@ type RpcResult = { isError?: boolean; structuredContent?: Record<string, unknown
 type Runtime = { catalogCall: (id: string, inputs: Record<string, unknown>, live?: boolean) => Promise<RpcResult>; toolCall: (name: string, inputs: Record<string, unknown>) => Promise<RpcResult> }
 type Owner = { account: string; runDir: string; pid: number; startedAt: string; messengerPin?: boolean; repliesPath: string }
 type Descriptor = { port: number; token: string; generation: string; pid: number }
-type LiveState = { url?: string; historyLength?: number; generation: string; revision: string; state: string; blocked: boolean; inputAllowed: boolean; busy: boolean }
+type LiveState = { url?: string; historyLength?: number; generation: string; revision: string; state: string; blocked: boolean; inputAllowed: boolean; busy: boolean; stream?: unknown }
 type Lease = { id: string; accountId: string; owner: Owner; descriptor: Descriptor; expiresAt: number; proof: { revision: string; step: string; at: number } | null; stopped: boolean; pending: boolean }
 
 function readJson<T>(path: string): T | null { try { return JSON.parse(readFileSync(path, 'utf8')) as T } catch { return null } }
 function alive(pid: number) { if (!Number.isSafeInteger(pid) || pid <= 0) return false; try { process.kill(pid, 0); return true } catch (error) { return (error as { code?: string }).code === 'EPERM' } }
+function streamOf(value: unknown) {
+  if (!value || typeof value !== 'object') return null
+  const row = value as { kind?: unknown; url?: unknown; page?: unknown; window?: unknown }
+  if (row.kind !== 'voxl' || typeof row.url !== 'string' || !row.page || !row.window) return null
+  let address: URL
+  try { address = new URL(row.url) } catch { return null }
+  if (address.protocol !== 'https:' && !(address.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(address.hostname))) return null
+  const page = row.page as { width?: unknown; height?: unknown }
+  const window = row.window as { left?: unknown; top?: unknown; width?: unknown; height?: unknown }
+  const numbers = [page.width, page.height, window.left, window.top, window.width, window.height]
+  if (!numbers.every((number) => Number.isSafeInteger(number) && (number as number) >= 0)) return null
+  if ((page.width as number) <= 0 || (page.height as number) <= 0) return null
+  if (window.width !== page.width || window.height !== page.height) return null
+  return { kind: 'voxl' as const, url: row.url, page: { width: page.width as number, height: page.height as number }, window: { left: window.left as number, top: window.top as number, width: window.width as number, height: window.height as number } }
+}
 function ownerOf(account: Account): Owner | null {
   const path = process.env.LOG_INSPECT_CURRENT || join(homedir(), '.logCli', 'runs', 'inspect', 'current.json')
   const session = readJson<Owner>(join(dirname(path), 'sessions', `${account.name.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`)) ?? readJson<Owner>(path)
@@ -150,7 +165,7 @@ export function createBrowserCheck(runtime: Runtime, keepOutcome: (id: string, s
       const currentUrl = new URL(state.url ?? at.url ?? '')
       if (currentUrl.protocol === 'https:' && (currentUrl.hostname === 'facebook.com' || currentUrl.hostname.endsWith('.facebook.com'))) address = `${currentUrl.origin}${currentUrl.pathname}`
     } catch {}
-    const value = { ...base, address, canGoBack: (state.historyLength ?? 0) > 1, canNavigate: true, revision: state.revision, pageState: at.state?.id ?? state.state }
+    const value = { ...base, address, canGoBack: (state.historyLength ?? 0) > 1, canNavigate: true, revision: state.revision, pageState: at.state?.id ?? state.state, stream: streamOf(state.stream) }
     if (lease.stopped || state.blocked || at.state?.person) return { ...value, phase: state.state === 'disabled' || at.state?.id === 'checkpoint' ? 'stopped' : 'needsAttention', canNavigate: false, canGoBack: false }
     if (lease.pending || state.busy) return { ...value, phase: 'busy', canNavigate: false }
     if (at.failed) return { ...value, phase: 'unknown' }
