@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { api, errorText, useSelectedTeam, useWorkspaces, type AccountView } from '@/lib/controlApi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { ConsoleLayout, SectionHeading, type WorkspaceState } from './ConsoleLayout'
+import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
 import { AddKeyDialog, type KeyProvider } from './AddKeyDialog'
 
 type Platform = { service: string; label: string; icon: IconDefinition; summary: string }
@@ -31,12 +34,17 @@ const EXTENSION_PROVIDERS: ExtensionProvider[] = [
 
 const EXTENSION_GROUPS = ['System One & decision models', 'Media', 'AI generation', 'Data'] as const
 
-function currentWorkspaceState(): WorkspaceState {
-  return 'ready'
-}
-
 export function ConnectionsPage() {
-  const workspaceState = currentWorkspaceState()
+  const { team } = useSelectedTeam()
+  const workspaces = useWorkspaces(team?.id ?? null)
+  const workspaceState = workspaceStateOf(workspaces.data, workspaces.isError)
+  const accounts = useQuery({
+    queryKey: ['controlAccounts', team?.id],
+    queryFn: ({ signal }) => api<{ accounts: AccountView[]; cursor: string | null }>(`/teams/${team?.id}/accounts?limit=200`, { signal }),
+    enabled: Boolean(team?.id) && workspaceState === 'ready',
+    staleTime: 30_000,
+  })
+  const iconOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.icon ?? faMagnifyingGlass
   const [query, setQuery] = useState('')
   const [keyDialog, setKeyDialog] = useState<{ open: boolean; provider: KeyProvider | null }>({ open: false, provider: null })
   const running = workspaceState === 'ready' || workspaceState === 'reconnecting' || workspaceState === 'offline'
@@ -54,17 +62,42 @@ export function ConnectionsPage() {
     >
 
 
-      {running ? (
-        <section className="mb-8">
-          <SectionHeading title="Connected" count={0} />
+      <section className="mb-8">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <WorkspaceChip state={workspaceState} />
+          {workspaceState === 'notConnected' || workspaceState === 'awaitingConnection' ? <Link to="/console/settings" className="text-sm font-semibold text-[#1B6FD6]">Set up your workspace →</Link> : null}
+          {workspaceState === 'offline' ? <span className="text-sm text-slate-600">Start <code className="rounded bg-slate-100 px-1">log runtime connect</code> in your workspace to see its accounts.</span> : null}
+        </div>
+        <SectionHeading title="Connected" count={workspaceState === 'ready' ? accounts.data?.accounts.length ?? 0 : undefined} />
+        {workspaceState !== 'ready' ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+            <p className="text-sm font-semibold text-slate-700">Accounts show while your workspace is connected</p>
+            <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-slate-600">They stay in your workspace. Nothing is copied here.</p>
+          </div>
+        ) : accounts.isLoading ? (
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Asking your workspace…</div>
+        ) : accounts.isError ? (
+          <div role="status" className="rounded-2xl border border-red-200 bg-white p-6 text-center text-sm text-red-700">{errorText(accounts.error)} <button type="button" onClick={() => accounts.refetch()} className="font-semibold underline">Try again</button></div>
+        ) : accounts.data?.accounts.length ? (
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {accounts.data.accounts.map((account) => (
+              <li key={account.id || `${account.platform}:${account.account}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#2A8CFF]"><FontAwesomeIcon icon={iconOf(account.platform)} className="size-[1.1rem]" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-bold">{account.displayName || account.account}</span>
+                  <span className="block truncate text-xs text-slate-500">{account.platform} · {account.account}</span>
+                </span>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${account.sessionState === 'loggedIn' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{account.sessionState ?? account.status}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
             <p className="text-sm font-semibold text-slate-700">No accounts signed in yet</p>
-            <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-slate-600">
-              Sign one in below. The platform decides whether it worked, and the session stays in your workspace.
-            </p>
+            <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-slate-600">Sign one in below. The platform decides whether it worked, and the session stays in your workspace.</p>
           </div>
-        </section>
-      ) : null}
+        )}
+      </section>
 
       <section>
         <SectionHeading title="Add a connection" count={shown.length} />
