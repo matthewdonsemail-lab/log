@@ -6,31 +6,31 @@
 | --- | --- |
 | Domain | login |
 | Kind | mutation |
-| doc_id | `28077768681846394` |
+| doc_id | `28610511871940857` |
 | Path | `/api/graphql/` |
 | Sends | `input`, `scale` |
 | Reads | `caa_login_web.error_code`, `caa_login_web.error_message`, `caa_login_web.error_style`, `caa_login_web.redirect_uri`, `caa_login_web.two_factor_result`, `caa_login_web.reg_nta_context`, `caa_login_web.is_3pl`, `caa_login_web.is_xapp_login`, `caa_login_web.recaptcha_needed`, `caa_login_web.is_ig_login_recaptcha`, `caa_login_web.should_show_profile_selector`, `caa_login_web.should_show_save_password_dialog` and 14 more |
 | Called from | `useCDSWebLoginMutation` |
-| rea | `ev_f18654fe13879f40a482e2123ed7247d7d2430323d52092806de0435de449a7c` |
+| rea | `ev_7630b3b2ad8d6015e4bdad2865ac23060a67ca91fe9aaed097a61390a0455796` |
 
 Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | signIn: password typed; submitting with Enter | 3 | 200 | 3650–4726 ms | 29–79 ms | — |
-| inspect | signIn: password typed; submitting with Enter | 1 | 0 | 0 ms | 9069 ms | — |
+| host | signIn: password typed; submitting with Enter | 2 | 200 | 4014–4726 ms | 52–79 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 2 | 0, 200 | 0–5033 ms | 67–9069 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T164654_61594285317994**, signIn: password typed; submitting with Enter: 200, 3650 ms
+**runs/inspect/20261111T081957_61593610473511**, signIn: password typed; submitting with Enter: 200, 5033 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "516759801",
+  "qpl_active_flow_ids": "175125627,516759801",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "useCDSWebLoginMutation",
   "server_timestamps": "true",
@@ -43,13 +43,13 @@ Sent:
       "app": "facebook",
       "auth_domain_data_key": null,
       "caa_login_request_extra_info": {
-        "ab_test_data": "DAAAj/AAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAA/BAAAAAANGBB",
-        "shared_prefs_data": "eyIxMTAyMCI6W3sidCI6MTc5MzAzMzQwNS43ODQsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS9sb2dpbi8ifSwidiI6IkFtZXJpY2EvVmFuY291dmVyIn1dLCIzMDAwMCI6W3sidCI6MTc5MzAzMzQwNS43ODQsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS9sb2dpbi8ifSwidiI6ZmFsc2V9XSwiMzAwMDEiOlt7InQiOjE3OTMwMzM0MDUuNzg0LCJjdHgiOnsiY24iOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vbG9naW4vIn0sInYiOjV9XSwiMzAwMDIiOlt7InQiOjE3OTMwMzM0MDUu… (3120 chars)",
+        "ab_test_data": "ACAAA/AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA/KAAAAAAOFCB",
+        "shared_prefs_data": "eyIxMTAyMCI6W3sidCI6MTc5NDM4NTIyOS4zNTcsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS8ifSwidiI6IkFtZXJpY2EvVmFuY291dmVyIn1dLCIzMDAwMCI6W3sidCI6MTc5NDM4NTIyOS4zNTcsImN0eCI6eyJjbiI6Imh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS8ifSwidiI6ZmFsc2V9XSwiMzAwMDEiOlt7InQiOjE3OTQzODUyMjkuMzU4LCJjdHgiOnsiY24iOiJodHRwczovL3d3dy5mYWNlYm9vay5jb20vIn0sInYiOjV9XSwiMzAwMDIiOlt7InQiOjE3OTQzODUyMjkuMzU4LCJjdHgiOnsiY24iOiJo… (2912 chars)",
         "cuid": "",
-        "guid": "f8ec9d2a12680a3af",
-        "lgndim": "eyJ3IjoxNjgwLCJoIjoxMDUwLCJhdyI6MTY4MCwiYWgiOjEwMDIsImMiOjI0fQ==",
-        "lgnjs": "1793033405",
-        "lgnrnd": "095004_lCbR",
+        "guid": "f99a386e0aabef4fe",
+        "lgndim": "eyJ3IjoxOTIwLCJoIjoxMDgwLCJhdyI6MTkyMCwiYWgiOjEwMzIsImMiOjI0fQ==",
+        "lgnjs": "1794385229",
+        "lgnrnd": "002027_v4Xm",
         "locale": "en_US",
         "login_source": "comet_headerless_login",
         "next": "",
@@ -62,27 +62,27 @@ Sent:
       "credential_type": "password",
       "dyi_job_id": "",
       "enc_password": {
-        "sensitive_string_value": "#PWD_BROWSER:5:1793033423:AfRQAAqu9n5hlyIfsu/nwPKDU2qoia0r/iBTUqP3uDkttuhPR5gRBmXYFNvNKJS5UTQaemZERcbs2Ysbc9Ozb+cbUBrHK4evrBlYcWA6ixrSJLAw4B27lckBZkkVOiLHgXqRkh+kVoKmSiENYlJI4TsYS6hj"
+        "sensitive_string_value": "#PWD_BROWSER:5:1794385837:AQRQAEFN2ORdGoObvhpOw2tEl+qca8hmc8kzj8hedeKstBk/dizKuV+ki1HFYJqAlUnLVTRI8jPLCIPI3qDw1yzJmpwgLavIPYas2MmWA0iBJQWY8Aagf0FscjK+7IJtP5M3NtFxSEthqonNsTzz3cKkpUyR"
       },
-      "event_request_id": "864c554f-8f30-46a7-bda9-996bc49b0023",
-      "identifier": "jjsz4nr6wvvv@merepost.com",
+      "event_request_id": "c9a24a67-40fa-40c7-b014-2caaebf326ce",
+      "identifier": "rnzkxijnqs2p@mailbox.in.ua",
       "ig_web_device_id": null,
       "initial_request_id": "1",
       "lids": null,
-      "login_source": "LOGIN",
+      "login_source": "COMET_HEADERLESS_LOGIN",
       "next": null,
       "passkey_payload": null,
       "persistent": true,
       "query_params": "{}",
       "trusted_device_records": "{}",
       "use_uid_to_login": false,
-      "waterfall_id": "343c14ca-baf8-4090-bda0-840cc59411c6"
+      "waterfall_id": "2f95ec40-3025-4c26-99b1-8de48ae02903"
     },
     "scale": 1
   },
-  "doc_id": "28077768681846394",
+  "doc_id": "28610511871940857",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=516759801"
+    "qpl_active_flow_ids=175125627,516759801"
   ]
 }
 ```
@@ -102,7 +102,7 @@ Answered:
         "color_ranges": []
       },
       "error_style": "GENERIC_BANNER",
-      "redirect_uri": "https://www.facebook.com/two_step_verification/two_factor/?encrypted_context=AWS0QH6zFAzqoaf8cmMG-QxAIJwr6xNoT4IvAm7Od7SN9ZjOg0wEicKif6oM7UeBuSgdOUcH9Bj4EY1uVha68_tOERoY3Osu504jJKti4gwzseGxv-h6jyxHrdVjQ2_zX50Krc-2YxJ34UZT2Cc59O_bbh76gTM5TRPLvBh_27mN0Mdh7r4Fr39o12u05Z6tUWwZcchdPVb4_EKcWUAhzECtUCZsbtMPILJc5sks5C1zKRaOu5oIICYk6B98qGrqVGWTrnauSqy7nhaUfDk9b8dbGhYy_Tn_ajZSgWJkgKSRJtaN5yNJyENiqvsw-ShC2zh… (914 chars)",
+      "redirect_uri": "https://www.facebook.com/two_step_verification/two_factor/?encrypted_context=AWSQc_NCevZ8pzxONvPfuS4qG2w5MSxxBAQYhIjIz_AgSr0PmcG97jPcz49LgHI8GO2WfCu2WnrAnwFeFvajjkBKsJFEn6tOfSjQcrgoBTC82jceKxfQqgvvir9gXCClhAV4vZvDVg2yAYb01GIr6zpRp_QsMScNyNTH-5s7DcCDlhY_dMjRzRpLSvx5tvLxQqxtLMlTLRHSjJw7r2yi2OfJI4sMy7NzuIveTvbRPhxgpR5RpIIAeMAA_VxyNBPvxkebPYrFg9WidITh7gZsTGiVBrjOx2iW4ok_SQNW3nNYOxAr5RXJC6SSyyTdqpnODPD… (1070 chars)",
       "two_factor_result": null,
       "reg_nta_context": null,
       "is_3pl": null,
@@ -112,13 +112,14 @@ Answered:
       "should_show_profile_selector": false,
       "should_show_save_password_dialog": false,
       "captcha_persist_data": null,
-      "crypted_uid": "AYgvWh_jt7YdXaOkBJXoRkbDW29RvJ7AcX9qVhIYtVDnMALIVV4zjWH6GwZMbT-BZO0YYFhNvGGL1X-_u_pDDnGyQu9x6SQP7eu4_hrHsO-LDqBkVZEFCjgwFC9by-73g_nhcBB7QIGNR-oAhTQZ0cdFD_obDU2wYHzYUXcXQWjpO-wvYe__O9r5bqwP3PMt1QgSmVx6F-svBIV09SNfTi8B|fetaaymh",
+      "crypted_uid": "AYieyhu92WaPzRxvYc2-idoe9srFqLIUM5eCxOCQsQzvzz1p4OcBN3W39NzQIDQRVTtySUJTraiHgo36UMlIAAGarmqpk7WudmWhFTHmb4pFMoJu1kOQqSdfDIXV-bTk4XpqL6lF-KR-wcXu7ooJ_BM-oBeOIefdPnCD7UwSspLktRqrLucj1-ysgQ7KgCdZW2PUI_v4pGKNS1Qkl9izfU4h|fetaaymh",
       "ig_nonce_refresh": null,
       "ig_trusted_device_nonce_refresh": null,
       "stop_deletion_payload": {
         "stop_deletion_nonce": null,
         "stop_deletion_date": null,
-        "is_feta": true
+        "is_feta": true,
+        "unified_screen_enabled": false
       },
       "ig_authenticated": false,
       "ig_login_upsell_ar": null,
@@ -133,8 +134,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793033423035,
-      "time_at_flush_ms": 1793033426478
+      "request_start_time_ms": 1794385837330,
+      "time_at_flush_ms": 1794385841912
     },
     "is_final": true
   }

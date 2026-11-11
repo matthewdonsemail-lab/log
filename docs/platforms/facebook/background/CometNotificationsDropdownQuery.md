@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29240849615602606` |
+| doc_id | `29257345437226429` |
 | Path | `/api/graphql/` |
 | Sends | `count`, `environment`, `scale` |
 | Reads | `viewer....CometNotificationsListWrapper_viewer` |
 | Called from | `CometNotificationsDropdown.react` |
-| rea | `ev_7aa9e5c9a9ae404ec1175123a1bee925e8f1a5ec304c224d1d40d139ebe1a191` |
+| rea | `ev_0fb8384e9310a1a8a4ecea7bcc79ff6d165a105c5451272b4199bf21a1857005` |
 
-Seen 224 time(s) in 39 run(s).
+Seen 205 time(s) in 37 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -85,324 +85,19 @@ Seen 224 time(s) in 39 run(s).
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 1164 ms | 5748 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 4 | 200 | 827–926 ms | 615012–657625 ms | — |
 | inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 1495 ms | 2924 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 555–887 ms | 2972–3884 ms | — |
-| host | step 4: goto /marketplace/status | 2 | 200 | 486–530 ms | 2252–4668 ms | — |
-| host | step 5: goto /me | 1 | 200 | 537 ms | 4186 ms | — |
-| host | step 12: goto /marketplace/create/item | 1 | 200 | 483 ms | 2719 ms | — |
-| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 470 ms | 2457 ms | — |
-| host | step 16: goto / | 1 | 200 | 862 ms | 5180 ms | — |
-| host | step 19: goto /marketplace/ | 1 | 200 | 516 ms | 926 ms | — |
-| host | step 22: goto /marketplace/ | 1 | 200 | 534 ms | 1345 ms | — |
-| host | step 26: goto /marketplace/ | 1 | 200 | 471 ms | 841 ms | — |
-| host | step 28: goto /marketplace/create/item | 1 | 200 | 498 ms | 986 ms | — |
-| host | step 30: goto /marketplace/ | 1 | 200 | 446 ms | 946 ms | — |
-| host | step 32: goto /marketplace/ | 1 | 200 | 453 ms | 879 ms | — |
-| host | step 34: goto /marketplace/you/selling | 1 | 200 | 467 ms | 3851 ms | — |
-| host | step 36: goto /marketplace/ | 1 | 200 | 435 ms | 900 ms | — |
-| host | step 38: goto /marketplace/you/selling | 1 | 200 | 520 ms | 1776 ms | — |
-| host | step 40: goto /messages/ | 1 | 200 | 566 ms | 3673 ms | — |
-| host | step 18: clickRole button "…" | 1 | 200 | 1400 ms | 5359 ms | — |
-| host | step 21: goto /marketplace/status | 1 | 200 | 498 ms | 7979 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 2268 ms | 15838 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 887 ms
+**runs/warmup/20261023T074930_61594063207669**, step 13: goto /marketplace/create/item: 200, 1550 ms
 
 Sent:
 
 ```json
 {
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "count": 15,
-    "environment": "MAIN_SURFACE",
-    "scale": 1
-  },
-  "doc_id": "29240849615602606"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "id": "61594285317994",
-        "__isActor": "User",
-        "name": "Halima Ndjzn"
-      },
-      "notifications_page": {
-        "filter_config": {
-          "selected_filter_tokens": "(taken out)",
-          "filters": [
-            {
-              "__typename": "NotifPageSingleFilter",
-              "title": "(1 fields)",
-              "notif_filter_token": "(taken out)"
-            },
-            {
-              "__typename": "NotifPageSingleFilter",
-              "title": "(1 fields)",
-              "notif_filter_token": "(taken out)"
-            }
-          ]
-        },
-        "query_id": "Cg8BdAZq35avDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
-        "edges": [
-          {
-            "node": {
-              "__typename": "NotifPageBucketHeaderRow",
-              "row_type": "BUCKET_HEADER",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":1,\"npos\":0,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"bucket_header\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "bucket_type": "PRIORITY_INBOX",
-              "header_link": "(2 fields)",
-              "title": "(1 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":1,\"nc\":0,\"rt\":\"bucket_header\",\"ah\":35,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":2,\"npos\":1,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788784990,\"nid\":[1788784990653562]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":3,\"npos\":2,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":2,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1793014543,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":4,\"npos\":3,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"has_excl_cta_attached\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}"
-          }
-        ],
-        "page_info": {
-          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"has_excl_cta_attached\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}",
-          "has_next_page": false
-        }
-      },
-      "notifications_unseen_count": 3,
-      "last_update_timestamp": 1793037999,
-      "notifications_sound_path": [
-        "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
-        "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
-      ],
-      "comet_push_turn_on_status": {
-        "is_comet_push_turn_on_eligible": true
-      },
-      "browser_push_config": {
-        "browser_name": "Chrome",
-        "service_worker_uri": "/sw?s=push",
-        "app_id": "1443096165982425"
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "/images/facebook_logo/fb_icon_144x144.png",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/865652545_4038118806494347_7051216815842930105_n.jpg (486 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/835874060_29035365446081650_2763189362067197988_n.jpg (487 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1793037999230,
-      "time_at_flush_ms": 1793037999702
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 486 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "count": 15,
-    "environment": "MAIN_SURFACE",
-    "scale": 1
-  },
-  "doc_id": "29240849615602606"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "id": "61594285317994",
-        "__isActor": "User",
-        "name": "Halima Ndjzn"
-      },
-      "notifications_page": {
-        "filter_config": {
-          "selected_filter_tokens": "(taken out)",
-          "filters": [
-            {
-              "__typename": "NotifPageSingleFilter",
-              "title": "(1 fields)",
-              "notif_filter_token": "(taken out)"
-            },
-            {
-              "__typename": "NotifPageSingleFilter",
-              "title": "(1 fields)",
-              "notif_filter_token": "(taken out)"
-            }
-          ]
-        },
-        "query_id": "Cg8BdAZq35bLDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
-        "edges": [
-          {
-            "node": {
-              "__typename": "NotifPageBucketHeaderRow",
-              "row_type": "BUCKET_HEADER",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":1,\"npos\":0,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"bucket_header\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "bucket_type": "PRIORITY_INBOX",
-              "header_link": "(2 fields)",
-              "title": "(1 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":1,\"nc\":0,\"rt\":\"bucket_header\",\"ah\":35,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":2,\"npos\":1,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788784990,\"nid\":[1788784990653562]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":3,\"npos\":2,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":2,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1793014543,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":4,\"npos\":3,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}"
-          }
-        ],
-        "page_info": {
-          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}",
-          "has_next_page": false
-        }
-      },
-      "notifications_unseen_count": 3,
-      "last_update_timestamp": 1793038027,
-      "notifications_sound_path": [
-        "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
-        "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
-      ],
-      "comet_push_turn_on_status": {
-        "is_comet_push_turn_on_eligible": true
-      },
-      "browser_push_config": {
-        "browser_name": "Chrome",
-        "service_worker_uri": "/sw?s=push",
-        "app_id": "1443096165982425"
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "/images/facebook_logo/fb_icon_144x144.png",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/865652545_4038118806494347_7051216815842930105_n.jpg (486 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/835874060_29035365446081650_2763189362067197988_n.jpg (487 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1793038027387,
-      "time_at_flush_ms": 1793038027681
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 537 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "25305590",
+  "qpl_active_flow_ids": "138820675",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
   "server_timestamps": "true",
@@ -413,7 +108,7 @@ Sent:
   },
   "doc_id": "29240849615602606",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=25305590"
+    "qpl_active_flow_ids=138820675"
   ]
 }
 ```
@@ -426,9 +121,289 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594285317994",
+        "id": "61594063207669",
         "__isActor": "User",
-        "name": "Halima Ndjzn"
+        "name": "Bethlehem Trash"
+      },
+      "notifications_page": {
+        "filter_config": {
+          "selected_filter_tokens": "(taken out)",
+          "filters": "(2 items)"
+        },
+        "query_id": "Cg8BdAZq2xOoDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "edges": [
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "… 2 more"
+        ],
+        "page_info": {
+          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[61556829712306],\"ts\":1792454835,\"nid\":[1792727402487884,1792705704726789,1792494780900935,179246013892753… (420 chars)",
+          "has_next_page": true
+        }
+      },
+      "notifications_unseen_count": 0,
+      "last_update_timestamp": 1792742312,
+      "notifications_sound_path": [
+        "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
+        "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
+      ],
+      "comet_push_turn_on_status": {
+        "is_comet_push_turn_on_eligible": true
+      },
+      "browser_push_config": {
+        "browser_name": "Chrome",
+        "service_worker_uri": "/sw?s=push",
+        "app_id": "1443096165982425"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792742312417,
+      "time_at_flush_ms": 1792742313133
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": "(6 fields)",
+          "hblp": "(3 fields)"
+        },
+        "jsmods": {
+          "define": "(7 items)",
+          "require": "(7 items)",
+          "phd2_indexes": ":2261,2260,142,141,1842,1843,1586"
+        },
+        "allResources": [
+          "f94yn+O",
+          "4YfkVO4",
+          "YG5p7TX",
+          "csr:_11_0_Xp",
+          "csr:_11_1_FR"
+        ],
+        "tieredResources": {
+          "r": "(4 items)",
+          "rdfds": "(0 items)",
+          "rds": "(1 items)"
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/warmup/20261023T072846_61594063207669**, step 1: goto /: 200, 1126 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 15,
+    "environment": "MAIN_SURFACE",
+    "scale": 1
+  },
+  "doc_id": "29240849615602606"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669",
+        "__isActor": "User",
+        "name": "Bethlehem Trash"
+      },
+      "notifications_page": {
+        "filter_config": {
+          "selected_filter_tokens": "(taken out)",
+          "filters": "(2 items)"
+        },
+        "query_id": "Cg8BdAZq2wzHDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "edges": [
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "(2 fields)",
+          "… 2 more"
+        ],
+        "page_info": {
+          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[61556829712306],\"ts\":1792454835,\"nid\":[1792727402487884,1792705704726789,1792494780900935,179246013892753… (420 chars)",
+          "has_next_page": true
+        }
+      },
+      "notifications_unseen_count": 0,
+      "last_update_timestamp": 1792740551,
+      "notifications_sound_path": [
+        "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
+        "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
+      ],
+      "comet_push_turn_on_status": {
+        "is_comet_push_turn_on_eligible": true
+      },
+      "browser_push_config": {
+        "browser_name": "Chrome",
+        "service_worker_uri": "/sw?s=push",
+        "app_id": "1443096165982425"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792740551324,
+      "time_at_flush_ms": 1792740551859
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": "(5 fields)",
+          "hblp": "(3 fields)"
+        },
+        "jsmods": {
+          "define": "(7 items)",
+          "require": "(7 items)",
+          "phd2_indexes": ":2261,2260,142,141,1842,1843"
+        },
+        "allResources": [
+          "f94yn+O",
+          "4YfkVO4",
+          "YG5p7TX",
+          "csr:_p_0_zr",
+          "csr:_p_1_vi"
+        ],
+        "tieredResources": {
+          "r": "(4 items)",
+          "rdfds": "(0 items)",
+          "rds": "(1 items)"
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/inspect/20261111T081957_61593610473511**, step 8: click e53: 200, 2268 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "1056839232",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 15,
+    "environment": "MAIN_SURFACE",
+    "scale": 1
+  },
+  "doc_id": "29257345437226429",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=1056839232"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61593610473511",
+        "__isActor": "User",
+        "name": "Halima Nxkdnb"
       },
       "notifications_page": {
         "filter_config": {
@@ -446,7 +421,7 @@ Answered:
             }
           ]
         },
-        "query_id": "Cg8BdAZq35baDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "query_id": "Cg8BdAZq9ChhDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
         "edges": [
           {
             "node": {
@@ -467,7 +442,7 @@ Answered:
               "prefetch_score": 0,
               "notif": "(16 fields)"
             },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788784990,\"nid\":[1788784990653562]}"
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788783972,\"nid\":[1788783972791570]}"
           },
           {
             "node": {
@@ -477,37 +452,28 @@ Answered:
               "prefetch_score": 0,
               "notif": "(16 fields)"
             },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":2,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1793014543,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485]}"
-          },
-          {
-            "node": {
-              "__typename": "NotifPageNotificationRow",
-              "row_type": "NOTIFICATION",
-              "tracking": "{\"b\":\"priority_inbox\",\"pos\":4,\"npos\":3,\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"rt\":\"notification\",\"extra_row_data\":[],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"pg\":1}",
-              "prefetch_score": 0,
-              "notif": "(16 fields)"
-            },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"has_excl_cta_attached\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}"
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[1788783972791570,1788783967563965,1794385919559732,1790733024259787,1790242991451437]}"
           }
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"has_excl_cta_attached\"],\"erd\":[],\"ts\":1789879394,\"nid\":[1788784990653562,1788784986756017,1793033451858520,1789313194893805,1793014543424485,1789879394715931]}",
+          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[1788783972791570,1788783967563965,1794385919559732,1790733024259787,1790242991451437]}",
           "has_next_page": false
         }
       },
-      "notifications_unseen_count": 3,
-      "last_update_timestamp": 1793038042,
+      "notifications_unseen_count": 2,
+      "last_update_timestamp": 1794386017,
       "notifications_sound_path": [
         "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
         "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
       ],
       "comet_push_turn_on_status": {
-        "is_comet_push_turn_on_eligible": true
+        "is_comet_push_turn_on_eligible": true,
+        "is_in_jewel_experiment_population": false
       },
       "browser_push_config": {
+        "app_id": "1443096165982425",
         "browser_name": "Chrome",
-        "service_worker_uri": "/sw?s=push",
-        "app_id": "1443096165982425"
+        "service_worker_uri": "/sw?s=push"
       }
     }
   },
@@ -521,14 +487,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/865652545_4038118806494347_7051216815842930105_n.jpg (486 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/835874060_29035365446081650_2763189362067197988_n.jpg (487 chars)",
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/339329083_2210290515822569_8421297167700275731_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -536,8 +495,8 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1793038042764,
-      "time_at_flush_ms": 1793038043126
+      "request_start_time_ms": 1794386017860,
+      "time_at_flush_ms": 1794386019515
     },
     "is_final": true
   }
