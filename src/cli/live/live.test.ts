@@ -286,17 +286,16 @@ describe("rules 15 and 18: the device and the local hours", () => {
     return { code, out: out.join("\n"), err: err.join("\n"), twenty };
   }
 
-  test("scan at 03:00 Galway time is refused with the local time; no worker starts", async () => {
+  test("scan at 03:00 Galway time runs: the waking-hours gate is retired", async () => {
     let started = 0;
     const worker = (async () => {
       started++;
       return SCAN;
     }) as WorkerClient;
     const result = await runAt(["facebook", "scan", "--account", "galwayOne"], NIGHT, worker);
-    expect(result.code).toBe(1);
-    expect(result.err).toContain("outsideActiveHours");
-    expect(result.err).toContain("it is 03:00 in Galway (Europe/Dublin)");
-    expect(started).toBe(0);
+    expect(result.code).toBe(0);
+    expect(result.err).not.toContain("outsideActiveHours");
+    expect(started).toBe(1);
   });
 
   test("scan --bypass at 03:00 runs anyway (rule 18 skipped, the proxy gate still in the worker)", async () => {

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { waitFor } from 'xstate'
-import { BROWSER_CAPABILITIES, BROWSER_DRIVERS, browserFor, createBrowserSession } from '../driver/index'
+import { BROWSER_CAPABILITIES, BROWSER_DRIVERS, DEFAULT_BROWSER_DRIVER, browserFor, createBrowserSession } from '../driver/index'
 import { adsPowerCapabilities } from '../adsPower/index'
 import { camoufoxCapabilities, camoufoxDriver } from './index'
 
@@ -27,10 +27,10 @@ describe('browser parity (rule 44)', () => {
     for (const row of [camoufoxCapabilities, adsPowerCapabilities]) expect(Object.keys(row).sort()).toEqual(Object.keys(BROWSER_CAPABILITIES).sort())
   })
 
-  test("an account's browser comes from Twenty, Camoufox when empty or unknown", () => {
+  test("an account's browser comes from Twenty, AdsPower when nothing names one", () => {
     expect(browserFor({ browserDriver: 'adsPower', adsPowerProfileId: 'k1' })).toEqual({ driver: 'adsPower', profileId: 'k1' })
-    expect(browserFor({ browserDriver: null, adsPowerProfileId: null })).toEqual({ driver: 'camoufox', profileId: null })
-    expect(browserFor({ browserDriver: 'netscape' })).toEqual({ driver: 'camoufox', profileId: null })
+    expect(browserFor({ browserDriver: null, adsPowerProfileId: null })).toEqual({ driver: DEFAULT_BROWSER_DRIVER, profileId: null })
+    expect(() => browserFor({ browserDriver: 'netscape' })).toThrow('browserProviderInvalid')
     expect(browserFor({ browserDriver: null, adsPowerProfileId: 'k9' })).toEqual({ driver: 'adsPower', profileId: 'k9' })
     expect(browserFor({ browserDriver: 'camoufox', adsPowerProfileId: 'k9' })).toEqual({ driver: 'camoufox', profileId: 'k9' })
   })
@@ -48,7 +48,7 @@ describe('browser parity (rule 44)', () => {
     const out = JSON.parse(run.stdout.toString())
     expect(out.browsers.sort()).toEqual([...BROWSER_DRIVERS].sort())
     expect(out.openers).toEqual([...BROWSER_DRIVERS].sort())
-    expect(out.default).toEqual(['camoufox', null])
+    expect(out.default).toEqual([DEFAULT_BROWSER_DRIVER, null])
     expect(out.ads).toEqual(['adsPower', 'k1'])
     expect(out.proxy).toEqual({ proxy_soft: 'other', proxy_type: 'http', proxy_host: 'na.proxy.2captcha.com', proxy_port: '2334', proxy_user: 'proxyUser', proxy_password: 'p' })
   })
