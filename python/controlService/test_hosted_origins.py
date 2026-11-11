@@ -19,12 +19,14 @@ def settings(databaseUrl: str) -> Settings:
         appOrigin="https://mcp.listeningkit.com",
         consoleOrigin="https://log.listeningkit.com",
         databaseUrl=databaseUrl,
-        sessionSecret="session-secret",
-        otpPepper="otp-pepper",
-        dispatchSigningKey="dispatch-signing-key",
+        sessionSecret="sessionSecret",
+        otpPepper="otpPepper",
+        dispatchSigningKey="dispatchSigningKey",
         resendApiKey=None,
         authEmailFrom=None,
         authEmailReplyTo=None,
+        clerkIssuer=None,
+        clerkSecretKey=None,
         secureCookies=True,
     )
 

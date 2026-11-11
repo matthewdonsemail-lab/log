@@ -41,6 +41,8 @@ class Settings:
     resendApiKey: str | None
     authEmailFrom: str | None
     authEmailReplyTo: str | None
+    clerkIssuer: str | None
+    clerkSecretKey: str | None
     secureCookies: bool
 
     @property
@@ -76,5 +78,7 @@ def load_settings() -> Settings:
         resendApiKey=os.environ.get("RESEND_API_KEY") or None,
         authEmailFrom=os.environ.get("AUTH_EMAIL_FROM") or None,
         authEmailReplyTo=os.environ.get("AUTH_EMAIL_REPLY_TO") or None,
+        clerkIssuer=os.environ.get("CLERK_ISSUER") or None,
+        clerkSecretKey=os.environ.get("CLERK_SECRET_KEY") or None,
         secureCookies=urlparse(origin).scheme == "https",
     )

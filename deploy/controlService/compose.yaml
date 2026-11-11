@@ -1,0 +1,16 @@
+name: logControlService
+
+services:
+  controlService:
+    build:
+      context: ../../
+      dockerfile: deploy/controlService/Dockerfile
+    container_name: logControlService
+    restart: unless-stopped
+    env_file: ../../../.env
+    networks: [listeningkitTwentyInternal]
+
+networks:
+  listeningkitTwentyInternal:
+    external: true
+    name: listeningkit-twenty_internal

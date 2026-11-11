@@ -12,6 +12,8 @@ MIGRATION_DATABASE_URL=postgresql://... alembic -c python/controlService/migrati
 uvicorn controlService.main:app --app-dir python --host 0.0.0.0 --port $PORT
 ```
 
+The node02 container definition is in `deploy/controlService/`. It joins the existing ListeningKit internal network, runs migrations as an explicit one-off command, and is reached through the Cloudflare tunnel only for `/api/v1/*` and `/bridge`.
+
 Migrations run once, as their own step, with `MIGRATION_DATABASE_URL`. The service itself never creates tables.
 
 | Variable | What it is |
@@ -24,6 +26,7 @@ Migrations run once, as their own step, with `MIGRATION_DATABASE_URL`. The servi
 | `DISPATCH_SIGNING_KEY` | Ed25519 seed, 32 bytes as base64 (`openssl rand -base64 32`). Signs every dispatch; runtimes pin its public key from `GET /runtime/dispatchKey`. Kept apart from runtime credentials. |
 | `OTP_PEPPER` | Keys the stored sign-in code verifiers, so a database copy can't check codes. |
 | `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, `AUTH_EMAIL_REPLY_TO` | Resend, for sign-in codes and invites. Without them a code can't be sent and `/auth/email/start` answers `deliveryFailed`. |
+| `CLERK_ISSUER`, `CLERK_SECRET_KEY` | Clerk production instance, used to verify a browser session and exchange it for the control service's HttpOnly session at `POST /api/v1/auth/clerk`. |
 
 ## Routes
 

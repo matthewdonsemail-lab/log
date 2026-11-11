@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useClerk } from '@clerk/react'
 import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, errorText, sessionKey, useResetPrivate, useSelectedTeam, type SessionView, type WorkspaceView } from '@/lib/controlApi'
@@ -131,6 +132,7 @@ export function ReferralLink() {
 }
 
 export function AccountMenu() {
+  const clerk = useClerk()
   const { session } = useSelectedTeam()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -139,6 +141,7 @@ export function AccountMenu() {
     try {
       await api<void>('/auth/logout', { method: 'POST', body: {} })
     } finally {
+      await clerk.signOut()
       queryClient.clear()
       navigate('/sign-in', { replace: true })
     }

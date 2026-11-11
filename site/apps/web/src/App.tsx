@@ -12,7 +12,7 @@ import { ShareCardPage } from './landing/shareCard/ShareCardPage'
 import { McpPage } from './landing/mcp/McpPage'
 import { McpPromo } from './landing/mcp/McpPromo'
 import Dither from './components/Dither'
-import { AuthPage } from './pages/auth/AuthPage'
+import { ClerkAuthPage } from './pages/auth/ClerkAuthPage'
 import { ConnectionsPage } from './pages/console/ConnectionsPage'
 import { StartPage } from './pages/console/StartPage'
 import { UsagePage } from './pages/console/UsagePage'
@@ -98,8 +98,9 @@ export function App() {
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/shareCard/:slug" element={<ShareCardPage />} />
-            <Route path="/sign-in" element={<AuthPage key="signIn" mode="signIn" />} />
-            <Route path="/verify" element={<AuthPage key="verify" mode="verify" />} />
+            <Route path="/sign-in" element={<ClerkAuthPage />} />
+            <Route path="/sign-up" element={<ClerkAuthPage signUp />} />
+            <Route path="/verify" element={<Navigate to="/sign-in" replace />} />
             <Route path="/console" element={<Navigate to="/console/start" replace />} />
             <Route path="/console/start" element={<StartPage />} />
             <Route path="/console/connections" element={<ConnectionsPage />} />
