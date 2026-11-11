@@ -36,6 +36,7 @@
     "country-flag-icons": "^1.6.20",
     "d3-scale": "^4.0.3",
     "d3-shape": "^3.2.1",
+    "fast-average-color": "^9.6.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.400.0",
     "motion": "^13.2.0",

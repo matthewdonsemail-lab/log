@@ -69,7 +69,7 @@ export function McpPromo() {
     saveClosed()
     setClosed(true)
   }
-  const shown = !closed && pathname !== MCP_PATH && !pathname.startsWith('/shareCard')
+  const shown = !['/sign-in', '/verify', '/login'].includes(pathname) && !closed && pathname !== MCP_PATH && !pathname.startsWith('/shareCard')
   return (
     <AnimatePresence>
       {shown ? (

@@ -7,7 +7,7 @@ function hexToRgb(hex: string): [number, number, number] {
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255]
 }
 
-export function DitherFade({ stops, cell = 4, className = '', style }: { stops: string[]; cell?: number; className?: string; style?: CSSProperties }) {
+export function DitherFade({ stops, cell = 4, className = '', style, hold = 0 }: { stops: string[]; cell?: number; className?: string; style?: CSSProperties; hold?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const key = stops.join('|')
   useEffect(() => {
@@ -27,7 +27,8 @@ export function DitherFade({ stops, cell = 4, className = '', style }: { stops: 
       const image = context.createImageData(cols, rows)
       const segments = colours.length - 1
       for (let y = 0; y < rows; y++) {
-        const t = rows === 1 ? 0 : y / (rows - 1)
+        const raw = rows === 1 ? 0 : y / (rows - 1)
+        const t = hold > 0 ? Math.min(1, Math.max(0, (raw - hold) / (1 - hold))) : raw
         const position = t * segments
         const segment = Math.min(Math.floor(position), segments - 1)
         const local = position - segment
@@ -47,6 +48,6 @@ export function DitherFade({ stops, cell = 4, className = '', style }: { stops: 
     const observer = new ResizeObserver(draw)
     observer.observe(canvas)
     return () => observer.disconnect()
-  }, [key, cell])
+  }, [key, cell, hold])
   return <canvas ref={canvasRef} aria-hidden="true" className={`block [image-rendering:pixelated] ${className}`} style={style} />
 }

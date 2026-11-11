@@ -9,6 +9,9 @@
     "baseColor": "slate",
     "cssVariables": false
   },
+  "registries": {
+    "@dither-kit": "https://tripwire.sh/r/{name}.json"
+  },
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
