@@ -232,6 +232,37 @@ export const MIGRATIONS: readonly Migration[] = [
       handle.exec('CREATE INDEX IF NOT EXISTS mediaByPath ON media (path)')
     },
   },
+  {
+    version: 18,
+    name: 'operations',
+    apply(handle) {
+      handle.exec(`CREATE TABLE IF NOT EXISTS operations (
+        id TEXT PRIMARY KEY,
+        createdAt INTEGER NOT NULL,
+        updatedAt INTEGER NOT NULL,
+        operationId TEXT NOT NULL UNIQUE,
+        requesterUserId TEXT,
+        grantId TEXT,
+        teamId TEXT NOT NULL,
+        workspaceId TEXT NOT NULL,
+        idempotencyKey TEXT NOT NULL,
+        requestHash TEXT NOT NULL,
+        tool TEXT NOT NULL,
+        args TEXT NOT NULL,
+        state TEXT NOT NULL CHECK (state IN ('accepted', 'running', 'succeeded', 'failed', 'cancelled', 'unknown')),
+        generation INTEGER NOT NULL,
+        live INTEGER NOT NULL DEFAULT 0,
+        jobId TEXT,
+        result TEXT,
+        error TEXT,
+        evidenceRef TEXT,
+        startedAt INTEGER,
+        endedAt INTEGER,
+        UNIQUE (teamId, idempotencyKey)
+      )`)
+      handle.exec('CREATE INDEX IF NOT EXISTS operationsByState ON operations (state, updatedAt)')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

@@ -16,6 +16,11 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/api/v1': { target: process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765', changeOrigin: false },
+      '/oauth': { target: process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765', changeOrigin: false },
+      '/.well-known': { target: process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765', changeOrigin: false },
+      '/bridge': { target: process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765', ws: true, changeOrigin: false },
+      '/mcp': { target: process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765', changeOrigin: false, bypass: (req) => (req.method === 'GET' ? req.url : undefined) },
       // The repo modal posts newsletter signups to the member-site endpoint on listeningkit.com
       // (vercel.json rewrites the same path in production). Listed before /api so it wins.
       '/api/kit': {

@@ -18,6 +18,9 @@ import { StartPage } from './pages/console/StartPage'
 import { UsagePage } from './pages/console/UsagePage'
 import { EventsPage } from './pages/console/EventsPage'
 import { ConsolePlaceholderPage } from './pages/console/ConsolePlaceholderPage'
+import { TeamsPage } from './pages/console/TeamsPage'
+import { SettingsPage } from './pages/console/SettingsPage'
+import { McpConsolePage } from './pages/console/McpConsolePage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
 const createQueryClient = () => new QueryClient({
@@ -101,12 +104,13 @@ export function App() {
             <Route path="/console/start" element={<StartPage />} />
             <Route path="/console/connections" element={<ConnectionsPage />} />
             <Route path="/console/accounts" element={<Navigate to="/console/connections" replace />} />
-            <Route path="/console/settings" element={<ConsolePlaceholderPage title="Settings" subtitle="Team members and invites, the supported workspace and provider setup, the AdsPower connection and session controls." />} />
+            <Route path="/console/settings" element={<SettingsPage />} />
+            <Route path="/console/mcp" element={<McpConsolePage />} />
             <Route path="/console/usage" element={<UsagePage />} />
             <Route path="/console/events" element={<EventsPage />} />
             <Route path="/console/analytics" element={<ConsolePlaceholderPage title="Analytics" subtitle="Private metrics read from the live workspace, shown with their provenance and unavailable while it is offline." />} />
             <Route path="/console/subscription" element={<ConsolePlaceholderPage title="Subscription" subtitle="Billing stays unconfigured until a real billing authority is implemented." />} />
-            <Route path="/teams" element={<ConsolePlaceholderPage title="Teams" subtitle="Create a team, join one by invitation, or pick the team you are already in." />} />
+            <Route path="/teams" element={<TeamsPage />} />
             <Route path="/login" element={<Navigate to="/sign-in" replace />} />
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />

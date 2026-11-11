@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, memelord, treg, balance, governor, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `memelord`, `treg`, `balance`, `governor`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -195,7 +195,7 @@ flowchart LR
   shell["Bash / PowerShell / Monitor"]
   mcp["MCP server log: 194 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 101 commands (COMMANDS)"]
+  runCli["runCli: 102 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -301,6 +301,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log voice`](#log-voice) | Gate a draft against matt's own writing guide with SubQ before anything is sent as him, sending nothing | any (none) | `--to <handle>` `--text` `--context` `--with <person or chat>` `--spoken` `--json` | none | none | `voice`, `voiceAiIndex`, `voiceIndex` | PreToolUse, PostToolUse · PostToolUse | no | 30, 39, 41, 63, 2, 109, 137, 142, 30, 38, 39, 40, 41 |
 | [`log search`](#log-search) | Hybrid search across every conversation (BM25 keyword + vector meaning, fused with RRF), and building its indexes | any (none) | `--limit <n>` `--platform <p>` `--account <a>` `--with <handle>` `--after <YYYY-MM-DD>` `--json` `--saved` `--rebuild` `--rounds <n>` | none | none | `search`, `searchIndex`, `searchBench` | PreToolUse, PostToolUse · PostToolUse | no | 175, 26, 63, 2, 89, 105, 30, 38, 39, 40, 41 |
 | [`log kb`](#log-kb) | The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article | any (none) | `--kind <kind>` `--limit <n>` `--json` `--noAccounts` `--title <t>` `--tags <a,b>` | none | none | `kbSearch`, `kbSync`, `kbRemember`, `kbShow` | PreToolUse, PostToolUse · PostToolUse | no | 175, 26, 30, 30, 38, 39, 40, 41 |
+| [`log runtime`](#log-runtime) | Pair this workspace with hosted log and keep its outbound bridge open, so the team's console and AI clients run their requests here | any (none) | `--origin <https://app.log.listeningkit.com>` `--json` `--token <pairing token>` | none | none | terminal only: pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager. | PreToolUse, PostToolUse · n/a | no | 26, 73, 171, 172, 175, 30, 38, 39, 40, 41 |
 | [`log memelord`](#log-memelord) | The Memelord extension: search memes for a moment, read one template, see what is trending, list the image tools (free tools only) | any (none) | `--type` `--method` `--limit <n>` `--json` `--media` `--category` `--build` `--from <posts.json>` `--noTaste` | none | none | `memelordSearch`, `memelordTemplate`, `memelordTrending`, `memelordTools`, `memelordTaste` | PreToolUse, PostToolUse · PostToolUse | no | 41, 94, 142, 30, 38, 39, 40, 41 |
 | [`log treg`](#log-treg) | The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked) | any (none) | `--limit <n>` `--json` `--params` `--path <path>` `--method <GET|POST>` `--data` `--await` `--maxItems <n>` `--fields <a,b>` `--where <key=value>` `--raw` `--approvedBy <who>` `--live` | none | none | `tregSearch`, `tregGet`, `tregCall`, `tregCallLive` | PreToolUse, PostToolUse · PostToolUse | no | 41, 53, 163, 142, 164, 30, 38, 39, 40, 41 |
 | [`log balance`](#log-balance) | Every paid provider log calls, with what is left and which are out of credit | any (none) | `--provider <name>` `--json` | none | none | `balance` | PreToolUse, PostToolUse · PostToolUse | no | 41, 73, 94, 164, 30, 38, 39, 40, 41 |
@@ -409,6 +410,7 @@ flowchart TB
     c_voice["voice"]
     c_search["search"]
     c_kb["kb"]
+    c_runtime["runtime"]
     c_memelord["memelord"]
     c_treg["treg"]
     c_balance["balance"]
@@ -624,6 +626,8 @@ flowchart TB
   mcp --> c_search
   cli --> c_kb
   mcp --> c_kb
+  cli --> c_runtime
+  c_runtime -.- terminal
   cli --> c_memelord
   mcp --> c_memelord
   cli --> c_treg
@@ -1483,6 +1487,17 @@ log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, sk
 log kb remember "<text>" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)
 log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)
 Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+```
+
+#### log runtime
+
+Pair this workspace with hosted log and keep its outbound bridge open, so the team's console and AI clients run their requests here Terminal only: pairs this workspace with hosted log and keeps its outbound bridge open as a long-lived service. Run `log runtime init --origin <url>`, `log runtime pair --token <t>` and `log runtime connect` in the workspace's terminal or its service manager.
+
+```text
+log runtime init --origin <https://app.log.listeningkit.com> [--json]   (makes this workspace's private pairing proof and prints the challenge hash to paste into the console)
+log runtime pair --token <pairing token> [--json]   (redeems the console's one-time pairing token and saves the runtime credential privately)
+log runtime connect   (keeps the outbound bridge open: runs each signed request from the team's console or AI client here, journals it in log.db, reconnects on its own)
+log runtime status [--json]   (which workspace this runtime is paired to, never the credential)
 ```
 
 #### log memelord

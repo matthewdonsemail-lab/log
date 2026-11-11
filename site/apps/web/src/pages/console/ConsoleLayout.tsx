@@ -1,8 +1,10 @@
-import { useEffect, useMemo, type ReactNode } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { api, errorText, sessionKey, useResetPrivate, useSelectedTeam, type SessionView, type WorkspaceView } from '@/lib/controlApi'
 import { cn } from '@listeningkit/ui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket, faBolt, faChartColumn, faCoins, faGift, faHouse, faPlug } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faBolt, faChartColumn, faCoins, faGear, faGift, faHouse, faPlug, faRobot } from '@fortawesome/free-solid-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import './console.css'
 
@@ -24,7 +26,21 @@ const NAV: { to: string; label: string; icon: IconDefinition }[] = [
   { to: '/console/connections', label: 'Connections', icon: faPlug },
   { to: '/console/usage', label: 'Usage', icon: faChartColumn },
   { to: '/console/events', label: 'Events', icon: faBolt },
+  { to: '/console/mcp', label: 'AI clients', icon: faRobot },
+  { to: '/console/settings', label: 'Settings', icon: faGear },
 ]
+
+export function workspaceStateOf(workspaces: WorkspaceView[] | undefined, failed: boolean): WorkspaceState {
+  if (failed) return 'stateMissing'
+  if (!workspaces) return 'connecting'
+  const selected = workspaces.find((workspace) => workspace.selected)
+  if (!selected) return 'notConnected'
+  if (selected.status === 'ready') return 'ready'
+  if (selected.status === 'pending') return 'awaitingConnection'
+  if (selected.status === 'connecting') return 'connecting'
+  if (selected.status === 'offline') return 'offline'
+  return 'failed'
+}
 
 export function WorkspaceChip({ state, className }: { state: WorkspaceState; className?: string }) {
   const copy = WORKSPACE_COPY[state]
@@ -37,30 +53,49 @@ export function WorkspaceChip({ state, className }: { state: WorkspaceState; cla
 }
 
 export function TeamSwitch() {
+  const { session, team } = useSelectedTeam()
+  const queryClient = useQueryClient()
+  const resetPrivate = useResetPrivate()
+  const navigate = useNavigate()
+  const [notice, setNotice] = useState('')
+  const teams = session.data?.teams ?? []
+  async function pick(teamId: string) {
+    try {
+      const next = await api<SessionView>('/session/team', { method: 'POST', body: { teamId } })
+      resetPrivate()
+      queryClient.setQueryData(sessionKey, next)
+      navigate('/console/start')
+    } catch (error) {
+      setNotice(errorText(error))
+    }
+  }
+  const initial = (team?.name ?? '?').slice(0, 1).toUpperCase()
   return (
     <details className="group relative">
       <summary
         className="flex cursor-pointer list-none items-center gap-2 rounded-md bg-[#2A8CFF] px-2.5 py-1.5 text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_1px_2px_rgba(13,42,76,0.25)] transition-colors hover:bg-[#1F6FE6] sm:text-sm [&::-webkit-details-marker]:hidden"
         aria-label="Teams"
       >
-        <span className="hidden rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:inline">owner</span>
-        <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#1B6FD6]">P</span>
-        <b className="max-w-[5rem] truncate font-semibold sm:max-w-[7rem]">Personal</b>
+        <span className="hidden rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:inline">{team?.role ?? ''}</span>
+        <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#1B6FD6]">{initial}</span>
+        <b className="max-w-[5rem] truncate font-semibold sm:max-w-[7rem]">{team?.name ?? 'Pick a team'}</b>
         <span aria-hidden="true" className="text-[10px] text-white/70">▾</span>
       </summary>
       <div className="absolute left-0 top-[calc(100%+6px)] z-30 w-56 rounded-md border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-900/10">
         <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">Your teams</p>
-        <div className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
-          <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-[#2A8CFF] text-[10px] font-bold text-white">P</span>
-          <span className="min-w-0 flex-1">
-            <span className="block truncate font-semibold">Personal</span>
-            <span className="text-[11px] text-slate-500">owner</span>
-          </span>
-          <span className="text-[11px] font-semibold text-[#1B6FD6]">✓ active</span>
-        </div>
+        {teams.map((item) => (
+          <button key={item.id} type="button" onClick={() => item.id !== team?.id && pick(item.id)} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-slate-50">
+            <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-[#2A8CFF] text-[10px] font-bold text-white">{item.name.slice(0, 1).toUpperCase()}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-semibold">{item.name}</span>
+              <span className="text-[11px] text-slate-500">{item.role}</span>
+            </span>
+            {item.id === team?.id ? <span className="text-[11px] font-semibold text-[#1B6FD6]">✓ active</span> : null}
+          </button>
+        ))}
+        {notice ? <p className="px-2 py-1 text-[11px] text-red-600">{notice}</p> : null}
         <div className="my-1 h-px bg-slate-200" />
         <Link to="/teams" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">＋ New team</Link>
-        <Link to="/teams" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">⤷ Join by code</Link>
         <Link to="/console/settings" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">⚙ Team settings</Link>
       </div>
     </details>
@@ -96,26 +131,38 @@ export function ReferralLink() {
 }
 
 export function AccountMenu() {
+  const { session } = useSelectedTeam()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const email = session.data?.user.email ?? ''
+  async function signOut() {
+    try {
+      await api<void>('/auth/logout', { method: 'POST', body: {} })
+    } finally {
+      queryClient.clear()
+      navigate('/sign-in', { replace: true })
+    }
+  }
   return (
     <details className="group relative">
       <summary
         className="flex cursor-pointer list-none items-center gap-2 rounded-md py-1 pl-1 pr-2 transition-colors hover:bg-white/40 [&::-webkit-details-marker]:hidden"
         aria-label="Account"
       >
-        <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-[#2A8CFF] text-xs font-bold text-white">LK</span>
+        <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-[#2A8CFF] text-xs font-bold text-white">{email.slice(0, 2).toUpperCase() || 'LK'}</span>
         <span className="text-[10px] text-slate-400">▾</span>
       </summary>
       <div className="absolute right-0 top-[calc(100%+6px)] z-30 w-60 rounded-md border border-slate-200 bg-white p-1.5 text-sm shadow-xl shadow-slate-900/10">
-        <p className="truncate px-2 py-1 text-xs font-semibold text-slate-500">you@listeningkit.com</p>
+        <p className="truncate px-2 py-1 text-xs font-semibold text-slate-500">{email}</p>
         <div className="my-1 h-px bg-slate-200" />
         <Link to="/console/settings" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Team settings</Link>
         <Link to="/console/subscription" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Billing</Link>
         <Link to="/console/connections" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Connections</Link>
         <div className="my-1 h-px bg-slate-200" />
-        <Link to="/sign-in" className="flex items-center gap-2 rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">
+        <button type="button" onClick={signOut} className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left font-semibold hover:bg-slate-50">
           <FontAwesomeIcon icon={faArrowRightFromBracket} className="size-3.5" />
           Sign out
-        </Link>
+        </button>
       </div>
     </details>
   )
@@ -146,14 +193,20 @@ export function SectionHeading({ title, count, quiet = false }: { title: string;
 }
 
 export function ConsoleLayout({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const active = useMemo(() => NAV.find((item) => pathname.startsWith(item.to))?.to ?? '', [pathname])
+  const { session, team } = useSelectedTeam()
 
   useEffect(() => {
     const root = document.documentElement
     root.classList.add('lk-console-scroll')
     return () => root.classList.remove('lk-console-scroll')
   }, [])
+
+  if (session.isLoading) return <div className="relative z-10 grid min-h-screen place-items-center text-sm text-slate-500">Loading…</div>
+  if (session.isError) return <div className="relative z-10 grid min-h-screen place-items-center px-6 text-center text-sm text-slate-600">Could not reach ListeningKit. Check your connection and refresh.</div>
+  if (!session.data) return <Navigate to={`/sign-in?returnPath=${encodeURIComponent(pathname + search)}`} replace />
+  if (!team) return <Navigate to="/teams" replace />
 
   return (
     <div className="relative min-h-screen font-sans text-slate-900">

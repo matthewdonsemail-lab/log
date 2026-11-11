@@ -70,6 +70,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   voice: [30, 39, 41, 63, 64, 98, 112, 127, 149],
   search: [13, 26, 63, 64, 88, 89, 105],
   kb: [13, 26, 30, 93],
+  runtime: [26, 73, 171, 172, 175],
   memelord: [41, 94, 119, 120],
   treg: [41, 53, 106, 119, 166],
   governor: [73, 86, 94, 104, 106, 168],
