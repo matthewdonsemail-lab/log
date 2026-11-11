@@ -69,7 +69,7 @@ describe('preflight says before any browser opens what would stop an account', (
     expect(failed(noRegion)).toContain('noHomeRegion')
   })
 
-  test('outside the waking hours is said up front', () => {
-    expect(failed(preflightOf(EXETER, GOOD, new Date('2026-10-24T06:00:00Z'), 2500))).toEqual(['outsideActiveHours'])
+  test('the waking hours no longer stop a preflight', () => {
+    expect(failed(preflightOf(EXETER, GOOD, new Date('2026-10-24T06:00:00Z'), 2500))).toEqual([])
   })
 })

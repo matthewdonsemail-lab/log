@@ -16,8 +16,7 @@ description: Give every account on a browser platform its AdsPower profile, give
 3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate (rule 12),
    self-check (rule 17), session HAR (rule 22), human mouse and scroll. `docs/browsers.md`
    lists what's built; `bun run check:browsers` keeps every browser in step.
-4. **Camoufox stays.** With `browserDriver` empty, an account with a linked profile opens on AdsPower
-   and one without opens on Camoufox. Never remove it.
+4. **Provider selection is explicit.** AdsPower is the default. A linked account profile stays pinned to AdsPower; an explicit account driver remains authoritative. With no account override, `LOG_BROWSER_DRIVER` selects the workspace default. Camoufox remains available only when explicitly selected. Missing AdsPower setup or a profile stops launch; never silently fall back.
 5. **Never print `ADSPOWER_API_KEY`.** It lives in `.env.local` and the local-scope MCP config.
 
 ## Environment
@@ -49,3 +48,14 @@ A failed create usually means the plan's profile limit: the AdsPower plan must h
 Write a `BrowserDriver` (`src/browser/driver/types.ts`): prepare, gate, start, selfCheck, stop.
 Add its name to `BROWSER_DRIVERS`. The machine already enforces the order, so the new browser
 can't skip the gate or the self-check. Details: `docs/adsPower.md`.
+
+## Console browser checks
+
+Opening a console browser check automatically provisions a missing AdsPower account profile through the existing account-scoped Log MCP sync operation, verifies the saved profile binding, then opens the account-owned browser through inspect.start. The XState machine displays centered preparation and connection stages. Provisioning and launch are attempted once per dialog; failure or missing binding stops the flow. Concurrent provisioning requests share one operation. Existing profile, home, status, proxy and launch gates remain authoritative.
+
+Allowed countries can be edited in Connections → Extensions → Browser → AdsPower → Manage. Save comma-separated country codes or the explicit value all. The setting persists privately as LOG_ADSPOWER_HOMES and existing MCP sessions read it before sync; changing it does not reset account/platform stops or other launch gates.
+
+Browser launch and browser preflight no longer apply the old active-hours window. The console does not wait for waking hours. Country/proxy, home/device, launch-budget, capture, account and owner checks still apply. Historical outsideActiveHours outcomes are retained as evidence and do not block a new launch.
+
+
+Console profile preparation consumes the exact account-scoped sync entry before continuing. A deactivated, banned or dead status is a stop; an excluded country or missing home locale is a setup block; an unavailable provider needs configuration; an unconfirmed create/binding is an uncertain operation. Preserve each reason in sanitized console/server diagnostics and the typed browser view. Normalize the legacy accountStatus field at the console boundary before choosing profileRequired. Never clear an account stop, repeat an uncertain provisioning write or infer profile creation from exit zero alone.

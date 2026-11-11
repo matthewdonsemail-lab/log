@@ -12,6 +12,7 @@ const landing = 'site/apps/web/src/landing'
 export function sourcesOf(path) {
   if (path === '/') return [landing, 'site/apps/web/index.html']
   if (path.startsWith('/devlog')) return [`${landing}/devlog`]
+  if (path === '/mcp') return [`${landing}/mcp`, 'docs/mcp.md']
   if (path.startsWith('/docs')) return ['docs']
   return [`${landing}/useCases`, `${landing}/AgencyIntro.tsx`, `${landing}/PlatformSuite.tsx`]
 }

@@ -1,3 +1,4 @@
+import { savedCredential } from '../../auth/credentials'
 import { createActor, fromPromise } from 'xstate'
 import { browserSessionMachine } from './machine'
 import { BROWSER_DRIVERS, DEFAULT_BROWSER_DRIVER } from './types'
@@ -6,7 +7,11 @@ import type { BrowserDriver, BrowserDriverName, BrowserSessionInput } from './ty
 export function driverNameOf(account: { browserDriver: string | null; adsPowerProfileId?: string | null }): BrowserDriverName {
   const name = account.browserDriver?.trim() ?? ''
   if ((BROWSER_DRIVERS as readonly string[]).includes(name)) return name as BrowserDriverName
-  return account.adsPowerProfileId ? 'adsPower' : DEFAULT_BROWSER_DRIVER
+  if (name) throw new Error('browserProviderInvalid')
+  if (account.adsPowerProfileId) return 'adsPower'
+  const selected = savedCredential('LOG_BROWSER_DRIVER') || process.env.LOG_BROWSER_DRIVER || DEFAULT_BROWSER_DRIVER
+  if (!(BROWSER_DRIVERS as readonly string[]).includes(selected)) throw new Error('browserProviderInvalid')
+  return selected as BrowserDriverName
 }
 
 export function sessionMachineFor(driver: BrowserDriver) {

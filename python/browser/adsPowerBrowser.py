@@ -5,6 +5,7 @@ import os
 import time
 import urllib.request
 from typing import Any
+from pathlib import Path
 from urllib.parse import urlsplit
 
 from browser import proxyGate
@@ -13,12 +14,24 @@ DEFAULT_HOST = "http://local.adspower.net:50325"
 RATE_LIMIT_WAIT_S = (2.0, 4.0)
 
 
+def savedSetting(name: str) -> str | None:
+    path = Path(os.environ.get("LOG_USER_ENV") or Path.home() / ".logCli" / ".env")
+    try:
+        for line in reversed(path.read_text(encoding="utf8").splitlines()):
+            key, separator, value = line.strip().removeprefix("export ").partition("=")
+            if separator and key.strip() == name:
+                return value.strip().strip("\"'") or None
+    except OSError:
+        pass
+    return None
+
+
 def base_url() -> str:
-    return (os.environ.get("ADSPOWER_HOST") or DEFAULT_HOST).strip().rstrip("/")
+    return (savedSetting("ADSPOWER_HOST") or os.environ.get("ADSPOWER_HOST") or DEFAULT_HOST).strip().rstrip("/")
 
 
 def _call(method: str, path: str, body: dict[str, Any] | None = None) -> Any:
-    key = (os.environ.get("ADSPOWER_API_KEY") or "").strip()
+    key = (savedSetting("ADSPOWER_API_KEY") or os.environ.get("ADSPOWER_API_KEY") or "").strip()
     proxyGate.register_secret(key)
     headers = {"Content-Type": "application/json", **({"Authorization": f"Bearer {key}"} if key else {})}
     data = json.dumps(body).encode() if body is not None else None

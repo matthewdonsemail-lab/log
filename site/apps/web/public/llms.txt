@@ -6,6 +6,7 @@
 
 - [Install](https://log.listeningkit.com/docs/getStarted/install): install log and sign in your accounts
 - [Connect your agent](https://log.listeningkit.com/docs/getStarted/mcp): add `logMcp` to Claude Code or Codex
+- [The log MCP](https://log.listeningkit.com/mcp): what `logMcp` gives your agent on each platform, how to add it, the plays it runs, and quick answers
 - [Using log](https://log.listeningkit.com/docs/getStarted/usingLog): how you ask for work and what log does with it
 - [Source on GitHub](https://github.com/matthewdonsemail-lab/log)
 
@@ -29,7 +30,7 @@
 
 ## For AI models
 
-- Each platform page has a plain markdown copy at the same path with `.md` (for example https://log.listeningkit.com/discord.md). Read the markdown, but cite the HTML page.
+- Each platform page, and the MCP page, has a plain markdown copy at the same path with `.md` (for example https://log.listeningkit.com/discord.md). Read the markdown, but cite the HTML page.
 - [llms-full.txt](https://log.listeningkit.com/llms-full.txt): every platform page's use case, play and quick answers in one file
 
 ## Optional

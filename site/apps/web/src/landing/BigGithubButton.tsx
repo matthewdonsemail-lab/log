@@ -1,4 +1,5 @@
-import { siGithub } from 'simple-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { cn } from '@listeningkit/ui'
 import { LOG_REPO_URL, RepoLink } from './RepoLink'
 
@@ -37,15 +38,11 @@ export function BigGithubButton({ className, tone = 'blue' }: { className?: stri
       )}
       style={t.style}
     >
-      <svg
-        viewBox="0 0 24 24"
-        role="img"
+      <FontAwesomeIcon
+        icon={faGithub}
         aria-label="GitHub"
         className={cn('pointer-events-none size-14 shrink-0 opacity-95 sm:size-16 md:size-24 lg:size-28', t.icon)}
-        fill="currentColor"
-      >
-        <path d={siGithub.path} />
-      </svg>
+      />
       <div className="min-w-0 flex-1">
         <p className={cn('text-sm font-bold leading-snug sm:text-base md:text-xl', t.eyebrow)}>Get Log by ListeningKit</p>
         <p

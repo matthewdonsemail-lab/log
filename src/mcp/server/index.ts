@@ -28,6 +28,8 @@ import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, 
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
+import { readUsageSummary } from "../../observability/usage/index.ts";
+import { readConsoleEvents, readConsoleConnections } from "../../observability/console/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -49,7 +51,7 @@ export function browserLines(views: BrowserView[]): string[] {
     : "Browsers: none open.";
   const matt = views.find((v) => v.needsMatt)?.needsMatt;
   const next = views.find((v) => v.next)?.next;
-  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 54: a known state is resolved, never a reason to stop).`] : [])];
+  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 79: a known state is resolved, never a reason to stop).`] : [])];
 }
 
 function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers, images: readonly ToolImage[] = []): CallToolResult {
@@ -373,6 +375,21 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
     port: options.port ?? 7337,
     async fetch(request) {
       const url = new URL(request.url);
+      if (["/api/console/events", "/api/console/usage", "/api/console/connections"].includes(url.pathname)) {
+        const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
+        if (!token || !authorized(request, token, null)) return Response.json({ error: "consoleWorkspaceAccessDenied" }, { status: 401, headers });
+        if (request.method !== "GET") return Response.json({ error: "consoleMethodNotAllowed" }, { status: 405, headers: { ...headers, Allow: "GET" } });
+        try {
+          if (url.pathname === "/api/console/connections") return Response.json(readConsoleConnections(), { headers });
+          const days = Number(url.searchParams.get("days") ?? 30);
+          if (!Number.isInteger(days) || days < 1 || days > 30) return Response.json({ error: "usageRangeInvalid" }, { status: 400, headers });
+          const to = Date.now();
+          const from = Math.floor(to / 86400000) * 86400000 - (days - 1) * 86400000;
+          return Response.json(url.pathname === "/api/console/usage" ? readUsageSummary(from, to) : readConsoleEvents(), { headers });
+        } catch {
+          return Response.json({ error: "consoleWorkspaceUnavailable" }, { status: 503, headers });
+        }
+      }
       if (oauth) {
         const answered = await oauth.handle(request);
         if (answered) return answered;

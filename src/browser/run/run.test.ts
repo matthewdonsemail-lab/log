@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { findAccount } from '../../marketplace/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
 import { captureDirFor, lastLaunchReset, listLaunches, overLaunchBudget, prepareRun, recordLaunchReset, runBrowserOf } from './index'
+import { DEFAULT_BROWSER_DRIVER } from '../driver/index'
 
 const DAY = new Date('2026-10-18T10:00:00Z')
 const NIGHT = new Date('2026-10-18T02:00:00Z')
@@ -54,11 +55,11 @@ describe('prepareRun: home, hours and device', () => {
     expect(existsSync(prepared.run.devicePath!)).toBe(false)
   })
 
-  test('outside the local window nothing is written and nothing opens, connect included', async () => {
+  test('the waking-hours gate is retired: a night run prepares, and only the proxy rule refuses', async () => {
     for (const purpose of ['run', 'connect'] as const) {
       const prepared = prepareRun(await account('galwayOne'), purpose, { now: NIGHT, root: ROOT })
-      expect(prepared).toMatchObject({ ok: false, code: 'outsideActiveHours' })
-      if (!prepared.ok) expect(prepared.detail).toContain('it is 03:00 in Galway (Europe/Dublin)')
+      expect(prepared).toMatchObject({ ok: true })
+      if (prepared.ok) prepared.run.cleanup()
     }
     expect(prepareRun(await account('galwayOne'), 'check', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })
   })
@@ -68,7 +69,7 @@ describe('prepareRun: home, hours and device', () => {
     expect(runBrowserOf(linked, 'inspect')).toBe('adsPower')
     expect(runBrowserOf(linked, 'host')).toBe('adsPower')
     expect(runBrowserOf(linked, 'connect')).toBe('camoufox')
-    expect(runBrowserOf({ browserDriver: null, adsPowerProfileId: null }, 'inspect')).toBe('camoufox')
+    expect(runBrowserOf({ browserDriver: null, adsPowerProfileId: null }, 'inspect')).toBe(DEFAULT_BROWSER_DRIVER)
     expect(captureDirFor('galwayOne', 'inspect', DAY, '/captures', 'adsPower').replaceAll('\\', '/')).toMatch(/^\/captures\/inspect\/\d{8}T\d{6}_galwayOne\/adsPower$/)
   })
 
@@ -86,10 +87,14 @@ describe('prepareRun: home, hours and device', () => {
     expect(prepareRun(await account('noProxy'), 'run', { now: NIGHT, root: ROOT, bypassHours: true })).toMatchObject({ ok: false })
   })
 
-  test("the account's own window is used", async () => {
+  test("the account's own hours no longer decide the launch", async () => {
     const late = await account('galwayOne', { activeHoursStart: 2, activeHoursEnd: 4 })
-    expect(prepareRun(late, 'run', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })
-    expect(prepareRun(late, 'run', { now: DAY, root: ROOT })).toMatchObject({ ok: false, code: 'outsideActiveHours' })
+    const atNight = prepareRun(late, 'run', { now: NIGHT, root: ROOT })
+    expect(atNight).toMatchObject({ ok: true })
+    if (atNight.ok) atNight.run.cleanup()
+    const atDay = prepareRun(late, 'run', { now: DAY, root: ROOT })
+    expect(atDay).toMatchObject({ ok: true })
+    if (atDay.ok) atDay.run.cleanup()
   })
 
   test('a country with no pinned locale is refused', async () => {

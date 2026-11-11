@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { readLocalAccountRows } from './localAccountRows'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { matchesFilter } from './memoryTwenty'
@@ -22,9 +23,7 @@ export function isLocalId(id: string): boolean {
 }
 
 export function readLocalAccounts(path = localAccountsPath()): Row[] {
-  if (!existsSync(path)) return []
-  const parsed = JSON.parse(readFileSync(path, 'utf8')) as { socialAccounts?: Row[] }
-  return Array.isArray(parsed.socialAccounts) ? parsed.socialAccounts : []
+  return readLocalAccountRows(path)
 }
 
 export function writeLocalAccounts(rows: Row[], path = localAccountsPath()): void {

@@ -262,7 +262,7 @@ describe("log facebook publish: device, exit IP and local hours (rules 12, 15, 1
     expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("ACTIVE");
   });
 
-  test("at 03:00 in Galway nothing opens, dry run included", async () => {
+  test("at 03:00 in Galway the waking-hours gate is retired: the publish still opens its session", async () => {
     const twenty = marketplaceFixture(photo);
     await twenty.update("socialAccounts", "galwayOne", { activeHoursStart: null, activeHoursEnd: null });
     const session = fakeSession();
@@ -274,9 +274,9 @@ describe("log facebook publish: device, exit IP and local hours (rules 12, 15, 1
       out: () => {},
       err: (l) => err.push(l),
     });
-    expect(code).toBe(1);
-    expect(err.join("\n")).toContain("outsideActiveHours");
-    expect(session.configs).toHaveLength(0);
+    expect(code).toBe(0);
+    expect(err.join("\n")).not.toContain("outsideActiveHours");
+    expect(session.configs.length).toBeGreaterThan(0);
   });
 });
 

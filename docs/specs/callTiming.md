@@ -6,6 +6,8 @@ title: "Call timing"
 
 Every call is timed, never guessed: one timing layer across Bun and Python gives each call an id, stores every stage inside it in log.db, and reports p50, p95 and p99 per tool and per stage. Rule 165.
 
+The SubQ decision client (`src/subq/decisions/client.ts`, `createDecisionsClient`) also records an `inference` span inside the active call, with provider and actual input/output token counts from the response. It records no decision input or output content. `src/observability/console/helpers/projection.ts` exposes only the fixed metadata projection described in [Usage summaries](../proposals/listeningKitUsage.md); older records without duration/usage remain unavailable rather than estimated.
+
 ### REQ-TIMING-01: Every call has an id and its stages are spans
 
 Every MCP tool call (`runGuarded` in `src/mcp/server/index.ts`) and every terminal run (`bin/log.ts`) runs inside `timeCall`, which gives the call a trace id, a short call id and a root span named `call`. The call id and how long the call took are written on its `▶` and `■` lines in the live log. Inside a call, `timed` and `timedSync` record a span with its parent, start time, length, whether it failed, and its attributes. Outside a call they only run the work. `instrumentFetch` patches `fetch` once, so every request made inside a call is a `fetch <METHOD> <host><path>` span with its status, with long ids in the path replaced.

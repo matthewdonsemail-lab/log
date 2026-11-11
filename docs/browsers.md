@@ -96,3 +96,76 @@ The two capabilities still to build are tracked: `syncSessions` in [#43](https:/
 
 Setting a browser up: [Browser setup](browserSetup.md). The rules behind this
 are in AGENTS.md.
+
+## The console viewer
+
+The account browser's live view is a frame path and an input path that meet
+only at the console.
+
+**Frames, default.** `python/browser/browserViewer.py` starts a private HTTP
+server on `127.0.0.1:0` and writes its port, bearer token, generation and pid
+to `browserViewer.json` in the run folder (`BrowserViewer.start`). `GET /frame`
+answers one `page.screenshot(type="jpeg", quality=65, scale="css")` as
+`image/jpeg` (`BrowserViewer.request`), and `GET /state` answers the classified
+page state plus that revision. The console's `createBrowserCheck` attaches to
+that descriptor (`browserCheck.ts`), and `browserCheckMachine.ts` polls the
+frame every 500 ms and paints it into a `<canvas>` in `BrowserCheckDialog.tsx`.
+This path is capped by the screenshot, not by the network, so it is roughly
+2 frames a second.
+
+**Frames, voxl.** When `LOG_VOXL_URL` names a running
+[voxl](https://github.com/tembo/voxl) server (`--read-only`) pointed at the
+account's display, `python/browser/streamSurface.py` reports a stream in
+`/state` instead: `{kind: "voxl", url, page, window}`. It first puts the
+browser window into fullscreen over CDP — `Browser.getWindowForTarget`, then
+`Browser.setWindowBounds` with `windowState: "fullscreen"`, then it re-reads
+the bounds and refuses the stream if the state did not take
+(`streamSurface.composite`, cached for 3 seconds) — because a fullscreen window
+is the one arrangement where the page viewport is the whole display, which is
+what makes a point on the video a point in the page. The window origin is read
+from the same call and defaults to 0,0. `streamOf` in `browserCheck.ts` then
+re-checks the URL (https anywhere, or http on loopback only), that every number
+is a non-negative integer, and that the window still matches the viewport size;
+the console embeds voxl's own client in an iframe with a transparent overlay
+for input, scaling by fraction so it does not care about resolution or device
+pixel ratio. When any of that does not hold, the view has no stream and the JPEG
+path above is used unchanged.
+
+**Every platform.** Nothing in that path is Linux-specific: it is Playwright
+over CDP, and AdsPower's browser is Chromium on Windows, Linux and macOS, so
+`Browser.getWindowForTarget`, `Browser.setWindowBounds` and the viewport read
+behave the same on all three. voxl is what differs underneath, and it already
+covers them: X11 and Xvfb on Linux, DXGI on Windows, ScreenCaptureKit on macOS.
+What the host has to provide is only the display voxl streams and the browser on
+it — an X display for the Chromium window on Linux, the logged-in user session
+on Windows (voxl streams the session it runs in, so not a service), and Screen
+Recording permission on macOS. Because voxl runs `--read-only`, its own
+platform input paths are never used, so no extra permission or input backend is
+needed beyond capture. Camoufox is Firefox and has no CDP, so the stream is
+never advertised for it; those accounts keep the JPEG path.
+
+**Local or cloud.** The frame path does not touch the console at all: the
+browser fetches `LOG_VOXL_URL` directly, so it works both when voxl is on
+`127.0.0.1` next to the console and when it is a remote host. Two conditions
+follow. Over HTTPS the console may only embed an `https:` stream, which
+`streamOf` already requires for any non-loopback host; give voxl `--tls` or put
+it behind a TLS proxy. And a cross-origin embed has to be allowed on voxl's side
+with `--allowed-origins`, plus `--allowed-hosts` when it is reached by a host
+name. The input path stays loopback to the runtime, so a remote voxl changes
+where pixels come from and nothing about where actions go.
+
+**Input, both paths.** Clicks and keys never travel on the frame channel. They
+go to `POST /input` on the same local server, which refuses them unless the
+page still reports a sign-in state and the revision still matches
+(`BrowserViewer.input`), then replays them with Playwright's `page.mouse`,
+`page.keyboard` and `mouse.wheel` inside `owner.step("viewerInput", …)`, so
+every viewer action is still a recorded step with its HAR and reading. voxl
+runs `--read-only` for the same reason: it supplies the picture, Playwright
+still supplies the input.
+
+**Running it hosted.** The console routes are a Vite `apply: 'serve'` plugin
+(`consoleEvents.ts`) that refuses any request whose host or peer is not
+loopback. A hosted console therefore has to serve those routes outside Vite and
+replace that check with the workspace's own authorization; the viewer address
+in `browserCheck.ts` is `127.0.0.1`, which is only correct when the console and
+the browser runtime run on the same machine — as they do on one instance.

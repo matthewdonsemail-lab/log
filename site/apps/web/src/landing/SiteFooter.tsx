@@ -21,6 +21,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: 'log',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'MCP', href: '/mcp' },
       { label: 'Use cases', href: '/docs/useCases' },
       { label: 'Get log', href: LOG_REPO_URL, icon: faGithub },
     ],

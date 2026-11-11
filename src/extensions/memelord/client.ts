@@ -2,10 +2,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { savedCredential } from '../../auth/credentials'
 import { MEMELORD_API, MEMELORD_TOOLS } from './types'
 import type { MemelordAnswer, MemelordFetch, MemelordTool, MemeSearch, MemeTemplate } from './types'
 
 export function memelordKey(env: Record<string, string | undefined> = process.env, home = homedir()): string | null {
+  const saved = savedCredential('MEMELORD_API_KEY', env)
+  if (saved) return saved
   if (env.MEMELORD_API_KEY?.trim()) return env.MEMELORD_API_KEY.trim()
   const repo = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
   for (const file of [join(repo, '.env.local'), join(repo, '..', '..', '.env.local'), join(home, '.config', 'listeningkit', 'memelord-api-key.txt')]) {

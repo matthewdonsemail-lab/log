@@ -3,21 +3,18 @@ import { AnimatePresence, motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowUp,
-  faCheck,
   faChevronDown,
-  faCircleNotch,
   faCodeBranch,
   faFolder,
   faForward,
   faPenToSquare,
-  faPlug,
   faPlus,
-  faTerminal,
 } from '@fortawesome/free-solid-svg-icons'
 import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { BrandMark } from './BrandMark'
 import { SESSION, type SessionEvent } from './agentSessionScript'
 import { DownArrow } from './VideoCarousel'
+import { AgentToolCall } from '../components/ai-elements/agentToolCall'
 
 const STEP_MS = { user: 2400, tool: 1700, assistant: 3400 }
 const END_PAUSE_MS = 5000
@@ -137,27 +134,7 @@ function ClaudeWindow({ visible, settled, round, events, recents }: WindowProps)
             }
             return (
               <Appear key={`${round}-${index}`}>
-                <div className="overflow-hidden rounded-lg border border-[#E5E0D6] bg-white/60 font-sans text-sm">
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    <FontAwesomeIcon icon={faPlug} className="text-xs text-[#8a8780]" />
-                    <span className="font-medium">{event.server ?? 'log'}</span>
-                    <span className="text-[#8a8780]">·</span>
-                    <span className="font-medium">{event.name}</span>
-                    <span className="min-w-0 flex-1 truncate font-mono text-xs text-[#8a8780]">{event.args}</span>
-                    {done ? (
-                      <FontAwesomeIcon icon={faCheck} className="text-xs text-[#5a8a3c]" />
-                    ) : (
-                      <FontAwesomeIcon icon={faCircleNotch} spin className="text-xs text-[#c96442]" />
-                    )}
-                  </div>
-                  {done ? (
-                    <div className="border-t border-[#E5E0D6] px-3 py-2 font-mono text-xs leading-5 text-[#5b5950]">
-                      {event.result.map((line) => (
-                        <div key={line}>{line}</div>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
+                <AgentToolCall call={event} done={done} variant="claude" />
               </Appear>
             )
           })}
@@ -235,25 +212,7 @@ function CodexWindow({ visible, settled, round, events, recents, thread }: Windo
             }
             return (
               <Appear key={`${round}-${index}`}>
-                <div className="text-sm">
-                  <div className="flex items-center gap-2 text-[#5d5d5d]">
-                    {done ? (
-                      <FontAwesomeIcon icon={faTerminal} className="text-[11px]" />
-                    ) : (
-                      <FontAwesomeIcon icon={faCircleNotch} spin className="text-[11px]" />
-                    )}
-                    <span>{done ? 'Called' : 'Calling'}</span>
-                    <span className="rounded bg-[#f3f3f3] px-1.5 py-0.5 font-mono text-xs text-[#0d0d0d]">{event.server ?? 'log'}.{event.name}</span>
-                  </div>
-                  {done ? (
-                    <div className="mt-2 rounded-xl bg-[#f9f9f9] px-3 py-2 font-mono text-xs leading-5 text-[#5d5d5d]">
-                      <div className="truncate text-[#8f8f8f]">{event.args}</div>
-                      {event.result.map((line) => (
-                        <div key={line}>{line}</div>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
+                <AgentToolCall call={event} done={done} variant="codex" />
               </Appear>
             )
           })}

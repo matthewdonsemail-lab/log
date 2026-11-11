@@ -10,7 +10,7 @@ const inspect = 'src/cli/inspect/index.ts'
 const account = 'src/cli/account/index.ts'
 
 export const launchBudget = {
-  description: 'When an account browser may open: waking hours, the launch budget and resetOpens',
+  description: 'When an account browser may open: the launch budget and resetOpens; active-hours launch restrictions retired',
   specPath: 'docs/specs/launchBudget.md',
   codePaths: [
     'src/browser/run/client.ts',
@@ -24,20 +24,9 @@ export const launchBudget = {
     'src/marketplace/host/helpers/progress.ts',
   ],
   anchors: {
-    'REQ-LAUNCH-01': [
-      { kind: 'value', file: homeTypes, name: 'DEFAULT_ACTIVE_HOURS', path: ['start'], equals: 8 },
-      { kind: 'value', file: homeTypes, name: 'DEFAULT_ACTIVE_HOURS', path: ['end'], equals: 22 },
-      { kind: 'symbol', file: hours, name: 'outsideActiveHours' },
-      { kind: 'string', file: run, includes: 'outsideActiveHours' },
-    ],
-    'REQ-LAUNCH-02': [
-      { kind: 'symbol', file: hours, name: 'activeWindow' },
-      { kind: 'symbol', file: hours, name: 'insideWindow' },
-    ],
-    'REQ-LAUNCH-03': [
-      { kind: 'string', file: publish, includes: 'bypass' },
-      { kind: 'string', file: inspect, includes: 'bypass' },
-    ],
+    'REQ-LAUNCH-01': [{ kind: 'symbol', file: run, name: 'prepareRun' }],
+    'REQ-LAUNCH-02': [{ kind: 'symbol', file: hours, name: 'activeWindow' }],
+    'REQ-LAUNCH-03': [{ kind: 'string', file: inspect, includes: 'Compatibility flag' }],
     'REQ-LAUNCH-04': [
       { kind: 'value', file: budget, name: 'LAUNCH_LIMITS', path: ['perDay'], equals: 8 },
       { kind: 'symbol', file: budget, name: 'overLaunchBudget' },
@@ -71,9 +60,9 @@ export const launchBudget = {
     'REQ-LAUNCH-12': [{ kind: 'string', file: account, includes: 'resetOpens' }],
   },
   rubrics: {
-    'REQ-LAUNCH-01': noul('Does prepareRun refuse the run when the account local hour in its home timezone is outside its active window?'),
+    'REQ-LAUNCH-01': noul('Does prepareRun omit the retired active-hours restriction while preserving proxy, home/device and launch-budget checks?'),
     'REQ-LAUNCH-02': noul('Does the active window use the account own start and end hours only when both are valid hours and not equal, falling back to the default otherwise, and is a window whose start is after its end (crossing midnight) treated as inside for hours after the start or before the end?'),
-    'REQ-LAUNCH-03': noul('When bypassHours is set, does prepareRun skip only the active hours check while the launch budget check still runs, and is bypassHours false unless the bypass flag is passed?'),
+    'REQ-LAUNCH-03': noul('Is the inspect bypass flag retained only for compatibility, without changing the remaining launch gates?'),
     'REQ-LAUNCH-04': noul('Is the run refused for the budget when the number of launches today is greater than or equal to the per-day limit?'),
     'REQ-LAUNCH-05': noul('Is the run refused as too soon when the last launch was fewer minutes ago than the minimum gap, and does the refusal say how many minutes to wait?'),
     'REQ-LAUNCH-06': noul('Are launches counted only from steps.jsonl lines containing the self-check line, reading both the runs folders and the publish folders for the account?'),
@@ -83,7 +72,7 @@ export const launchBudget = {
     'REQ-LAUNCH-10': noul('Does resetting opens append one JSON line with the account, the time and the reason, and set the host progress opensToday to 0, without deleting any file?'),
     'REQ-LAUNCH-11': noul('Are launches at or before the latest reset of the account dropped, so only launches strictly after it are counted?'),
     'REQ-LAUNCH-12': noul('Does the resetOpens action refuse to reset an account whose browser session is still open, naming the open session?'),
-    unspecifiedBehavior: noul('Does prepareRun let a browser open by a route the specification does not describe, such as skipping the launch budget for a flag other than a file: formUrl, or skipping the active hours without bypassHours?'),
+    unspecifiedBehavior: noul('Does prepareRun let a browser open by a route the specification does not describe, such as skipping the launch budget for a flag other than a file: formUrl?'),
   },
   assertions: {
     'REQ-LAUNCH-01': MET,

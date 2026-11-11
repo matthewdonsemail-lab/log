@@ -20,7 +20,7 @@ class Opened:
 
 def driver_of(config: dict[str, Any]) -> tuple[str, str | None]:
     browser = config.get("browser") or {}
-    driver = str(browser.get("driver") or "camoufox")
+    driver = str(browser.get("driver") or "adsPower")
     if driver not in BROWSERS:
         raise proxyGate.GateError("unguardedLaunch", f"unknown browser driver {driver!r}")
     return driver, browser.get("profileId")

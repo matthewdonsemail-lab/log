@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "siteDev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "site/apps/web", "exec", "vite", "--port", "5179", "--strictPort"],
+      "port": 5179
+    }
+  ]
+}

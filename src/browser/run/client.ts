@@ -3,7 +3,7 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasStoredDevice, toDeviceProfile } from '../../camofox/device/index'
 import type { DeviceProfile, DeviceRunFile } from '../../camofox/device/index'
-import { HOME_COUNTRIES, homeOf, outsideActiveHours } from '../../marketplace/home/index'
+import { HOME_COUNTRIES, homeOf } from '../../marketplace/home/index'
 import type { Home } from '../../marketplace/home/index'
 import { siteOfAccount } from '../../cli/runner/helpers/platforms'
 import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccount/index'
@@ -66,8 +66,6 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
     const known = homeOf(account)
     const home = known.ok || !direct ? known : directHome(account)
     if (!home.ok) return home
-    const outside = options.bypassHours ? null : outsideActiveHours(account, home.home.timezone, options.now ?? new Date())
-    if (outside) return { ok: false, code: 'outsideActiveHours', detail: outside }
     if (!options.skipLaunchBudget) {
       const limits = options.skipLaunchGap ? { ...LAUNCH_LIMITS, minGapMinutes: 0 } : LAUNCH_LIMITS
       const over = overLaunchBudget(listLaunches(account.accountName, { runs: options.captureRoot }), options.now ?? new Date(), home.home.timezone, limits)

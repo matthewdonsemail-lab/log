@@ -27,7 +27,7 @@ Every log command has one shape: a command that acts on one platform starts with
 
 ## [MCP server](./mcpServer.md)
 
-The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Rules 47, 95 and 106 (rule 95 replaces rule 47's long instructions with short ones that send the agent to the full guide; rule 76 puts rule one first).
+The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Active rules 47, 55, 73, 158, 163 and 176 govern current guidance. Retired citations are consolidated into active rules; historical snapshots never restore superseded scope.
 
 - **REQ-MCP-01** The instructions carry the core rules, rule one first
 - **REQ-MCP-02** The instructions send the agent to the full guide first
@@ -188,11 +188,11 @@ Before an account's browser loads anything, it goes through one gate: a headed l
 
 ## [Launch budget](./launchBudget.md)
 
-Before a run opens an account's browser, `prepareRun` checks when it may open: only inside the account's local waking hours, at most 8 launches a local day and at least 10 minutes apart. `--bypass` skips the hours only, `--now` skips the gap only, and only matt resets the count, with `log facebook account resetOpens`. Rules 18, 20, 24, 30 and 37.
+Before a run opens an account browser, prepareRun validates the account, proxy, home/device and launch budget. Browser launch and preflight no longer restrict execution to the legacy active-hours window. The daily launch count and minimum gap remain in force.
 
-- **REQ-LAUNCH-01** No run outside the account's waking hours
-- **REQ-LAUNCH-02** The account's own hours replace the default
-- **REQ-LAUNCH-03** --bypass skips the waking hours and nothing else
+- **REQ-LAUNCH-01** Browser launch has no waking-hours restriction
+- **REQ-LAUNCH-02** Legacy window calculation remains available
+- **REQ-LAUNCH-03** Inspect bypass is retained for compatibility
 - **REQ-LAUNCH-04** At most 8 launches a local day
 - **REQ-LAUNCH-05** Launches are at least 10 minutes apart
 - **REQ-LAUNCH-06** A launch counts once it passed the self-check

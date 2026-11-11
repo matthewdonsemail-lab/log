@@ -8,6 +8,6 @@
     { "source": "/docs/:path+", "destination": "/docs/:path+.html" },
     { "source": "/devlog", "destination": "/devlog.html" },
     { "source": "/devlog/:slug", "destination": "/devlog/:slug.html" },
-    { "source": "/:page(twitter|discord|slack|instagram|reddit)", "destination": "/:page.html" },
+    { "source": "/:page(twitter|discord|slack|instagram|reddit|mcp)", "destination": "/:page.html" },
     { "source": "/((?!docs/|assets/|logos/).*)", "destination": "/index.html" }]
 }

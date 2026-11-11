@@ -22,7 +22,7 @@ Checked by: code and SubQ
 
 ### REQ-ADSPOWER-03: The account's browser is AdsPower when it has a profile
 
-`socialAccounts.browserDriver` picks the driver. When it is empty, an account with a linked profile opens on AdsPower and one without opens on Camoufox. Rules 42 and 59.
+An explicit supported account browserDriver picks the driver. Otherwise a linked profile stays on AdsPower. With neither account override nor linked profile, the saved or environment LOG_BROWSER_DRIVER selects the workspace default, which is AdsPower when unset. Unsupported choices refuse. Missing AdsPower setup or profile does not silently fall back to Camoufox. The native account adapter still has legacy socialAccounts dependencies; this driver selection change does not migrate their storage. Rules 44 and 174.
 
 Checked by: code and SubQ
 

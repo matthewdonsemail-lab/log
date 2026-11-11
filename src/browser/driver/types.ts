@@ -1,6 +1,6 @@
 export const BROWSER_DRIVERS = ['camoufox', 'adsPower'] as const
 export type BrowserDriverName = (typeof BROWSER_DRIVERS)[number]
-export const DEFAULT_BROWSER_DRIVER: BrowserDriverName = 'camoufox'
+export const DEFAULT_BROWSER_DRIVER: BrowserDriverName = 'adsPower'
 
 export const BROWSER_CAPABILITIES = {
   headedWindow: 'A visible window you can watch, never headless (rule 11)',

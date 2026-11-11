@@ -7,7 +7,9 @@ import sharePages from '../useCases/sharePages.json'
 import { PLATFORM_PAGES } from '../useCases/platformPages'
 import { QUICK_ANSWERS } from '../useCases/quickAnswers'
 import { PLATFORMS } from '../PlatformSuite'
-import { UPDATED, devlogIndexSchema, homeSchema, platformSchema } from '../structuredData'
+import { UPDATED, devlogIndexSchema, homeSchema, mcpSchema, platformSchema } from '../structuredData'
+import { MCP_CLIENTS, MCP_DESCRIPTION, MCP_FAQ, MCP_INSTALL, MCP_PATH, MCP_PLATFORMS, MCP_STEPS, MCP_TITLE } from '../mcp/mcpContent'
+import { USE_CASES } from '../useCases/useCaseCatalog'
 
 export type PrerenderedPage = {
   path: string
@@ -132,5 +134,98 @@ export function prerenderedPages(): PrerenderedPage[] {
       ),
     }
   })
-  return [index, ...articles, ...platforms]
+  const mcpImage = `${SITE}/og/og.png`
+  const labelOf = (id: string) => PLATFORMS.find((item) => item.id === id)?.label ?? id
+  const mcp: PrerenderedPage = {
+    path: MCP_PATH,
+    title: MCP_TITLE,
+    description: MCP_DESCRIPTION,
+    image: mcpImage,
+    type: 'website',
+    schema: mcpSchema({
+      path: MCP_PATH,
+      title: MCP_TITLE,
+      description: MCP_DESCRIPTION,
+      image: mcpImage,
+      faq: MCP_FAQ,
+      steps: MCP_STEPS,
+      features: MCP_PLATFORMS.flatMap((item) => item.tools.map((tool) => `${labelOf(item.platformId)}: ${tool.does} (${tool.name})`)),
+    }),
+    markdown: [
+      `# ${MCP_TITLE}`,
+      '',
+      `canonical_url: ${SITE}${MCP_PATH}`,
+      `last_updated: ${UPDATED}`,
+      `author: Matthew Don (https://x.com/matthewsoldit)`,
+      '',
+      MCP_DESCRIPTION,
+      '',
+      '## Install',
+      '',
+      ...MCP_STEPS.map((step, index) => `${index + 1}. **${step.title}.** ${step.body}`),
+      '',
+      '```bash',
+      MCP_INSTALL,
+      ...MCP_CLIENTS.filter((client) => client.id === 'claude' || client.id === 'codex').flatMap((client) => client.lines),
+      '```',
+      '',
+      '## What your agent can do, platform by platform',
+      '',
+      ...MCP_PLATFORMS.flatMap((item) => [
+        `### ${labelOf(item.platformId)}`,
+        '',
+        ...item.tools.map((tool) => `- \`${tool.name}\`: ${tool.does}${tool.acts ? ' (sends, needs confirmLive: true)' : ' (reads)'}`),
+        '',
+      ]),
+      '## The plays',
+      '',
+      ...USE_CASES.map((useCase) => `- [${useCase.title}](${SITE}/docs/useCases/${useCase.page}): ${useCase.does}`),
+      '',
+      '## The log MCP: quick answers',
+      '',
+      ...MCP_FAQ.flatMap((item) => [`### ${item.q}`, '', item.a, '']),
+      `Source and install: https://github.com/matthewdonsemail-lab/log`,
+      '',
+    ].join('\n'),
+    body: renderToStaticMarkup(
+      <main>
+        <h1>{MCP_TITLE}</h1>
+        <p>{MCP_DESCRIPTION}</p>
+        <h2>Install</h2>
+        <ol>
+          {MCP_STEPS.map((step) => (
+            <li key={step.title}>
+              <strong>{step.title}.</strong> {step.body}
+            </li>
+          ))}
+        </ol>
+        <h2>What your agent can do</h2>
+        {MCP_PLATFORMS.map((item) => (
+          <section key={item.platformId}>
+            <h3>{labelOf(item.platformId)}</h3>
+            <ul>
+              {item.tools.map((tool) => (
+                <li key={tool.name}>
+                  <code>{tool.name}</code>: {tool.does}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+        <section className="quick-answers">
+          <h2>The log MCP: quick answers</h2>
+          {MCP_FAQ.map((item) => (
+            <div key={item.q}>
+              <h3>{item.q}</h3>
+              <p>{item.a}</p>
+            </div>
+          ))}
+        </section>
+        <p>
+          By Matthew Don. Updated <time dateTime={UPDATED}>{UPDATED}</time>.
+        </p>
+      </main>,
+    ),
+  }
+  return [index, ...articles, ...platforms, mcp]
 }
