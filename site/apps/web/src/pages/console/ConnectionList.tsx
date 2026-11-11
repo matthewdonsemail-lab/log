@@ -1,0 +1,28 @@
+import type { ReactNode } from 'react'
+import { ConnectionActions, ConnectionActionButton, type ConnectionAction } from './ConnectionActions'
+
+export type ConnectionItem = { id: string; name: string; homeCountry: string | null; proxyProvider: 'twoCaptcha' | 'byteful' | 'unknown' | null; subtitle: string; icon: ReactNode; status: string; tone: 'active' | 'error' | 'warning' | 'neutral'; checkedAt: string | null; checkNote: string | null; search: string; action: ConnectionAction }
+
+function Country({ value }: { value: string | null }) {
+  const name = value ? new Intl.DisplayNames(['en'], { type: 'region' }).of(value) ?? value : null
+  return <span className={name ? 'text-slate-700' : 'text-slate-400'}>{name ?? 'Not set'}</span>
+}
+
+function ConnectionStatus({ item }: { item: ConnectionItem }) {
+  return <span className={`inline-flex max-w-full items-center gap-1.5 rounded-md border px-2 py-0.5 text-sm font-medium ${item.tone === 'error' ? 'border-red-200 bg-red-50 text-red-700' : item.tone === 'warning' ? 'border-amber-200 bg-amber-50 text-amber-800' : item.tone === 'active' ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}><span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-current" />{item.status}</span>
+}
+
+function LastChecked({ value }: { value: string | null }) {
+  const date = value ? new Date(value) : null
+  if (!date || !Number.isFinite(date.getTime())) return <span className="whitespace-nowrap text-slate-400">Never checked</span>
+  return <time dateTime={date.toISOString()} title={new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: 'long' }).format(date)} className="inline-flex flex-col gap-0.5 whitespace-nowrap text-sm tabular-nums"><span className="font-medium text-slate-700">{date.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</span><span className="text-slate-500">{date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}</span></time>
+}
+
+function ConnectionIdentity({ item }: { item: ConnectionItem }) {
+  return <div className="flex min-w-0 items-center gap-3"><span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center text-slate-700">{item.icon}</span><span className="min-w-0"><span className="block break-words font-semibold text-slate-900">{item.name}</span><span className="sr-only">{item.subtitle}</span></span></div>
+}
+
+export function ConnectionList({ items, view, label }: { items: ConnectionItem[]; view: 'table' | 'cards'; label: string }) {
+  if (view === 'cards') return <div role="list" aria-label={label} className="grid gap-3 px-4 pb-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-3">{items.map((item) => <article role="listitem" key={item.id} aria-label={item.name} className="flex min-w-0 flex-col rounded-xl border border-slate-200 bg-white p-4 text-sm"><ConnectionIdentity item={item} /><div className="mt-4"><ConnectionStatus item={item} />{item.checkNote ? <p className="mt-2 text-sm text-slate-500">{item.checkNote}</p> : null}</div><div className="mb-4 mt-4 flex items-start justify-between gap-3 text-sm"><span className="text-slate-500">Last checked</span><span className="text-right"><LastChecked value={item.checkedAt} /></span></div><div className="mt-auto flex justify-end border-t border-slate-100 pt-3"><ConnectionActionButton action={item.action} /></div></article>)}</div>
+  return <div role="region" aria-label={`${label} table, scroll horizontally for more columns`} tabIndex={0} className="max-w-full overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400"><table className="w-full min-w-[1020px] table-fixed text-left text-sm"><caption className="sr-only">{label}</caption><thead className="border-y border-slate-200 bg-slate-50 text-slate-500"><tr><th scope="col" className="w-[23%] px-5 py-3 font-medium">Connection</th><th scope="col" className="w-[22%] px-4 py-3 font-medium">Status</th><th scope="col" className="w-[13%] px-4 py-3 font-medium">Country</th><th scope="col" className="w-[14%] px-4 py-3 font-medium">Proxy provider</th><th scope="col" className="w-[18%] px-4 py-3 font-medium">Last checked</th><th scope="col" className="w-[12%] px-5 py-3 text-right font-medium">Actions</th></tr></thead><tbody className="divide-y divide-slate-100">{items.map((item) => <tr key={item.id} className="transition-colors hover:bg-slate-50/60"><th scope="row" className="px-5 py-4 font-normal"><ConnectionIdentity item={item} /></th><td className="px-4 py-4"><ConnectionStatus item={item} />{item.checkNote ? <p className="mt-1.5 text-sm leading-5 text-slate-500">{item.checkNote}</p> : null}</td><td className="px-4 py-4"><Country value={item.homeCountry} /></td><td className="px-4 py-4"><span className={`inline-flex items-center gap-2 ${item.proxyProvider ? 'text-slate-700' : 'text-slate-400'}`}>{item.proxyProvider === 'byteful' || item.proxyProvider === 'twoCaptcha' ? <img src={item.proxyProvider === 'byteful' ? '/logos/byteful.svg' : '/logos/twoCaptcha.png'} alt="" aria-hidden="true" className="size-3.5 shrink-0 object-contain" /> : null}{item.proxyProvider === 'byteful' ? 'Byteful' : item.proxyProvider === 'twoCaptcha' ? '2Captcha' : item.proxyProvider === 'unknown' ? 'Unknown provider' : 'Not set'}</span></td><td className="px-4 py-4 align-middle"><LastChecked value={item.checkedAt} /></td><td className="px-5 py-4 text-right"><ConnectionActions name={`${item.name} on ${item.subtitle}`} action={item.action} /></td></tr>)}</tbody></table></div>
+}

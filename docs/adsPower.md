@@ -35,7 +35,9 @@ Twenty gets two fields, both additions:
 
 - `adsPowerProfileId`: the profile linked to the account.
 - `browserDriver`: `adsPower` or `camoufox`. When it is empty, an account
-  with a linked profile opens on AdsPower, and one without opens on Camoufox.
+  with a linked profile stays on AdsPower. With no account override or profile,
+  LOG_BROWSER_DRIVER selects the workspace default, which is AdsPower when unset.
+  An unknown driver refuses; missing setup never selects another provider implicitly.
 
 ## What a profile holds
 

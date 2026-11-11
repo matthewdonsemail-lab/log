@@ -21,7 +21,7 @@ import { watchCheckpoint } from "./helpers/index.ts";
 export const INSPECT_USAGE = [
   "Usage: log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/... or the platform's own page>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
   "       log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)",
-  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)",
+  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--sessionStartedAt <timestamp>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)",
   "       log inspect read <stepFolder> --account <accountName> [--goal <text>] [--json]   (read a recorded step again: its internal API calls, the page and the earlier steps, by SubQ when no known state names it)",
   "       log inspect goal [--set <text>] [--account <accountName>] [--json]   (the session's goal, whether a step's reading says it is reached, and its P.E.E. findings: what went wrong, the evidence, why, and how it was fixed; rule 75)",
   "       log inspect finding --step <step> --point <text> --explain <text> [--evidence <text>] [--account <accountName>]   (a step that went wrong: Point, the issue in one sentence; Evidence, quoted from the step's reading, plus your own; Explain, why the evidence shows it and what caused it)",
@@ -88,7 +88,7 @@ export const INSPECT_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The account to open" },
         { name: "url", kind: "string", description: "The first page (https://www.facebook.com/..., or the account's own platform; default: the platform's home)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Compatibility flag; browser launch no longer applies active-hours restrictions" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "noIdleMouse", kind: "boolean", description: "No idle mouse loop between steps" },
         { name: "detach", kind: "boolean", description: "Run as its own process and return once open: set it over MCP" },
@@ -106,6 +106,7 @@ export const INSPECT_INPUT: CommandInput = {
       flags: [
         { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on the platform, only when matt asked (rule 8)` },
         { name: "goal", kind: "string", description: "What this step is for, if not the session's goal (rule 74)" },
+        { name: "sessionStartedAt", kind: "string", description: "Refuse if the account browser session differs from this expected start timestamp" },
         { name: "timeout", kind: "integer", description: "Seconds to wait for the step" },
         { name: "account", kind: "string", description: "Picks the session when more than one is open" },
         JSON_FLAG,
@@ -258,6 +259,7 @@ export const inspectCommand: Command = {
         if (accountName) return { code: 1, stderr: `log inspect: no session is open for ${accountName} (open: ${open.map((s) => s.account).join(", ")})` };
         return { code: 1, stderr: `log inspect: ${open.length} sessions are open (${open.map((s) => s.account).join(", ")}): add --account <name>` };
       }
+      if (typeof parsed.flags["sessionStartedAt"] === "string" && parsed.flags["sessionStartedAt"] !== current.startedAt) return { code: 1, stderr: "log inspect: inspectSessionChanged: the account browser owner changed; nothing was dispatched" };
       const timeout = parsed.flags["timeout"] === undefined ? 120 : Number(parsed.flags["timeout"]);
       if (!Number.isFinite(timeout) || timeout < 5 || timeout > 900) return { code: 1, stderr: `log inspect: --timeout must be 5 to 900 seconds\n${INSPECT_USAGE}` };
       const reply = await context.sendInspect(current, action.action, action.args, timeout * 1000);

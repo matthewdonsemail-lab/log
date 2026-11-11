@@ -5,6 +5,7 @@ export type ConsoleEvent = {
   status: 'recorded' | 'succeeded' | 'failed' | 'unknown'
   kind: string
   model: 'SubQ' | 'Jev' | null
+  platform: 'facebook' | 'twitter' | 'discord' | 'slack' | 'instagram' | 'reddit' | 'linkedin' | null
   durationMs: number | null
   usage: { type: 'tokens'; input: number; output: number } | { type: 'balance'; amount: number } | null
 }
@@ -33,6 +34,7 @@ export async function loadConsoleEvents(signal: AbortSignal): Promise<ConsoleEve
     const row = record(value)
     if (typeof row.id !== 'string' || !/^(event\d+|provider\d+|inference[a-f0-9]+)$/.test(row.id) || (row.type !== 'event' && row.type !== 'inference') || !['recorded', 'succeeded', 'failed', 'unknown'].includes(String(row.status)) || typeof row.kind !== 'string' || !kinds.has(row.kind) || (row.model !== null && row.model !== 'SubQ' && row.model !== 'Jev')) throw new Error('consoleResponseInvalid')
     if ((row.type === 'event' && row.model !== null) || (row.type === 'inference' && row.model === null)) throw new Error('consoleResponseInvalid')
+    if (row.platform !== null && !['facebook', 'twitter', 'discord', 'slack', 'instagram', 'reddit', 'linkedin'].includes(String(row.platform))) throw new Error('consoleResponseInvalid')
     let usage: ConsoleEvent['usage'] = null
     if (row.usage !== null) {
       const source = record(row.usage)
@@ -40,11 +42,12 @@ export async function loadConsoleEvents(signal: AbortSignal): Promise<ConsoleEve
       else if (source.type === 'balance') usage = { type: 'balance', amount: numeric(source.amount) }
       else throw new Error('consoleResponseInvalid')
     }
-    return { id: row.id, type: row.type, time: numeric(row.time), status: row.status as ConsoleEvent['status'], kind: row.kind, model: row.model, durationMs: row.durationMs === null ? null : numeric(row.durationMs), usage }
+    return { id: row.id, type: row.type, time: numeric(row.time), status: row.status as ConsoleEvent['status'], kind: row.kind, model: row.model, platform: row.platform as ConsoleEvent['platform'], durationMs: row.durationMs === null ? null : numeric(row.durationMs), usage }
   })
   return { schemaVersion: 1, source: 'workspace', generatedAt: body.generatedAt, events }
 }
 
+export const platformLabels = { facebook: 'Facebook', twitter: 'X', discord: 'Discord', slack: 'Slack', instagram: 'Instagram', reddit: 'Reddit', linkedin: 'LinkedIn' }
+
 export const eventTime = (time: number) => new Date(time).toLocaleString('en', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' })
 export const eventDuration = (ms: number | null) => ms === null ? '—' : `${(ms / 1000).toFixed(2)} s`
-

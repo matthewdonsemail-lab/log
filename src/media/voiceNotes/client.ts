@@ -1,3 +1,4 @@
+import { savedCredential } from '../../auth/credentials'
 import { withCreditNote } from '../../billing/balance/helpers/answers'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
@@ -8,6 +9,8 @@ import { ASSEMBLY_AI_API, ASSEMBLY_AI_KEY_NAME, ASSEMBLY_AI_KEY_NAMES, POLL_EVER
 import type { AssemblyAiClient, AssemblyAiOptions, TranscribeAnswer } from './types'
 
 export function assemblyAiKey(env: Record<string, string | undefined> = process.env, home = homedir()): string | null {
+  const saved = savedCredential('ASSEMBLYAI_API_KEY', env)
+  if (saved) return saved
   for (const name of ASSEMBLY_AI_KEY_NAMES) if (env[name]?.trim()) return env[name]!.trim()
   const repo = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
   for (const file of [join(repo, '.env.local'), join(repo, '..', '..', '.env.local'), join(home, '.buzz', '.env.local'), join(home, 'filmcraft', '.env.local')]) {

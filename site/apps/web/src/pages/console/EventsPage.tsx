@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { autoUpdate, flip, FloatingFocusManager, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react'
 import { ConsoleLayout } from './ConsoleLayout'
-import { loadConsoleEvents, eventDuration, eventTime, type ConsoleEvent } from './eventsData'
+import { EventLogo } from './EventLogo'
+import { platformLabels, loadConsoleEvents, eventDuration, eventTime, type ConsoleEvent } from './eventsData'
 
 function EventStatus({ status }: { status: ConsoleEvent['status'] }) {
   return <span className={`inline-flex items-center gap-1.5 rounded border px-2 py-0.5 text-sm font-medium ${status === 'failed' ? 'border-red-300 bg-red-50 text-red-700' : 'border-slate-200 bg-slate-50 text-slate-700'}`}><span className={`size-1.5 rounded-full ${status === 'failed' ? 'bg-red-500' : 'bg-[#2A8CFF]'}`} />{status === 'failed' ? 'Failed' : status === 'succeeded' ? 'OK' : status === 'recorded' ? 'Recorded' : 'Unknown'}</span>
@@ -15,6 +16,7 @@ function EventDetails({ event, onClose }: { event: ConsoleEvent; onClose: () => 
   const fields = [
     ['Time (UTC)', eventTime(event.time)],
     ['Event type', event.kind],
+    ...(event.platform ? [['Platform', platformLabels[event.platform]]] : []),
     ['Duration', eventDuration(event.durationMs)],
     ...(event.model ? [['Model', event.model]] : []),
     ...(event.usage?.type === 'tokens' ? [['Input tokens', event.usage.input.toLocaleString()], ['Output tokens', event.usage.output.toLocaleString()]] : []),
@@ -37,7 +39,7 @@ export function EventsPage() {
   const [filterOpen, setFilterOpen] = useState(false)
   const { refs, floatingStyles, context } = useFloating({ open: filterOpen, onOpenChange: setFilterOpen, placement: 'bottom-start', strategy: 'fixed', middleware: [offset(8), flip(), shift({ padding: 12 })], whileElementsMounted: autoUpdate })
   const { getReferenceProps, getFloatingProps } = useInteractions([useClick(context), useDismiss(context), useRole(context, { role: 'dialog' })])
-  const filtered = useMemo(() => (query.data?.events ?? []).filter((event) => (tab === 'firehose' || event.type === 'inference') && (status === 'all' || event.status === status) && `${event.kind} ${event.model ?? ''}`.toLowerCase().includes(search.trim().toLowerCase())), [query.data, tab, status, search])
+  const filtered = useMemo(() => (query.data?.events ?? []).filter((event) => (tab === 'firehose' || event.type === 'inference') && (status === 'all' || event.status === status) && `${event.kind} ${event.model ?? ''} ${event.platform ? platformLabels[event.platform] : ''}`.toLowerCase().includes(search.trim().toLowerCase())), [query.data, tab, status, search])
   const pageSize = 12
   const rows = filtered.slice(page * pageSize, (page + 1) * pageSize)
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
@@ -48,7 +50,7 @@ export function EventsPage() {
       <button type="button" onClick={() => query.refetch()} disabled={query.isFetching} className="ml-auto rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-50">{query.isFetching ? 'Refreshing…' : 'Refresh'}</button>
       <button ref={refs.setReference} type="button" {...getReferenceProps()} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2v-9z" /></svg>Filter{status !== 'all' || search ? <span className="size-1.5 rounded-full bg-[#2A8CFF]" /> : null}</button>
       {filterOpen ? <FloatingPortal><FloatingFocusManager context={context} modal={false}><div ref={refs.setFloating} style={{ ...floatingStyles, zIndex: 10000 }} {...getFloatingProps()} aria-label="Filter events" className="w-72 space-y-4 rounded-xl border border-slate-200 bg-white p-4 font-sans text-sm shadow-xl">
-        <label className="block font-semibold text-slate-700">Search<input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0) }} placeholder="Event type or model" className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal outline-none focus:border-blue-500" /></label>
+        <label className="block font-semibold text-slate-700">Search<input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0) }} placeholder="Event type, model or platform" className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal outline-none focus:border-blue-500" /></label>
         <fieldset><legend className="mb-2 font-semibold text-slate-700">Status</legend><div className="flex flex-wrap gap-2">{['all', 'recorded', 'succeeded', 'failed', 'unknown'].map((value) => <button type="button" key={value} aria-pressed={status === value} onClick={() => { setStatus(value); setPage(0) }} className={`rounded-md border px-2 py-1.5 ${status === value ? 'border-blue-300 bg-blue-50 text-blue-700' : 'border-slate-200 text-slate-600'}`}>{value === 'all' ? 'All' : value === 'failed' ? 'Failed' : value === 'recorded' ? 'Recorded' : value === 'unknown' ? 'Unknown' : 'Succeeded'}</button>)}</div></fieldset>
         <button type="button" onClick={() => { setStatus('all'); setSearch(''); setPage(0) }} className="font-semibold text-[#2A8CFF]">Clear filters</button>
       </div></FloatingFocusManager></FloatingPortal> : null}
@@ -58,11 +60,12 @@ export function EventsPage() {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[880px] text-left text-sm">
           <caption className="sr-only">{tab === 'inference' ? 'Inference' : 'Firehose'} events, newest first</caption>
-          <thead className="border-b border-slate-200 bg-slate-50 text-slate-600"><tr>{['Time (UTC)', 'Status', tab === 'inference' ? 'Model' : 'Event type', 'Workspace', 'Duration', 'Usage'].map((label, index) => <th key={label} scope="col" className={`px-4 py-3 font-medium ${index > 3 ? 'text-right' : ''}`}>{label}</th>)}</tr></thead>
+          <thead className="border-b border-slate-200 bg-slate-50 text-slate-600"><tr>{['Time (UTC)', 'Status', ...(tab === 'firehose' ? ['Platform'] : []), tab === 'inference' ? 'Model' : 'Event type', 'Workspace', 'Duration', 'Usage'].map((label, index) => <th key={label} scope="col" className={`px-4 py-3 font-medium ${index >= (tab === 'firehose' ? 5 : 4) ? 'text-right' : ''}`}>{label}</th>)}</tr></thead>
           <tbody className="divide-y divide-slate-100">{rows.map((event) => <tr key={event.id} className="transition-colors hover:bg-blue-50/40">
             <td className="whitespace-nowrap px-4 py-3 text-slate-600"><time dateTime={new Date(event.time).toISOString()}>{eventTime(event.time)}</time></td>
             <td className="px-4 py-3"><EventStatus status={event.status} /></td>
-            <td className="px-4 py-3"><button type="button" onClick={() => setSelected(event)} aria-label={`Inspect ${event.kind} at ${eventTime(event.time)}`} className="flex items-center gap-3 rounded text-left outline-none focus-visible:ring-2 focus-visible:ring-blue-400"><span><span className="block font-semibold text-slate-900">{tab === 'inference' ? event.model : event.kind}</span><span className="mt-0.5 block text-slate-500">{event.type === 'inference' ? event.model : 'Event journal'}</span></span></button></td>
+            {tab === 'firehose' ? <td className="px-4 py-3 font-medium text-slate-700">{event.platform ? <span className="inline-flex items-center gap-2"><EventLogo platform={event.platform} />{platformLabels[event.platform]}</span> : '—'}</td> : null}
+            <td className="px-4 py-3"><button type="button" onClick={() => setSelected(event)} aria-label={`Inspect ${event.kind} at ${eventTime(event.time)}`} className="flex items-center gap-3 rounded text-left text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-blue-400"><EventLogo model={event.model} /><span><span className="block font-semibold">{tab === 'inference' ? event.model : event.kind}</span><span className="mt-0.5 block text-slate-500">{event.type === 'inference' ? event.model : 'Event journal'}</span></span></button></td>
             <td className="px-4 py-3 text-slate-600">Workspace</td>
             <td className="whitespace-nowrap px-4 py-3 text-right font-medium tabular-nums text-slate-900">{eventDuration(event.durationMs)}</td>
             <td className="whitespace-nowrap px-4 py-3 text-right font-medium tabular-nums text-slate-900">{event.usage?.type === 'tokens' ? `${(event.usage.input + event.usage.output).toLocaleString()} tokens` : event.usage?.type === 'balance' ? `$${event.usage.amount.toFixed(4)} balance` : '—'}</td>
@@ -75,6 +78,3 @@ export function EventsPage() {
     {selected ? <EventDetails key={selected.id} event={selected} onClose={() => setSelected(null)} /> : null}
   </ConsoleLayout>
 }
-
-
-

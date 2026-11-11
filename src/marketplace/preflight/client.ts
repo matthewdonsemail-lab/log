@@ -1,4 +1,4 @@
-import { homeOf, localClock, outsideActiveHours } from '../home/index'
+import { homeOf, localClock } from '../home/index'
 import { homePlace } from '../../facebook/marketplace/location/index'
 import { OPENS_PER_DAY } from '../lifecycle/index'
 import { LAUNCH_LIMITS, overLaunchBudget } from '../../browser/run/helpers/launchBudget'
@@ -16,8 +16,6 @@ export function preflightOf(account: PreflightAccount, facts: PreflightFacts, no
     checks.push(pass('home', `${home.home.timezone}, ${home.home.locale}`))
     const place = homePlace(account)
     checks.push(place ? pass('location', `Marketplace location "${place}"`) : fail('location', 'noHomeRegion', `${account.homeCity ?? '?'} (${account.homeCountry ?? '?'}) has no state or province in CITY_REGIONS, so its Marketplace location can't be written out`))
-    const closed = outsideActiveHours(account, home.home.timezone, now)
-    checks.push(closed ? fail('hours', 'outsideActiveHours', closed) : pass('hours', `local ${localClock(now, home.home.timezone).label}`))
     const over = overLaunchBudget(facts.launches, now, home.home.timezone, LAUNCH_LIMITS)
     const today = localClock(now, home.home.timezone).date
     const launchedToday = facts.launches.filter((at) => localClock(at, home.home.timezone).date === today).length

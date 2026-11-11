@@ -13,7 +13,7 @@ log-cli's own launch, in the account's own browser (rules 44, 84).
 
 1. **One launch, every gate** (rules 11-12, 15-18, 22, 24): headed, proxy in
    country, the account's device and locale, the self-check, the raw HAR, the
-   launch budget. `--bypass` only for matt's runs outside waking hours.
+   launch budget. Browser launch no longer applies the legacy active-hours restriction.
 2. **Read-only unless matt asked** (rule 8): `goto`, `snapshot`, `back`,
    `wait` read; `click`, `type`, `press` act on the platform and need `--live`
    (over MCP, `inspectDoLive` with confirmLive).
@@ -112,3 +112,7 @@ to matt.
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
 Rebuild the request docs after (rules 27, 85): `log facebook capture --docs`.
+
+## Console closure
+
+The console browser dialog Close and Escape actions request inspect.do stop for the expected sessionStartedAt. The modal remains open until the original owner releases its session after browser cleanup. A pending action finishes before close is dispatched. A changed owner is refused; a failed close is reported without a force-kill or account reset. This is an explicitly requested user lifecycle closure.

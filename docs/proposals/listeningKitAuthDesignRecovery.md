@@ -18,6 +18,10 @@ Contracts: listeningKitSchema.yaml frontend pages and listeningKitConsole.md rou
 
 Historical Clerk and Convex behavior is not restored. Remaining team and console pages are outside this login-design recovery.
 
+## Account settings presentation
+
+`site/apps/web/src/pages/console/SettingsPage.tsx` replaces the settings placeholder with Change password and Delete account tabs. The password form confirms matching entries and clears submitted credentials; deletion requires typing DELETE. Keyboard navigation supports arrows, Home and End. No backend operation is connected: submission explicitly reports that no password change or deletion occurred. Password sign-in/account recovery semantics are not implemented by this UI; the accepted hosted sign-in contract remains email OTP until explicitly extended.
+
 ## Expanded showcase and SSO preview
 
 The right panel keeps the original ears, dither, grid and automatic vertical filmstrip. It cycles the original videos and all existing animated stories for X, Discord, Slack, Instagram and Reddit, then slides into a duplicate first frame before resetting seamlessly. There are no platform tabs or manual carousel controls. Hover pauses playback; reduced motion stays static. These are showcase examples, independent of private workspace data.

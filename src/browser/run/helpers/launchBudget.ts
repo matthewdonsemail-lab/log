@@ -84,7 +84,7 @@ export function overLaunchBudget(
     const minutes = (now.getTime() - last.getTime()) / 60_000
     if (minutes >= 0 && minutes < limits.minGapMinutes) {
       const wait = Math.ceil(limits.minGapMinutes - minutes)
-      return { code: 'launchTooSoon', detail: `the last launch was ${Math.floor(minutes)} min ago; wait ${wait} min (at least ${limits.minGapMinutes} between launches)` }
+      return { code: 'launchTooSoon', detail: `the last launch was ${Math.floor(minutes)} min ago; wait ${wait} min (at least ${limits.minGapMinutes} between launches); next launch at ${new Date(last.getTime() + limits.minGapMinutes * 60000).toISOString()}` }
     }
   }
   return null

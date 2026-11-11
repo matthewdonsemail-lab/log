@@ -1,12 +1,41 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types","../../node_modules/@types"],
+    "target": "ES2022",
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ],
     "composite": true,
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts", "server/**/*.ts", "../../../src/observability/console/helpers/projection.ts", "../../../src/observability/console/types.ts"]
+  "include": [
+    "vite.config.ts",
+    "server/**/*.ts",
+    "../../../src/observability/console/helpers/projection.ts",
+    "../../../src/observability/console/types.ts",
+    "../../../src/observability/usage/helpers/projection.ts",
+    "../../../src/observability/usage/types.ts",
+    "../../../src/observability/console/helpers/connections.ts",
+    "../../../src/marketplace/socialAccount/helpers/twentyEnum.ts",
+    "../../../src/twenty/graphql/helpers/localAccountRows.ts",
+    "../../../src/subq/decisions/helpers/credentials.ts",
+    "../../../src/extensions/memelord/client.ts",
+    "../../../src/extensions/memelord/types.ts",
+    "../../../src/extensions/voiceClone/helpers/provider.ts",
+    "../../../src/extensions/voiceClone/types.ts",
+    "../../../src/auth/credentials/*.ts",
+    "../../../src/config/userEnv/index.ts",
+    "../../../src/browser/flow/helpers/pageState.ts",
+    "../../../src/subq/stepReading/types.ts",
+    "../../../src/subq/decisions/types.ts",
+    "shared/*.d.ts",
+    "../../../src/browser/driver/client.ts",
+    "../../../src/browser/driver/types.ts",
+    "../../../src/browser/driver/machine.ts",
+    "../../../src/proxyVendor/vendor/helpers/vendorOfProxy.ts",
+    "../../../src/proxyVendor/vendor/types.ts"
+  ]
 }
-

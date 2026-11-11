@@ -66,7 +66,7 @@ log-cli's own launch, in the account's own browser (rules 44, 84).
 
 1. **One launch, every gate** (rules 11-12, 15-18, 22, 24): headed, proxy in
    country, the account's device and locale, the self-check, the raw HAR, the
-   launch budget. `--bypass` only for matt's runs outside waking hours.
+   launch budget. Browser launch no longer applies the legacy active-hours restriction.
 2. **Read-only unless matt asked** (rule 8): `goto`, `snapshot`, `back`,
    `wait` read; `click`, `type`, `press` act on the platform and need `--live`
    (over MCP, `inspectDoLive` with confirmLive).
@@ -165,6 +165,10 @@ to matt.
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
 Rebuild the request docs after (rules 27, 85): `log facebook capture --docs`.
+
+### Console closure
+
+The console browser dialog Close and Escape actions request inspect.do stop for the expected sessionStartedAt. The modal remains open until the original owner releases its session after browser cleanup. A pending action finishes before close is dispatched. A changed owner is refused; a failed close is reported without a force-kill or account reset. This is an explicitly requested user lifecycle closure.
 
 ## The work, step by step: host
 
@@ -342,8 +346,7 @@ From `skills/adsPower/SKILL.md`.
 3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate (rule 12),
    self-check (rule 17), session HAR (rule 22), human mouse and scroll. `docs/browsers.md`
    lists what's built; `bun run check:browsers` keeps every browser in step.
-4. **Camoufox stays.** With `browserDriver` empty, an account with a linked profile opens on AdsPower
-   and one without opens on Camoufox. Never remove it.
+4. **Provider selection is explicit.** AdsPower is the default. A linked account profile stays pinned to AdsPower; an explicit account driver remains authoritative. With no account override, `LOG_BROWSER_DRIVER` selects the workspace default. Camoufox remains available only when explicitly selected. Missing AdsPower setup or a profile stops launch; never silently fall back.
 5. **Never print `ADSPOWER_API_KEY`.** It lives in `.env.local` and the local-scope MCP config.
 
 ### Environment
@@ -375,6 +378,16 @@ A failed create usually means the plan's profile limit: the AdsPower plan must h
 Write a `BrowserDriver` (`src/browser/driver/types.ts`): prepare, gate, start, selfCheck, stop.
 Add its name to `BROWSER_DRIVERS`. The machine already enforces the order, so the new browser
 can't skip the gate or the self-check. Details: `docs/adsPower.md`.
+
+### Console browser checks
+
+Opening a console browser check automatically provisions a missing AdsPower account profile through the existing account-scoped Log MCP sync operation, verifies the saved profile binding, then opens the account-owned browser through inspect.start. The XState machine displays centered preparation and connection stages. Provisioning and launch are attempted once per dialog; failure or missing binding stops the flow. Concurrent provisioning requests share one operation. Existing profile, home, status, proxy and launch gates remain authoritative.
+
+Allowed countries can be edited in Connections → Extensions → Browser → AdsPower → Manage. Save comma-separated country codes or the explicit value all. The setting persists privately as LOG_ADSPOWER_HOMES and existing MCP sessions read it before sync; changing it does not reset account/platform stops or other launch gates.
+
+Browser launch and browser preflight no longer apply the old active-hours window. The console does not wait for waking hours. Country/proxy, home/device, launch-budget, capture, account and owner checks still apply. Historical outsideActiveHours outcomes are retained as evidence and do not block a new launch.
+
+Console profile preparation consumes the exact account-scoped sync entry before continuing. A deactivated, banned or dead status is a stop; an excluded country or missing home locale is a setup block; an unavailable provider needs configuration; an unconfirmed create/binding is an uncertain operation. Preserve each reason in sanitized console/server diagnostics and the typed browser view. Normalize the legacy accountStatus field at the console boundary before choosing profileRequired. Never clear an account stop, repeat an uncertain provisioning write or infer profile creation from exit zero alone.
 
 ## The work, step by step: humanMouse
 
@@ -650,7 +663,7 @@ AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 
 
 Send one step to the open browser; it returns the snapshot (element refs), requests and rea's reading.
 Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)
-log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
+log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--sessionStartedAt <timestamp>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
 Sends one step to the open session and returns its snapshot (element refs), requests and rea reading. Steps that act on Facebook (click, type, press, solve, signIn, code, pin…) are `inspectDoLive`.
 Fill the named fields; each value goes through whole. What acts on Facebook is `inspectDoLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
@@ -663,7 +676,7 @@ AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 
 Send one step to the open browser; it returns the snapshot (element refs), requests and rea's reading.
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
 Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)
-log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
+log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--sessionStartedAt <timestamp>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
 Sends one step that acts on Facebook to the open session and returns its snapshot (element refs), requests and rea reading.
 Fill the named fields; each value goes through whole.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.

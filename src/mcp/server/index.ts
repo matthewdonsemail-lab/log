@@ -28,7 +28,8 @@ import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, 
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
-import { readConsoleEvents } from "../../observability/console/index.ts";
+import { readUsageSummary } from "../../observability/usage/index.ts";
+import { readConsoleEvents, readConsoleConnections } from "../../observability/console/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -374,12 +375,17 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
     port: options.port ?? 7337,
     async fetch(request) {
       const url = new URL(request.url);
-      if (url.pathname === "/api/console/events") {
+      if (["/api/console/events", "/api/console/usage", "/api/console/connections"].includes(url.pathname)) {
         const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
         if (!token || !authorized(request, token, null)) return Response.json({ error: "consoleWorkspaceAccessDenied" }, { status: 401, headers });
         if (request.method !== "GET") return Response.json({ error: "consoleMethodNotAllowed" }, { status: 405, headers: { ...headers, Allow: "GET" } });
         try {
-          return Response.json(readConsoleEvents(), { headers });
+          if (url.pathname === "/api/console/connections") return Response.json(readConsoleConnections(), { headers });
+          const days = Number(url.searchParams.get("days") ?? 30);
+          if (!Number.isInteger(days) || days < 1 || days > 30) return Response.json({ error: "usageRangeInvalid" }, { status: 400, headers });
+          const to = Date.now();
+          const from = Math.floor(to / 86400000) * 86400000 - (days - 1) * 86400000;
+          return Response.json(url.pathname === "/api/console/usage" ? readUsageSummary(from, to) : readConsoleEvents(), { headers });
         } catch {
           return Response.json({ error: "consoleWorkspaceUnavailable" }, { status: 503, headers });
         }

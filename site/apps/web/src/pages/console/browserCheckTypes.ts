@@ -1,0 +1,2 @@
+export const browserPhases = ['profileSetupBlocked', 'operationUncertain', 'serviceUnavailable', 'launchCooldown', 'waitingForOwner', 'launchBlocked', 'launchUncertain', 'providerSetupRequired', 'profileRequired', 'browserMissing', 'viewerUnavailable', 'ready', 'signInRequired', 'needsResolution', 'needsAttention', 'stopped', 'unknown', 'verified', 'busy'] as const
+export type { BrowserPhase, BrowserCheckView, BrowserOperation } from '../../../shared/browserCheck'

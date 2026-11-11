@@ -1,4 +1,5 @@
-import { useEffect, useMemo, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { autoUpdate, flip, FloatingFocusManager, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { cn } from '@listeningkit/ui'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -37,34 +38,30 @@ export function WorkspaceChip({ state, className }: { state: WorkspaceState; cla
 }
 
 export function TeamSwitch() {
-  return (
-    <details className="group relative">
-      <summary
-        className="flex cursor-pointer list-none items-center gap-2 rounded-md bg-[#2A8CFF] px-2.5 py-1.5 text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_1px_2px_rgba(13,42,76,0.25)] transition-colors hover:bg-[#1F6FE6] sm:text-sm [&::-webkit-details-marker]:hidden"
-        aria-label="Teams"
-      >
-        <span className="hidden rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:inline">owner</span>
-        <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#1B6FD6]">P</span>
-        <b className="max-w-[5rem] truncate font-semibold sm:max-w-[7rem]">Personal</b>
-        <span aria-hidden="true" className="text-[10px] text-white/70">▾</span>
-      </summary>
-      <div className="absolute left-0 top-[calc(100%+6px)] z-30 w-56 rounded-md border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-900/10">
-        <p className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">Your teams</p>
-        <div className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm">
-          <span aria-hidden="true" className="flex size-6 items-center justify-center rounded-full bg-[#2A8CFF] text-[10px] font-bold text-white">P</span>
-          <span className="min-w-0 flex-1">
-            <span className="block truncate font-semibold">Personal</span>
-            <span className="text-[11px] text-slate-500">owner</span>
-          </span>
-          <span className="text-[11px] font-semibold text-[#1B6FD6]">✓ active</span>
+  const [open, setOpen] = useState(false)
+  const { refs, floatingStyles, context } = useFloating({ open, onOpenChange: setOpen, placement: 'bottom-start', strategy: 'fixed', middleware: [offset(10), flip(), shift({ padding: 12 })], whileElementsMounted: autoUpdate })
+  const { getReferenceProps, getFloatingProps } = useInteractions([useClick(context), useDismiss(context), useRole(context, { role: 'dialog' })])
+  return <>
+    <button ref={refs.setReference} type="button" {...getReferenceProps()} className="flex items-center gap-2 rounded-md bg-[#2A8CFF] px-2.5 py-1.5 text-xs text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_1px_2px_rgba(13,42,76,0.25)] transition-colors hover:bg-[#1F6FE6] sm:text-sm" aria-label="Teams">
+      <span className="hidden rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white sm:inline">owner</span>
+      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#1B6FD6]">P</span>
+      <b className="max-w-[5rem] truncate font-semibold sm:max-w-[7rem]">Personal</b>
+      <span aria-hidden="true" className="text-[10px] text-white/70">▾</span>
+    </button>
+    {open ? <FloatingPortal><FloatingFocusManager context={context} modal={false}>
+      <div ref={refs.setFloating} style={{ ...floatingStyles, zIndex: 10000 }} {...getFloatingProps()} aria-label="Your teams" className="w-72 max-w-[calc(100vw-24px)] rounded-xl border border-slate-200 bg-white p-2 font-sans text-sm text-slate-900 shadow-xl shadow-slate-900/10">
+        <div role="group" aria-label="Personal team profile" className="mb-2 flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50/70 p-4">
+          <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#2A8CFF] text-xl font-bold text-white shadow-sm">P</span>
+          <div className="min-w-0 flex-1"><p className="truncate text-base font-semibold text-[#0D2A4C]">Personal</p><p className="mt-0.5 text-sm text-slate-600">Owner</p></div>
+          <span aria-label="Active team" title="Active team" className="flex size-7 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-white font-semibold text-[#2A8CFF]">✓</span>
         </div>
-        <div className="my-1 h-px bg-slate-200" />
-        <Link to="/teams" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">＋ New team</Link>
-        <Link to="/teams" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">⤷ Join by code</Link>
-        <Link to="/console/settings" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">⚙ Team settings</Link>
+        <Link to="/teams" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-semibold hover:bg-slate-50">＋ New team</Link>
+        <Link to="/teams" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-semibold hover:bg-slate-50">⤷ Join by code</Link>
+        <div className="my-1 h-px bg-slate-100" />
+        <Link to="/console/settings" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-semibold hover:bg-slate-50">⚙ Settings</Link>
       </div>
-    </details>
-  )
+    </FloatingFocusManager></FloatingPortal> : null}
+  </>
 }
 
 export function BalanceChip() {
@@ -108,7 +105,7 @@ export function AccountMenu() {
       <div className="absolute right-0 top-[calc(100%+6px)] z-30 w-60 rounded-md border border-slate-200 bg-white p-1.5 text-sm shadow-xl shadow-slate-900/10">
         <p className="truncate px-2 py-1 text-xs font-semibold text-slate-500">you@listeningkit.com</p>
         <div className="my-1 h-px bg-slate-200" />
-        <Link to="/console/settings" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Team settings</Link>
+        <Link to="/console/settings" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Settings</Link>
         <Link to="/console/subscription" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Billing</Link>
         <Link to="/console/connections" className="block rounded-md px-2 py-1.5 font-semibold hover:bg-slate-50">Connections</Link>
         <div className="my-1 h-px bg-slate-200" />

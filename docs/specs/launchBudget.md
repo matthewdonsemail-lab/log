@@ -4,25 +4,25 @@ title: "Launch budget"
 
 # Launch budget
 
-Before a run opens an account's browser, `prepareRun` checks when it may open: only inside the account's local waking hours, at most 8 launches a local day and at least 10 minutes apart. `--bypass` skips the hours only, `--now` skips the gap only, and only matt resets the count, with `log facebook account resetOpens`. Rules 18, 20, 24, 30 and 37.
+Before a run opens an account browser, prepareRun validates the account, proxy, home/device and launch budget. Browser launch and preflight no longer restrict execution to the legacy active-hours window. The daily launch count and minimum gap remain in force.
 
-## Active hours
+## Retired active-hours launch restriction
 
-### REQ-LAUNCH-01: No run outside the account's waking hours
+### REQ-LAUNCH-01: Browser launch has no waking-hours restriction
 
-A run that opens a browser is refused with `outsideActiveHours` when the account's local time is outside its window. The window is 08:00 to 22:00 in its home timezone. Rule 18.
-
-Checked by: code and SubQ
-
-### REQ-LAUNCH-02: The account's own hours replace the default
-
-When the account has valid `activeHoursStart` and `activeHoursEnd` that are not equal, its window is those hours instead of 08:00 to 22:00, and a window that crosses midnight is handled. Rule 18.
+prepareRun does not refuse browser opening because of the account local time. Proxy, locale/device, account and launch-budget checks remain authoritative.
 
 Checked by: code and SubQ
 
-### REQ-LAUNCH-03: --bypass skips the waking hours and nothing else
+### REQ-LAUNCH-02: Legacy window calculation remains available
 
-With `--bypass` the hours check is skipped for that run. The launch budget, the proxy gate, the home locale, the device and the self-check still run. It is never on by default. Rule 20.
+activeWindow and insideWindow remain for existing runtime consumers outside browser preparation. Removing the browser launch gate does not migrate host scheduling or direct API policy.
+
+Checked by: code and SubQ
+
+### REQ-LAUNCH-03: Inspect bypass is retained for compatibility
+
+The existing inspect bypass flag is accepted for older callers but is unnecessary for browser launch. It does not disable the proxy, account, device or launch-budget checks.
 
 Checked by: code and SubQ
 
@@ -36,7 +36,7 @@ Checked by: code and SubQ
 
 ### REQ-LAUNCH-05: Launches are at least 10 minutes apart
 
-A launch less than 10 minutes after the last one is refused with `launchTooSoon`, saying how long to wait. Rule 24.
+A launch less than 10 minutes after the last one is refused with `launchTooSoon`, saying how long to wait and the exact next eligible UTC timestamp. Rule 24.
 
 Checked by: code and SubQ
 

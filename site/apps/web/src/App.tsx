@@ -17,6 +17,7 @@ import { ConnectionsPage } from './pages/console/ConnectionsPage'
 import { StartPage } from './pages/console/StartPage'
 import { UsagePage } from './pages/console/UsagePage'
 import { EventsPage } from './pages/console/EventsPage'
+import { SettingsPage } from './pages/console/SettingsPage'
 import { ConsolePlaceholderPage } from './pages/console/ConsolePlaceholderPage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 
@@ -101,7 +102,7 @@ export function App() {
             <Route path="/console/start" element={<StartPage />} />
             <Route path="/console/connections" element={<ConnectionsPage />} />
             <Route path="/console/accounts" element={<Navigate to="/console/connections" replace />} />
-            <Route path="/console/settings" element={<ConsolePlaceholderPage title="Settings" subtitle="Team members and invites, the supported workspace and provider setup, the AdsPower connection and session controls." />} />
+            <Route path="/console/settings" element={<SettingsPage />} />
             <Route path="/console/usage" element={<UsagePage />} />
             <Route path="/console/events" element={<EventsPage />} />
             <Route path="/console/analytics" element={<ConsolePlaceholderPage title="Analytics" subtitle="Private metrics read from the live workspace, shown with their provenance and unavailable while it is offline." />} />
@@ -117,5 +118,3 @@ export function App() {
     </QueryClientProvider>
   )
 }
-
-
