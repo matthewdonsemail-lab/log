@@ -1,28 +1,23 @@
-import { siFacebook, siReddit, siX } from 'simple-icons'
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebook, faRedditAlien, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { SquircleBorder, useComposedRef, useSquircleBorder, useSquircleClip } from '@listeningkit/ui'
 import type { Platform } from './platform'
 
 export type SocialIcon = {
   id: Platform
   label: string
-  path: string
-  hex: string
+  icon: IconDefinition
 }
 
-// Same three platforms as ui-kit's social-listening section, but rendered
-// from the `simple-icons` library instead of raw SVGs in public/.
 export const SOCIAL_ICONS: SocialIcon[] = [
-  { id: 'facebook', label: siFacebook.title, path: siFacebook.path, hex: siFacebook.hex },
-  { id: 'x', label: siX.title, path: siX.path, hex: siX.hex },
-  { id: 'reddit', label: siReddit.title, path: siReddit.path, hex: siReddit.hex }
+  { id: 'facebook', label: 'Facebook', icon: faFacebook },
+  { id: 'x', label: 'X', icon: faXTwitter },
+  { id: 'reddit', label: 'Reddit', icon: faRedditAlien }
 ]
 
 export function SocialGlyph({ icon, className }: { icon: SocialIcon; className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" role="img" aria-label={icon.label} className={className} fill="currentColor">
-      <path d={icon.path} />
-    </svg>
-  )
+  return <FontAwesomeIcon icon={icon.icon} aria-label={icon.label} role="img" className={className} />
 }
 
 export type SocialBadgeVariant = 'white' | 'blue'
@@ -47,7 +42,7 @@ export function SocialBadge({
       title={icon.label}
       ref={setRef}
       style={clip.style}
-      // Fixed-size icon: never flex-shrink, or the box distorts (e.g. 28×32
+      // Fixed-size icon: never flex-shrink, or the box distorts (e.g. 28A-32
       // inside a 28px parent) and the squircle measures the wrong geometry.
       className={`relative flex size-8 shrink-0 items-center justify-center ${className ?? ''}`}
     >

@@ -8,6 +8,8 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 
 ## What the server carries
 
+The runtime HTTP server also serves `GET /api/console/events` through `serveLogMcpHttp` in `src/mcp/server/index.ts`. This is a read of the fixed workspace projection in `src/observability/console`, not a platform action or inbox catch-up. It requires the existing workspace-owner static bearer token, returns no private payloads and uses `Cache-Control: no-store`. Legacy OAuth does not authorize this route. A hosted team gateway and paired workspace transport are still pending; see [Usage summaries](../proposals/listeningKitUsage.md).
+
 ### REQ-MCP-01: The instructions carry the core rules, rule one first
 
 The server's instructions, sent at initialize, list the core rules each with its rule number, and the first of them is rule one ("if we don't know, we do this", rule 73), followed by rule 30.

@@ -1713,3 +1713,16 @@ export function PlatformScroll({ platformId, ctaHref }: { platformId: string; ct
     </>
   )
 }
+
+
+export const AUTH_USECASE_STORIES = ['x', 'discord', 'slack', 'instagram', 'reddit'].flatMap(
+  (platformId) => SLIDES_BY_PLATFORM[platformId].map((slide) => ({
+    id: slide.story.id,
+    durationMs: slide.story.phases.reduce((total, _, index) => total + phaseMs(slide.story, index), 0),
+    story: slide.story,
+  })),
+)
+
+export function AuthUsecaseStory({ index, playing }: { index: number; playing: boolean }) {
+  return <StoryPhone story={AUTH_USECASE_STORIES[index].story} playing={playing} />
+}
