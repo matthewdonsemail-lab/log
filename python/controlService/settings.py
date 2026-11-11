@@ -33,6 +33,7 @@ MCP_PROTOCOL_VERSIONS = ("2025-11-25", "2025-06-18", "2025-03-26")
 @dataclass(frozen=True)
 class Settings:
     appOrigin: str
+    consoleOrigin: str
     databaseUrl: str
     sessionSecret: str
     otpPepper: str
@@ -64,8 +65,10 @@ def required(name: str) -> str:
 
 def load_settings() -> Settings:
     origin = required("APP_ORIGIN").rstrip("/")
+    consoleOrigin = (os.environ.get("CONSOLE_ORIGIN") or origin).rstrip("/")
     return Settings(
         appOrigin=origin,
+        consoleOrigin=consoleOrigin,
         databaseUrl=required("DATABASE_URL"),
         sessionSecret=required("SESSION_SECRET"),
         otpPepper=required("OTP_PEPPER"),

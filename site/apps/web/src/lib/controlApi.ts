@@ -20,6 +20,8 @@ export class ControlError extends Error {
 }
 
 const BASE = '/api/v1'
+export const HOSTED_MCP_URL = 'https://mcp.listeningkit.com/mcp'
+export const PLATFORM_SETUP_COMMAND = 'log launch --setup'
 
 const MESSAGES: Record<string, string> = {
   invalidInput: 'Check what you typed and try again.',

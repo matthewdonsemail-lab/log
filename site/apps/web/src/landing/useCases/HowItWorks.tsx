@@ -337,7 +337,7 @@ export function HowItWorks({
         <br />
         <span className="sticker-word inline-block px-[0.08em] text-[1.18em] leading-none">log runs the whole play.</span>
       </h2>
-      <div className="mt-12 grid w-full grid-cols-1 items-stretch gap-y-10 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-x-10">
+      <div className="mt-12 grid w-full grid-cols-1 items-stretch gap-y-10 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:gap-x-10">
         {cards.map((card, index) => (
           <div key={card.title} className="contents">
             <div
@@ -347,7 +347,7 @@ export function HowItWorks({
               className="flex h-full flex-col gap-6 rounded-3xl px-6 pb-7 pt-8 text-white shadow-[0_6px_0_#1A5FC8]"
               style={{ background: 'radial-gradient(ellipse at 50% 0%, #4FA6FF 0%, #2A8CFF 55%, #1F78F0 100%)' }}
             >
-              <div key={`${index}-${round}`} className="relative z-10 -mx-2 flex h-[17rem] items-center justify-center md:-mx-14">
+              <div key={`${index}-${round}`} className="relative z-10 -mx-2 flex h-[17rem] items-center justify-center lg:-mx-14">
                 {card.demo}
               </div>
               <div className="flex min-h-[8.5rem] flex-col gap-1">
@@ -357,7 +357,7 @@ export function HowItWorks({
               </div>
             </div>
             {index < cards.length - 1 ? (
-              <div aria-hidden className="relative z-20 hidden items-center md:flex">
+              <div aria-hidden className="relative z-20 hidden items-center lg:flex">
                 <span className="grid size-9 place-items-center rounded-full bg-[#0D2A4C] text-white">
                   <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
                 </span>

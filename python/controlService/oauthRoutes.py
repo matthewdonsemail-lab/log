@@ -222,7 +222,7 @@ def oauth_router(settings: Settings, open_db) -> APIRouter:
         pending = AuthorizationRequest(clientId=client.id, redirectUri=redirectUri, clientState=state[:512] if state else None, codeChallenge=challenge, resource=settings.mcpResourceUrl, scopes=scopes, expiresAt=datetime.now(timezone.utc) + timedelta(seconds=AUTHORIZATION_REQUEST_SECONDS))
         db.add(pending)
         db.commit()
-        return RedirectResponse(f"{issuer}/console/mcp?request={pending.id}", status_code=302)
+        return RedirectResponse(f"{settings.consoleOrigin}/console/mcp?request={pending.id}", status_code=302)
 
     def pending_request(db: Session, requestId: str) -> tuple[AuthorizationRequest, OauthClient]:
         pending = db.get(AuthorizationRequest, parse_id(requestId))

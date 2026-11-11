@@ -17,6 +17,7 @@ Migrations run once, as their own step, with `MIGRATION_DATABASE_URL`. The servi
 | Variable | What it is |
 | --- | --- |
 | `APP_ORIGIN` | The one public origin, `https://app.log.listeningkit.com`. Cookies are `Secure` when it is https; state-changing calls from any other `Origin` are refused. |
+| `CONSOLE_ORIGIN` | The frontend origin when it is hosted separately, for example `https://log.listeningkit.com`. OAuth consent and invite links open here, and same-origin frontend proxy requests carrying this `Origin` are accepted. Defaults to `APP_ORIGIN`. |
 | `DATABASE_URL` | The service's own PostgreSQL login (`postgres://` and `postgresql://` both work). |
 | `MIGRATION_DATABASE_URL` | The login that owns the schema, used only by Alembic. |
 | `SESSION_SECRET` | Signs the CSRF token tied to each session. |

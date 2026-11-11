@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, errorText, useSelectedTeam, type ConsentRequestView, type GrantView } from '@/lib/controlApi'
+import { api, errorText, HOSTED_MCP_URL, useSelectedTeam, type ConsentRequestView, type GrantView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading } from './ConsoleLayout'
 
 const SCOPE_TEXT: Record<string, string> = {
@@ -62,7 +62,7 @@ function Grants({ teamId }: { teamId: string }) {
   const grants = useQuery({ queryKey: ['controlGrants', teamId], queryFn: ({ signal }) => api<GrantView[]>(`/teams/${teamId}/grants`, { signal }) })
   const queryClient = useQueryClient()
   const [notice, setNotice] = useState('')
-  const url = `${window.location.origin}/mcp`
+  const url = HOSTED_MCP_URL
 
   async function revoke(grant: GrantView) {
     if (!window.confirm(`Disconnect ${grant.clientName}? It stops working at once.`)) return

@@ -816,7 +816,7 @@ export function ThreeSteps({ play, platform, icon }: { play: Play; platform: Pla
           The play: <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">{play.name}</span>
         </p>
       </div>
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
         {steps.map((step, index) => (
           <div key={step.title} className="contents">
             <div
@@ -831,7 +831,7 @@ export function ThreeSteps({ play, platform, icon }: { play: Play; platform: Pla
               </div>
             </div>
             {index < steps.length - 1 ? (
-              <div aria-hidden className="hidden items-center md:flex">
+              <div aria-hidden className="hidden items-center lg:flex">
                 <span className="grid size-9 place-items-center rounded-full bg-[#0D2A4C] text-white">
                   <FontAwesomeIcon icon={faArrowRight} className="text-[13px]" />
                 </span>

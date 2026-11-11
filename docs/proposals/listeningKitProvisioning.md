@@ -64,6 +64,7 @@ Names are the integration contract. Setting a variable does not make the current
 
 ```text
 APP_ORIGIN=https://app.log.listeningkit.com
+CONSOLE_ORIGIN=https://app.log.listeningkit.com
 MCP_RESOURCE_URL=https://app.log.listeningkit.com/mcp
 BRIDGE_PUBLIC_URL=wss://app.log.listeningkit.com/bridge
 

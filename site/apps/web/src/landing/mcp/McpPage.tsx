@@ -94,15 +94,15 @@ function Hero() {
           className="absolute right-6 top-36 hidden size-24 rotate-[4deg] rounded-[22px] shadow-[0_0_0_5px_#fff,0_0_0_10px_#0D2A4C,0_13px_0_10px_#0D2A4C] md:block lg:size-28"
         />
         <a
-          href="#prompt"
+          href="/sign-in?returnPath=/console/start"
           className="inline-flex max-w-full items-center gap-3 rounded-full bg-white py-1.5 pl-1.5 pr-1.5 transition-transform hover:-translate-y-px"
         >
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#2A8CFF]">
             <span aria-hidden className="block size-6 bg-white" style={CLAUDE_MASK} />
           </span>
-          <span className="whitespace-nowrap text-[16px] font-black tracking-[-0.01em] text-[#0D2A4C] sm:text-[17px]">Claude connector</span>
+          <span className="whitespace-nowrap text-[16px] font-black tracking-[-0.01em] text-[#0D2A4C] sm:text-[17px]">Create your log account</span>
           <span aria-hidden className="hidden h-6 border-l-2 border-dashed border-[#B5D6FF] sm:block" />
-          <span className="hidden whitespace-nowrap text-[16px] font-medium text-[#0D2A4C]/65 sm:inline sm:text-[17px]">Add log to Claude in one click</span>
+          <span className="hidden whitespace-nowrap text-[16px] font-medium text-[#0D2A4C]/65 sm:inline sm:text-[17px]">Connect the native MCP to your workspace</span>
           <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#2A8CFF] text-[15px] text-white">
             <FontAwesomeIcon icon={faArrowRight} />
           </span>
@@ -137,7 +137,7 @@ function Hero() {
             {TRY_ON.map((agent) => (
               <a
                 key={agent.label}
-                href="#prompt"
+                 href="/sign-in?returnPath=/console/start"
                 className="inline-flex items-center gap-2.5 rounded-xl bg-white px-4 py-2.5 text-[#0D2A4C] shadow-[0_3px_0_#1A5FC8] transition-transform hover:-translate-y-px"
               >
                 <span className="text-[13px] font-medium text-[#0D2A4C]/60">Try on</span>
@@ -148,8 +148,8 @@ function Hero() {
             <span className="inline-flex items-center gap-2.5 rounded-xl bg-white/15 px-4 py-2.5 text-white">
               <FontAwesomeIcon icon={faLaptop} className="text-[15px]" />
               <span className="flex flex-col leading-tight">
-                <span className="text-[14px] font-bold">Runs on your machine</span>
-                <span className="text-[12px] text-white/75">Your accounts stay on your computer</span>
+                 <span className="text-[14px] font-bold">Runs in your workspace</span>
+                 <span className="text-[12px] text-white/75">Your account sessions stay there</span>
               </span>
             </span>
           </div>
@@ -366,7 +366,7 @@ export function McpPage() {
         logoLabel="ListeningKit"
         githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
         className="z-[70]"
-        accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
+        accountItems={[{ href: '/sign-in?returnPath=/console/start', label: 'Create account', variant: 'cta' }]}
       />
       <Hero />
       <PlayDemo />

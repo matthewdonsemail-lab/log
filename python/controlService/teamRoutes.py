@@ -108,7 +108,7 @@ def team_router(settings: Settings, open_db, mailer: Mailer) -> APIRouter:
         db.add(invite)
         db.commit()
         db.refresh(invite)
-        subject, text = invite_email(access.team.name, f"{settings.appOrigin}/teams?invite={token}")
+        subject, text = invite_email(access.team.name, f"{settings.consoleOrigin}/teams?invite={token}")
         if not mailer.send(invite.emailCanonical, subject, text):
             invite.revokedAt = datetime.now(timezone.utc)
             db.add(invite)

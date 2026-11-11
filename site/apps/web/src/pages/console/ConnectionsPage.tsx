@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { api, errorText, useSelectedTeam, useWorkspaces, type AccountView } from '@/lib/controlApi'
+import { api, errorText, PLATFORM_SETUP_COMMAND, useSelectedTeam, useWorkspaces, type AccountView } from '@/lib/controlApi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -46,6 +46,7 @@ export function ConnectionsPage() {
   })
   const iconOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.icon ?? faMagnifyingGlass
   const [query, setQuery] = useState('')
+  const [setupPlatform, setSetupPlatform] = useState<Platform | null>(null)
   const [keyDialog, setKeyDialog] = useState<{ open: boolean; provider: KeyProvider | null }>({ open: false, provider: null })
   const running = workspaceState === 'ready' || workspaceState === 'reconnecting' || workspaceState === 'offline'
 
@@ -131,6 +132,7 @@ export function ConnectionsPage() {
                   <button
                     type="button"
                     disabled={!running}
+                    onClick={() => setSetupPlatform(platform)}
                     className="relative mt-3 h-8 rounded-lg bg-white px-2.5 text-xs font-bold text-[#0D2A4C] shadow-[0_3px_0_#1A5FC8] transition-transform active:not-disabled:translate-y-px disabled:bg-white disabled:text-[#0D2A4C]/60"
                     title={running ? `Log in to ${platform.label} and approve access` : 'Connect a workspace first'}
                   >
@@ -197,6 +199,27 @@ export function ConnectionsPage() {
         providers={EXTENSION_PROVIDERS}
         onClose={() => setKeyDialog({ open: false, provider: null })}
       />
+      {setupPlatform ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0D2A4C]/45 backdrop-blur-[2px] sm:items-center sm:p-6" onMouseDown={() => setSetupPlatform(null)}>
+          <div role="dialog" aria-modal="true" aria-labelledby="platform-setup-title" className="w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl" onMouseDown={(event) => event.stopPropagation()}>
+            <div className="flex items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#2A8CFF]">
+                <FontAwesomeIcon icon={setupPlatform.icon} className="size-[1.1rem]" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 id="platform-setup-title" className="text-base font-bold text-slate-900">Connect {setupPlatform.label} in your workspace</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-600">Account sign-in runs inside your selected workspace so its session stays there. Open that workspace’s terminal and run:</p>
+              </div>
+            </div>
+            <code className="mt-5 block overflow-x-auto rounded-xl bg-[#0D2A4C] px-4 py-3 text-sm text-white">{PLATFORM_SETUP_COMMAND}</code>
+            <p className="mt-3 text-xs leading-5 text-slate-500">Choose {setupPlatform.label} in the guided setup. When it finishes, keep <code className="rounded bg-slate-100 px-1">log runtime connect</code> running and this page will show the account.</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button type="button" onClick={() => setSetupPlatform(null)} className="h-10 rounded-lg px-3 text-sm font-bold text-slate-600 hover:bg-slate-100">Close</button>
+              <button type="button" onClick={() => navigator.clipboard?.writeText(PLATFORM_SETUP_COMMAND)} className="h-10 rounded-lg bg-[#2A8CFF] px-4 text-sm font-bold text-white hover:bg-[#1F6FE6]">Copy command</button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </ConsoleLayout>
   )
 }

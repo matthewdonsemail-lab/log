@@ -15,15 +15,15 @@ export const MCP_INSTALL_WINDOWS = 'irm https://log.listeningkit.com/install.ps1
 export type McpClient = { id: string; label: string; icon: string; lines: string[]; note: string }
 
 export const MCP_CLIENTS: McpClient[] = [
-  { id: 'claude', label: 'Claude Code', icon: '/logos/tools/claude-desktop.svg', lines: ['claude mcp add log -- logMcp'], note: 'You add it once. logMcp reloads its own code when log changes, so you never restart Claude Code for new code.' },
+  { id: 'claude', label: 'Claude Code', icon: '/logos/tools/claude-desktop.svg', lines: ['claude mcp add --transport http log https://mcp.listeningkit.com/mcp'], note: 'Add the hosted native MCP once. Your browser opens to sign in, select your team and approve the connection.' },
   { id: 'codex', label: 'Codex', icon: '/logos/tools/chatgpt.svg', lines: ['codex mcp add log -- logMcp'], note: 'The same server, added to Codex.' },
   { id: 'cursor', label: 'Cursor', icon: '/logos/tools/cursor.svg', lines: ['{ "mcpServers": { "log": { "command": "logMcp" } } }'], note: 'In ~/.cursor/mcp.json, or .cursor/mcp.json in a project.' },
   { id: 'http', label: 'Over HTTP', icon: '/logos/tools/mcp.svg', lines: ['logMcp --http --port 7337', 'claude mcp add --transport http log http://127.0.0.1:7337/mcp'], note: 'For a client that can’t start a process. Off your own machine it won’t start without a token (LOG_MCP_TOKEN).' },
 ]
 
 export const MCP_STEPS: [PlayStep, PlayStep, PlayStep] = [
-  { title: 'Install log', body: 'One line installs Bun if you need it, the log and logMcp commands, and the Python the platform engines run on. Your accounts stay on your machine.' },
-  { title: 'Add logMcp to your agent', body: 'One command for Claude Code or Codex, or one entry in Cursor’s mcp.json. Any other MCP client runs logMcp as a stdio server with no arguments.' },
+  { title: 'Create your account', body: 'Sign in with your email, create or select your team, then pair the cloud workspace where your account sessions and conversations stay.' },
+  { title: 'Add the native MCP', body: 'Point Claude Code or another MCP client at https://mcp.listeningkit.com/mcp, then approve the team it may use.' },
   { title: 'Ask in plain words', body: 'Your agent’s first call loads log’s guide, which lists every use case and how to ask for it. Then say what you want, like “answer everyone waiting in my dms”.' },
 ]
 
@@ -92,7 +92,7 @@ export const MCP_FIND_TOOLS = [
 export const MCP_FAQ: FaqItem[] = [
   {
     q: 'What is the log MCP?',
-    a: 'A free, open-source MCP server that gives your AI agent every log command. Claude Code, Codex or Cursor can then read and answer your DMs on X, Discord, Slack, Instagram and Reddit, from your own accounts, in your own voice.',
+    a: 'A native remote MCP connection that gives your AI agent log’s tools. Sign in once, select your team, pair your workspace and approve the client; your account sessions remain in that workspace.',
   },
   {
     q: 'Which agents does it work with?',
