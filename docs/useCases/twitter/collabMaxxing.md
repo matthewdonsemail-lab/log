@@ -16,7 +16,7 @@ Say: **"go on docs/useCases/twitter/collabMaxxing.md"**, and say who it's for th
 ```mermaid
 flowchart TD
   s0["1. Who: everyone waiting on the owner and everyone who opened his…<br/><i>twitterDms, search, discordChats</i>"]
-  s1["2. Read each one's full context right now: the whole thread (old D…<br/><i>twitterDms, discordRead</i>"]
+  s1["2. Read each one's full context right now: their whole conversatio…<br/><i>twitterDms, discordRead</i>"]
   s2["3. Sort each person: keen (said yes to working together), scoping…<br/><i>the agent</i>"]
   s3["4. Draft the one next move for their bucket, in the owner's words…<br/><i>voice</i>"]
   s4["5. Gate each draft against the same person, and rewrite until it p…<br/><i>voice</i>"]
@@ -34,7 +34,7 @@ flowchart TD
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who: everyone waiting on the owner and everyone who opened his last message, plus the missed openings. The missed openings are threads in the local store where they wrote last, or said something with a deal in it (hiring, a retainer, a price, "lets do it", an intro), and nobody answered. Keep the real people. Drop spam, cold pitches at the owner, group banter and notification bots | `twitterDms` { account, waiting: true, limit: "200" }, `search` { query }, `discordChats` | a short list: who, what they said last, and what the opening is |
-| 2 | Read each one's full context right now: the whole thread (old DM and X Chat merged) and what they did on the owner's posts. On Discord, read the chat | `twitterDms` { account, with: "<handle>" }, `discordRead` | what they do, what they asked, and where the talk stands |
+| 2 | Read each one's full context right now: their whole conversation and what they did on the owner's posts. On Discord, read the chat | `twitterDms` { account, with: "<handle>" }, `discordRead` | what they do, what they asked, and where the talk stands |
 | 3 | Sort each person: **keen** (said yes to working together), **scoping** (has a need, hasn't said what), **skint** (said they can't pay), **friend** (crew, not a lead), **cold** (never talked). Each gets a different next message | the agent | one bucket per person |
 | 4 | Draft the one next move for their bucket, in the owner's words for that person. **Scoping:** get them talking about what they do, how they sell and what they spend, with one question and often none. Ask what it looks like in 6 months. **Keen:** position the collab: it's all open source and free, you get the outcome, I make content about us doing it, would be lit to properly collab. Let them lead on what's first. **Skint:** be nice, no pressure, ask nothing about money, and leave the door open. **Friend:** react to what they said and share something of the owner's, never a script. **Cold:** the opener only ([networkMaxing.md](networkMaxing.md) step 10) | `voice` { to, with, context } | one draft per person |
 | 5 | Gate each draft against the same person, and rewrite until it passes. A draft with a price, a retainer figure or a meeting waits for the owner: say what it would offer and let him give the number | `voice` { to, with, context, text } | the gate passes, or it's held for the owner with why |

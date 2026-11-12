@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 501 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 502 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -383,7 +383,7 @@ Before anything goes to a person on X, log reads that person's full context thro
 
 Every message log sends as matt passes the voice gate first (`log voice`, MCP `voice`). The gate asks SubQ whether matt typed it himself, reading his own writing across all his conversations. Rules 90, 98, 111 and 112.
 
-- **REQ-VOICE-01** Every draft is read against matt's writing across all his conversations
+- **REQ-VOICE-01** Every draft is read against matt's writing
 - **REQ-VOICE-02** A chat with the person adds that chat's evidence
 - **REQ-VOICE-03** Phrases matt never says fail the draft
 - **REQ-VOICE-04** A first message is only the opener
@@ -398,6 +398,7 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-13** A voice note is graded as spoken and must build on the conversation
 - **REQ-VOICE-14** matt can send one dm over the gate's refusal
 - **REQ-VOICE-19** A task is gated as a brief, and its files go with it
+- **REQ-VOICE-20** A send reads one conversation card, kept up to date as messages land
 - **REQ-VOICE-18** A draft that just passed is not sent to SubQ again
 - **REQ-VOICE-17** A refused draft says where to look before it is rewritten
 - **REQ-VOICE-16** No two messages read alike

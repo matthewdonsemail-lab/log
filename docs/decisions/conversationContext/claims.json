@@ -1,0 +1,10 @@
+[
+  { "id": "nothingEmbeddedOnArrival", "statement": "Today nothing about a message's meaning is computed when it arrives. Only its row and its keyword index entry are written." },
+  { "id": "voiceIndexParsedTwice", "statement": "Every gate attempt parses the 19.9 MB voice index pairs.json twice." },
+  { "id": "subqIsMinorityOfTime", "statement": "The SubQ request is under a third of the voice reading's time. Most gate time is local work and Jina calls." },
+  { "id": "evidenceFromEveryPlatform", "statement": "The gate sends SubQ matt's replies from conversations on every platform, not only this chat." },
+  { "id": "guideIsXOnly", "statement": "The writing guide the gate sends was written from matt's X posts, and is sent whole for every chat on every platform." },
+  { "id": "noConversationState", "statement": "log.db keeps no per-conversation record of what is open, what was asked, or what matt already said." },
+  { "id": "formOfQuestionsFails", "statement": "In the Invoker case, drafts written as a list of questions scored voice 0.15 to 0.22 against a pass of 0.8." },
+  { "id": "ownerAppendsEveryMessage", "statement": "Each account's one owner already appends every incoming message to log.db in one transaction, so it is the place a per-message background step would run." }
+]

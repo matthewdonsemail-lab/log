@@ -6,7 +6,9 @@ import { roomOf } from "../../../voice/room/index.ts";
 import type { Room, RoomKind } from "../../../voice/room/index.ts";
 import { NOT_SAID, REACTION } from "../../../inbox/lastWord/index.ts";
 import { join } from "node:path";
-import { storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
+import { db, storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
+import { cardFor, renderCard, scopedToThisChat } from "../../../inbox/card/index.ts";
+import type { ConversationCard } from "../../../inbox/card/index.ts";
 import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
 import { firstClonedAt, mattsOwnVoiceNotes, mattsRecordings } from "../../../extensions/voiceClone/index.ts";
 import { hashOf, readTranscript } from "../../../media/voiceNotes/index.ts";
@@ -39,7 +41,7 @@ export const VOICE_USAGE = [
   "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; the gate builds it itself when it is missing or older than the voice index; rule 112)",
   "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
   "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
-  "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Every gate also reads his nearest real replies, closest wording and style across all his conversations, every platform, beside the chat's own, never the writing guide alone.",
+  "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Without --text it starts with the chat's conversation card (who it is with, how it started, what they said that matt hasn't answered, what matt already asked and said there, the last messages), kept in log.db and refreshed in the background as each message lands in a chat being worked. The gate reads the same card, and reads matt's replies from other conversations only while he has written fewer than 5 messages in this one.",
   "--spoken gates a voice note: it is graded as said out loud, so its length and punctuation never count against it, and it must build on what they are talking about across the whole chat, adding to it, never repeating what matt already told them (buildsOn, 0.7 to pass, rule 149). Every voice note send is gated this way.",
   "Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.",
 ].join("\n");
@@ -89,7 +91,7 @@ export function renderVoice(reading: VoiceReading & { notHere?: string[]; aiTell
   return `log voice: @${reading.to.replace(/^@/, "")} ${reading.pass ? "PASS" : "FAIL"}: ${scores}${never}${notHere}${watermark}${ai}${phrases}${scrambler}${reading.pass ? "" : "\n  rewrite it in matt's words and gate it again"}`;
 }
 
-function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; target: VoiceTarget })[] {
+function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platform: string; account: string; conversationId: string; target: VoiceTarget })[] {
   const seen = new Set<string>();
   return conversations.filter((c) => {
     const key = c.platform === "twitter" ? `twitter:${[...c.with].sort().join(",").toLowerCase()}` : `${c.platform}:${c.conversationId}`;
@@ -98,8 +100,18 @@ function chatsOf(conversations: readonly Conversation[]): (DiscordChat & { platf
     return true;
   }).map((c) => {
     const named = /^group (.+)$/.exec(c.box)?.[1] ?? null;
-    return { id: c.platform === "twitter" ? `twitter:${[...c.with].sort().join(",").toLowerCase()}` : `${c.platform}:${c.conversationId}`, kind: c.with.length > 1 || c.box.startsWith("group") ? "group" : "dm", name: named, members: c.with, platform: c.platform, target: c.platform === "twitter" ? { with: c.with } : { platform: c.platform, conversationId: c.conversationId, with: c.with } };
+    return { id: c.platform === "twitter" ? `twitter:${[...c.with].sort().join(",").toLowerCase()}` : `${c.platform}:${c.conversationId}`, kind: c.with.length > 1 || c.box.startsWith("group") ? "group" : "dm", name: named, members: c.with, platform: c.platform, account: c.account, conversationId: c.conversationId, target: c.platform === "twitter" ? { with: c.with } : { platform: c.platform, conversationId: c.conversationId, with: c.with } };
   });
+}
+
+const NEAR_WHEN_SCOPED = 4;
+
+function cardOrNull(platform: string, account: string, who: { conversationId?: string | null; userId?: string | null; handle?: string | null }): ConversationCard | null {
+  try {
+    return cardFor(db(), platform, account, who);
+  } catch {
+    return null;
+  }
 }
 
 export function profileLine(profile: VoiceProfile): string {
@@ -111,14 +123,15 @@ function nearLines(near: readonly NearPair[]): string[] {
   return near.flatMap((n) => [`  [${n.tier}] ${n.pair.chat} (${n.pair.platform}, ${String(n.pair.at ?? "").slice(0, 10)})`, ...(n.pair.said ? [`    ${n.pair.saidBy ?? "them"}: ${n.pair.said.replace(/\n/g, " / ").slice(0, 200)}`] : []), `    matt: ${n.pair.reply.replace(/\n/g, " / ").slice(0, 240)}`]);
 }
 
-async function evidenceFor(context: CommandContext, said: string, chat: string, draft = ""): Promise<{ ok: true; evidence: VoiceEvidence; near: NearPair[]; wording: NearPair[]; recent: VoicePair[]; profile: VoiceProfile | null; label: string } | { ok: false; result: CommandResult }> {
+async function evidenceFor(context: CommandContext, said: string, chat: string, draft = ""): Promise<{ ok: true; evidence: VoiceEvidence; near: NearPair[]; wording: NearPair[]; recent: VoicePair[]; profile: VoiceProfile | null; label: string; card: ConversationCard | null } | { ok: false; result: CommandResult }> {
   const chats = chatsOf(loadConversations());
   const byId = /^\d{15,22}$/.test(chat) ? chats.find((c) => c.id.endsWith(`:${chat}`)) : undefined;
   const found = byId ? matchChat(chats, byId.id) : matchChat(chats, chat);
   if (!found.ok) return { ok: false, result: refuse("voice", found.code, [found.detail, ...found.candidates.map((c) => `  ${c.id}  ${c.label}`)].join("\n")) };
   const picked = chats.find((c) => c.id === found.chat.id)!;
   const label = `${found.label} (${picked.platform} ${picked.kind})`;
-  context.err(`voice: "${chat}" is ${label}; finding matt's real replies there`);
+  context.err(`voice: "${chat}" is ${label}; reading its conversation card and matt's real replies there`);
+  const card = cardOrNull(picked.platform, picked.account, { conversationId: picked.conversationId });
   const index = await openVoiceIndex(voiceDeps.embedder());
   try {
     const near = await nearestPairs(index, said, picked.target);
@@ -132,6 +145,7 @@ async function evidenceFor(context: CommandContext, said: string, chat: string, 
       recent,
       profile,
       label,
+      card,
       evidence: {
         chat: label,
         profile,
@@ -247,16 +261,22 @@ export const voiceCommand: Command = {
     if (!guide) return refuse("voice", "voiceGuideMissing", `matt's writing guide isn't at ${guidePath()}`);
     try {
       let evidence: VoiceEvidence | undefined;
+      let card: ConversationCard | null = null;
       if (chat) {
         const found = await evidenceFor(context, said || text, chat, text);
         if (!found.ok && !text.trim()) return found.result;
-        if (found.ok) evidence = found.evidence;
+        if (found.ok) {
+          evidence = found.evidence;
+          card = found.card;
+        }
         if (found.ok && !text.trim()) {
-          if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ chat: found.label, profile: found.profile, replies: found.near }, null, 2) };
-          return { code: 0, stdout: [`log voice: how matt writes in ${found.label}`, `  ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, `his latest messages here:`, ...found.recent.map((p) => `    matt: ${p.reply.replace(/\n/g, " / ").slice(0, 240)}`), `his real replies to things like this, nearest first (same chat, same person, same platform, anywhere):`, ...nearLines(found.near), "Draft from these, then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
+          const scoped = scopedToThisChat(found.card);
+          const near = (scoped ? found.near.filter((n) => n.tier === "sameChat" || n.tier === "samePerson") : found.near).slice(0, NEAR_WHEN_SCOPED);
+          if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ chat: found.label, card: found.card, profile: found.profile, replies: near }, null, 2) };
+          return { code: 0, stdout: [`log voice: ${found.label}`, found.card ? renderCard(found.card) : "no conversation card: nothing of this chat is in log.db yet", `how matt writes here: ${found.profile ? profileLine(found.profile) : "no messages of his there yet"}`, ...(near.length ? [`his real replies to things like this${scoped ? ", from this chat and person only" : ""}:`, ...nearLines(near)] : []), "Write from the card: answer what is open in one or two short lines, in his words from this chat. Never a list of questions, never what he already asked or said, nothing from another conversation. Then gate it: log voice --to <who> --with <chat> --context \"<what they said>\" --text \"<draft>\""].join("\n") };
         }
       }
-      const reading = await gateReading(context, { to, text, said, guide, ...(evidence ? { evidence } : {}), ...(parsed.flags["spoken"] === true ? { spoken: true } : {}) });
+      const reading = await gateReading(context, { to, text, said, guide, card, ...(evidence ? { evidence } : {}), ...(parsed.flags["spoken"] === true ? { spoken: true } : {}) });
       if (reading.pass && text.trim()) recordPass(text, to, reading.voice);
       if (parsed.flags["json"]) return { code: reading.pass ? 0 : 1, stdout: JSON.stringify(reading, null, 2) };
       return { code: reading.pass ? 0 : 1, stdout: renderVoice(reading) };
@@ -297,16 +317,17 @@ function cosineOf(a: ArrayLike<number>, b: ArrayLike<number>): number {
   return na && nb ? dot / Math.sqrt(na * nb) : 0;
 }
 
-export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[]; spoken?: boolean; room?: Room }): Promise<GateReading> {
+export async function gateReading(context: CommandContext, draft: { to: string; text: string; said: string; guide: string; evidence?: VoiceEvidence; ranked?: RankedMoment[]; spoken?: boolean; room?: Room; card?: ConversationCard | null }): Promise<GateReading> {
   const { to, text, said, guide, evidence } = draft;
   const ranked = draft.ranked ?? [];
-  const everywhere = await evidenceAnywhere(context, said, to, text);
-  context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")} against matt's writing across all his conversations${evidence ? ` and his real replies in ${evidence.chat}` : ""}${ranked.length ? `, with ${ranked.length} moment(s) of this chat ranked against what is being answered` : ""}, with his writing guide`);
+  const scoped = scopedToThisChat(draft.card ?? null);
+  const everywhere = scoped ? undefined : await evidenceAnywhere(context, said, to, text);
+  context.err(`voice: SubQ reading the draft for @${to.replace(/^@/, "")}${draft.card ? " against this chat's conversation card" : ""}${evidence ? ` and his real replies in ${evidence.chat}` : ""}${scoped ? "" : " and his writing across his other conversations"}${ranked.length ? `, with ${ranked.length} moment(s) of this chat ranked against what is being answered` : ""}, with his writing guide`);
   const phraseIndex = ensurePhraseIndex(context);
   if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
   const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
   const scrambler = voiceDeps.scrambler(text);
-  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
+  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(draft.card ? { card: renderCard(draft.card) } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
   const notHere = evidence && !draft.spoken ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
   await ensureAiIndex(context);
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
@@ -397,9 +418,10 @@ async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ o
   const held = timedSync("voice.chatContext", () => saidOnly(chatContextOf(send.platform, send.account, who).messages));
   const said = send.said ?? momentAnswered(held);
   const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, roomKindOf(send), held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const card = timedSync("voice.card", () => cardOrNull(send.platform, send.account, who));
   const ranked = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const evidence = await timed("voice.evidence", () => chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text));
-  const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
+  const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, card, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
   if (reading.pass) {
     recordPass(send.text, send.to, reading.voice);
     return { ok: true, line: `voice gate: passed for ${handle ? `@${handle}` : send.to} (voice ${reading.voice.toFixed(2)})` };
@@ -431,9 +453,9 @@ export function rewriteSteps(send: { to: string; said?: string }): string[] {
   const about = (send.said ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
   return [
     "Before you rewrite it, look, don't guess (rule 158):",
-    `  1. \`voice\` { to: "${send.to}", with: "${send.to}"${about ? `, context: "${about}"` : ""} } with no text: matt's own latest lines to them and his real replies to things like it.`,
-    `  2. \`search\` { query: "${about || "what they said"}" }: how matt answered the same kind of thing anywhere, every platform.`,
-    "  3. Write it from those, in his words and his length, answering what they actually said. Make it read unlike anything else you have sent today: a platform reads a run of near-copies as automation.",
+    `  1. \`voice\` { to: "${send.to}", with: "${send.to}"${about ? `, context: "${about}"` : ""} } with no text: this chat's conversation card (what they said that is still open, what matt already asked and said there) and his real replies in this chat.`,
+    "  2. Answer only what is open on the card, in one or two short lines in his words from this chat: never a list of questions, never what he already asked, nothing from another conversation.",
+    "  3. Make it read unlike anything else you have sent today: a platform reads a run of near-copies as automation.",
   ];
 }
 

@@ -1,0 +1,671 @@
+{
+  "model": "subq-snap-1.1",
+  "stateChars": 87486,
+  "choices": {
+    "scopedToThisChat": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.0013657259987667203,
+        "scopedAtSend": 0.04492085799574852,
+        "indexOnArrival": 0.029966751113533974,
+        "conversationCard": 0.9237467646598816
+      },
+      "confidence": 0.8983290195465088
+    },
+    "shortForTheDrafter": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.00019561157387215644,
+        "scopedAtSend": 0.004396836739033461,
+        "indexOnArrival": 0.004964596126228571,
+        "conversationCard": 0.9904429316520691
+      },
+      "confidence": 0.9872572422027588
+    },
+    "sendLatency": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.0008791697327978909,
+        "scopedAtSend": 0.008604159578680992,
+        "indexOnArrival": 0.08228598535060883,
+        "conversationCard": 0.9082306623458862
+      },
+      "confidence": 0.8776408831278483
+    },
+    "passesFirstTime": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.0007548821740783751,
+        "scopedAtSend": 0.013280258513987064,
+        "indexOnArrival": 0.020352112129330635,
+        "conversationCard": 0.9656127095222473
+      },
+      "confidence": 0.9541502793629965
+    },
+    "onlyWhenNeeded": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.002198366913944483,
+        "scopedAtSend": 0.34127143025398254,
+        "indexOnArrival": 0.011857586912810802,
+        "conversationCard": 0.6446726322174072
+      },
+      "confidence": 0.5262301762898763
+    },
+    "fitsLogRules": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.0428621843457222,
+        "scopedAtSend": 0.19676023721694946,
+        "indexOnArrival": 0.15082678198814392,
+        "conversationCard": 0.6095507740974426
+      },
+      "confidence": 0.4794010321299235
+    },
+    "buildCost": {
+      "type": "choice",
+      "choice": "today",
+      "probabilities": {
+        "today": 0.7919607162475586,
+        "scopedAtSend": 0.13994570076465607,
+        "indexOnArrival": 0.03381016105413437,
+        "conversationCard": 0.034283462911844254
+      },
+      "confidence": 0.7226142883300781
+    },
+    "overall": {
+      "type": "choice",
+      "choice": "conversationCard",
+      "probabilities": {
+        "today": 0.0010063964873552322,
+        "scopedAtSend": 0.03086194396018982,
+        "indexOnArrival": 0.045183341950178146,
+        "conversationCard": 0.9229483008384705
+      },
+      "confidence": 0.8972644011179606
+    }
+  },
+  "scores": {
+    "today": {
+      "scopedToThisChat": {
+        "type": "score",
+        "score": 0.19197899918071926,
+        "legend": {
+          "0": "Mostly other conversations and global material",
+          "1": "This chat mixed evenly with other conversations",
+          "2": "Mostly this chat, other conversations always added",
+          "3": "This chat, other conversations only when this chat has too little",
+          "4": "Only this chat and what matt said in it"
+        },
+        "probabilities": {
+          "0": 0.8790510892868042,
+          "1": 0.05998453497886658,
+          "2": 0.05480646342039108,
+          "3": 0.0022500420454889536,
+          "4": 0.003907852806150913
+        },
+        "confidence": 0.840017500682734
+      },
+      "shortForTheDrafter": {
+        "type": "score",
+        "score": 0.11239999916870147,
+        "legend": {
+          "0": "Many KB of guide, history and chat",
+          "1": "Several KB with no structure",
+          "2": "A few KB, the chat plus extras",
+          "3": "Under a KB, mostly the chat",
+          "4": "A few hundred words: what's open and the last messages"
+        },
+        "probabilities": {
+          "0": 0.9146859049797058,
+          "1": 0.0638062059879303,
+          "2": 0.017906254157423973,
+          "3": 0.0016252197092399001,
+          "4": 0.0019764064345508814
+        },
+        "confidence": 0.9063333340260821
+      },
+      "sendLatency": {
+        "type": "score",
+        "score": 1.0133686577901244,
+        "legend": {
+          "0": "Slower than today",
+          "1": "Same as today",
+          "2": "A little faster",
+          "3": "About half today's time",
+          "4": "Mostly just the SubQ call (about 1 s)"
+        },
+        "probabilities": {
+          "0": 0.00793011486530304,
+          "1": 0.9801859855651855,
+          "2": 0.005910361651331186,
+          "3": 0.0025321561843156815,
+          "4": 0.003441370092332363
+        },
+        "confidence": 0.9756425840314478
+      },
+      "passesFirstTime": {
+        "type": "score",
+        "score": 0.9191141971386969,
+        "legend": {
+          "0": "More rewrites than today",
+          "1": "Same as today",
+          "2": "Somewhat fewer rewrites",
+          "3": "Usually passes in one or two",
+          "4": "Usually passes first time"
+        },
+        "probabilities": {
+          "0": 0.11455165594816208,
+          "1": 0.8635634779930115,
+          "2": 0.01271902583539486,
+          "3": 0.006550634745508432,
+          "4": 0.0026151908095926046
+        },
+        "confidence": 0.8764853969138736
+      },
+      "onlyWhenNeeded": {
+        "type": "score",
+        "score": 3.8265018928796053,
+        "legend": {
+          "0": "Heavy work for every message on every account",
+          "1": "Heavy work for many messages",
+          "2": "Light work for every message",
+          "3": "Light work only where needed",
+          "4": "Nothing extra, or only for chats being worked"
+        },
+        "probabilities": {
+          "0": 0.004896095022559166,
+          "1": 0.008660772815346718,
+          "2": 0.03604120761156082,
+          "3": 0.05584881454706192,
+          "4": 0.8945530652999878
+        },
+        "confidence": 0.8554183930779496
+      },
+      "fitsLogRules": {
+        "type": "score",
+        "score": 3.8018843345344067,
+        "legend": {
+          "0": "Breaks one or more rules",
+          "1": "Bends a rule",
+          "2": "Fits, with a new store or process outside log.db",
+          "3": "Fits, adds a table to log.db",
+          "4": "Fits inside the existing owner and log.db"
+        },
+        "probabilities": {
+          "0": 0.011215247213840485,
+          "1": 0.01468857005238533,
+          "2": 0.040595367550849915,
+          "3": 0.0279984250664711,
+          "4": 0.905502438545227
+        },
+        "confidence": 0.8349034506827593
+      },
+      "buildCost": {
+        "type": "score",
+        "score": 3.948015430243686,
+        "legend": {
+          "0": "A rewrite of the gate and the inbox",
+          "1": "Large, many domains",
+          "2": "Medium",
+          "3": "Small, one or two domains",
+          "4": "Almost nothing"
+        },
+        "probabilities": {
+          "0": 0.0014033755287528038,
+          "1": 0.002452221931889653,
+          "2": 0.009296925738453865,
+          "3": 0.02042057365179062,
+          "4": 0.9664269089698792
+        },
+        "confidence": 0.9566795058005179
+      }
+    },
+    "scopedAtSend": {
+      "scopedToThisChat": {
+        "type": "score",
+        "score": 3.07277097919723,
+        "legend": {
+          "0": "Mostly other conversations and global material",
+          "1": "This chat mixed evenly with other conversations",
+          "2": "Mostly this chat, other conversations always added",
+          "3": "This chat, other conversations only when this chat has too little",
+          "4": "Only this chat and what matt said in it"
+        },
+        "probabilities": {
+          "0": 0.0003641777148004621,
+          "1": 0.0008247289224527776,
+          "2": 0.00797074381262064,
+          "3": 0.9073563814163208,
+          "4": 0.08348390460014343
+        },
+        "confidence": 0.9215028004982742
+      },
+      "shortForTheDrafter": {
+        "type": "score",
+        "score": 2.824104566127062,
+        "legend": {
+          "0": "Many KB of guide, history and chat",
+          "1": "Several KB with no structure",
+          "2": "A few KB, the chat plus extras",
+          "3": "Under a KB, mostly the chat",
+          "4": "A few hundred words: what's open and the last messages"
+        },
+        "probabilities": {
+          "0": 0.001770591945387423,
+          "1": 0.02023141458630562,
+          "2": 0.21080531179904938,
+          "3": 0.6865082383155823,
+          "4": 0.08068445324897766
+        },
+        "confidence": 0.7189463582859995
+      },
+      "sendLatency": {
+        "type": "score",
+        "score": 2.422857940196991,
+        "legend": {
+          "0": "Slower than today",
+          "1": "Same as today",
+          "2": "A little faster",
+          "3": "About half today's time",
+          "4": "Mostly just the SubQ call (about 1 s)"
+        },
+        "probabilities": {
+          "0": 0.001556003582663834,
+          "1": 0.03162764757871628,
+          "2": 0.5334077477455139,
+          "3": 0.4092194139957428,
+          "4": 0.024189138785004616
+        },
+        "confidence": 0.58971887807517
+      },
+      "passesFirstTime": {
+        "type": "score",
+        "score": 2.4005934223532677,
+        "legend": {
+          "0": "More rewrites than today",
+          "1": "Same as today",
+          "2": "Somewhat fewer rewrites",
+          "3": "Usually passes in one or two",
+          "4": "Usually passes first time"
+        },
+        "probabilities": {
+          "0": 0.0026626025792211294,
+          "1": 0.04205451160669327,
+          "2": 0.5382746458053589,
+          "3": 0.38604292273521423,
+          "4": 0.030965212732553482
+        },
+        "confidence": 0.5872057791954527
+      },
+      "onlyWhenNeeded": {
+        "type": "score",
+        "score": 3.9457687380490825,
+        "legend": {
+          "0": "Heavy work for every message on every account",
+          "1": "Heavy work for many messages",
+          "2": "Light work for every message",
+          "3": "Light work only where needed",
+          "4": "Nothing extra, or only for chats being worked"
+        },
+        "probabilities": {
+          "0": 0.00035854883026331663,
+          "1": 0.0005694347200915217,
+          "2": 0.009180372580885887,
+          "3": 0.0327281691133976,
+          "4": 0.9571635127067566
+        },
+        "confidence": 0.954807155202919
+      },
+      "fitsLogRules": {
+        "type": "score",
+        "score": 3.915261943358928,
+        "legend": {
+          "0": "Breaks one or more rules",
+          "1": "Bends a rule",
+          "2": "Fits, with a new store or process outside log.db",
+          "3": "Fits, adds a table to log.db",
+          "4": "Fits inside the existing owner and log.db"
+        },
+        "probabilities": {
+          "0": 0.0009342089178971946,
+          "1": 0.003034245688468218,
+          "2": 0.016088491305708885,
+          "3": 0.03972150757908821,
+          "4": 0.9402215480804443
+        },
+        "confidence": 0.9293849475604171
+      },
+      "buildCost": {
+        "type": "score",
+        "score": 2.9578810376115143,
+        "legend": {
+          "0": "A rewrite of the gate and the inbox",
+          "1": "Large, many domains",
+          "2": "Medium",
+          "3": "Small, one or two domains",
+          "4": "Almost nothing"
+        },
+        "probabilities": {
+          "0": 0.0014435657067224383,
+          "1": 0.002276573795825243,
+          "2": 0.2056168168783188,
+          "3": 0.6182813048362732,
+          "4": 0.17238172888755798
+        },
+        "confidence": 0.6775980079352545
+      }
+    },
+    "indexOnArrival": {
+      "scopedToThisChat": {
+        "type": "score",
+        "score": 3.092337782785762,
+        "legend": {
+          "0": "Mostly other conversations and global material",
+          "1": "This chat mixed evenly with other conversations",
+          "2": "Mostly this chat, other conversations always added",
+          "3": "This chat, other conversations only when this chat has too little",
+          "4": "Only this chat and what matt said in it"
+        },
+        "probabilities": {
+          "0": 0.00030705350218340755,
+          "1": 0.000906526402104646,
+          "2": 0.009327230975031853,
+          "3": 0.8850599527359009,
+          "4": 0.10439923405647278
+        },
+        "confidence": 0.9029494347147798
+      },
+      "shortForTheDrafter": {
+        "type": "score",
+        "score": 2.5933903977274895,
+        "legend": {
+          "0": "Many KB of guide, history and chat",
+          "1": "Several KB with no structure",
+          "2": "A few KB, the chat plus extras",
+          "3": "Under a KB, mostly the chat",
+          "4": "A few hundred words: what's open and the last messages"
+        },
+        "probabilities": {
+          "0": 0.001843645004555583,
+          "1": 0.04351987689733505,
+          "2": 0.3500046730041504,
+          "3": 0.5686660408973694,
+          "4": 0.03596576303243637
+        },
+        "confidence": 0.601215729295897
+      },
+      "sendLatency": {
+        "type": "score",
+        "score": 3.5364491590298712,
+        "legend": {
+          "0": "Slower than today",
+          "1": "Same as today",
+          "2": "A little faster",
+          "3": "About half today's time",
+          "4": "Mostly just the SubQ call (about 1 s)"
+        },
+        "probabilities": {
+          "0": 0.0009159705950878561,
+          "1": 0.0029642232693731785,
+          "2": 0.06251442432403564,
+          "3": 0.32596540451049805,
+          "4": 0.6076399683952332
+        },
+        "confidence": 0.6137076622107998
+      },
+      "passesFirstTime": {
+        "type": "score",
+        "score": 2.624709004536271,
+        "legend": {
+          "0": "More rewrites than today",
+          "1": "Same as today",
+          "2": "Somewhat fewer rewrites",
+          "3": "Usually passes in one or two",
+          "4": "Usually passes first time"
+        },
+        "probabilities": {
+          "0": 0.0021709275897592306,
+          "1": 0.018364379182457924,
+          "2": 0.39268553256988525,
+          "3": 0.5261432528495789,
+          "4": 0.06063595041632652
+        },
+        "confidence": 0.5861974798996622
+      },
+      "onlyWhenNeeded": {
+        "type": "score",
+        "score": 2.201226391363889,
+        "legend": {
+          "0": "Heavy work for every message on every account",
+          "1": "Heavy work for many messages",
+          "2": "Light work for every message",
+          "3": "Light work only where needed",
+          "4": "Nothing extra, or only for chats being worked"
+        },
+        "probabilities": {
+          "0": 0.002570878714323044,
+          "1": 0.006304182577878237,
+          "2": 0.8160600066184998,
+          "3": 0.1374576836824417,
+          "4": 0.037607286125421524
+        },
+        "confidence": 0.8132348367168257
+      },
+      "fitsLogRules": {
+        "type": "score",
+        "score": 3.8677217646036297,
+        "legend": {
+          "0": "Breaks one or more rules",
+          "1": "Bends a rule",
+          "2": "Fits, with a new store or process outside log.db",
+          "3": "Fits, adds a table to log.db",
+          "4": "Fits inside the existing owner and log.db"
+        },
+        "probabilities": {
+          "0": 0.0008942061685957015,
+          "1": 0.0033070913050323725,
+          "2": 0.015792017802596092,
+          "3": 0.08719626069068909,
+          "4": 0.8928104639053345
+        },
+        "confidence": 0.889768004262199
+      },
+      "buildCost": {
+        "type": "score",
+        "score": 2.3420247212052345,
+        "legend": {
+          "0": "A rewrite of the gate and the inbox",
+          "1": "Large, many domains",
+          "2": "Medium",
+          "3": "Small, one or two domains",
+          "4": "Almost nothing"
+        },
+        "probabilities": {
+          "0": 0.002953872550278902,
+          "1": 0.02222510427236557,
+          "2": 0.6261449456214905,
+          "3": 0.3271942734718323,
+          "4": 0.021481726318597794
+        },
+        "confidence": 0.6680911870983739
+      }
+    },
+    "conversationCard": {
+      "scopedToThisChat": {
+        "type": "score",
+        "score": 3.8886582021950744,
+        "legend": {
+          "0": "Mostly other conversations and global material",
+          "1": "This chat mixed evenly with other conversations",
+          "2": "Mostly this chat, other conversations always added",
+          "3": "This chat, other conversations only when this chat has too little",
+          "4": "Only this chat and what matt said in it"
+        },
+        "probabilities": {
+          "0": 0.0005545558524318039,
+          "1": 0.0008230981766246259,
+          "2": 0.004191024228930473,
+          "3": 0.09827212244272232,
+          "4": 0.8961591720581055
+        },
+        "confidence": 0.9072152592998464
+      },
+      "shortForTheDrafter": {
+        "type": "score",
+        "score": 3.9898303295849473,
+        "legend": {
+          "0": "Many KB of guide, history and chat",
+          "1": "Several KB with no structure",
+          "2": "A few KB, the chat plus extras",
+          "3": "Under a KB, mostly the chat",
+          "4": "A few hundred words: what's open and the last messages"
+        },
+        "probabilities": {
+          "0": 0.00007315751281566918,
+          "1": 0.00009347641753265634,
+          "2": 0.0011225859634578228,
+          "3": 0.007351581938564777,
+          "4": 0.9913592338562012
+        },
+        "confidence": 0.9915251556922158
+      },
+      "sendLatency": {
+        "type": "score",
+        "score": 3.9363565308158286,
+        "legend": {
+          "0": "Slower than today",
+          "1": "Same as today",
+          "2": "A little faster",
+          "3": "About half today's time",
+          "4": "Mostly just the SubQ call (about 1 s)"
+        },
+        "probabilities": {
+          "0": 0.00035058677894994617,
+          "1": 0.0006373033975251019,
+          "2": 0.01045187097042799,
+          "3": 0.0394253134727478,
+          "4": 0.949134886264801
+        },
+        "confidence": 0.9469639060650176
+      },
+      "passesFirstTime": {
+        "type": "score",
+        "score": 3.7047783855814487,
+        "legend": {
+          "0": "More rewrites than today",
+          "1": "Same as today",
+          "2": "Somewhat fewer rewrites",
+          "3": "Usually passes in one or two",
+          "4": "Usually passes first time"
+        },
+        "probabilities": {
+          "0": 0.0008872888865880668,
+          "1": 0.0021935023833066225,
+          "2": 0.01488282810896635,
+          "3": 0.2553263008594513,
+          "4": 0.7267100811004639
+        },
+        "confidence": 0.7539819835219532
+      },
+      "onlyWhenNeeded": {
+        "type": "score",
+        "score": 3.727927329717204,
+        "legend": {
+          "0": "Heavy work for every message on every account",
+          "1": "Heavy work for many messages",
+          "2": "Light work for every message",
+          "3": "Light work only where needed",
+          "4": "Nothing extra, or only for chats being worked"
+        },
+        "probabilities": {
+          "0": 0.0008213664405047894,
+          "1": 0.0010252862703055143,
+          "2": 0.012423287145793438,
+          "3": 0.24086467921733856,
+          "4": 0.744865357875824
+        },
+        "confidence": 0.773272851598449
+      },
+      "fitsLogRules": {
+        "type": "score",
+        "score": 3.834976053563878,
+        "legend": {
+          "0": "Breaks one or more rules",
+          "1": "Bends a rule",
+          "2": "Fits, with a new store or process outside log.db",
+          "3": "Fits, adds a table to log.db",
+          "4": "Fits inside the existing owner and log.db"
+        },
+        "probabilities": {
+          "0": 0.0007471831049770117,
+          "1": 0.0019805727060884237,
+          "2": 0.002343121450394392,
+          "3": 0.15140730142593384,
+          "4": 0.8435218334197998
+        },
+        "confidence": 0.8624800042792533
+      },
+      "buildCost": {
+        "type": "score",
+        "score": 2.1425760462880135,
+        "legend": {
+          "0": "A rewrite of the gate and the inbox",
+          "1": "Large, many domains",
+          "2": "Medium",
+          "3": "Small, one or two domains",
+          "4": "Almost nothing"
+        },
+        "probabilities": {
+          "0": 0.0042981794103980064,
+          "1": 0.08246725052595139,
+          "2": 0.6998401284217834,
+          "3": 0.19314886629581451,
+          "4": 0.02024548500776291
+        },
+        "confidence": 0.7294137952849269
+      }
+    }
+  },
+  "claims": {
+    "nothingEmbeddedOnArrival": {
+      "type": "noul",
+      "noul": 0.9980905652046204
+    },
+    "voiceIndexParsedTwice": {
+      "type": "noul",
+      "noul": 0.9984982013702393
+    },
+    "subqIsMinorityOfTime": {
+      "type": "noul",
+      "noul": 0.9995185136795044
+    },
+    "evidenceFromEveryPlatform": {
+      "type": "noul",
+      "noul": 0.9990392923355103
+    },
+    "guideIsXOnly": {
+      "type": "noul",
+      "noul": 0.9962067604064941
+    },
+    "noConversationState": {
+      "type": "noul",
+      "noul": 0.9968701004981995
+    },
+    "formOfQuestionsFails": {
+      "type": "noul",
+      "noul": 0.9799519181251526
+    },
+    "ownerAppendsEveryMessage": {
+      "type": "noul",
+      "noul": 0.9981538653373718
+    }
+  },
+  "inputTokens": 146041
+}

@@ -263,6 +263,14 @@ export const MIGRATIONS: readonly Migration[] = [
       handle.exec('CREATE INDEX IF NOT EXISTS operationsByState ON operations (state, updatedAt)')
     },
   },
+  {
+    version: 19,
+    name: 'conversationCards',
+    apply(handle) {
+      handle.exec('CREATE TABLE IF NOT EXISTS conversationCards (key TEXT PRIMARY KEY, platform TEXT NOT NULL, account TEXT NOT NULL, throughSeq INTEGER NOT NULL, card TEXT NOT NULL, builtAt TEXT NOT NULL) WITHOUT ROWID')
+      handle.exec('CREATE INDEX IF NOT EXISTS conversationCardsByAccount ON conversationCards (platform, account)')
+    },
+  },
 ]
 
 export const SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version

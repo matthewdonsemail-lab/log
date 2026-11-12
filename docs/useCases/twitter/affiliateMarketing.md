@@ -16,7 +16,7 @@ flowchart TD
   s0["0. Session check<br/><i>twitterSessionCheck</i>"]
   s1["1. Read every conversation, X Chat included, and index it<br/><i>searchIndex, log</i>"]
   s2["2. Find the conversations worth a follow-up: anyone who asked abou…<br/><i>search</i>"]
-  s3["3. Read each person's whole history before writing a word: the old…<br/><i>twitterDms</i>"]
+  s3["3. Read each person's whole conversation before writing a word<br/><i>twitterDms</i>"]
   s4["4. Sort them: owes you an answer, you owe them something (a doc, a…<br/><i>a table for the owner</i>"]
   s5["5. Write one message per person: pick up exactly where the thread…<br/><i>house style</i>"]
   s6["6. Tool companies: ask for the partner, referral or creator progra…<br/><i>twitterDm, twitterDmLive</i>"]
@@ -38,7 +38,7 @@ flowchart TD
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
 | 1 | Read every conversation, X Chat included, and index it | `searchIndex` { account } (`log search index`) | "N conversations, M messages" and the chunk count |
 | 2 | Find the conversations worth a follow-up: anyone who asked about the tool, offered work, a call or a collaboration, or went quiet on an open thread | `search` { query: "<tool> enrichment", with, after } (several queries: the tool, "call", "consulting", "affiliate", "role") | a short list of people and conversation ids |
-| 3 | Read each person's whole history before writing a word: the old DM thread and the X Chat thread merged into one timeline | `twitterDms` { account, with: "<handle>" } | you know the last thing each side said, and what was promised |
+| 3 | Read each person's whole conversation before writing a word | `twitterDms` { account, with: "<handle>" } | you know the last thing each side said, and what was promised |
 | 4 | Sort them: **owes you an answer**, **you owe them something** (a doc, a look, a reply), **left hanging**, **competitor** (building a rival tool), **tool company** (their partner program) | a table for the owner | the owner agrees the list |
 | 5 | Write one message per person: pick up exactly where the thread left off, one line on what you've built since, then the offer framed as something for them. The link goes only to people who don't use the tool yet, and never to a rival's founder | house style | the owner approves each line |
 | 6 | Tool companies: ask for the partner, referral or creator program, show the reach (views, who follows you), and offer two concrete call times in their mornings or a calendar link | `twitterDm` / `twitterDmLive` | a time agreed |
