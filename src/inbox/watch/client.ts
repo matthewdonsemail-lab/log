@@ -423,7 +423,7 @@ function discordContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW DISCORD MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Discord's gateway the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
     `  1. Read the chat around it: \`discordRead\` { account: "${account}", channel: "<channel>", limit: "20" }.`,
-    '  2. Before writing a word, pull how matt really writes in that chat: `voice` { to: "<who>", with: "<channel>", context: "<what they said>" } (no text): his latest messages there and his real replies to things like it. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    '  2. Before writing a word, read the conversation card and how matt writes in that chat: `voice` { to: "<who>", with: "<channel>", context: "<what they said>" } (no text): the conversation card of the chat, what they said that is still open and what matt already asked and said there, then his real replies in this chat. Answer what is open in one or two short lines, in his words and his length, using only facts matt has said: never a list of questions, never what he already asked, nothing from another conversation.',
     '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`discordSendLive\` { account: "${account}", channel: "<channel>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
     ...lines,
@@ -436,7 +436,7 @@ function slackContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW SLACK MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by the workspace's websocket the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one:`,
     `  1. Read the chat around it: \`slackRead\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", limit: "20" }.`,
-    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<who>", with: "<chat>", context: "<what they said>" } (no text): his messages to them first, then his whole history. Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
+    '  2. Before writing a word, read the conversation card and how matt writes to them: `voice` { to: "<who>", with: "<chat>", context: "<what they said>" } (no text): the conversation card of the chat, what they said that is still open and what matt already asked and said there, then his real replies in this chat. Answer what is open in one or two short lines, in his words and his length, using only facts matt has said: never a list of questions, never what he already asked, nothing from another conversation.',
     '  3. Gate it against the same chat: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`slackSendLive\` { account: "${account}", workspace: "<workspace>", chat: "<chat>", text: "<draft>", approvedBy: "matt", confirmLive: true }).`,
     ...lines,
@@ -449,7 +449,7 @@ function instagramContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW INSTAGRAM MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): pushed by Instagram's realtime connection the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each one (never through the browser):`,
     `  1. Read the thread around it: \`instagramDms\` { account: "${account}", with: "<handle or thread>", limit: "20" }.`,
-    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<who>", context: "<what they said>" } (no text). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked.',
+    '  2. Before writing a word, read the conversation card and how matt writes to them: `voice` { to: "<handle>", with: "<who>", context: "<what they said>" } (no text): the conversation card of the chat, what they said that is still open and what matt already asked and said there, then his real replies in this chat. Answer what is open in one or two short lines, in his words and his length, using only facts matt has said: never a list of questions, never what he already asked, nothing from another conversation.',
     '  3. Gate it: `voice` { to, with, context, text: "<draft>" }. Rewrite until it passes.',
     `  4. ${SEND_RULE} (\`instagramSendLive\` { account: "${account}", with: "<handle or thread>", text: "<draft>", approvedBy: "matt", confirmLive: true }; a meme or picture goes as photo: "<file>").`,
     ...lines,
@@ -472,7 +472,7 @@ function twitterContext(messages: readonly InboxMessage[]): string {
   return [
     `>>> NEW MESSAGE${messages.length === 1 ? '' : 'S'} (${messages.length}): someone wrote to an account, pushed by X the moment it landed. Tell matt now, with what they said and what the conversation is about. Then, for each person:`,
     `  1. Read their full context right now, the old DM thread and X Chat merged (one conversation, whichever id a message names) and what they did on the account's posts (likes, retweets, replies, quotes), all in one call (rule 109): \`twitterDms\` { account: "${account}", with: "<handle>" }.`,
-    '  2. Before writing a word, pull how matt really writes to them: `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } (no text): his messages to them first, then his whole history (every platform). Draft from those, in his words and his length, using only facts matt has said, answering what they actually asked. Never from the twitter guide alone.',
+    '  2. Before writing a word, read the conversation card and how matt writes to them: `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } (no text): the conversation card of the chat, what they said that is still open and what matt already asked and said there, then his real replies in this chat. Answer what is open in one or two short lines, in his words and his length, using only facts matt has said: never a list of questions, never what he already asked, nothing from another conversation.',
     `  3. Gate it against the same person: \`voice\` { to, with, context, text: "<draft>" }. Rewrite until it passes.`,
     `  4. ${SEND_RULE} One reply goes straight out with \`twitterDmLive\` { account: "${account}", userId: "<id>", text: "<draft>", approvedBy: "matt", confirmLive: true }; more than one goes into the account's one running queue (\`twitterQueueAdd\`, rule 107). Every step is the log MCP tool, never a hand-run command (rule 106).`,
     ...lines,

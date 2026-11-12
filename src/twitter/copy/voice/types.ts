@@ -19,6 +19,7 @@ export interface VoiceDraft {
   spoken?: boolean
   howMattTalks?: string[]
   room?: import('../../../voice/room/index').Room
+  card?: string
 }
 
 export interface VoiceReading {

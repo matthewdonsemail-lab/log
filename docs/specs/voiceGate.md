@@ -8,9 +8,9 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 
 ## Reading
 
-### REQ-VOICE-01: Every draft is read against matt's writing across all his conversations
+### REQ-VOICE-01: Every draft is read against matt's writing
 
-Every draft is sent to SubQ with matt's writing guide, the DMs he wrote himself, and his real replies and closest wording from all his conversations, whether or not there is a chat with the person.
+Every draft is sent to SubQ with matt's writing guide and the DMs he wrote himself. His real replies and closest wording from all his conversations go with them, unless he has written enough in this chat already (REQ-VOICE-20).
 
 Checked by: code and SubQ
 
@@ -106,6 +106,31 @@ Checked by: code and SubQ
 
 Checked by: code and SubQ
 
+### REQ-VOICE-20: A send reads one conversation card, kept up to date as messages land
+
+Every chat has one conversation card in log.db (`conversationCards`, migration 19, `src/inbox/card`). `buildCard` makes it from the chat's own rows in `messages`, and for X merges the old DM and X Chat threads by their pair. It holds:
+
+- who the chat is with and its kind;
+- how many messages there are, and how many are matt's;
+- who it is waiting on;
+- how it started (`startedWith`);
+- what they said that matt hasn't answered (`theyAskedOpen`);
+- what matt asked that they haven't answered (`mattAskedOpen`);
+- matt's last messages there (`mattSaid`);
+- the last messages (`last`).
+
+`cardFor` reads the stored card and rebuilds it only when the chat has messages past its `throughSeq`.
+
+`appendEvent` refreshes the card in the background after each message it appends (`refreshWorkedCards`), but only for a chat being worked: one that already has a card, or one claimed now. Nothing runs for any other chat.
+
+`log voice` with no text starts with the card (`renderCard`), then how matt writes in this chat, then at most `NEAR_WHEN_SCOPED` (4) of his real replies. It tells the agent to answer what is open in one or two short lines, never as a list of questions, never repeating what matt already asked or said, and with nothing from another conversation.
+
+`gateSend` and the `voice` command pass the card to `gateReading`, which gives it to SubQ as `thisConversation`. Once matt has written `OWN_CHAT_MESSAGES` (5) or more messages in the chat (`scopedToThisChat`), `evidenceAnywhere` isn't read, so nothing from other conversations reaches the gate.
+
+matt, 2026-11-12: "all of the things of other conversations is just all over the place"; the SubQ decision is in `docs/decisions/conversationContext`.
+
+Checked by: code and SubQ
+
 ### REQ-VOICE-18: A draft that just passed is not sent to SubQ again
 
 When `gateSend` or the `log voice` command passes a draft, it records the pass by the draft's text (`recordPass`, `src/voice/passes`). `gateSend` then answers a send of the same text as passed without asking SubQ (`recentPass`) when that pass is under `PASS_REUSE_MS` (10 minutes) old and nothing has come in on the chat since (`incomingSince`). The sameness check (REQ-VOICE-16) still runs first. On a Discord DM or group whose .db is current (`readSourceFor`), the room the gate reads comes from `chatMessages`, not a read from Discord. matt, 2026-11-07. Rule 161.
@@ -114,7 +139,7 @@ Checked by: code and SubQ
 
 ### REQ-VOICE-17: A refused draft says where to look before it is rewritten
 
-When `gateSend` in `src/cli/twitter/helpers/voice.ts` refuses a draft with `voiceGateFailed`, or `sameAsSent` refuses it, the refusal ends with `rewriteSteps`: call `voice` with the person (and what they said) and no text, to read their thread and matt's real replies to things like it; call `search` for what matt has said on it before; then write from those, unlike anything sent today. matt, 2026-11-07: "you don't even try to look ... you don't try to search". Rule 158.
+When `gateSend` in `src/cli/twitter/helpers/voice.ts` refuses a draft with `voiceGateFailed`, or `sameAsSent` refuses it, the refusal ends with `rewriteSteps`: call `voice` with the person (and what they said) and no text, to read the chat's conversation card and matt's real replies in this chat. Then answer only what is open on the card, in one or two short lines, never as a list of questions and with nothing from another conversation, unlike anything sent today. matt, 2026-11-07: "you don't even try to look"; matt, 2026-11-12, against reading other conversations. Rule 158.
 
 Checked by: code and SubQ
 

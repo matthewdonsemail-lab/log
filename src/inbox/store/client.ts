@@ -6,6 +6,7 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
 import { accountIdentifiedEvent, attachmentsSeenEvent, eventIdFrom, identityLearnedEvent, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
+import { refreshWorkedCards } from '../card/client'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -221,7 +222,7 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
   input = { ...input, with: handleGiven || (senderId ? personOf(input.platform, input.account, senderId) ?? input.with : input.with) }
   const messageKey = messageKeyOfEvent(input)
   const eventId = input.eventId ?? eventIdOf({ platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', at: input.sourceAt ?? receivedAt, text: input.text ?? JSON.stringify(input.payload ?? {}), messageKey })
-  return immediate((handle) => {
+  const appended = immediate((handle) => {
     checkFence(handle, input.platform, input.account)
     const known = typeStatus(input.platform, input.type, input.payload ?? {}, now, handle) === 'known'
     const inserted = insertEventRow(handle, { eventId, platform: input.platform, account: input.account, conversationId: input.conversationId ?? '', type: input.type, with: input.with ?? '', text: input.text ?? '', box: input.box ?? '', payload: (input.payload ?? {}) as Record<string, unknown>, sourceAt: input.sourceAt ?? '', receivedAt, source: input.source ?? 'live', known }, now)
@@ -237,6 +238,14 @@ export function appendEvent(input: AppendInput, now: Date = new Date()): { seq: 
     }
     return { seq: Number(result.lastInsertRowid), eventId, known }
   })
+  if (appended && input.conversationId && MESSAGE_TYPES.includes(input.type)) {
+    try {
+      refreshWorkedCards(db(), input.platform, input.account, input.conversationId, now)
+    } catch {
+      return appended
+    }
+  }
+  return appended
 }
 
 export function latestSeq(): number {
