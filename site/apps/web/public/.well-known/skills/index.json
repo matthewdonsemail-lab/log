@@ -21,6 +21,14 @@
       "summary": "Answering someone in a Discord DM or group DM"
     },
     {
+      "name": "log-discord-forum-posts",
+      "description": "Going through a Discord forum for posts worth answering. A log play (docs/useCases/discord/forumPosts.md): Find a forum in a server, list its posts, read the ones that look right, and tell matt which are worth answering and why: someone asking for help with something matt has built or knows, a question nobody answered yet, a problem log solves. This page reads and sends nothing; answering one is [serverReply](serverReply.md).",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Going through a Discord forum for posts worth answering"
+    },
+    {
       "name": "log-discord-group-chat-read",
       "description": "Reading a Discord group chat without Twenty. A log play (docs/useCases/discord/groupChatRead.md): Catch up on what was said in a Discord group DM over the last few hours, on the account's own session, with the account kept in a local file instead of Twenty. This page reads and sends nothing. A channel inside a server is read the same way by `\"<server> #<channel>\"`, but always live from Discord, since log.db keeps only its mentions and replies: see [serverReply](serverReply.md) for how a server channel differs from a group DM.",
       "files": [
@@ -43,6 +51,14 @@
         "SKILL.md"
       ],
       "summary": "Replying in a Discord server channel"
+    },
+    {
+      "name": "log-discord-server-search",
+      "description": "Finding a conversation in a Discord server. A log play (docs/useCases/discord/serverSearch.md): Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how \"the conversation I had with Paul about OpenAI widgets in the paulchrisluke server\" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.",
+      "files": [
+        "SKILL.md"
+      ],
+      "summary": "Finding a conversation in a Discord server"
     },
     {
       "name": "log-facebook-groups",

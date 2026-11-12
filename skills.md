@@ -10,6 +10,7 @@ skill in the same commit.
 | [`logCli`](skills/logCli/SKILL.md) | Run the CLI: seed data, live Camoufox checks, the XState monitor |
 | [`commitLog`](skills/commitLog/SKILL.md) | Write the `log.md` entry every commit needs, from the AST summary the hook generates |
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
+| [`discordServers`](skills/discordServers/SKILL.md) | Know what a Discord server holds (channels, forums, posts, threads) and read each live with its own tool |
 | [`reaCapture`](skills/reaCapture/SKILL.md) | Capture live publish runs as a raw HAR, read them with `rea`, and score client design changes with SubQ |
 | [`accountToDryRun`](skills/accountToDryRun/SKILL.md) | Take one account from NEEDSLOGIN to ACTIVE and run a full publish dry run, all through the `log` MCP tools |
 | [`listingCopy`](skills/listingCopy/SKILL.md) | Write a listing's title, description and photos by the copy rules, each with a good and a bad version, from research on high-response classified and service ads (`docs/listingMedia.md` for how photos reach Facebook) |

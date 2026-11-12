@@ -27,9 +27,9 @@ Say: **"go on docs/useCases/discord/serverReply.md for <server> #<channel>"**. T
 <!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
 ```mermaid
 flowchart TD
-  s0["1. Find the server's channel by its name<br/><i>discordChats</i>"]
+  s0["1. Find the server's channel by its name<br/><i>discordChannels</i>"]
   s1["2. Claim the channel, so no other session answers it<br/><i>inboxClaim</i>"]
-  s2["3. Read the channel from Discord, far enough back to have what the…<br/><i>discordRead</i>"]
+  s2["3. Read the channel or post from Discord, far enough back to have…<br/><i>discordRead</i>"]
   s3["4. Write the answer to that one person, from what they asked and w…<br/><i>voice</i>"]
   s4["5. Send it to the channel by its name, tagging the person with @th…<br/><i>discordSendLive</i>"]
   s0 --> s1
@@ -41,9 +41,9 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Find the server's channel by its name | `discordChats` { account } | the `kind: "channel"` row whose name is `"<server> #<channel>"`; when matt names only the server, its channels are the rows with that `server` |
+| 1 | Find the server's channel by its name | `discordChannels` { account, server: "<server>" } | the channel by its name and kind; for a forum, the post from `discordPosts`, named `"<server> #<forum> > <post title>"` |
 | 2 | Claim the channel, so no other session answers it | `inboxClaim` { platform: "discord", account, chat: "<channel id>", event: "<event id from the hook>" } | this session holds the channel |
-| 3 | Read the channel from Discord, far enough back to have what they said, what it answers and anything matt already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: "50" } | their message with its `fromId`, the messages before it, and none from matt after it |
+| 3 | Read the channel or post from Discord, far enough back to have what they said, what it answers and anything matt already said after it | `discordRead` { account, channel: "<server> #<channel>", limit: "50" } | their message with its `fromId`, the messages before it, and none from matt after it |
 | 4 | Write the answer to that one person, from what they asked and what matt said to tell them, in his words and length, then gate it | `voice` { to: "<who>", context: "<what they said and what came before>", text: "<draft>" } | `PASS`, or matt's own words he gave for this message |
 | 5 | Send it to the channel by its name, tagging the person with `<@their fromId>` | `discordSendLive` { account, channel: "<server> #<channel>", text: "<@fromId> <draft>", approvedBy: "matt", confirmLive: true } | Discord answers `sent` with the message id |
 
@@ -52,10 +52,11 @@ flowchart TD
 - **It is someone else's room.** The server has an owner and rules. Answer what was asked and stay in the channel's topic. A pitch or a sales line in someone's server is not a reply: paulchrisluke, the owner of the paulchrisluke server, told matt on 9 Nov 2026 not to use his Discord for selling services.
 - **Tag the one person.** Everyone in the channel reads every message, so the answer starts with `<@their fromId>` (from the read in step 3), the way matt tags people there ("have you ever made generative ui before <@379607746510848000>", paulchrisluke #general, 11 Nov 2026). The AI artifact check passes a mention. Never talk to the whole room as if it were a DM.
 - **The read is always live.** log.db keeps only the mentions and replies from a server channel, so `discordRead` reads the channel from Discord every time and says so. Up to 1000 messages, 100 a page. A 429 stops the read and pauses the account (rule 94).
-- **Finding an old conversation in a server.** `search` doesn't hold a server channel's history, only the mentions and replies the watcher kept. Name the server's channels from `discordChats` (step 1), read the likely one back with `discordRead` and a large `limit`, and look through what came back. Paul's widgets advice was found this way in "paulchrisluke #general" on 12 Nov 2026, after `search` missed it.
+- **Finding an old conversation in a server.** Log's own `search` doesn't hold a server's history, only the mentions and replies the watcher kept. Use `discordSearch` on the server: [serverSearch](serverSearch.md). Reading a channel back to look for something is the slow way: Paul's widgets advice took a 400-message read of "paulchrisluke #general" on 12 Nov 2026.
 - **When matt is already there, leave it to him.** If his own message comes after theirs, he is answering: send nothing and release the claim with `inboxRelease` { platform: "discord", account, chat: "<channel id>" }. A send releases the claim by itself.
 - **A send waits for the account.** A send to a server channel needs the account caught up; while it is behind, Discord isn't contacted and the answer is `accountBehind`. Wait for the catch-up, never go around it (rules 94, 105).
 - **The voice gate can't find a server channel by name.** Gate with `to` and `context` only, never `with`.
 - **matt's own words.** When matt says what to tell them, the answer is his words. When the gate still refuses them, `overGate` on `discordSendLive` sends that exact message; the AI artifact check still runs (rule 152).
 - **One message per line.** A draft on several lines goes out one message per line, and in a busy channel other people's messages can land between them. Keep a server answer to one or two lines (rule 90).
-- **Name the channel, never its id.** The chat-names hook refuses an id: `"<server> #<channel>"` (rule 154).
+- **Name the channel, never its id.** The chat-names hook refuses an id: `"<server> #<channel>"`, or `"<server> #<forum> > <post title>"` for a forum post (rule 154).
+- **Forums and threads.** A forum holds posts, each its own conversation: answer inside the post, never in the forum. What each part of a server is: the `discordServers` skill in the discord guide; going through a forum for posts to answer: [forumPosts](forumPosts.md).
