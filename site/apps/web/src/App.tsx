@@ -99,7 +99,7 @@ export function App() {
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/shareCard/:slug" element={<ShareCardPage />} />
             <Route path="/sign-in" element={<ClerkAuthPage />} />
-            <Route path="/sign-up" element={<ClerkAuthPage signUp />} />
+            <Route path="/sign-up" element={<ClerkAuthPage />} />
             <Route path="/verify" element={<Navigate to="/sign-in" replace />} />
             <Route path="/console" element={<Navigate to="/console/start" replace />} />
             <Route path="/console/start" element={<StartPage />} />

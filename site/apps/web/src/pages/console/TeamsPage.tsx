@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, errorText, sessionKey, useResetPrivate, useSession, type SessionView, type TeamView } from '@/lib/controlApi'
 import './console.css'
+import { toast } from '@listeningkit/ui'
 
 function slugOf(name: string): string {
   return name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48)
@@ -17,7 +18,6 @@ export function TeamsPage() {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [slugTouched, setSlugTouched] = useState(false)
-  const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
   const invite = params.get('invite')
 
@@ -36,7 +36,7 @@ export function TeamsPage() {
       })
       .catch((error) => {
         if (stopped) return
-        setNotice(errorText(error))
+        toast.error(errorText(error))
         params.delete('invite')
         setParams(params, { replace: true })
       })
@@ -59,12 +59,11 @@ export function TeamsPage() {
   async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setBusy(true)
-    setNotice('')
     try {
       const team = await api<TeamView>('/teams', { method: 'POST', body: { name: name.trim(), slug } })
       await choose(team.id)
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     } finally {
       setBusy(false)
     }
@@ -72,11 +71,10 @@ export function TeamsPage() {
 
   async function pick(teamId: string) {
     setBusy(true)
-    setNotice('')
     try {
       await choose(teamId)
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
       setBusy(false)
     }
   }
@@ -89,7 +87,6 @@ export function TeamsPage() {
         <Link to="/" aria-label="ListeningKit home" className="mb-6 inline-flex"><img src="/logo.svg" alt="" className="size-10 rounded-[10px]" /></Link>
         <h1 className="text-2xl font-black tracking-tight">Your teams</h1>
         <p className="mt-2 text-sm leading-6 text-slate-600">Signed in as {session.data.user.email}. A team shares one workspace, its accounts and its AI connections.</p>
-        {notice ? <p role="status" className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{notice}</p> : null}
         {invite && busy ? <p role="status" className="mt-5 rounded-xl bg-white p-3 text-sm text-slate-600">Joining the team…</p> : null}
 
         {teams.length ? (

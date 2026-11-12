@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faKey, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useMediaQuery } from '@/landing/useMediaQuery'
+import { toast } from '@listeningkit/ui'
 
 export type KeyProvider = { key: string; label: string; logo: string; meta: string }
 
@@ -26,7 +27,6 @@ export function AddKeyDialog({
   const [secret, setSecret] = useState('')
   const [done, setDone] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
   const field = useRef<HTMLInputElement>(null)
   const picker = useRef<HTMLButtonElement>(null)
   const desktop = useMediaQuery('(min-width: 640px)')
@@ -39,7 +39,6 @@ export function AddKeyDialog({
     setChosen(provider)
     setSecret('')
     setDone(false)
-    setError('')
   }, [open, provider])
 
   useEffect(() => {
@@ -65,13 +64,12 @@ export function AddKeyDialog({
   async function submit() {
     if (!chosen || !secret.trim() || !onSave || saving) return
     setSaving(true)
-    setError('')
     try {
       await onSave(chosen.key, secret.trim())
       setSecret('')
       setDone(true)
     } catch {
-      setError('The key could not be saved. Try again when your workspace is connected.')
+      toast.error('The key could not be saved.', 'Try again when your workspace is connected.')
     } finally {
       setSaving(false)
     }
@@ -161,7 +159,6 @@ export function AddKeyDialog({
                       className="h-10 w-full rounded-xl border border-slate-300 px-3 font-mono text-sm outline-none placeholder:font-sans placeholder:text-slate-400 focus:border-[#2A8CFF] focus:ring-2 focus:ring-[#2A8CFF]/20"
                     />
                     <p className="mt-1.5 text-[11px] leading-5 text-slate-500">{onSave ? 'Sent straight to your workspace over the paired connection.' : 'Key saving is not connected yet. Your key will not be stored in this browser.'}</p>
-                    {error ? <p role="alert" className="mt-2 text-xs text-red-600">{error}</p> : null}
                   </div>
                   <div className="flex justify-end gap-2 pt-1">
                     <button type="button" onClick={onClose} className="h-10 rounded-lg px-3 text-sm font-bold text-slate-600 hover:bg-slate-100">

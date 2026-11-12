@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29231152373168310` |
+| doc_id | `40910485911871813` |
 | Path | `/api/graphql/` |
 | Sends | `actionBarRenderLocation`, `context`, `entityID`, `groupID`, `scale`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider` |
 | Reads | `node....CometHovercard_entity` |
 | Called from | `CometHovercardQueryRenderer.react` |
-| rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
+| rea | `ev_b91b80164a16aef94010b0fe96d78b1a3fb80dcc79b03686f4539c84a7cb2aae` |
 
-Seen 354 time(s) in 19 run(s).
+Seen 359 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -138,6 +138,7 @@ Seen 354 time(s) in 19 run(s).
 | inspect | step 8: wait 5s | 6 | 200 | 547–792 ms | 67342–202011 ms | — |
 | host | step 17: goto /me | 3 | 200 | 580–943 ms | 9289–12025 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 3 | 200 | 824–898 ms | 68–85995 ms | — |
+| inspect | step 10: press Escape | 5 | 200 | 384–772 ms | 1879–36526 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

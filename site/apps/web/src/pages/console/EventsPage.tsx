@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { autoUpdate, flip, FloatingFocusManager, FloatingPortal, offset, shift, useClick, useDismiss, useFloating, useInteractions, useRole } from '@floating-ui/react'
 import { ConsoleLayout } from './ConsoleLayout'
+import { useErrorToast } from '@/lib/useErrorToast'
 import { loadConsoleEvents, eventDuration, eventTime, type ConsoleEvent } from './eventsData'
 
 function EventStatus({ status }: { status: ConsoleEvent['status'] }) {
@@ -29,6 +30,7 @@ function EventDetails({ event, onClose }: { event: ConsoleEvent; onClose: () => 
 
 export function EventsPage() {
   const query = useQuery({ queryKey: ['consoleEvents'], queryFn: ({ signal }) => loadConsoleEvents(signal), retry: false, refetchOnWindowFocus: false })
+  useErrorToast(query.isError, query.error, 'Could not load workspace events.')
   const [tab, setTab] = useState<'firehose' | 'inference'>('firehose')
   const [status, setStatus] = useState('all')
   const [search, setSearch] = useState('')
@@ -53,7 +55,7 @@ export function EventsPage() {
         <button type="button" onClick={() => { setStatus('all'); setSearch(''); setPage(0) }} className="font-semibold text-[#2A8CFF]">Clear filters</button>
       </div></FloatingFocusManager></FloatingPortal> : null}
     </div>
-    {query.isError ? <div role="status" className="mb-4 rounded-lg border border-red-200 bg-white p-4 text-sm text-red-700">Could not load workspace events. <button type="button" onClick={() => query.refetch()} className="font-semibold underline">Try again</button></div> : null}
+    {query.isError ? <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600"><button type="button" onClick={() => query.refetch()} className="font-semibold underline">Try again</button></div> : null}
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white" aria-busy={query.isLoading}>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[880px] text-left text-sm">
@@ -68,7 +70,7 @@ export function EventsPage() {
             <td className="whitespace-nowrap px-4 py-3 text-right font-medium tabular-nums text-slate-900">{event.usage?.type === 'tokens' ? `${(event.usage.input + event.usage.output).toLocaleString()} tokens` : event.usage?.type === 'balance' ? `$${event.usage.amount.toFixed(4)} balance` : '—'}</td>
           </tr>)}</tbody>
         </table>
-        {!rows.length ? <p role="status" className="p-10 text-center text-sm text-slate-600">{query.isLoading ? 'Loading workspace events…' : query.isError ? 'Workspace events are unavailable.' : 'No events match your filters.'}</p> : null}
+        {!rows.length ? <p role="status" className="p-10 text-center text-sm text-slate-600">{query.isLoading ? 'Loading workspace events…' : query.isError ? 'No events to show.' : 'No events match your filters.'}</p> : null}
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-600"><span aria-live="polite">{filtered.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filtered.length)} of {filtered.length}</span><div className="flex items-center gap-3"><button type="button" disabled={page === 0} onClick={() => setPage(page - 1)} className="rounded-md border border-slate-200 px-3 py-1.5 font-medium disabled:opacity-40">Previous</button><button type="button" disabled={page + 1 >= pageCount} onClick={() => setPage(page + 1)} className="rounded-md border border-slate-200 px-3 py-1.5 font-medium disabled:opacity-40">Next</button></div></div>
     </div>

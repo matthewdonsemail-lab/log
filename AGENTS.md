@@ -138,6 +138,8 @@ For platform work, read the relevant skill/use-case and current domain spec. Pla
 
 176. 2026-11-11 · Matt requested pruning obsolete agent rules. AGENTS.md is the concise active instruction set; ruleHistory preserves prior instructions as non-authoritative history. Keep platform procedures in their relevant skills/specs and dated one-off incidents out of global instructions. A historical citation does not restore superseded architecture.
 
+177. 2026-11-12 · Website and console errors show as toasts through the shared `@listeningkit/ui` toast, never inline under a field, in a form or on the page. A failed load toasts its error and leaves only a neutral empty state with its Try again action. Errors from embedded widgets (Clerk's form) are hidden in place and raised as toasts.
+
 ## Checks
 
 Use targeted document/source checks appropriate to the task. Do not add or run application tests unless asked. When committing or pushing, follow the existing hooks and commit-log procedure; do not disable them. SubQ is excluded from automatic gates under rule 170.

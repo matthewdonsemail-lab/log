@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { api, errorText, PLATFORM_SETUP_COMMAND, useSelectedTeam, useWorkspaces, type AccountView } from '@/lib/controlApi'
+import { api, PLATFORM_SETUP_COMMAND, useSelectedTeam, useWorkspaces, type AccountView } from '@/lib/controlApi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
 import { AddKeyDialog, type KeyProvider } from './AddKeyDialog'
+import { useErrorToast } from '@/lib/useErrorToast'
 
 type Platform = { service: string; label: string; icon: IconDefinition; summary: string }
 
@@ -44,6 +45,7 @@ export function ConnectionsPage() {
     enabled: Boolean(team?.id) && workspaceState === 'ready',
     staleTime: 30_000,
   })
+  useErrorToast(accounts.isError, accounts.error)
   const iconOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.icon ?? faMagnifyingGlass
   const [query, setQuery] = useState('')
   const [setupPlatform, setSetupPlatform] = useState<Platform | null>(null)
@@ -78,7 +80,7 @@ export function ConnectionsPage() {
         ) : accounts.isLoading ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Asking your workspace…</div>
         ) : accounts.isError ? (
-          <div role="status" className="rounded-2xl border border-red-200 bg-white p-6 text-center text-sm text-red-700">{errorText(accounts.error)} <button type="button" onClick={() => accounts.refetch()} className="font-semibold underline">Try again</button></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-600"><button type="button" onClick={() => accounts.refetch()} className="font-semibold underline">Try again</button></div>
         ) : accounts.data?.accounts.length ? (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {accounts.data.accounts.map((account) => (
