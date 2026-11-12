@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, errorText, HOSTED_MCP_URL, useSelectedTeam, type ConsentRequestView, type GrantView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading } from './ConsoleLayout'
+import { toast } from '@listeningkit/ui'
+import { useErrorToast } from '@/lib/useErrorToast'
 
 const SCOPE_TEXT: Record<string, string> = {
   'log:read': 'Read your team’s accounts, DMs and chats through your workspace',
@@ -14,26 +16,26 @@ function Consent({ requestId }: { requestId: string }) {
   const request = useQuery({ queryKey: ['controlConsent', requestId], queryFn: ({ signal }) => api<ConsentRequestView>(`/oauth/requests/${requestId}`, { signal }), retry: false, staleTime: Infinity })
   const [teamId, setTeamId] = useState('')
   const [busy, setBusy] = useState(false)
-  const [notice, setNotice] = useState('')
 
   useEffect(() => {
     if (request.data && !teamId) setTeamId(request.data.selectedTeamId ?? request.data.teams[0]?.id ?? '')
   }, [request.data, teamId])
 
+  useErrorToast(request.isError, request.error)
+
   async function decide(approve: boolean) {
     setBusy(true)
-    setNotice('')
     try {
       const answer = await api<{ redirectTo: string }>(`/oauth/requests/${requestId}/${approve ? 'approve' : 'deny'}`, { method: 'POST', body: approve ? { teamId } : {} })
       window.location.assign(answer.redirectTo)
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
       setBusy(false)
     }
   }
 
   if (request.isLoading) return <p className="text-sm text-slate-500">Loading the request…</p>
-  if (request.isError || !request.data) return <p role="status" className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800">{errorText(request.error)} Start the connection again from your AI app.</p>
+  if (request.isError || !request.data) return <p className="text-sm text-slate-600">Start the connection again from your AI app.</p>
   const data = request.data
   return (
     <section className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-6">
@@ -49,7 +51,6 @@ function Consent({ requestId }: { requestId: string }) {
         </select>
       </label>
       <p className="mt-2 text-xs leading-5 text-slate-500">It can only reach this team’s workspace. Switching team on this site never moves it; connect again for another team.</p>
-      {notice ? <p role="status" className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{notice}</p> : null}
       <div className="mt-6 flex gap-3">
         <button type="button" disabled={busy || !teamId} onClick={() => decide(true)} className="h-11 flex-1 rounded-xl bg-[#2A8CFF] text-sm font-bold text-white disabled:opacity-60">{busy ? 'Working…' : 'Approve'}</button>
         <button type="button" disabled={busy} onClick={() => decide(false)} className="h-11 flex-1 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-700 disabled:opacity-60">Deny</button>
@@ -61,7 +62,6 @@ function Consent({ requestId }: { requestId: string }) {
 function Grants({ teamId }: { teamId: string }) {
   const grants = useQuery({ queryKey: ['controlGrants', teamId], queryFn: ({ signal }) => api<GrantView[]>(`/teams/${teamId}/grants`, { signal }) })
   const queryClient = useQueryClient()
-  const [notice, setNotice] = useState('')
   const url = HOSTED_MCP_URL
 
   async function revoke(grant: GrantView) {
@@ -70,7 +70,7 @@ function Grants({ teamId }: { teamId: string }) {
       await api<void>(`/teams/${teamId}/grants/${grant.id}/revoke`, { method: 'POST', body: {} })
       await queryClient.invalidateQueries({ queryKey: ['controlGrants', teamId] })
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     }
   }
 
@@ -87,7 +87,6 @@ function Grants({ teamId }: { teamId: string }) {
       </section>
       <section>
         <SectionHeading title="Connected AI apps" count={live.length} />
-        {notice ? <p role="status" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{notice}</p> : null}
         {grants.isLoading ? <p className="text-sm text-slate-500">Loading…</p> : live.length ? (
           <ul className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
             {live.map((grant) => (

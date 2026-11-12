@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, errorText, useSelectedTeam, useWorkspaces, type InviteView, type MemberView, type PairingView, type WorkspaceView } from '@/lib/controlApi'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
+import { toast } from '@listeningkit/ui'
 
 function origin(): string {
   return window.location.origin
@@ -22,18 +23,16 @@ function WorkspaceSetup({ teamId, canAdmin }: { teamId: string; canAdmin: boolea
   const queryClient = useQueryClient()
   const [hash, setHash] = useState('')
   const [pairing, setPairing] = useState<PairingView | null>(null)
-  const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
   const selected = workspaces.data?.find((item) => item.selected) ?? null
   const state = workspaceStateOf(workspaces.data, workspaces.isError)
 
   async function run(work: () => Promise<void>) {
     setBusy(true)
-    setNotice('')
     try {
       await work()
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     } finally {
       setBusy(false)
     }
@@ -71,7 +70,6 @@ function WorkspaceSetup({ teamId, canAdmin }: { teamId: string; canAdmin: boolea
           {selected?.lastContactAt ? <span className="text-xs text-slate-500">Last contact {new Date(selected.lastContactAt).toLocaleString()}</span> : null}
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">Your workspace is the cloud machine where log runs with your accounts, sessions and messages. They stay there; this site only routes requests to it.</p>
-        {notice ? <p role="status" className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{notice}</p> : null}
 
         {!selected ? (
           canAdmin ? <button type="button" disabled={busy} onClick={create} className="mt-4 h-10 rounded-xl bg-[#2A8CFF] px-4 text-sm font-bold text-white disabled:opacity-60">Add a workspace</button> : <p className="mt-4 text-sm text-slate-600">Ask an owner or admin to add the team’s workspace.</p>
@@ -115,28 +113,25 @@ function Members({ teamId, canInvite, manageOwners }: { teamId: string; canInvit
   const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<'member' | 'admin'>('member')
-  const [notice, setNotice] = useState('')
   const [sent, setSent] = useState<InviteView[]>([])
 
   async function invite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setNotice('')
     try {
       const made = await api<InviteView>(`/teams/${teamId}/invites`, { method: 'POST', body: { email: email.trim(), role } })
       setSent((items) => [made, ...items])
       setEmail('')
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     }
   }
 
   async function update(member: MemberView, change: { role?: string; status?: string }) {
-    setNotice('')
     try {
       await api<MemberView>(`/teams/${teamId}/members/${member.id}`, { method: 'PATCH', body: change })
       await queryClient.invalidateQueries({ queryKey: ['controlMembers', teamId] })
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     }
   }
 
@@ -145,14 +140,13 @@ function Members({ teamId, canInvite, manageOwners }: { teamId: string; canInvit
       await api<void>(`/teams/${teamId}/invites/${item.id}/revoke`, { method: 'POST', body: {} })
       setSent((items) => items.map((entry) => (entry.id === item.id ? { ...entry, status: 'revoked' } : entry)))
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     }
   }
 
   return (
     <section className="mb-10">
       <SectionHeading title="Members" count={members.data?.filter((item) => item.status === 'active').length} />
-      {notice ? <p role="status" className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{notice}</p> : null}
       <ul className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
         {members.isLoading ? <li className="p-4 text-sm text-slate-500">Loading…</li> : null}
         {members.data?.map((member) => (

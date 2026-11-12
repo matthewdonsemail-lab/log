@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, type ReactNode } from 'react'
 import { useClerk } from '@clerk/react'
 import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket, faBolt, faChartColumn, faCoins, faGear, faGift, faHouse, faPlug, faRobot } from '@fortawesome/free-solid-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import './console.css'
+import { toast } from '@listeningkit/ui'
 
 export type WorkspaceState = 'notConnected' | 'awaitingConnection' | 'connecting' | 'ready' | 'reconnecting' | 'offline' | 'failed' | 'stateMissing'
 
@@ -58,7 +59,6 @@ export function TeamSwitch() {
   const queryClient = useQueryClient()
   const resetPrivate = useResetPrivate()
   const navigate = useNavigate()
-  const [notice, setNotice] = useState('')
   const teams = session.data?.teams ?? []
   async function pick(teamId: string) {
     try {
@@ -67,7 +67,7 @@ export function TeamSwitch() {
       queryClient.setQueryData(sessionKey, next)
       navigate('/console/start')
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     }
   }
   const initial = (team?.name ?? '?').slice(0, 1).toUpperCase()
@@ -94,7 +94,6 @@ export function TeamSwitch() {
             {item.id === team?.id ? <span className="text-[11px] font-semibold text-[#1B6FD6]">✓ active</span> : null}
           </button>
         ))}
-        {notice ? <p className="px-2 py-1 text-[11px] text-red-600">{notice}</p> : null}
         <div className="my-1 h-px bg-slate-200" />
         <Link to="/teams" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">＋ New team</Link>
         <Link to="/console/settings" className="block rounded-md px-2 py-1.5 text-sm font-semibold hover:bg-slate-50">⚙ Team settings</Link>

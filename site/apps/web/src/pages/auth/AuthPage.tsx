@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, errorText, safeReturnPath, sessionKey, type AuthChallengeView, type SessionView } from '@/lib/controlApi'
-import { Button } from '@listeningkit/ui'
+import { Button, toast } from '@listeningkit/ui'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { UsecaseLoop } from '@/landing/UsecaseLoop'
 import { ClayClouds } from '@/landing/ClayClouds'
@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
-  const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
   const verifying = mode === 'verify'
   const [params] = useSearchParams()
@@ -24,11 +23,10 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     setBusy(true)
-    setNotice('')
     try {
       if (verifying) {
         if (!challengeId) {
-          setNotice('Ask for a sign-in code first.')
+          toast.error('Ask for a sign-in code first.')
           return
         }
         const session = await api<SessionView>('/auth/email/verify', { method: 'POST', body: { challengeId, code: String(form.get('code') ?? '').replace(/\D/g, '') } })
@@ -42,7 +40,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
         navigate(`/verify?${next.toString()}`)
       }
     } catch (error) {
-      setNotice(errorText(error))
+      toast.error(errorText(error))
     } finally {
       setBusy(false)
     }
@@ -67,7 +65,7 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
             {!verifying && (
               <div className="mt-7 space-y-3">
                 {[{ label: 'Google', icon: faGoogle }, { label: 'GitHub', icon: faGithub }].map((provider) => (
-                  <button key={provider.label} type="button" onClick={() => setNotice(`${provider.label} sign-in is not connected yet.`)} className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900 hover:border-[#2A8CFF] hover:bg-[#EFF6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2A8CFF]">
+                  <button key={provider.label} type="button" onClick={() => toast.info(`${provider.label} sign-in is not connected yet.`)} className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-900 hover:border-[#2A8CFF] hover:bg-[#EFF6FF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#2A8CFF]">
                     <FontAwesomeIcon icon={provider.icon} className="size-5" />
                     Continue with {provider.label}
                   </button>
@@ -81,7 +79,6 @@ export function AuthPage({ mode }: { mode: 'signIn' | 'verify' }) {
                 {verifying ? <input id="code" name="code" type="text" inputMode="numeric" pattern="[0-9 ]{6,7}" maxLength={7} autoComplete="one-time-code" required autoFocus placeholder="123456" className={fieldClass} /> : <input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" className={fieldClass} />}
               </div>
               <Button type="submit" variant="blue" disabled={busy} className="h-12 w-full rounded-xl text-sm font-bold">{busy ? (verifying ? 'Checking…' : 'Sending…') : verifying ? 'Verify code' : 'Send sign-in code'} <ArrowRight size={16} className="ml-2" /></Button>
-              {notice && <p role="status" className="rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-600">{notice}</p>}
             </form>
             <p className="mt-5 text-center text-xs text-slate-500">{verifying ? 'Use the code from your sign-in email.' : 'A sign-in code. No password to remember.'}</p>
             {verifying && <Link to={returnPath ? `/sign-in?returnPath=${encodeURIComponent(returnPath)}` : '/sign-in'} className="mt-6 text-center text-sm font-semibold text-[#2A8CFF]">Use a different email</Link>}
