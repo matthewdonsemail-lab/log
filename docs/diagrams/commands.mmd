@@ -95,6 +95,10 @@ flowchart TB
   subgraph g_discord["Discord"]
     c_discordSession["session"]
     c_discordChats["chats"]
+    c_discordServers["servers"]
+    c_discordChannels["channels"]
+    c_discordPosts["posts"]
+    c_discordSearch["search"]
     c_discordRead["read"]
     c_discordWatch["watch"]
     c_discordSend["send"]
@@ -300,6 +304,14 @@ flowchart TB
   mcp --> c_discordSession
   cli --> c_discordChats
   mcp --> c_discordChats
+  cli --> c_discordServers
+  mcp --> c_discordServers
+  cli --> c_discordChannels
+  mcp --> c_discordChannels
+  cli --> c_discordPosts
+  mcp --> c_discordPosts
+  cli --> c_discordSearch
+  mcp --> c_discordSearch
   cli --> c_discordRead
   mcp --> c_discordRead
   c_discordRead --> live

@@ -4,7 +4,7 @@ import { basename, isAbsolute, join, relative, resolve as resolvePath } from "no
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { roomFromRead } from "../../voice/room/index.ts";
 import { findDiscordAccount, recordDiscordSession, discordGate } from "../../discord/account/session/index.ts";
-import { labelOf, matchChat } from "../../discord/chat/match/index.ts";
+import { labelOf, matchChat, normalizedName } from "../../discord/chat/match/index.ts";
 import { addPending, incomingSince, interruptedLines } from "../../inbox/watch/index.ts";
 import { ownOrAttach } from "../../inbox/relay/index.ts";
 import { enqueueAttachments, mediaByPath, mediaLine } from "../../media/describer/index.ts";
@@ -24,7 +24,7 @@ import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { DiscordChat } from "../../discord/chat/match/index.ts";
 import type { PlatformAnswer } from "../../platformKit/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command, CommandInput, FlagSpec } from "../runner/types.ts";
+import type { Command, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 
 export const DISCORD_SESSION_USAGE = [
   "Usage: log discord session check --account <accountName> [--json]",
@@ -131,8 +131,8 @@ export const discordChatsCommand: Command = {
 };
 
 export const DISCORD_READ_USAGE = [
-  "Usage: log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--json]",
-  "Reads a DM, group DM or server channel's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. --after keeps only what came after that message (a bot's answer to ours). Sends nothing.",
+  "Usage: log discord read --account <accountName> --channel <channelId|chat name> [--limit <n>] [--after <messageId>] [--noMedia] [--json]",
+  "Reads a DM, group DM, server channel or forum post's latest messages, oldest first, on the direct-API engine (no browser): who sent each, when, whether a bot, what it replies to, its text and embeds. A server channel is \"<server> #<channel>\" and a forum post \"<server> #<forum> > <post title>\" (from log discord posts), both read live from Discord. --after keeps only what came after that message (a bot's answer to ours). --noMedia reads text only, without saving images or transcribing voice notes, for a fast pass over a busy channel. Sends nothing.",
 ].join("\n");
 
 export const DISCORD_READ_INPUT: CommandInput = {
@@ -146,6 +146,7 @@ export const DISCORD_READ_INPUT: CommandInput = {
         { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id (a server channel by its id)" },
         { name: "limit", kind: "string", description: "How many of the latest messages, default 20, at most 1000, read 100 a page as Discord's app scrolls back" },
         { name: "after", kind: "string", description: "Only messages after this message id" },
+        { name: "noMedia", kind: "boolean", description: "Text only: skip saving images and files and transcribing voice notes, for a fast read of a busy channel" },
         JSON_FLAG,
       ],
     },
@@ -261,7 +262,7 @@ export const discordReadCommand: Command = {
         return { code: 0, stdout: [`log discord read: ${messages.length} message(s) in ${target}${after ? ` after ${after}` : ""}, from the .db`, ...messages.map((m) => [`  ${m.at} ${m.from}${m.fromMe ? " (me)" : ""} · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...attachmentLines(m)].join("\n"))].join("\n") };
       }
       context.err(sourceLine(source, "Discord", account.accountName, 0));
-      const run = direct(account, { action: "read", channel: target, limit, ...(after ? { after } : {}) });
+      const run = direct(account, { action: "read", channel: target, limit, ...(after ? { after } : {}), ...(parsed.flags["noMedia"] ? { saveAudio: false, saveImages: false } : {}) });
       if (run.answer.ok && kind !== "channel") markBackfilled("discord", account.accountName, target, context.now?.() ?? new Date());
       const code = run.answer.ok ? 0 : 1;
       const messages = await withVoiceNotes({ platform: "discord", account: account.accountName, conversationId: target }, (run.answer.messages as DiscordRead[] | undefined) ?? [], (m) => m.audio ?? [], context.err);
@@ -656,6 +657,271 @@ export const discordSendCommand: Command = {
       return { code, stdout: `log discord send: ${account.accountName}: ${done.length} of ${plan.parts.length} sent, then ${last.code}: ${last.detail ?? ""}. What was sent stays sent; nothing is retried.` };
     } catch (error) {
       return refuseError("discord send", error);
+    }
+  },
+};
+
+type DirectDiscord = NonNullable<Parameters<Command["run"]>[0]["directDiscord"]>;
+type DiscordAccount = Awaited<ReturnType<typeof findDiscordAccount>>;
+interface ServerRow { id: string; name: string | null; owner: boolean }
+interface KeptChannel extends DiscordChat { server?: string | null; serverId?: string }
+
+export function matchServer(servers: readonly ServerRow[], said: string): { ok: true; server: ServerRow } | { ok: false; code: "chatNotFound" | "chatAmbiguous"; detail: string } {
+  const wanted = normalizedName(said);
+  const named = servers.filter((s) => s.name);
+  const exact = named.filter((s) => normalizedName(s.name!) === wanted);
+  const pool = exact.length ? exact : named.filter((s) => wanted.split(" ").every((w) => normalizedName(s.name!).split(" ").includes(w)));
+  if (pool.length === 1) return { ok: true, server: pool[0] };
+  if (!pool.length) return { ok: false, code: "chatNotFound", detail: `no server the account is in matches "${said}"` };
+  return { ok: false, code: "chatAmbiguous", detail: `${pool.length} servers match "${said}": ${pool.slice(0, 8).map((s) => s.name).join(", ")}` };
+}
+
+function serverByName(direct: DirectDiscord, account: DiscordAccount, said: string) {
+  const run = direct(account, { action: "servers" });
+  if (!run.answer.ok) return { failed: `${run.answer.code}: ${run.answer.detail ?? ""}` } as const;
+  return { found: matchServer((run.answer.servers as ServerRow[] | undefined) ?? [], said) } as const;
+}
+
+function channelByName(direct: DirectDiscord, account: DiscordAccount, said: string) {
+  return findInChatList<DiscordChat, ReturnType<typeof matchChat>>("discord", account.accountName, said, matchChat, () => {
+    const listed = direct(account, { action: "chats" });
+    return listed.answer.ok ? { ok: true, chats: (listed.answer.chats as DiscordChat[] | undefined) ?? [] } : { ok: false, detail: `${listed.answer.code}: ${listed.answer.detail ?? ""}` };
+  });
+}
+
+async function serverCommandStart(context: Parameters<Command["run"]>[0], accountName: string, label: string): Promise<{ refused: CommandResult } | { account: DiscordAccount; direct: DirectDiscord }> {
+  const account = await findDiscordAccount(context.twenty, accountName);
+  const gate = discordGate(account);
+  if (!gate.ok) return { refused: refuse(label, gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail) };
+  if (!context.directDiscord) return { refused: { code: 1, stderr: `log ${label}: the direct-API engine isn't wired in this context` } };
+  return { account, direct: context.directDiscord };
+}
+
+export const DISCORD_SERVERS_USAGE = [
+  "Usage: log discord servers --account <accountName> [--json]",
+  "Lists the Discord servers the account is in, by name, on the direct-API engine (no browser). One request. Sends nothing. A server is not a group DM: a group DM is a private chat in log discord chats, while a server holds channels, forums and threads (log discord channels).",
+].join("\n");
+
+export const DISCORD_SERVERS_INPUT: CommandInput = {
+  forms: [{ words: [], summary: "The servers the account is in", positionals: [], flags: [DISCORD_ACCOUNT, JSON_FLAG] }],
+};
+
+export const discordServersCommand: Command = {
+  usage: DISCORD_SERVERS_USAGE,
+  platform: "discord",
+  name: "servers",
+  effect: "read",
+  input: DISCORD_SERVERS_INPUT,
+  summary: "List the Discord servers the account is in, on the direct-API engine, sending nothing",
+  args: "--account <a> [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(DISCORD_SERVERS_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log discord servers: ${parsed.error}\n${DISCORD_SERVERS_USAGE}` };
+    try {
+      const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord servers");
+      if ("refused" in start) return start.refused;
+      const run = start.direct(start.account, { action: "servers" });
+      const servers = (run.answer.servers as ServerRow[] | undefined) ?? [];
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: start.account.accountName, ...run.answer }, null, 2) };
+      if (!run.answer.ok) return { code, stdout: `log discord servers: ${start.account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
+      return { code, stdout: [`log discord servers: ${start.account.accountName} is in ${servers.length} server(s)`, ...servers.map((s) => `  ${s.name ?? "(no name)"}${s.owner ? " (its owner)" : ""}`)].join("\n") };
+    } catch (error) {
+      return refuseError("discord servers", error);
+    }
+  },
+};
+
+interface ServerChannel { id: string; name: string; kind: string; category: string | null; topic: string | null; lastMessageAt: string | null; tags?: string[] }
+
+export const DISCORD_CHANNELS_USAGE = [
+  "Usage: log discord channels --account <accountName> --server <server name> [--json]",
+  "Lists one server's channels by category, each with its kind (text, announcement, forum, media, voice, stage), its tags and when its last message came, on the direct-API engine (no browser). One request. Sends nothing. A text or announcement channel is read with log discord read and the channel \"<server> #<channel>\"; a forum or media channel holds posts, listed with log discord posts.",
+].join("\n");
+
+export const DISCORD_CHANNELS_INPUT: CommandInput = {
+  forms: [{
+    words: [],
+    summary: "One server's channels by category, each with its kind",
+    positionals: [],
+    flags: [DISCORD_ACCOUNT, { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" }, JSON_FLAG],
+  }],
+};
+
+export const discordChannelsCommand: Command = {
+  usage: DISCORD_CHANNELS_USAGE,
+  platform: "discord",
+  name: "channels",
+  effect: "read",
+  input: DISCORD_CHANNELS_INPUT,
+  summary: "List one Discord server's channels by category and kind (text, forum, media, voice), on the direct-API engine, sending nothing",
+  args: "--account <a> --server <name> [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(DISCORD_CHANNELS_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log discord channels: ${parsed.error}\n${DISCORD_CHANNELS_USAGE}` };
+    try {
+      const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord channels");
+      if ("refused" in start) return start.refused;
+      const looked = serverByName(start.direct, start.account, String(parsed.flags["server"]));
+      if ("failed" in looked) return { code: 1, stdout: `log discord channels: ${start.account.accountName}: reading its servers: ${looked.failed}` };
+      if (!looked.found.ok) return refuse("discord channels", looked.found.code, looked.found.detail);
+      const server = looked.found.server;
+      context.err(`"${parsed.flags["server"]}" is the server ${server.name}`);
+      const run = start.direct(start.account, { action: "channels", server: server.id });
+      const channels = (run.answer.channels as ServerChannel[] | undefined) ?? [];
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: start.account.accountName, server: server.name, ...run.answer }, null, 2) };
+      if (!run.answer.ok) return { code, stdout: `log discord channels: ${start.account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
+      const lines: string[] = [];
+      let category: string | null | undefined;
+      for (const c of channels) {
+        if (c.category !== category) lines.push(`  ${c.category ?? "(no category)"}`);
+        category = c.category;
+        lines.push(`    ${c.kind.padEnd(12)} "${server.name} #${c.name}"${c.lastMessageAt ? ` · last ${c.lastMessageAt.slice(0, 16)}` : ""}${c.tags?.length ? ` · tags: ${c.tags.join(", ")}` : ""}${c.topic ? ` · ${c.topic.replace(/\s+/g, " ").slice(0, 120)}` : ""}`);
+      }
+      return { code, stdout: [`log discord channels: ${server.name} has ${channels.length} channel(s)`, ...lines].join("\n") };
+    } catch (error) {
+      return refuseError("discord channels", error);
+    }
+  },
+};
+
+interface ForumPost { id: string; title: string; kind: string; author: string | null; createdAt: string | null; lastMessageAt: string | null; replies: number | null; tags: string[]; archived: boolean; locked: boolean; opening: string }
+
+export const DISCORD_POSTS_USAGE = [
+  "Usage: log discord posts --account <accountName> --channel \"<server> #<forum>\" [--limit <n>] [--archived <true|false>] [--json]",
+  "Lists the posts in a forum or media channel (or the threads under a text channel), newest activity first, on the direct-API engine (no browser): each post's title, who opened it, when, its tags, how many replies, whether it is closed, and its opening message. 25 a request, at most 200. Sends nothing. Each post is then read by its name with log discord read and the channel \"<server> #<forum> > <post title>\".",
+].join("\n");
+
+export const DISCORD_POSTS_INPUT: CommandInput = {
+  forms: [{
+    words: [],
+    summary: "A forum's posts (or a channel's threads), newest first, with each one's opening message",
+    positionals: [],
+    flags: [
+      DISCORD_ACCOUNT,
+      { name: "channel", kind: "string", required: true, description: "The forum or channel as \"<server> #<channel>\"" },
+      { name: "limit", kind: "string", description: "How many posts, default 25, at most 200" },
+      { name: "archived", kind: "string", description: "true for only closed (archived) posts, false for only open ones; both when left out" },
+      JSON_FLAG,
+    ],
+  }],
+};
+
+export const discordPostsCommand: Command = {
+  usage: DISCORD_POSTS_USAGE,
+  platform: "discord",
+  name: "posts",
+  effect: "read",
+  input: DISCORD_POSTS_INPUT,
+  summary: "List the posts in a Discord forum (or a channel's threads) with each one's opening message, on the direct-API engine, sending nothing",
+  args: "--account <a> --channel \"<server> #<forum>\" [--limit <n>] [--archived <true|false>] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(DISCORD_POSTS_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log discord posts: ${parsed.error}\n${DISCORD_POSTS_USAGE}` };
+    const limit = parsed.flags["limit"] === undefined ? 25 : Number(parsed.flags["limit"]);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log discord posts: --limit must be 1 to 200\n${DISCORD_POSTS_USAGE}` };
+    const archivedFlag = parsed.flags["archived"];
+    if (archivedFlag !== undefined && archivedFlag !== "true" && archivedFlag !== "false") return { code: 1, stderr: `log discord posts: --archived is true or false\n${DISCORD_POSTS_USAGE}` };
+    try {
+      const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord posts");
+      if ("refused" in start) return start.refused;
+      const said = String(parsed.flags["channel"]).trim();
+      const looked = channelByName(start.direct, start.account, said);
+      if ("failed" in looked) return { code: 1, stdout: `log discord posts: ${start.account.accountName}: reading its channels to find "${said}": ${looked.failed}` };
+      if (!looked.found.ok) return refuse("discord posts", looked.found.code, [looked.found.detail, ...looked.found.candidates.map((c) => `  ${c.label}`)].join("\n"));
+      const chat = looked.found.chat as KeptChannel;
+      if (chat.kind !== "channel") return refuse("discord posts", "chatNotFound", `"${said}" is a ${chat.kind}, not a server channel: a DM or group DM has no posts`);
+      context.err(`"${said}" is ${labelOf(chat)}`);
+      const run = start.direct(start.account, { action: "posts", channel: chat.id, limit, serverName: chat.server ?? labelOf(chat).split(" #")[0], ...(archivedFlag !== undefined ? { archived: archivedFlag === "true" } : {}) });
+      const posts = (run.answer.posts as ForumPost[] | undefined) ?? [];
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: start.account.accountName, ...run.answer }, null, 2) };
+      if (!run.answer.ok) return { code, stdout: `log discord posts: ${start.account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
+      const name = String(run.answer.channel ?? labelOf(chat));
+      return {
+        code,
+        stdout: [
+          `log discord posts: ${posts.length} of ${run.answer.total ?? posts.length} post(s) in ${name} (${run.answer.channelKind}), newest activity first${run.answer.stopped ? `, stopped: ${run.answer.stopped}` : ""}`,
+          ...posts.map((p) => [`  "${name} > ${p.title}"`, `    by ${p.author ?? "?"} · opened ${p.createdAt?.slice(0, 16) ?? "?"} · ${p.replies ?? 0} replies · last ${p.lastMessageAt?.slice(0, 16) ?? "?"}${p.tags.length ? ` · tags: ${p.tags.join(", ")}` : ""}${p.archived ? " · closed" : ""}${p.locked ? " · locked" : ""}`, ...(p.opening ? [`    ${p.opening.replace(/\s+/g, " ")}`] : [])].join("\n")),
+        ].join("\n"),
+      };
+    } catch (error) {
+      return refuseError("discord posts", error);
+    }
+  },
+};
+
+interface SearchHit { id: string; at: string; channelId: string; from: string; fromId: string; fromMe: boolean; replyTo: string | null; text: string; attachments: string[] }
+
+export const DISCORD_SEARCH_USAGE = [
+  "Usage: log discord search --account <accountName> --server <server name> --query \"<words>\" [--channel \"<server> #<channel>\"] [--from <name>] [--limit <n>] [--json]",
+  "Searches a whole server with Discord's own search, every channel, forum post and thread at once, on the direct-API engine (no browser): each hit's time, channel or post, who wrote it and its text, newest first. 25 a request, at most 200. --channel keeps one channel, --from one person (by name, matched to who wrote in the hits). Sends nothing. The fast way to find an old conversation in a server: no channel has to be read back.",
+].join("\n");
+
+export const DISCORD_SEARCH_INPUT: CommandInput = {
+  forms: [{
+    words: [],
+    summary: "Search a whole server with Discord's own search",
+    positionals: [],
+    flags: [
+      DISCORD_ACCOUNT,
+      { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" },
+      { name: "query", kind: "string", required: true, description: "The words to look for" },
+      { name: "channel", kind: "string", description: "Only this channel, as \"<server> #<channel>\"" },
+      { name: "from", kind: "string", description: "Only messages from this person, by their name" },
+      { name: "limit", kind: "string", description: "How many hits, default 25, at most 200" },
+      JSON_FLAG,
+    ],
+  }],
+};
+
+export const discordSearchCommand: Command = {
+  usage: DISCORD_SEARCH_USAGE,
+  platform: "discord",
+  name: "search",
+  effect: "read",
+  input: DISCORD_SEARCH_INPUT,
+  summary: "Search a whole Discord server (channels, forum posts and threads) with Discord's own search, on the direct-API engine, sending nothing",
+  args: "--account <a> --server <name> --query \"<words>\" [--channel \"<server> #<channel>\"] [--from <name>] [--limit <n>] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, parserSpecOf(DISCORD_SEARCH_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log discord search: ${parsed.error}\n${DISCORD_SEARCH_USAGE}` };
+    const limit = parsed.flags["limit"] === undefined ? 25 : Number(parsed.flags["limit"]);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log discord search: --limit must be 1 to 200\n${DISCORD_SEARCH_USAGE}` };
+    try {
+      const start = await serverCommandStart(context, String(parsed.flags["account"]), "discord search");
+      if ("refused" in start) return start.refused;
+      const looked = serverByName(start.direct, start.account, String(parsed.flags["server"]));
+      if ("failed" in looked) return { code: 1, stdout: `log discord search: ${start.account.accountName}: reading its servers: ${looked.failed}` };
+      if (!looked.found.ok) return refuse("discord search", looked.found.code, looked.found.detail);
+      const server = looked.found.server;
+      let channelId: string | undefined;
+      if (typeof parsed.flags["channel"] === "string") {
+        const said = parsed.flags["channel"].trim();
+        const found = channelByName(start.direct, start.account, said);
+        if ("failed" in found) return { code: 1, stdout: `log discord search: reading its channels to find "${said}": ${found.failed}` };
+        if (!found.found.ok) return refuse("discord search", found.found.code, found.found.detail);
+        channelId = found.found.chat.id;
+      }
+      const from = typeof parsed.flags["from"] === "string" ? normalizedName(parsed.flags["from"]) : "";
+      const run = start.direct(start.account, { action: "search", server: server.id, query: String(parsed.flags["query"]), limit: from ? 200 : limit, ...(channelId ? { channel: channelId } : {}) });
+      const hits = ((run.answer.messages as SearchHit[] | undefined) ?? []).filter((m) => !from || normalizedName(m.from ?? "").includes(from)).slice(0, limit);
+      const kept = cachedChatList<KeptChannel>("discord", start.account.accountName) ?? [];
+      const places = (run.answer.places as Record<string, string> | undefined) ?? {};
+      const placeOf = (id: string) => kept.find((c) => c.id === id)?.name ?? (places[id] ? `${server.name} > ${places[id]}` : `${server.name} channel ${id}`);
+      const code = run.answer.ok ? 0 : 1;
+      if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", platform: "discord", account: start.account.accountName, server: server.name, ...run.answer, messages: hits.map((h) => ({ ...h, place: placeOf(h.channelId) })) }, null, 2) };
+      if (!run.answer.ok) return { code, stdout: `log discord search: ${start.account.accountName}: ${run.answer.code}: ${run.answer.detail ?? ""}` };
+      return {
+        code,
+        stdout: [
+          `log discord search: ${hits.length} hit(s) for "${parsed.flags["query"]}" in ${server.name}${run.answer.total !== undefined ? ` (${run.answer.total} in all)` : ""}${run.answer.stopped ? `, stopped: ${run.answer.stopped}` : ""}`,
+          ...hits.map((m) => [`  ${m.at?.slice(0, 16)} ${m.from}${m.fromMe ? " (me)" : ""} in "${placeOf(m.channelId)}" · ${m.id}`, ...(m.text ? m.text.split("\n").map((l) => `    ${l}`) : []), ...m.attachments.map((a) => `    [attachment] ${a}`)].join("\n")),
+        ].join("\n"),
+      };
+    } catch (error) {
+      return refuseError("discord search", error);
     }
   },
 };

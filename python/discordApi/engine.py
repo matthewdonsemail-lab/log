@@ -158,7 +158,7 @@ def dms_of(client: Any) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
 
 SERVERS_FRESH_SECONDS = 24 * 3600
 SERVER_READ_SPACING = 1.5
-TEXT_CHANNELS = (0, 5, 15)
+TEXT_CHANNELS = (0, 5, 15, 16)
 
 
 def servers_path(spec: dict[str, Any]) -> Path:
@@ -211,7 +211,7 @@ def chats_of(token: str, spec: dict[str, Any] | None = None) -> dict[str, Any]:
     kinds = {1: "dm", 3: "group"}
     chats = [{"id": d["id"], "kind": kinds.get(d["type"], str(d["type"])), "name": d["name"], "members": [r.get("global_name") or r["username"] for r in d["recipients"]]} for d in dms]
     channels, problem = server_channels_of(client, spec or {})
-    return {"ok": True, "loginState": "loggedIn", "chats": chats + channels, **({"serversProblem": problem} if problem else {})}
+    return {"ok": True, "loginState": "loggedIn", "chats": chats + channels + kept_threads(spec or {}), **({"serversProblem": problem} if problem else {})}
 
 
 MEDIA_LINK = re.compile(r"^https?://\S+?\.(mp4|mov|gif|jpe?g|png|webp)(\?\S*)?$", re.I)
@@ -647,7 +647,185 @@ async def voice_notes(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str
     return await asyncio.to_thread(voice_notes_of, token, spec)
 
 
-ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes}
+CHANNEL_KINDS = {0: "text", 2: "voice", 4: "category", 5: "announcement", 10: "announcementThread", 11: "thread", 12: "privateThread", 13: "stage", 15: "forum", 16: "media"}
+POST_PAGE = 25
+
+
+def snowflake_time(snowflake: Any) -> str | None:
+    try:
+        seconds = ((int(snowflake) >> 22) + 1420070400000) / 1000
+    except (TypeError, ValueError):
+        return None
+    return time.strftime("%Y-%m-%dT%H:%M:%S+00:00", time.gmtime(seconds))
+
+
+def threads_path(spec: dict[str, Any]) -> Path:
+    return servers_path(spec).with_name("threads.json")
+
+
+def kept_threads(spec: dict[str, Any]) -> list[dict[str, Any]]:
+    try:
+        return json.loads(threads_path(spec).read_text(encoding="utf-8")).get("threads") or []
+    except (OSError, ValueError):
+        return []
+
+
+def keep_threads(spec: dict[str, Any], found: list[dict[str, Any]]) -> None:
+    fresh = {t["id"]: t for t in found}
+    merged = [t for t in kept_threads(spec) if t["id"] not in fresh] + list(fresh.values())
+    path = threads_path(spec)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"savedAt": time.time(), "threads": merged[-5000:]}), encoding="utf-8")
+
+
+def get_json(client: Any, url: str, where: str) -> tuple[Any, dict[str, Any] | None]:
+    data, status = client.request("GET", url, None, client.header)
+    if not status:
+        return None, {"ok": False, "code": "platformError", "detail": f"Discord didn't answer {where} (the network dropped)", "loginState": "unknown"}
+    if status == 202:
+        return None, {"ok": False, "code": "platformError", "detail": f"Discord answered 202 to {where}: its search index for this server isn't built yet, try again in a minute", "loginState": "loggedIn"}
+    if status != 200:
+        return None, refusal_of(status, data, where)
+    return json.loads(data), None
+
+
+def servers_of(token: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    guilds, refused = get_json(client, "/api/v9/users/@me/guilds", "/users/@me/guilds")
+    if refused:
+        return refused
+    return {"ok": True, "loginState": "loggedIn", "servers": [{"id": g["id"], "name": g.get("name"), "owner": bool(g.get("owner"))} for g in guilds]}
+
+
+def channels_of(token: str, server: str) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    raw, refused = get_json(client, f"/api/v9/guilds/{server}/channels", f"server {server} channels")
+    if refused:
+        return refused
+    categories = {c["id"]: c.get("name") for c in raw if c.get("type") == 4}
+    channels = [{
+        "id": c["id"],
+        "name": c.get("name"),
+        "kind": CHANNEL_KINDS.get(c.get("type"), str(c.get("type"))),
+        "category": categories.get(c.get("parent_id")),
+        "topic": c.get("topic"),
+        "position": c.get("position"),
+        "lastMessageAt": snowflake_time(c.get("last_message_id")),
+        **({"tags": [t.get("name") for t in c.get("available_tags") or []]} if c.get("available_tags") else {}),
+    } for c in raw if c.get("type") != 4]
+    channels.sort(key=lambda c: (c["category"] or "", c["position"] or 0))
+    return {"ok": True, "loginState": "loggedIn", "serverId": server, "channels": channels}
+
+
+def post_of(t: dict[str, Any], tags: dict[str, str], first: dict[str, Any] | None, owners: dict[str, str]) -> dict[str, Any]:
+    meta = t.get("thread_metadata") or {}
+    author = (first or {}).get("author") or {}
+    return {
+        "id": t["id"],
+        "title": t.get("name"),
+        "kind": CHANNEL_KINDS.get(t.get("type"), str(t.get("type"))),
+        "author": author.get("global_name") or author.get("username") or owners.get(str(t.get("owner_id"))),
+        "authorId": str(t.get("owner_id")),
+        "createdAt": meta.get("create_timestamp") or snowflake_time(t["id"]),
+        "lastMessageAt": snowflake_time(t.get("last_message_id")),
+        "replies": t.get("message_count"),
+        "tags": [tags.get(str(x), str(x)) for x in t.get("applied_tags") or []],
+        "archived": bool(meta.get("archived")),
+        "locked": bool(meta.get("locked")),
+        "opening": ((first or {}).get("content") or "")[:600],
+    }
+
+
+def posts_of(token: str, spec: dict[str, Any]) -> dict[str, Any]:
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    channel = str(spec["channel"])
+    limit = max(1, min(int(spec.get("limit") or POST_PAGE), 200))
+    parent, refused = get_json(client, f"/api/v9/channels/{channel}", f"channel {channel}")
+    if refused:
+        return refused
+    tags = {str(t["id"]): t.get("name") for t in parent.get("available_tags") or []}
+    archived = spec.get("archived")
+    posts: list[dict[str, Any]] = []
+    total = 0
+    offset = 0
+    while len(posts) < limit:
+        url = f"/api/v9/channels/{channel}/threads/search?sort_by=last_message_time&sort_order=desc&limit={min(POST_PAGE, limit - len(posts))}&tag_setting=match_some&offset={offset}" + (f"&archived={'true' if archived else 'false'}" if archived is not None else "")
+        body, refused = get_json(client, url, f"channel {channel} posts")
+        if refused:
+            if posts:
+                return {"ok": True, "loginState": "loggedIn", "channelId": channel, "total": total, "posts": posts, "stopped": refused.get("detail"), **({"httpStatus": refused["httpStatus"]} if refused.get("httpStatus") else {})}
+            return refused
+        total = int(body.get("total_results") or 0)
+        firsts = {str(m.get("channel_id") or m.get("id")): m for m in body.get("first_messages") or []}
+        owners = {str(m.get("user_id")): (m.get("member") or {}).get("nick") for m in body.get("members") or [] if isinstance(m, dict)}
+        page = [post_of(t, tags, firsts.get(str(t["id"])), {k: v for k, v in owners.items() if v}) for t in body.get("threads") or []]
+        posts += page
+        offset += len(page)
+        if not page or not body.get("has_more") or offset >= total:
+            break
+        time.sleep(SERVER_READ_SPACING)
+    server_name = str(spec.get("serverName") or "")
+    parent_name = f"{server_name} #{parent.get('name')}" if server_name else f"#{parent.get('name')}"
+    keep_threads(spec, [{"id": p["id"], "kind": "channel", "name": f"{parent_name} > {p['title']}", "members": [], "server": server_name or None, "serverId": str(parent.get("guild_id")), "parentId": channel} for p in posts])
+    return {"ok": True, "loginState": "loggedIn", "channelId": channel, "channel": parent_name, "channelKind": CHANNEL_KINDS.get(parent.get("type"), str(parent.get("type"))), "total": total, "posts": posts}
+
+
+def search_of(token: str, spec: dict[str, Any]) -> dict[str, Any]:
+    from urllib.parse import quote
+
+    client, failed = open_client(token)
+    if failed:
+        return failed
+    server = str(spec["server"])
+    limit = max(1, min(int(spec.get("limit") or POST_PAGE), 200))
+    query = "".join(f"&{key}={quote(str(value))}" for key, value in (("content", spec.get("query")), ("channel_id", spec.get("channel")), ("author_id", spec.get("author"))) if value)
+    me = str(client.my_id)
+    found: list[dict[str, Any]] = []
+    places: dict[str, str] = {}
+    total = 0
+    offset = 0
+    while len(found) < limit:
+        body, refused = get_json(client, f"/api/v9/guilds/{server}/messages/search?{query.lstrip('&')}" + (f"&offset={offset}" if offset else ""), f"server {server} search")
+        if refused:
+            if found:
+                return {"ok": True, "loginState": "loggedIn", "serverId": server, "total": total, "messages": found, "places": places, "stopped": refused.get("detail")}
+            return refused
+        total = int(body.get("total_results") or 0)
+        for t in body.get("threads") or []:
+            places[str(t["id"])] = str(t.get("name"))
+        page = [hit[0] for hit in body.get("messages") or [] if hit]
+        for m in page:
+            author = m.get("author") or {}
+            found.append({"id": m["id"], "at": m.get("timestamp"), "channelId": str(m.get("channel_id")), "from": author.get("global_name") or author.get("username"), "fromId": str(author.get("id")), "fromMe": str(author.get("id")) == me, "replyTo": (m.get("referenced_message") or {}).get("id") or (m.get("message_reference") or {}).get("message_id"), "text": m.get("content") or "", "attachments": [a.get("filename") for a in m.get("attachments") or []]})
+        offset += SEARCH_PAGE
+        if not page or offset >= total:
+            break
+        time.sleep(SERVER_READ_SPACING)
+    return {"ok": True, "loginState": "loggedIn", "serverId": server, "total": total, "messages": found[:limit], "places": places}
+
+
+def with_token(work: Any) -> Any:
+    async def action(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+        token = cookies.get("token")
+        if not token:
+            return {"ok": False, "code": "noPlatformSession", "detail": "no Discord token saved for this account", "loginState": "unknown"}
+        return await asyncio.to_thread(work, token, spec)
+    return action
+
+
+servers = with_token(lambda token, spec: servers_of(token))
+channels = with_token(lambda token, spec: channels_of(token, str(spec.get("server") or "")) if str(spec.get("server") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "channels needs a server id"})
+posts = with_token(lambda token, spec: posts_of(token, spec) if str(spec.get("channel") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "posts needs a channel id"})
+search = with_token(lambda token, spec: search_of(token, spec) if str(spec.get("server") or "").isdigit() else {"ok": False, "code": "sendInvalid", "detail": "search needs a server id"})
+
+
+ACTIONS = {"ping": ping, "chats": chats, "export": export, "read": read, "send": send, "delete": delete, "react": react, "voice": voice, "watch": watch, "voiceNotes": voice_notes, "servers": servers, "channels": channels, "posts": posts, "search": search}
 
 
 if __name__ == "__main__":
