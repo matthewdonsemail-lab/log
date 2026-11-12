@@ -25,7 +25,7 @@ Say: **"go on docs/useCases/twitter/followUps.md"**, and who, with what the owne
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Read each person in full, old DM thread and X Chat merged | `twitterDms` { account, with: "<handle>" } | everything they've said, oldest first |
+| 1 | Read each person's whole conversation | `twitterDms` { account, with: "<handle>" } | everything they've said, oldest first |
 | 2 | Take what the owner wants from each, in the owner's words only (met in person, ask advice, take up an offer) | the owner | one intent per person |
 | 3 | This chat's conversation card (what they said that is still open, what the owner already asked and said) and how the owner writes to this person | `voice` { to: "<handle>", with: "<handle>", context: "<what they said>" } | the owner's own lines to draft from |
 | 4 | Draft each one from those lines, in the owner's words and length. Every draft reads differently: no shared opener, no stock line. Each line of a draft is one message | the agent | one draft per person |

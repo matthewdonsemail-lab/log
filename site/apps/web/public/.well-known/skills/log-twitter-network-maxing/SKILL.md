@@ -30,7 +30,7 @@ Say: **"go on docs/useCases/twitter/networkMaxing.md"**. The agent reads this pa
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 1 | Who wrote last, message requests included; anyone who opened the owner's message without replying is listed apart, for "Everyone who opened it" | `twitterDms` { account, waiting: true, limit: "50" } | the list, newest first |
-| 2 | Read each in full, old DM thread and X Chat merged. Drop spam, pitches and bots: a real person who said something real stays | `twitterDms` { account, with: "<handle>" } | what each one said, and whether they're real |
+| 2 | Read each one's whole conversation. Drop spam, pitches and bots: a real person who said something real stays | `twitterDms` { account, with: "<handle>" } | what each one said, and whether they're real |
 | 3 | How the owner writes to this person | `voice` { to, with, context: "<what they said>" } | the owner's own lines to draft from |
 | 4 | Draft something nice that keeps it going and asks for nothing: answer what they said, say something true about them or their work, and get to know them (what they're doing, how it's going). Leave the door open. Never a pitch, never "let's hop on a call". Every draft reads differently | the agent | one draft per person |
 | 5 | Gate each draft, rewrite until it passes | `voice` { to, with, context, text } | the gate passes |

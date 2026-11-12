@@ -20,8 +20,7 @@ replies show up the second they land and no inbox read ever hits X's 429.
    already done there. Another session holding it means leave it; the send
    releases the claim.
 3. **Read everything with the person first:** `log twitter dms --account
-   <a> --with <handle>` (the old DM thread and X Chat are one conversation,
-   rule 88).
+   <a> --with <handle>` (their whole conversation).
 3. **Draft from matt's guide, with his facts only.** Read
    `C:/Users/0/.buzz/GUIDES/MATT_WRITING_STYLE.md` before drafting. Lowercase,
    no commas or full stops, his words, almost never end on a question, no
