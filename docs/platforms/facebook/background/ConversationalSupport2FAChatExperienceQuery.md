@@ -11,19 +11,20 @@
 | Sends | `request` |
 | Reads | `init_conversational_support_attempt_for_2fa.is_cometai_chat_available`, `init_conversational_support_attempt_for_2fa.attempt_token` |
 | Called from | `ConversationalSupport2FAChatExperience.react` |
-| rea | `ev_375f167746b9b15f68ee15d1ed0bb62852294f30b4159b0bf56d1afad856bcf5` |
+| rea | `ev_d11be8721cd4afab0439fc3c849dca2fa71e71821ec061de98d513058883f28e` |
 
 Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | signIn: password typed; submitting with Enter | 2 | 200 | 239–430 ms | 11476–13779 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 430 ms | 11476 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 1 | 200 | 672 ms | 29798 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T164654_61594285317994**, signIn: password typed; submitting with Enter: 200, 239 ms
+**runs/inspect/20261111T081957_61593610473511**, signIn: password typed; submitting with Enter: 200, 672 ms
 
 Sent:
 
@@ -35,7 +36,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "request": {
-      "encrypted_context": "AWS0QH6zFAzqoaf8cmMG-QxAIJwr6xNoT4IvAm7Od7SN9ZjOg0wEicKif6oM7UeBuSgdOUcH9Bj4EY1uVha68_tOERoY3Osu504jJKti4gwzseGxv-h6jyxHrdVjQ2_zX50Krc-2YxJ34UZT2Cc59O_bbh76gTM5TRPLvBh_27mN0Mdh7r4Fr39o12u05Z6tUWwZcchdPVb4_EKcWUAhzECtUCZsbtMPILJc5sks5C1zKRaOu5oIICYk6B98qGrqVGWTrnauSqy7nhaUfDk9b8dbGhYy_Tn_ajZSgWJkgKSRJtaN5yNJyENiqvsw-ShC2zh2Kp9BweCsZjS6abSVdyZjHGMXvPGcZO1OOxWB2mxnFnouTqVdtacAzRMvjfH2njhTW5Zqqs-wrxvN… (802 chars)",
+      "encrypted_context": "AWSQc_NCevZ8pzxONvPfuS4qG2w5MSxxBAQYhIjIz_AgSr0PmcG97jPcz49LgHI8GO2WfCu2WnrAnwFeFvajjkBKsJFEn6tOfSjQcrgoBTC82jceKxfQqgvvir9gXCClhAV4vZvDVg2yAYb01GIr6zpRp_QsMScNyNTH-5s7DcCDlhY_dMjRzRpLSvx5tvLxQqxtLMlTLRHSjJw7r2yi2OfJI4sMy7NzuIveTvbRPhxgpR5RpIIAeMAA_VxyNBPvxkebPYrFg9WidITh7gZsTGiVBrjOx2iW4ok_SQNW3nNYOxAr5RXJC6SSyyTdqpnODPDgH38Qdqk7HBm2X4SfgeeWPsW-dng0tI7c70KgdTk3qdr0dB4I_ewAyyYcqF6aUHY9Xc8S742a3Ccb… (958 chars)",
       "existing_token": null
     }
   },
@@ -58,8 +59,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793033436331,
-      "time_at_flush_ms": 1793033436367
+      "request_start_time_ms": 1794385867218,
+      "time_at_flush_ms": 1794385867243
     },
     "is_final": true
   }

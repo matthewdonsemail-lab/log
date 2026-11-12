@@ -11,7 +11,7 @@
 | Sends | — |
 | Reads | `fb_scraping_warning_clear` |
 | Called from | `FBScrapingWarningMutation` |
-| rea | `ev_dc1eb4f7a79a423e31e0b8c54cbd8b6984b20ccdb4abc3de5db86a84686f4c77` |
+| rea | `ev_7af21ac9cd534e18a388ccd12dcf757cf78ca62bc92d96de74837a68b388ba73` |
 
 Seen 4 time(s) in 4 run(s).
 
@@ -20,13 +20,13 @@ Seen 4 time(s) in 4 run(s).
 | connect | Auto-login: answered automatedBehaviour. | 1 | 200 | 1077 ms | 2 ms | — |
 | host | step 3: clickRole button "…" | 1 | 200 | 2114 ms | 976 ms | — |
 | host | step 28: clickRole button "…" | 1 | 200 | 1113 ms | 1192 ms | — |
-| host | step 18: clickRole button "…" | 1 | 200 | 731 ms | 800 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 941 ms | 814 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T164654_61594285317994**, step 18: clickRole button "…": 200, 731 ms
+**runs/inspect/20261111T081957_61593610473511**, step 8: click e53: 200, 941 ms
 
 Sent:
 
@@ -43,20 +43,47 @@ Sent:
 Answered:
 
 ```json
+null
+```
+
+**runs/host/20261024T222706_61593981307720**, step 28: clickRole button "…": 200, 1113 ms
+
+Sent:
+
+```json
 {
-  "data": {
-    "fb_scraping_warning_clear": {
-      "success": true
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1793033458851,
-      "time_at_flush_ms": 1793033459436
-    },
-    "is_final": true
-  }
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScrapingWarningMutation",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "24406519995698862"
 }
+```
+
+Answered:
+
+```json
+null
+```
+
+**runs/host/20261024T211541_61593939852820**, step 3: clickRole button "…": 200, 2114 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScrapingWarningMutation",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "24406519995698862"
+}
+```
+
+Answered:
+
+```json
+null
 ```
 
 <!-- facts:end -->

@@ -11,7 +11,7 @@
 | Sends | — |
 | Reads | `viewer.logout_hash`, `viewer.actor` |
 | Called from | `CometLogoutHandler.react` |
-| rea | `ev_12d775187d9aa65268863b0ca4e903a7c1f6081af93b55bce25e253e1045e8d9` |
+| rea | `ev_93007121314a1431e49915cf3c087648f0520a262c82854fa989a18c7ba27e6d` |
 
 Seen 10 time(s) in 10 run(s).
 
@@ -24,13 +24,61 @@ Seen 10 time(s) in 10 run(s).
 | host | step 1: goto /marketplace/selling/ | 1 | 200 | 809 ms | 2580 ms | — |
 | host | step 27: pageText | 1 | 200 | 379 ms | 2319 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 696 ms | 6542 ms | — |
-| host | step 17: pageText | 1 | 200 | 188 ms | 3100 ms | — |
+| inspect | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 967 ms | 8381 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T164654_61594285317994**, step 17: pageText: 200, 188 ms
+**runs/inspect/20261111T081957_61593610473511**, code: typed the current authenticator code; submitting with Enter: 200, 967 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometLogoutHandlerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9812519355492122"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "logout_whitelist": [
+      "^CacheStorageVersion$",
+      "^RSTData$",
+      "^RTC_VIDEO_INPUT$",
+      "^RTC_AUDIO_INPUT$",
+      "^RTC_AUDIO_OUTPUT$",
+      "^RTC_IS_AUDIO_ONLY$",
+      "… 99 more"
+    ],
+    "viewer": {
+      "logout_hash": "Afm2c1asB9Uh_vX3Gdc",
+      "actor": {
+        "__typename": "User",
+        "has_confirmed_contactpoints": true,
+        "pending_contactpoints": [],
+        "id": "61593610473511"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1794385920413,
+      "time_at_flush_ms": 1794385920460
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 643 ms
 
 Sent:
 
@@ -59,19 +107,67 @@ Answered:
       "… 98 more"
     ],
     "viewer": {
-      "logout_hash": "AfnRtcy9iKk87eM-_yU",
+      "logout_hash": "AfkmQBzbvkh9kfgylII",
       "actor": {
         "__typename": "User",
         "has_confirmed_contactpoints": true,
         "pending_contactpoints": [],
-        "id": "61594285317994"
+        "id": "61593843527201"
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793033451974,
-      "time_at_flush_ms": 1793033452018
+      "request_start_time_ms": 1792862149605,
+      "time_at_flush_ms": 1792862149663
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 379 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometLogoutHandlerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9812519355492122"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "logout_whitelist": [
+      "^CacheStorageVersion$",
+      "^RSTData$",
+      "^RTC_VIDEO_INPUT$",
+      "^RTC_AUDIO_INPUT$",
+      "^RTC_AUDIO_OUTPUT$",
+      "^RTC_IS_AUDIO_ONLY$",
+      "… 98 more"
+    ],
+    "viewer": {
+      "logout_hash": "Afn16gW7g4R9xF8oV5Y",
+      "actor": {
+        "__typename": "User",
+        "has_confirmed_contactpoints": true,
+        "pending_contactpoints": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792824693955,
+      "time_at_flush_ms": 1792824694004
     },
     "is_final": true
   }

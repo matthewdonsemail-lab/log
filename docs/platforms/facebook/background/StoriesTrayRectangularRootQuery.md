@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `27831542276468324` |
+| doc_id | `28646477395024243` |
 | Path | `/api/graphql/` |
 | Sends | `blur`, `bucketsToFetch`, `isFbNotesIncluded`, `scale`, `trayType`, `__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider`, `__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider`, `__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider`, `__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider`, `__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider` |
 | Reads | `me`, `viewer.actor`, `viewer....useStoriesTrayRefresh_viewer` |
 | Called from | `StoriesTrayRectangularRoot.react` |
-| rea | `ev_7099c1c21007c329c9526ae168304a481b11618c2a37ecf98ba0b54a4ee462ed` |
+| rea | `ev_a7f1c4bcf6e830d1031ba50cf9f1ba169ed1bca9cdfed13d790f44835b767df4` |
 
-Seen 26 time(s) in 18 run(s).
+Seen 25 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -40,14 +40,13 @@ Seen 26 time(s) in 18 run(s).
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 976 ms | 219901 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 979 ms | 12050 ms | — |
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 872 ms | 9222 ms | — |
-| host | step 32: goto /marketplace/ | 1 | 200 | 386 ms | 12658 ms | — |
-| host | step 38: goto /marketplace/you/selling | 1 | 200 | 385 ms | 17040 ms | — |
+| inspect | step 10: press Escape | 1 | 200 | 429 ms | 104 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 386 ms
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 1050 ms
 
 Sent:
 
@@ -59,11 +58,11 @@ Sent:
   "variables": {
     "blur": 10,
     "bucketsToFetch": 6,
-    "isFbNotesIncluded": true,
+    "isFbNotesIncluded": false,
     "scale": 1,
     "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
     "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
-    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
     "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
     "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
     "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
@@ -86,7 +85,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122095713291476177",
+              "id": "122126439807468773",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -95,18 +94,18 @@ Answered:
               "story_bucket_owner": {
                 "__typename": "User",
                 "profilePic": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "61594285317994",
+                "id": "61594063207669",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
-                "name": "Halima Ndjzn",
+                "name": "Bethlehem Trash",
                 "profile_picture": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
                 },
                 "coverImage": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
                 }
               },
               "story_bucket_type": "STORY",
@@ -117,41 +116,41 @@ Answered:
               },
               "can_viewer_post": true,
               "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"5a6bb19f-f7ef-48d5-9ed7-33d1d0b46bf5\",\"bucket_id\":\"122095713291476177\",\"owner_id\":\"61594285317994\",\"scored_time\":0,\"ranker_join_key\":\"54f4f4ff-4877-419d-bdea-5eb84251e262\",\"raas_position\":0,\"raas_newly_scored_position\":-1,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"prn\\\",\\\"snapshotId\\\":7754077029247465175,\\\"versionId\\\":0,\\\"creati… (422 chars)",
+              "ranking_tracking_string": "{\"request_id\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"1d4fce12-54a1-4b5d-a249-e943acaa586d\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"rva\\\",\\\"snapshotId\\\":7981457366225466703,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
               "thumbnail_story_to_show": null,
               "is_bucket_live": false
             },
-            "cursor": "NjE1OTQyODUzMTc5OTQ6MToxNzkzMDM4MzMxOjEyMjA5NTcxMzI5MTQ3NjE3NzotMTpwcm46Nzc1NDA3NzAyOTI0NzQ2NTE3NTowOjE3OTMwMzgzMzE6OjA="
+            "cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzQyMjM4OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpydmE6Nzk4MTQ1NzM2NjIyNTQ2NjcwMzowOjE3OTI3NDIyMzg6OjA="
           }
         ],
         "page_info": {
-          "end_cursor": "NjE1OTQyODUzMTc5OTQ6MToxNzkzMDM4MzMxOjEyMjA5NTcxMzI5MTQ3NjE3NzotMTpwcm46Nzc1NDA3NzAyOTI0NzQ2NTE3NTowOjE3OTMwMzgzMzE6OjA=",
+          "end_cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzQyMjM4OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpydmE6Nzk4MTQ1NzM2NjIyNTQ2NjcwMzowOjE3OTI3NDIyMzg6OjA=",
           "has_next_page": false
         }
       },
-      "id": "61594285317994",
+      "id": "61594063207669",
       "profilePicture": {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
       }
     },
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594285317994"
+        "id": "61594063207669"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -159,15 +158,15 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1793038331030,
-      "time_at_flush_ms": 1793038331181
+      "request_start_time_ms": 1792742238170,
+      "time_at_flush_ms": 1792742238449
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 385 ms
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 797 ms
 
 Sent:
 
@@ -179,11 +178,11 @@ Sent:
   "variables": {
     "blur": 10,
     "bucketsToFetch": 6,
-    "isFbNotesIncluded": true,
+    "isFbNotesIncluded": false,
     "scale": 1,
     "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
     "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
-    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
     "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
     "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
     "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
@@ -206,7 +205,7 @@ Answered:
             "node": {
               "__typename": "DirectMessageThreadBucket",
               "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122095713291476177",
+              "id": "122126439807468773",
               "unified_stories": {
                 "nodes": [],
                 "is_empty": true
@@ -215,18 +214,18 @@ Answered:
               "story_bucket_owner": {
                 "__typename": "User",
                 "profilePic": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
                 },
                 "__isNode": "User",
-                "id": "61594285317994",
+                "id": "61594063207669",
                 "is_viewer_friend": false,
                 "gender": "FEMALE",
-                "name": "Halima Ndjzn",
+                "name": "Bethlehem Trash",
                 "profile_picture": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
                 },
                 "coverImage": {
-                  "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)"
+                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
                 }
               },
               "story_bucket_type": "STORY",
@@ -237,41 +236,41 @@ Answered:
               },
               "can_viewer_post": true,
               "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"5c6f2bd0-63c1-481f-9c0f-9ab5745a8e88\",\"bucket_id\":\"122095713291476177\",\"owner_id\":\"61594285317994\",\"scored_time\":0,\"ranker_join_key\":\"54f4f4ff-4877-419d-bdea-5eb84251e262\",\"raas_position\":0,\"raas_newly_scored_position\":-1,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"prn\\\",\\\"snapshotId\\\":336912580674075692,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
+              "ranking_tracking_string": "{\"request_id\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"6aef2c79-927e-410f-81e1-333758f5d71e\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"ncg\\\",\\\"snapshotId\\\":2336266685962601271,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
               "thumbnail_story_to_show": null,
               "is_bucket_live": false
             },
-            "cursor": "NjE1OTQyODUzMTc5OTQ6MToxNzkzMDM4NDM2OjEyMjA5NTcxMzI5MTQ3NjE3NzotMTpwcm46MzM2OTEyNTgwNjc0MDc1NjkyOjA6MTc5MzAzODQzNjo6MA=="
+            "cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzQyMzk2OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpuY2c6MjMzNjI2NjY4NTk2MjYwMTI3MTowOjE3OTI3NDIzOTY6OjA="
           }
         ],
         "page_info": {
-          "end_cursor": "NjE1OTQyODUzMTc5OTQ6MToxNzkzMDM4NDM2OjEyMjA5NTcxMzI5MTQ3NjE3NzotMTpwcm46MzM2OTEyNTgwNjc0MDc1NjkyOjA6MTc5MzAzODQzNjo6MA==",
+          "end_cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzQyMzk2OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpuY2c6MjMzNjI2NjY4NTk2MjYwMTI3MTowOjE3OTI3NDIzOTY6OjA=",
           "has_next_page": false
         }
       },
-      "id": "61594285317994",
+      "id": "61594063207669",
       "profilePicture": {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)"
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)"
       }
     },
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594285317994"
+        "id": "61594063207669"
       }
     }
   },
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (482 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/861826748_122127009285476177_3116611628911920417_n.jpg (484 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -279,8 +278,128 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1793038436485,
-      "time_at_flush_ms": 1793038436636
+      "request_start_time_ms": 1792742396622,
+      "time_at_flush_ms": 1792742396947
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261111T081957_61593610473511**, step 10: press Escape: 200, 429 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "StoriesTrayRectangularRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "blur": 10,
+    "bucketsToFetch": 6,
+    "isFbNotesIncluded": false,
+    "scale": 1,
+    "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
+    "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
+    "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
+    "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false
+  },
+  "doc_id": "28646477395024243"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "unified_stories_buckets": {
+        "edges": [
+          {
+            "node": {
+              "__typename": "DirectMessageThreadBucket",
+              "__isStoryBucket": "DirectMessageThreadBucket",
+              "id": "122099276547453682",
+              "unified_stories": {
+                "nodes": [],
+                "is_empty": true
+              },
+              "first_story_to_show": null,
+              "story_bucket_owner": {
+                "__typename": "User",
+                "profilePic": {
+                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
+                },
+                "__isNode": "User",
+                "id": "61593610473511",
+                "is_viewer_friend": false,
+                "gender": "FEMALE",
+                "name": "Halima Nxkdnb",
+                "profile_picture": {
+                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
+                },
+                "coverImage": {
+                  "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (419 chars)"
+                }
+              },
+              "story_bucket_type": "STORY",
+              "is_bucket_seen_by_viewer": true,
+              "unified_stories_with_notes": {
+                "edges": [],
+                "nodes": []
+              },
+              "can_viewer_post": true,
+              "should_show_close_friend_badge": false,
+              "ranking_tracking_string": "{\"request_id\":\"9a89e463-86f5-46be-bc68-ec306990eea1\",\"bucket_id\":\"122099276547453682\",\"owner_id\":\"61593610473511\",\"scored_time\":0,\"ranker_join_key\":\"12209469-baa0-4d32-86e0-913f56438125\",\"raas_position\":0,\"raas_newly_scored_position\":-1,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"hil\\\",\\\"snapshotId\\\":5620441670970226314,\\\"versionId\\\":0,\\\"creati… (422 chars)",
+              "thumbnail_story_to_show": null,
+              "is_bucket_live": false
+            },
+            "cursor": "NjE1OTM2MTA0NzM1MTE6MToxNzk0Mzg2MTE0OjEyMjA5OTI3NjU0NzQ1MzY4MjotMTpoaWw6NTYyMDQ0MTY3MDk3MDIyNjMxNDowOjE3OTQzODYxMTQ6OjA="
+          }
+        ],
+        "page_info": {
+          "end_cursor": "NjE1OTM2MTA0NzM1MTE6MToxNzk0Mzg2MTE0OjEyMjA5OTI3NjU0NzQ1MzY4MjotMTpoaWw6NTYyMDQ0MTY3MDk3MDIyNjMxNDowOjE3OTQzODYxMTQ6OjA=",
+          "has_next_page": false
+        }
+      },
+      "id": "61593610473511",
+      "profilePicture": {
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (401 chars)"
+      }
+    },
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61593610473511"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (401 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1794386114242,
+      "time_at_flush_ms": 1794386114356
     },
     "is_final": true
   }
