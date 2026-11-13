@@ -40,7 +40,7 @@ async function api(path, options = {}) {
 
 const VENDORS = join(root, 'docs/vendors')
 const FIELDS = ['cUser', 'password', 'cookies', 'accessToken', 'totpSecret', 'email', 'userAgent', 'homeCity', 'homeCountry']
-const files = readdirSync(VENDORS).filter((f) => f.endsWith('.txt')).sort()
+const files = existsSync(VENDORS) ? readdirSync(VENDORS).filter((f) => f.endsWith('.txt')).sort() : []
 if (files.length === 0) {
   console.log('No docs/vendors/*.txt order files.')
   process.exit(0)

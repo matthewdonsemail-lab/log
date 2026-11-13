@@ -26,4 +26,4 @@ Credentials, sessions, messages and detailed execution stay at the selected priv
 
 ## Historical procedures
 
-The old Marketplace-only guide is archived in ruleHistory/logCliBefore20261111.md. Use current platform guides for a specific supported operation. Do not import historical data models into native hosted development.
+The old Marketplace-only guide is retired. Use current platform guides for a specific supported operation. Do not import historical data models into native hosted development.

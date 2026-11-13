@@ -13,7 +13,7 @@ AGENTS.md is the active implementation contract. Record durable constraints, sco
 
 1. Read the current task and current rules. Existing authorization is sufficient; do not ask again to prune rules Matt explicitly asked to prune.
 2. Add or update a concise dated rule in Matt's meaning. Preserve stable active rule ids and the `## Hard rules (from matt)` heading because the knowledge/MCP collectors parse them.
-3. If Matt authorized removal or consolidation, preserve the prior text in ruleHistory, outside automatically collected docs. Record old-to-current citations in ruleHistory/index.md and the MCP generator's consolidated mapping. Never silently renumber a historical id to unrelated behavior.
+3. If Matt authorized removal or consolidation, preserve the prior text in the private workspace rule archive, outside this repository. Record old-to-current citations in the MCP generator's consolidated mapping. Never silently renumber a historical id to unrelated behavior.
 4. Keep the native ownership/scope rules authoritative. A platform procedure or old generated field inventory cannot reintroduce a superseded architecture.
 5. Update the affected skill/spec and generated MCP guidance when applicable. Generated guides are rebuilt from their sources. Do not load the full historical snapshot into active client instructions.
 6. Check document links, parser-compatible rule formatting and citations. Do not add or run application tests unless Matt asks. Do not perform paid semantic review as routine rule maintenance.

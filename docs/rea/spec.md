@@ -7,7 +7,7 @@ This is the question the REA research set out to answer, written down so the web
 Make REA usable on the Facebook client log already opens, which is Playwright driving Camoufox. Then use that evidence to check two pieces of existing work:
 
 - the humanize setting at launch, in `python/browser/visibleBrowser.py`;
-- the 22 identity-leak surfaces in `docs/identityLeaks/`.
+- the 22 identity-leak surfaces in the private identity-leak study.
 
 The way there is public evidence, not a new browser. Web research looks for every public REA use against a Meta product, and for public code that records a Playwright Firefox page. SubQ's Decisions API ranks the ways to connect those findings to this client. The winner has to keep the gate.
 
@@ -39,7 +39,7 @@ A finding is useful here only if it cites a Camoufox or Playwright file and says
 
 ## The 22 surfaces
 
-They're the rows in `docs/identityLeaks/README.md`. At the time, these were still open: the canvas hash changes every launch, WebGL pixels come from the machine's GPU, Camoufox detectability wasn't re-measured on 156.0.1-beta.39, a person at the keyboard during sign-in, and listing text. The others were fixed or not leaking, on the evidence in that folder.
+They're the rows in the private identity-leak study. At the time, these were still open: the canvas hash changes every launch, WebGL pixels come from the machine's GPU, Camoufox detectability wasn't re-measured on 156.0.1-beta.39, a person at the keyboard during sign-in, and listing text. The others were fixed or not leaking, on the evidence in that folder.
 
 REA doesn't close those rows. A saved script can show whether the create page's own code reads a surface. That's a check on the study, not a new countermeasure, and a script that never touches a surface doesn't prove Facebook's servers ignore it.
 

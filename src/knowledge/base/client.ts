@@ -5,7 +5,7 @@ import { reciprocalRankFusion } from '../../search/conversations/helpers/fuse'
 import type { Embedder } from '../../search/conversations/types'
 import { articleHash, chunksOf } from './helpers/chunk'
 import { scrubSecrets } from './helpers/scrub'
-import { KB_DEFAULT_TWENTY_URL, KB_SEARCH_DEPTH } from './types'
+import { KB_SEARCH_DEPTH, KB_TWENTY_URL_ENV } from './types'
 import type { KbArticle, KbConfig, KbHit, KbIndex, KbKind, KbStore, KbStoredArticle, KbSyncReport } from './types'
 
 const CONFIG_DIR = join(homedir(), '.config', 'listeningkit')
@@ -15,9 +15,10 @@ function fromFile(path: string): string {
 }
 
 export function kbConfig(env: Record<string, string | undefined> = process.env): KbConfig | { missing: string } {
-  const twentyUrl = (env.KB_TWENTY_URL || KB_DEFAULT_TWENTY_URL).trim()
+  const twentyUrl = (env[KB_TWENTY_URL_ENV] || '').trim()
   const twentyKey = (env.KB_TWENTY_API_KEY || fromFile(env.KB_TWENTY_API_KEY_FILE || join(CONFIG_DIR, 'twenty-listeningkit-api-key.txt'))).trim()
   const redisUrl = (env.KB_REDIS_URL || fromFile(env.KB_REDIS_URL_FILE || join(CONFIG_DIR, 'kb-redis-url.txt'))).trim()
+  if (!twentyUrl) return { missing: `${KB_TWENTY_URL_ENV} (the URL of your own Twenty server; there is no default host)` }
   if (!twentyKey) return { missing: 'KB_TWENTY_API_KEY (or the file ~/.config/listeningkit/twenty-listeningkit-api-key.txt)' }
   if (!redisUrl) return { missing: 'KB_REDIS_URL (or the file ~/.config/listeningkit/kb-redis-url.txt)' }
   return { twentyUrl, twentyKey, redisUrl }

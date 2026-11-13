@@ -23254,7 +23254,7 @@ export type FacebookAccountMigrationStatusEnum = 'METADATA_ONLY' | 'ENCRYPTED_AC
 export type FacebookAccountConnectionStateEnum = 'CONNECTED' | 'NEEDS_ATTENTION' | 'NOT_CONFIGURED'
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccount {
     /** ID */
     id: Scalars['UUID']
@@ -23298,17 +23298,17 @@ export interface FacebookAccount {
     statusChangedAt?: Scalars['DateTime']
     /** Whether the source record contained login material. No secret value is stored in Twenty. */
     legacyCredentialPresent?: Scalars['Boolean']
-    /** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+    /** Whether legacy access was sealed into the protected AES-256-GCM vault. */
     credentialsMigrated?: Scalars['Boolean']
     /** Last update timestamp supplied by the legacy source record. */
     sourceUpdatedAt?: Scalars['DateTime']
-    /** When this safe metadata snapshot was last synchronized to node02. */
+    /** When this safe metadata snapshot was last synchronized. */
     migratedAt?: Scalars['DateTime']
     /** Whether only metadata moved or encrypted access also completed. */
     migrationStatus?: FacebookAccountMigrationStatusEnum
     /** Original system retained as a read-only migration source. */
     sourceSystem?: Scalars['String']
-    /** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+    /** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
     sourceAccountId?: Scalars['String']
     /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
     connectionState?: FacebookAccountConnectionStateEnum
@@ -23326,7 +23326,7 @@ export interface FacebookAccount {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountEdge {
     node: FacebookAccount
     cursor: Scalars['Cursor']
@@ -23334,7 +23334,7 @@ export interface FacebookAccountEdge {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountConnection {
     /** Total number of records in the connection */
     totalCount?: Scalars['Int']
@@ -23668,7 +23668,7 @@ export interface FacebookAccountConnection {
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByConnection {
     /** Total number of records in the connection */
     totalCount?: Scalars['Int']
@@ -38564,7 +38564,7 @@ export interface SocialAccount {
     browserDriver?: Scalars['String']
     /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
     profilePhoto?: Scalars['String']
-    /** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+    /** log-cli: who sold the account, as named in the private vendor order files */
     vendor?: Scalars['String']
     /** log-cli: used to pick the least recently used replacement */
     lastPostedAt?: Scalars['DateTime']
@@ -96056,7 +96056,7 @@ syncedAt?: (GroupByDateGranularityInput | null),
 failureReason?: (Scalars['Boolean'] | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGenqlSelection{
     /** ID */
     id?: boolean | number
@@ -96100,17 +96100,17 @@ export interface FacebookAccountGenqlSelection{
     statusChangedAt?: boolean | number
     /** Whether the source record contained login material. No secret value is stored in Twenty. */
     legacyCredentialPresent?: boolean | number
-    /** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+    /** Whether legacy access was sealed into the protected AES-256-GCM vault. */
     credentialsMigrated?: boolean | number
     /** Last update timestamp supplied by the legacy source record. */
     sourceUpdatedAt?: boolean | number
-    /** When this safe metadata snapshot was last synchronized to node02. */
+    /** When this safe metadata snapshot was last synchronized. */
     migratedAt?: boolean | number
     /** Whether only metadata moved or encrypted access also completed. */
     migrationStatus?: boolean | number
     /** Original system retained as a read-only migration source. */
     sourceSystem?: boolean | number
-    /** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+    /** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
     sourceAccountId?: boolean | number
     /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
     connectionState?: boolean | number
@@ -96129,7 +96129,7 @@ export interface FacebookAccountGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountEdgeGenqlSelection{
     node?: FacebookAccountGenqlSelection
     cursor?: boolean | number
@@ -96138,7 +96138,7 @@ export interface FacebookAccountEdgeGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountConnectionGenqlSelection{
     /** Total number of records in the connection */
     totalCount?: boolean | number
@@ -96473,7 +96473,7 @@ export interface FacebookAccountConnectionGenqlSelection{
 }
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByConnectionGenqlSelection{
     /** Total number of records in the connection */
     totalCount?: boolean | number
@@ -96825,7 +96825,7 @@ export interface FacebookAccountWhereUniqueInput {
 id?: (Scalars['ID'] | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountCreateInput {
 /** ID */
 id?: (Scalars['ID'] | null),
@@ -96869,23 +96869,23 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 statusChangedAt?: (Scalars['DateTime'] | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (Scalars['DateTime'] | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (Scalars['DateTime'] | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnum | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['String'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['String'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountUpdateInput {
 /** ID */
 id?: (Scalars['ID'] | null),
@@ -96929,23 +96929,23 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 statusChangedAt?: (Scalars['DateTime'] | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (Scalars['DateTime'] | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (Scalars['DateTime'] | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnum | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['String'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['String'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountFilterInput {
 /** ID */
 id?: (UUIDFilter | null),
@@ -96989,17 +96989,17 @@ lastPostedAt?: (DateTimeFilter | null),
 statusChangedAt?: (DateTimeFilter | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (BooleanFilter | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (BooleanFilter | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (DateTimeFilter | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (DateTimeFilter | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (FacebookAccountMigrationStatusEnumFilter | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (StringFilter | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (StringFilter | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (FacebookAccountConnectionStateEnumFilter | null),and?: ((FacebookAccountFilterInput | null)[] | null),or?: ((FacebookAccountFilterInput | null)[] | null),not?: (FacebookAccountFilterInput | null)}
@@ -97009,7 +97009,7 @@ export interface FacebookAccountMigrationStatusEnumFilter {eq?: (FacebookAccount
 export interface FacebookAccountConnectionStateEnumFilter {eq?: (FacebookAccountConnectionStateEnum | null),neq?: (FacebookAccountConnectionStateEnum | null),in?: ((FacebookAccountConnectionStateEnum | null)[] | null),containsAny?: ((FacebookAccountConnectionStateEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (FacebookAccountConnectionStateEnum | null),gte?: (FacebookAccountConnectionStateEnum | null),lt?: (FacebookAccountConnectionStateEnum | null),lte?: (FacebookAccountConnectionStateEnum | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountOrderByInput {
 /** ID */
 id?: (OrderByDirection | null),
@@ -97053,23 +97053,23 @@ lastPostedAt?: (OrderByDirection | null),
 statusChangedAt?: (OrderByDirection | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (OrderByDirection | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (OrderByDirection | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (OrderByDirection | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (OrderByDirection | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (OrderByDirection | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (OrderByDirection | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (OrderByDirection | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (OrderByDirection | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountOrderByWithGroupByInput {
 /** Order by aggregate values */
 aggregate?: (FacebookAccountOrderByWithGroupByAggregateInput | null),
@@ -97115,17 +97115,17 @@ lastPostedAt?: (OrderByDateGranularityInput | null),
 statusChangedAt?: (OrderByDateGranularityInput | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (OrderByDirection | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (OrderByDirection | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (OrderByDateGranularityInput | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (OrderByDateGranularityInput | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (OrderByDirection | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (OrderByDirection | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (OrderByDirection | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (OrderByDirection | null)}
@@ -97461,7 +97461,7 @@ percentageEmptyConnectionState?: (OrderByDirection | null),
 percentageNotEmptyConnectionState?: (OrderByDirection | null)}
 
 
-/** Canonical inventory of ListeningKit Facebook accounts migrated from node01. Twenty stores understandable operational metadata only; access remains encrypted on node02, and no account is authorized to run until its next action is completed. */
+/** Canonical inventory of Facebook accounts migrated from an earlier CRM. Twenty stores understandable operational metadata only; access remains encrypted in a separate vault, and no account is authorized to run until its next action is completed. */
 export interface FacebookAccountGroupByInput {
 /** Creation date */
 createdAt?: (GroupByDateGranularityInput | null),
@@ -97497,17 +97497,17 @@ lastPostedAt?: (GroupByDateGranularityInput | null),
 statusChangedAt?: (GroupByDateGranularityInput | null),
 /** Whether the source record contained login material. No secret value is stored in Twenty. */
 legacyCredentialPresent?: (Scalars['Boolean'] | null),
-/** Whether legacy access was sealed into the protected AES-256-GCM vault on node02. */
+/** Whether legacy access was sealed into the protected AES-256-GCM vault. */
 credentialsMigrated?: (Scalars['Boolean'] | null),
 /** Last update timestamp supplied by the legacy source record. */
 sourceUpdatedAt?: (GroupByDateGranularityInput | null),
-/** When this safe metadata snapshot was last synchronized to node02. */
+/** When this safe metadata snapshot was last synchronized. */
 migratedAt?: (GroupByDateGranularityInput | null),
 /** Whether only metadata moved or encrypted access also completed. */
 migrationStatus?: (Scalars['Boolean'] | null),
 /** Original system retained as a read-only migration source. */
 sourceSystem?: (Scalars['Boolean'] | null),
-/** Stable identifier from the read-only node01 CRM, used only for idempotent migration. */
+/** Stable identifier from the earlier read-only CRM, used only for idempotent migration. */
 sourceAccountId?: (Scalars['Boolean'] | null),
 /** High-level readiness only. Connected means encrypted access exists, not that automation is running. */
 connectionState?: (Scalars['Boolean'] | null)}
@@ -124930,7 +124930,7 @@ export interface SocialAccountGenqlSelection{
     browserDriver?: boolean | number
     /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
     profilePhoto?: boolean | number
-    /** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+    /** log-cli: who sold the account, as named in the private vendor order files */
     vendor?: boolean | number
     /** log-cli: used to pick the least recently used replacement */
     lastPostedAt?: boolean | number
@@ -126371,7 +126371,7 @@ coverPhoto?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | nul
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['String'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['String'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (Scalars['DateTime'] | null),
@@ -126471,7 +126471,7 @@ coverPhoto?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | nul
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['String'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['String'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (Scalars['DateTime'] | null),
@@ -126571,7 +126571,7 @@ coverPhoto?: (StringFilter | null),emailPassword?: (StringFilter | null),email?:
 browserDriver?: (StringFilter | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (StringFilter | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (StringFilter | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (DateTimeFilter | null),
@@ -126675,7 +126675,7 @@ coverPhoto?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null)
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (OrderByDirection | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (OrderByDirection | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (OrderByDirection | null),
@@ -126777,7 +126777,7 @@ coverPhoto?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null)
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (OrderByDirection | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (OrderByDirection | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (OrderByDateGranularityInput | null),
@@ -127507,7 +127507,7 @@ coverPhoto?: (Scalars['Boolean'] | null),emailPassword?: (Scalars['Boolean'] | n
 browserDriver?: (Scalars['Boolean'] | null),
 /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
 profilePhoto?: (Scalars['Boolean'] | null),
-/** log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop) */
+/** log-cli: who sold the account, as named in the private vendor order files */
 vendor?: (Scalars['Boolean'] | null),
 /** log-cli: used to pick the least recently used replacement */
 lastPostedAt?: (GroupByDateGranularityInput | null),

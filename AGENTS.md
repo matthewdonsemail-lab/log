@@ -16,7 +16,7 @@ Read the internal request/response evidence and collate the goal, account/runtim
 
 ## How to read these instructions
 
-Use the current task and active rules below. Stable rule numbers are retained for tool citations; gaps are intentional. Consolidated rule mappings and the full historical snapshot live in [the rule archive index](ruleHistory/index.md). Do not load the full archive as active instructions.
+Use the current task and active rules below. Stable rule numbers are retained for tool citations; gaps are intentional. Consolidated rule mappings are kept in the MCP generator; the historical snapshot is archived outside this repository and is not active instruction.
 
 For platform work, read the relevant skill/use-case and current domain spec. Platform browser gates, current account-specific limits and credential formats remain enforced by existing implementations. Do not turn their historical storage conventions into a new native schema.
 
@@ -136,7 +136,7 @@ For platform work, read the relevant skill/use-case and current domain spec. Pla
 
 175. 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.
 
-176. 2026-11-11 · Matt requested pruning obsolete agent rules. AGENTS.md is the concise active instruction set; ruleHistory preserves prior instructions as non-authoritative history. Keep platform procedures in their relevant skills/specs and dated one-off incidents out of global instructions. A historical citation does not restore superseded architecture.
+176. 2026-11-11 · Matt requested pruning obsolete agent rules. AGENTS.md is the concise active instruction set; prior instructions are archived outside this repository as non-authoritative history. Keep platform procedures in their relevant skills/specs and dated one-off incidents out of global instructions. A historical citation does not restore superseded architecture.
 
 177. 2026-11-12 · Website and console errors show as toasts through the shared `@listeningkit/ui` toast, never inline under a field, in a form or on the page. A failed load toasts its error and leaves only a neutral empty state with its Try again action. Errors from embedded widgets (Clerk's form) are hidden in place and raised as toasts.
 

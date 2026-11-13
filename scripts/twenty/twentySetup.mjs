@@ -53,7 +53,7 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'messengerPin', label: 'Messenger PIN', type: 'TEXT', description: "log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it" },
   { name: 'accessToken', label: 'Access token', type: 'TEXT', description: 'log-cli: the Facebook access token the vendor delivered. A credential: never print it' },
   { name: 'vendorUserAgent', label: 'Vendor user agent', type: 'TEXT', description: 'log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15)' },
-  { name: 'vendor', label: 'Vendor', type: 'TEXT', description: 'log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop)' },
+  { name: 'vendor', label: 'Vendor', type: 'TEXT', description: 'log-cli: who sold the account, as named in the private vendor order files' },
   { name: 'vendorOrderId', label: 'Vendor order', type: 'TEXT', description: 'log-cli: the vendor order or invoice id' },
   { name: 'vendorListingUrl', label: 'Vendor listing URL', type: 'TEXT', description: 'log-cli: the product page it was bought from' },
   { name: 'purchasedAt', label: 'Purchased', type: 'DATE_TIME', description: 'logCli' },

@@ -6,7 +6,15 @@ node_modules/
 __pycache__/
 
 # vendor orders carry live cookies, tokens and 2FA secrets
-docs/vendors/*.txt
+docs/vendors/
+
+# internal-only material kept in the private workspace, never in this public repo
+docs/infra/
+docs/identityLeaks/
+docs/deviceIsolation/
+ruleHistory/
+RESEARCH/
+media/personas/
 
 # matt's messages and everything built from them stay on this machine (~/.logCli), never in git
 .logCli/

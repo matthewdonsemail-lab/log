@@ -13,7 +13,7 @@ export const KB_USAGE = [
   "       log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, skills, docs, infra notes, every Claude memory file, the known page states and the accounts from log-cli's Twenty, writes them to the knowledge base in ListeningKit's Twenty, and indexes what changed into Redis)",
   "       log kb remember \"<text>\" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)",
   "       log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)",
-  `Kinds: ${KB_KINDS.join(", ")}. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.`,
+  `Kinds: ${KB_KINDS.join(", ")}. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.`,
 ].join("\n");
 
 const KIND_FLAG = { name: "kind", kind: "enum", values: KB_KINDS, description: "Only this kind of article" } as const;
