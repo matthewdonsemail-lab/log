@@ -8,6 +8,9 @@ READ_TOOLS = frozenset({
     "linkedinDelete",
     "linkedinSuggestions",
     "linkedinConnect",
+    "linkedinLike",
+    "linkedinInbox",
+    "linkedinMessages",
     "redditSessionCheck",
     "twitterDms",
     "twitterFollowers",
@@ -46,6 +49,7 @@ WRITE_TOOLS = frozenset({
     "linkedinPostLive",
     "linkedinDeleteLive",
     "linkedinConnectLive",
+    "linkedinLikeLive",
 })
 
 

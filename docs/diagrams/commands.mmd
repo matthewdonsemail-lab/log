@@ -117,6 +117,9 @@ flowchart TB
     c_linkedinDelete["delete"]
     c_linkedinSuggestions["suggestions"]
     c_linkedinConnect["connect"]
+    c_linkedinLike["like"]
+    c_linkedinInbox["inbox"]
+    c_linkedinMessages["messages"]
   end
   subgraph g_slack["Slack"]
     c_slackSession["session"]
@@ -355,6 +358,12 @@ flowchart TB
   cli --> c_linkedinConnect
   mcp --> c_linkedinConnect
   c_linkedinConnect --> live
+  cli --> c_linkedinLike
+  mcp --> c_linkedinLike
+  cli --> c_linkedinInbox
+  mcp --> c_linkedinInbox
+  cli --> c_linkedinMessages
+  mcp --> c_linkedinMessages
   cli --> c_slackSession
   mcp --> c_slackSession
   cli --> c_slackWorkspaces

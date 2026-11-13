@@ -52,7 +52,7 @@ import { dispatchWith, runWith } from "./client.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { redditPostCommand, redditReadCommand, redditReplyCommand, redditSessionCommand, redditVoteCommand } from "../reddit/index.ts";
 import { discordChannelsCommand, discordChatsCommand, discordDeleteCommand, discordPostsCommand, discordReadCommand, discordSearchCommand, discordSendCommand, discordServersCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
-import { linkedinConnectCommand, linkedinCookiesCommand, linkedinDeleteCommand, linkedinPostCommand, linkedinSessionCommand, linkedinSuggestionsCommand } from "../linkedin/index.ts";
+import { linkedinConnectCommand, linkedinCookiesCommand, linkedinDeleteCommand, linkedinInboxCommand, linkedinLikeCommand, linkedinMessagesCommand, linkedinPostCommand, linkedinSessionCommand, linkedinSuggestionsCommand } from "../linkedin/index.ts";
 import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
 import { instagramDmsCommand, instagramSendCommand, instagramSessionCommand, instagramWatchCommand } from "../instagram/index.ts";
 import { discordReactCommand, instagramReactCommand, slackReactCommand, twitterReactCommand } from "../react/index.ts";
@@ -160,6 +160,9 @@ export const COMMANDS: Command[] = [
   linkedinDeleteCommand,
   linkedinSuggestionsCommand,
   linkedinConnectCommand,
+  linkedinLikeCommand,
+  linkedinInboxCommand,
+  linkedinMessagesCommand,
   slackSessionCommand,
   slackWorkspacesCommand,
   slackChatsCommand,

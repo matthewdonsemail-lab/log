@@ -15,10 +15,11 @@ for p in (str(ROOT), str(VENDOR / "openLinkedinApi")):
         sys.path.insert(0, p)
 
 from platformKit import engine as kit
+from platformKit import media
 
 PLATFORM = "linkedin"
 LIBRARY = "vendor/openLinkedinApi"
-WRITES: tuple[str, ...] = ("post", "deletePost", "connect")
+WRITES: tuple[str, ...] = ("post", "deletePost", "connect", "like")
 CONNECT_GAP_S = 15 * 60
 CONNECTS_PER_DAY = 5
 SESSION_COOKIES = ("li_at", "JSESSIONID")
@@ -314,7 +315,47 @@ async def connect(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, An
     return out
 
 
-ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connectPace": connect_check, "connect": connect}
+async def like(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.reactions import Reactions, activity_of
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    activity = activity_of(str(spec.get("post") or ""))
+    if not activity:
+        return {"ok": False, "code": "invalidArgs", "detail": "like needs the post's activity id or its feed/update URL"}
+    return await asyncio.to_thread(share_run, cookies, browser, lambda r: r.like(activity), Reactions, "reactions")
+
+
+async def inbox(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.messaging import Messaging
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    return await asyncio.to_thread(share_run, cookies, browser, lambda m: m.inbox(), Messaging, "messaging")
+
+
+async def messages(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.messaging import Messaging
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    conversation = str(spec.get("conversation") or "").strip()
+    with_whom = str(spec.get("with") or "").strip()
+    if bool(conversation) == bool(with_whom):
+        return {"ok": False, "code": "invalidArgs", "detail": "messages needs one of with (a name or profile id) or conversation (its urn)"}
+    out = await asyncio.to_thread(share_run, cookies, browser, lambda m: m.messages(conversation, with_whom), Messaging, "messaging")
+    if out.get("ok"):
+        out["audioMessages"] = sum(1 for m in out.get("messages") or [] if any(media.is_audio(a) for a in m.get("attachments") or []))
+    return out
+
+
+ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connectPace": connect_check, "connect": connect, "like": like, "inbox": inbox, "messages": messages}
 
 
 if __name__ == "__main__":

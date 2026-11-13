@@ -23,6 +23,9 @@ LinkedIn is new in log: signing in, checking the session, posting (text, an imag
 
 - `log linkedin suggestions --account <a>`: lists the people LinkedIn suggests on My Network. Reads only.
 - `log linkedin connect --account <a> --profile <publicId|url>`: sends one invitation, without a note, to someone from that list, the way their own Connect button does. A dry run unless `--live --approvedBy <who>`. One a run, at least 15 minutes apart, at most 5 a day: LinkedIn refused every connect sent seconds after another and then ended the session. Connecting from a profile page isn't built yet.
+- `log linkedin like --account <a> --post <activityId|url>`: likes one post, the request the feed's Like button sends. A dry run unless `--live --approvedBy <who>`. It counts only when LinkedIn's answer commits the reaction.
+- `log linkedin inbox --account <a>`: lists the 20 newest conversations, with who is in each, the unread count and the last message. Reads only, and marks nothing seen.
+- `log linkedin messages --account <a> --with <name|profileId>` (or `--conversation <urn>`): reads one conversation in full. Reads only.
 
 **Work in the account's own browser**
 

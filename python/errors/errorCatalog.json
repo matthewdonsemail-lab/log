@@ -136,6 +136,39 @@
     "monitor": "blocked",
     "action": "Pick someone from log linkedin suggestions --account <a>. Connecting from a profile page needs a Chrome recording of that first."
   },
+  "likeUnconfirmed": {
+    "layer": "account",
+    "meaning": "LinkedIn answered log linkedin like without committing the post's reaction state, so the like isn't known to have landed.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Open the post in Chrome to see whether it is liked. Nothing is retried; wait for the person who approved it before trying again (rule 94)."
+  },
+  "conversationNotFound": {
+    "layer": "account",
+    "meaning": "log linkedin messages --with names nobody in the account's 20 newest LinkedIn conversations, so nothing was read.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run log linkedin inbox --account <a> and pass the person's name or profile id as it shows there, or the conversation's urn with --conversation."
+  },
+  "conversationAmbiguous": {
+    "layer": "account",
+    "meaning": "log linkedin messages --with matches more than one of the account's newest LinkedIn conversations, so nothing was read.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/linkedin"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Pass the conversation's urn with --conversation, from log linkedin inbox --account <a> --json."
+  },
   "linkedinCookiesWrongAccount": {
     "layer": "account",
     "meaning": "The cookies typed into log linkedin cookies save are signed in to a different LinkedIn profile than --account names, so nothing was saved.",
