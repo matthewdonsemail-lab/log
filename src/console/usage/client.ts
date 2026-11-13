@@ -11,8 +11,12 @@ export function usageDaysOf(value: unknown): UsageDays | null {
   return USAGE_DAYS.find((allowed) => allowed === days) ?? null;
 }
 
-export function loadConsoleUsage(days: UsageDays = 7, now: number = Date.now()): UsageSummary {
+export function calendarFrom(days: UsageDays, now: number): number {
+  return Math.floor(now / dayMs) * dayMs - (days - 1) * dayMs;
+}
+
+export function loadConsoleUsage(days: UsageDays = 7, now: number = Date.now(), calendar = false): UsageSummary {
   if (!usageDaysOf(days)) throw new Error("usageRangeInvalid");
-  const from = now - days * dayMs;
+  const from = calendar ? calendarFrom(days, now) : now - days * dayMs;
   return consoleDbFound() ? readUsageSummary(from, now) : summarizeUsage([], from, now);
 }

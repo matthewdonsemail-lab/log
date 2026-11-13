@@ -130,7 +130,7 @@ export function ConnectionsPage() {
   const currentPage = Math.min(page, Math.max(0, Math.ceil(items.length / pageSize) - 1))
   const rows = items.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
   const label = 'Connected profiles'
-  const where = localConsole ? 'on this machine' : 'in your workspace'
+  const where = localConsole ? 'locally' : 'in your workspace'
 
   return <ConsoleLayout title="Connections" subtitle="Your own accounts and extension keys.">
     {!localConsole ? <div className="mb-4 flex flex-wrap items-center gap-3">

@@ -35,6 +35,7 @@ function redactedValue(value: unknown, frames: boolean): unknown {
 }
 
 export function redactConsoleResult(tool: string, result: unknown): unknown {
+  if (tool === "uiResourceRead" && result && typeof result === "object") return { ...(result as Record<string, unknown>), contents: REDACTED };
   if (!STREAM_TOOLS.includes(tool) && !FRAME_TOOLS.includes(tool)) return result;
   return redactedValue(result, FRAME_TOOLS.includes(tool));
 }
@@ -89,7 +90,7 @@ export async function runConsoleOperation(tool: string, args: Record<string, unk
   if (tool === "usage") {
     const days = usageDaysOf(String(args.days ?? "30"));
     if (!days) throw new Error("usageRangeInvalid");
-    return loadConsoleUsage(days, deps.now?.());
+    return loadConsoleUsage(days, deps.now?.() ?? Date.now(), true);
   }
   const { total: _total, page: _page, pageSize: _pageSize, pageCount: _pageCount, kinds: _kinds, ...page } = loadConsoleEvents({ pageSize: MAX_PAGE_SIZE });
   return page;

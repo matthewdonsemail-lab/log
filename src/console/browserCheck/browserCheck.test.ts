@@ -102,5 +102,6 @@ describe("the console browser check on the runtime", () => {
     expect(JSON.stringify(redactConsoleResult("browserFrame", frame))).not.toContain("ZmFrZUZyYW1l");
     expect(JSON.stringify(redactConsoleResult("browserViewStream", { generation: "a", stream: STREAM }))).not.toContain("fakeReadOnly0001");
     expect(redactConsoleResult("connectionsList", { a: 1 })).toEqual({ a: 1 });
+    expect(redactConsoleResult("uiResourceRead", { contents: [{ uri: "ui://log/browserView", text: "<html>" }] })).toEqual({ contents: "<redacted>" });
   });
 });
