@@ -14,7 +14,7 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
-| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+| `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | "post a marketplace listing in <town>", "get listings up on facebook marketplace in every town", "set up the facebook accounts and publish the listings", "take the marketplace listing down". |
 
 ## The tools in this guide
 
@@ -650,6 +650,7 @@ Live on Facebook: runs every step in the account's browser. Call it only when ma
 Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then "No, haven't sold" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing 1425935622848350).
 Steps: gotomarketplaceYouSelling → clickMoreOptions → clickDeleteListing → clickDelete → clickNoHavenTSold → clickNext. Every step is recorded (snapshot, screenshot, HAR, rea).
 Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookFlows" }) (Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause).
 AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

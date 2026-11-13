@@ -2,6 +2,8 @@
 
 After a post goes out, people like it, repost it, reply, quote it and follow you. This page pulls all of that from the account's X notifications, new and back through the history, keeps it on this machine, and gives the agent a list of who did what on which post. It sends nothing.
 
+How the owner asks for it: "check my x notifications", "who liked my tweet", "who engaged with my post since <date>", "pull my twitter notifications".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/notifications.md for <account>"**, or "who liked <post url>", or "who engaged since <date>". The agent then reads this page and [README.md](README.md) and runs the steps.

@@ -1,7 +1,7 @@
 ---
 name: log-twitter-dm-inbox
 description: "Reading the DM inbox: who is waiting on you. A log play (docs/useCases/twitter/dmInbox.md): Read every DM conversation on the account and sort it into a pipeline: who is waiting on you and what they asked, who you're waiting on, and what to do next for each. It sends nothing and marks nothing read. Replies only go out after the owner says what to send."
-when_to_use: "Use when matt asks for: reading the dm inbox: who is waiting on you."
+when_to_use: "Use when matt asks for this, in words like: \"who is waiting on me\", \"check my x dms\", \"go through my twitter inbox and tell me who needs a reply\", \"who am I waiting on in my dms\"."
 metadata:
   summary: "Reading the DM inbox: who is waiting on you"
 ---
@@ -13,6 +13,8 @@ This is the log play `twitter/dmInbox`. Before anything else, call the log MCP t
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
 Read every DM conversation on the account and sort it into a pipeline: who is waiting on you and what they asked, who you're waiting on, and what to do next for each. It sends nothing and marks nothing read. Replies only go out after the owner says what to send.
+
+How the owner asks for it: "who is waiting on me", "check my x dms", "go through my twitter inbox and tell me who needs a reply", "who am I waiting on in my dms".
 
 ## Run it from a fresh context
 

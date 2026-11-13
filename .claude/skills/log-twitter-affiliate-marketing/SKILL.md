@@ -1,7 +1,7 @@
 ---
 name: log-twitter-affiliate-marketing
 description: "Affiliate marketing through your DMs. A log play (docs/useCases/twitter/affiliateMarketing.md): You use a tool, you make content about it, and people message you about it. This page turns those conversations into affiliate income without sounding like a pitch: each person gets a reply about their own thread, an update on what you've built, and the tool with your affiliate credit only where it actually helps them. The other side of the page is the tool companies themselves: getting onto their partner, referral or creator program and booking the call."
-when_to_use: "Use when matt asks for: affiliate marketing through your dms."
+when_to_use: "Use when matt asks for this, in words like: \"answer the people asking about <tool> in my dms with my affiliate link\", \"turn the dms about <tool> into affiliate money\", \"follow up everyone who asked about the tool\", \"get me onto <company>'s affiliate program and book the call\"."
 metadata:
   summary: "Affiliate marketing through your DMs"
 ---
@@ -15,6 +15,8 @@ Draft every message from that person's own thread and matt's real replies (`voic
 You use a tool, you make content about it, and people message you about it. This page turns those conversations into affiliate income without sounding like a pitch: each person gets a reply about their own thread, an update on what you've built, and the tool with your affiliate credit only where it actually helps them. The other side of the page is the tool companies themselves: getting onto their partner, referral or creator program and booking the call.
 
 Inbound and outbound are on other pages: [dmInbox.md](../log-twitter-dm-inbox/SKILL.md) reads who is waiting, [engagerDms.md](../log-twitter-engager-dms/SKILL.md) opens new conversations.
+
+How the owner asks for it: "answer the people asking about <tool> in my dms with my affiliate link", "turn the dms about <tool> into affiliate money", "follow up everyone who asked about the tool", "get me onto <company>'s affiliate program and book the call".
 
 ## Run it from a fresh context
 

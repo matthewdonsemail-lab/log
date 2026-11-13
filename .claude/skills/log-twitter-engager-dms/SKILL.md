@@ -1,7 +1,7 @@
 ---
 name: log-twitter-engager-dms
 description: "DMing the people who liked or reposted your post. A log play (docs/useCases/twitter/engagerDms.md): A post that does well leaves hundreds of people who liked or reposted it and were never followed up. This page turns them into a short list the owner knows is worth it, writes each one a DM that opens on why they're on the list, and sends them through the queue as dms."
-when_to_use: "Use when matt asks for: dming the people who liked or reposted your post."
+when_to_use: "Use when matt asks for this, in words like: \"dm everyone who liked my post\", \"message the people who retweeted my tweet\", \"dm the likers and reposters of <post url> pitching <what>\"."
 metadata:
   summary: "DMing the people who liked or reposted your post"
 ---
@@ -15,6 +15,8 @@ Draft every message from that person's own thread and matt's real replies (`voic
 A post that does well leaves hundreds of people who liked or reposted it and were never followed up. This page turns them into a short list the owner knows is worth it, writes each one a DM that opens on why they're on the list, and sends them through the queue as dms.
 
 This is outbound DMs. Reading the inbox and answering people who are waiting is [dmInbox.md](../log-twitter-dm-inbox/SKILL.md).
+
+How the owner asks for it: "dm everyone who liked my post", "message the people who retweeted my tweet", "dm the likers and reposters of <post url> pitching <what>".
 
 ## Run it from a fresh context
 
@@ -31,7 +33,7 @@ Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what
 | 3 | The owner checks the top of the list: drop the team, people they don't want to contact, and friends (friends get a personal note, not a template) | a table | the owner's corrections applied |
 | 4 | Check for an existing thread with each person, and DMs already waiting | `twitterDms` { account, limit: 200 } | no one gets a cold template where a chat already exists |
 | 5 | Write each DM the cold DM way below: their own tweet forwarded first, then one informal line | house style | passes `twitterQueueCheck` |
-| 6 | Queue as dms: targets are `{handle, user_id, text}`, `action: "dm"`. Approve, plan, run live | README queue steps, `twitterQueueBuild` { action: "dm" } | `finished` |
+| 6 | Queue as dms: targets are `{handle, user_id, text}`, `action: "dm"`. Approve, plan, run live | README queue steps, `twitterQueueBuild` { action: "dm" }, `twitterQueueRunLive` | `finished` |
 
 ## How a cold DM opens
 

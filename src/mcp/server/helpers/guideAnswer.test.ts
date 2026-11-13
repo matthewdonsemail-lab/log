@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { clearActivePlay } from "./activePlay.ts";
+import { activePlay, clearActivePlay, playScope } from "./activePlay.ts";
 import { askAnswer, guideAnswer } from "./guideAnswer.ts";
 
 describe("getGuide routes the owner's own words to a use case", () => {
@@ -23,6 +23,31 @@ describe("getGuide routes the owner's own words to a use case", () => {
     expect(none.text).toStartWith('No use case matches "what is the weather in lisbon"');
     expect(guideAnswer({ ask: "show me who has been messaging me", topic: "ui" }).text).toContain("(inbox/showMe)");
     expect(guideAnswer({ topic: "nope" }).isError).toBe(true);
+    clearActivePlay();
+  });
+});
+
+describe("ask activates a play only on a clear match", () => {
+  test("an ambiguous request returns the menu, loads nothing and keeps the play already loaded", () => {
+    const scope = playScope("http:askMenu");
+    const empty = askAnswer("reply to her", scope);
+    expect(empty.routed).toBe("menu");
+    expect(empty.text).toContain("none was loaded");
+    expect(activePlay(scope)).toBeNull();
+    guideAnswer({ useCase: "twitter/followUps" }, scope);
+    expect(askAnswer("reply to my dms", scope).text).toContain("twitter/followUps, stays as it was");
+    expect(activePlay(scope)?.id).toBe("twitter/followUps");
+    clearActivePlay();
+  });
+
+  test("a clear match replaces the play, records that ask loaded it, and cites no rule for it", () => {
+    const scope = playScope("http:askReplace");
+    guideAnswer({ useCase: "twitter/followUps" }, scope);
+    const answer = askAnswer("read my instagram dms", scope);
+    expect(answer.play?.id).toBe("instagram/dmReply");
+    expect(answer.play?.loadedBy).toBe("ask");
+    expect(activePlay(scope)?.id).toBe("instagram/dmReply");
+    expect(answer.text).not.toContain("rule 157");
     clearActivePlay();
   });
 });

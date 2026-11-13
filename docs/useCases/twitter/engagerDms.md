@@ -4,6 +4,8 @@ A post that does well leaves hundreds of people who liked or reposted it and wer
 
 This is outbound DMs. Reading the inbox and answering people who are waiting is [dmInbox.md](dmInbox.md).
 
+How the owner asks for it: "dm everyone who liked my post", "message the people who retweeted my tweet", "dm the likers and reposters of <post url> pitching <what>".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/engagerDms.md for <post url>, pitching <what>"**. The agent then reads this page and [README.md](README.md) and runs the steps.
@@ -19,7 +21,7 @@ flowchart TD
   s3["3. The owner checks the top of the list: drop the team, people the…<br/><i>a table</i>"]
   s4["4. Check for an existing thread with each person, and DMs already…<br/><i>twitterDms</i>"]
   s5["5. Write each DM the cold DM way below: their own tweet forwarded…<br/><i>house style</i>"]
-  s6["6. Queue as dms: targets are handle, user_id, text, action: dm<br/><i>twitterQueueBuild</i>"]
+  s6["6. Queue as dms: targets are handle, user_id, text, action: dm<br/><i>twitterQueueBuild, twitterQueueRunLive</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
@@ -37,7 +39,7 @@ flowchart TD
 | 3 | The owner checks the top of the list: drop the team, people they don't want to contact, and friends (friends get a personal note, not a template) | a table | the owner's corrections applied |
 | 4 | Check for an existing thread with each person, and DMs already waiting | `twitterDms` { account, limit: 200 } | no one gets a cold template where a chat already exists |
 | 5 | Write each DM the cold DM way below: their own tweet forwarded first, then one informal line | house style | passes `twitterQueueCheck` |
-| 6 | Queue as dms: targets are `{handle, user_id, text}`, `action: "dm"`. Approve, plan, run live | README queue steps, `twitterQueueBuild` { action: "dm" } | `finished` |
+| 6 | Queue as dms: targets are `{handle, user_id, text}`, `action: "dm"`. Approve, plan, run live | README queue steps, `twitterQueueBuild` { action: "dm" }, `twitterQueueRunLive` | `finished` |
 
 ## How a cold DM opens
 

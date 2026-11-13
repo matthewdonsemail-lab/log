@@ -41,6 +41,16 @@ describe('the play comes back after compaction', () => {
     expect(sessionPlayOf(use('twitterDms'))).toBeNull()
   })
 
+  test('a play loaded with ask is restored from the getGuide answer, and a cleared play is not', () => {
+    const ask = (id: string, text: string) => JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', id, name: 'mcp__log__getGuide', input: { ask: text } }] } })
+    const answer = (id: string, text: string) => JSON.stringify({ type: 'user', message: { content: [{ type: 'tool_result', tool_use_id: id, content: [{ type: 'text', text }] }] } })
+    const loaded = [ask('t1', 'reply to him on discord'), answer('t1', ">>> PLAY MATCH: x\n\n>>> PLAY discord/channelReply is now this session's play, under the handle play_x"), use('discordRead')].join('\n')
+    expect(sessionPlayOf(loaded)).toEqual({ id: 'discord/channelReply', lastTool: 'discordRead' })
+    const menu = [use('getGuide', { useCase: 'twitter/followUps' }), ask('t2', 'reply to her'), answer('t2', 'No single use case matches')].join('\n')
+    expect(sessionPlayOf(menu)).toEqual({ id: 'twitter/followUps', lastTool: null })
+    expect(sessionPlayOf([loaded, use('getGuide', { clearPlay: true })].join('\n'))).toBeNull()
+  })
+
   test('the reminder lists the steps done and to do and says to load it again', () => {
     const page = '# Reply guy\n\n| # | Step | Tool | Done when |\n|---|---|---|---|\n| 1 | Read them | `twitterDms` | read |\n| 2 | Reply | `twitterReplyLive` | sent |\n| 3 | Forward | `twitterDmLive` | sent |\n'
     const text = playReminder({ id: 'twitter/replyGuyFunnel', lastTool: 'twitterReplyLive' }, page)
@@ -51,7 +61,7 @@ describe('the play comes back after compaction', () => {
   })
 
   test('the hook answers a prompt from the router and stays silent when the service is down', async () => {
-    const route = async () => ({ matches: [{ id: 'inbox/voiceNote', title: 'Sending a voice note', score: 0.8, phrase: 'send a vn' }] })
+    const route = async () => ({ play: { id: 'inbox/voiceNote', title: 'Sending a voice note', score: 0.8, phrase: 'send a vn' } })
     const hit = await hookAnswer({ hook_event_name: 'UserPromptSubmit', prompt: 'send a vn to the group' }, route)
     expect(hit.outcome).toBe('inbox/voiceNote')
     expect(JSON.parse(hookOutput(hit)).hookSpecificOutput.additionalContext).toContain('inbox/voiceNote')

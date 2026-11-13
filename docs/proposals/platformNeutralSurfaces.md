@@ -198,6 +198,7 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 - The platform word in the prompt is weighted, placeholders such as `<server>` are not counted as words, and a tie is broken by platform, never by folder order. Nothing is activated on a tie.
 - Every use case gets its asks line (10 of 38 have none) and a numbered step table (the Facebook plays have no steps the code can parse).
 - Files: `src/useCases/router/client.ts`, `src/useCases/router/types.ts`, `src/mcp/server/helpers/guideAnswer.ts`, `scripts/contextLayer/service.ts`, `src/contextLayer/hook/client.ts`, `docs/useCases/**`.
+- **Built.** `route(prompt, context)` is the one router: `askAnswer` calls it with the use cases, the hook's `routePrompt` with the dense scores as an optional signal. Placeholders aren't words; `PLATFORM_WORDS` reads the platform and its synonyms; plays under another platform's folder are left out; a play activates only when clear (word score 0.6 or more, 0.1 ahead of the next, its phrase naming no platform the prompt left out); otherwise a menu, never a folder-order pick. `ask` loads a play only on a clear match. Hook and router text is statements of fact. The ten use cases have asks lines; the Facebook pages have numbered step tables. `src/useCases/router/fixtures/golden.json` (94 prompts) is run on both entry points by `router.test.ts`. Spec: [REQ-MCP-16 and 17](../specs/mcpServer.md).
 
 **Slice 17: the play state.**
 - The play is keyed by a handle the server mints and the client passes back, and it expires. Today it is one per process and never cleared. It is not keyed by the session header, which the 2026-07-28 revision removes.
@@ -205,6 +206,7 @@ The evidence, with every file, is in [contextInjectionAudit.md](contextInjection
 - The play gate is derived from each tool's effect. Today 18 live acting tools are ungated.
 - The hosted path gets the play footer and keeps `next`.
 - Files: `src/mcp/server/helpers/activePlay.ts`, `src/cli/runtime/index.ts`, `src/contextLayer/session/client.ts`.
+- **Built.** Plays live in a store keyed by a minted handle (`play_…`): one per stdio process, one per HTTP session's server, one per team and actor on the hosted runtime (from the dispatch authority), never the session header. `getGuide` names the handle; a call may pass it back as `playHandle`. A play expires after two idle hours, is replaced by the next load and ends with `clearPlay`. `playRefusal` refuses a send the play's steps don't name (`playNotCovering`). The gate is `playRequiredTools`, derived from each tool's effect (31 tools, flows marked with `effect`). The hosted `toolRunner` adds the same footer through `withCallFooter` and keeps `next`. Play restore reads plays loaded with `ask`. Spec: [REQ-MCP-15](../specs/mcpServer.md).
 
 **Slice 18: guides scoped by capability and platform, and a budget on what is injected.**
 - 27 tools point at another platform's guide, not 10: the inbox tools point at `xInbox`, the voice gate at `xSending`, `sessionsCheck` at a Twenty accounts guide. These move to shared topics (extends slice 2).

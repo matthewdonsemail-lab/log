@@ -22,7 +22,8 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { currentToolName, guideAnswer, playRefusal, renamedTool, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
+import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, playRequiredTools, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
+import type { PlayScope } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
@@ -76,6 +77,8 @@ function jsonOf(stdout: string): unknown {
     return undefined;
   }
 }
+
+export const PLAY_META = "log/play";
 
 export const AGENTS_MD = fileURLToPath(new URL("../../../AGENTS.md", import.meta.url));
 
@@ -213,34 +216,46 @@ export async function runToolCall(
   readBrowsers: ReadBrowsers = browserViews,
   signal?: AbortSignal,
   appCaller: boolean = browserViewLocation() === "remote",
+  scope: PlayScope = processPlayScope(),
 ): Promise<CallToolResult> {
-  if (renamedTool(name)) return withRenamedNote(name, await runToolCall(currentToolName(name), input, context, onLine, readBrowsers, signal, appCaller));
-  if (isAppTool(name)) return runAppTool(name, input, appCaller);
-  if (name === REPORT_TOOL) return runReport(input, appCaller);
+  const handle = handleOf(input);
+  const given = withoutHandle(input);
+  const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope);
+  if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input));
+  if (isAppTool(name)) return runAppTool(name, given, appCaller);
+  if (name === REPORT_TOOL) return runReport(given, appCaller);
   if (name === GUIDE_TOOL) {
-    const answer = guideAnswer(input);
-    return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }] };
+    const answer = guideAnswer(input, scope);
+    const play = answer.play === undefined ? undefined : playMeta(answer.play);
+    return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }], ...(play === undefined ? {} : { _meta: { [PLAY_META]: play } }) };
   }
   if (isCatalogTool(name)) {
     const entries = catalog(COMMANDS);
     if (name === CALL_TOOL) {
-      const target = resolveCall(entries, input);
+      const target = resolveCall(entries, given);
       if (!target.ok) return refused(target.message, readBrowsers);
-      return runToolCall(target.tool, target.input, context, onLine, readBrowsers, signal, false);
+      return again(target.tool, target.input, false);
     }
-    const answer = name === SEARCH_TOOL ? searchAnswer(entries, input) : getAnswer(entries, input);
+    const answer = name === SEARCH_TOOL ? searchAnswer(entries, given) : getAnswer(entries, given);
     return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
   }
-  const { waitMs, ...fields } = input ?? {};
-  const flowCall = flowOfTool(savedFlows(), name);
+  const { waitMs, ...fields } = given ?? {};
+  const flows = savedFlows();
+  const gate = (tool: string) => {
+    const play = activePlay(scope, handle);
+    const refusal = playRefusal(tool, { required: playRequiredTools(COMMANDS, flows).has(tool), useCases: listUseCases([tool]).filter((u) => u.tools.includes(tool)).map((u) => u.id), play });
+    if (!refusal) touchPlay(play);
+    return refusal;
+  };
+  const flowCall = flowOfTool(flows, name);
   if (flowCall) {
     const built = flowArgv(flowCall.flow, fields as Record<string, unknown>, flowCall.live);
     if (!built.ok) return refused(built.message, readBrowsers);
-    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) }, context, onLine, readBrowsers, signal);
+    return again(flowCall.live ? FLOW_LIVE_TOOL : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) });
   }
-  const guard = guardCall(name, input === undefined ? undefined : fields, COMMANDS);
+  const guard = guardCall(name, given === undefined ? undefined : fields, COMMANDS);
   if (!guard.ok) return refused(guard.message, readBrowsers);
-  const noPlay = playRefusal(name, listUseCases([name]).filter((u) => u.tools.includes(name)).map((u) => u.id));
+  const noPlay = gate(gatedToolOf(name, fields as Record<string, unknown>, flows));
   if (noPlay) return refused(noPlay, readBrowsers);
   const entry = commandOfTool(name);
   const progress: ProgressLine[] = [];
@@ -268,6 +283,12 @@ export async function runToolCall(
   return withBrowsers({ exit: -1, ok: false, stdout: "", stderr: "", log: [], progress: [...progress], job: { id: job.id, status: "running", afterLine: progress.length } }, running, false, readBrowsers);
 }
 
+export function withCallFooter(name: string, input: LogToolInput | undefined, result: CallToolResult, scope: PlayScope = processPlayScope()): CallToolResult {
+  if (name === GUIDE_TOOL || name === REPORT_TOOL) return result;
+  const target = name === CALL_TOOL ? resolveCall(catalog(COMMANDS), withoutHandle(input)) : null;
+  return withPlayFooter(target?.ok ? target.tool : currentToolName(name), result, activePlay(scope, handleOf(input)));
+}
+
 async function withViewer(result: CallToolResult, input: LogToolInput | undefined): Promise<CallToolResult> {
   const account = accountOfArgs(input);
   if (result.isError || !account) return result;
@@ -280,6 +301,7 @@ async function withViewer(result: CallToolResult, input: LogToolInput | undefine
 
 export interface LogMcpOptions {
   logDir?: string | null;
+  playOwner?: string;
   watchFlows?: boolean;
   readBrowsers?: ReadBrowsers;
 }
@@ -290,6 +312,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     { capabilities: { tools: { listChanged: true }, logging: {}, resources: {} }, instructions: SERVER_INSTRUCTIONS },
   );
   const logDir = options.logDir === undefined ? liveLogDir() : options.logDir;
+  const scope = options.playOwner ? playScope(options.playOwner) : processPlayScope();
   const onLine: OnLogLine = (tool, stream, line) => {
     if (logDir) appendLiveLine(logDir, tool, stream, line);
     server.sendLoggingMessage({ level: stream === "err" ? "warning" : "info", logger: `log.${tool}.${stream}`, data: line }).catch(() => {});
@@ -320,11 +343,18 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()));
-    if (request.params.name === GUIDE_TOOL || request.params.name === REPORT_TOOL) return result;
-    const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
-    return withPlayFooter(target?.ok ? target.tool : currentToolName(request.params.name), result);
+    const input = request.params.arguments as LogToolInput | undefined;
+    const result = await runToolCall(request.params.name, input, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope);
+    return withCallFooter(request.params.name, input, result, scope);
   });
+  if (options.playOwner) {
+    const owner = options.playOwner;
+    const close = server.onclose;
+    server.onclose = () => {
+      forgetPlayScope(owner);
+      close?.();
+    };
+  }
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;
     try {
@@ -420,7 +450,7 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
           enableDnsRebindingProtection: !LOOPBACK.has(host) || oauth !== null,
           allowedHosts: [...(LOOPBACK.has(host) ? ["127.0.0.1", "localhost", "[::1]"].flatMap((h) => [h, `${h}:${server.port}`]) : [host, `${host}:${server.port}`]), ...(oauth ? [oauth.publicHost] : [])],
         });
-        await createLogMcpServer(options.context ?? {}, options.server ?? {}).connect(fresh);
+        await createLogMcpServer(options.context ?? {}, { ...(options.server ?? {}), playOwner: `http:${crypto.randomUUID()}` }).connect(fresh);
         transport = fresh;
       }
       return transport.handleRequest(request);

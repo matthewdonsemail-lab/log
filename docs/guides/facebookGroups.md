@@ -14,7 +14,7 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
-| `getGuide({ useCase: "facebook/groups" })` | Listening to local Facebook groups | see the page |
+| `getGuide({ useCase: "facebook/groups" })` | Listening to local Facebook groups | "join the local facebook groups in <town>", "listen to the facebook groups for people asking for <service>", "read the posts in the facebook group", "poll the facebook group for new posts", "find the business owners in the facebook group". |
 
 ## The tools in this guide
 

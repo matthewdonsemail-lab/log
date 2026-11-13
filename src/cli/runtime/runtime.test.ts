@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { REPORT_URI } from "../../mcp/apps/index.ts";
-import { guideOperation, reportOperation, toolManifest, uiResources } from "./index.ts";
+import { guideOperation, reportOperation, toolManifest, toolRunner, uiResources } from "./index.ts";
 
 const SPEC = { title: "Fake report", blocks: [{ type: "barChart", title: "Messages by person", data: [{ label: "Fake One", value: 3 }] }] };
 
@@ -38,5 +38,30 @@ describe("the hosted relay serves the report widget", () => {
     const routed = await guideOperation({ ask: "show me who has been messaging me" });
     expect((routed.result as { text: string }).text).toContain("(inbox/showMe)");
     expect((await guideOperation({ topic: "nope" })).state).toBe("failed");
+  });
+});
+
+describe("the hosted runner keeps the play footer and next", () => {
+  const authority = { teamId: "fakeTeam", actorUserId: "fakeActor", grantId: null } as unknown as Parameters<ReturnType<typeof toolRunner>>[2];
+  const next = { tool: "inspectDo", input: { account: "fakeBird" } };
+  const stub = async () => ({ content: [{ type: "text", text: "the inbox" }], structuredContent: { exit: 0, ok: true, stdout: "the inbox", browsers: [{ account: "fakeBird" }], next } });
+
+  test("a call after getGuide carries the play footer and next, and drops browsers", async () => {
+    const run = toolRunner(stub);
+    const loaded = await run("getGuide", { useCase: "twitter/getTheAction" }, authority);
+    expect((loaded.result as { play: { id: string } }).play.id).toBe("twitter/getTheAction");
+    const answer = await run("twitterDms", { account: "fakeBird" }, authority);
+    const result = answer.result as Record<string, unknown>;
+    expect(result.next).toEqual(next);
+    expect(result.browsers).toBeUndefined();
+    expect((result.play as { id: string; footer: string }).id).toBe("twitter/getTheAction");
+    expect((result.play as { footer: string }).footer).toContain("This call is step 1");
+  });
+
+  test("another actor in the same team has no play", async () => {
+    const run = toolRunner(stub);
+    await run("getGuide", { useCase: "twitter/getTheAction" }, authority);
+    const other = await run("twitterDms", { account: "fakeBird" }, { ...authority, actorUserId: "fakeOther" } as typeof authority);
+    expect((other.result as Record<string, unknown>).play).toBeUndefined();
   });
 });

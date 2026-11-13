@@ -204,7 +204,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
       onLine(`bridge: running ${checked.tool} for operation ${operationId}`);
       let outcome: ResultPayload;
       try {
-        outcome = await options.runTool(checked.tool, checked.args);
+        outcome = await options.runTool(checked.tool, checked.args, checked.authority);
       } catch (error) {
         outcome = { state: options.isLive(checked.tool) ? "unknown" : "failed", error: { code: "runtimeError", message: error instanceof Error ? error.message : String(error) } };
       }

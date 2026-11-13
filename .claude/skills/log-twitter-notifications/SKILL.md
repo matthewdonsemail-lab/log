@@ -1,7 +1,7 @@
 ---
 name: log-twitter-notifications
 description: "Seeing who engaged with your posts. A log play (docs/useCases/twitter/notifications.md): After a post goes out, people like it, repost it, reply, quote it and follow you. This page pulls all of that from the account's X notifications, new and back through the history, keeps it on this machine, and gives the agent a list of who did what on which post. It sends nothing."
-when_to_use: "Use when matt asks for: seeing who engaged with your posts."
+when_to_use: "Use when matt asks for this, in words like: \"check my x notifications\", \"who liked my tweet\", \"who engaged with my post since <date>\", \"pull my twitter notifications\"."
 metadata:
   summary: "Seeing who engaged with your posts"
 ---
@@ -13,6 +13,8 @@ This is the log play `twitter/notifications`. Before anything else, call the log
 Draft every message from that person's own thread and matt's real replies (`voice` with no text, `search`), never from memory, and never send two that read alike (`sameAsSent`).
 
 After a post goes out, people like it, repost it, reply, quote it and follow you. This page pulls all of that from the account's X notifications, new and back through the history, keeps it on this machine, and gives the agent a list of who did what on which post. It sends nothing.
+
+How the owner asks for it: "check my x notifications", "who liked my tweet", "who engaged with my post since <date>", "pull my twitter notifications".
 
 ## Run it from a fresh context
 

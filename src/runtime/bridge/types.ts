@@ -55,6 +55,6 @@ export interface ResultPayload {
   error?: { code: string; message: string };
 }
 
-export type RunTool = (tool: string, args: Record<string, unknown>) => Promise<ResultPayload>;
+export type RunTool = (tool: string, args: Record<string, unknown>, authority?: Authority) => Promise<ResultPayload>;
 
 export type Refusal = { ok: false; code: string; message: string };

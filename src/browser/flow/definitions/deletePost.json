@@ -1,6 +1,7 @@
 {
   "name": "deletePost",
   "summary": "Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live).",
+  "effect": "delete",
   "params": [],
   "steps": [
     {

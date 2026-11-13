@@ -2,6 +2,8 @@
 
 Pick a topic you have something real to say about, find everyone on X posting about it, and reply to each person with one line about their own post, backed by one of your own facts. Each reply can point at your article or video on the topic. The owner approves the list, then the queue sends it over days, inside the account's 240 writes a day ([write budgets](../../specs/writeBudgets.md)).
 
+How the owner asks for it: "reply to everyone tweeting about <topic>", "find everyone posting about <topic> on x and reply with my article", "reply to the people talking about <topic> with my video".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/topicReplies.md for <topic>, linking <article or video url>"**. The agent then:
@@ -20,7 +22,7 @@ flowchart TD
   s2["2. One post per person, only from people with 1500 followers or fe…<br/><i>followers</i>"]
   s3["3. For each post, a one-line summary of what they said, and a repl…<br/><i>house style</i>"]
   s4["4. Write the list somewhere the owner can read it on a phone: numb…<br/><i>a shared page</i>"]
-  s5["5. Queue it: each target carries its own text, build, check, appro…<br/><i>twitterQueuePlan</i>"]
+  s5["5. Queue it: each target carries its own text, build, check, appro…<br/><i>twitterQueueBuild, twitterQueuePlan, twitterQueueRunLive</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
@@ -36,7 +38,7 @@ flowchart TD
 | 2 | One post per person, only from people with 1500 followers or fewer (bigger accounts aren't worth it yet, rule 121; niche map people first). Drop anyone the account already replied to, and accounts that only repost news | the niche map's `followers`, treg's posts read on the account, for its past replies | a unique list, everyone at 1500 followers or under |
 | 3 | For each post, a one-line summary of what they said, and a reply that answers it with one of your facts. Mark which link it carries (article or video) | house style | every line passes `twitterQueueCheck` |
 | 4 | Write the list somewhere the owner can read it on a phone: number, handle, link type, post url, "they said", the reply | a shared page | the owner says yes |
-| 5 | Queue it: each target carries its own `text`, build, check, approve, plan, run live. Plan only what fits today's limit (`limit`), and plan the rest on later days | README queue steps, `twitterQueuePlan` { limit } | the queue's `pending` reaches 0 |
+| 5 | Queue it: each target carries its own `text`, build, check, approve, plan, run live. Plan only what fits today's limit (`limit`), and plan the rest on later days | README queue steps: `twitterQueueBuild`, `twitterQueuePlan` { limit }, `twitterQueueRunLive` | the queue's `pending` reaches 0 |
 
 ## What one item looks like
 

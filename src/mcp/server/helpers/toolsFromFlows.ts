@@ -6,8 +6,12 @@ import { ANY_PLATFORM_LABEL } from "../../../cli/runner/helpers/platforms.ts";
 import { FLOWS_GUIDE, guideLine } from "./guides.ts";
 import { rulesLine } from "./agentRules.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
-import { longRunLine, WAIT_MS } from "./toolsFromCommands.ts";
+import { longRunLine, OWNER_EFFECTS, PLAY_HANDLE, WAIT_MS } from "./toolsFromCommands.ts";
 import type { ToolOptions } from "./toolsFromCommands.ts";
+
+export function flowActsAsOwner(flow: FlowDefinition, live: boolean): boolean {
+  return live && flow.effect !== undefined && OWNER_EFFECTS.has(flow.effect);
+}
 
 function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): LogTool {
   const properties: Record<string, unknown> = {
@@ -20,6 +24,7 @@ function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): Lo
   if (live) properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
   properties.confirmBypass = { type: "boolean", description: "Set true with bypass, only when matt asked for a run outside the account's hours (rule 20)" };
   properties.waitMs = WAIT_MS;
+  if (flowActsAsOwner(flow, live)) properties.playHandle = PLAY_HANDLE;
   const title = titleOf(flow.summary, live, ANY_PLATFORM_LABEL);
   return {
     name: `${toolName(flow.name)}${live ? LIVE_SUFFIX : ""}`,

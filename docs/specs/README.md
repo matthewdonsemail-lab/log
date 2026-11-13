@@ -45,9 +45,9 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-14** They are said at session start and whenever they change
 - **REQ-MCP-18** Any command is found and run with logSearch, logGet and logCall
 - **REQ-MCP-21** Every platform's tools carry the platform's name, and renamed tools still answer for one release
-- **REQ-MCP-17** One warm context layer routes matt's prompts and puts the play back after compaction
-- **REQ-MCP-16** The prompt is matched to a play, and every play is a skill
-- **REQ-MCP-15** The loaded use case is the session's play, and sends need one
+- **REQ-MCP-17** One warm context layer routes the owner's prompts and puts the play back after compaction
+- **REQ-MCP-16** One router for the ask path and the prompt hook, and every play is a skill
+- **REQ-MCP-15** The loaded use case is the caller's play, kept under a handle, and a send needs a play that names it
 - **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 - **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
 
