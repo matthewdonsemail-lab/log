@@ -62,6 +62,7 @@ export const voiceClone = {
       { kind: 'symbol', file: AUDIO, name: 'convertFor' },
       { kind: 'string', file: SENDS, includes: 'chatClaimedElsewhere' },
       { kind: 'string', file: SENDS, includes: 'voiceGateFailed' },
+      { kind: 'uses', file: SENDS, name: 'runAction' },
     ],
     'REQ-VOICE-CLONE-08': [
       { kind: 'symbol', file: MEDIA, name: 'voice_note_path' },

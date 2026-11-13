@@ -97,6 +97,8 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   treg: [41, 53, 106, 119, 166],
   governor: [73, 86, 94, 104, 106, 168],
   sessions: [25, 73, 94, 163],
+  chats: [89, 154, 160, 163],
+  messages: [89, 154, 160, 163],
   console: [47, 55, 134, 163, 168, 172, 177],
   balance: [41, 73, 94, 164],
   clone: [39, 41, 94, 106, 119, 142, 143, 145, 146, 147],

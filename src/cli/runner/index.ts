@@ -28,6 +28,7 @@ import { tregCommand } from "../treg/index.ts";
 import { balanceCommand } from "../balance/index.ts";
 import { governorCommand } from "../governor/index.ts";
 import { sessionsCommand } from "../sessions/index.ts";
+import { chatsCommand, messagesCommand } from "../capabilities/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
@@ -122,6 +123,8 @@ export const COMMANDS: Command[] = [
   balanceCommand,
   governorCommand,
   sessionsCommand,
+  chatsCommand,
+  messagesCommand,
   cloneCommand,
   transcribeCommand,
   followersCommand,

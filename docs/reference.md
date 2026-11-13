@@ -69,7 +69,7 @@ flowchart LR
   anyB --> b_linkedin
   anyB --> b_slack
   anyB --> b_instagram
-  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, clone, transcribe, new"]
+  anyN["Any platform, no browser: launch, console, adsPower, localAccount, proxy, errors, graph, runs, storage, timing, inbox, media, browsers, browser, report, job, mcp, login, logout, whoami, voice, search, kb, runtime, memelord, treg, balance, governor, sessions, chats, messages, clone, transcribe, new"]
   anyN -.-> twenty
   newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
   drivers --> api
@@ -105,7 +105,7 @@ Source: [`docs/diagrams/browsers.mmd`](diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`, `reddit read`, `discord read`, `slack read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`, `discord watch`, `slack watch`, `instagram watch`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
+- **No browser:** `launch`, `console`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `localAccount`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `storage`, `timing`, `inbox`, `media`, `browsers`, `browser`, `report`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter dms`, `twitter chat`, `twitter cookies`, `voice`, `search`, `kb`, `runtime`, `memelord`, `treg`, `balance`, `governor`, `sessions`, `chats`, `messages`, `clone`, `transcribe`, `twitter followers`, `twitter notifications`, `twitter reply`, `twitter quote`, `twitter post`, `twitter like`, `twitter list`, `twitter repost`, `twitter follow`, `twitter dm`, `twitter react`, `twitter queue`, `new`, `reddit session`, `reddit post`, `reddit reply`, `reddit vote`, `discord session`, `discord chats`, `discord servers`, `discord channels`, `discord posts`, `discord search`, `discord send`, `discord delete`, `discord react`, `discord voice`, `linkedin session`, `linkedin cookies`, `slack session`, `slack workspaces`, `slack chats`, `slack send`, `slack cookies`, `slack react`, `slack voice`, `instagram session`, `instagram dms`, `instagram send`, `instagram react`, `instagram voice`, `twitter voice`.
 - **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](adsPower.md).
@@ -197,9 +197,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 222 command tools + saved flows"]
+  mcp["MCP server log: 224 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 110 commands (COMMANDS)"]
+  runCli["runCli: 112 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   engine{"commandEngine: DIRECT_ROUTES"}
   direct["Direct-API engine: fbk, twikit, reverseChud, endcord, openLinkedinApi, gabrielSlack, instagrapi (vendor/), the account's saved session, a governor per account"]
@@ -314,6 +314,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log balance`](#log-balance) | Every paid provider log calls, with what is left and which are out of credit | any (none) | `[--provider <subq|jina|inworld|fishAudio|assemblyAi|parallel|treg|twoCaptcha|byteful>]` `[--json]` | none | none | `balance` | PreToolUse, PostToolUse · PostToolUse | no | 41, 73, 94, 164, 30, 38, 39, 40, 41 |
 | [`log governor`](#log-governor) | Read every platform account's governor count, and put one back to 0 when the owner says so, recorded in log.db | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` `--account <accountName|all>` `--by <who>` `[--reason <text>]` | none | none | `governorShow`, `governorReset` | PreToolUse, PostToolUse · PostToolUse | no | 73, 86, 94, 105, 163, 168, 30, 38, 39, 40, 41 |
 | [`log sessions`](#log-sessions) | Check every account's saved session through its platform's own answer, with the next step to sign each one back in | any (none) | `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--account <accountName>]` `[--json]` | none | none | `sessionsCheck` | PreToolUse, PostToolUse · PostToolUse | no | 25, 73, 94, 163, 30, 38, 39, 40, 41 |
+| [`log chats`](#log-chats) | List an account's chats on its own platform, the platform taken from the account | any (none) | `--account <account>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `chatsList` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
+| [`log messages`](#log-messages) | Read one chat's messages on the account's own platform, the platform taken from the account | any (none) | `--account <account>` `--chat <chat>` `[--space <space>]` `[--limit <integer 1..>]` `[--platform <facebook|twitter|reddit|discord|linkedin|slack|instagram>]` `[--json]` | none | none | `messagesRead` | PreToolUse, PostToolUse · PostToolUse | no | 89, 154, 160, 163, 30, 38, 39, 40, 41 |
 | [`log clone`](#log-clone) | the owner's voice, cloned once per provider (Inworld or Fish Audio) from their own voice notes, and words said in it to a local file | any (none) | `[--provider <inworld|fishAudio>]` `[--from <file,…>]` `[--apply]` `[--replace]` `[--json]` `--text <text>` `[--model <model>]` `[--format <mp3|wav>]` | none | none | `cloneVoice`, `cloneSpeak` | PreToolUse, PostToolUse · PostToolUse | no | 39, 41, 94, 163, 142, 30, 38, 39, 40, 41 |
 | [`log transcribe`](#log-transcribe) | Transcribe every voice note in the saved X and Discord conversations with AssemblyAI, written into the conversation store for search, voice and SubQ | any (none) | `[--platform <twitter|discord>]` `[--account <a>]` `[--list]` `[--noIndex]` `[--json]` | none | none | `transcribe`, `transcribeFile` | PreToolUse, PostToolUse · PostToolUse | no | 26, 41, 89, 94, 105, 163, 138, 30, 38, 39, 40, 41 |
 | [`log twitter followers`](#log-twitter-followers) | Read an X account's own followers on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `[--limit <integer 1..4000>]` `[--json]` | direct API only | none | `twitterFollowers` | PreToolUse, PostToolUse · PostToolUse | no | 73, 105, 30, 38, 39, 40, 41 |
@@ -431,6 +433,8 @@ flowchart TB
     c_balance["balance"]
     c_governor["governor"]
     c_sessions["sessions"]
+    c_chats["chats"]
+    c_messages["messages"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -664,6 +668,10 @@ flowchart TB
   mcp --> c_governor
   cli --> c_sessions
   mcp --> c_sessions
+  cli --> c_chats
+  mcp --> c_chats
+  cli --> c_messages
+  mcp --> c_messages
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe
@@ -1627,6 +1635,28 @@ Check every account's saved session through its platform's own answer, with the 
 ```text
 log sessions check [--platform <p>] [--account <accountName>] [--json]
 Checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. An account that needs signing in comes with its next step: its own browser opened on the platform's sign-in page for the owner (log inspect start; closing it saves the new session), or X's cookie prompt. Facebook is checked in its browser, and a deactivated account is skipped. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
+```
+
+#### log chats
+
+List an account's chats on its own platform, the platform taken from the account MCP tools: `chatsList`, one per form, with named fields.
+
+```text
+log chats list --account <account> [--space <space>] [--limit <limit>] [--platform <p>] [--json]
+list: List an account's chats on its own platform, the platform taken from the account. It runs that platform's own command with the inputs renamed to its flags (chatsList), so the answer is that command's answer.
+Platforms: Facebook, X, Discord, Slack, Instagram.
+The platform comes from the account: one account by that name gives its platform, two give platformAmbiguous (give --platform), none gives accountNotFound. A platform without the capability answers capabilityMissing with the platforms that have it, and an input its command doesn't take answers inputUnsupported. Nothing is contacted before that. log chats only reads.
+```
+
+#### log messages
+
+Read one chat's messages on the account's own platform, the platform taken from the account MCP tools: `messagesRead`, one per form, with named fields.
+
+```text
+log messages read --account <account> --chat <chat> [--space <space>] [--limit <limit>] [--platform <p>] [--json]
+read: Read one chat's messages on the account's own platform, the platform taken from the account. It runs that platform's own command with the inputs renamed to its flags (messagesRead), so the answer is that command's answer.
+Platforms: Facebook, X, Discord, Slack, Instagram.
+The platform comes from the account: one account by that name gives its platform, two give platformAmbiguous (give --platform), none gives accountNotFound. A platform without the capability answers capabilityMissing with the platforms that have it, and an input its command doesn't take answers inputUnsupported. Nothing is contacted before that. log messages only reads.
 ```
 
 #### log clone

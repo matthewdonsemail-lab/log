@@ -2,7 +2,7 @@
 
 The voice gate every send as the owner passes on every platform: a draft checked against the owner's own writing before it goes out, and the voice and AI-tells indexes behind it.
 
-Load next, when the work needs it: getGuide({ topic: "inbox" }) (Every platform's chats as one inbox: who is waiting on a reply, claiming a chat before acting in it, releasing it, and the log of every action taken).
+Load next, when the work needs it: getGuide({ topic: "inbox" }) (Every platform's chats as one inbox: listing and reading them, who waits on a reply, claiming a chat before acting in it, and every action's log).
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md. Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
