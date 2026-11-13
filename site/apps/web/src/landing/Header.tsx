@@ -41,7 +41,7 @@ import {
 } from "@listeningkit/ui"
 import { cn } from "@listeningkit/ui"
 
-import { OPEN_SOURCE_OWNER, OPEN_SOURCE_PROJECTS, type OpenSourceProject } from "./openSourceProjects"
+import { OPEN_SOURCE_OWNER, OPEN_SOURCE_PROJECTS, OPEN_SOURCE_TOTAL_STARS, type OpenSourceProject } from "./openSourceProjects"
 import { RepoLink, RepoModal, shouldOpenRepoModal } from "./RepoLink"
 
 const MENU_ICONS: Record<string, React.ReactNode> = {
@@ -125,7 +125,11 @@ function useOpenSourceStars() {
       cancelled = true
     }
   }, [])
-  return OPEN_SOURCE_PROJECTS.map((p) => ({ ...p, stars: stars?.[p.repo] ?? p.stars }))
+  const projects = OPEN_SOURCE_PROJECTS.map((p) => ({ ...p, stars: stars?.[p.repo] ?? p.stars }))
+  const total = stars
+    ? Object.values(stars).reduce((sum, n) => sum + n, 0) + projects.filter((p) => !(p.repo in stars)).reduce((sum, p) => sum + p.stars, 0)
+    : OPEN_SOURCE_TOTAL_STARS
+  return { projects, total }
 }
 
 /** Icon per open-source repo, shown in the dropdown's icon boxes (ui-kit uses the Font Awesome equivalents). */
@@ -151,8 +155,7 @@ const BUTTON_GLOW: React.CSSProperties = {
  * projects laid out across it as cards. Picking a project opens the repository modal for it.
  */
 function GithubStarsLink({ className }: { repo?: string; className?: string }) {
-  const projects = useOpenSourceStars()
-  const total = projects.reduce((sum, p) => sum + p.stars, 0)
+  const { projects, total } = useOpenSourceStars()
   const [open, setOpen] = React.useState(false)
   // The modal lives here, not in the card, so it survives the panel closing behind it.
   const [modalRepo, setModalRepo] = React.useState<string | null>(null)
@@ -534,16 +537,14 @@ function useHeaderTone() {
   return React.useContext(HeaderToneContext)
 }
 
-function HeaderPill({
+type HeaderPillProps = Omit<React.ComponentProps<"div">, "ref"> & { layoutSize?: boolean }
+
+const HeaderPill = React.forwardRef<HTMLDivElement, HeaderPillProps>(function HeaderPill({
   children,
   className,
-  ref,
   layoutSize = false,
   ...props
-}: Omit<React.ComponentProps<"div">, "ref"> & {
-  ref?: React.Ref<HTMLDivElement>
-  layoutSize?: boolean
-}) {
+}, ref) {
   const nodeRef = React.useRef<HTMLDivElement | null>(null)
   const setRef = useComposedRef(ref, nodeRef)
   const tone = useHeaderTone()
@@ -568,7 +569,7 @@ function HeaderPill({
       {children}
     </motion.div>
   )
-}
+})
 
 function headerNavId(href: string) {
   const [withoutHash, hash] = href.split("#")
@@ -1603,11 +1604,11 @@ function HeaderChrome({
             setHoverExpand(false)
           }
         }}
-        className="flex h-16 min-w-0 flex-1 items-center pl-2 md:flex-none"
+        className="flex h-16 min-w-0 flex-1 items-center pl-2 lg:flex-none"
       >
         <div className="flex w-full items-center justify-between gap-1 md:w-auto md:justify-start">
           <HeaderLogo href={homeHref} label={logoLabel} />
-          <div className="flex items-center gap-1 md:hidden">
+          <div className="flex items-center gap-1 lg:hidden">
             <HeaderActions
               items={accounts.filter(
                 (item) => item.variant === "cta" || item.variant === "pricing" || item.variant === "ghost"
@@ -1625,14 +1626,14 @@ function HeaderChrome({
               aria-controls={menuId}
               aria-label={open ? "Close site menu" : "Open site menu"}
               className={cn(
-                "md:hidden",
+                "lg:hidden",
                 light ? "text-ink hover:bg-ink/10" : "text-paper hover:bg-dither-frame/10"
               )}
             >
               <HeaderMenuIcon open={open} />
             </SquircleButton>
           </div>
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <AnimatePresence>
               {showNavLinks ? (
                 <motion.div
@@ -1658,7 +1659,7 @@ function HeaderChrome({
         </div>
       </HeaderPill>
 
-      <HeaderPill className="hidden h-16 shrink-0 items-center gap-2 md:flex">
+      <HeaderPill className="hidden h-16 shrink-0 items-center gap-2 lg:flex">
         <HeaderActions
           items={accounts}
           label="Account"

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { copiedRequestProblem, parseCopiedRequest } from "./index.ts";
 
 const LI_AT = "AQEDA".padEnd(120, "x");
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.7444.59 Safari/537.36";
 
 describe("a linkedin.com request copied as cURL", () => {
   test("Copy as cURL (cmd) on Windows: the caret escapes are undone", () => {

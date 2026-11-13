@@ -27,7 +27,7 @@ Seen 8 time(s) in 6 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261024T060921_61594063207669**, step 1: goto /groups/junkremovalwinners: 200, 930 ms
+**runs/inspect/20261024T060921_<userId:1>**, step 1: goto /groups/junkremovalwinners: 200, 930 ms
 
 Sent:
 
@@ -39,15 +39,15 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1",
       "badge_entry_point": "GROUPS_TAB_MAIN",
       "bookmark_folder_id": "FAVORITES",
       "environment": "COMET",
-      "group_id": "3549906855288164"
+      "group_id": "<groupId:1>"
     },
     "scale": 1,
-    "bookmarkID": "3549906855288164"
+    "bookmarkID": "<id:1>"
   },
   "doc_id": "27788177020768038",
   "fb_api_analytics_tags": [
@@ -65,15 +65,15 @@ Answered:
       "group_bookmark": {
         "bookmarked_node": {
           "__typename": "Group",
-          "id": "3549906855288164"
+          "id": "<id:1>"
         },
         "last_used_timestamp": null,
         "is_news_feed": false,
         "section": "UNKNOWN",
-        "name": "Junk Removal Winners ™ - How to Start, Get Leads & Grow Your Business",
+        "name": "<name:1>",
         "has_user_hidden": false,
         "url": "https://www.facebook.com/groups/junkremovalwinners/",
-        "tracking": "{\"bmid\":3549906855288164,\"bookmark_type\":\"type_group\",\"content_type\":null}",
+        "tracking": "{\"bmid\":<id:1>,\"bookmark_type\":\"type_group\",\"content_type\":null}",
         "bookmark_icon_sprite": {
           "sprited": 0,
           "sprite_map_css_class": null,
@@ -90,7 +90,7 @@ Answered:
           "logging_id": ""
         },
         "image": {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/447843169_122043041345420024_8407522355823862737_n.png (432 chars)",
+          "uri": "<mediaUrl> (432 chars)",
           "is_silhouette": true
         },
         "query_prefetching_eligible": true,
@@ -106,7 +106,7 @@ Answered:
               "node": {
                 "bookmarked_node": {
                   "__typename": "Group",
-                  "id": "3549906855288164"
+                  "id": "<id:1>"
                 },
                 "bookmark_unread_count": 0,
                 "bookmark_unread_count_string": null,

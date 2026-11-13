@@ -43,7 +43,7 @@ Answered:
   "payload": {
     "success": "ok"
   },
-  "lid": "7704006797055112010"
+  "lid": "<id:1>"
 }
 ```
 

@@ -47,7 +47,7 @@ Seen 26 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 2469 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 2469 ms
 
 Sent:
 
@@ -124,8 +124,8 @@ Answered:
         },
         "actor": {
           "__typename": "User",
-          "name": "Halima Ndjzn",
-          "id": "61594285317994"
+          "name": "<name:1>",
+          "id": "<userId:1>"
         },
         "can_have_friends": true,
         "all_friends": {
@@ -139,14 +139,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/760434761_27873855612276295_9047649971810608122_n.jpg (467 chars)",
+          "uri": "<mediaUrl> (467 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/861069674_28938005685861277_3550473545109325617_n.jpg (467 chars)",
+          "uri": "<mediaUrl> (467 chars)",
           "label": null,
           "width": 680,
           "height": null,
@@ -194,7 +194,7 @@ Answered:
           "__isNode": "ShowcaseFeedUnit",
           "id": "UzpfSVNob3djYXNlX1NGVjoyOmVKeXRsMTFRRTFjVXgvZnVocWdFV3JSazFWeG1XanRUcDYzQjJXeXltNnd2blRxYUVSOTRzVS9hbVF6R1pLUmpnVUYwYWgrWTJBKzA2UnF0MmlSOEZCVVJJNGtwS3ZXN2dhWVpiRFBVYW9ZeVNQRmpGQm1sdUNLbEtYN1VkbmF6ZHhPbVBIU2d5VXZ5UCtmbW52Lzl6Ymw3UWg1dVBqUjB3WHVtL1NsNGd5ZUhlaUsrWS91Zm5pQzBhdkw4cnZpWnVLdUFkTmVPSGM5ZGttTU56YzBKdkV6M0w0cGM4STJHUG5WblhYbWxadFZKTzM3NWxmYXNSTVhOMGNQUGs3N09tbWJRVTZIOGlKY0hlTElvdXowQjhKcDZn… (2936 chars)",
           "__isFeedUnit": "ShowcaseFeedUnit",
-          "tracking": "{\"qid\":\"-5910552709473123613\",\"mf_story_key\":\"-9057986082811160850\",\"filter\":\"h_nor\",\"sty\":1445,\"story_set_type\":25,\"mf_objid\":\"122149493901088051\",\"viewstate_id\":\"-9057986082811160850\",\"pos\":2,\"partial_response_callsite_id\":-1,\"actrs\":\"61582641546077\",\"fb_shorts_surface\":\"FBShorts_SurfaceType::IFU_TRAY\",\"fb_shorts_ifu_tray_index\":1,\"fb_shorts_ifu_tray_position\":2,\"feed_unified_request_id\":\"-59105… (446 chars)",
+          "tracking": "{\"qid\":\"-5910552709473123613\",\"mf_story_key\":\"-9057986082811160850\",\"filter\":\"h_nor\",\"sty\":1445,\"story_set_type\":25,\"mf_objid\":\"<id:1>\",\"viewstate_id\":\"-9057986082811160850\",\"pos\":2,\"partial_response_callsite_id\":-1,\"actrs\":\"<userId:2>\",\"fb_shorts_surface\":\"FBShorts_SurfaceType::IFU_TRAY\",\"fb_shorts_ifu_tray_index\":1,\"fb_shorts_ifu_tray_position\":2,\"feed_unified_request_id\":\"-59105… (446 chars)",
           "debug_info": null,
           "showcase_story_type": "SHOWCASE_SHORT_VIDEO",
           "showcase_item": "(6 items)",
@@ -248,7 +248,7 @@ Answered:
         "… 6 more"
       ],
       "data": {
-        "id": "2204102610505702",
+        "id": "<id:2>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 10
         },
@@ -286,7 +286,7 @@ Answered:
         "… 6 more"
       ],
       "data": {
-        "id": "2675229056239717",
+        "id": "<id:3>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 21
         },
@@ -316,7 +316,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 2945 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 2945 ms
 
 Sent:
 
@@ -393,8 +393,8 @@ Answered:
         },
         "actor": {
           "__typename": "User",
-          "name": "Halima Ndjzn",
-          "id": "61594285317994"
+          "name": "<name:1>",
+          "id": "<userId:1>"
         },
         "can_have_friends": true,
         "all_friends": {
@@ -408,14 +408,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-1/801938798_10234805655190677_717144495667367879_n.jpg (438 chars)",
+          "uri": "<mediaUrl> (438 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.99422-6/861811071_1355638166481948_8168384254718414366_n.png (466 chars)",
+          "uri": "<mediaUrl> (466 chars)",
           "label": null,
           "width": 680,
           "height": null,
@@ -453,7 +453,7 @@ Answered:
           "enc": null,
           "cat": "FB_SHORTS"
         },
-        "deduplication_key": "4013517879834734671",
+        "deduplication_key": "<id:4>",
         "min_gap_type_index_string": "12",
         "sposnsor_new_distac_action": null,
         "top_story_cache_score": 0,
@@ -463,7 +463,7 @@ Answered:
           "__isNode": "ShowcaseFeedUnit",
           "id": "UzpfSVNob3djYXNlX1NGVjoyOmVKeWRsbjlNVTFjVXg5OTlyeTNLZ3cwTmZXZ3Z5WFJ4eGgvRjlEYzgvOW1QYUFkbThZKzV2OVNrMGRwR2xna0VkWm43ZzlUcG1IcytPcWY0S09oUUNXS2wyRUNIVEVVTE5wMWlRL3pCQ0dQTTZLYklBTXVqSW1PSVpsdmU2N3NQbUN3aGxuL0s5NTU3ejdtZmMrNDVwU3F2L3ZTMC8xWXNrTCtjcFpwNnl4dTZlNTRvMVNwcXNPTit1NjhsZytwMS8za3VlZVZjYTkwOG5mY05RODlpcktOZ1gvVEhyOGFHTHhkWGc4NEN0SU5qQVQ2V2s5allBZkRpWXdDSGVQYTFZbnpqT3IzUnBMWG96YlRKa0dVMjZqTnAy… (2764 chars)",
           "__isFeedUnit": "ShowcaseFeedUnit",
-          "tracking": "{\"qid\":\"-5910545425283849419\",\"mf_story_key\":\"4013517879834734671\",\"filter\":\"h_nor\",\"sty\":1445,\"story_set_type\":25,\"mf_objid\":\"1657422562408731\",\"viewstate_id\":\"4013517879834734671\",\"pos\":2,\"partial_response_callsite_id\":-1,\"actrs\":\"100044230096053\",\"fb_shorts_surface\":\"FBShorts_SurfaceType::IFU_TRAY\",\"fb_shorts_ifu_tray_index\":1,\"fb_shorts_ifu_tray_position\":2,\"feed_unified_request_id\":\"-59105454… (443 chars)",
+          "tracking": "{\"qid\":\"-5910545425283849419\",\"mf_story_key\":\"<id:4>\",\"filter\":\"h_nor\",\"sty\":1445,\"story_set_type\":25,\"mf_objid\":\"<id:5>\",\"viewstate_id\":\"<id:4>\",\"pos\":2,\"partial_response_callsite_id\":-1,\"actrs\":\"<userId:3>\",\"fb_shorts_surface\":\"FBShorts_SurfaceType::IFU_TRAY\",\"fb_shorts_ifu_tray_index\":1,\"fb_shorts_ifu_tray_position\":2,\"feed_unified_request_id\":\"-59105454… (443 chars)",
           "debug_info": null,
           "showcase_story_type": "SHOWCASE_SHORT_VIDEO",
           "showcase_item": "(6 items)",
@@ -475,7 +475,7 @@ Answered:
         "feed_backend_data": {
           "qid": "-5910545425283849419",
           "original_qid": "-5910545425283849419",
-          "vsid": "4013517879834734671",
+          "vsid": "<id:4>",
           "vspos": 2,
           "should_recent_vpv_fetch_tracking_data": false,
           "serialized_payloads": "GwZGGrbkmbHY2vEFxgGA9wLsATL8AxjCAcoWtAMGGwFIwAEEbm9uZRsDSbbmAwbe5gMGhOcDBgA="
@@ -517,7 +517,7 @@ Answered:
         "… 6 more"
       ],
       "data": {
-        "id": "2204102610505702",
+        "id": "<id:2>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 10
         },
@@ -555,7 +555,7 @@ Answered:
         "… 6 more"
       ],
       "data": {
-        "id": "1035027539463897",
+        "id": "<id:6>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 15000
         },

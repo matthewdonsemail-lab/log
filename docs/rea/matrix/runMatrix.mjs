@@ -23,7 +23,6 @@ const evidence = [
   ["docs/rea/parallel/humanize.md", read("docs/rea/parallel/humanize.md")],
   ["docs/rea/facebookClient.md", read("docs/rea/facebookClient.md")],
   ["docs/rea/comparison.md", read("docs/rea/comparison.md")],
-  ["docs/identityLeaks/README.md", read("docs/identityLeaks/README.md")],
   ["python/browser/visibleBrowser.py", read("python/browser/visibleBrowser.py")],
 ];
 

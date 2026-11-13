@@ -27,7 +27,7 @@ Seen 5 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 1618 ms
+**runs/inspect/20261023T080801_<userId:2>**, step 6: clickAny 1 x link /see owner profile$/: 200, 1618 ms
 
 Sent:
 
@@ -41,7 +41,7 @@ Sent:
     "scale": 1,
     "sectionToken": "YXBwX3NlY3Rpb246MTAwMDc4NDQ4NzQyNDU2OjE2ODY4NDg0MTc2ODM3NQ==",
     "useDefaultActor": false,
-    "userID": "100078448742456",
+    "userID": "<userId:1>",
     "__relay_internal__pv__FBProfile_enable_perf_improv_gkrelayprovider": true,
     "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
     "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
@@ -81,10 +81,10 @@ Answered:
         "__typename": "TimelineAppSection",
         "id": "YXBwX3NlY3Rpb246MTAwMDc4NDQ4NzQyNDU2OjE2ODY4NDg0MTc2ODM3NQ==",
         "section_notice": null,
-        "name": "Reels",
+        "name": "<name:1>",
         "section_type": "REELS",
         "subtitle": null,
-        "url": "https://www.facebook.com/profile.php?id=100078448742456&sk=reels_tab",
+        "url": "https://www.facebook.com/profile.php?id=<userId:1>&sk=reels_tab",
         "nav_collections": "(1 fields)",
         "section_actions_renderer": null,
         "all_collections": "(1 fields)",
@@ -93,7 +93,7 @@ Answered:
       "user": {
         "timeline_nav_app_sections": "(1 fields)",
         "if_viewer_can_see_profile_paginated_collections_feed": "(4 fields)",
-        "id": "100078448742456"
+        "id": "<userId:1>"
       }
     },
     "extensions": {
@@ -160,7 +160,7 @@ Answered:
       ],
       "data": {
         "attachments": "(1 items)",
-        "tracking": "{\"top_level_post_id\":\"1107265938687642\",\"content_owner_id_new\":\"100078448742456\",\"page_id\":\"113960531206402\",\"story_location\":12,\"story_attachment_style\":\"video_autoplay\",\"video_id\":\"1107265938687642\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"6628568379\",\"page_insights\":{\"100078448742456\":{\"page_id\":\"100078448742456\",\"page_id_type\":\"page\",\"actor_id\":\"100078448742456\",\"dm\":{\"isShare\":0,\"or… (836 chars)"
+        "tracking": "{\"top_level_post_id\":\"<id:1>\",\"content_owner_id_new\":\"<userId:1>\",\"page_id\":\"<id:2>\",\"story_location\":12,\"story_attachment_style\":\"video_autoplay\",\"video_id\":\"<id:1>\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"6628568379\",\"page_insights\":{\"<userId:1>\":{\"page_id\":\"<userId:1>\",\"page_id_type\":\"page\",\"actor_id\":\"<userId:1>\",\"dm\":{\"isShare\":0,\"or… (836 chars)"
       },
       "extensions": {
         "prefetch_uris_v2": "(7 items)",
@@ -182,7 +182,7 @@ Answered:
       ],
       "data": {
         "attachments": "(1 items)",
-        "tracking": "{\"top_level_post_id\":\"1107265938687642\",\"content_owner_id_new\":\"100078448742456\",\"page_id\":\"113960531206402\",\"story_location\":12,\"story_attachment_style\":\"video_autoplay\",\"video_id\":\"1107265938687642\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"6628568379\",\"page_insights\":{\"100078448742456\":{\"page_id\":\"100078448742456\",\"page_id_type\":\"page\",\"actor_id\":\"100078448742456\",\"dm\":{\"isShare\":0,\"or… (836 chars)"
+        "tracking": "{\"top_level_post_id\":\"<id:1>\",\"content_owner_id_new\":\"<userId:1>\",\"page_id\":\"<id:2>\",\"story_location\":12,\"story_attachment_style\":\"video_autoplay\",\"video_id\":\"<id:1>\",\"ent_attachement_type\":\"VideoAttachment\",\"app_id\":\"6628568379\",\"page_insights\":{\"<userId:1>\":{\"page_id\":\"<userId:1>\",\"page_id_type\":\"page\",\"actor_id\":\"<userId:1>\",\"dm\":{\"isShare\":0,\"or… (836 chars)"
       },
       "extensions": {
         "prefetch_uris_v2": "(7 items)",

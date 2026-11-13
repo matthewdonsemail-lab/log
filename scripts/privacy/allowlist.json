@@ -1,0 +1,22 @@
+{
+  "emails": [],
+  "findings": [
+    { "path": "docs/providerResearch/", "rule": "email", "why": "Public role addresses (sales@, support@) of proxy and captcha vendors, from their own public pages" },
+    { "path": "docs/providerResearch/", "rule": "publicIp", "why": "Vendor endpoint and example addresses published on the vendors' own pages" },
+    { "path": "src/", "rule": "windowsUserPath", "fingerprint": "8f2e5e4b7ff9", "why": "The fake Windows user 'tester' in tests and flow definitions" },
+    { "path": "docs/guides/", "rule": "windowsUserPath", "fingerprint": "8f2e5e4b7ff9", "why": "The fake Windows user 'tester' in example paths" },
+    { "path": "skills/", "rule": "windowsUserPath", "fingerprint": "8f2e5e4b7ff9", "why": "The fake Windows user 'tester' in example paths" },
+    { "path": "media/listings/", "rule": "windowsUserPath", "fingerprint": "8f2e5e4b7ff9", "why": "The fake Windows user 'tester' in example paths" },
+    { "path": "docs/platforms/reddit/telemetry/w3ReportingReports.md", "rule": "publicIp", "fingerprint": "517b756b8921", "why": "A Chrome version string, not an address" },
+    { "path": "src/specs/slack/index.ts", "rule": "publicIp", "fingerprint": "49a4b0a5d8c8", "why": "A Chrome version string, not an address" },
+    { "path": "src/cli/discord/discord.test.ts", "rule": "email", "fingerprint": "c3fcb126311f", "why": "A made-up address in an attachment test" },
+    { "path": "src/camofox/device/device.test.ts", "rule": "urlCredentials", "fingerprint": "24a27e9c92ca", "why": "Dummy proxy password in a test" },
+    { "path": "src/marketplace/socialAccount/socialAccount.test.ts", "rule": "urlCredentials", "why": "Dummy proxy passwords in tests" },
+    { "path": "src/proxyVendor/twoCaptcha/twoCaptcha.test.ts", "rule": "urlCredentials", "fingerprint": "08378bb6e248", "why": "Dummy proxy password in a test" },
+    { "path": "src/media/photo/photo.test.ts", "rule": "urlCredentials", "fingerprint": "a0785818a40c", "why": "Dummy proxy password in a test" },
+    { "path": "src/twenty/graphql/helpers/marketplaceFixture.ts", "rule": "urlCredentials", "fingerprint": "96b193cdedf2", "why": "Dummy proxy password in a fixture" },
+    { "path": "src/knowledge/base/client.test.ts", "rule": "urlCredentials", "fingerprint": "7fd3d2d9916d", "why": "A fake redis password the redaction test must mask" },
+    { "path": "src/knowledge/base/client.test.ts", "rule": "gitleaks", "why": "A fake JWT and key the redaction test must mask" },
+    { "path": "scripts/privacy/redactDocs.mjs", "rule": "encPassword", "fingerprint": "d10b920e6e2a", "why": "The redactor's own enc_password pattern" }
+  ]
+}

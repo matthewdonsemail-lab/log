@@ -24,7 +24,7 @@ describe('matt phrasing', () => {
     const foreign = readPhrases('a pageant in the same week is wild win or lose', index)
     expect(foreign.pass).toBe(false)
     expect(foreign.unfamiliar).toContain('is wild')
-    expect(phrasesLine(foreign)).toContain('never from him: ')
+    expect(phrasesLine(foreign)).toContain('new subject words he has never written, not counted against it: ')
   })
 
   test('words they wrote themselves are not held against the draft, and a short draft is not measured', () => {
@@ -32,5 +32,21 @@ describe('matt phrasing', () => {
     expect(readPhrases('pageant week wild', index).familiarity).toBeNull()
     const echoed = readPhrases('yo lad whats the craic with the pageant thing', index, 'pageant thing')
     expect(echoed.unfamiliar.some((pair) => pair.includes('pageant'))).toBe(false)
+  })
+
+  test('their everyday words are still his: a long message from them never strips the draft down to its rare pairs', () => {
+    const index = buildPhraseIndex([...MATT, ...MATT, ...MATT])
+    const draft = 'yo lad whats the craic what are you building'
+    const alone = readPhrases(draft, index)
+    const answering = readPhrases(draft, index, 'what are you building lad, whats the craic with the pageant thing')
+    expect(answering.familiarity).toBe(alone.familiarity)
+  })
+
+  test('a new subject is named apart from phrasing he never uses, so its words are not read as his voice (matt, 2026-11-12)', () => {
+    const index = buildPhraseIndex([...MATT, ...MATT, ...MATT])
+    const reading = readPhrases('yo lad the craic is in the datamart what are you building', index)
+    expect(reading.newWords).toContain('the datamart')
+    expect(reading.newPhrasing).not.toContain('the datamart')
+    expect(phrasesLine(reading)).toContain('new subject words he has never written, not counted against it')
   })
 })

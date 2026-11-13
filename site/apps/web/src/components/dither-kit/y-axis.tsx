@@ -6,16 +6,18 @@ export function YAxis({
   tickFormatter,
   tickCount = 4,
   tickMargin = 8,
+  className = "fill-current font-mono text-[10px] text-slate-500 dark:text-slate-400",
 }: {
   tickFormatter?: (value: number) => string
   tickCount?: number
   tickMargin?: number
+  className?: string
 }) {
   const ctx = useChartPart("YAxis")
   if (!ctx.ready) return null
 
   return (
-    <g className="fill-current font-mono text-[10px] text-slate-500 dark:text-slate-400">
+    <g className={className}>
       {ctx.y.ticks(tickCount).map((t) => (
         <text
           key={t}

@@ -1,8 +1,8 @@
 # Flow: `marketplaceListingDelete`
 
-Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then "No, haven't sold" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing 1425935622848350).
+Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then "No, haven't sold" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing <id:1>).
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261023T173652_61594063207669` (account 61594063207669). Run it on any account with `log flow run marketplaceListingDelete --account <a> --live`, or over MCP as the tool `flowMarketplaceListingDelete` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261023T173652_<userId:1>` (account <userId:1>). Run it on any account with `log flow run marketplaceListingDelete --account <a> --live`, or over MCP as the tool `flowMarketplaceListingDelete` (rule 31).
 
 ## Params
 

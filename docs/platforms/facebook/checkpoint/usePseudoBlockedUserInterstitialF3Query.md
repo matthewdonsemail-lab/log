@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `usePseudoBlockedUserInterstitial` |
-| rea | `ev_0af321f259e00b80718e9782609166cc4663c54cd29bf4e28174a8254484422f` |
+| rea | `ev_ec034108ab3b406a599d2e459152a8d237b9e325202125cfe1cf7a4d68ad42fa` |
 
-Seen 196 time(s) in 44 run(s).
+Seen 175 time(s) in 42 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -123,32 +123,13 @@ Seen 196 time(s) in 44 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 533 ms | 8052 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 414 ms | 6254 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 430–447 ms | 616772–657502 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 201–475 ms | 3624–4921 ms | — |
-| host | step 4: goto /marketplace/status | 2 | 200 | 189–215 ms | 3036–5708 ms | — |
-| host | step 5: goto /me | 1 | 200 | 160 ms | 5054 ms | — |
-| host | step 12: goto /marketplace/create/item | 1 | 200 | 176 ms | 9279 ms | — |
-| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 180 ms | 6405 ms | — |
-| host | step 16: goto / | 1 | 200 | 297 ms | 5510 ms | — |
-| host | step 19: goto /marketplace/ | 1 | 200 | 168 ms | 3466 ms | — |
-| host | step 22: goto /marketplace/ | 1 | 200 | 171 ms | 2744 ms | — |
-| host | scroll: -553px in 12 wheel steps, 499 ms | 1 | 200 | 173 ms | 1143 ms | — |
-| host | scroll: +617px in 15 wheel steps, 789 ms | 1 | 200 | 173 ms | 1219 ms | — |
-| host | step 26: goto /marketplace/ | 1 | 200 | 178 ms | 3353 ms | — |
-| host | step 28: goto /marketplace/create/item | 1 | 200 | 178 ms | 2179 ms | — |
-| host | step 30: goto /marketplace/ | 1 | 200 | 168 ms | 2850 ms | — |
-| host | step 32: goto /marketplace/ | 1 | 200 | 329 ms | 2735 ms | — |
-| host | step 34: goto /marketplace/you/selling | 1 | 200 | 163 ms | 4815 ms | — |
-| host | step 36: goto /marketplace/ | 1 | 200 | 167 ms | 2099 ms | — |
-| host | step 38: goto /marketplace/you/selling | 1 | 200 | 167 ms | 2292 ms | — |
-| host | step 40: goto /messages/ | 1 | 200 | 171 ms | 3988 ms | — |
-| host | step 18: clickRole button "…" | 1 | 200 | 195 ms | 9809 ms | — |
-| host | step 21: goto /marketplace/status | 1 | 200 | 171 ms | 8993 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 1175 ms | 17582 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 475 ms
+**runs/warmup/20261023T080515_<id:1>**, step 1: goto /marketplace/: 200, 389 ms
 
 Sent:
 
@@ -168,30 +149,34 @@ Answered:
 {
   "data": {
     "fx_feta_settings": {
-      "is_user_upgraded_to_feta": true
+      "is_user_upgraded_to_feta": false
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793037999958,
-      "time_at_flush_ms": 1793037999984
+      "request_start_time_ms": 1792742733444,
+      "time_at_flush_ms": 1792742733466
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 189 ms
+**runs/warmup/20261023T080515_<id:1>**, step 3: goto /marketplace/you/selling: 200, 421 ms
 
 Sent:
 
 ```json
 {
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "40106045909008763"
+  "doc_id": "40106045909008763",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
 }
 ```
 
@@ -201,20 +186,20 @@ Answered:
 {
   "data": {
     "fx_feta_settings": {
-      "is_user_upgraded_to_feta": true
+      "is_user_upgraded_to_feta": false
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038028391,
-      "time_at_flush_ms": 1793038028416
+      "request_start_time_ms": 1792742782499,
+      "time_at_flush_ms": 1792742782520
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 160 ms
+**runs/warmup/20261023T080515_<id:1>**, step 5: goto /messages/: 200, 545 ms
 
 Sent:
 
@@ -234,13 +219,13 @@ Answered:
 {
   "data": {
     "fx_feta_settings": {
-      "is_user_upgraded_to_feta": true
+      "is_user_upgraded_to_feta": false
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038043594,
-      "time_at_flush_ms": 1793038043618
+      "request_start_time_ms": 1792742814551,
+      "time_at_flush_ms": 1792742814574
     },
     "is_final": true
   }

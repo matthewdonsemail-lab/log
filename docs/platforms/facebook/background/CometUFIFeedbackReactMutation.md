@@ -32,7 +32,7 @@ Seen 10 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 3: likePost Like: 200, 1451 ms
+**runs/inspect/20261023T051540_<userId:1>**, step 3: likePost Like: 200, 1451 ms
 
 Sent:
 
@@ -45,14 +45,14 @@ Sent:
     "input": {
       "attribution_id_v2": "CometHomeRoot.react,comet.home,via_cold_start,1792732560933,80386,4748854339,,",
       "feedback_id": "ZmVlZGJhY2s6MTIyMzExMjkxMDgyMDI5MDQx",
-      "feedback_reaction_id": "1635855486666999",
+      "feedback_reaction_id": "<id:1>",
       "feedback_source": "NEWS_FEED",
       "is_tracking_encrypted": true,
       "tracking": [
         "AZihIoUx0lY6kt-0ST0sCSSoGccaBFOsDLmHSkY3pflbhbwmj9jrlfcFCMOfOFfK5WpPjaTswdbTjmcApIJivCEzw10f7kQlQ0EBl9a4OSik5M3v9s2iZiYWn7JTF8HYn3VXNI-QE8GoiStheM-0p-7dCPsYuFsHV4Avvkr4IaTGTG2-kwMjb-qdSJ_fyodYM4WUj1lEgGycxnGD6rp8m-vQBt7YGQ77ZIZfq7T7oVDhKH5YYsDfStIjWzsJIrY9YjxmSF_sFZbiOW3n6b4_3HHfVGJyjP79FLe0HkAxe_cAcgWFwz0T9gCkBBXYHqK0c8GHJN_3pqGPUDNIMHmd3c81qMOo6JkPm2wlU0F-f6qSdThSkKt3Uu3GeMvRiHe2MJrbPlRd2qlYuKGF… (2060 chars)"
       ],
-      "session_id": "4350d157-00b5-4b70-8d45-db5dbb1ef5be",
-      "actor_id": "61594063207669",
+      "session_id": "<token>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     },
     "scale": 1,
@@ -89,7 +89,7 @@ Answered:
             {
               "visible_in_bling_bar": true,
               "node": {
-                "id": "1635855486666999",
+                "id": "<id:1>",
                 "localized_name": "Like"
               },
               "i18n_reaction_count": "7K",
@@ -98,7 +98,7 @@ Answered:
             {
               "visible_in_bling_bar": true,
               "node": {
-                "id": "1678524932434102",
+                "id": "<id:2>",
                 "localized_name": "Love"
               },
               "i18n_reaction_count": "1K",
@@ -107,7 +107,7 @@ Answered:
             {
               "visible_in_bling_bar": false,
               "node": {
-                "id": "613557422527858",
+                "id": "<id:3>",
                 "localized_name": "Care"
               },
               "i18n_reaction_count": "68",
@@ -116,7 +116,7 @@ Answered:
             {
               "visible_in_bling_bar": false,
               "node": {
-                "id": "478547315650144",
+                "id": "<id:4>",
                 "localized_name": "Wow"
               },
               "i18n_reaction_count": "10",
@@ -125,7 +125,7 @@ Answered:
             {
               "visible_in_bling_bar": false,
               "node": {
-                "id": "115940658764963",
+                "id": "<id:5>",
                 "localized_name": "Haha"
               },
               "i18n_reaction_count": "1",
@@ -134,7 +134,7 @@ Answered:
             {
               "visible_in_bling_bar": false,
               "node": {
-                "id": "444813342392137",
+                "id": "<id:6>",
                 "localized_name": "Angry"
               },
               "i18n_reaction_count": "1",
@@ -155,18 +155,18 @@ Answered:
         },
         "viewer_actor": {
           "__typename": "User",
-          "id": "61594063207669",
-          "name": "Bethlehem Trash"
+          "id": "<userId:1>",
+          "name": "<name:1>"
         },
         "viewer_feedback_reaction_info": {
           "__typename": "FeedbackReactionInfo",
-          "id": "1635855486666999"
+          "id": "<id:1>"
         },
         "actor_provider": {
           "__typename": "Feedback",
           "current_actor": {
             "__typename": "User",
-            "id": "61594063207669"
+            "id": "<userId:1>"
           },
           "id": "ZmVlZGJhY2s6MTIyMzExMjkxMDgyMDI5MDQx"
         },
@@ -175,39 +175,39 @@ Answered:
         "supported_reaction_infos": [
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMAyWFGBnpZcTK2dlEOkqcwMaoy83Uqi8TpzhTSUZALJigog3c9HtHsJXzd9MKLb2PVDBx4xkmV3RvB4Kmg5KEKOvlYs4Ggq0X-CadWq3u4PIz9eVH_MavO64AcP9J2BwNn0UffDXE0Hg.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "1635855486666999"
+            "id": "<id:1>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQPAN3wnlj1_huOshOAAvpfjoCd5aVxnTwTsjiyYTTXnIsu-1nLzanwNU8zwOfMDhh5F6-nniwHcok3F4ABE47HhHIffqj71IsxixEAezmXyIEseNxv330rUs_42ET7mC4Ev-rfSuUF81Q.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "1678524932434102"
+            "id": "<id:2>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMnTnEXO5oaNMCRjmCBSOb8iEKffW1eD7CbZmX6dUtTWL1ahy-WsQKljBEgFdpzs3Sys-NSJrzuX6HIg4ZqQ8bMVRahZNPk5t-RWh1jh4p-eSRYh-tTFddUC38Bczzvb_GxYwgetHwypA.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "613557422527858"
+            "id": "<id:3>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMWA4JAROSuJJAbhBBxsoSgjlFmQDeVHKdfbsTQ7coDdrzyECj53gWbXyXm1HczF8nsTHQvp-Ixh5FkZoTPPLDYORgzSzWc-7diQcADjXDu-mfefSgINqs5OYiKYJokL9VMXBeCXrSTLQ.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "115940658764963"
+            "id": "<id:5>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQN-JjoqwNXB4Tr0H7hDnxvTKrSzmlyJtPiMB8laTBI0c1SuWHx39YtQ6PPc0qPua7zsjkFb0q59kMgk3nyksqZBGpNhQYIf8EniQGrdYFJlHdodRDanIAkT5Nbn0tKhm8ZZyaZVkNUB.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "478547315650144"
+            "id": "<id:4>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQP_tAIVJFa-mtUrEoOoncnEKU0zJrb28G5uey_89YuUd2ZqnoBcsl8Bww5d7ZaHwhavjL1BQ0PuggIA2VY9lnZQ6YTbY2qZ2f2XYGMeXXB8CeGbcyxm6tzviVu6BHOZow6MS8o8hW2h.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "908563459236466"
+            "id": "<id:7>"
           },
           "… 1 more"
         ],
@@ -221,7 +221,7 @@ Answered:
           }
         },
         "associated_video": {
-          "id": "1508021361207264"
+          "id": "<id:8>"
         },
         "unified_reactors": {
           "count": 8182
@@ -384,7 +384,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T051540_61594063207669**, step 5: likePost Like: 200, 1024 ms
+**runs/inspect/20261023T051540_<userId:1>**, step 5: likePost Like: 200, 1024 ms
 
 Sent:
 
@@ -397,14 +397,14 @@ Sent:
     "input": {
       "attribution_id_v2": "CometHomeRoot.react,comet.home,via_cold_start,1792732560933,80386,4748854339,,",
       "feedback_id": "ZmVlZGJhY2s6NDIyMTAxNDMyNDg3NTQ3OA==",
-      "feedback_reaction_id": "1635855486666999",
+      "feedback_reaction_id": "<id:1>",
       "feedback_source": "NEWS_FEED",
       "is_tracking_encrypted": true,
       "tracking": [
         "AZheieZQlJyJM8SeUT7TdbW0tHls18qzSEj20nPskhQkqzybZJowGgQkY6MLCAsqI9Vo6Z3a5L_7YdNQlaWsiVsP-Df-96_HR2-OvH3CSvVUuXvg2AkWWx6kTmUM65uFHmas9LLDgnjP6ag8-EAvEWHvec13KHgSnnTvGARS4zlxAFQTDfSMonFVDI48cK1j8C1kDMIHX6wlFf00SpISOu0dmARvjIuHLdOqYOg0ukCoPOlILOiM5dgnVLt9m6a_Hx5Qhy9yV5wyORQiKEuYiq7m5IKGQuYJizuDYkt5wCF3LqpUIR7svFG4qyRHrYQ_Pp7e019G2QrYol9WmmHPhhSPYM0NMoXOi4_FyrB2JmOqx0jDDrBgSnB1jgtL2S-t9BS7BjZY_XjQDHXJ… (1438 chars)"
       ],
-      "session_id": "4350d157-00b5-4b70-8d45-db5dbb1ef5be",
-      "actor_id": "61594063207669",
+      "session_id": "<token>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     },
     "scale": 1,
@@ -441,7 +441,7 @@ Answered:
             {
               "visible_in_bling_bar": true,
               "node": {
-                "id": "1635855486666999",
+                "id": "<id:1>",
                 "localized_name": "Like"
               },
               "i18n_reaction_count": "1",
@@ -462,62 +462,62 @@ Answered:
         },
         "viewer_actor": {
           "__typename": "User",
-          "id": "61594063207669",
-          "name": "Bethlehem Trash"
+          "id": "<userId:1>",
+          "name": "<name:1>"
         },
         "viewer_feedback_reaction_info": {
           "__typename": "FeedbackReactionInfo",
-          "id": "1635855486666999"
+          "id": "<id:1>"
         },
         "actor_provider": {
           "__typename": "Feedback",
           "current_actor": {
             "__typename": "User",
-            "id": "61594063207669"
+            "id": "<userId:1>"
           },
           "id": "ZmVlZGJhY2s6NDIyMTAxNDMyNDg3NTQ3OA=="
         },
         "if_viewer_can_comment_anonymously": null,
         "associated_group": {
           "feature_intervention": null,
-          "id": "2478332015810393"
+          "id": "<id:9>"
         },
         "supported_reaction_infos": [
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMAyWFGBnpZcTK2dlEOkqcwMaoy83Uqi8TpzhTSUZALJigog3c9HtHsJXzd9MKLb2PVDBx4xkmV3RvB4Kmg5KEKOvlYs4Ggq0X-CadWq3u4PIz9eVH_MavO64AcP9J2BwNn0UffDXE0Hg.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "1635855486666999"
+            "id": "<id:1>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQPAN3wnlj1_huOshOAAvpfjoCd5aVxnTwTsjiyYTTXnIsu-1nLzanwNU8zwOfMDhh5F6-nniwHcok3F4ABE47HhHIffqj71IsxixEAezmXyIEseNxv330rUs_42ET7mC4Ev-rfSuUF81Q.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "1678524932434102"
+            "id": "<id:2>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMnTnEXO5oaNMCRjmCBSOb8iEKffW1eD7CbZmX6dUtTWL1ahy-WsQKljBEgFdpzs3Sys-NSJrzuX6HIg4ZqQ8bMVRahZNPk5t-RWh1jh4p-eSRYh-tTFddUC38Bczzvb_GxYwgetHwypA.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "613557422527858"
+            "id": "<id:3>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQMWA4JAROSuJJAbhBBxsoSgjlFmQDeVHKdfbsTQ7coDdrzyECj53gWbXyXm1HczF8nsTHQvp-Ixh5FkZoTPPLDYORgzSzWc-7diQcADjXDu-mfefSgINqs5OYiKYJokL9VMXBeCXrSTLQ.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "115940658764963"
+            "id": "<id:5>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQN-JjoqwNXB4Tr0H7hDnxvTKrSzmlyJtPiMB8laTBI0c1SuWHx39YtQ6PPc0qPua7zsjkFb0q59kMgk3nyksqZBGpNhQYIf8EniQGrdYFJlHdodRDanIAkT5Nbn0tKhm8ZZyaZVkNUB.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "478547315650144"
+            "id": "<id:4>"
           },
           {
             "animation": {
-              "uri_keyframes2": "https://scontent-phl2-1.xx.fbcdn.net/m1/v/t6/AQP_tAIVJFa-mtUrEoOoncnEKU0zJrb28G5uey_89YuUd2ZqnoBcsl8Bww5d7ZaHwhavjL1BQ0PuggIA2VY9lnZQ6YTbY2qZ2f2XYGMeXXB8CeGbcyxm6tzviVu6BHOZow6MS8o8hW2h.kf"
+              "uri_keyframes2": "<mediaUrl>"
             },
-            "id": "908563459236466"
+            "id": "<id:7>"
           },
           "… 1 more"
         ],
@@ -648,13 +648,13 @@ Sets a reaction on a post or reel: it sends `input` and reads back `feedback_rea
 
 ## What our machine does with it
 
-It decides the like (rule 73). The Reels warm-up's `like` step (`src/facebook/warmup/activities/helpers/reel.ts`) and the feed's `likePost` (`feed.ts`) click Like, wait for this call (`answerWaitOf`, 15 s), and pass only when it answers 2xx with no errors and `data.feedback_react.feedback.viewer_feedback_reaction_info.id` is the reaction we sent as `variables.input.feedback_reaction_id` (`answerIssue`, `checkStep`). The Like is `1635855486666999`. The "Remove Like" button is no longer what decides it. The steps only run with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
+It decides the like (rule 73). The Reels warm-up's `like` step (`src/facebook/warmup/activities/helpers/reel.ts`) and the feed's `likePost` (`feed.ts`) click Like, wait for this call (`answerWaitOf`, 15 s), and pass only when it answers 2xx with no errors and `data.feedback_react.feedback.viewer_feedback_reaction_info.id` is the reaction we sent as `variables.input.feedback_reaction_id` (`answerIssue`, `checkStep`). The Like is `<id:1>`. The "Remove Like" button is no longer what decides it. The steps only run with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
 
 ## What can go wrong
 
 Every like seen answered 200 in 872-2018 ms. What the step then reports, and the run stops or outlines:
 - no answer in the step: `Facebook never answered CometUFIFeedbackReactMutation in this step`;
 - a status other than 2xx, or errors in the answer: the status or the errors;
-- a saved reaction other than the one sent, or none (`viewer_feedback_reaction_info: null`): `answered data.feedback_react.feedback.viewer_feedback_reaction_info.id = …, not "1635855486666999"`.
+- a saved reaction other than the one sent, or none (`viewer_feedback_reaction_info: null`): `answered data.feedback_react.feedback.viewer_feedback_reaction_info.id = …, not "<id:1>"`.
 
 A checkpoint or login page ends the run as `blocked`, as before.

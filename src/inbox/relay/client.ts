@@ -5,7 +5,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { hostname } from 'node:os'
 import { addAlert, claimWatcher, killTree, processAlive, processStartedAt, releaseWatcher, sameProcess, watchHolder } from '../watch/index'
 import { appendEvent, asOwner, behindOf, db, lastEventAt, markGap, markStage, openGap, OwnerFencedError } from '../store/index'
-import { HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, NETWORK_FAILURE, OWN_FAILURE, PLATFORM_REFUSAL, STALE_CONFIRM_MS, STALE_MS } from './types'
+import { CHAT_ACCESS_REFUSAL, HEARTBEAT_MS, HEARTBEAT_RETRIES, HEARTBEAT_RETRY_MS, MAX_BUFFERED_BYTES, NETWORK_FAILURE, OWN_FAILURE, PLATFORM_REFUSAL, STALE_CONFIRM_MS, STALE_MS } from './types'
 import type { AttachResult, CatchUp, Relay, RelaySession, RelayStatus } from './types'
 
 export function readSession(platform: string, account: string): RelaySession | null {
@@ -243,7 +243,7 @@ export function networkFailure(detail: string): boolean {
 
 export function notThePlatform(detail: string | null | undefined): boolean {
   if (!detail || PLATFORM_REFUSAL.test(detail)) return false
-  return NETWORK_FAILURE.test(detail) || OWN_FAILURE.test(detail)
+  return NETWORK_FAILURE.test(detail) || OWN_FAILURE.test(detail) || CHAT_ACCESS_REFUSAL.test(detail)
 }
 
 export function catchUpRunner(platform: string, account: string, catchUp: CatchUp | undefined, log: (line: string) => void = () => {}): { run: () => Promise<void>; settled: () => Promise<void> } {

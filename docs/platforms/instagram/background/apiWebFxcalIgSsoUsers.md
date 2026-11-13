@@ -39,9 +39,9 @@ Answered:
 ```json
 {
   "fbAccount": {
-    "obfuscated_account_id": "FXACINFRAOBIDAdPnCFFerYPpMjpTCHkezBh1llh9tQ2rvaigych0s7npaC0lfAXSpay7NVjV3-qKye0_whLbjoA",
-    "profile_pic_url": "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/448509310_2854775338016712_8352622713117055087_n.jpg (482 chars)",
-    "display_name": "Matthew Don",
+    "obfuscated_account_id": "<userId:1>",
+    "profile_pic_url": "<mediaUrl> (482 chars)",
+    "display_name": "<name:1>",
     "sso_login_available": false,
     "is_sso_enabled": true
   },
@@ -62,9 +62,9 @@ Answered:
 ```json
 {
   "fbAccount": {
-    "obfuscated_account_id": "FXACINFRAOBIDAdMn1FnsdobQ0lyz9srQCOqQNZYz92CJ7olTKitlJ0w4pslzUMPUOhNpiCkkn62Xz9st4ZAKxxk",
-    "profile_pic_url": "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/448509310_2854775338016712_8352622713117055087_n.jpg (482 chars)",
-    "display_name": "Matthew Don",
+    "obfuscated_account_id": "<userId:2>",
+    "profile_pic_url": "<mediaUrl> (482 chars)",
+    "display_name": "<name:1>",
     "sso_login_available": false,
     "is_sso_enabled": true
   },
@@ -85,9 +85,9 @@ Answered:
 ```json
 {
   "fbAccount": {
-    "obfuscated_account_id": "FXACINFRAOBIDAdPLNv-ggjo_OVpxvbVpQOthXbZElY0SSgjzzqT3472L7z8hxqEhXngYCe7ZATbRu_ImAQXyn8Y",
-    "profile_pic_url": "https://scontent.fdad3-6.fna.fbcdn.net/v/t39.30808-1/448509310_2854775338016712_8352622713117055087_n.jpg (482 chars)",
-    "display_name": "Matthew Don",
+    "obfuscated_account_id": "<userId:3>",
+    "profile_pic_url": "<mediaUrl> (482 chars)",
+    "display_name": "<name:1>",
     "sso_login_available": false,
     "is_sso_enabled": true
   },

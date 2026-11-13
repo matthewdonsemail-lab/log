@@ -26,6 +26,7 @@ export interface CatchUpResult {
   appended: number
   refused?: string
   detail?: string
+  skipped?: string[]
 }
 
 export const READ_GAP_MS: readonly [number, number] = [800, 2500]

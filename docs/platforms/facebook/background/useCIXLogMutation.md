@@ -36,7 +36,7 @@ Seen 14 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 194 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 194 ms
 
 Sent:
 
@@ -48,11 +48,11 @@ Sent:
   "variables": {
     "input": {
       "frx": {
-        "context": "{\"session_id\":\"a3c99675-e371-4f34-9bbe-c54b4e7989b5\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"29987156274207440\"}",
+        "context": "{\"session_id\":\"<token>\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"<id:1>\"}",
         "frx_menu_item_loaded": null,
-        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038230014,797264,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,1606854132932955,494,1818774979262678"
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038230014,797264,<id:2>,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,<id:2>,494,<id:3>"
       },
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },
@@ -79,7 +79,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 172 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +617px in 15 wheel steps, 789 ms: 200, 172 ms
 
 Sent:
 
@@ -91,11 +91,11 @@ Sent:
   "variables": {
     "input": {
       "frx": {
-        "context": "{\"session_id\":\"b3d92a3a-357f-4d8c-a7a1-1ac47fe02e73\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"29436407615976563\"}",
+        "context": "{\"session_id\":\"<token>\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"<id:4>\"}",
         "frx_menu_item_loaded": null,
-        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038240744,92809,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,1606854132932955,494,2249546198922840"
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1793038240744,92809,<id:2>,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1793038198638,353894,<id:2>,494,<id:5>"
       },
-      "actor_id": "61594285317994",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "4"
     }
   },

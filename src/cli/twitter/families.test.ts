@@ -195,14 +195,14 @@ describe("log twitter reply, quote, like, dm", () => {
     expect(h.calls).toEqual([]);
     expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", join(dir, "nope.mp4")])).err).toContain("mediaInvalid");
     expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", `${clip},${clip}`])).err).toContain("alone");
-    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "One in 173.", "--approvedBy", "mandeep", "--live"])).err).toContain("styleFailed");
+    expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "One in 173.", "--approvedBy", "mandy", "--live"])).err).toContain("styleFailed");
     expect((await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--live"])).err).toContain("notApproved");
     expect(h.calls).toEqual([]);
-    const sent = await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", clip, "--approvedBy", "mandeep", "--live"]);
+    const sent = await h.run(["twitter", "post", "--account", "xTwo", "--text", "one in 173", "--media", clip, "--approvedBy", "mandy", "--live"]);
     expect(sent.code).toBe(0);
     expect(sent.out).toContain("posted https://x.com/xTwo/status/888");
     expect(sent.err).toContain("uploading 1 file to X first (video)");
-    expect(h.calls).toEqual([{ action: "post", live: true, approvedBy: "mandeep", text: "one in 173", media: [clip] }]);
+    expect(h.calls).toEqual([{ action: "post", live: true, approvedBy: "mandy", text: "one in 173", media: [clip] }]);
   });
 
   test("a dm drafted on several lines goes out one message per line, --asOne as one, and a drop stops the rest", async () => {

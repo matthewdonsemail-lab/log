@@ -22,6 +22,7 @@ from login import autoLogin
 from human import scrollMotion
 from browser import proxyGate
 from browser import controlMatch
+from browser.browserViewer import BrowserViewer
 from location.placeName import pick_suggestion, place_problem
 from human.humanMouse import HumanMouse
 from errors.errorCodes import failure
@@ -254,6 +255,7 @@ class Inspector:
         self.opts: dict[str, Any] = {}
         self.page: Any = None
         self.context: Any = None
+        self.controlLock = asyncio.Lock()
 
     async def step(self, action: str, label: str, act: Any, expect: str | None = None, expect_ms: int = 30_000) -> dict[str, Any]:
         self.index += 1
@@ -494,6 +496,10 @@ class Inspector:
             await asyncio.sleep(0.5)
 
     async def handle(self, command: dict[str, Any]) -> dict[str, Any]:
+        async with self.controlLock:
+            return await self.handleUnlocked(command)
+
+    async def handleUnlocked(self, command: dict[str, Any]) -> dict[str, Any]:
         action = str(command.get("action") or "")
         args = [str(a) for a in command.get("args") or []]
         page = self.page
@@ -813,17 +819,20 @@ class Inspector:
                 self.mouse.start_idle()
             else:
                 log("Our cursor stays still in this session (--noIdleMouse).")
+            viewer = BrowserViewer(self)
+            await viewer.start()
             log("Inspect session open. Send steps with: log inspect do <action>.")
             with replies.open("a", encoding="utf8") as out:
                 out.write(json.dumps({"id": "ready", "result": {"ok": True}}) + "\n")
             offset = commands.stat().st_size
-            start = self.config.get("startUrl")
-            if start:
-                reply = await self.handle({"action": "goto", "args": [start]})
-                with replies.open("a", encoding="utf8") as out:
-                    out.write(json.dumps({"id": "start", "result": reply}) + "\n")
             last = time.monotonic()
             try:
+                start = self.config.get("startUrl")
+                if start:
+                    reply = await self.handle({"action": "goto", "args": [start]})
+                    with replies.open("a", encoding="utf8") as out:
+                        out.write(json.dumps({"id": "start", "result": reply}) + "\n")
+                last = time.monotonic()
                 while time.monotonic() - last < IDLE_SECONDS:
                     await asyncio.sleep(0.3)
                     if self.closed:
@@ -860,6 +869,7 @@ class Inspector:
                 log("Idle for 30 minutes: stopping.")
                 return 0
             finally:
+                await viewer.close()
                 await self.mouse.stop_idle()
                 if self.rea_tasks:
                     log(f"waiting for rea on {len(self.rea_tasks)} step(s) before closing")

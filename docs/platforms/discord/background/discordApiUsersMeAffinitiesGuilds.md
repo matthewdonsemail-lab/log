@@ -10,21 +10,64 @@
 | Path | `discord.com/api/users/@me/affinities/guilds` |
 | Sends | — |
 | Reads | `guild_affinities` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 352 ms | 5395 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 640 ms | 47867 ms | — |
+| inspect | step 1: goto /login | 2 | 200 | 372–514 ms | 34800–1044582 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 200, 640 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 372 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "guild_affinities": [
+    {
+      "guild_id": "1053877538025386074",
+      "affinity": 1591.904500638148
+    },
+    {
+      "guild_id": "1290725749543927941",
+      "affinity": 1330.5832112007427
+    },
+    {
+      "guild_id": "1442518050527248436",
+      "affinity": 310.23882320410013
+    },
+    {
+      "guild_id": "1458911680376606957",
+      "affinity": 269.1522123575936
+    },
+    {
+      "guild_id": "1130383047699738754",
+      "affinity": 244.86491119850427
+    },
+    {
+      "guild_id": "1019350475847499849",
+      "affinity": 203.59212506331508
+    },
+    "… 65 more"
+  ]
+}
+```
+
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 640 ms
 
 Sent:
 
@@ -66,7 +109,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 352 ms
+**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 352 ms
 
 Sent:
 

@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `input` |
 | Reads | `data.enrollInGamification`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script114.js:47 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script114.js:47 anonymous` |
 | rea | `ev_5a641c4d57b5f35719fc15447c137bf3f5e5b0fbfc6acbb532f1a32c505b16ad` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 200, 638 ms
+**runs/inspect/20261025T124815_<name:1>**, step 1: goto /: 200, 638 ms
 
 Sent:
 
@@ -32,7 +32,7 @@ Sent:
   "operation": "EnrollInStreaks",
   "variables": {
     "input": {
-      "timezone": "Asia/Saigon",
+      "timezone": "<timezone>",
       "gameId": "achievements"
     }
   }
@@ -66,7 +66,7 @@ The `achievement-events` element's `enrollUserIntoAchievements()` sends the Grap
 
 ## What our machine does with it
 
-log-cli's Reddit platform has only `log reddit session check` (the direct-API engine, with no Reddit client vendored yet) and `log inspect` in the account's AdsPower browser with no proxy (rule 84). Nothing waits on this call yet: inspect records it and names it in each step's `exchanges.json`, and SubQ reads it with the rest of the step. It matters for how the account looks: the mutation sends the browser's timezone, and ours sent `Asia/Saigon`, so if log-cli acts on Reddit for an account whose home is elsewhere, this call is one place the profile's timezone reaches Reddit.
+log-cli's Reddit platform has only `log reddit session check` (the direct-API engine, with no Reddit client vendored yet) and `log inspect` in the account's AdsPower browser with no proxy (rule 84). Nothing waits on this call yet: inspect records it and names it in each step's `exchanges.json`, and SubQ reads it with the rest of the step. It matters for how the account looks: the mutation sends the browser's timezone, and ours sent `<timezone>`, so if log-cli acts on Reddit for an account whose home is elsewhere, this call is one place the profile's timezone reaches Reddit.
 
 ## What can go wrong
 

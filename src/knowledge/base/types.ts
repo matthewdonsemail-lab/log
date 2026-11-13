@@ -9,7 +9,7 @@ export const KB_ARTICLE_PREFIX = 'kb:article:'
 export const KB_CHUNK_CHARS = 1200
 export const KB_CHUNK_OVERLAP = 150
 export const KB_SEARCH_DEPTH = 50
-export const KB_DEFAULT_TWENTY_URL = 'https://node02.tail4fcf85.ts.net'
+export const KB_TWENTY_URL_ENV = 'KB_TWENTY_URL'
 
 export interface KbArticle {
   key: string

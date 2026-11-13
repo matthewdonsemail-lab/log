@@ -23,7 +23,7 @@ replies show up the second they land and no inbox read ever hits X's 429.
    <a> --with <handle>` (the old DM thread and X Chat are one conversation,
    rule 88).
 3. **Draft from matt's guide, with his facts only.** Read
-   `C:/Users/0/.buzz/GUIDES/MATT_WRITING_STYLE.md` before drafting. Lowercase,
+   `C:/Users/tester/.buzz/GUIDES/MATT_WRITING_STYLE.md` before drafting. Lowercase,
    no commas or full stops, his words, almost never end on a question, no
    praise-then-pitch, nothing he didn't say (rules 39-41).
 4. **Gate every draft:** `log voice --to <handle> --text "<draft>"

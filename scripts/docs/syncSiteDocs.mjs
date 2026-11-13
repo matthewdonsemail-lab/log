@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from "node:os";
 import { basename, dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripPrivateBlocks } from "../../src/privacy/privateBlocks/index.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const docsDir = join(root, "docs");
@@ -116,7 +117,8 @@ function plainText(body) {
 }
 
 function render(rel) {
-  const text = readFileSync(join(docsDir, rel), "utf8");
+  const { text, problem } = stripPrivateBlocks(readFileSync(join(docsDir, rel), "utf8"));
+  if (problem) problems.push(`docs/${rel}: ${problem}`);
   if (rel.endsWith(".mmd")) {
     return { title: `Diagram: ${basename(rel, ".mmd")}`, body: `Generated from the code by \`bun run docs:build\`.\n\n\`\`\`mermaid\n${text.trim()}\n\`\`\`\n` };
   }

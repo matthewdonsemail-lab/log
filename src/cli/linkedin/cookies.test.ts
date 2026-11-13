@@ -18,7 +18,7 @@ afterEach(() => {
 
 const LI_AT = "AQEDA".padEnd(120, "x");
 const JSESSION = "ajax:1234567890123456789";
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.7444.59 Safari/537.36";
 const CURL = [
   "curl 'https://www.linkedin.com/voyager/api/me' \\",
   "  -H 'accept: application/vnd.linkedin.normalized+json+2.1' \\",
@@ -136,6 +136,6 @@ describe("log linkedin cookies save", () => {
     expect(r.err).toContain("interactive terminal");
     expect(r.calls).toEqual([]);
     expect(publicIdOf("https://www.linkedin.com/in/mandeepSingh/?trk=x")).toBe("mandeepSingh");
-    expect(publicIdOf("@mandeep")).toBe("mandeep");
+    expect(publicIdOf("@mandy")).toBe("mandy");
   });
 });

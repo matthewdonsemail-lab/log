@@ -29,7 +29,7 @@ Seen 9 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 190 ms
+**runs/host/20261026T180628_<userId:1>**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 190 ms
 
 Sent:
 
@@ -40,8 +40,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buy_location": {
-      "latitude": 50.6759,
-      "longitude": -120.33898
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     }
   },
   "doc_id": "9608405655935574"
@@ -56,8 +56,8 @@ Answered:
     "viewer": {
       "marketplace_feed_stories": {
         "buy_location": {
-          "marketplace_vanity_id": "114995818516099",
-          "id": "114995818516099"
+          "marketplace_vanity_id": "<id:1>",
+          "id": "<id:1>"
         }
       }
     }
@@ -76,7 +76,7 @@ Answered:
 
 ## What it does
 
-Resolves the place picked in the Change location dialog to its Marketplace page (`/marketplace/<placeId>/`, Reading's is 109847139034270).
+Resolves the place picked in the Change location dialog to its Marketplace page (`/marketplace/<placeId>/`, Reading's is <id:2>).
 
 ## What our machine does with it
 

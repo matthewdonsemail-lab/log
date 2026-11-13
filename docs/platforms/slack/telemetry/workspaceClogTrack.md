@@ -7,7 +7,7 @@
 | Domain | telemetry |
 | Kind | endpoint |
 | doc_id | — |
-| Path | `workspace.slack.com/clog/track` |
+| Path | `<workspace:1>.slack.com/clog/track` |
 | Sends | `------WebKitFormBoundary6rWiP8eAwObL1v1i
 Content-Disposition: form-data; name`, `------WebKitFormBoundary3hehxgD9sM8cLUuz
 Content-Disposition: form-data; name`, `------WebKitFormBoundaryT4njC1WjSVUo2uIA
@@ -49,7 +49,7 @@ Sent:
 
 ```json
 {
-  "------WebKitFormBoundary6rWiP8eAwObL1v1i\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689064443,\"event\":6,\"args\":{\"experiment_name\":\"eventlog_drop_teams_left_shared_channel\",\"experiment_type\":\"user\",\"experiment_id\":\"12183228734982\",\"experiment_group\":\"off\",\"experiment_trigger\":\"hash_user\",\"exposure_id\":\"12156263517591\"},\"user_id\":\"U0C4L7RF7HD\",\"team_id\":\"T0C4VCD06MR\",\"session_id\":\"fd9dee1e-2a8c-446c-aba7-19f42e1fff17\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"c… (5489 chars)"
+  "------WebKitFormBoundary6rWiP8eAwObL1v1i\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689064443,\"event\":6,\"args\":{\"experiment_name\":\"eventlog_drop_teams_left_shared_channel\",\"experiment_type\":\"user\",\"experiment_id\":\"12183228734982\",\"experiment_group\":\"off\",\"experiment_trigger\":\"hash_user\",\"exposure_id\":\"12156263517591\"},\"user_id\":\"<userId:1>\",\"team_id\":\"<teamId:1>\",\"session_id\":\"<token>\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"c… (5489 chars)"
 }
 ```
 
@@ -65,7 +65,7 @@ Sent:
 
 ```json
 {
-  "------WebKitFormBoundaryT4njC1WjSVUo2uIA\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689119610,\"event\":6,\"args\":{\"experiment_name\":\"eventlog_drop_teams_left_shared_channel\",\"experiment_type\":\"user\",\"experiment_id\":\"12183228734982\",\"experiment_group\":\"off\",\"experiment_trigger\":\"hash_user\",\"exposure_id\":\"12156263517591\"},\"user_id\":\"U0C4L7RF7HD\",\"team_id\":\"T0C4VCD06MR\",\"client_session\":{\"uid\":\"aVvVPXA0sak\",\"timestamp_start\":1793689066,\"timestamp_refresh\":1793… (9987 chars)"
+  "------WebKitFormBoundaryT4njC1WjSVUo2uIA\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689119610,\"event\":6,\"args\":{\"experiment_name\":\"eventlog_drop_teams_left_shared_channel\",\"experiment_type\":\"user\",\"experiment_id\":\"12183228734982\",\"experiment_group\":\"off\",\"experiment_trigger\":\"hash_user\",\"exposure_id\":\"12156263517591\"},\"user_id\":\"<userId:1>\",\"team_id\":\"<teamId:1>\",\"client_session\":{\"uid\":\"aVvVPXA0sak\",\"timestamp_start\":1793689066,\"timestamp_refresh\":1793… (9987 chars)"
 }
 ```
 
@@ -81,7 +81,7 @@ Sent:
 
 ```json
 {
-  "------WebKitFormBoundarymXQP426cZd4yNZa9\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689239917,\"event\":1500002,\"args\":{},\"user_id\":\"U0C4L7RF7HD\",\"team_id\":\"T0C4VCD06MR\",\"client_session\":{\"uid\":\"aVvVPXA0sak\",\"timestamp_start\":1793689066,\"timestamp_refresh\":1793689134,\"seconds_offline\":55,\"version\":0,\"definition_version\":1},\"ia_version\":\"ia4\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"client\"},{\"tstamp\":1793689250455,\"event\":700008,\"args\":{\"browser_session_id\":\"e… (891 chars)"
+  "------WebKitFormBoundarymXQP426cZd4yNZa9\r\nContent-Disposition: form-data; name": "\"logs\"\r\n\r\n[{\"tstamp\":1793689239917,\"event\":1500002,\"args\":{},\"user_id\":\"<userId:1>\",\"team_id\":\"<teamId:1>\",\"client_session\":{\"uid\":\"aVvVPXA0sak\",\"timestamp_start\":1793689066,\"timestamp_refresh\":1793689134,\"seconds_offline\":55,\"version\":0,\"definition_version\":1},\"ia_version\":\"ia4\",\"i18n_locale\":\"en-US\",\"sub_app_name\":\"client\"},{\"tstamp\":1793689250455,\"event\":700008,\"args\":{\"browser_session_id\":\"e… (891 chars)"
 }
 ```
 
@@ -95,7 +95,7 @@ Answered:
 
 ## What it does
 
-Slack's client sends the same batched usage events to the workspace host, `workspace.slack.com/clog/track`: each body is a `logs` JSON list (one shown carries an `experiment_name` event) and each answer is the 1x1 GIF with status 200. Seen 15 times in one run, on step 5 saveState, step 7 pageText, steps 9 and 16 press Control+a, step 14 press Enter and step 20 snapshot (272-1344 ms).
+Slack's client sends the same batched usage events to the workspace host, `<workspace:1>.slack.com/clog/track`: each body is a `logs` JSON list (one shown carries an `experiment_name` event) and each answer is the 1x1 GIF with status 200. Seen 15 times in one run, on step 5 saveState, step 7 pageText, steps 9 and 16 press Control+a, step 14 press Enter and step 20 snapshot (272-1344 ms).
 
 ## What our machine does with it
 

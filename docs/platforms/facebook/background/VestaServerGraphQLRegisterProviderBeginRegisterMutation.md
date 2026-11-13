@@ -23,7 +23,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T100521_61594063207669**, pin: typed the account's Messenger PIN: 200, 735 ms
+**runs/inspect/20261022T100521_<userId:1>**, pin: typed the account's Messenger PIN: 200, 735 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "3",
       "base64url_encoded_opaque_r1": "QkjYWmUWoa5qGSCRi6HXrDMvlTduP2GgAhHD4BS60V4",
       "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",

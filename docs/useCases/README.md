@@ -31,6 +31,8 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 | Web | [Competitor traffic: finding how to rank on your competitors' names](web/competitorTraffic.md) | what competitors rank for, their affiliate programmes, what BlackHatWorld says works this month, who in your DMs has a site to link from, then a SubQ-ranked order, all read-only |
 | Every chat | [Bossmaxxing: giving out tasks to the team](inbox/bossMaxxing.md) | reads each person's chat, triages every job across the team, sends each task as a brief with a live monitor on, and walks people through setups one step at a time |
 | Every chat | [Sending a voice note](inbox/voiceNote.md) | only when matt asks: his words said in his cloned voice and sent as Discord's, Instagram's or Slack's own voice note, gated and claimed like a send |
+| Every chat | [Showing it as a view: generative UI in the chat](inbox/showMe.md) | builds a view for the question (stats, charts, people, a page per person) from log.db and draws it in the chat, or as text where the host can't, sends nothing |
+| Every platform | [Signing an account in: checking it, then the live browser](inbox/signIn.md) | checks the session through the platform's answer and, when it needs a person, opens the account's own browser: the window on your screen, or inline in the chat from a remote runtime |
 | Instagram | [Bringing a new platform up, then vendoring its client](instagram/newPlatform.md) | makes the platform, opens it in the account's browser to sign in, reads its client's calls with rea, then vendors the GitHub client that speaks them |
 
 ## The parts every use case is built from
@@ -42,3 +44,15 @@ What log-cli is built to do, one page each, by platform. Each page gives the ide
 - **Pacing:** each account has its own governor, local hours and limits.
 
 A new use case gets its own page here, under its platform: `docs/useCases/<platform>/<useCase>.md`. The log MCP serves each page as `getGuide({ useCase: "<platform>/<useCase>" })`, names it on every tool the page names, and the pre-commit review asks SubQ whether a session left a page stale or work uncovered ([MCP server](../specs/mcpServer.md)). Pages describe the method, never the owner's own accounts, people, prices, links or files: examples use placeholders like `<account>`, `<role link>` and `@someone`.
+
+### Private blocks
+
+Wrap anything that must not reach the website or the installable skills in a private block:
+
+```markdown
+<!-- private -->
+The owner's own words or an anecdote that only makes sense to the team.
+<!-- /private -->
+```
+
+`bun run skills:build` (`scripts/docs/syncSiteSkills.mjs`) drops every private block before it writes `site/apps/web/public/.well-known/skills/` and `.claude/skills/`, and the site docs sync drops them from the docs site. A marker left open fails the build. The skill sync then runs the privacy scan (`src/privacy/scan`) on what it writes and fails on a hit (in pre-commit, `--staged` scans only the skills whose source page is staged; pre-push scans them all). The source page is still in this public repo, so a private block is for context that is fine to be public but not useful on the site: real people's names, handles, DMs and money never go in a tracked file at all, private block or not. Use an anonymised example instead (rule 178). `bun run check:privacy` catches secrets, private hosts, emails, phones and the terms in your private denylist (`~/.logCli/privacy/denylist.txt`, or `LOG_PRIVACY_DENYLIST`).

@@ -37,7 +37,7 @@ Seen 15 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 328 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 328 ms
 
 Sent:
 
@@ -49,8 +49,8 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "1818774979262678",
-      "actor_id": "61594285317994",
+      "product_item_id": "<id:1>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     }
   },
@@ -66,7 +66,7 @@ Answered:
     "marketplace_set_product_item_seen_state": {
       "product_item": {
         "has_viewer_previously_seen": true,
-        "id": "1818774979262678"
+        "id": "<id:1>"
       }
     }
   },
@@ -80,7 +80,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 506 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +617px in 15 wheel steps, 789 ms: 200, 506 ms
 
 Sent:
 
@@ -92,8 +92,8 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "2249546198922840",
-      "actor_id": "61594285317994",
+      "product_item_id": "<id:2>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "5"
     }
   },
@@ -109,7 +109,7 @@ Answered:
     "marketplace_set_product_item_seen_state": {
       "product_item": {
         "has_viewer_previously_seen": true,
-        "id": "2249546198922840"
+        "id": "<id:2>"
       }
     }
   },

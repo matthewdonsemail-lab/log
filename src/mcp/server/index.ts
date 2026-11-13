@@ -22,12 +22,17 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { playRefusal, setActivePlay, withPlayFooter } from "./helpers/index.ts";
+import { guideAnswer, playRefusal, withPlayFooter } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 import { RESULT_SIZE_META } from "./types.ts";
+import { readConsoleEvents } from "../../observability/console/index.ts";
+import { viewerState } from "../../browser/viewer/index.ts";
+import { accountOfArgs, appTools, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, browserViewResource, httpLocation, isAppTool, readBrowserViewResource, runAppTool, settleLocation, uiCapable, withBrowserView, withBrowserViewUi } from "../apps/browserView/index.ts";
+import { browserViewLocation } from "../../cli/browser/index.ts";
+import { readReportResource, REPORT_TOOL, REPORT_URI, reportResource, reportTool, runReport, withReportUi } from "../apps/report/index.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
@@ -49,7 +54,7 @@ export function browserLines(views: BrowserView[]): string[] {
     : "Browsers: none open.";
   const matt = views.find((v) => v.needsMatt)?.needsMatt;
   const next = views.find((v) => v.next)?.next;
-  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 54: a known state is resolved, never a reason to stop).`] : [])];
+  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 79: a known state is resolved, never a reason to stop).`] : [])];
 }
 
 function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers, images: readonly ToolImage[] = []): CallToolResult {
@@ -207,26 +212,20 @@ export async function runToolCall(
   onLine: OnLogLine = () => {},
   readBrowsers: ReadBrowsers = browserViews,
   signal?: AbortSignal,
+  appCaller: boolean = browserViewLocation() === "remote",
 ): Promise<CallToolResult> {
+  if (isAppTool(name)) return runAppTool(name, input, appCaller);
+  if (name === REPORT_TOOL) return runReport(input, appCaller);
   if (name === GUIDE_TOOL) {
-    const asked = (input ?? {}) as { topic?: unknown; useCase?: unknown };
-    if (typeof asked.useCase === "string" && asked.useCase) {
-      const page = readUseCase(asked.useCase);
-      if (page === null) return { isError: true, content: [{ type: "text", text: `No use case "${asked.useCase}". Use cases: ${listUseCases().map((u) => u.id).join(", ")}.` }] };
-      const play = setActivePlay(asked.useCase, page);
-      return { content: [{ type: "text", text: `${page}\n\n>>> PLAY ${play.id} is now this session's play: every log tool's answer ends with the step it is and the step that comes next, and a send that isn't one of its steps says so (rule 157).` }] };
-    }
-    const topic = String(asked.topic ?? CORE_GUIDE);
-    const text = readGuide(topic);
-    if (text === null) return { isError: true, content: [{ type: "text", text: `No guide "${topic}". Topics: ${Object.keys(GUIDE_TOPICS).join(", ")}.` }] };
-    return { content: [{ type: "text", text }] };
+    const answer = guideAnswer(input);
+    return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }] };
   }
   if (isCatalogTool(name)) {
     const entries = catalog(COMMANDS);
     if (name === CALL_TOOL) {
       const target = resolveCall(entries, input);
       if (!target.ok) return refused(target.message, readBrowsers);
-      return runToolCall(target.tool, target.input, context, onLine, readBrowsers, signal);
+      return runToolCall(target.tool, target.input, context, onLine, readBrowsers, signal, false);
     }
     const answer = name === SEARCH_TOOL ? searchAnswer(entries, input) : getAnswer(entries, input);
     return withBrowsers({ exit: answer.ok ? 0 : 1, ok: answer.ok, stdout: answer.text, stderr: answer.ok ? "" : answer.text, log: [], progress: [], json: answer.json }, answer.text, !answer.ok, readBrowsers);
@@ -246,7 +245,8 @@ export async function runToolCall(
   const progress: ProgressLine[] = [];
   if (!entry || !LONG_RUNNING.has(entry.command.name)) {
     const ran = await runGuarded(name, guard.argv, context, onLine, progress, null, signal);
-    return withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
+    const answered = withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers, ran.images);
+    return name === BROWSER_VIEW_TOOL ? withViewer(answered, input) : answered;
   }
   const account = accountOfArgv(guard.argv);
   const holder = busyJob(account);
@@ -265,6 +265,16 @@ export async function runToolCall(
   if (finished) return finished;
   const running = `Still running as job ${job.id} (${name}). Follow it with jobStatus { jobId: "${job.id}", afterLine: ${progress.length} } (it waits for new lines), stop it at its next browser step with jobCancel { jobId: "${job.id}" }. Lines so far:\n${progress.map((p) => `${p.at.slice(11, 19)}  ${p.line}`).join("\n") || "(none yet)"}`;
   return withBrowsers({ exit: -1, ok: false, stdout: "", stderr: "", log: [], progress: [...progress], job: { id: job.id, status: "running", afterLine: progress.length } }, running, false, readBrowsers);
+}
+
+async function withViewer(result: CallToolResult, input: LogToolInput | undefined): Promise<CallToolResult> {
+  const account = accountOfArgs(input);
+  if (result.isError || !account) return result;
+  try {
+    return withBrowserView(result, await viewerState(account));
+  } catch {
+    return result;
+  }
 }
 
 export interface LogMcpOptions {
@@ -291,18 +301,26 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     const shell = hasShell(server.getClientVersion()?.name);
     const tools = [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })];
     const listed = [guideTool(), ...catalogTools(), ...withUseCases(tools, listUseCases(tools.map((t) => t.name)))];
-    return { tools: listed.map((tool) => ({ ...tool, _meta: RESULT_SIZE_META })) };
+    const capable = uiCapable(server.getClientCapabilities());
+    const sized = listed.map((tool) => ({ ...tool, _meta: { ...RESULT_SIZE_META } as Record<string, unknown> }));
+    const report = { ...reportTool(), _meta: { ...RESULT_SIZE_META } as Record<string, unknown> };
+    return { tools: capable ? [...sized.map(withBrowserViewUi), withReportUi(report), ...appTools()] : [...sized, report] };
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-    resources: [{ uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }],
+    resources: [
+      { uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" },
+      ...(uiCapable(server.getClientCapabilities()) ? [browserViewResource(), reportResource()] : []),
+    ],
   }));
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
-    if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the one resource is ${AGENTS_URI})`);
+    if (request.params.uri === BROWSER_VIEW_URI) return readBrowserViewResource();
+    if (request.params.uri === REPORT_URI) return readReportResource();
+    if (request.params.uri !== AGENTS_URI) throw new Error(`No resource ${request.params.uri} (the resources are ${AGENTS_URI}, ${BROWSER_VIEW_URI} and ${REPORT_URI})`);
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
-    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal);
-    if (request.params.name === GUIDE_TOOL) return result;
+    const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()));
+    if (request.params.name === GUIDE_TOOL || request.params.name === REPORT_TOOL) return result;
     const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
     return withPlayFooter(target?.ok ? target.tool : request.params.name, result);
   });
@@ -336,6 +354,7 @@ export async function startLogMcpServer(root: string): Promise<void> {
   loadEnv(root);
   console.log = console.error;
   console.info = console.error;
+  settleLocation("local");
   await createLogMcpServer().connect(new StdioServerTransport());
 }
 
@@ -373,6 +392,16 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
     port: options.port ?? 7337,
     async fetch(request) {
       const url = new URL(request.url);
+      if (url.pathname === "/api/console/events") {
+        const headers = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" };
+        if (!token || !authorized(request, token, null)) return Response.json({ error: "consoleWorkspaceAccessDenied" }, { status: 401, headers });
+        if (request.method !== "GET") return Response.json({ error: "consoleMethodNotAllowed" }, { status: 405, headers: { ...headers, Allow: "GET" } });
+        try {
+          return Response.json(readConsoleEvents(), { headers });
+        } catch {
+          return Response.json({ error: "consoleWorkspaceUnavailable" }, { status: 503, headers });
+        }
+      }
       if (oauth) {
         const answered = await oauth.handle(request);
         if (answered) return answered;
@@ -402,6 +431,7 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
 export async function startLogMcpHttp(root: string, options: { host?: string; port?: number }): Promise<void> {
   loadEnv(root);
   const oauth = oauthFromEnv();
+  settleLocation(httpLocation(options.host ?? "127.0.0.1", Boolean(process.env.LOG_MCP_TOKEN || oauth)));
   const served = serveLogMcpHttp({ ...options, token: process.env.LOG_MCP_TOKEN || null, oauth });
   const how = [process.env.LOG_MCP_TOKEN ? "the static bearer token" : "", oauth ? `OAuth through Twenty, resource ${oauth.resource}` : ""].filter(Boolean).join(" or ") || "loopback, no token";
   console.error(`log MCP over HTTP: ${served.url} (${how})`);

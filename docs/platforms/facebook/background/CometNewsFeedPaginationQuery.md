@@ -47,7 +47,7 @@ Seen 30 time(s) in 10 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 18: scroll 4-7 x 300-600px: 200, 1756 ms
+**runs/host/20261026T180628_<userId:1>**, step 18: scroll 4-7 x 300-600px: 200, 1756 ms
 
 Sent:
 
@@ -81,7 +81,7 @@ Sent:
         "original_qid": "-5910566797008524316",
         "qid": "-5910566797008524316",
         "timestamp": 1793038130728,
-        "vsid": "4836613144453713975",
+        "vsid": "<id:1>",
         "vspos": 1
       }
     ],
@@ -145,42 +145,42 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.99422-6/844965894_1429526252613333_6972818291109462005_n.png (479 chars)",
+          "uri": "<mediaUrl> (479 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/730397906_122118253569274842_7831749617363640922_n.jpg (484 chars)",
+          "uri": "<mediaUrl> (484 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.99422-6/842466353_2855839078119996_8288012466051692383_n.png (481 chars)",
+          "uri": "<mediaUrl> (481 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/837569983_1752234870243301_7157932580893354678_n.jpg (479 chars)",
+          "uri": "<mediaUrl> (479 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/734505683_1012598714805185_3184065509239216370_n.jpg (483 chars)",
+          "uri": "<mediaUrl> (483 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/717419339_1446454694182915_1583599819979607512_n.jpg (481 chars)",
+          "uri": "<mediaUrl> (481 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -230,7 +230,7 @@ Answered:
           "__isNode": "Story",
           "id": "UzpfSUZTOjE6LTU5MTA1NjY3OTcwMDg1MjQzMTY6ZUp3VHV6cnB6ZG9ERjI1M3EyaktpSDJiY21aUDErL0piS0pzWXRmK2R0eThzVjlYN01EVXlXdDR4VGJjK2JPVzExSkdwSUZKamNFVUxHVEdJTWFRQmxXMG1zbnRpampUUGFaTjM3NHRPdmo5R0pzMG84ZVVCaVltWFVPNGdkSU1EQXppam52c1B6Z3dNRENvQ2trenVrbkJwTXpnRGtobEVHWFJrV1pzNU1zc2ppOU9MWW5Qekl0UFMwMU5ZWlJtd0E0WmVMekVHR0tFaEJnWWtrd1pHQUNOMzBqSA==",
           "__isFeedUnit": "Story",
-          "post_id": "1732745831744827",
+          "post_id": "<id:2>",
           "debug_info": null,
           "feedback": "(3 fields)",
           "is_story_civic": null,

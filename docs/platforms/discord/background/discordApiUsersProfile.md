@@ -10,7 +10,7 @@
 | Path | `discord.com/api/users/profile` |
 | Sends | — |
 | Reads | `user.id`, `user.username`, `user.global_name`, `user.avatar`, `user.avatar_decoration_data`, `user.collectibles`, `user.discriminator`, `user.display_name_styles`, `user.public_flags`, `user.primary_guild`, `user.clan`, `user.flags` and 28 more |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:2>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:2>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:2>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:2>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 4 time(s) in 2 run(s).
@@ -26,7 +26,7 @@ Seen 4 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me/<id>: 200, 510 ms
+**runs/inspect/20261028T065202_<name:2>**, step 1: goto /channels/@me/<id>: 200, 510 ms
 
 Sent:
 
@@ -47,8 +47,8 @@ Answered:
 ```json
 {
   "user": {
-    "id": "1540556850045521930",
-    "username": "Jilly",
+    "id": "<id:1>",
+    "username": "<name:1>",
     "global_name": null,
     "avatar": "fb80bbc029b4e9d1df8999fddb550687",
     "avatar_decoration_data": null,
@@ -63,7 +63,7 @@ Answered:
     "banner": null,
     "banner_color": null,
     "accent_color": null,
-    "bio": "AI agent powered by AgentConnect."
+    "bio": "<messageText>"
   },
   "connected_accounts": [],
   "premium_type": 0,
@@ -71,7 +71,7 @@ Answered:
   "premium_guild_since": null,
   "profile_themes_experiment_bucket": 4,
   "user_profile": {
-    "bio": "AI agent powered by AgentConnect.",
+    "bio": "<messageText>",
     "accent_color": null,
     "pronouns": "",
     "profile_effect": null,
@@ -92,13 +92,13 @@ Answered:
   "guild_badges": [],
   "mutual_guilds": [
     {
-      "id": "1489405473110102199",
+      "id": "<id:2>",
       "nick": null
     }
   ],
   "application": {
-    "id": "1540556850045521930",
-    "name": "Jilly",
+    "id": "<id:1>",
+    "name": "<name:1>",
     "flags": 11051008,
     "verified": false,
     "storefront_available": false,
@@ -113,7 +113,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 4: press Enter: 200, 649 ms
+**runs/inspect/20261028T065202_<name:2>**, step 4: press Enter: 200, 649 ms
 
 Sent:
 
@@ -134,8 +134,8 @@ Answered:
 ```json
 {
   "user": {
-    "id": "1540556850045521930",
-    "username": "Jilly",
+    "id": "<id:1>",
+    "username": "<name:1>",
     "global_name": null,
     "avatar": "fb80bbc029b4e9d1df8999fddb550687",
     "avatar_decoration_data": null,
@@ -150,7 +150,7 @@ Answered:
     "banner": null,
     "banner_color": null,
     "accent_color": null,
-    "bio": "AI agent powered by AgentConnect."
+    "bio": "<messageText>"
   },
   "connected_accounts": [],
   "premium_type": 0,
@@ -158,7 +158,7 @@ Answered:
   "premium_guild_since": null,
   "profile_themes_experiment_bucket": 4,
   "user_profile": {
-    "bio": "AI agent powered by AgentConnect.",
+    "bio": "<messageText>",
     "accent_color": null,
     "pronouns": "",
     "profile_effect": null,
@@ -179,13 +179,13 @@ Answered:
   "guild_badges": [],
   "mutual_guilds": [
     {
-      "id": "1489405473110102199",
+      "id": "<id:2>",
       "nick": null
     }
   ],
   "application": {
-    "id": "1540556850045521930",
-    "name": "Jilly",
+    "id": "<id:1>",
+    "name": "<name:1>",
     "flags": 11051008,
     "verified": false,
     "storefront_available": false,
@@ -200,7 +200,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 28: press Enter: 200, 403 ms
+**runs/inspect/20261028T062914_<name:2>**, step 28: press Enter: 200, 403 ms
 
 Sent:
 
@@ -221,8 +221,8 @@ Answered:
 ```json
 {
   "user": {
-    "id": "1540556850045521930",
-    "username": "Jilly",
+    "id": "<id:1>",
+    "username": "<name:1>",
     "global_name": null,
     "avatar": "fb80bbc029b4e9d1df8999fddb550687",
     "avatar_decoration_data": null,
@@ -237,7 +237,7 @@ Answered:
     "banner": null,
     "banner_color": null,
     "accent_color": null,
-    "bio": "AI agent powered by AgentConnect."
+    "bio": "<messageText>"
   },
   "connected_accounts": [],
   "premium_type": 0,
@@ -245,7 +245,7 @@ Answered:
   "premium_guild_since": null,
   "profile_themes_experiment_bucket": 4,
   "user_profile": {
-    "bio": "AI agent powered by AgentConnect.",
+    "bio": "<messageText>",
     "accent_color": null,
     "pronouns": "",
     "profile_effect": null,
@@ -266,13 +266,13 @@ Answered:
   "guild_badges": [],
   "mutual_guilds": [
     {
-      "id": "1489405473110102199",
+      "id": "<id:2>",
       "nick": null
     }
   ],
   "application": {
-    "id": "1540556850045521930",
-    "name": "Jilly",
+    "id": "<id:1>",
+    "name": "<name:1>",
     "flags": 11051008,
     "verified": false,
     "storefront_available": false,
@@ -295,7 +295,7 @@ Reads a user's full profile (`GET .../users/<id>/profile`): bio, badges, mutual 
 
 ## What our machine does with it
 
-The client fetches it to draw a sender after their `MESSAGE_CREATE` arrives (Jilly). A watch can read the sender's name from the event itself, so it doesn't need this.
+The client fetches it to draw a sender after their `MESSAGE_CREATE` arrives (<name:1>). A watch can read the sender's name from the event itself, so it doesn't need this.
 
 ## What can go wrong
 

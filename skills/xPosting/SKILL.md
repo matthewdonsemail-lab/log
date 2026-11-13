@@ -33,9 +33,7 @@ comment, the quote an hour later).
 
 - Repo: `listeningkit-frontend`, `docs/okf/operations/social-posting-playbook.md`
   (branch `docs/social-posting-playbook`).
-- Twenty: Notes → "Social posting playbook (ListeningKit)", in node02's
-  Twenty (`a9afec1f-50e0-45a7-a51f-0f1bbf70e94c`) and the legacy one
-  (`a41908eb-adc7-4b40-a0c5-b8fa31c522e5`).
+- Twenty: Notes → "Social posting playbook" in your own Twenty.
 - Knowledge base: `log kb search "social posting playbook"`.
 
 Post the original with `log twitter post --account <handle> --text "<copy>" --media <video.mp4>` (MCP `twitterPost`, `twitterPostLive`).
@@ -148,8 +146,8 @@ account posts about comes from its own plan:
 
 | Account | Plan | What it sets |
 | --- | --- | --- |
-| @matthewsoldit | `log kb show memory:-buzz/listeningkit-real-state` | ListeningKit, treg and Go Getters. The follower atlas |
-| @deepman_1 | Mandeep + InferenceSaver Social Growth Plan: `inferencesaver` repo, `docs/project/social-growth-plan.md` | positioning ("I test AI tools, coding agents, and API infrastructure so builders can save money and build faster"), 5 content pillars, a 70/20/10 ratio (helpful, build in public, InferenceSaver), the hook and CTA banks, the 30-day and 90-day plans, DM openers (stack review, soft pitch, demo invite), leads in Twenty, the weekly review |
+| your main account | its plan in the knowledge base (`log kb search "<account> plan"`) | the product, the people it is for, the follower atlas |
+| a teammate's account | the teammate's own social growth plan | positioning, content pillars and their ratio, the hook and CTA banks, the 30-day and 90-day plans, DM openers, leads in Twenty, the weekly review |
 
 Where they disagree, the X discipline wins on X. The plan's comment
 prompts ("comment your AI stack") read as engagement bait there, so on X

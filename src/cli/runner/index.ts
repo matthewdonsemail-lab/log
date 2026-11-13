@@ -9,6 +9,7 @@ import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { captureCommand } from "../capture/index.ts";
 import { checkCommand } from "../check/index.ts";
 import { launchCommand } from "../launch/index.ts";
+import { consoleCommand } from "../console/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
 import { preflightCommand } from "../preflight/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
@@ -21,10 +22,12 @@ import { joinCommand } from "../join/index.ts";
 import { messengerCommand } from "../messenger/index.ts";
 import { searchCommand } from "../search/index.ts";
 import { kbCommand } from "../kb/index.ts";
+import { runtimeCommand } from "../runtime/index.ts";
 import { memelordCommand } from "../memelord/index.ts";
 import { tregCommand } from "../treg/index.ts";
 import { balanceCommand } from "../balance/index.ts";
 import { governorCommand } from "../governor/index.ts";
+import { sessionsCommand } from "../sessions/index.ts";
 import { cloneCommand } from "../clone/index.ts";
 import { discordVoiceCommand, instagramVoiceCommand, slackVoiceCommand, twitterVoiceCommand } from "../voiceNote/index.ts";
 import { transcribeCommand } from "../transcribe/index.ts";
@@ -37,6 +40,8 @@ import { timingCommand } from "../timing/index.ts";
 import { inboxCommand } from "../inbox/index.ts";
 import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
+import { browserCommand } from "../browser/index.ts";
+import { reportCommand } from "../report/index.ts";
 import { jobCommand } from "../job/index.ts";
 import { mcpCommand } from "../mcp/index.ts";
 import { newCommand } from "../new/index.ts";
@@ -46,7 +51,7 @@ import { watchCommand } from "../watch/index.ts";
 import { dispatchWith, runWith } from "./client.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { redditPostCommand, redditReadCommand, redditReplyCommand, redditSessionCommand, redditVoteCommand } from "../reddit/index.ts";
-import { discordChatsCommand, discordDeleteCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
+import { discordChannelsCommand, discordChatsCommand, discordDeleteCommand, discordPostsCommand, discordReadCommand, discordSearchCommand, discordSendCommand, discordServersCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
 import { linkedinCookiesCommand, linkedinDeleteCommand, linkedinPostCommand, linkedinSessionCommand } from "../linkedin/index.ts";
 import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
 import { instagramDmsCommand, instagramSendCommand, instagramSessionCommand, instagramWatchCommand } from "../instagram/index.ts";
@@ -58,6 +63,7 @@ export type { Command, CommandContext, CommandResult, MarketplaceData } from "./
 
 export const COMMANDS: Command[] = [
   launchCommand,
+  consoleCommand,
   listingsCommand,
   listingCommand,
   accountsCommand,
@@ -95,6 +101,8 @@ export const COMMANDS: Command[] = [
   inboxCommand,
   mediaCommand,
   browsersCommand,
+  browserCommand,
+  reportCommand,
   jobCommand,
   mcpCommand,
   loginCommand,
@@ -108,10 +116,12 @@ export const COMMANDS: Command[] = [
   voiceCommand,
   searchCommand,
   kbCommand,
+  runtimeCommand,
   memelordCommand,
   tregCommand,
   balanceCommand,
   governorCommand,
+  sessionsCommand,
   cloneCommand,
   transcribeCommand,
   followersCommand,
@@ -134,6 +144,10 @@ export const COMMANDS: Command[] = [
   redditVoteCommand,
   discordSessionCommand,
   discordChatsCommand,
+  discordServersCommand,
+  discordChannelsCommand,
+  discordPostsCommand,
+  discordSearchCommand,
   discordReadCommand,
   discordWatchCommand,
   discordSendCommand,

@@ -61,8 +61,8 @@ describe("catching up after a gap (rule 135)", () => {
 
   test("an X user id finds its handle from the notifications the owner stored, so the voice gate reads the right chat", () => {
     expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBeNull();
-    appendEvent({ platform: "twitter", account: "acct", conversationId: "", type: "notification", with: "AjeetVermai", payload: { userId: "1987816842371743744", handle: "AjeetVermai" }, receivedAt: "2026-11-05T11:41:11Z" });
-    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBe("AjeetVermai");
+    appendEvent({ platform: "twitter", account: "acct", conversationId: "", type: "notification", with: "HandleA1", payload: { userId: "1987816842371743744", handle: "HandleA1" }, receivedAt: "2026-11-05T11:41:11Z" });
+    expect(handleOfUserId("twitter", "acct", "1987816842371743744")).toBe("HandleA1");
     expect(handleOfUserId("twitter", "other", "1987816842371743744")).toBeNull();
   });
 
@@ -103,6 +103,21 @@ describe("catching up after a gap (rule 135)", () => {
     expect(db().prepare("SELECT type, source FROM events ORDER BY seq").all()).toEqual([{ type: "message", source: "catchUp" }, { type: "ownMessage", source: "catchUp" }]);
   });
 
+  test("a chat the account can't read is skipped, and the catch-up carries on with the others", async () => {
+    recordPosition("discord", "acct", "100", "DEAD");
+    recordPosition("discord", "acct", "100", "D1");
+    const read: PlatformRead = (_a, spec) => {
+      if (spec.channel === "DEAD") return { answer: { ok: false, code: "platformError", detail: 'Discord answered 403 to channel DEAD messages: {"message": "Missing Access", "code": 50001}' } } as unknown as ReturnType<PlatformRead>;
+      return { answer: { ok: true, messages: [{ id: "101", at: "2026-11-04T02:00:00Z", from: "x", text: "still read" }] } } as unknown as ReturnType<PlatformRead>;
+    };
+    const got = await discordCatchUp(account, openGap("discord", "acct", "2026-11-04T01:00:00Z", "socketDropped"), read, new Date(), noWait);
+    expect(got.refused).toBeUndefined();
+    expect(got.appended).toBe(1);
+    expect(got.skipped?.[0]).toContain("DEAD");
+    expect(got.detail).toContain("skipped without access");
+    expect(positionsOf("discord", "acct").DEAD).toBe("100");
+  });
+
   test("Instagram reads only the threads active since its position", async () => {
     recordPosition("instagram", "acct", "2026-11-04T01:00:00Z");
     const specs: Record<string, unknown>[] = [];
@@ -136,7 +151,7 @@ describe("a send catches up only its own chat, never waiting for the whole accou
 
   test("while catching up, this one chat is read and stored at once", () => {
     openGap("discord", "oneChatB", "2026-11-07T11:00:00Z", "ownerRestarted");
-    const got = catchUpOneChat("discord", "oneChatB", "c2", () => ({ ok: true, messages: [{ id: "1", at: "2026-11-07T11:01:00Z", from: "Kennedy", fromMe: false, text: "we gotta plan" }] }), new Date("2026-11-07T11:02:00Z"));
+    const got = catchUpOneChat("discord", "oneChatB", "c2", () => ({ ok: true, messages: [{ id: "1", at: "2026-11-07T11:01:00Z", from: "Kira", fromMe: false, text: "we gotta plan" }] }), new Date("2026-11-07T11:02:00Z"));
     expect(got).toEqual({ ok: true, how: "chatRead", stored: 1 });
   });
 

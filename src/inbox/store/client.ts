@@ -153,7 +153,7 @@ export interface AppendInput {
 
 export { isBareId }
 
-const UNNAMED = 'someone not named yet'
+export const UNNAMED = 'someone not named yet'
 
 function senderIdOf(input: AppendInput): string {
   const payload = (input.payload ?? {}) as Record<string, unknown>

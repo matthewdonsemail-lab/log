@@ -2,7 +2,11 @@
 
 Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -10,8 +14,11 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
+| `getGuide({ useCase: "discord/serverReply" })` | Replying in a Discord server channel | "reply to <someone> in <server>", "answer him in the general", "message the guy in <server> #<channel> who mentioned me", "reply in the <server> server", "find what <someone> said in <server> and answer it" |
+| `getGuide({ useCase: "discord/serverSearch" })` | Finding a conversation in a Discord server | "find the conversation I had with <someone> in <server> about <thing>", "what did <someone> say in <server> about <thing>", "search <server> for <words>", "read through the <server> server and find <thing>" |
+| `getGuide({ useCase: "inbox/scopeAJob" })` | Scoping a job out of someone in a DM | "probe <person> so we can scope out what the task is", "scope it out with him", "find out what he actually wants done", "go through and then scope it out". |
 | `getGuide({ useCase: "twitter/affiliateMarketing" })` | Affiliate marketing through your DMs | see the page |
-| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on deepman and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with lior whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask ben if i could become a contributor", "look on my twitter for missed opportunities". |
+| `getGuide({ useCase: "twitter/collabMaxxing" })` | Collab maxxing: turn open conversations into collabs | "position a collab first then be like just a few quid so i can make a video about it", "start network maxxing and collab maxxing and trying to see what hes doing get him to reveal it all", "follow up on <someone> and the other people, small commitment from deals, not just new people but already open convos", "respond with the collabmaxxing", "selling the outcome", "let him name it", "check in with <someone> whats good there he is keen but isnt liquid", "just be nice to them there the poor people", "ask <someone> if i could become a contributor", "look on my twitter for missed opportunities". |
 | `getGuide({ useCase: "twitter/dmInbox" })` | Reading the DM inbox: who is waiting on you | see the page |
 | `getGuide({ useCase: "twitter/followUps" })` | Following up in your own voice | "follow up with these, not for anything in particular, just warming up the relationship", "say it was cool to meet him", "ask him for some advice on what he's doing", "take him up on the doc he offered". |
 | `getGuide({ useCase: "twitter/whoNeedsYou" })` | Finding who needs something from you, or who matters | "look through my messages and find someone who clearly needs something off me", "summarise everything on my twitter, how likely is it we make money", "who's worth following up". |
@@ -58,13 +65,14 @@ searches it.
 
 ### Where it lives
 
-- **Twenty:** ListeningKit's workspace on node02, object `knowledgeArticles`
+- **Twenty:** your own Twenty workspace, object `knowledgeArticles`
   (Knowledge base): `name` (title), `key`, `kind`, `body` (Markdown),
   `source`, `tags`, `author`, `contentHash`, `syncedAt`. log-cli reaches it at
-  `https://node02.tail4fcf85.ts.net` (Tailscale Serve, tailnet only). People
-  read and edit it at `https://twenty.listeningkit.com` (Basic Auth first).
-- **Redis:** `kb-redis` on node02 (Redis 8.2.11 with the search module),
-  tailnet `node02.tail4fcf85.ts.net:6380`, index `kbIdx` over
+  `KB_TWENTY_URL` (`https://<your-twenty-host>`, over a private network such
+  as Tailscale). There is no default host. People read and edit it in Twenty's
+  own web app.
+- **Redis:** `kb-redis` (Redis 8.2.11 with the search module), on the same
+  private network at `<your-redis-host>:6380`, index `kbIdx` over
   `kb:chunk:*` hashes (title, text, key, kind, source, a 384-dimension
   vector) and `kb:article:*` (each article's hash and chunk ids).
 - **Logins:** `~/.config/listeningkit/twenty-listeningkit-api-key.txt` and
@@ -79,10 +87,10 @@ searches it.
 | `section` | each other AGENTS.md section (`agents:howWeFixProblems…`) |
 | `skill` | `skills/*/SKILL.md` (`skill:inspect`) |
 | `doc` | `docs/**/*.md`, the request docs included (`doc:docs/adsPower.md`) |
-| `infra` | `docs/infra/*.md` (`doc:docs/infra/node02.md`) |
+| `infra` | `docs/infra/*.md` (`doc:docs/infra/server.md`) |
 | `memory` | every Claude Code memory file in `~/.claude/projects/*/memory` (`memory:log-cli/cloudflare-access`) |
 | `pageState` | `PAGE_STATES` (`pageState:messengerPinCreate`) |
-| `account` | log-cli's Twenty socialAccounts, status and setup only (`account:61594285317994`) |
+| `account` | log-cli's Twenty socialAccounts, status and setup only (`account:10000000000001`) |
 | `note` | `log kb remember`, or written by a person in Twenty |
 
 ### Commands
@@ -93,7 +101,7 @@ Agents call the MCP tools, never a hand-run `log kb …` (rule 106):
 kbSearch { query: "why did the tunnel go down" }               best articles, keyword + meaning
 kbSearch { query: "messenger pin", kind: "pageState", limit: "3" }
 kbShow { key: "rule:73" }                                      one article in full
-kbRemember { text: "…", tags: "infra,node02" }                 a note, in Twenty and Redis at once
+kbRemember { text: "…", tags: "infra,server" }                 a note, in Twenty and Redis at once
 kbSync {}                                                      refresh from every source (Monitor it, rule 26)
 kbSync { noAccounts: true }                                    without reading log-cli's Twenty
 ```
@@ -120,7 +128,7 @@ Save it before the session ends, in one or two plain sentences with where it
 came from:
 
 ```
-kbRemember { text: "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets.", title: "Twenty API keys need the original ENCRYPTION_KEY", tags: "twenty,node02" }
+kbRemember { text: "Twenty v2.49 signs API keys with a key encrypted by ENCRYPTION_KEY; a changed ENCRYPTION_KEY gives 'No encryption key matches keyId'. Fixed 2026-10-27 by restoring the Oct 21 secrets.", title: "Twenty API keys need the original ENCRYPTION_KEY", tags: "twenty,server" }
 ```
 
 ## Every tool, in full
@@ -133,7 +141,7 @@ log media describer [--json]
 Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview (rules 138, 169). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the vision model once (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js, the first of an ordered list that falls back to the next), takes one item at a time from a queue of at most 20 (the overflow waits and is described when there is room), and for each keeps its size, length, hash and a small JPEG preview (a contact sheet of frames for a video), describes an image with its text word for word, and a video scene by scene (ffmpeg scene changes, one keyframe per scene with its on-screen words, its sound transcribed through AssemblyAI) as timestamped lines, labels it, stores its jina-embeddings-v5-omni vector, then deletes the engine's downloaded copy, so no media file is kept. A voice note shows its transcript. describe puts one local file in the queue and waits for its description. status shows the queue. view shows one item's line, and over MCP returns its preview as an image for a model that can see.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 126, 131, 137, 138, 139, 169, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 138, 105, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `mediaDescribe`
 
@@ -143,7 +151,7 @@ log media describe <path> [--wait <seconds>] [--json]
 Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview (rules 138, 169). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the vision model once (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js, the first of an ordered list that falls back to the next), takes one item at a time from a queue of at most 20 (the overflow waits and is described when there is room), and for each keeps its size, length, hash and a small JPEG preview (a contact sheet of frames for a video), describes an image with its text word for word, and a video scene by scene (ffmpeg scene changes, one keyframe per scene with its on-screen words, its sound transcribed through AssemblyAI) as timestamped lines, labels it, stores its jina-embeddings-v5-omni vector, then deletes the engine's downloaded copy, so no media file is kept. A voice note shows its transcript. describe puts one local file in the queue and waits for its description. status shows the queue. view shows one item's line, and over MCP returns its preview as an image for a model that can see.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 126, 131, 137, 138, 139, 169, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 138, 105, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `mediaStatus`
 
@@ -153,7 +161,7 @@ log media status [--json]
 Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview (rules 138, 169). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the vision model once (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js, the first of an ordered list that falls back to the next), takes one item at a time from a queue of at most 20 (the overflow waits and is described when there is room), and for each keeps its size, length, hash and a small JPEG preview (a contact sheet of frames for a video), describes an image with its text word for word, and a video scene by scene (ffmpeg scene changes, one keyframe per scene with its on-screen words, its sound transcribed through AssemblyAI) as timestamped lines, labels it, stores its jina-embeddings-v5-omni vector, then deletes the engine's downloaded copy, so no media file is kept. A voice note shows its transcript. describe puts one local file in the queue and waits for its description. status shows the queue. view shows one item's line, and over MCP returns its preview as an image for a model that can see.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 126, 131, 137, 138, 139, 169, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 138, 105, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `mediaView`
 
@@ -162,8 +170,9 @@ Turn every image, meme and video into text any model reads, kept in the .db with
 log media view <id> [--json]
 Every image, meme, gif and video sent or received becomes text any model can read, kept in log.db with a small preview (rules 138, 169). describer is the one warm process per machine (the session hook starts it; a second is refused): it loads the vision model once (onnx-community/LFM2.5-VL-450M-ONNX, q4, on this machine's transformers.js, the first of an ordered list that falls back to the next), takes one item at a time from a queue of at most 20 (the overflow waits and is described when there is room), and for each keeps its size, length, hash and a small JPEG preview (a contact sheet of frames for a video), describes an image with its text word for word, and a video scene by scene (ffmpeg scene changes, one keyframe per scene with its on-screen words, its sound transcribed through AssemblyAI) as timestamped lines, labels it, stores its jina-embeddings-v5-omni vector, then deletes the engine's downloaded copy, so no media file is kept. A voice note shows its transcript. describe puts one local file in the queue and waits for its description. status shows the queue. view shows one item's line, and over MCP returns its preview as an image for a model that can see.
 Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/scopeAJob" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 126, 131, 137, 138, 139, 169, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 138, 105, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `search`
 
@@ -172,9 +181,9 @@ Hybrid search across every conversation (BM25 keyword + vector meaning, fused wi
 log search "<query>" [--limit <n>] [--platform <p>] [--account <a>] [--with <handle>] [--after <YYYY-MM-DD>] [--json]
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/whoNeedsYou" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "discord/serverReply" }), getGuide({ useCase: "discord/serverSearch" }), getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/collabMaxxing" }), getGuide({ useCase: "twitter/dmInbox" }), getGuide({ useCase: "twitter/followUps" }), getGuide({ useCase: "twitter/whoNeedsYou" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 63, 2, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchIndex`
 
@@ -185,7 +194,7 @@ Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meanin
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "twitter/affiliateMarketing" }), getGuide({ useCase: "twitter/dmInbox" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 63, 2, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `searchBench`
 
@@ -195,47 +204,47 @@ log search bench [--rounds <n>]   (times realistic queries on the built index, c
 Hybrid search across every conversation: BM25 keyword ranking (bm25s) and meaning ranking (verso-db HNSW over local all-MiniLM-L6-v2 embeddings) run in parallel and are fused with reciprocal rank fusion. Each hit names the conversation, who it was with, when, and the messages it covers.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 63, 64, 88, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 63, 2, 89, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbSearch`
 
 Search the knowledge base (rules, skills, docs, infra, agent memory, page states, accounts, notes) by keyword and meaning at once.
 The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article
 log kb search "<query>" [--kind <kind>] [--limit <n>] [--json]
-Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 30, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbSync`
 
 Collect every source into the knowledge base in Twenty and index what changed into Redis.
 The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article
 log kb sync [--noAccounts] [--json]   (collects AGENTS.md rules and sections, skills, docs, infra notes, every Claude memory file, the known page states and the accounts from log-cli's Twenty, writes them to the knowledge base in ListeningKit's Twenty, and indexes what changed into Redis)
-Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 30, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbRemember`
 
 Save an agent memory as a knowledge base note, in Twenty and Redis at once.
 The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article
 log kb remember "<text>" [--title <t>] [--tags <a,b>] [--json]   (saves an agent memory as a note in Twenty and Redis at once)
-Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 30, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `kbShow`
 
 Show one knowledge base article in full.
 The knowledge base: search it, sync every source into Twenty and Redis, remember a note, show an article
 log kb show <key> [--json]   (one article in full, e.g. rule:73, skill:inspect, pageState:messengerPinCreate)
-Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (node02, over the tailnet) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
+Kinds: rule, section, skill, doc, infra, memory, pageState, account, note. Twenty (your own server, reached over a private network) holds every article and can be edited there; Redis 8 holds the search index: BM25 keyword and HNSW meaning (local all-MiniLM-L6-v2) fused with reciprocal rank fusion. Secrets are scrubbed before anything is written.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 13, 26, 30, 93, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 26, 30, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `transcribe`
 
@@ -246,7 +255,7 @@ Transcribes every voice note in the saved conversations with AssemblyAI (upload,
 --list only lists the voice notes the store holds and which have their file, calling nothing. The key is ASSEMBLYAI_API_KEY or ASSEMBLY_AI_KEY (the environment, .env.local, ~/.buzz/.env.local or ~/filmcraft/.env.local), never printed; without it the command refuses with assemblyAiKeyMissing.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 89, 94, 105, 163, 138, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `transcribeFile`
 
@@ -257,50 +266,38 @@ Transcribes every voice note in the saved conversations with AssemblyAI (upload,
 --list only lists the voice notes the store holds and which have their file, calling nothing. The key is ASSEMBLYAI_API_KEY or ASSEMBLY_AI_KEY (the environment, .env.local, ~/.buzz/.env.local or ~/filmcraft/.env.local), never printed; without it the command refuses with assemblyAiKeyMissing.
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "knowledgeAndSearch" }) (Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it).
-AGENTS.md (log://agents): rules 26, 41, 88, 89, 94, 105, 106, 126, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 26, 41, 89, 94, 105, 163, 138, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 13.** 2026-10-18 · Twenty is the only place accounts and listings live: Facebook accounts are `socialAccounts` (platform FACEBOOK), listings are `agencyListings`. Never delete either: a banned or dead account keeps its record with its status, and its campaign listings get replacement accounts in the same country (`docs/accountsAndListings.md`). Fields are only ever added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the twitter-controller keeps working.
+**Rule 2.** 2026-10-18 · Put platform code under src/<platform>/<area>/<domain>; shared code stays in its shared library/domain. Use index.ts, types.ts, client.ts, machine.ts and helpers where appropriate. Keep scripts and Python in domain folders.
 
-**Rule 26.** 2026-10-19 · matt: "I always want to see what is going on." Every process that runs over time writes a progress line per stage as it happens (never only at the end) and to a log file in its folder. Agents run long commands so the lines stream live (Claude Code: Monitor, never piped through `tail`/`head`).
+**Rule 26.** 2026-10-19 · Stream progress while work runs, one meaningful line per stage, with the run log retained. Explain stages in plain words; do not leave the user waiting silently for a final buffered result.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 63.** 2026-10-22 · matt: the platform comes first. Every command that acts on one platform is `log <platform> <command> …` (`log facebook warmup reel`, `log facebook join group`); there is no form without it. The poll is `log facebook poll <group> <account> <how long to poll>`. Old forms are refused with the form they became. This replaces rule 60's `log warmup <platform> <activity>` and settles issue #20. OpenMagpie's worker is `log facebook poll --request` (it was `read group --worker`), a read in the account's open browser. `bun run check:docs` refuses a usage line without the platform first. Top of this file; the table is `docs/commandNaming.md`.
+**Rule 63.** 2026-10-22 · Platform commands are log <platform> <command> <what>. Shared commands remain shared. Preserve the naming boundary described in docs/commandNaming.md.
 
-**Rule 64.** 2026-10-22 · matt: the code is by platform first, as the commands are, "because each has different approaches": `src/<platform>/<area>/<domain>`. Facebook's groups are `src/facebook/group/{join,read,answer}` (were `src/group/…`, rule 45) and its warm-up `src/facebook/warmup/activities` and `src/facebook/warmup/stages` (were `src/warmup/facebook` and `src/warmup/facebookStages`, rule 49). What every platform's warm-up draws from stays shared: `src/warmup/persona`, `src/warmup/viewer`. Each area has an `index.ts` (`check:naming`). Top of this file.
+**Rule 89.** 2026-10-26 · Find conversational context by scoped search and existing private records. Do not reread every thread for a single person or task.
 
-**Rule 88.** 2026-10-26 · matt: "DONT OPEN IT IN MY CHROME WE FUCKING BUILT IT OUT BECAUSE THE vendor/twikit hasnt been updated." X Chat (encrypted DMs) is read through log only, in the same shapes as the legacy DMs, never by opening x.com in a browser. X's own encryption SDK is vendored at `vendor/chatXdk` (xdevplatform/chat-xdk v0.5.2: its Rust source and the prebuilt Python wheel, installed from there). `vendor/twikit` reads the account's keys and Juicebox token map (`GetPublicKeysQuery`), unlocks them with the account's X Chat PIN (`client.unlock_xchat`) and decrypts every conversation's events (`client.get_xchat_messages`). The PIN is saved by matt once in a masked Clack prompt, `log twitter chat pin --account <a>`, kept in Twenty (`socialAccounts.messengerPin` on the X row) and handed to the engine only in the run's private folder. `log twitter dms` fills each X Chat thread's last message, and `--with <handle>` merges a person's legacy and X Chat threads into one timeline. Nobody is answered on X without reading their X Chat side first.
+**Rule 94.** 2026-10-29 · Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies. A refusal, failed send, 429, block, disable, captcha or cooldown stops that run/account until Matt authorizes continuation. Do not retry through refusals. Bulk reading and sending are separate sessions; cold DMs stay a few a day, minutes apart, and opening a DM counts as a write.
 
-**Rule 89.** 2026-10-26 · matt: finding context in conversations is a search, never reading every thread. `log search "<query>"` (MCP `search`) runs BM25 (bm25s) and meaning search (verso-db HNSW over local all-MiniLM-L6-v2 embeddings, `@huggingface/transformers`) in parallel and fuses them with reciprocal rank fusion, with `--platform`, `--account`, `--with` and `--after` filters. `log search index` reads every conversation through the platform's engine in one export read (X Chat decrypted with the saved PIN, rule 88), keeps them in `~/.logCli/conversations` and the indexes in `~/.logCli/search`, which survive restarts. `log search bench` prints p50, p95 and p99, cold and warm, beside a linear scan. `src/search/conversations`.
+**Rule 105.** 2026-11-01 · One platform/account owns one continuous engine session and push connection. Reads, writes, queues and watches share that owner through existing relay/serialization. Never open a parallel client to bypass the owner or its governor.
 
-**Rule 93.** 2026-10-27 · matt: "we need to build a knowledge base inside of it", all of it, agent memory too, with Redis. The knowledge base lives in ListeningKit's Twenty on node02 (`knowledgeArticles`: key, kind, body, source, tags, author, content hash; reached over the tailnet at `node02.tail4fcf85.ts.net`, never through the public login gate) and is searched through Redis 8 on node02 (`kb-redis`, the search module's `kbIdx`: BM25 keyword and HNSW meaning over local all-MiniLM-L6-v2, fused with reciprocal rank fusion). `log kb sync` collects AGENTS.md's rules and sections, every skill, every doc (`docs/infra/` as infra, never `docs/vendors`), every Claude memory file, the known page states and the accounts from log-cli's Twenty (no credential, proxy URL or cookie), writes what changed to Twenty and re-indexes what changed into Redis; an article a person writes or edits in Twenty is indexed on the next sync. `log kb search "<query>" [--kind]` is how an agent finds context, `log kb remember "<text>"` saves an agent memory to both at once, `log kb show <key>` reads one in full. Secrets are scrubbed before anything is written (named keys, URLs with a login, JWTs, private keys, long random strings). The logins are files in `~/.config/listeningkit/`, never in the repo or the knowledge base. `src/knowledge/base`, `docs/knowledgeBase.md`.
+**Rule 137.** 2026-11-04 · Preserve current context-aware voice and AI-artifact gates for messages sent as Matt. Rework refused drafts from the stated cause. Exact-message overrides and dictated/translated voice-note exceptions require Matt's request and preserve remaining artifact checks. Do not treat an exception as permanent permission.
 
-**Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
+**Rule 138.** 2026-11-04 · Media and voice-note context uses the existing private media descriptions and transcripts. Do not claim to have understood undescribed media. Preserve hash-based deduplication, private storage and the one describer process.
 
-**Rule 105.** 2026-11-01 · matt: "we cannot be opening multiple sessions there, that defeats the core purpose of what we use this tool for ... it should always be one, and then it needs to loudly create issues". An X account has one session, always. Every X call (CLI, MCP, hooks, the queue, the X Chat watch) goes through the account's one engine host (`python/twitterApi/host.py`, started on the first call, closed after 30 idle minutes or when the engine code changes): one twikit client, one connection, one cookie jar and one transaction key, the way X's own web app keeps one page and signs every call from it (x-web `startup-dynamic`, read with rea 2026-11-01). A second host can't start (`host.lock`); a call that can't reach the host is refused with `xSessionHostDown` and sends nothing, never falls back to a session of its own. The hook's account line shows the open session (pid, since, calls). `LOG_TWITTER_HOST=inline` runs the old way, for tests only.
+**Rule 163.** 2026-11-07 · Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients. Terminal-only credential prompts remain for Matt. Expose discoverable command contracts through the existing Log catalog: search the job, get exact inputs, then call. Keep tool descriptions concise and accurate to the current implementation.
 
-**Rule 106.** 2026-11-01 · matt: "when doing stuff like changing the code or anything, ensure that there hasn't been any changes to it locally, like to the engine ... you're not allowed hand-rolled commands, it always has to be through the MCP basically". Two things, enforced by the hooks: - **Through the MCP only.** Every log action an agent takes goes through the log MCP tools (`mcp__log__…`), never a hand-run `log …` or `bun bin/log.ts …` from a shell. The PreToolUse hook (`liveLogs`, `handRunDenial` in `src/agentHooks/liveLog`) refuses one and names the MCP instead. Only the terminal-only prompts (`TERMINAL_ONLY`: launch, login, mcp, chat pin, cookies save, messenger pin) are run in a terminal, by matt. A stale MCP server is said to matt (restart the app), never worked around. - **Local changes first.** Before changing code, check what is already changed and uncommitted in the checkout. The engines hook says it loudly at session start and whenever it changes (`>>> UNCOMMITTED LOCAL CHANGES`, `localChangesLine` in `src/mcp/freshness`): read each one's diff, and never overwrite, revert, stage, publish or ship someone else's uncommitted work without matt.
-
-**Rule 126.** 2026-11-03 · matt: every voice note he was sent or sent, transcribed with AssemblyAI, and "inside of the discord layer we have that and then the social media platforms at large, how can we detect when we have audio". Audio is detected once, in the shared message layer (`python/platformKit/media.py`, `src/platformKit/media`), never per platform: a content type of `audio/*` or `video/ogg`, an extension (`.ogg .oga .opus .m4a .mp3 .wav .aac .webm`), or the platform's own flag (Discord's voice-message flag 8192 with its duration and waveform, X Chat's audio media, Slack's `slack_audio` file). Every platform's messages keep their attachments, and an audio one adds `(audio: <name>)` to the text. Whatever is audio goes through one AssemblyAI path (`log transcribe`, MCP `transcribe`; `src/media/voiceNotes`): kept once by its file's hash in `~/.logCli/transcripts`, written into the conversation store as `(voice note: "<what was said>")` so search, voice and SubQ see it, and done as they come in `discordRead`, `twitterDms`, `slackRead` and the inbox. Files come only through the platform's own engine and session (X's one session, Discord's sound search, Slack's own transport), and any refusal stops the run (rule 94). The key is `ASSEMBLYAI_API_KEY` or `ASSEMBLY_AI_KEY` (`.env.local`, `~/.buzz/.env.local` or `~/filmcraft/.env.local`), never printed. `log new platform` writes the attachments into a new platform's message shape, and `check:platforms` refuses an engine whose messages drop them. Spec: `docs/specs/voiceNotes.md`.
-
-**Rule 131.** 2026-11-04 · matt: "WE NEED TO LOUDLY ALERT THAT THIS CANNOT HAPPEN ... WE CAN ONLY HAVE ONE PROCESS PER ACTUAL THING". On 2026-11-04 every watcher was running two or three times (X Chat for both X accounts, Discord and Slack): each new Claude session's hook started them again, the cleanup only killed the pid in `watch.pid`, which the new one had overwritten, and the doubled X watchers polled X's badge counts in bunches until X answered 429 on both accounts. One watcher process per account per platform, always, and every Claude session subscribes to it through the inbox (`pending.jsonl`), never by starting its own. Each watcher takes `watch.lock` (exclusive create, its pid) before it opens anything (`claimWatcher`, `src/inbox/watch`); a second one is refused with `watcherAlreadyRunning` and exits, and the refusal goes to `~/.logCli/inbox/alerts.jsonl`, which the inbox hook puts first in the agent's context (`>>> ONE PROCESS PER ACCOUNT, NEVER TWO`) to be told to matt. A dead holder's lock is taken over, only the holder releases it, the hook never starts a watcher while a live one holds the lock, and the stale-code cleanup stops the holder as well as the pid file's process. Tests run the Instagram engine inline (`LOG_INSTAGRAM_HOST=inline` in the preload) so they never leave a real session host behind. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-13).
-
-**Rule 137.** 2026-11-04 · matt: keep every part of the voice gate ("necessary") and run it "as the whole voice process on the new .db", required inside every send, only at send time, scoped to that send, quiet; then "Yes, both" to jina-embeddings-v5-omni and the local media model. The voice gate is one step (`gateSend`, `src/cli/twitter/helpers/voice.ts`) inside `log discord send`, `log slack send`, `log twitter dm`, the queue's sends and `log instagram send`, after the account has caught up (rule 135) and before the chat is claimed (rule 133): a draft that fails is refused with `voiceGateFailed` whether or not `log voice` ran first, and in the X queue the item is held to be rewritten with `twitterQueueEdit`. All five checks stay: SubQ's read of matt's voice, the AI tells index with its reranker (rule 112), his own phrasing (rule 127), the watermark checker (rule 111) and the scrambler (rule 127). It reads the chat's context from the .db (rule 136), embeds it, ranks it against the moment being answered (cosine, then `jina-reranker-v3.5`) and gives SubQ the top moments in full (`rankedContext`, `thisConversationRankedForThisMoment`). Only embeddings are kept, in the .db (`embeddings`: the text's hash, model, dimensions and vector, each made once), with the AI tells index's phrase list and matt's baseline (`aiIndexes`); every result is worked out fresh for each send, never saved. Jina is `jina-embeddings-v5-omni-small` at 1024 dimensions (`text-matching`), and an index made with another model is rebuilt. The local embedder stays loaded in its process. A pass is one line; a fail names only what failed and why. Spec: `docs/specs/voiceGate.md` (REQ-VOICE-09 to 11), `docs/specs/aiTells.md` (REQ-AITELLS-05, 10, 12).
-
-**Rule 138.** 2026-11-04 · matt: "a smaller local model" turns every piece of media into "a text representation", labelled with what it is, after a message went out answering only the text around a video someone sent; then "Yes, both" to downloading it. One media describer per machine (`log media describer`, `src/media/describer`), started by the inbox hook and locked like an owner (rule 131, a second is refused), loads `onnx-community/LFM2.5-VL-450M-ONNX` once (SubQ's pick, q4, on the transformers.js runtime log already uses) and keeps it warm. Every image, meme, gif and video a watch receives goes into the .db's `media` queue (`enqueueAttachments`). The describer takes one at a time, describes a video from three frames (ffmpeg), labels each description with its kind, stores it with its `jina-embeddings-v5-omni-small` vector, beats every 5 s, and stops loudly past its memory ceiling (`describerMemory`). The queue holds 20 at most: past that, an item is marked not described yet and alerted (`mediaQueueFull`). Media with no description is shown as `[video clip.mp4 not described yet: …]` in the inbox hook and in the voice gate's ranked context, so nobody replies to it blind; a description reaches both in its place. Audio stays with AssemblyAI (rule 126). A file the platform engine hasn't saved locally yet is listed as not described, with why. `log media describe <path>` queues one local file, and `log media status` shows the queue. Spec: `docs/specs/mediaDescriber.md`.
-
-**Rule 139.** 2026-11-04 · matt: "Yes, do it here", having the engines save the images and videos the describer needs (rule 138). Each platform engine keeps a local copy of every image, gif and video someone sends, fetched through the account's own session, at most 50 MB, in its media folder (`is_visual`, `python/platformKit/media.py`): Slack's watch through its authenticated session (`file_of`, `saved_visuals`), Instagram's realtime watch through instagrapi's private session on curl_cffi, never its plain-requests downloads (`media_ref_of`, `saved_media`, under the engine's one-call lock), and X Chat through the files its one session already decrypts and saves. Each watch passes the saved path with the attachment, so the describer gets it at once; a fetch that fails is listed with why. Discord's watch keeps them too (matt, "Yes, do it here", once its engine's uncommitted work was committed as his), for the messages that reach the inbox only (DMs, mentions and replies to the account), through its REST session as it already does for voice notes (`with_visuals`, `visual_file_of`). Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-06).
-
-**Rule 169.** 2026-11-08 · matt: "Implement the correct systems ... that achieve what we want", after a SubQ matrix over 17 GitHub systems that let a model understand media (openclaw first overall, screenpipe for the store and speed, RAG-Anything for silent video; `RESEARCH/MEDIA_UNDERSTANDING_SYSTEMS_ON_GITHUB.md` in the Buzz workspace). He doesn't want media files kept on disk, and every model, even one that can't see, must know what was sent and recall it later. Every image, meme, gif and video is kept as text in log.db, with a small preview, and no media file is kept: - **Stage 0, the record:** each item's row in `media` keeps its hash, size, length, width, height and one small JPEG preview made by ffmpeg through a pipe (`ingestRow`, migration 17). A still keeps its first frame at 320 px; a moving picture keeps a 3 x 2 grid of frames. - **Stage 1, the text** (openclaw's shape): describers are tried in order, falling back to the next (`describeWith`), and the text is labelled by kind. - **Video** (RAG-Anything's shape): cut where the picture changes into at most 8 scenes (`sceneCutsOf`, `spansOf`). One keyframe per scene is described with its on-screen words read out. Its sound goes to AssemblyAI, and each word lands in its scene. It reads `video 0:32, 4 scenes, speech: [0:00-0:08] screen: … | speech: "…"`. A silent one says `no sound`. - **Voice notes:** a voice note's line shows its transcript. - **No file kept** (screenpipe's shape: rows stay, media goes): once the preview and text are in log.db, the engine's downloaded copy is deleted (`removeSpoolFile`), never a local file a person asked about and never a voice note. Anything described again is described from the kept preview. The queue's overflow waits and is described when there is room. - **A model that can see:** `log media view <id>` (MCP `mediaView`) returns the preview as an MCP image block beside the text, and every line with a preview ends `(picture: media view <id>)`. Spec: `docs/specs/mediaDescriber.md` (REQ-MEDIA-09 to 12).
+**Rule 175.** 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.

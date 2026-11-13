@@ -1,8 +1,8 @@
 # LinkedIn
 
-log saves a LinkedIn account's session and checks that LinkedIn still accepts it. It talks to LinkedIn directly through its own API client with the saved session. When you need the website itself, log opens the account's own browser, with no proxy.
+log saves a LinkedIn account's session, checks that LinkedIn still accepts it, and posts and deletes the account's own posts. It talks to LinkedIn directly through its own API client with the saved session. When you need the website itself, log opens the account's own browser, with no proxy.
 
-LinkedIn is new in log: signing in and checking the session are what it does so far.
+LinkedIn is new in log: signing in, checking the session, posting (text, an image, mentions) and deleting a post are what it does so far. Comments aren't built.
 
 ## What you can do
 
@@ -14,6 +14,11 @@ LinkedIn is new in log: signing in and checking the session are what it does so 
 
 - `log linkedin session check --account <a>`: checks LinkedIn still accepts the saved session. Sends nothing.
 
+**Post and delete** (a dry run unless `--live --approvedBy <who>`; 10 writes a day per account)
+
+- `log linkedin post --account <a> --text "<post>" [--image <path>]`: posts as the account, the way LinkedIn's own composer does. `@[Name]` in the text mentions a person or page found by LinkedIn's own mention search; when the name matches more than one, write `@[Name|entityID]` with the id the refusal lists. The dry run shows the post and its mentions without posting. The image must be in `~/.logCli` or your outbox.
+- `log linkedin delete --account <a> --activity <id|url>`: deletes one of the account's own posts.
+
 **Work in the account's own browser**
 
 - `log inspect start --account <a>`: opens the account's browser on LinkedIn and keeps it open.
@@ -21,8 +26,8 @@ LinkedIn is new in log: signing in and checking the session are what it does so 
 
 ## Signing in
 
-1. Sign in to linkedin.com in any browser and copy the `li_at` and `JSESSIONID` cookies.
-2. `log linkedin cookies save --account <publicId>`: paste them into the hidden prompt. They are checked with LinkedIn before they are saved, and never printed.
+1. Sign in to linkedin.com in Chrome, open DevTools, Network, reload, right-click any `www.linkedin.com` request and pick Copy, Copy as cURL. Leave the device toolbar off: a phone copy is refused.
+2. `log linkedin cookies save --account <publicId>` in a terminal: answer yes and log reads the copy from your clipboard (`--har <file>` takes a recording instead). The session and the browser's headers are checked with LinkedIn before they are saved, and never printed.
 3. `log linkedin session check --account <publicId>`: checks LinkedIn accepts them.
 
 The full steps: [Adding an account](../accounts.md).

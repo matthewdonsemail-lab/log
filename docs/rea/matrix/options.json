@@ -30,9 +30,9 @@
     "description": "Stop using Camoufox for the create page. Use a Chrome-family Playwright browser so rea inspect-web-page can attach. Leaves the humanize float, the cursor, and the Camoufox device pin."
   },
   {
-    "id": "adsPowerLikeListaro",
-    "name": "Listaro's AdsPower Chromium, REA attached over CDP",
-    "description": "Open the create page in AdsPower and attach REA with connectOverCDP, as Listaro's poster already attaches Playwright. The account would not pass log-cli's Camoufox gate."
+    "id": "adsPowerOverCdp",
+    "name": "AdsPower Chromium, REA attached over CDP",
+    "description": "Open the create page in AdsPower and attach REA with connectOverCDP, as an AdsPower poster attaches Playwright. The account would not pass log-cli's Camoufox gate."
   },
   {
     "id": "noRea",

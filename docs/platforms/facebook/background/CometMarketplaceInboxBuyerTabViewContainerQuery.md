@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T113536_61594063207669**, step 1: goto /marketplace/inbox: 200, 631 ms
+**runs/inspect/20261022T113536_<userId:1>**, step 1: goto /marketplace/inbox: 200, 631 ms
 
 Sent:
 

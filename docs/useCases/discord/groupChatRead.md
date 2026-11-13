@@ -1,6 +1,6 @@
 # Reading a Discord group chat without Twenty
 
-Catch up on what was said in a Discord group or channel over the last few hours, on the account's own session, with the account kept in a local file instead of Twenty. This page reads and sends nothing.
+Catch up on what was said in a Discord group DM over the last few hours, on the account's own session, with the account kept in a local file instead of Twenty. This page reads and sends nothing. A channel inside a server is read the same way by `"<server> #<channel>"`, but always live from Discord, since log.db keeps only its mentions and replies: see [serverReply](serverReply.md) for how a server channel differs from a group DM.
 
 How the owner asks for it: "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>"
 

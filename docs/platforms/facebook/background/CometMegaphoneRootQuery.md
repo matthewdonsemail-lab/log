@@ -47,7 +47,7 @@ Seen 26 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 362 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 362 ms
 
 Sent:
 
@@ -74,7 +74,7 @@ Answered:
         "edges": [
           {
             "node": {
-              "id": "1012732625523263",
+              "id": "<id:1>",
               "user_interaction_info": "(1 fields)",
               "comet_qp_sections": "(1 fields)"
             }
@@ -281,7 +281,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 273 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 273 ms
 
 Sent:
 
@@ -308,7 +308,7 @@ Answered:
         "edges": [
           {
             "node": {
-              "id": "1012732625523263",
+              "id": "<id:1>",
               "user_interaction_info": "(1 fields)",
               "comet_qp_sections": "(1 fields)"
             }

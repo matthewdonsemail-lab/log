@@ -1,6 +1,6 @@
 ---
 name: warmup
-description: 'Record and run the account warm-up (rule 36) - Listaro''s five activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log facebook warmup stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.'
+description: 'Record and run the account warm-up (rule 36) - the five warm-up activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log facebook warmup stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.'
 ---
 
 # warmup
@@ -70,7 +70,7 @@ log facebook warmup stages log --account <a> --follow                 # the stag
 ```
 
 `--gapSeconds` is the wait between activities: 10 by default (matt,
-2026-10-23: "it should be like 10 seconds", not Listaro's 150 minutes). `--only
+2026-10-23: "it should be like 10 seconds", not 150 minutes). `--only
 feedBrowse,sellingVisit` limits it.
 
 After recording, read each activity's steps with rea (rule 25) and rebuild the

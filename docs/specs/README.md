@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 500 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 506 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -27,7 +27,7 @@ Every log command has one shape: a command that acts on one platform starts with
 
 ## [MCP server](./mcpServer.md)
 
-The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Rules 47, 95 and 106 (rule 95 replaces rule 47's long instructions with short ones that send the agent to the full guide; rule 76 puts rule one first).
+The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Active rules 47, 55, 73, 158, 163 and 176 govern current guidance. Retired citations are consolidated into active rules; historical snapshots never restore superseded scope.
 
 - **REQ-MCP-01** The instructions carry the core rules, rule one first
 - **REQ-MCP-02** The instructions send the agent to the full guide first
@@ -47,6 +47,8 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-17** One warm context layer routes matt's prompts and puts the play back after compaction
 - **REQ-MCP-16** The prompt is matched to a play, and every play is a skill
 - **REQ-MCP-15** The loaded use case is the session's play, and sends need one
+- **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
+- **REQ-MCP-20** report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
 
 ## [Agent hooks](./agentHooks.md)
 
@@ -282,9 +284,9 @@ Facebook group listening is OpenMagpie's triage job: an account joins a group, O
 
 ## [Warm-up](./warmup.md)
 
-The warm-up makes an account look used before it sells: Listaro's five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
+The warm-up makes an account look used before it sells: five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
 
-- **REQ-WARMUP-01** The stages are Listaro's five activities, each a flow of its own
+- **REQ-WARMUP-01** The stages are the five warm-up activities, each a flow of its own
 - **REQ-WARMUP-02** Recording turns each activity into a flow, never from a broken recording
 - **REQ-WARMUP-03** Running needs every flow recorded, and runs them in turn in one browser
 - **REQ-WARMUP-04** A checkpoint, login wall or restriction stops the stages
@@ -377,6 +379,7 @@ Before anything goes to a person on X, log reads that person's full context thro
 - **REQ-CONTEXT-09** A like and the parts of a split dm ride on their send's context read
 - **REQ-CONTEXT-10** The context before a send is read from the .db once the account has caught up
 - **REQ-CONTEXT-11** A read for one chat or person answers from the .db, and the platform only fills it
+- **REQ-CONTEXT-12** Who wrote last is one rule over the .db, in time order, on every platform
 
 ## [Voice gate](./voiceGate.md)
 
@@ -389,6 +392,9 @@ Every message log sends as matt passes the voice gate first (`log voice`, MCP `v
 - **REQ-VOICE-05** A draft with AI artifacts fails
 - **REQ-VOICE-06** A draft passes only when every answer passes
 - **REQ-VOICE-07** A draft written in word pairs matt has never written fails
+- **REQ-VOICE-20** A draft written on several lines is graded as the messages it sends
+- **REQ-VOICE-21** A subject he has never written about never counts against his voice
+- **REQ-VOICE-22** Outside X, his X guide is scoped to his vocabulary
 - **REQ-VOICE-08** The vendored watermark scrambler reads every draft
 - **REQ-VOICE-09** The gate runs inside every send and refuses a failing draft
 - **REQ-VOICE-10** The chat's context is ranked for the moment and given in full
@@ -498,7 +504,7 @@ Finding context in conversations is a search, never reading every thread. `log s
 
 ## [Knowledge base](./knowledgeBase.md)
 
-The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in ListeningKit's Twenty on node02 and is searched through Redis on node02 by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
+The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in your own Twenty server and is searched through your own Redis by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
 
 - **REQ-KB-01** The articles live in Twenty's knowledgeArticles
 - **REQ-KB-02** The logins are files outside the repo

@@ -4,13 +4,13 @@ title: "Knowledge base"
 
 # Knowledge base
 
-The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in ListeningKit's Twenty on node02 and is searched through Redis on node02 by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
+The knowledge base holds everything an agent should look up before it guesses: AGENTS.md's rules and sections, the skills, the docs, the Claude memory files, the known page states and the accounts. It lives in your own Twenty server and is searched through your own Redis by keyword and meaning at once. `log kb sync`, `log kb search`, `log kb remember` and `log kb show` (MCP `kbSync`, `kbSearch`, `kbRemember`, `kbShow`). Rule 93 (with rule 38 for the pages it leaves out).
 
 ## Where it lives
 
 ### REQ-KB-01: The articles live in Twenty's knowledgeArticles
 
-Every article is a `knowledgeArticles` row in ListeningKit's Twenty, with its key, kind, title, body, source, tags, author and content hash. Twenty is reached over the tailnet at `node02.tail4fcf85.ts.net` by default, never through the public login gate.
+Every article is a `knowledgeArticles` row in ListeningKit's Twenty, with its key, kind, title, body, source, tags, author and content hash. Twenty is reached at the URL in `KB_TWENTY_URL`, over a private network rather than a public login gate. There is no default host: without `KB_TWENTY_URL`, `kbConfig` says it is missing.
 
 Checked by: code (anchors)
 

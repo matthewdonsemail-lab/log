@@ -4,31 +4,33 @@ title: "MCP server"
 
 # MCP server
 
-The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Rules 47, 95 and 106 (rule 95 replaces rule 47's long instructions with short ones that send the agent to the full guide; rule 76 puts rule one first).
+The log MCP server is how every agent works with log-cli: it carries matt's rules into the agent's context, serves the guides and the use cases, names on every tool the rules, guide and use cases it falls under, and the hooks keep agents on it. Active rules 47, 55, 73, 158, 163 and 176 govern current guidance. Retired citations are consolidated into active rules; historical snapshots never restore superseded scope.
 
 ## What the server carries
 
+The runtime HTTP server also serves `GET /api/console/events` through `serveLogMcpHttp` in `src/mcp/server/index.ts`. This is a read of the fixed workspace projection in `src/observability/console`, not a platform action or inbox catch-up. It requires the existing workspace-owner static bearer token, returns no private payloads and uses `Cache-Control: no-store`. Legacy OAuth does not authorize this route. A hosted team gateway and paired workspace transport are still pending; see [Usage summaries](../proposals/listeningKitUsage.md).
+
 ### REQ-MCP-01: The instructions carry the core rules, rule one first
 
-The server's instructions, sent at initialize, list the core rules each with its rule number, and the first of them is rule one ("if we don't know, we do this", rules 73-76), followed by rule 30.
+The server's instructions, sent at initialize, list the core rules each with its rule number, and the first of them is rule one ("if we don't know, we do this", rule 73), followed by rule 30.
 
 Checked by: code and SubQ
 
 ### REQ-MCP-02: The instructions send the agent to the full guide first
 
-The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session. Rule 95.
+The instructions say to load `getGuide({ topic: "logMcpInstructions" })` before the other log tools, once per session. Active rule 158.
 
 Checked by: code (anchors)
 
 ### REQ-MCP-03: AGENTS.md is the resource log://agents
 
-The server lists one resource, `log://agents`, and reading it returns AGENTS.md as it is in the checkout.
+The server lists `log://agents`, and reading it returns AGENTS.md as it is in the checkout. A client that supports MCP Apps also sees the browser view resource (REQ-MCP-19) and the report resource (REQ-MCP-20).
 
 Checked by: code and SubQ
 
 ### REQ-MCP-04: Every tool names the rules it falls under
 
-Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41).
+Every tool's description ends with a line naming AGENTS.md (`log://agents`) and the rules it falls under: its command's own rules from `COMMAND_RULES` and the rules every tool falls under (30, 38, 39, 40, 41). `currentRuleIds` resolves retired references to the active ids in the MCP generator's consolidated mapping. Generated guides use active rule text and distinguish current legacy command behavior from the native hosted target; active rules 171/172/175 govern the data boundary.
 
 Checked by: code and SubQ
 
@@ -68,7 +70,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-10: A log command run by hand from a shell is refused
 
-The PreToolUse hook refuses a shell command that runs `log …` or `bun bin/log.ts …`, and names the MCP tool route instead. Rule 106.
+The PreToolUse hook refuses a shell command that runs `log …` or `bun bin/log.ts …`, and names the MCP tool route instead. Active rule 163.
 
 Checked by: code and SubQ
 
@@ -88,7 +90,7 @@ Checked by: code and SubQ
 
 ### REQ-MCP-13: Uncommitted local changes are said loudly
 
-The engines hook lists the uncommitted changes in log-cli's code (src, python, vendor, bin, scripts, package.json) under `>>> UNCOMMITTED LOCAL CHANGES`, and says to read each one's diff and never overwrite, revert, stage, publish or ship them without matt. Rule 106.
+The engines hook lists the uncommitted changes in log-cli's code (src, python, vendor, bin, scripts, package.json) under `>>> UNCOMMITTED LOCAL CHANGES`, and says to read each one's diff and never overwrite, revert, stage, publish or ship them without matt. Active rule 163.
 
 Checked by: code and SubQ
 
@@ -135,5 +137,21 @@ Checked by: code and SubQ
 ### REQ-MCP-15: The loaded use case is the session's play, and sends need one
 
 When `getGuide` is called with a `useCase`, `runToolCall` in `src/mcp/server/index.ts` makes it the active play with `setActivePlay` (`src/mcp/server/helpers/activePlay.ts`), which reads the page's steps table (`stepsOf`: each row's number, step, tools named in backticks, and done when). Every other tool's answer then ends with `playFooter`: the play's id and title, the step this tool is and what counts as done, and the next step with its tools, or that the tool isn't one of the play's steps. A tool in `PLAY_REQUIRED` (the live sends as matt) is refused by `playRefusal` with `playMissing` while no play is loaded, naming the use cases whose pages name that tool. matt, 2026-11-07: the guides were not being called for actions. Rule 157.
+
+Checked by: code and SubQ
+
+## The live browser in the chat
+
+### REQ-MCP-19: browserView shows an account's live browser where the person is, and only their own gated input reaches it
+
+`browserView` (`log browser view --account`, `browserCommand` in `src/cli/browser/index.ts`) reads the account's viewer with `viewerState` (`src/browser/viewer/client.ts`). Where the runtime is comes from `browserViewLocation`, which `settleLocation` in `src/mcp/apps/browserView/client.ts` sets once per process: `local` for the stdio server (`startLogMcpServer`), `httpLocation` for the HTTP server (local only on loopback with no token or OAuth), `remote` for the hosted bridge (`runtimeDeps` in `src/cli/runtime/index.ts`). Local: `browserViewText` tells the person to finish the sign-in in the browser window on this machine, `browserViewJson` carries no stream, and `runAppTool` refuses frames and input with `browserViewLocal`. Remote: `browserViewJson` says only which stream there is (`streamKind`), and the voxl descriptor from `streamOf`, whose URL carries voxl's password, reaches the view only through the app-only `browserViewStream` (voxl first); `browserViewFrame` (`viewerFrame`) is the screenshot fallback when there is none. Nothing the model reads carries the voxl URL. When the client advertises the MCP Apps extension (`uiCapable`), `createLogMcpServer` adds `_meta.ui.resourceUri` `ui://log/browserView` to `browserView` (`withBrowserViewUi`), lists `appTools` with `visibility: ["app"]` and the `browserViewResource`; a client without it is refused the app-only tools with `browserViewAppOnly`. `browserViewInput` posts the person's click, text, key or scroll to the viewer's `/input` (`viewerInput`), which `BrowserViewer.input` in `python/browser/browserViewer.py` refuses unless the generation and revision still match and the page still reports a sign-in state, and replays as a recorded `viewerInput` step; input never goes through voxl. `readBrowserViewResource` answers one HTML page built by `widgetHtml` (`src/mcp/apps/browserView/helpers/build.ts`) with `text/html;profile=mcp-app` and a CSP from `browserViewCsp`: no connect domains unless `LOG_VOXL_URL` is https, or http on loopback (`voxlOrigins`). matt, 2026-11-13: the person signs in without leaving the harness, voxl is the stream and screenshots only the fallback, and on their own machine they use the window already open there.
+
+Checked by: code and SubQ
+
+## Reports in the chat
+
+### REQ-MCP-20: report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
+
+`report` is a server tool listed to every client (`reportTool` in `src/mcp/apps/report/client.ts`, added by `createLogMcpServer`). Its input is a declarative spec, `{ title, subtitle?, blocks }`, each block one of `REPORT_BLOCK_TYPES` (`heading`, `text`, `stat`, `barChart`, `lineChart`, `table`, `personList`, `callout`): data and layout only, never code. `checkReport` (`src/mcp/apps/report/helpers/schema.ts`) validates it against `reportSchema` (zod, strict objects, `REPORT_LIMITS`), and `runReport` refuses a spec that breaks it with one of `REPORT_REFUSALS` and the paths to fix. A valid spec comes back as `structuredContent`. When the client advertises the MCP Apps extension (`uiCapable`), the tool carries `_meta.ui.resourceUri` `ui://log/report` (`withReportUi`), the resource list has `reportResource`, and the text is `reportSummary`, one line so the model doesn't repeat the numbers. Without it, the text is `reportText` (`src/mcp/apps/report/helpers/text.ts`): markdown headings, the KPI line, tables, people, and unicode bar charts (`bar`) and sparklines (`sparkline`). `readReportResource` answers one HTML page built by `reportHtml` (`src/mcp/apps/report/helpers/build.ts`) with `text/html;profile=mcp-app` and an empty CSP; `reportBodyHtml` (`src/mcp/apps/report/widget/render.ts`) draws every block as escaped HTML and SVG in log's `brandTokens`, and the view follows the host's theme and offers fullscreen when the host lists it. The numbers come from `reportData` (`log report data`, `reportCommand` in `src/cli/report/index.ts`), which reads log.db only through `readTwitterSenders` (`src/inbox/senders/client.ts`): no platform call and no governor use. The server instructions and the `ui` guide topic point the model at it. matt, 2026-11-13: "We are making a generative UI MCP. I go to my harness and say 'generate a report with some bar charts of who has been messaging me on Twitter'." One server, the best presentation each host can show.
 
 Checked by: code and SubQ

@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 25: click e1241: 200, 594 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 25: click e1241: 200, 594 ms
 
 Sent:
 
@@ -33,7 +33,7 @@ Sent:
   "fb_api_req_friendly_name": "CometMarketplaceBoostListingPostPublishNuxDialogQuery",
   "server_timestamps": "true",
   "variables": {
-    "listingID": "1425935622848350",
+    "listingID": "<id:1>",
     "scale": 1,
     "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
   },
@@ -57,13 +57,13 @@ Answered:
         "is_pending": false,
         "is_sold": false,
         "product_item": {
-          "id": "28800458926283039",
+          "id": "<id:2>",
           "boosted_marketplace_listing": null,
           "promoted_listing": {
             "button_text": "Promote now",
-            "page_id": "1383267438207114",
+            "page_id": "<id:3>",
             "product_item_override": {
-              "id": "28800458926283039"
+              "id": "<id:2>"
             },
             "coupon_offer_id": null,
             "page_posted_from": null
@@ -73,11 +73,11 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (424 chars)"
+            "uri": "<mediaUrl> (424 chars)"
           },
-          "id": "2379535206124103"
+          "id": "<id:4>"
         },
-        "id": "1425935622848350"
+        "id": "<id:1>"
       }
     }
   },

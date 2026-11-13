@@ -50,7 +50,7 @@ Seen 31 time(s) in 18 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 32: goto /marketplace/: 200, 376 ms
+**runs/host/20261026T180628_<userId:1>**, step 32: goto /marketplace/: 200, 376 ms
 
 Sent:
 
@@ -84,14 +84,14 @@ Answered:
             }
           ]
         },
-        "id": "370399423318783"
+        "id": "<id:1>"
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
           "count": 0,
           "edges": []
         },
-        "id": "1592249071005526",
+        "id": "<id:2>",
         "bookmarks": {
           "edges": [],
           "page_info": {
@@ -124,7 +124,7 @@ Answered:
             "… 4 more"
           ]
         },
-        "id": "644715445650924",
+        "id": "<id:3>",
         "bookmarks": {
           "edges": [
             {
@@ -187,7 +187,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 38: goto /marketplace/you/selling: 200, 260 ms
+**runs/host/20261026T180628_<userId:1>**, step 38: goto /marketplace/you/selling: 200, 260 ms
 
 Sent:
 
@@ -221,14 +221,14 @@ Answered:
             }
           ]
         },
-        "id": "370399423318783"
+        "id": "<id:1>"
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
           "count": 0,
           "edges": []
         },
-        "id": "1592249071005526",
+        "id": "<id:2>",
         "bookmarks": {
           "edges": [],
           "page_info": {
@@ -261,7 +261,7 @@ Answered:
             "… 4 more"
           ]
         },
-        "id": "644715445650924",
+        "id": "<id:3>",
         "bookmarks": {
           "edges": [
             {
@@ -324,7 +324,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 40: goto /messages/: 200, 284 ms
+**runs/host/20261026T180628_<userId:1>**, step 40: goto /messages/: 200, 284 ms
 
 Sent:
 

@@ -7,6 +7,7 @@
       "description": "Install log, add an account, connect your agent",
       "sections": [
         { "title": "Start here", "pages": ["install.md", "accounts.md", "mcp.md"] },
+        { "title": "Your agent app", "folder": "harnesses" },
         { "title": "Using log well", "pages": ["usingLog.md"] }
       ]
     },
@@ -48,7 +49,7 @@
       "description": "How log works inside, for contributors",
       "sections": [
         { "title": "Specs", "folder": "specs" },
-        { "title": "The ideas", "pages": ["howItWorks.md", "models.md", "liveInbox.md", "unifyStorage.md", "storageAgainstTheBook.md", "storageReadPath.md", "hookStartup.md", "toolCallSpeed.md", "accountsAndListings.md", "lifecycle.md", "twenty.md", "signingIn.md", "status.md"] },
+        { "title": "The ideas", "pages": ["howItWorks.md", "models.md", "liveInbox.md", "unifyStorage.md", "storageAgainstTheBook.md", "storageReadPath.md", "hookStartup.md", "antigravityHooks.md", "toolCallSpeed.md", "accountsAndListings.md", "lifecycle.md", "twenty.md", "signingIn.md", "status.md"] },
         { "title": "Browsers and proxies", "pages": ["browsers.md", "browserSetup.md", "adsPower.md", "proxies.md"], "folders": ["proxyVendors"] },
         {
           "title": "Facebook in depth",
@@ -59,11 +60,12 @@
         { "title": "Diagrams", "folder": "diagrams" },
         {
           "title": "Working on log",
-          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "callTiming.md", "knowledgeBase.md", "deployment.md", "twitterPlatform.md"],
+          "pages": ["layout.md", "namingConventions.md", "contextLayer.md", "callTiming.md", "knowledgeBase.md", "deployment.md", "twitterPlatform.md", "opencodeHooks.md"],
           "folders": ["rea", "voice"]
         }
       ]
     }
   ],
-  "private": ["decisions", "identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation", "vendors", "infra", "site.json"]
+  "private": ["decisions", "identityLeaks", "providerResearch", "scaleArchitecture", "deviceIsolation",
+        "datamodel", "vendors", "infra", "proposals", "controlService.md", "site.json"]
 }

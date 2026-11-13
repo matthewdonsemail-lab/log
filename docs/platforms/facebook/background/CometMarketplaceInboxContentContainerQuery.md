@@ -24,7 +24,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 396 ms
+**runs/inspect/20261025T064655_<userId:1>**, step 3: goto /marketplace/inbox: 200, 396 ms
 
 Sent:
 
@@ -60,7 +60,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T113536_61594063207669**, step 3: click e156: 200, 466 ms
+**runs/inspect/20261022T113536_<userId:2>**, step 3: click e156: 200, 466 ms
 
 Sent:
 

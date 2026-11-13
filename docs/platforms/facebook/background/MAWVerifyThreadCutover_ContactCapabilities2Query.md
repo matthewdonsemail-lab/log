@@ -11,9 +11,9 @@
 | Sends | `id` |
 | Reads | `user.message_capabilities2_str` |
 | Called from | `MAWVerifyThreadCutover` |
-| rea | `ev_ce49c0c58c4991bd4bdaf674f08b677347a7495f71ce19a3e4d43fe83ef8cdf2` |
+| rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 162 time(s) in 42 run(s).
+Seen 144 time(s) in 40 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -100,29 +100,13 @@ Seen 162 time(s) in 42 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 459 ms | 8136 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 419 ms | 6408 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 448–475 ms | 616836–657576 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 199–431 ms | 3691–4962 ms | — |
-| host | step 4: goto /marketplace/status | 2 | 200 | 180–188 ms | 3064–5751 ms | — |
-| host | step 12: goto /marketplace/create/item | 1 | 200 | 170 ms | 9311 ms | — |
-| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 171 ms | 6432 ms | — |
-| host | step 16: goto / | 1 | 200 | 340 ms | 5517 ms | — |
-| host | step 19: goto /marketplace/ | 1 | 200 | 169 ms | 3479 ms | — |
-| host | step 22: goto /marketplace/ | 1 | 200 | 156 ms | 2767 ms | — |
-| host | step 26: goto /marketplace/ | 1 | 200 | 172 ms | 3370 ms | — |
-| host | step 28: goto /marketplace/create/item | 1 | 200 | 187 ms | 2185 ms | — |
-| host | step 30: goto /marketplace/ | 1 | 200 | 163 ms | 2875 ms | — |
-| host | step 32: goto /marketplace/ | 1 | 200 | 293 ms | 2771 ms | — |
-| host | step 34: goto /marketplace/you/selling | 1 | 200 | 169 ms | 4847 ms | — |
-| host | step 36: goto /marketplace/ | 1 | 200 | 166 ms | 2133 ms | — |
-| host | step 38: goto /marketplace/you/selling | 1 | 200 | 170 ms | 2334 ms | — |
-| host | step 40: goto /messages/ | 1 | 200 | 197 ms | 4009 ms | — |
-| host | step 18: clickRole button "…" | 1 | 200 | 171 ms | 9853 ms | — |
-| host | step 21: goto /marketplace/status | 1 | 200 | 191 ms | 9013 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 1110 ms | 18220 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 431 ms
+**runs/warmup/20261023T080515_<id:1>**, step 1: goto /marketplace/: 200, 366 ms
 
 Sent:
 
@@ -132,7 +116,7 @@ Sent:
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "61594285317994"
+    "id": "<id:1>"
   },
   "doc_id": "9948369021930229"
 }
@@ -145,71 +129,35 @@ Answered:
   "data": {
     "user": {
       "message_capabilities2_str": "252060841644982528",
-      "id": "61594285317994"
+      "id": "<id:1>"
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038000036,
-      "time_at_flush_ms": 1793038000065
+      "request_start_time_ms": 1792742733499,
+      "time_at_flush_ms": 1792742733519
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 180 ms
+**runs/warmup/20261023T080515_<id:1>**, step 3: goto /marketplace/you/selling: 200, 395 ms
 
 Sent:
 
 ```json
 {
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
   "variables": {
-    "id": "61594285317994"
-  },
-  "doc_id": "9948369021930229"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "user": {
-      "message_capabilities2_str": "252060841644982528",
-      "id": "61594285317994"
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1793038028425,
-      "time_at_flush_ms": 1793038028451
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/host/20261026T180628_61594285317994**, step 12: goto /marketplace/create/item: 200, 170 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "138820675",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
-  "server_timestamps": "true",
-  "variables": {
-    "id": "61594285317994"
+    "id": "<id:1>"
   },
   "doc_id": "9948369021930229",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -221,13 +169,49 @@ Answered:
   "data": {
     "user": {
       "message_capabilities2_str": "252060841644982528",
-      "id": "61594285317994"
+      "id": "<id:1>"
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038088362,
-      "time_at_flush_ms": 1793038088390
+      "request_start_time_ms": 1792742782510,
+      "time_at_flush_ms": 1792742782533
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_<id:1>**, step 5: goto /messages/: 200, 492 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+  "server_timestamps": "true",
+  "variables": {
+    "id": "<id:1>"
+  },
+  "doc_id": "9948369021930229"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "user": {
+      "message_capabilities2_str": "252060841644982528",
+      "id": "<id:1>"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814645,
+      "time_at_flush_ms": 1792742814672
     },
     "is_final": true
   }

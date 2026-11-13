@@ -1,30 +1,24 @@
 ---
 name: captureRule
-description: Turn something matt tells the agent ("we never use kebab-case", "every commit updates log.md") into a hard rule in AGENTS.md, plus the check or skill that enforces it, in the same session.
+description: Maintain concise current instructions in AGENTS.md, preserving stable rule ids and archiving superseded context when Matt authorizes pruning.
 ---
 
-# captureRule
+# Capture and maintain a rule
 
-When matt says how things are done, it becomes a fact in `AGENTS.md`, not
-something the next session has to rediscover.
+## Current instructions first
 
-## Hard boundaries
+AGENTS.md is the active implementation contract. Record durable constraints, scope and ownership there. Keep anecdotes, completed migrations, one-off messages and obsolete defaults in history or the relevant domain document.
 
-1. **Same session, same commit.** Add the rule in the commit that applies
-   it, not later.
-2. **One dated line per rule** under `## Hard rules (from matt)`, written as a
-   fact ("camelCase everywhere, never kebab-case"), not a suggestion.
-3. **Never delete or soften a rule** without matt saying so. If a new
-   instruction contradicts an old rule, ask matt which one wins.
+## Procedure
 
-## The routine
+1. Read the current task and current rules. Existing authorization is sufficient; do not ask again to prune rules Matt explicitly asked to prune.
+2. Add or update a concise dated rule in Matt's meaning. Preserve stable active rule ids and the `## Hard rules (from matt)` heading because the knowledge/MCP collectors parse them.
+3. If Matt authorized removal or consolidation, preserve the prior text in the private workspace rule archive, outside this repository. Record old-to-current citations in the MCP generator's consolidated mapping. Never silently renumber a historical id to unrelated behavior.
+4. Keep the native ownership/scope rules authoritative. A platform procedure or old generated field inventory cannot reintroduce a superseded architecture.
+5. Update the affected skill/spec and generated MCP guidance when applicable. Generated guides are rebuilt from their sources. Do not load the full historical snapshot into active client instructions.
+6. Check document links, parser-compatible rule formatting and citations. Do not add or run application tests unless Matt asks. Do not perform paid semantic review as routine rule maintenance.
+7. When committing, include the rule, related source/docs and required AST-backed commit log entry together. Never bypass hooks. Report only checks actually performed.
 
-1. Write the rule as one line in matt's meaning, in plain words. Number it
-   and date it (`9. 2026-10-18 · ...`).
-2. Make it enforceable where you can:
-   - a check in `scripts/checks/checkNamingConventions.mjs` or a test, or
-   - a step in the skill that covers the routine (`skills/<name>/SKILL.md`).
-3. Fix everything the rule already breaks in the repo, in the same commit.
-4. Put the rule in the `log.md` entry's `Why:` line.
-5. If it's a new routine, add `skills/<camelCaseName>/SKILL.md` and list it in
-   `skills.md`.
+## Scope
+
+Without explicit instruction to prune or supersede, preserve the existing durable constraint and resolve a genuine unanswered conflict. Do not manufacture a confirmation requirement when the current task already resolves it.

@@ -4,7 +4,7 @@ import { join } from "node:path";
 const root = join(import.meta.dir, "..", "..");
 const DOMAIN_ROOTS: Record<string, string> = {
   python: "browser, human, session, login, device, errors, fixtures",
-  scripts: "checks, commitLog, datasets, docs, hooks, twenty",
+  scripts: "checks, commitLog, datasets, docs, hooks, privacy, twenty",
 };
 
 const git = (...args: string[]) => execFileSync("git", args, { windowsHide: true, cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);

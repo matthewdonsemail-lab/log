@@ -34,14 +34,14 @@ Sent:
     "_x_id": "2c6eaecf-1793689064.419",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ndispatch-client-extras\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Dispo… (592 chars)"
+    "------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ndispatch-client-extras\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundarygAaa46CR1GAAYxae\r\nContent-Dispo… (592 chars)"
   }
 }
 ```
@@ -57,72 +57,72 @@ Answered:
       "canonical_name": "/shrug",
       "desc": "Appends ¯\\_(ツ)_/¯ to your message",
       "usage": "your text",
-      "name_normalized": "/shrug",
-      "name": "/shrug",
+      "name_normalized": "<name:1>",
+      "name": "<name:1>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     {
       "canonical_name": "/me",
       "usage": "your message",
       "desc": "Displays action text",
-      "name_normalized": "/me",
-      "name": "/me",
+      "name_normalized": "<name:2>",
+      "name": "<name:2>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     {
       "canonical_name": "/topic",
       "usage": "new topic",
       "desc": "Set the channel topic",
-      "name_normalized": "/topic",
-      "name": "/topic",
+      "name_normalized": "<name:3>",
+      "name": "<name:3>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     {
       "canonical_name": "/away",
       "usage": "",
       "desc": "Toggle your \"away\" status",
-      "name_normalized": "/away",
-      "name": "/away",
+      "name_normalized": "<name:4>",
+      "name": "<name:4>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     {
       "canonical_name": "/msg",
       "usage": "@user [your message]",
       "desc": "Send a DM message to another user",
-      "name_normalized": "/msg",
-      "name": "/msg",
+      "name_normalized": "<name:5>",
+      "name": "<name:5>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     {
       "canonical_name": "/open",
       "usage": "[channel]",
       "desc": "Open a channel",
-      "name_normalized": "/open",
-      "name": "/open",
+      "name_normalized": "<name:6>",
+      "name": "<name:6>",
       "type": "core",
       "is_workspace_agnostic": true,
       "teams": [
-        "T0C4VCD06MR"
+        "<teamId:1>"
       ]
     },
     "… 18 more"

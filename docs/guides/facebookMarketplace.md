@@ -2,7 +2,11 @@
 
 Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -62,7 +66,7 @@ matt says so.
 
 ### The steps
 
-`<a>` is the account's name (the Facebook id, e.g. `61594387282311`).
+`<a>` is the account's name (the Facebook id, e.g. `99900000000029`).
 
 #### 1. Proxy (no browser)
 
@@ -94,7 +98,7 @@ the Twenty email and password, then on the two-step page the current code
 from `totpSecret` (switching to "Authentication app" if Facebook offers
 another method first), and trusts the device. This is the connect machine
 (`marketplace/connect/machine.ts`): each page is printed as its kind and
-state; nothing secret is. Every page takes Listaro's path (rule 23): the
+state; nothing secret is. Every page takes the proven path (rule 23): the
 cookie banner is accepted, "We suspect automated behaviour" dismissed, login
 captchas solved (CaptchaKraken, then 2Captcha). Only an identity, photo, video
 or SMS checkpoint is never clicked: it waits for matt in the window. It reads for up to 600 s
@@ -625,7 +629,7 @@ From `skills/conversations/SKILL.md`.
 
 A buyer who writes about a listing is an `agencyConversation` on that
 listing and account. Each message is an `agencyMessage` in it. The shape,
-and where each field came from (Listaro, blaster), is in
+and where each field came from, is in
 `docs/conversations.md`.
 
 ### Hard boundaries
@@ -672,7 +676,7 @@ List the Twenty listings, by status, account or campaign
 log facebook listings [--status <STATUS>] [--account <accountName>] [--campaign <campaignId>] [--json]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listing`
 
@@ -682,7 +686,7 @@ log facebook listing <agencyListingId> [--json]
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listingCreate`
 
@@ -693,7 +697,7 @@ The file: title, description, price, priceCurrency, category, condition (new|use
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listingRemove`
 
@@ -703,7 +707,7 @@ log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypa
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `listingRemoveLive`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listingRemoveLive`
 
@@ -715,7 +719,7 @@ The file: title, description, price, priceCurrency, category, condition (new|use
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listingSweep`
 
@@ -725,7 +729,7 @@ log facebook listing sweep [--apply] [--json]   (every listing whose account is 
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `listingLint`
 
@@ -736,7 +740,7 @@ The file: title, description, price, priceCurrency, category, condition (new|use
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `publish`
 
@@ -750,7 +754,7 @@ The listing, its account and the account's proxy all come from Twenty.
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `publishLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 8, 10, 12, 18, 22, 24, 68, 72, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `publishLive`
 
@@ -765,7 +769,7 @@ The listing, its account and the account's proxy all come from Twenty.
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 8, 10, 12, 18, 22, 24, 68, 72, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `campaign`
 
@@ -779,7 +783,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. It never t
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 18, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `campaignLive`
 
@@ -794,7 +798,7 @@ Pass the arguments after the command name in `args`, with --live. `--bypass` (ou
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 13, 18, 71, 72, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversations`
 
@@ -803,7 +807,7 @@ List buyers' Marketplace conversations in Twenty, newest first, by account or li
 log facebook conversations [--account <name>] [--listing <agencyListingId>] [--json]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversationShow`
 
@@ -812,7 +816,7 @@ One conversation: show its messages, mark read, set its lead status, link its li
 log facebook conversation show <id> [--json]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversationRead`
 
@@ -821,7 +825,7 @@ One conversation: show its messages, mark read, set its lead status, link its li
 log facebook conversation read <id>
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversationLead`
 
@@ -830,7 +834,7 @@ One conversation: show its messages, mark read, set its lead status, link its li
 log facebook conversation lead <id> <NEW|CONTACTED|QUALIFIED|BOOKED|LOST|SPAM>
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversationLink`
 
@@ -839,7 +843,7 @@ One conversation: show its messages, mark read, set its lead status, link its li
 log facebook conversation link <id> --listing <agencyListingId>
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `conversationRecord`
 
@@ -848,42 +852,28 @@ One conversation: show its messages, mark read, set its lead status, link its li
 log facebook conversation record --account <name> --file <threads.json>
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookMarketplace" }) (Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations).
-AGENTS.md (log://agents): rules 34, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 8.** 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted unless matt asks for it.
+**Rule 8.** 2026-10-18 · Platform actions require the user authorization their tool defines. Send, post, react, join, edit and delete only when authorized; preserve explicit live confirmation, governor and account gates. Ordinary reads do not need new approval.
 
-**Rule 10.** 2026-10-18 · matt asked for posting: `log publish` posts one listing through the publish machine. It is a dry run unless `--live`, and once Publish is clicked nothing is retried. Captchas go CaptchaKraken first, then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still holds for editing and deleting.
+**Rule 19.** 2026-10-18 · Every browser action records its raw HAR and timed step evidence, with no switch to disable capture. Raw private captures may contain credentials. Keep them in the selected private runtime/browser-host storage, never in git, central payload logs or user-facing output. Retention/pruning must preserve required analysis evidence.
 
-**Rule 12.** 2026-10-18 · No browser opens for an account unless its proxy is attached and its exit IP is in the account's country (`python/browser/proxyGate.py`). There is no exception: not dry runs, not signing in (matt: "never, ever open" without one). Listings must be in the account's country, and the form's location must be picked in that country. How it works: `docs/proxies.md`.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 13.** 2026-10-18 · Twenty is the only place accounts and listings live: Facebook accounts are `socialAccounts` (platform FACEBOOK), listings are `agencyListings`. Never delete either: a banned or dead account keeps its record with its status, and its campaign listings get replacement accounts in the same country (`docs/accountsAndListings.md`). Fields are only ever added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the twitter-controller keeps working.
+**Rule 35.** 2026-10-19 · Browser work uses one account browser through its active day, with actions as tabs/steps; close only for a logged lifecycle reason. Preserve existing proxy-country, locale/timezone, device/profile, headed visibility, capture, active-hours and launch-budget gates. Keep checkpoint stops and account-specific constraints in the browser/flow guides. Do not create a fresh browser per action.
 
-**Rule 18.** 2026-10-18 · No run outside the account's local waking hours (08:00-22:00 in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish, scan, status, watch, campaign run and connect are refused with `outsideActiveHours`. Daily caps count the account's local day.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 22.** 2026-10-19 · Every action records a HAR, with no way to turn it off. The proxy gate puts a raw HAR recorder (rule 19) on every browser context, and refuses a context without a capture folder (`captureMissing`). That covers connect, scan, status, each watch check and publish. Each run keeps `~/.logCli/runs/<action>/<time>_<account>/firefox` (publish: its run folder): `session.har`, `steps.jsonl` (every action the run logged, timed), and `steps/NN_<action>.har`, one per step, each read by the local rea (`settleRunCapture`). Never committed.
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 24.** 2026-10-19 · matt: "fix them issues now" (the launch budget from RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md). One account's browser opens on Facebook at most 8 times per local day, dry runs counted, at least 10 minutes apart. A launch counts once it passed the gate ("Self-check passed" in its `steps.jsonl`). Refused before anything opens: `launchTooSoon`, `launchBudgetSpent` (`src/browser/run/helpers/launchBudget.ts`). `--bypass` doesn't skip it; only a publish against the saved fixture form (`--formUrl file://...`) isn't counted. A publish meets a login wall or checkpoint in its own browser (the connect steps run there), never in a second launch.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 34.** 2026-10-19 · matt: a buyer's conversation is tied to its listing, in the shape blaster and Listaro already use. Twenty's `agencyConversation` (blaster's SMS thread object) gains the Marketplace fields and relations to `agencyListing` and `socialAccount`; `agencyMessage` gains its relation to `agencyConversation` and Listaro's per-message fields (`isRead`, `sentBy`, `aiStatus`), all additive (rule 13, `scripts/twenty/twentySetup.mjs`). A conversation is keyed on the account and Facebook's thread id, never a hash of the buyer's name; a message on Facebook's message id or a stable hash, so a rescan adds nothing. The listing is matched by its Facebook id or a unique title, never guessed. `log conversations`, `log conversation show|read|lead|link|record` (`src/marketplace/conversation`, `docs/conversations.md`).
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
-
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
-
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
-
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
-
-**Rule 68.** 2026-10-22 · matt: the Marketplace location is typed as "City, State" with the state written out in full ("Bethlehem, Pennsylvania", never "PA"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (Bethlehem, inspect 20261022T105341 and 20261022T110738). `setLocation` writes a US state code out, picks the option Facebook's own answer names as the place typed, clicks it, and sets nothing when none matches. A listing is published from the account's open AdsPower browser by the recorded flow `marketplaceListingPublish` (location, Create, photos, title, price, category, condition, description, Next, Publish; never Boost, rule 41), not by a second browser. "Discover more when you shop" (partner listings, a European location) is a known page state, pressed through with Update.
-
-**Rule 71.** 2026-10-23 · matt: an ad says the same thing several ways. An ad that goes out on more than one listing in a city carries copy versions (`agencyListings.copyVersions`, title-and-description pairs written by `skills/listingCopy`), at least as many as the listings it will have live in that city and never fewer than 3, every two titles differing by at least half their words (the city's not counted). Each copy (`campaign fill`, `heal`) takes the version least like what is live in its city and records it in `copyVersionId`; a replacement skips the lost copy's version. `log facebook listing lint`, `listing create` and `campaign fill` refuse a version that breaks a checkable copy rule, and `campaign fill` refuses too few (`notEnoughCopyVersions`). `src/facebook/marketplace/copy`.
-
-**Rule 72.** 2026-10-23 · matt: a Marketplace location is never abbreviated. It is typed as "City, State" with the state written out ("Bethlehem, Pennsylvania") or "City, Country" ("Galway, Ireland"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip offered Granada, Spain first (rule 68). A check blocks before any action: a place with an acronym, a state code, a zip or any number, or no state or country is refused with `locationAbbreviated` (`placeProblem`, `src/facebook/marketplace/location`; `python/location/placeName.py` in the sessions), in a listing's `locationQuery` (`listing create`, `lint`, `publish`, `campaign fill`), `log inspect do setLocation`, a flow's `location`, and the host's setLocation, which types the listing's `locationQuery` and never a zip. A written-out state counts as the US for the country check.
-
-**Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
+**Rule 175.** 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.

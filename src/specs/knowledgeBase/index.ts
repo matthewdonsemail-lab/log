@@ -26,7 +26,8 @@ export const knowledgeBase = {
   anchors: {
     'REQ-KB-01': [
       { kind: 'value', file: TYPES, name: 'KB_OBJECT_PLURAL', equals: 'knowledgeArticles' },
-      { kind: 'value', file: TYPES, name: 'KB_DEFAULT_TWENTY_URL', equals: 'https://node02.tail4fcf85.ts.net' },
+      { kind: 'value', file: TYPES, name: 'KB_TWENTY_URL_ENV', equals: 'KB_TWENTY_URL' },
+      { kind: 'string', file: CLIENT, includes: 'there is no default host' },
       { kind: 'symbol', file: STORE, name: 'twentyKbStore' },
       { kind: 'symbol', file: STORE, name: 'FIELDS' },
       { kind: 'string', file: STORE, includes: 'key' },

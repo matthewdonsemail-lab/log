@@ -68,14 +68,14 @@ print(json.dumps(d.strip_per_launch({"timezone": "x", "webrtc:ipv4": "1.2.3.4", 
 profile = ${JSON.stringify(JSON.stringify(PROFILE))}
 p = json.loads(profile)
 run = {"locale": "en-IE", "languages": ["en-IE", "en"]}
-c = d.launch_config(p, run, "109.78.211.66", "Europe/Dublin", {"headless": False, "humanize": 1.5, "showcursor": True}, "156")
+c = d.launch_config(p, run, "203.0.113.10", "Europe/Dublin", {"headless": False, "humanize": 1.5, "showcursor": True}, "156")
 print(json.dumps(c))`) as Record<string, unknown>;
     expect(out["canvas:seed"]).toBe(7);
     expect(out["screen.width"]).toBe(1600);
     expect(out["navigator.userAgent"]).toBe("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:156.0) Gecko/20100101 Firefox/156.0");
     expect(out).toMatchObject({
       timezone: "Europe/Dublin",
-      "webrtc:ipv4": "109.78.211.66",
+      "webrtc:ipv4": "203.0.113.10",
       "locale:language": "en",
       "locale:region": "IE",
       "geolocation:latitude": 53.28,
@@ -89,7 +89,7 @@ print(json.dumps(c))`) as Record<string, unknown>;
   test("prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed", () => {
     const out = py(`from device import deviceProfile as d
 p = {"firefoxUserPrefs": {"webgl.force-enabled": True, "intl.locale.requested": "en-US", "network.dns.disableIPv6": False}}
-print(json.dumps([d.launch_prefs(p, {"locale": "en-IE"}, "86.41.85.43"), d.launch_prefs(p, {"locale": "en-GB"}, "2001:db8::1")]))`) as Record<string, unknown>[];
+print(json.dumps([d.launch_prefs(p, {"locale": "en-IE"}, "203.0.113.11"), d.launch_prefs(p, {"locale": "en-GB"}, "2001:db8::1")]))`) as Record<string, unknown>[];
     expect(out[0]).toEqual({
       "webgl.force-enabled": true,
       "network.http.http3.enable": false,
@@ -137,7 +137,7 @@ print(json.dumps(res))`);
 });
 
 describe("python/browser/proxyGate.py (pure parts)", () => {
-  const WANT = { timezone: "Europe/Dublin", locale: "en-IE", languages: ["en-IE", "en"], exitIp: "109.78.211.66" };
+  const WANT = { timezone: "Europe/Dublin", locale: "en-IE", languages: ["en-IE", "en"], exitIp: "203.0.113.10" };
   const realm = { timeZone: "Europe/Dublin", intlLocale: "en-IE", numberLocale: "en-IE", language: "en-IE", languages: ["en-IE", "en"], offset: -60 };
   const verdict = (observed: unknown) => py(`from browser import proxyGate as g\nprint(json.dumps(g.compare(json.loads(${JSON.stringify(JSON.stringify(observed))}), json.loads(${JSON.stringify(JSON.stringify(WANT))}))))`);
 
@@ -152,7 +152,7 @@ describe("python/browser/proxyGate.py (pure parts)", () => {
       [{ ip: WANT.exitIp, page: { ...realm, intlLocale: "en" }, worker: realm }, "browserLocaleMismatch"],
       [{ ip: WANT.exitIp, page: realm, worker: { ...realm, language: "en-US" } }, "browserLocaleMismatch"],
       [{ ip: WANT.exitIp, page: { ...realm, languages: ["ga-IE", "ga"] }, worker: realm }, "browserLocaleMismatch"],
-      [{ ip: "116.105.162.81", page: realm, worker: realm }, "browserExitIpMismatch"],
+      [{ ip: "203.0.113.81", page: realm, worker: realm }, "browserExitIpMismatch"],
       [{ ip: null, page: realm, worker: realm }, "selfCheckFailed"],
       [{ ip: WANT.exitIp, page: realm, worker: { error: "the worker did not answer in 5s" } }, "selfCheckFailed"],
     ];
@@ -191,8 +191,8 @@ print(json.dumps([e.failure("crashed", "launch failed for http://u7e9secret-zone
   });
 
   test("an IP echo's text is read as an IP and nothing else", () => {
-    expect(py(`from browser import proxyGate as g\nprint(json.dumps([g._ip_from_text("109.78.211.66\\n"), g._ip_from_text("<html>"), g._ip_from_text("")]))`)).toEqual([
-      "109.78.211.66",
+    expect(py(`from browser import proxyGate as g\nprint(json.dumps([g._ip_from_text("203.0.113.10\\n"), g._ip_from_text("<html>"), g._ip_from_text("")]))`)).toEqual([
+      "203.0.113.10",
       null,
       null,
     ]);

@@ -27,7 +27,7 @@ matt says so.
 
 ## The steps
 
-`<a>` is the account's name (the Facebook id, e.g. `61594387282311`).
+`<a>` is the account's name (the Facebook id, e.g. `99900000000029`).
 
 ### 1. Proxy (no browser)
 
@@ -59,7 +59,7 @@ the Twenty email and password, then on the two-step page the current code
 from `totpSecret` (switching to "Authentication app" if Facebook offers
 another method first), and trusts the device. This is the connect machine
 (`marketplace/connect/machine.ts`): each page is printed as its kind and
-state; nothing secret is. Every page takes Listaro's path (rule 23): the
+state; nothing secret is. Every page takes the proven path (rule 23): the
 cookie banner is accepted, "We suspect automated behaviour" dismissed, login
 captchas solved (CaptchaKraken, then 2Captcha). Only an identity, photo, video
 or SMS checkpoint is never clicked: it waits for matt in the window. It reads for up to 600 s

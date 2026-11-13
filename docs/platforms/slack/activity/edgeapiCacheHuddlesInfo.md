@@ -18,7 +18,7 @@ Seen 4 time(s) in 1 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 2 | 200 | 93–286 ms | 7947–9300 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 2 | 200 | 53–201 ms | 5512–7929 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 2 | 200 | 53–201 ms | 5512–7929 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
@@ -35,7 +35,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"channel_ids\":[\"C0C4L7RSTGX\"]}"
+  "body": "{\"token\":\"<slackToken>\",\"channel_ids\":[\"<channelId:2>\"]}"
 }
 ```
 
@@ -48,7 +48,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 201 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 201 ms
 
 Sent:
 
@@ -59,7 +59,7 @@ Sent:
     "fp": "6f",
     "_x_num_retries": "0"
   },
-  "body": "{\"token\":\"xoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\",\"channel_ids\":[\"D0C8VAE7REU\"]}"
+  "body": "{\"token\":\"<slackToken>\",\"channel_ids\":[\"<channelId:1>\"]}"
 }
 ```
 
@@ -76,7 +76,7 @@ Answered:
 
 ## What it does
 
-Asks Slack's edge cache for huddle info on the open channels: it sent a JSON body with the `token` and `channel_ids` (`D0C8VAE7REU` on step 6) and answered `huddles: []`, `ok: true`. Seen 4 times, twice on step 4 goto /client (93-286 ms) and twice on step 6 goto the DM (53-201 ms).
+Asks Slack's edge cache for huddle info on the open channels: it sent a JSON body with the `token` and `channel_ids` (`<channelId:1>` on step 6) and answered `huddles: []`, `ok: true`. Seen 4 times, twice on step 4 goto /client (93-286 ms) and twice on step 6 goto the DM (53-201 ms).
 
 ## What our machine does with it
 

@@ -75,7 +75,7 @@ describe("timing", () => {
     try {
       await timeCall(`fetchTool${Date.now()}`, async (call) => {
         callId = call.callId;
-        await fetch(`http://127.0.0.1:${server.port}/api/v9/channels/1547936265436012645/messages`);
+        await fetch(`http://127.0.0.1:${server.port}/api/v9/channels/1000000000000000001/messages`);
       });
     } finally {
       server.stop(true);

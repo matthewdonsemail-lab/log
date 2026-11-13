@@ -20,7 +20,7 @@ describe('a task is gated as a brief, not as casual chat', () => {
     const guide = join(dir, 'GUIDE.md')
     writeFileSync(guide, '# the guide\nyour task for today')
     const { asked, decide } = answering({ clear: 0.9, why: 0.85, doneWhen: 0.8, kind: 0.9, steerable: 0.75 })
-    const reading = await readBrief({ to: 'jdbaiii', text: 'here is the guide', attached: attachedOf([guide, join(dir, 'sheet.png')]) }, decide)
+    const reading = await readBrief({ to: 'handle_j1', text: 'here is the guide', attached: attachedOf([guide, join(dir, 'sheet.png')]) }, decide)
     expect(reading.pass).toBe(true)
     const state = asked[0].state as Record<string, unknown>
     expect(state.attachedFiles).toEqual([{ name: 'GUIDE.md', text: '# the guide\nyour task for today' }, { name: 'sheet.png', text: null }])
@@ -29,7 +29,7 @@ describe('a task is gated as a brief, not as casual chat', () => {
 
   test('a curt order with no deadline fails, and says which parts are missing', async () => {
     const { decide } = answering({ clear: 0.8, why: 0.3, doneWhen: 0.2, kind: 0.4, steerable: 0.8 })
-    const reading = await readBrief({ to: 'jdbaiii', text: 'do the aeo stuff' }, decide)
+    const reading = await readBrief({ to: 'handle_j1', text: 'do the aeo stuff' }, decide)
     expect(reading.pass).toBe(false)
     const parts = briefFailedParts(reading).join('\n')
     expect(parts).toContain('why 0.30')

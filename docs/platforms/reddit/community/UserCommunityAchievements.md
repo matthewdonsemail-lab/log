@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `username`, `subredditId`, `imageMaxWidth` |
 | Reads | `data.redditorInfoByName`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script33.js:5 getCommunityAchievementsData` |
+| Called from | `runs/inspect/20261025T124815_<name:2>/script33.js:5 getCommunityAchievementsData` |
 | rea | `ev_7eb9479e35d54f913fc2f4a191e2f87153f3e03b997a57a40d4a11db3e670f67` |
 
 Seen 2 time(s) in 1 run(s).
@@ -24,7 +24,7 @@ Seen 2 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 711 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 200, 711 ms
 
 Sent:
 
@@ -32,7 +32,7 @@ Sent:
 {
   "operation": "UserCommunityAchievements",
   "variables": {
-    "username": "Maleficent-Try-8338",
+    "username": "<name:1>",
     "subredditId": "t5_2qh1i",
     "imageMaxWidth": 100
   }
@@ -60,7 +60,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 385 ms
+**runs/inspect/20261025T124815_<name:2>**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 385 ms
 
 Sent:
 
@@ -68,7 +68,7 @@ Sent:
 {
   "operation": "UserCommunityAchievements",
   "variables": {
-    "username": "Maleficent-Try-8338",
+    "username": "<name:1>",
     "subredditId": "t5_2qh1i",
     "imageMaxWidth": 100
   }

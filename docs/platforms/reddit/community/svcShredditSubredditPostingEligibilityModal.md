@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/subreddit-posting-eligibility-modal` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:100 anonymous`, `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:100 anonymous`, `runs/inspect/20261025T124815_<name:1>/script1.js:9 anonymous` |
 | rea | `ev_9238b7d25c82cf90e4ef5d35f5be371c3a36c3a0f7571e7f0fabd623318a3661` |
 
 Seen 2 time(s) in 1 run(s).
@@ -24,7 +24,7 @@ Seen 2 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 200, 647 ms
+**runs/inspect/20261025T124815_<name:1>**, step 3: goto /r/AskReddit/: 200, 647 ms
 
 Sent:
 
@@ -38,7 +38,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 420 ms
+**runs/inspect/20261025T124815_<name:1>**, step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th: 200, 420 ms
 
 Sent:
 

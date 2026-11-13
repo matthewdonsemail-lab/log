@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/feeds/popular-feed` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:9 anonymous` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:9 anonymous` |
 | rea | `ev_b9eb871b431af374cafca8aa1692ff30df562901fa370db3483f0dc3ffa887e2` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 12: goto /r/popular/: 200, 1601 ms
+**runs/inspect/20261025T124815_<name:1>**, step 12: goto /r/popular/: 200, 1601 ms
 
 Sent:
 

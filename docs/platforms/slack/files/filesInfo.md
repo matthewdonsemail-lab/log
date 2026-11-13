@@ -18,13 +18,13 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 346 ms | 6930 ms | — |
+| inspect | step 6: goto /client/<teamId:2>/<channelId:1> | 1 | 200 | 346 ms | 6930 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 346 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:2>/<channelId:1>: 200, 346 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:2>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=\"file\"\r\n\r\nF0CDBB09HT5\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=\"page\"\r\n\r\n1\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=… (1085 chars)"
+    "------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=\"file\"\r\n\r\n<fileId:1>\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=\"page\"\r\n\r\n1\r\n------WebKitFormBoundaryfB0CNISI5mABPHiN\r\nContent-Disposition: form-data; name=<name:2> (1085 chars)"
   }
 }
 ```
@@ -54,14 +54,14 @@ Answered:
 {
   "ok": true,
   "file": {
-    "id": "F0CDBB09HT5",
+    "id": "<fileId:1>",
     "created": 1793354470,
     "timestamp": 1793354470,
     "mimetype": "application/vnd.slack-docs",
     "filetype": "quip",
     "pretty_type": "Canvas",
-    "user": "U0A9JFXK21L",
-    "user_team": "T0A9H4FM18V",
+    "user": "<userId:1>",
+    "user_team": "<teamId:1>",
     "editable": true,
     "size": 0,
     "mode": "quip",
@@ -71,17 +71,17 @@ Answered:
     "public_url_shared": false,
     "display_as_bot": false,
     "username": "",
-    "name": "Untitled",
+    "name": "<name:1>",
     "title": "Untitled",
     "is_modified_by_ai": false,
-    "url_private": "https://files.slack.com/files-pri/T0A9H4FM18V-F0CDBB09HT5/canvas",
-    "url_private_download": "https://files.slack.com/files-pri/T0A9H4FM18V-F0CDBB09HT5/download/canvas",
-    "permalink": "https://rheosgroup.slack.com/docs/T0A9H4FM18V/F0CDBB09HT5",
-    "permalink_public": "https://slack-files.com/T0A9H4FM18V-F0CDBB09HT5-ae8c59ce98",
-    "url_static_preview": "https://rheosgroup.slack.com/docs/T0A9H4FM18V/F0CDBB09HT5/mobile",
+    "url_private": "<mediaUrl>",
+    "url_private_download": "<mediaUrl>",
+    "permalink": "https://<workspace:1>.slack.com/docs/<teamId:1>/<fileId:1>",
+    "permalink_public": "<mediaUrl>",
+    "url_static_preview": "https://<workspace:1>.slack.com/docs/<teamId:1>/<fileId:1>/mobile",
     "quip_thread_id": "YZR9AAL1PgV",
     "update_notification": null,
-    "source_team": "T0A9H4FM18V",
+    "source_team": "<teamId:1>",
     "favorites": [],
     "is_starred": false,
     "skipped_shares": true,
@@ -90,7 +90,7 @@ Answered:
     "file_access": "visible",
     "access": "write",
     "org_or_workspace_access": "none",
-    "canvas_creator_id": "U0A9JFXK21L",
+    "canvas_creator_id": "<userId:1>",
     "team_pref_version_history_enabled": true,
     "canvas_printing_enabled": true,
     "is_ai_suggested": false,

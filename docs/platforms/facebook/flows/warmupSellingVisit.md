@@ -1,8 +1,8 @@
 # Flow: `warmupSellingVisit`
 
-Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35).
+Warm-up sellingVisit: recorded on <userId:1> 2026-10-22 (rule 35).
 
-Built by `log flow fromInspect` from the recording `C:\Users\0\.logCli\runs\warmup\20261022T091121_61594063207669` (account 61594063207669). Run it on any account with `log flow run warmupSellingVisit --account <a> --live`, or over MCP as the tool `flowWarmupSellingVisit` (rule 31).
+Built by `log flow fromInspect` from the recording `~\.logCli\runs\warmup\20261022T091121_<userId:1>` (account <userId:1>). Run it on any account with `log flow run warmupSellingVisit --account <a> --live`, or over MCP as the tool `flowWarmupSellingVisit` (rule 31).
 
 ## Params
 

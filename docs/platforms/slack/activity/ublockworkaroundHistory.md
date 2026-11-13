@@ -18,13 +18,13 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 305 ms | 6669 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 305 ms | 6669 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 305 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 305 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name=\"start\"\r\n\r\n1793689111.020700\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name=\"count\"\r\n\r\n2000\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-… (1260 chars)"
+    "------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name=\"start\"\r\n\r\n1793689111.020700\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-data; name=\"count\"\r\n\r\n2000\r\n------WebKitFormBoundaryMjuaJBgUANQquNXo\r\nContent-Disposition: form-… (1260 chars)"
   }
 }
 ```

@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 558 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 4: click e191: 200, 558 ms
 
 Sent:
 
@@ -34,17 +34,17 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1",
       "selected_partner_ids": [
-        "1240470891063721",
-        "1629659441068862"
+        "<id:1>",
+        "<id:2>"
       ],
       "should_enable_auto_opt_in": true,
       "should_hide_organic_listings": false,
       "viewed_partner_ids": [
-        "1240470891063721",
-        "1629659441068862"
+        "<id:1>",
+        "<id:2>"
       ]
     }
   },

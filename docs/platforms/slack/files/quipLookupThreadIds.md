@@ -10,7 +10,7 @@
 | Path | `/api/quip.lookupThreadIds` |
 | Sends | `------WebKitFormBoundaryETN5zi8blIBcrSNK
 Content-Disposition: form-data; name` |
-| Reads | `ok`, `lookup.F0CDBB09HT5` |
+| Reads | `ok`, `lookup.<fileId:1>` |
 | Called from | `runs/inspect/20261103T065639_mattSlack/script31.js:2988 anonymous`, `runs/inspect/20261103T065639_mattSlack/script29.js:169 Gx6E`, `runs/inspect/20261103T065639_mattSlack/script3.js:2977 Gx6E` |
 | rea | `ev_ded8f36da996e21cd24d54a17b9c52bd574b65bfa6a382b17d43adf174e8944f` |
 
@@ -34,7 +34,7 @@ Sent:
     "_x_id": "2c6eaecf-1793689471.246",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -42,7 +42,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name=\"file_ids\"\r\n\r\nF0CDBB09HT5\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-quip-ids\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposi… (690 chars)"
+    "------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name=\"file_ids\"\r\n\r\n<fileId:1>\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetch-quip-ids\r\n------WebKitFormBoundaryETN5zi8blIBcrSNK\r\nContent-Disposi… (690 chars)"
   }
 }
 ```
@@ -53,7 +53,7 @@ Answered:
 {
   "ok": true,
   "lookup": {
-    "F0CDBB09HT5": "YZR9AAL1PgV"
+    "<fileId:1>": "YZR9AAL1PgV"
   }
 }
 ```
@@ -62,7 +62,7 @@ Answered:
 
 ## What it does
 
-Maps a Slack file id to its Quip thread id (`lookup.F0CDBB09HT5`): it fired once on step 14 (press Enter), 90.8 s in, 315 ms, 200.
+Maps a Slack file id to its Quip thread id (`lookup.<fileId:1>`): it fired once on step 14 (press Enter), 90.8 s in, 315 ms, 200.
 
 ## What our machine does with it
 

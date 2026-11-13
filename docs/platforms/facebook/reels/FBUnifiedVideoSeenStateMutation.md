@@ -92,7 +92,7 @@ Seen 96 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T080801_61594063207669**, step 4: clickRole button "…": 200, 435 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 4: clickRole button "…": 200, 435 ms
 
 Sent:
 
@@ -104,9 +104,9 @@ Sent:
   "variables": {
     "input": {
       "video_ids": [
-        "1967507720600004"
+        "<id:1>"
       ],
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },
@@ -123,7 +123,7 @@ Answered:
       "viewer": {
         "actor": {
           "__typename": "User",
-          "id": "61594063207669"
+          "id": "<userId:1>"
         }
       }
     }
@@ -138,7 +138,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 708 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 6: clickAny 1 x link /see owner profile$/: 200, 708 ms
 
 Sent:
 
@@ -150,9 +150,9 @@ Sent:
   "variables": {
     "input": {
       "video_ids": [
-        "1607183873661381"
+        "<id:2>"
       ],
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "2"
     }
   },
@@ -169,7 +169,7 @@ Answered:
       "viewer": {
         "actor": {
           "__typename": "User",
-          "id": "61594063207669"
+          "id": "<userId:1>"
         }
       }
     }
@@ -184,7 +184,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 9: clickRole button "…": 200, 435 ms
+**runs/inspect/20261023T080801_<userId:1>**, step 9: clickRole button "…": 200, 435 ms
 
 Sent:
 
@@ -196,9 +196,9 @@ Sent:
   "variables": {
     "input": {
       "video_ids": [
-        "1607183873661381"
+        "<id:2>"
       ],
-      "actor_id": "61594063207669",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },
@@ -215,7 +215,7 @@ Answered:
       "viewer": {
         "actor": {
           "__typename": "User",
-          "id": "61594063207669"
+          "id": "<userId:1>"
         }
       }
     }

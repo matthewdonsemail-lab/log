@@ -10,10 +10,10 @@
 | Path | `discord.com/api/science` |
 | Sends | `events` |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 129 time(s) in 4 run(s).
+Seen 156 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ Seen 129 time(s) in 4 run(s).
 | inspect | step 2: snapshot | 16 | 204 | 287–485 ms | 8909–52433 ms | — |
 | inspect | step 4: press Enter | 6 | 204 | 267–490 ms | 7564–10902 ms | — |
 | inspect | step 5: wait 75s | 25 | 204 | 273–727 ms | 75767–412983 ms | — |
-| inspect | step 1: goto /login | 8 | 204 | 294–466 ms | 3263–19363 ms | — |
+| inspect | step 1: goto /login | 32 | 204 | 272–672 ms | 3263–1111934 ms | — |
 | inspect | step 3: goto /login | 4 | 204 | 291–396 ms | 5385–47260 ms | — |
 | inspect | step 5: click e40 | 8 | 204 | 306–511 ms | 816–13580 ms | — |
 | inspect | step 7: snapshot | 4 | 204 | 299–529 ms | 16081–19305 ms | — |
@@ -43,12 +43,252 @@ Seen 129 time(s) in 4 run(s).
 | inspect | step 31: wait 60s | 3 | 204 | 280–567 ms | 40027–243549 ms | — |
 | inspect | step 2: wait 8s | 6 | 204 | 273–319 ms | 22473–28128 ms | — |
 | inspect | step 1: goto /channels/@me | 3 | 204 | 301–321 ms | 10837–12629 ms | — |
+| inspect | Stopping after 1 step(s). | 3 | 204 | 273–490 ms | 1179–5845 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 1: goto /channels/@me: 204, 321 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 204, 318 ms
+
+Sent:
+
+```json
+{
+  "events": [
+    {
+      "type": "libdiscore_loaded",
+      "properties": {
+        "client_track_timestamp": 1794579361435,
+        "event_sequence_number": 1,
+        "success": true,
+        "experimental_features": [],
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 0,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_send_timestamp": 1794579363093
+      }
+    },
+    {
+      "type": "login_viewed",
+      "properties": {
+        "client_track_timestamp": 1794579362397,
+        "event_sequence_number": 2,
+        "login_source": null,
+        "authenticated": true,
+        "location": "Non-Invite Login Page",
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 1,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1794579363093
+      }
+    },
+    {
+      "type": "app_web_perf_startup_metrics",
+      "properties": {
+        "client_track_timestamp": 1794579362518,
+        "event_sequence_number": 3,
+        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
+        "metric_name": "tti",
+        "url_root_path": "login",
+        "was_authenticated": true,
+        "time_first_render_after_ready_end": 4245,
+        "script_cost_loaf_supported": true,
+        "script_cost_unattributed_eval_ms": 31,
+        "script_cost_total_count": 530,
+        "script_cost_reported_count": 20,
+        "script_cost_url": [
+          "/assets/619666.39a9c889d48f07ce.js",
+          "/assets/web.637e82960de4dc33.js",
+          "/assets/572018.46aab2493cfbe4fb.js",
+          "/assets/14335.8f50c7e3cc239ed9.js",
+          "/assets/363189.f566234fc8638ced.js",
+          "/assets/641877.378be635771f416b.js",
+          "… 14 more"
+        ],
+        "script_cost_download_ms": [
+          0,
+          0,
+          376,
+          474,
+          470,
+          470,
+          "… 14 more"
+        ],
+        "script_cost_transfer_size_bytes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          "… 14 more"
+        ],
+        "script_cost_from_cache": [
+          false,
+          false,
+          true,
+          true,
+          true,
+          true,
+          "… 14 more"
+        ],
+        "script_cost_initial_eval_ms": [
+          0,
+          825,
+          0,
+          0,
+          0,
+          0,
+          "… 14 more"
+        ],
+        "script_cost_total_eval_ms": [
+          1079,
+          825,
+          102,
+          0,
+          0,
+          0,
+          "… 14 more"
+        ],
+        "script_cost_eval_attributed": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false,
+          "… 14 more"
+        ],
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 1,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1794579363093
+      }
+    },
+    {
+      "type": "app_ui_viewed",
+      "properties": {
+        "client_track_timestamp": 1794579362637,
+        "event_sequence_number": 4,
+        "total_compressed_byte_size": 2291525,
+        "total_uncompressed_byte_size": 8063806,
+        "total_transfer_byte_size": 0,
+        "js_compressed_byte_size": 731177,
+        "js_uncompressed_byte_size": 2135098,
+        "js_transfer_byte_size": 0,
+        "css_compressed_byte_size": 126006,
+        "css_uncompressed_byte_size": 519463,
+        "css_transfer_byte_size": 0,
+        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
+        "screen_name": "<username:1>",
+        "duration_ms_since_app_opened": 4143,
+        "app_hardware_acceleration_enabled": true,
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 2,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1794579363093
+      }
+    },
+    {
+      "type": "impression_multi_account_switch_landing",
+      "properties": {
+        "client_track_timestamp": 1794579362824,
+        "event_sequence_number": 5,
+        "impression_type": "modal",
+        "location_section": "impression_multi_account_switch_landing",
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 2,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1794579363093
+      }
+    }
+  ]
+}
+```
+
+Answered:
+
+```json
+null
+```
+
+**runs/inspect/20261113T044840_<name:1>**, Stopping after 1 step(s).: 204, 281 ms
+
+Sent:
+
+```json
+{
+  "events": [
+    {
+      "type": "quest_content_loaded",
+      "properties": {
+        "client_track_timestamp": 1794545380358,
+        "client_heartbeat_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
+        "event_sequence_number": 48,
+        "client_ad_session_id": "f20855a6-d7de-453b-9ffc-da1aa6c9dfe7",
+        "billing_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
+        "ad_content_id": "0",
+        "is_targeted": false,
+        "creative_type": 4,
+        "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMUVRzcFNNalJKK2tuaFBta3JpeTlqSW52OVlPLzhJZ2U4NitEckQwSFBZUXVPYzdta3R2WVZod3F0RHB2UWk4UEZPSmlnTWVkVHQ4M01hRFBwSXZndGVDQ3FDSldlVzU4dG9MUDlkZHhCd1F6Z3lrSHBXUy8zMzdKWFhMbWY1UE9QWUQ2dm5iOU1Kd0tiMFoxZVl5WUFDY3FVTzF3Vi9qcGhTaGVTYTdMZG1JRVNNWk9TTklTdERMTW9jSXFvVDZGRk1pNTdnM0dmT05oNTJLSG1vQzNFZEI0c2lDdmREcUlRcDRiTUNFalRTcUhzRXFqSnoxMTZLUEsySC9D… (852 chars)",
+        "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKS2huOU5Sa3VRYXNlaElFMkdGZ3VRdGNUS0ZaRUtRK0ZxdmVudWRuL0FLdEdrdTV6ajZXbkVVWjcyNGRJbU0yazVvSnFJZldYUndmT0xrUFQ3amRmWkNvVGlaZTRpNitINWZrTEJ2eFNOMmVleGptQitzMGdkWnlwTzNRdUk1TVp1V2ZRUm5GZ1BVdTZSbEc3eEtsVHNFQT09In0=",
+        "decision_id": "e941b5b6-3b21-4ecc-b498-57da9db62dfa",
+        "triggered_by_status_change": false,
+        "impression_id": "d820e4fa-8abd-45d7-adda-00415ffc6297",
+        "is_quest_enrollment_blocked": false,
+        "content_id": 10,
+        "content_name": "QUEST_BAR_V2",
+        "client_performance_memory": 0,
+        "accessibility_features": 524416,
+        "rendered_locale": "en-US",
+        "uptime_app": 47,
+        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_uuid": "UABCI2oq6BPh8X6X7rI806EBAAAjAAAA",
+        "client_send_timestamp": 1794545380723
+      }
+    }
+  ]
+}
+```
+
+Answered:
+
+```json
+null
+```
+
+**runs/inspect/20261030T222341_<name:1>**, step 1: goto /channels/@me: 204, 321 ms
 
 Sent:
 
@@ -185,280 +425,6 @@ Sent:
       }
     },
     "… 2 more"
-  ]
-}
-```
-
-Answered:
-
-```json
-null
-```
-
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 204, 373 ms
-
-Sent:
-
-```json
-{
-  "events": [
-    {
-      "type": "keyboard_shortcut_used",
-      "properties": {
-        "client_track_timestamp": 1793399122735,
-        "event_sequence_number": 14,
-        "shortcut_name": "tab_navigation",
-        "source_class_list": [
-          "input__0ed4f",
-          "inputField_d64f22"
-        ],
-        "location_object": "INPUT",
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 77,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_uuid": "ICBArccHuxX4SIMXebvpjqEBAAAFAAAA",
-        "client_send_timestamp": 1793399122785
-      }
-    },
-    {
-      "type": "keyboard_mode_toggled",
-      "properties": {
-        "client_track_timestamp": 1793399122744,
-        "event_sequence_number": 15,
-        "enabled": true,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 77,
-        "launch_signature": "7242838a-60a3-40ff-8b74-371f049c70d6",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_uuid": "ICBArccHuxX4SIMXebvpjqEBAAAGAAAA",
-        "client_send_timestamp": 1793399122785
-      }
-    }
-  ]
-}
-```
-
-Answered:
-
-```json
-null
-```
-
-**runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder**, step 1: goto /login: 204, 389 ms
-
-Sent:
-
-```json
-{
-  "events": [
-    {
-      "type": "libdiscore_loaded",
-      "properties": {
-        "client_track_timestamp": 1793173310772,
-        "event_sequence_number": 1,
-        "success": true,
-        "experimental_features": [
-          "2026-10-wasm-precompressed-brotli:1"
-        ],
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 0,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    {
-      "type": "login_viewed",
-      "properties": {
-        "client_track_timestamp": 1793173312208,
-        "event_sequence_number": 2,
-        "login_source": null,
-        "authenticated": true,
-        "location": "Non-Invite Login Page",
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    {
-      "type": "app_web_perf_startup_metrics",
-      "properties": {
-        "client_track_timestamp": 1793173312295,
-        "event_sequence_number": 3,
-        "load_id": "4e2033f3-f004-4038-b70c-563eb151a51c",
-        "metric_name": "tti",
-        "url_root_path": "login",
-        "was_authenticated": true,
-        "time_first_render_after_ready_end": 6365,
-        "script_cost_loaf_supported": true,
-        "script_cost_unattributed_eval_ms": 0,
-        "script_cost_total_count": 384,
-        "script_cost_reported_count": 20,
-        "script_cost_url": [
-          "/assets/web.33a8a649a2fda558.js",
-          "/assets/556707.bb1a25f3c212ce8f.js",
-          "/assets/650195.0e8e00a4ed4dbb1c.js",
-          "/assets/67702.4e066046965d6b8a.js",
-          "/assets/662387.dffd15f867960c06.js",
-          "/assets/31544.2ba7e1214ad9444a.js",
-          "… 14 more"
-        ],
-        "script_cost_download_ms": [
-          1480,
-          0,
-          512,
-          511,
-          510,
-          510,
-          "… 14 more"
-        ],
-        "script_cost_transfer_size_bytes": [
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          "… 14 more"
-        ],
-        "script_cost_from_cache": [
-          true,
-          false,
-          true,
-          true,
-          true,
-          true,
-          "… 14 more"
-        ],
-        "script_cost_initial_eval_ms": [
-          1543,
-          0,
-          0,
-          0,
-          0,
-          0,
-          "… 14 more"
-        ],
-        "script_cost_total_eval_ms": [
-          1543,
-          796,
-          0,
-          0,
-          0,
-          0,
-          "… 14 more"
-        ],
-        "script_cost_eval_attributed": [
-          true,
-          true,
-          false,
-          false,
-          false,
-          false,
-          "… 14 more"
-        ],
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    {
-      "type": "client_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793173312589,
-        "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
-        "event_sequence_number": 4,
-        "client_heartbeat_initialization_timestamp": 1793173312588,
-        "client_heartbeat_version": 31,
-        "is_idle": false,
-        "idle_duration_ms": 1793173312589,
-        "is_afk": false,
-        "is_system_suspended": false,
-        "is_system_locked": false,
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    {
-      "type": "client_ad_heartbeat",
-      "properties": {
-        "client_track_timestamp": 1793173312643,
-        "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
-        "event_sequence_number": 5,
-        "client_ad_session_id": "8b8ce89d-11bc-4e79-b242-5c10647e14f5",
-        "client_heartbeat_initialization_timestamp": 1793173312608,
-        "client_heartbeat_version": 3,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    {
-      "type": "gateway_connected",
-      "properties": {
-        "client_track_timestamp": 1793173312662,
-        "client_heartbeat_session_id": "042a6464-5284-440e-831b-0ed816011058",
-        "event_sequence_number": 6,
-        "num_failed_connect_attempts": 0,
-        "gateway_url": "wss://gateway.discord.gg",
-        "is_reconnect": false,
-        "is_fast_connect": false,
-        "duration_ms_since_first_connect_attempt": 8,
-        "duration_ms_since_connect_attempt_start": 8,
-        "client_performance_memory": 0,
-        "accessibility_features": 524416,
-        "rendered_locale": "en-US",
-        "uptime_app": 2,
-        "launch_signature": "d00245ea-668b-47d6-9700-e828a267d6f5",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1793173321354
-      }
-    },
-    "… 6 more"
   ]
 }
 ```

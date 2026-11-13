@@ -7,6 +7,7 @@ flowchart TB
   terminal["terminal only"]
   subgraph g_any["Any platform"]
     c_launch["launch"]
+    c_console["console"]
     c_adsPower["adsPower"]
     c_localAccount["localAccount"]
     c_inspect["inspect"]
@@ -20,6 +21,8 @@ flowchart TB
     c_inbox["inbox"]
     c_media["media"]
     c_browsers["browsers"]
+    c_browser["browser"]
+    c_report["report"]
     c_job["job"]
     c_mcp["mcp"]
     c_login["login"]
@@ -28,10 +31,12 @@ flowchart TB
     c_voice["voice"]
     c_search["search"]
     c_kb["kb"]
+    c_runtime["runtime"]
     c_memelord["memelord"]
     c_treg["treg"]
     c_balance["balance"]
     c_governor["governor"]
+    c_sessions["sessions"]
     c_clone["clone"]
     c_transcribe["transcribe"]
     c_new["new"]
@@ -94,6 +99,10 @@ flowchart TB
   subgraph g_discord["Discord"]
     c_discordSession["session"]
     c_discordChats["chats"]
+    c_discordServers["servers"]
+    c_discordChannels["channels"]
+    c_discordPosts["posts"]
+    c_discordSearch["search"]
     c_discordRead["read"]
     c_discordWatch["watch"]
     c_discordSend["send"]
@@ -128,6 +137,8 @@ flowchart TB
   end
   cli --> c_launch
   c_launch -.- terminal
+  cli --> c_console
+  mcp --> c_console
   cli --> c_listings
   mcp --> c_listings
   cli --> c_listing
@@ -219,6 +230,10 @@ flowchart TB
   mcp --> c_media
   cli --> c_browsers
   mcp --> c_browsers
+  cli --> c_browser
+  mcp --> c_browser
+  cli --> c_report
+  mcp --> c_report
   cli --> c_job
   mcp --> c_job
   cli --> c_mcp
@@ -245,6 +260,8 @@ flowchart TB
   mcp --> c_search
   cli --> c_kb
   mcp --> c_kb
+  cli --> c_runtime
+  c_runtime -.- terminal
   cli --> c_memelord
   mcp --> c_memelord
   cli --> c_treg
@@ -253,6 +270,8 @@ flowchart TB
   mcp --> c_balance
   cli --> c_governor
   mcp --> c_governor
+  cli --> c_sessions
+  mcp --> c_sessions
   cli --> c_clone
   mcp --> c_clone
   cli --> c_transcribe
@@ -299,6 +318,14 @@ flowchart TB
   mcp --> c_discordSession
   cli --> c_discordChats
   mcp --> c_discordChats
+  cli --> c_discordServers
+  mcp --> c_discordServers
+  cli --> c_discordChannels
+  mcp --> c_discordChannels
+  cli --> c_discordPosts
+  mcp --> c_discordPosts
+  cli --> c_discordSearch
+  mcp --> c_discordSearch
   cli --> c_discordRead
   mcp --> c_discordRead
   c_discordRead --> live

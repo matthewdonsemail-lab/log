@@ -11,7 +11,7 @@ REA isn't a search command for log, and it isn't pointed at log's own code. It's
 The aim is to compare three things:
 
 - how log and two earlier projects drive that page;
-- the identity-leak study in `docs/identityLeaks/` (what a page can observe about the machine, the proxy and the account);
+- the private identity-leak study (what a page can observe about the machine, the proxy and the account);
 - what the client actually does, once REA can read a saved copy of it.
 
 The way log posts doesn't change: a visible Camoufox window, the account's proxy, one device, the pinned locale, and `log facebook publish`. REA doesn't open Facebook and doesn't replace that path.
@@ -32,9 +32,8 @@ The way log posts doesn't change: a visible Camoufox window, the account's proxy
 Related studies stay where they are:
 
 - How a listing is posted: [How a Marketplace listing gets posted](../listingPublish/README.md)
-- What can leak the machine or link accounts: `docs/identityLeaks/`
+- What can leak the machine or link accounts: the private identity-leak study
 - Proxy, device and hours: [proxies](../proxies.md), [accounts and listings](../accountsAndListings.md)
-- Where to host later: `docs/deviceIsolation/`, `docs/scaleArchitecture/`
 
 ## The decision
 

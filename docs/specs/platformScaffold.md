@@ -16,7 +16,7 @@ Checked by: code and SubQ
 
 ### REQ-PLATFORM-02: The repo is wired by editing each file through its syntax tree
 
-The platform is wired in by editing each file through its TypeScript syntax tree, never by text search: `PLATFORMS`, `PLATFORM_LABELS`, `PLATFORM_SITES`, `COMMANDS` and its import, `COMMAND_INDEX`, `createContext` and its import, `CommandContext`, `DIRECT_ROUTES` and `COMMAND_RULES`. Its routes and rules are keyed by the platform-qualified name (`<name>Session`).
+The platform is wired in by editing each file through its TypeScript syntax tree, never by text search: `PLATFORMS`, `PLATFORM_LABELS`, `PLATFORM_SITES`, `COMMANDS` and its import, `COMMAND_INDEX`, `createContext` and its import, `CommandContext`, `DIRECT_ROUTES` and `COMMAND_RULES`. Its routes and rules are keyed by the platform-qualified name (`<name>Session`). Rule registrations edit the literal `SOURCE_COMMAND_RULES` table; the exported `COMMAND_RULES` applies the current rule consolidation to those registrations.
 
 Checked by: code and SubQ
 

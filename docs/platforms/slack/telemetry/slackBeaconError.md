@@ -19,7 +19,7 @@ Seen 12 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: goto /client | 1 | 0 | 280 ms | 10949 ms | — |
 | inspect | POST 0 /clog/track/ (0 ms) | 2 | 0 | 293–294 ms | 131–2435 ms | — |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 2 | 0 | 297–358 ms | 9826–12206 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 2 | 0 | 297–358 ms | 9826–12206 ms | — |
 | inspect | step 14: press Enter | 6 | 0 | 370–383 ms | 36542–95968 ms | — |
 | inspect | step 17: press Backspace | 1 | 0 | 335 ms | 18104 ms | — |
 
@@ -43,8 +43,8 @@ Sent:
   },
   "team": "?",
   "user": "?",
-  "session_id": "6fec80a3-9024-4a7d-8d7a-942e548e38a3",
-  "visitor_cookie": ".ba7b41a58e712cdee4b8b723c88bf595",
+  "session_id": "<token>",
+  "visitor_cookie": "<cookie>",
   "sub_app_name": "client",
   "tracing_enabled_for_session": "false",
   "frontend_build_type": "current",
@@ -76,8 +76,8 @@ Sent:
   },
   "team": "?",
   "user": "?",
-  "session_id": "6fec80a3-9024-4a7d-8d7a-942e548e38a3",
-  "visitor_cookie": ".ba7b41a58e712cdee4b8b723c88bf595",
+  "session_id": "<token>",
+  "visitor_cookie": "<cookie>",
   "sub_app_name": "client",
   "tracing_enabled_for_session": "false",
   "frontend_build_type": "current",
@@ -93,7 +93,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 0, 358 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 0, 358 ms
 
 Sent:
 
@@ -109,8 +109,8 @@ Sent:
   },
   "team": "?",
   "user": "?",
-  "session_id": "c87cf839-e831-469d-bb42-6a05207d97bf",
-  "visitor_cookie": ".ba7b41a58e712cdee4b8b723c88bf595",
+  "session_id": "<token>",
+  "visitor_cookie": "<cookie>",
   "sub_app_name": "client",
   "tracing_enabled_for_session": "false",
   "frontend_build_type": "current",

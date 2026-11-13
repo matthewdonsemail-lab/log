@@ -2,7 +2,7 @@
 
 Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupTabs` (account groupTabs). Run it on any account with `log flow run groupTabs --account <a> --live`, or over MCP as the tool `flowGroupTabs` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T153648_<userId:1>/sequences/groupTabs` (account groupTabs). Run it on any account with `log flow run groupTabs --account <a> --live`, or over MCP as the tool `flowGroupTabs` (rule 31).
 
 ## Params
 

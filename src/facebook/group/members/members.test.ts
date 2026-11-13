@@ -37,7 +37,7 @@ describe("extractMembers: the members page and its refetch answers (inspect 2026
     expect(page!.hasNextPage).toBe(true);
     expect(page!.endCursor).toStartWith("AQHT");
     const first = page!.members[0]!;
-    expect(first).toMatchObject({ id: "754353135", name: "Mike Genova", joined: "Joined about an hour ago" });
+    expect(first).toMatchObject({ id: "200000000000002", name: "Blake Example", joined: "Joined about an hour ago" });
     expect(first.url).toStartWith("https://www.facebook.com/");
     const experts = membersFromPage(JSON.parse(JSON.stringify(gotoHar)).log.entries[0].response.content.text);
     expect(experts.members.map((m) => m.id)).toEqual(page!.members.map((m) => m.id));
@@ -49,12 +49,12 @@ describe("extractMembers: the members page and its refetch answers (inspect 2026
     const [one] = memberPagesOf(scrollOneHar);
     expect(one!.groupId).toBe(GROUP_ID);
     expect(one!.members).toHaveLength(10);
-    expect(one!.members[0]).toEqual({ id: "100009167217962", name: "Gary Bousquet", url: "https://www.facebook.com/gary.bousquet.576457", bio: "Owner at NEED-it-GONE 4Seasons Services LLC", category: null, followers: 0, joined: "Joined on Wednesday" });
+    expect(one!.members[0]).toEqual({ id: "200000000000012", name: "Lee Example", url: "https://www.facebook.com/profile.php?id=200000000000012", bio: "Owner at Example Hauling 5", category: null, followers: 0, joined: "Joined on Wednesday" });
     const pages = memberPagesOf(scrollTwoHar);
     expect(pages.flatMap((p) => p.members)).toHaveLength(20);
     expect(pages.every((p) => p.hasNextPage === true)).toBe(true);
     const all = pages.flatMap((p) => p.members);
-    expect(all.find((m) => m.name === "Carll Quiver")).toMatchObject({ category: "Personal blog", followers: 6518, bio: "" });
+    expect(all.find((m) => m.name === "Wren Example")).toMatchObject({ category: "Personal blog", followers: 6518, bio: "" });
   });
 
   test("a node that isn't a User is counted as skipped, never kept", () => {
@@ -103,7 +103,7 @@ describe("membersPlan: scrolls for --count, the minutes from --secondsPerScroll,
 
 describe("the owner filter: a bio naming the owner, or a page", () => {
   test("bio words: owner, co-owner, founder, CEO, president, proprietor, self-employed", () => {
-    for (const bio of ["Owner at NEED-it-GONE", "Co-Owner of Haul Co", "Founder at The junk boys", "Owner/Manager/CEO at Junk ByeBye", "President, Acme Hauling", "Proprietor", "Works at Self-employed"]) expect(ownerReasonOf(member({ bio }))).toBe("bio");
+    for (const bio of ["Owner at Example Removals", "Co-Owner of Haul Co", "Founder at Example Junk", "Owner/Manager/CEO at Example Co", "President, Acme Hauling", "Proprietor", "Works at Self-employed"]) expect(ownerReasonOf(member({ bio }))).toBe("bio");
     expect(ownerReasonOf(member({ bio: "Works at Amazon.com" }))).toBeNull();
     expect(ownerReasonOf(member({ bio: "Ownership matters" }))).toBeNull();
   });
@@ -117,8 +117,8 @@ describe("the owner filter: a bio naming the owner, or a page", () => {
     const all = [...memberPagesOf(gotoHar), ...memberPagesOf(scrollOneHar), ...memberPagesOf(scrollTwoHar)].reduce<GroupMember[]>((seen, p) => mergeMembers(seen, p.members), []);
     expect(all).toHaveLength(40);
     const owners = ownersOf(all);
-    expect(owners.find((m) => m.name === "Gary Bousquet")?.ownerReason).toBe("bio");
-    expect(owners.find((m) => m.name === "Carll Quiver")?.ownerReason).toBe("page");
+    expect(owners.find((m) => m.name === "Lee Example")?.ownerReason).toBe("bio");
+    expect(owners.find((m) => m.name === "Wren Example")?.ownerReason).toBe("page");
     const summary = summaryOf(all);
     expect(summary.members).toBe(40);
     expect(summary.owners).toBe(owners.length);

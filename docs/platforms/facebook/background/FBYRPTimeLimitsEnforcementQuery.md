@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29210280235242852` |
+| doc_id | `28597458263257974` |
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
-| rea | `ev_3e28feeb7a65dc632fe3f50774d08299a7f1480c51aa668adb9ca8ce27b47315` |
+| rea | `ev_dd73babde27745d8c5598d81f8f893faf6c7750e3630089f33e18f769cdfcac1` |
 
-Seen 171 time(s) in 44 run(s).
+Seen 152 time(s) in 42 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -107,30 +107,13 @@ Seen 171 time(s) in 44 run(s).
 | host | step 40: goto /marketplace/create/item | 1 | 200 | 482 ms | 4255 ms | — |
 | host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 435 ms | 5155 ms | — |
 | host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 425–451 ms | 614791–656179 ms | — |
-| host | step 1: goto /marketplace/selling/ | 2 | 200 | 164–732 ms | 2793–3684 ms | — |
-| host | step 4: goto /marketplace/status | 2 | 200 | 220–238 ms | 2250–4655 ms | — |
-| host | step 5: goto /me | 1 | 200 | 189 ms | 3976 ms | — |
-| host | step 12: goto /marketplace/create/item | 1 | 200 | 177 ms | 2709 ms | — |
-| host | step 14: setLocation Kamloops, British Columbia | 1 | 200 | 159 ms | 2275 ms | — |
-| host | step 16: goto / | 1 | 200 | 162 ms | 4813 ms | — |
-| host | step 19: goto /marketplace/ | 1 | 200 | 156 ms | 828 ms | — |
-| host | step 22: goto /marketplace/ | 1 | 200 | 163 ms | 1227 ms | — |
-| host | step 26: goto /marketplace/ | 1 | 200 | 167 ms | 779 ms | — |
-| host | step 28: goto /marketplace/create/item | 1 | 200 | 158 ms | 668 ms | — |
-| host | step 30: goto /marketplace/ | 1 | 200 | 154 ms | 839 ms | — |
-| host | step 32: goto /marketplace/ | 1 | 200 | 163 ms | 776 ms | — |
-| host | step 34: goto /marketplace/you/selling | 1 | 200 | 211 ms | 3837 ms | — |
-| host | step 36: goto /marketplace/ | 1 | 200 | 298 ms | 805 ms | — |
-| host | step 38: goto /marketplace/you/selling | 1 | 200 | 185 ms | 1755 ms | — |
-| host | step 40: goto /messages/ | 1 | 200 | 222 ms | 3657 ms | — |
-| host | step 18: clickRole button "…" | 1 | 200 | 166 ms | 5208 ms | — |
-| host | step 21: goto /marketplace/status | 1 | 200 | 169 ms | 7962 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 653 ms | 14818 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 732 ms
+**runs/warmup/20261023T080515_<id:1>**, step 1: goto /marketplace/: 200, 372 ms
 
 Sent:
 
@@ -140,7 +123,7 @@ Sent:
   "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "29210280235242852"
+  "doc_id": "28934009902924466"
 }
 ```
 
@@ -155,15 +138,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793037999017,
-      "time_at_flush_ms": 1793037999560
+      "request_start_time_ms": 1792742731822,
+      "time_at_flush_ms": 1792742731843
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 4: goto /marketplace/status: 200, 238 ms
+**runs/warmup/20261023T080515_<id:1>**, step 3: goto /marketplace/you/selling: 200, 372 ms
 
 Sent:
 
@@ -173,7 +156,7 @@ Sent:
   "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "29210280235242852"
+  "doc_id": "28934009902924466"
 }
 ```
 
@@ -188,29 +171,25 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038027386,
-      "time_at_flush_ms": 1793038027417
+      "request_start_time_ms": 1792742781495,
+      "time_at_flush_ms": 1792742781514
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, step 5: goto /me: 200, 189 ms
+**runs/warmup/20261023T080515_<id:1>**, step 5: goto /messages/: 200, 374 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "29210280235242852",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=25305590"
-  ]
+  "doc_id": "28934009902924466"
 }
 ```
 
@@ -225,8 +204,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1793038042521,
-      "time_at_flush_ms": 1793038042549
+      "request_start_time_ms": 1792742814050,
+      "time_at_flush_ms": 1792742814070
     },
     "is_final": true
   }

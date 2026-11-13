@@ -4,22 +4,23 @@ import { spawnSync } from 'node:child_process'
 type Kind = 'repo' | 'capture' | 'dataset' | 'index' | 'media' | 'log' | 'session'
 
 const WHY: Record<Kind, string> = {
-  repo: 'writes files inside the repo (docs, skills, scaffolds, the commit log)',
+  repo: 'writes files inside the repo (docs, skills, scaffolds)',
   capture: 'a raw browser or engine capture, or its per-run artifacts, kept as files on purpose (rules 19, 22) and pruned once analysed (rule 66)',
   dataset: 'a dataset or export that other tools read as a file',
   index: 'a search or model index in a format its library owns',
   media: 'a media file (audio, image, video)',
-  log: 'a log people watch as it is written (the live log, rule 26) or a process log',
+  log: 'a log people watch as it is written (the live log, rule 26), a process log, or the private day log (~/.logCli/devlog)',
   session: 'a private per-run or per-account session file (cookies, specs, OAuth), never shared state',
 }
 
 const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
+  'src/auth/credentials/client.ts': { writes: 1, kind: 'session' },
   'src/directApi/governor/client.ts': { writes: 1, kind: 'session' },
   'scripts/checks/checkAgentHooks.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkBrowserParity.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkNoComments.ts': { writes: 1, kind: 'repo' },
   'scripts/checks/checkUseCases.ts': { writes: 1, kind: 'repo' },
-  'scripts/commitLog/commitLog.mjs': { writes: 3, kind: 'repo' },
+  'scripts/commitLog/commitLog.mjs': { writes: 4, kind: 'log' },
   'scripts/datasets/buildInterestEffect.ts': { writes: 1, kind: 'dataset' },
   'scripts/datasets/buildReelViewers.ts': { writes: 1, kind: 'dataset' },
   'scripts/directApi/buildFlowMap.ts': { writes: 3, kind: 'repo' },
@@ -27,9 +28,11 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'scripts/docs/buildDocs.ts': { writes: 1, kind: 'repo' },
   'scripts/docs/syncSiteDocs.mjs': { writes: 4, kind: 'repo' },
   'scripts/docs/syncSiteSkills.mjs': { writes: 2, kind: 'repo' },
+  'scripts/privacy/redactDocs.mjs': { writes: 1, kind: 'repo' },
   'scripts/fbk/tryAccount.ts': { writes: 1, kind: 'capture' },
   'scripts/media/personaPictures.ts': { writes: 1, kind: 'dataset' },
   'scripts/useCases/benchRouter.ts': { writes: 1, kind: 'dataset' },
+  'src/agentHooks/opencode/client.ts': { writes: 1, kind: 'repo' },
   'src/auth/session/client.ts': { writes: 2, kind: 'session' },
   'src/browser/flow/client.ts': { writes: 2, kind: 'capture' },
   'src/browser/inspect/client.ts': { writes: 5, kind: 'capture' },
@@ -56,6 +59,7 @@ const ALLOWED: Record<string, { writes: number; kind: Kind }> = {
   'src/observability/liveLog/index.ts': { writes: 1, kind: 'log' },
   'src/platformKit/session/client.ts': { writes: 6, kind: 'session' },
   'src/rea/capture/client.ts': { writes: 7, kind: 'capture' },
+  'src/runtime/bridge/client.ts': { writes: 1, kind: 'session' },
   'src/rea/facebookClient/client.ts': { writes: 6, kind: 'capture' },
   'src/rea/inspectMap/client.ts': { writes: 6, kind: 'capture' },
   'src/rea/platformClient/client.ts': { writes: 4, kind: 'capture' },

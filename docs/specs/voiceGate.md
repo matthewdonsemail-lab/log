@@ -56,6 +56,26 @@ Checked by: code and SubQ
 
 Every reply in the voice index is cut into pairs of words. The gate counts how many of the draft's pairs matt has written at least twice, leaving out pairs that use words from what the other person said. A draft whose share is below matt's own 10th percentile fails, measured over his replies with each reply's own pairs left out. The pairs he has never written are named in the result and handed to SubQ, so "is wild" fails because matt never wrote it.
 
+The pairs are split before any of that: a pair made of words he has written, in an order he never used, is `newPhrasing` and is what is measured and handed to SubQ; a pair holding a word he has never written at all is `newWords`, the vocabulary of a subject that is new to him, and is named apart in the result and in `phrasesLine` as not counted against him. On 2026-11-12 a scoping message about a job in a subject he has never written about was being failed for its nouns, not its voice.
+
+Checked by: code and SubQ
+
+### REQ-VOICE-20: A draft written on several lines is graded as the messages it sends
+
+A draft of several lines goes out as one message per line (rule 90), so the voice question reads it the same way: `readVoice` in `src/twitter/copy/voice/client.ts` cuts it with `messagesOf` and hands SubQ `dmAsItWillBeSent` and `wordsInEachMessageAsSent`, and is told to read the messages and the burst of them, never one block. His length is each message against the chat's `burst.messageWords` and `medianWords`, and how many he sends in a row against `burst.median`. Before this, on 2026-11-12, six short lines of a scoping message scored `voice` 0.22 as one wall of text, and the same six lines as six messages scored 0.85. Matt: "it keeps scoring really low on the gate and it's because it's a mountain wall of text".
+
+Checked by: code and SubQ
+
+### REQ-VOICE-21: A subject he has never written about never counts against his voice
+
+The voice question says outright that words for a new subject are new vocabulary, not a voice problem: the phrasing, the shape and the register are what is judged, never the topic. So a draft about a job in a subject matt has no history in is read on how he says it, not on whether he has ever said it. Matt, 2026-11-12: "it's trying to search for things ive not talked about".
+
+Checked by: SubQ
+
+### REQ-VOICE-22: Outside X, his X guide is scoped to his vocabulary
+
+`GUIDES/MATT_WRITING_STYLE.md` is how matt writes on X: a reply is 6 to 20 words, one line, no question at the end. That is not how he writes in a Discord, Slack or Instagram chat, where a burst of short lines and a run of questions is normal. `outsideXVoice` reads the chat's platform from the evidence (`platform`, `kind`), and for any platform other than `twitter` SubQ is told (`howMattWritesIsOnlyHisX`, `thisChatIsNotX`) to read `howMattWritesInThisChat` and `mattsRealRepliesHere` first and use `howMattWrites` only for his vocabulary and his spelling. On 2026-11-12 the X guide was failing a Discord DM for being a question with an ask in it.
+
 Checked by: code and SubQ
 
 ### REQ-VOICE-08: The vendored watermark scrambler reads every draft

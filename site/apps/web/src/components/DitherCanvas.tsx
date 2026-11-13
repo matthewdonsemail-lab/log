@@ -160,6 +160,7 @@ class RetroEffectImpl extends Effect {
 type RGB = [number, number, number];
 
 export interface DitherProps {
+  onReady?: () => void;
   waveSpeed?: number;
   waveFrequency?: number;
   waveAmplitude?: number;
@@ -210,9 +211,13 @@ function DitheredWaves({
   mouseRadius,
   active,
   maxFps,
+  onReady,
 }: DitheredWavesProps) {
   const mesh = useRef<THREE.Mesh>(null);
   const mouseRef = useRef(new THREE.Vector2());
+  const ready = useRef(false);
+  const nextWaveColor = useRef(new THREE.Color());
+  const nextBackgroundColor = useRef(new THREE.Color());
   const { viewport, size, gl, invalidate } = useThree();
 
   // The canvas draws on demand (frameloop="demand"). While it is on screen and animated, ask for a frame at a capped
@@ -246,9 +251,11 @@ function DitheredWaves({
     }
   }, [size, gl]);
 
-  const prevColor = useRef<number[]>([...waveColor]);
-  const prevBackgroundColor = useRef<number[]>([...backgroundColor]);
   useFrame(({ clock }) => {
+    if (!ready.current) {
+      ready.current = true;
+      window.requestAnimationFrame(() => onReady?.());
+    }
     const u = waveUniformsRef.current;
 
     if (!disableAnimation) {
@@ -259,15 +266,9 @@ function DitheredWaves({
     if (u.waveFrequency.value !== waveFrequency) u.waveFrequency.value = waveFrequency;
     if (u.waveAmplitude.value !== waveAmplitude) u.waveAmplitude.value = waveAmplitude;
 
-    if (!prevColor.current.every((v, i) => v === waveColor[i])) {
-      (u.waveColor.value as THREE.Color).set(...waveColor);
-      prevColor.current = [...waveColor];
-    }
-
-    if (!prevBackgroundColor.current.every((v, i) => v === backgroundColor[i])) {
-      (u.backgroundColor.value as THREE.Color).set(...backgroundColor);
-      prevBackgroundColor.current = [...backgroundColor];
-    }
+    const blend = disableAnimation ? 1 : 0.15;
+    (u.waveColor.value as THREE.Color).lerp(nextWaveColor.current.set(...waveColor), blend);
+    (u.backgroundColor.value as THREE.Color).lerp(nextBackgroundColor.current.set(...backgroundColor), blend);
 
     u.enableMouseInteraction.value = enableMouseInteraction ? 1 : 0;
     u.mouseRadius.value = mouseRadius;
@@ -324,6 +325,7 @@ export default function Dither({
   enableMouseInteraction = true,
   mouseRadius = 1,
   maxFps = 20,
+  onReady,
 }: DitherProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [active, setActive] = useState(true);
@@ -358,6 +360,7 @@ export default function Dither({
         mouseRadius={mouseRadius}
         active={active}
         maxFps={maxFps}
+        onReady={onReady}
       />
     </Canvas>
   );

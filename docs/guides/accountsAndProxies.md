@@ -2,7 +2,11 @@
 
 Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -11,6 +15,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+| `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 
 ## The tools in this guide
 
@@ -22,6 +27,7 @@ When the owner asks for one of these, follow its page step by step.
 | `accountResetOpens` | Restart today's count of launches and host opens, only when matt asks |
 | `accountStatus` | Set an account's status |
 | `proxy` | Check an account's proxy, give it one from a provider |
+| `sessionsCheck` | Check every account's saved session through its platform's own answer |
 
 ## Every tool, in full
 
@@ -32,7 +38,7 @@ List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may 
 log facebook accounts [--json]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 13, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `accountShow`
 
@@ -41,7 +47,7 @@ Show one account, or set its status (banned/dead/restricted replace its campaign
 log facebook account show <accountName> [--json]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 13, 37, 78, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `accountResave`
 
@@ -50,7 +56,7 @@ Show one account, or set its status (banned/dead/restricted replace its campaign
 log facebook account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 13, 37, 78, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `accountResetOpens`
 
@@ -59,7 +65,7 @@ Show one account, or set its status (banned/dead/restricted replace its campaign
 log facebook account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 13, 37, 78, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `accountStatus`
 
@@ -68,7 +74,7 @@ Show one account, or set its status (banned/dead/restricted replace its campaign
 log facebook account status <accountName> <ACTIVE|WARMING|LIMITED|PAUSED|NEEDS_LOGIN|CHECKPOINT|RESTRICTED|BANNED|DEAD|DEACTIVATED> [--reason <code>] [--detail <text>]
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 13, 37, 78, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 175, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `proxy`
 
@@ -82,34 +88,41 @@ The proxy is the socialAccount's `proxy` field in Twenty (scheme://user:pass@hos
 Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
-AGENTS.md (log://agents): rules 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 35, 41, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `sessionsCheck`
+
+Check every account's saved session through its platform's own answer (a 401 means sign in again), with the next step to sign each one back in.
+Check every account's saved session through its platform's own answer, with the next step to sign each one back in
+log sessions check [--platform <p>] [--account <accountName>] [--json]
+Checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. An account that needs signing in comes with its next step: its own browser opened on the platform's sign-in page for the owner (log inspect start; closing it saves the new session), or X's cookie prompt. Facebook is checked in its browser, and a deactivated account is skipped. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
+Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
+AGENTS.md (log://agents): rules 25, 73, 94, 163, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 12.** 2026-10-18 · No browser opens for an account unless its proxy is attached and its exit IP is in the account's country (`python/browser/proxyGate.py`). There is no exception: not dry runs, not signing in (matt: "never, ever open" without one). Listings must be in the account's country, and the form's location must be picked in that country. How it works: `docs/proxies.md`.
+**Rule 25.** 2026-10-19 · Fix failed or unfamiliar behavior from its own recorded action/request/response timeline. Identify the first response deciding the outcome, compare evidence, then change the machine. Do not infer success from a screen, timer or completed tool call.
 
-**Rule 13.** 2026-10-18 · Twenty is the only place accounts and listings live: Facebook accounts are `socialAccounts` (platform FACEBOOK), listings are `agencyListings`. Never delete either: a banned or dead account keeps its record with its status, and its campaign listings get replacement accounts in the same country (`docs/accountsAndListings.md`). Fields are only ever added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the twitter-controller keeps working.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 35.** 2026-10-19 · Browser work uses one account browser through its active day, with actions as tabs/steps; close only for a logged lifecycle reason. Preserve existing proxy-country, locale/timezone, device/profile, headed visibility, capture, active-hours and launch-budget gates. Keep checkpoint stops and account-specific constraints in the browser/flow guides. Do not create a fresh browser per action.
 
-**Rule 33.** 2026-10-19 · matt: the proxy speed limit is set per run, not hardcoded: `--proxyMs <ms>` on any log command (and `proxyMs` on the flow MCP tools) sets `LOG_PROXY_MAX_MS` for that run, which the Python gate and `log proxy` both read. Default 2500 ms; 500-60000 allowed.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 37.** 2026-10-19 · matt: "close, then reset every single one of the opens". `log account resetOpens <a>|all [--reason]` restarts the count of today's launches (rule 24) and the host's opens (rule 35), only when matt asks, with every browser closed first. It deletes nothing: it writes one dated line to `~/.logCli/launchResets.jsonl`, and launches before that line stop counting. The 10-minute gap and the 8 a day apply again from the reset.
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
+**Rule 94.** 2026-10-29 · Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies. A refusal, failed send, 429, block, disable, captcha or cooldown stops that run/account until Matt authorizes continuation. Do not retry through refusals. Bulk reading and sending are separate sessions; cold DMs stay a few a day, minutes apart, and opening a DM counts as a write.
 
-**Rule 43.** 2026-10-20 · matt: the proxies stay 2Captcha residential. The money is already spent, so no other proxy provider is bought or planned, whatever a ranking said. AdsPower uses the same 2Captcha proxy URL from Twenty. Production runs AdsPower and log-cli on one browser server (AdsPower's Local API and CDP are loopback only), with Twenty on its own server over HTTPS (`docs/deployment.md`).
+**Rule 163.** 2026-11-07 · Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients. Terminal-only credential prompts remain for Matt. Expose discoverable command contracts through the existing Log catalog: search the job, get exact inputs, then call. Keep tool descriptions concise and accurate to the current implementation.
 
-**Rule 51.** 2026-10-20 · matt: proxy traffic is money. Reels ran 2Captcha's traffic out (about 4.5 MB a reel through the residential proxy), so each account has a budget of its own traffic for 24 hours, 1 GB by default (`--trafficMb`). A warm-up reads 2Captcha's counter before and after, refuses to start over the budget (`trafficBudgetSpent`), checks every 5 reels and stops at it, and writes each run's use to `~/.logCli/proxyTraffic.jsonl` (`src/proxyVendor/traffic`).
-
-**Rule 52.** 2026-10-20 · matt: proxies are provider-agnostic, and Byteful is added beside 2Captcha (this widens rule 43). Twenty keeps one `proxy` URL per account, whichever provider it came from. The provider is read from its host (`vendorOfProxy`, `src/proxyVendor/vendor`), and each provider is a domain of its own (`src/proxyVendor/twoCaptcha`, `src/proxyVendor/byteful`). `log proxy assign --vendor byteful` takes a sticky (24 h) Byteful residential proxy in the account's city and checks it (home country, 100 km, speed) before saving, as for 2Captcha. `log proxy balance` shows every provider set up, and `log proxy static` lists Byteful's static IPs with where each is. A traffic-billed proxy is metered by its own provider (rule 51); a static IP is not. log-cli never buys from a provider (rule 41). Docs: `docs/proxyVendors/`; Byteful's own docs and API spec are in `RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful/`.
-
-**Rule 78.** 2026-10-24 · matt: a deactivated account gives its AdsPower profile back, and another account takes the slot (AdsPower holds 22). When an account is DEACTIVATED, by `log facebook account status <a> DEACTIVATED` or in Twenty, its profile is deleted from AdsPower and `adsPowerProfileId` cleared; the account's row stays (rule 13). The status command does it at once and runs the sync, so an account waiting for a profile is given the freed one. `log adsPower sync --apply` releases first, then makes profiles, so a status set in Twenty is caught there. matt: "I just want to do Pennsylvania": only accounts whose home is in `LOG_ADSPOWER_HOMES` (`.env.local`, `US`; or `--homes`) hold a profile, and the others give theirs back the same way. Nothing else about them changes. `src/browser/adsPower`, `docs/adsPower.md`.
+**Rule 175.** 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.

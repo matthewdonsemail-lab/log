@@ -34,14 +34,14 @@ Sent:
     "_x_id": "2c6eaecf-1793689064.484",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_frontend_build_type": "current",
     "fp": "6f",
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundarymsx7880oTfIYc9gW\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundarymsx7880oTfIYc9gW\r\nContent-Disposition: form-data; name=\"machines\"\r\n\r\n[{\"machine_name\":\"INPRODUCT_TEAM_CREATION_FLOW\"},{\"machine_name\":\"SEGMENTATION_IN_TEAM_CREATION_FLOW\"},{\"machine_name\":\"SC_TRIAL_TEAM_ONBOARDING\"},{\"machine_name\":\"SC_TRIAL_TEAM_ON… (1002 chars)"
+    "------WebKitFormBoundarymsx7880oTfIYc9gW\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundarymsx7880oTfIYc9gW\r\nContent-Disposition: form-data; name=\"machines\"\r\n\r\n[{\"machine_name\":\"INPRODUCT_TEAM_CREATION_FLOW\"},{\"machine_name\":\"SEGMENTATION_IN_TEAM_CREATION_FLOW\"},{\"machine_name\":\"SC_TRIAL_TEAM_ONBOARDING\"},{\"machine_name\":\"SC_TRIAL_TEAM_ON… (1002 chars)"
   }
 }
 ```
@@ -67,7 +67,7 @@ Answered:
     {
       "machine_name": "SC_TRIAL_TEAM_ONBOARDING",
       "state": "COMPLETE",
-      "metadata": "{\"sc_channel_id\":\"C0C5VUS8GC8\",\"inviting_team_domain\":\"rheosgroup\",\"has_sent_first_message\":true,\"message_banner_skipped_at\":1790671577,\"welcome_modal_completed_at\":1790671576,\"message_banner_skipped_reason\":\"has_sent_message\",\"channel_invite_coachmark_completed_at\":1790708270,\"workspace_invite_coachmark_completed_at\":1790796175}",
+      "metadata": "{\"sc_channel_id\":\"<channelId:1>\",\"inviting_team_domain\":\"<name:1>\",\"has_sent_first_message\":true,\"message_banner_skipped_at\":1790671577,\"welcome_modal_completed_at\":1790671576,\"message_banner_skipped_reason\":\"has_sent_message\",\"channel_invite_coachmark_completed_at\":1790708270,\"workspace_invite_coachmark_completed_at\":1790796175}",
       "is_state_terminal": true
     },
     {

@@ -21,7 +21,7 @@ function watch(event: string): { lines: { liveEvent: Record<string, unknown> }[]
     '    async def get_xchat_media(self, conversation_id, media_hash_key, key_version):',
     "        return b'picture bytes'",
     '    async def get_user_by_id(self, user_id):',
-    "        return type('U', (), {'screen_name': 'AjeetVermai'})()",
+    "        return type('U', (), {'screen_name': 'HandleA1'})()",
     "spec = {'account': 'matt', 'pinPath': 'pin.json'}",
     "asyncio.run(e.xchat_stream(Client(), {'twid': 'u%3D1'}, spec))",
   ].join('\n')

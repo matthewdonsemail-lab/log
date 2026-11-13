@@ -14,7 +14,7 @@
           "forkReaForJuggler": 0.025629369542002678,
           "cdpOnCamoufox": 0.009007511660456657,
           "chromeInstead": 0.004078378435224295,
-          "adsPowerLikeListaro": 0.003021546872332692,
+          "adsPowerOverCdp": 0.003021546872332692,
           "noRea": 0.05751712620258331
         },
         "confidence": 0.8195694514683315
@@ -29,7 +29,7 @@
           "forkReaForJuggler": 0.02350606769323349,
           "cdpOnCamoufox": 0.008975679986178875,
           "chromeInstead": 0.010468922555446625,
-          "adsPowerLikeListaro": 0.004387976136058569,
+          "adsPowerOverCdp": 0.004387976136058569,
           "noRea": 0.06725926697254181
         },
         "confidence": 0.8124448912484306
@@ -44,7 +44,7 @@
           "forkReaForJuggler": 0.019781745970249176,
           "cdpOnCamoufox": 0.010848571546375751,
           "chromeInstead": 0.009730265475809574,
-          "adsPowerLikeListaro": 0.009991390630602837,
+          "adsPowerOverCdp": 0.009991390630602837,
           "noRea": 0.05041301250457764
         },
         "confidence": 0.8065737315586635
@@ -59,7 +59,7 @@
           "forkReaForJuggler": 0.008048278279602528,
           "cdpOnCamoufox": 0.003936038352549076,
           "chromeInstead": 0.00416301004588604,
-          "adsPowerLikeListaro": 0.0026561240665614605,
+          "adsPowerOverCdp": 0.0026561240665614605,
           "noRea": 0.004879725631326437
         },
         "confidence": 0.9278467042105538
@@ -74,7 +74,7 @@
           "forkReaForJuggler": 0.0063582188449800014,
           "cdpOnCamoufox": 0.004202950745820999,
           "chromeInstead": 0.003916303161531687,
-          "adsPowerLikeListaro": 0.0026473067700862885,
+          "adsPowerOverCdp": 0.0026473067700862885,
           "noRea": 0.008172612637281418
         },
         "confidence": 0.8325815200805664
@@ -89,7 +89,7 @@
           "forkReaForJuggler": 0.0059877242892980576,
           "cdpOnCamoufox": 0.005151310935616493,
           "chromeInstead": 0.00919609609991312,
-          "adsPowerLikeListaro": 0.013674859888851643,
+          "adsPowerOverCdp": 0.013674859888851643,
           "noRea": 0.028780106455087662
         },
         "confidence": 0.6887469972882952
@@ -104,7 +104,7 @@
           "forkReaForJuggler": 0.004726317245513201,
           "cdpOnCamoufox": 0.0035602597054094076,
           "chromeInstead": 0.002312652301043272,
-          "adsPowerLikeListaro": 0.0022404221817851067,
+          "adsPowerOverCdp": 0.0022404221817851067,
           "noRea": 0.013481305912137032
         },
         "confidence": 0.9169002260480609
@@ -119,7 +119,7 @@
           "forkReaForJuggler": 0.012417087331414223,
           "cdpOnCamoufox": 0.008557146415114403,
           "chromeInstead": 0.004909234121441841,
-          "adsPowerLikeListaro": 0.006873814854770899,
+          "adsPowerOverCdp": 0.006873814854770899,
           "noRea": 0.11261622607707977
         },
         "confidence": 0.716038635798863
@@ -134,7 +134,7 @@
           "forkReaForJuggler": 0.007913822308182716,
           "cdpOnCamoufox": 0.005010978318750858,
           "chromeInstead": 0.0025046207010746002,
-          "adsPowerLikeListaro": 0.002518983790650964,
+          "adsPowerOverCdp": 0.002518983790650964,
           "noRea": 0.08346917480230331
         },
         "confidence": 0.8216625622340611
@@ -149,7 +149,7 @@
           "forkReaForJuggler": 0.019823668524622917,
           "cdpOnCamoufox": 0.013766818679869175,
           "chromeInstead": 0.009591897949576378,
-          "adsPowerLikeListaro": 0.014425561763346195,
+          "adsPowerOverCdp": 0.014425561763346195,
           "noRea": 0.07698517292737961
         },
         "confidence": 0.7770196369716099
@@ -164,7 +164,7 @@
           "forkReaForJuggler": 0.008601407520473003,
           "cdpOnCamoufox": 0.005924596451222897,
           "chromeInstead": 0.0031589048448950052,
-          "adsPowerLikeListaro": 0.0018212503055110574,
+          "adsPowerOverCdp": 0.0018212503055110574,
           "noRea": 0.1754886955022812
         },
         "confidence": 0.33652281761169434
@@ -179,7 +179,7 @@
           "forkReaForJuggler": 0.004771185573190451,
           "cdpOnCamoufox": 0.0037309974431991577,
           "chromeInstead": 0.0017811453435570002,
-          "adsPowerLikeListaro": 0.001473133102990687,
+          "adsPowerOverCdp": 0.001473133102990687,
           "noRea": 0.023179451003670692
         },
         "confidence": 0.7697151047842843
@@ -194,7 +194,7 @@
           "forkReaForJuggler": 0.011595827527344227,
           "cdpOnCamoufox": 0.005834563635289669,
           "chromeInstead": 0.004122905433177948,
-          "adsPowerLikeListaro": 0.0023157240357249975,
+          "adsPowerOverCdp": 0.0023157240357249975,
           "noRea": 0.21468953788280487
         },
         "confidence": 0.5497144290379116
@@ -209,7 +209,7 @@
           "forkReaForJuggler": 0.00959201529622078,
           "cdpOnCamoufox": 0.01138201542198658,
           "chromeInstead": 0.011452571488916874,
-          "adsPowerLikeListaro": 0.012424550019204617,
+          "adsPowerOverCdp": 0.012424550019204617,
           "noRea": 0.03410414606332779
         },
         "confidence": 0.8390733173915318
@@ -224,7 +224,7 @@
           "forkReaForJuggler": 0.019347231835126877,
           "cdpOnCamoufox": 0.008348867297172546,
           "chromeInstead": 0.010787042789161205,
-          "adsPowerLikeListaro": 0.005276191048324108,
+          "adsPowerOverCdp": 0.005276191048324108,
           "noRea": 0.01774689182639122
         },
         "confidence": 0.8018003872462681
@@ -239,7 +239,7 @@
           "forkReaForJuggler": 0.010793105699121952,
           "cdpOnCamoufox": 0.00637074513360858,
           "chromeInstead": 0.004315712954849005,
-          "adsPowerLikeListaro": 0.005534898955374956,
+          "adsPowerOverCdp": 0.005534898955374956,
           "noRea": 0.031020548194646835
         },
         "confidence": 0.8863702501569476
@@ -256,7 +256,7 @@
           "forkReaForJuggler": 0.025629369542002678,
           "cdpOnCamoufox": 0.009007511660456657,
           "chromeInstead": 0.004078378435224295,
-          "adsPowerLikeListaro": 0.003021546872332692,
+          "adsPowerOverCdp": 0.003021546872332692,
           "noRea": 0.05751712620258331
         },
         "confidence": 0.8195694514683315
@@ -271,7 +271,7 @@
           "forkReaForJuggler": 0.02350606769323349,
           "cdpOnCamoufox": 0.008975679986178875,
           "chromeInstead": 0.010468922555446625,
-          "adsPowerLikeListaro": 0.004387976136058569,
+          "adsPowerOverCdp": 0.004387976136058569,
           "noRea": 0.06725926697254181
         },
         "confidence": 0.8124448912484306
@@ -286,7 +286,7 @@
           "forkReaForJuggler": 0.019781745970249176,
           "cdpOnCamoufox": 0.010848571546375751,
           "chromeInstead": 0.009730265475809574,
-          "adsPowerLikeListaro": 0.009991390630602837,
+          "adsPowerOverCdp": 0.009991390630602837,
           "noRea": 0.05041301250457764
         },
         "confidence": 0.8065737315586635
@@ -301,7 +301,7 @@
           "forkReaForJuggler": 0.008048278279602528,
           "cdpOnCamoufox": 0.003936038352549076,
           "chromeInstead": 0.00416301004588604,
-          "adsPowerLikeListaro": 0.0026561240665614605,
+          "adsPowerOverCdp": 0.0026561240665614605,
           "noRea": 0.004879725631326437
         },
         "confidence": 0.9278467042105538
@@ -316,7 +316,7 @@
           "forkReaForJuggler": 0.0063582188449800014,
           "cdpOnCamoufox": 0.004202950745820999,
           "chromeInstead": 0.003916303161531687,
-          "adsPowerLikeListaro": 0.0026473067700862885,
+          "adsPowerOverCdp": 0.0026473067700862885,
           "noRea": 0.008172612637281418
         },
         "confidence": 0.8325815200805664
@@ -331,7 +331,7 @@
           "forkReaForJuggler": 0.0059877242892980576,
           "cdpOnCamoufox": 0.005151310935616493,
           "chromeInstead": 0.00919609609991312,
-          "adsPowerLikeListaro": 0.013674859888851643,
+          "adsPowerOverCdp": 0.013674859888851643,
           "noRea": 0.028780106455087662
         },
         "confidence": 0.6887469972882952
@@ -346,7 +346,7 @@
           "forkReaForJuggler": 0.004726317245513201,
           "cdpOnCamoufox": 0.0035602597054094076,
           "chromeInstead": 0.002312652301043272,
-          "adsPowerLikeListaro": 0.0022404221817851067,
+          "adsPowerOverCdp": 0.0022404221817851067,
           "noRea": 0.013481305912137032
         },
         "confidence": 0.9169002260480609
@@ -361,7 +361,7 @@
           "forkReaForJuggler": 0.012417087331414223,
           "cdpOnCamoufox": 0.008557146415114403,
           "chromeInstead": 0.004909234121441841,
-          "adsPowerLikeListaro": 0.006873814854770899,
+          "adsPowerOverCdp": 0.006873814854770899,
           "noRea": 0.11261622607707977
         },
         "confidence": 0.716038635798863
@@ -376,7 +376,7 @@
           "forkReaForJuggler": 0.007913822308182716,
           "cdpOnCamoufox": 0.005010978318750858,
           "chromeInstead": 0.0025046207010746002,
-          "adsPowerLikeListaro": 0.002518983790650964,
+          "adsPowerOverCdp": 0.002518983790650964,
           "noRea": 0.08346917480230331
         },
         "confidence": 0.8216625622340611
@@ -391,7 +391,7 @@
           "forkReaForJuggler": 0.019823668524622917,
           "cdpOnCamoufox": 0.013766818679869175,
           "chromeInstead": 0.009591897949576378,
-          "adsPowerLikeListaro": 0.014425561763346195,
+          "adsPowerOverCdp": 0.014425561763346195,
           "noRea": 0.07698517292737961
         },
         "confidence": 0.7770196369716099
@@ -406,7 +406,7 @@
           "forkReaForJuggler": 0.008601407520473003,
           "cdpOnCamoufox": 0.005924596451222897,
           "chromeInstead": 0.0031589048448950052,
-          "adsPowerLikeListaro": 0.0018212503055110574,
+          "adsPowerOverCdp": 0.0018212503055110574,
           "noRea": 0.1754886955022812
         },
         "confidence": 0.33652281761169434
@@ -421,7 +421,7 @@
           "forkReaForJuggler": 0.004771185573190451,
           "cdpOnCamoufox": 0.0037309974431991577,
           "chromeInstead": 0.0017811453435570002,
-          "adsPowerLikeListaro": 0.001473133102990687,
+          "adsPowerOverCdp": 0.001473133102990687,
           "noRea": 0.023179451003670692
         },
         "confidence": 0.7697151047842843
@@ -436,7 +436,7 @@
           "forkReaForJuggler": 0.011595827527344227,
           "cdpOnCamoufox": 0.005834563635289669,
           "chromeInstead": 0.004122905433177948,
-          "adsPowerLikeListaro": 0.0023157240357249975,
+          "adsPowerOverCdp": 0.0023157240357249975,
           "noRea": 0.21468953788280487
         },
         "confidence": 0.5497144290379116
@@ -451,7 +451,7 @@
           "forkReaForJuggler": 0.00959201529622078,
           "cdpOnCamoufox": 0.01138201542198658,
           "chromeInstead": 0.011452571488916874,
-          "adsPowerLikeListaro": 0.012424550019204617,
+          "adsPowerOverCdp": 0.012424550019204617,
           "noRea": 0.03410414606332779
         },
         "confidence": 0.8390733173915318
@@ -466,7 +466,7 @@
           "forkReaForJuggler": 0.019347231835126877,
           "cdpOnCamoufox": 0.008348867297172546,
           "chromeInstead": 0.010787042789161205,
-          "adsPowerLikeListaro": 0.005276191048324108,
+          "adsPowerOverCdp": 0.005276191048324108,
           "noRea": 0.01774689182639122
         },
         "confidence": 0.8018003872462681
@@ -481,7 +481,7 @@
           "forkReaForJuggler": 0.010793105699121952,
           "cdpOnCamoufox": 0.00637074513360858,
           "chromeInstead": 0.004315712954849005,
-          "adsPowerLikeListaro": 0.005534898955374956,
+          "adsPowerOverCdp": 0.005534898955374956,
           "noRea": 0.031020548194646835
         },
         "confidence": 0.8863702501569476
@@ -2325,7 +2325,7 @@
         "confidence": 0.23761192709207535
       }
     },
-    "adsPowerLikeListaro": {
+    "adsPowerOverCdp": {
       "camoufoxStays": {
         "type": "score",
         "score": 0.5501351626589894,
@@ -2960,7 +2960,7 @@
         "type": "noul",
         "noul": 0.9428726434707642
       },
-      "listaroIsNotCamoufox": {
+      "adsPowerPosterIsNotCamoufox": {
         "type": "noul",
         "noul": 0.9815355539321899
       },
@@ -3002,7 +3002,7 @@
         "type": "noul",
         "noul": 0.9428726434707642
       },
-      "listaroIsNotCamoufox": {
+      "adsPowerPosterIsNotCamoufox": {
         "type": "noul",
         "noul": 0.9815355539321899
       },

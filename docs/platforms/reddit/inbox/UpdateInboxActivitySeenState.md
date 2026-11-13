@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/graphql` |
 | Sends | `input` |
 | Reads | `data.updateInboxActivitySeenState`, `errors`, `operation`, `extensions.traceID` |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script103.js:49 firstUpdated` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script103.js:49 firstUpdated` |
 | rea | `ev_eb0bc10d733085edc2ae653118264942b37131707715a18ca6b93fa95c578d4b` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 11: goto /notifications: 200, 636 ms
+**runs/inspect/20261025T124815_<name:1>**, step 11: goto /notifications: 200, 636 ms
 
 Sent:
 

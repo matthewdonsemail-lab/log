@@ -150,13 +150,13 @@ describe('connectMachine', () => {
     expect(calls.filter((c) => c === 'save').length).toBeGreaterThan(1)
   })
 
-  test("Listaro's path: 'We suspect automated behaviour' is dismissed and the sign-in carries on", async () => {
+  test("'We suspect automated behaviour' is dismissed and the sign-in carries on", async () => {
     const { output, calls } = await runConnect([page('loginForm'), page('automatedBehaviour', 'We suspect automated behaviour on your account'), page('loggedIn')])
     expect(output.result).toBe('connected')
     expect(calls).toEqual(['open', 'submitCredentials', 'dismiss', 'save'])
   })
 
-  test("Listaro's path: a login captcha is solved, CaptchaKraken first, and the page is the judge", async () => {
+  test("a login captcha is solved, CaptchaKraken first, and the page is the judge", async () => {
     const captcha: ReadOutput = { ok: true, kind: 'captcha', path: '/login', captcha: { kind: 'recaptcha', enterprise: true } }
     const { output, calls } = await runConnect([page('loginForm'), captcha, page('loggedIn')])
     expect(output.result).toBe('connected')
@@ -172,7 +172,7 @@ describe('connectMachine', () => {
     expect(output.result).toBe('timedOut')
   })
 
-  test("Listaro's path: 'Find your account' is submitted once, and coming back is wrong credentials", async () => {
+  test("'Find your account' is submitted once, and coming back is wrong credentials", async () => {
     const { output, calls } = await runConnect([page('findAccount', 'Find your account'), page('findAccount', 'Find your account')])
     expect(calls).toEqual(['open', 'dismiss'])
     expect(output.result).toBe('wrongPassword')
@@ -181,7 +181,7 @@ describe('connectMachine', () => {
     expect(cleared.calls).toEqual(['open', 'dismiss', 'submitCredentials', 'save'])
   })
 
-  test("Listaro's path: the cookie banner is accepted first", async () => {
+  test("the cookie banner is accepted first", async () => {
     const { output, calls } = await runConnect([page('cookieBanner'), page('loginForm'), page('loggedIn')])
     expect(output.result).toBe('connected')
     expect(calls).toEqual(['open', 'dismiss', 'submitCredentials', 'save'])

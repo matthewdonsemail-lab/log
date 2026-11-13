@@ -2,6 +2,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faGithub, faInstagram, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { AskAi, askAiGeneralPrompt } from './PlatformSuite'
+import { HARNESS_PAGES, HARNESS_PLATFORMS } from './useCases/harnessPages'
 import { LOG_REPO_URL, RepoLink } from './RepoLink'
 
 type FooterLink = { label: string; href: string; icon?: IconDefinition }
@@ -15,12 +16,17 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Slack', href: '/slack', icon: faSlack },
       { label: 'Discord', href: '/discord', icon: faDiscord },
       { label: 'Reddit', href: '/reddit', icon: faRedditAlien },
+      ...HARNESS_PAGES.map((page) => {
+        const platform = HARNESS_PLATFORMS.find((item) => item.id === page.platformId)!
+        return { label: platform.label, href: page.path, icon: platform.icon }
+      }),
     ],
   },
   {
     title: 'log',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'MCP', href: '/mcp' },
       { label: 'Use cases', href: '/docs/useCases' },
       { label: 'Get log', href: LOG_REPO_URL, icon: faGithub },
     ],

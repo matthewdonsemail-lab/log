@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "log": {
+      "command": "bun",
+      "args": ["bin/logMcp.ts"],
+      "timeoutSeconds": 300
+    }
+  }
+}

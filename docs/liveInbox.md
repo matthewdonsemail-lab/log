@@ -16,12 +16,12 @@ flowchart LR
 
 ## A real example
 
-Abel writes "is this ai" on Discord while a reply to him is going out line by line.
+A contact writes a short question on Discord while a reply to them is going out line by line.
 
-1. Discord's gateway pushes his message to the account's one owner process.
+1. Discord's gateway pushes their message to the account's one owner process.
 2. The owner adds it to `events` with the next sequence number and passes it to everyone attached to the relay.
-3. Before sending its next line, the send checks the database, sees Abel wrote, and holds the rest (`>>> INTERRUPTED`).
-4. The agent's hook shows the new message from its own cursor. The agent claims the chat, reads what was already done in it (`actions`), and answers his question first.
+3. Before sending its next line, the send checks the database, sees the contact wrote, and holds the rest (`>>> INTERRUPTED`).
+4. The agent's hook shows the new message from its own cursor. The agent claims the chat, reads what was already done in it (`actions`), and answers their question first.
 
 ## The parts
 

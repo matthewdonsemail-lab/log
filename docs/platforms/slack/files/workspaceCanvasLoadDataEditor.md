@@ -7,7 +7,7 @@
 | Domain | files |
 | Kind | endpoint |
 | doc_id | — |
-| Path | `workspace.slack.com/canvas/-/load-data/editor` |
+| Path | `<workspace:1>.slack.com/canvas/-/load-data/editor` |
 | Sends | `request_binary` |
 | Reads | — |
 | Called from | — |
@@ -50,7 +50,7 @@ Answered:
 
 ## What it does
 
-Loads the editor data for a canvas from `workspace.slack.com/canvas/-/load-data/editor`: it sent a binary request body and returned an encoded binary blob, fired once on step 14 (press Enter), 96.3 s in, 397 ms, 200. The facts list no source file that sends it.
+Loads the editor data for a canvas from `<workspace:1>.slack.com/canvas/-/load-data/editor`: it sent a binary request body and returned an encoded binary blob, fired once on step 14 (press Enter), 96.3 s in, 397 ms, 200. The facts list no source file that sends it.
 
 ## What our machine does with it
 

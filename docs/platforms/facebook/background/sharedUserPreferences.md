@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_9f8088d32f87a3467804486ab3e1f9b34496bc83fd01e5c651b6e0978e588451` |
+| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
 
-Seen 6 time(s) in 6 run(s).
+Seen 6 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,20 +21,21 @@ Seen 6 time(s) in 6 run(s).
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 887 ms | 15895 ms | — |
 | host | step 4: pageText | 1 | 200 | 633 ms | 8959 ms | — |
 | host | step 28: clickRole button "…" | 1 | 200 | 888 ms | 17939 ms | — |
-| host | step 1: goto /marketplace/selling/ | 1 | 200 | 343 ms | 13579 ms | — |
-| host | step 19: pageText | 1 | 200 | 569 ms | 1711 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 1 | 200 | 815 ms | 38468 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 1972 ms | 27528 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 1: goto /marketplace/selling/: 200, 343 ms
+**runs/inspect/20261111T081957_<id:1>**, signIn: password typed; submitting with Enter: 200, 815 ms
 
 Sent:
 
 ```json
 {
-  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJzY3JlZW5fdGltZV9wZXJpb2RfbG9nZ2luZ19mYWNlYm9vayIsIlJTVERhdGEiLCJoYl90aW1lc3RhbXAiLCJiZHpfcGxheWJhY2tfc3RhdGUiLCJtd19lbmNyeXB0ZWRfYmFja3Vwc19yZXN0b3JlX3Vwc2VsbF9maXJzdF9pbXByZXNzaW9uX3RpbWVfa2V5IiwiYXJlc19sYXN0X3NpZ25hbF9mbHVzaCIsInNpZ25hbF9mbHVzaF90aW1lc3RhbXAiLCJTZXNzaW9uIiwiYmFuemFpOmxhc3Rfc3RvcmFnZV9mbHVzaCJdLCJyZXN1bHRzIjpbWyJzY3JpcHQiLCJo… (53612 chars)"
+  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJzaWduYWxfZmx1c2hfdGltZXN0YW1wIiwiU2Vzc2lvbiIsImhiX3RpbWVzdGFtcCIsImJhbnphaTpsYXN0X3N0b3JhZ2VfZmx1c2giXSwicmVzdWx0cyI6W1sic2NyaXB0IiwiaHR0cHM6Ly9zdGF0aWMueHguZmJjZG4ubmV0L3JzcmMucGhwL3Y0L3lzL3IvMzY0cDE3MGxnVVEuanMiLG51bGwsbnVsbCxudWxsXSxbInNjcmlwdCIsImh0dHBzOi8vc3RhdGljLnh4LmZiY2RuLm5ldC9yc3JjLnBocC92NGlTNzc0L3l4L2wvZW5fVVMtai9zbzdTMjhPSEF2YTFq… (13988 chars)",
+  "qpl_active_flow_ids": "241973805"
 }
 ```
 
@@ -43,19 +44,20 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "Ad3_rISZraNMdMhtfbk3zL0",
-  "payload": null,
-  "lid": "7701039610664888116"
+  "rid": "As8GaM1r2Va90w9ZZu0Mpi9",
+  "payload": {},
+  "lid": "7706828654168794980"
 }
 ```
 
-**runs/host/20261026T164654_61594285317994**, step 19: pageText: 200, 569 ms
+**runs/inspect/20261111T081957_<id:1>**, step 8: click e53: 200, 1972 ms
 
 Sent:
 
 ```json
 {
-  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJzY3JlZW5fdGltZV9wZXJpb2RfbG9nZ2luZ19mYWNlYm9vayIsImhiX3RpbWVzdGFtcCIsImJhbnphaTpsYXN0X3N0b3JhZ2VfZmx1c2giLCJhcmVzX2xhc3Rfc2lnbmFsX2ZsdXNoIiwic2lnbmFsX2ZsdXNoX3RpbWVzdGFtcCIsImJkel9wbGF5YmFja19zdGF0ZSIsImxhc3RfaGVhZGxvYWRfdGltZSIsIm13X2VuY3J5cHRlZF9iYWNrdXBzX3Jlc3RvcmVfdXBzZWxsX2ZpcnN0X2ltcHJlc3Npb25fdGltZV9rZXkiLCJTZXNzaW9uIiwiUlNURGF0YSJdLCJy… (87160 chars)"
+  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJzY3JlZW5fdGltZV9wZXJpb2RfbG9nZ2luZ19mYWNlYm9vayIsImxhc3RfaGVhZGxvYWRfdGltZSIsIlJTVERhdGEiLCJoYl90aW1lc3RhbXAiLCJiZHpfcGxheWJhY2tfc3RhdGUiLCJtd19lbmNyeXB0ZWRfYmFja3Vwc19yZXN0b3JlX3Vwc2VsbF9maXJzdF9pbXByZXNzaW9uX3RpbWVfa2V5IiwiYXJlc19sYXN0X3NpZ25hbF9mbHVzaCIsInNpZ25hbF9mbHVzaF90aW1lc3RhbXAiLCJTZXNzaW9uIiwiYmFuemFpOmxhc3Rfc3RvcmFnZV9mbHVzaCJdLCJy… (60268 chars)",
+  "qpl_active_flow_ids": "1056839232"
 }
 ```
 
@@ -64,9 +66,30 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "An5YJA_rBIytqwB7Dk43ytk",
+  "rid": "Atark-jk2ICGq4QVErjXAy0",
+  "payload": {},
+  "lid": "7706829316592572123"
+}
+```
+
+**runs/inspect/20261023T000744_<id:2>**, step 1: goto /marketplace/status: 200, 887 ms
+
+Sent:
+
+```json
+{
+  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJwczoxMDAwOTUyNDM0OTQ5ODE6MDU3NDgzMWEtY2VkYy00MjA2LTk4OTQtYjU3ZmYxYmU1MDBmIiwicHM6MTAwMDk1MzYxODUxNzQ0OjA1NzQ4MzFhLWNlZGMtNDIwNi05ODk0LWI1N2ZmMWJlNTAwZiIsInBzOjEwMDA5NTI0MDI3MjYwMzo1NWU0YzI1Ni1jNzVjLTRkZjItYWQ0ZC0xMDM5ODNlM2Y1NTIiLCJwczoxMDAwOTUzMDIzMDk1NTI6NTU0MWM5NWEtODM3Yy00ODZhLWI2MTktMGUzZDhiOTk1OGM4IiwicHM6MTAwMDk1MDc4ODMyMTA1OjA1NzQ4MzFh… (41104 chars)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Ae7OC83RspaUO2p68eZxGjc",
   "payload": null,
-  "lid": "7701020144425935718"
+  "lid": "7699648432146207398"
 }
 ```
 

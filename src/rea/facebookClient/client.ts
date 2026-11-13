@@ -12,6 +12,8 @@ import type { RequestSeen } from "./helpers/index";
 import type { ClientOperation, FacebookModule } from "./types";
 import { exchangesOf } from "../../subq/stepReading/helpers/exchangesOf";
 import type { StepExchange } from "../../subq/stepReading/types";
+import { redactDoc } from "../../privacy/redact/index";
+import { loadDenylist } from "../../privacy/scan/client";
 
 export interface RunCapture {
   dir: string;
@@ -239,6 +241,7 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
   }
   const seenBy = new Map<string, number>();
   const kindBy = new Map<string, ClientOperation["kind"]>();
+  const denylist = loadDenylist();
   for (const operation of operations) {
     const path = join(docsDir, operation.domain, `${operation.name}.md`);
     const old = existingDoc(docsDir, operation.name);
@@ -248,7 +251,7 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
     seenBy.set(operation.name, facts.seen);
     kindBy.set(operation.name, facts.kind);
     const known = { ...operation, kind: facts.kind, sends: facts.sends, reads: facts.reads, calledFrom: facts.calledFrom, reaEvidenceId: facts.reaEvidenceId };
-    const doc = renderOperationDoc(known, oldText, renderStoredSightings(facts), reasoning);
+    const doc = redactDoc(renderOperationDoc(known, oldText, renderStoredSightings(facts), reasoning), denylist);
     mkdirSync(join(docsDir, operation.domain), { recursive: true });
     writeFileSync(path, doc);
     if (old && resolve(old) !== resolve(path)) rmSync(old);

@@ -37,7 +37,7 @@ Seen 266 time(s) in 9 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 14: setLocation Kamloops, British Columbia: 200, 178 ms
+**runs/host/20261026T180628_<userId:1>**, step 14: setLocation Kamloops, British Columbia: 200, 178 ms
 
 Sent:
 
@@ -60,8 +60,8 @@ Sent:
       "query": "",
       "search_type": "PLACE_TYPEAHEAD",
       "viewer_coordinates": {
-        "latitude": 32.739,
-        "longitude": -97.1145
+        "latitude": "<coordinate>",
+        "longitude": "<coordinate>"
       }
     }
   },

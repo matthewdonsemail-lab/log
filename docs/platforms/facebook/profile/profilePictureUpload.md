@@ -28,7 +28,7 @@ Seen 7 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, step 10: uploadRole button "…": 200, 1643 ms
+**runs/host/20261026T180628_<userId:1>**, step 10: uploadRole button "…": 200, 1643 ms
 
 Sent:
 
@@ -36,7 +36,7 @@ Sent:
 {
   "query": {
     "photo_source": "57",
-    "profile_id": "61594285317994"
+    "profile_id": "<userId:1>"
   },
   "body": null
 }
@@ -49,13 +49,13 @@ Answered:
   "__ar": 1,
   "rid": "AC4AlGD_QTNVdD2wMcSbQTA",
   "payload": {
-    "fbid": "122127009279476177",
-    "profileID": "61594285317994",
-    "imageURI": "https://scontent.fyvr4-1.fna.fbcdn.net/v/t39.30808-6/861826748_122127009285476177_3116611628911920417_n.jpg (468 chars)",
+    "fbid": "<userId:2>",
+    "profileID": "<userId:1>",
+    "imageURI": "<mediaUrl> (468 chars)",
     "imageHeight": 1059,
     "imageWidth": 803
   },
-  "lid": "7701039855905876932"
+  "lid": "<id:1>"
 }
 ```
 

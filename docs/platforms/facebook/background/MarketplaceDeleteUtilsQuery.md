@@ -24,7 +24,7 @@ Seen 3 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 481 ms
+**runs/inspect/20261023T173652_<userId:1>**, step 3: click e356: 200, 481 ms
 
 Sent:
 
@@ -34,7 +34,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplaceDeleteUtilsQuery",
   "server_timestamps": "true",
   "variables": {
-    "id": "1425935622848350",
+    "id": "<id:1>",
     "shouldSkip": false
   },
   "doc_id": "27605324959069136"
@@ -57,11 +57,11 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
+            "uri": "<mediaUrl> (428 chars)"
           },
-          "id": "2379535206124103"
+          "id": "<id:2>"
         },
-        "id": "1425935622848350"
+        "id": "<id:1>"
       }
     }
   },
@@ -75,7 +75,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 548 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 548 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Sent:
   "fb_api_req_friendly_name": "MarketplaceDeleteUtilsQuery",
   "server_timestamps": "true",
   "variables": {
-    "id": "1425935622848350",
+    "id": "<id:1>",
     "shouldSkip": false
   },
   "doc_id": "27605324959069136"
@@ -108,11 +108,11 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
+            "uri": "<mediaUrl> (428 chars)"
           },
-          "id": "2379535206124103"
+          "id": "<id:2>"
         },
-        "id": "1425935622848350"
+        "id": "<id:1>"
       }
     }
   },

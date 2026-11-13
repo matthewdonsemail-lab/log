@@ -29,7 +29,7 @@ Seen 9 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 283 ms
+**runs/host/20261026T180628_<userId:1>**, setLocation: 'Kamloops, British Columbia' is suggestion 1 of 9: 200, 283 ms
 
 Sent:
 
@@ -40,9 +40,9 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "latitude": 50.6759,
-      "longitude": -120.33898,
-      "actor_id": "61594285317994",
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>",
+      "actor_id": "<userId:1>",
       "client_mutation_id": "1"
     }
   },
@@ -59,22 +59,22 @@ Answered:
       "viewer": {
         "marketplace_settings": {
           "buy_location": {
-            "latitude": 50.6759,
-            "longitude": -120.33898,
+            "latitude": "<coordinate>",
+            "longitude": "<coordinate>",
             "reverse_geocode": {
-              "city": "Kamloops",
+              "city": "<city>",
               "city_page": {
-                "marketplace_vanity_id": "114995818516099",
-                "id": "114995818516099"
+                "marketplace_vanity_id": "<id:1>",
+                "id": "<id:1>"
               },
               "state": "BC",
-              "postal_code": "V2C"
+              "postal_code": "<postcode>"
             }
           },
           "current_marketplace": {
             "__typename": "Marketplace",
             "is_metric_base": true,
-            "id": "1759579680997030"
+            "id": "<id:2>"
           },
           "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDI4NTMxNzk5NA=="
         }

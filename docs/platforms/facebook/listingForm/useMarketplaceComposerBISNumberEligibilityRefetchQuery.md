@@ -25,7 +25,7 @@ Seen 13 time(s) in 13 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1465 ms
+**runs/inspect/20261022T110738_<userId:1>**, scroll: container +87px in 3 steps: 200, 1465 ms
 
 Sent:
 
@@ -36,7 +36,7 @@ Sent:
   "fb_api_req_friendly_name": "useMarketplaceComposerBISNumberEligibilityRefetchQuery",
   "server_timestamps": "true",
   "variables": {
-    "category_id": "895487550471874",
+    "category_id": "<id:1>",
     "has_prefetched_category": true
   },
   "doc_id": "39227039350213554",
@@ -53,7 +53,7 @@ Answered:
   "data": {
     "bis_number_category": {
       "__typename": "GroupSellCategory",
-      "id": "895487550471874",
+      "id": "<id:1>",
       "if_viewer_can_add_bis_certification_number": null
     }
   },

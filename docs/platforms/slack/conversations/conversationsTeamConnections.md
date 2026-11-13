@@ -18,13 +18,13 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU | 1 | 200 | 293 ms | 7000 ms | — |
+| inspect | step 6: goto /client/<teamId:1>/<channelId:1> | 1 | 200 | 293 ms | 7000 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/T0C4VCD06MR/D0C8VAE7REU: 200, 293 ms
+**runs/inspect/20261103T065639_mattSlack**, step 6: goto /client/<teamId:1>/<channelId:1>: 200, 293 ms
 
 Sent:
 
@@ -35,7 +35,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "aVvVPXA0sak",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -43,7 +43,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\nD0C8VAE7REU\r\n------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetchAndUpsertSharedChannelTeamConnections\r\n------WebKitFormBoundary8s98Vd… (717 chars)"
+    "------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name=\"channel\"\r\n\r\n<channelId:1>\r\n------WebKitFormBoundary8s98VdfmW6mZiNVc\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\nfetchAndUpsertSharedChannelTeamConnections\r\n------WebKitFormBoundary8s98Vd… (717 chars)"
   }
 }
 ```
@@ -54,11 +54,11 @@ Answered:
 {
   "ok": true,
   "channel": {
-    "id": "D0C8VAE7REU",
-    "conversation_host_id": "T0C4VCD06MR",
+    "id": "<channelId:1>",
+    "conversation_host_id": "<teamId:1>",
     "connected_team_ids": [
-      "T0C4VCD06MR",
-      "T0A9H4FM18V"
+      "<teamId:1>",
+      "<teamId:2>"
     ],
     "connected_limited_team_ids": [],
     "is_sponsored": false
@@ -66,8 +66,8 @@ Answered:
   "connections": [
     {
       "team": {
-        "id": "T0C4VCD06MR",
-        "name": "Matthew's Team",
+        "id": "<teamId:1>",
+        "name": "<name:1>",
         "icon": {
           "image_default": true,
           "image_34": "https://a.slack-edge.com/80588/img/avatars-teams/ava_0016-34.png",
@@ -80,7 +80,7 @@ Answered:
         },
         "avatar_base_url": "https://ca.slack-edge.com/",
         "is_verified": false,
-        "domain": "matthewsteam-op91876",
+        "domain": "<workspace:1>",
         "date_created": 1790614676,
         "requires_sponsorship": true
       },
@@ -90,21 +90,21 @@ Answered:
     },
     {
       "team": {
-        "id": "T0A9H4FM18V",
-        "name": "Rheos",
+        "id": "<teamId:2>",
+        "name": "<name:2>",
         "icon": {
           "image_default": false,
-          "image_34": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_34.png",
-          "image_44": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_44.png",
-          "image_68": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_68.png",
-          "image_88": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_88.png",
-          "image_102": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_102.png",
-          "image_230": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_230.png",
-          "image_132": "https://avatars.slack-edge.com/2026-03-26/10790014070324_8195aace320335883a0d_132.png"
+          "image_34": "<avatarUrl>",
+          "image_44": "<avatarUrl>",
+          "image_68": "<avatarUrl>",
+          "image_88": "<avatarUrl>",
+          "image_102": "<avatarUrl>",
+          "image_230": "<avatarUrl>",
+          "image_132": "<avatarUrl>"
         },
         "avatar_base_url": "https://ca.slack-edge.com/",
         "is_verified": false,
-        "domain": "rheosgroup",
+        "domain": "<workspace:2>",
         "date_created": 1768831576,
         "requires_sponsorship": false
       },
@@ -122,7 +122,7 @@ Answered:
 
 ## What it does
 
-Asks which other teams a channel is connected to (`channel.connected_team_ids`, `connections`, `pending_connections`, `previous_connections`) for the opened DM: it fired 7.0 s into step 6 (goto the DM D0C8VAE7REU), 293 ms, 200.
+Asks which other teams a channel is connected to (`channel.connected_team_ids`, `connections`, `pending_connections`, `previous_connections`) for the opened DM: it fired 7.0 s into step 6 (goto the DM <channelId:1>), 293 ms, 200.
 
 ## What our machine does with it
 

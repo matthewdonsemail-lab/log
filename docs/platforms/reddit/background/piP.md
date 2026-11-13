@@ -21,7 +21,7 @@ Seen 7 time(s) in 1 run(s).
 | inspect | step 3: goto /r/AskReddit/ | 1 | 0 | 360 ms | 9921 ms | — |
 | inspect | step 5: goto /search/ | 1 | 0 | 405 ms | 3663 ms | — |
 | inspect | step 6: goto /r/AskReddit/comments/1x8sr8s/whats_a_high_paying_but_soul_crushing_career_th | 1 | 0 | 368 ms | 5453 ms | — |
-| inspect | step 10: goto /user/Maleficent-Try-8338/ | 1 | 0 | 395 ms | 5000 ms | — |
+| inspect | step 10: goto /user/<name:1>/ | 1 | 0 | 395 ms | 5000 ms | — |
 | inspect | step 11: goto /notifications | 1 | 0 | 398 ms | 5497 ms | — |
 | inspect | step 12: goto /r/popular/ | 1 | 0 | 306 ms | 5943 ms | — |
 
@@ -29,7 +29,7 @@ Seen 7 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 1: goto /: 0, 1100 ms
+**runs/inspect/20261025T124815_<name:2>**, step 1: goto /: 0, 1100 ms
 
 Sent:
 
@@ -47,7 +47,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 3: goto /r/AskReddit/: 0, 360 ms
+**runs/inspect/20261025T124815_<name:2>**, step 3: goto /r/AskReddit/: 0, 360 ms
 
 Sent:
 
@@ -65,7 +65,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, step 5: goto /search/: 0, 405 ms
+**runs/inspect/20261025T124815_<name:2>**, step 5: goto /search/: 0, 405 ms
 
 Sent:
 

@@ -10,7 +10,7 @@
 | Path | `/svc/shreddit/more-comments` |
 | Sends | `cursor` |
 | Reads | — |
-| Called from | `runs/inspect/20261025T124815_MaleficentTry8338/script1.js:33 anonymous`, `runs/inspect/20261025T124815_MaleficentTry8338/script57.js:291 anonymous`, `runs/inspect/20261025T124815_MaleficentTry8338/script57.js:224 A`, `runs/inspect/20261025T124815_MaleficentTry8338/script57.js:296 renderShredtopViewMoreCommentsButton` |
+| Called from | `runs/inspect/20261025T124815_<name:1>/script1.js:33 anonymous`, `runs/inspect/20261025T124815_<name:1>/script57.js:291 anonymous`, `runs/inspect/20261025T124815_<name:1>/script57.js:224 A`, `runs/inspect/20261025T124815_<name:1>/script57.js:296 renderShredtopViewMoreCommentsButton` |
 | rea | `ev_b93f1f9518971a3d3c21a643e5d4652e977b4059195bbb83c385e0bdf74eb746` |
 
 Seen 1 time(s) in 1 run(s).
@@ -23,7 +23,7 @@ Seen 1 time(s) in 1 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261025T124815_MaleficentTry8338**, scroll: -955px in 22 wheel steps, 1235 ms: 200, 775 ms
+**runs/inspect/20261025T124815_<name:1>**, scroll: -955px in 22 wheel steps, 1235 ms: 200, 775 ms
 
 Sent:
 

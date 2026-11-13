@@ -1,6 +1,10 @@
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripPrivateBlocks } from "../../src/privacy/privateBlocks/index.ts";
+import { formatFinding, scanText } from "../../src/privacy/scan/index.ts";
+import { loadAllowlist, loadDenylist } from "../../src/privacy/scan/client.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const sourceDir = join(root, "skills", "published");
@@ -15,6 +19,12 @@ const PLAY_PREFIX = "log-";
 const toKebab = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 const oneLine = (text) => text.replace(/\s+/g, " ").trim();
 const yamlValue = (text) => JSON.stringify(oneLine(text));
+
+function publicTextOf(text, file) {
+  const { text: kept, problem } = stripPrivateBlocks(text);
+  if (problem) problems.push(`${file}: ${problem}`);
+  return kept;
+}
 
 function frontmatterOf(text, file) {
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
@@ -101,6 +111,7 @@ headerProblems(join(root, "skills"), "skills");
 
 const files = new Map();
 const repoFiles = new Map();
+const sources = new Map();
 const index = { skills: [] };
 
 const skills = existsSync(sourceDir)
@@ -108,7 +119,7 @@ const skills = existsSync(sourceDir)
   : [];
 for (const folder of skills) {
   const file = `skills/published/${folder}/SKILL.md`;
-  const text = readFileSync(join(sourceDir, folder, "SKILL.md"), "utf8").replace(/\r\n/g, "\n");
+  const text = publicTextOf(readFileSync(join(sourceDir, folder, "SKILL.md"), "utf8").replace(/\r\n/g, "\n"), file);
   const meta = frontmatterOf(text, file);
   if (!meta) continue;
   if (meta.name !== folder) problems.push(`${file}: name is ${meta.name}, the folder is ${folder}`);
@@ -116,6 +127,7 @@ for (const folder of skills) {
   const name = toKebab(folder);
   const published = text.replace(meta.block, meta.block.replace(/^name:.*$/m, `name: ${name}`));
   files.set(join(name, "SKILL.md"), published);
+  sources.set(join(name, "SKILL.md"), file);
   index.skills.push({ name, description: meta.description, files: ["SKILL.md"], ...(meta.summary ? { summary: meta.summary } : {}), ...(meta.dependsOn.length ? { dependsOn: meta.dependsOn } : {}) });
 }
 
@@ -123,14 +135,25 @@ const platforms = existsSync(useCasesDir) ? readdirSync(useCasesDir, { withFileT
 for (const platform of platforms) {
   for (const file of readdirSync(join(useCasesDir, platform)).filter((f) => f.endsWith(".md") && f !== "README.md").sort()) {
     const page = file.slice(0, -3);
-    const text = readFileSync(join(useCasesDir, platform, file), "utf8").replace(/\r\n/g, "\n");
+    const text = publicTextOf(readFileSync(join(useCasesDir, platform, file), "utf8").replace(/\r\n/g, "\n"), `docs/useCases/${platform}/${file}`);
     const play = playSkillOf(platform, page, text);
     files.set(join(play.name, "SKILL.md"), play.skill);
     repoFiles.set(join(play.name, "SKILL.md"), play.skill);
+    sources.set(join(play.name, "SKILL.md"), `docs/useCases/${platform}/${file}`);
     index.skills.push({ name: play.name, description: play.description, files: ["SKILL.md"], summary: play.summary });
   }
 }
 files.set("index.json", `${JSON.stringify(index, null, 2)}\n`);
+
+const privacy = { allowlist: loadAllowlist(join(root, "scripts", "privacy", "allowlist.json")), denylist: loadDenylist() };
+const stagedOnly = process.argv.includes("--staged");
+const staged = stagedOnly ? new Set(spawnSync("git", ["diff", "--cached", "--name-only", "--diff-filter=ACMR"], { cwd: root, windowsHide: true, encoding: "utf8" }).stdout.split(/\r?\n/).filter(Boolean)) : null;
+for (const [label, wanted] of [["site/apps/web/public/.well-known/skills", files], [".claude/skills", repoFiles]]) {
+  for (const [path, text] of wanted) {
+    if (staged && !staged.has(sources.get(path))) continue;
+    for (const hit of scanText(`${label}/${path.split("\\").join("/")}`, text, privacy)) problems.push(`privacy: ${formatFinding(hit)} (wrap it in <!-- private --> … <!-- /private --> in the source, or take it out)`);
+  }
+}
 
 function compare(dir, label, wanted) {
   for (const [path, text] of wanted) {
@@ -147,7 +170,7 @@ if (check) {
     const wanted = new Set([...repoFiles.keys()].map((p) => p.split(/[\\/]/)[0]));
     for (const entry of readdirSync(repoSkillsDir)) if (entry.startsWith(PLAY_PREFIX) && !wanted.has(entry)) problems.push(`.claude/skills/${entry} has no use case any more: run bun run skills:build`);
   }
-} else {
+} else if (!problems.some((problem) => problem.startsWith("privacy:"))) {
   rmSync(outDir, { recursive: true, force: true });
   for (const [path, text] of files) {
     mkdirSync(dirname(join(outDir, path)), { recursive: true });

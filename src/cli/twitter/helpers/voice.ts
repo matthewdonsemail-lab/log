@@ -3,7 +3,8 @@ import { timed, timedSync } from "../../../observability/timing/index.ts";
 import { incomingSince } from "../../../inbox/watch/index.ts";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { roomOf } from "../../../voice/room/index.ts";
-import type { Room } from "../../../voice/room/index.ts";
+import type { Room, RoomKind } from "../../../voice/room/index.ts";
+import { NOT_SAID, REACTION } from "../../../inbox/lastWord/index.ts";
 import { join } from "node:path";
 import { storedEmbedder, ownTextsSince, personOf } from "../../../inbox/store/index.ts";
 import { SAMENESS_WINDOW_HOURS, samenessLine, samenessOf } from "../../../voice/sameness/index.ts";
@@ -38,7 +39,7 @@ export const VOICE_USAGE = [
   "       log voice aiIndex [--json]   (builds the AI tells index: every literal phrase in vendor/aiTells, tbhb/vale-ai-tells first and then the other lists, embedded with Jina (JINA_API_KEY), with matt's own replies from the voice index measured against it for his p50 and p99 closeness, and the vale rules he uses himself muted; the gate builds it itself when it is missing or older than the voice index; rule 112)",
   "       log voice index [--json]   (builds matt's voice from every conversation log search already saved, reading nothing new: each of his replies paired with what was said just before it, embedded with log search's own model, and a profile per chat, person and platform counted from his own messages)",
   "Gates a draft before anything is sent as matt (his rule, 2026-10-27): SubQ reads it against matt's own writing guide (GUIDES/MATT_WRITING_STYLE.md, built from 256 of his tweets) and the dms he wrote himself, and answers whether it sounds like he typed it (voice, 0.8 to pass), whether it answers what they said (--context) or something specific about them, whether it reads like a mate texting, and, to someone matt has never talked with, whether it is only a relevant opener with no ask or pitch (openerOnly, matt 2026-10-31). A phrase matt never says (hit home, big swing, spot on, felt that…) fails it outright. Sends nothing.",
-  "--with names the chat or person the way matt says it (\"the log group\", \"jilly\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Every gate also reads his nearest real replies, closest wording and style across all his conversations, every platform, beside the chat's own, never the writing guide alone.",
+  "--with names the chat or person the way matt says it (\"the log group\", \"jinny\", a handle): log finds matt's real replies to things like --context, from that chat first, then that person, then that platform, then anywhere, and how he writes there (length, case, punctuation, his words). Without --text it shows them to draft from; with --text the gate also asks whether the draft reads like his real replies there (toThem, 0.7 to pass). Every gate also reads his nearest real replies, closest wording and style across all his conversations, every platform, beside the chat's own, never the writing guide alone.",
   "--spoken gates a voice note: it is graded as said out loud, so its length and punctuation never count against it, and it must build on what they are talking about across the whole chat, adding to it, never repeating what matt already told them (buildsOn, 0.7 to pass, rule 149). Every voice note send is gated this way.",
   "Exit 0 when it passes, 1 when it doesn't: rewrite and gate again.",
 ].join("\n");
@@ -133,6 +134,8 @@ async function evidenceFor(context: CommandContext, said: string, chat: string, 
       label,
       evidence: {
         chat: label,
+        platform: picked.platform,
+        kind: picked.kind,
         profile,
         replies: near.map((n) => ({ said: n.pair.said, reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
         wording: wording.map((n) => ({ reply: n.pair.reply, chat: n.pair.chat, tier: n.tier })),
@@ -176,12 +179,10 @@ export function aiIndexStale(dir = aiIndexDir(), pairsFile = join(voiceDir(), "p
   return statSync(pairsFile).mtimeMs > Date.parse(index.builtAt);
 }
 
-async function ensureAiIndex(context: CommandContext): Promise<void> {
-  if (!aiIndexStale(aiIndexDir(), join(voiceDir(), "pairs.json"), JINA_EMBED_MODEL)) return;
-  const pairsFile = join(voiceDir(), "pairs.json");
-  const replies = existsSync(pairsFile) ? (JSON.parse(readFileSync(pairsFile, "utf8")) as VoicePair[]).map((p) => p.reply) : [];
-  context.err(`voice: the AI tells index is ${openAiIndex(aiIndexDir(), JINA_EMBED_MODEL) ? "older than matt's voice index" : `missing for ${JINA_EMBED_MODEL}`}, so it is built now (rule 112)`);
-  await buildAiIndex(voiceDeps.aiEmbedder(), replies, aiIndexDir(), undefined, undefined, (line) => context.err(line));
+async function ensureAiIndex(context: CommandContext): Promise<boolean> {
+  if (!aiIndexStale(aiIndexDir(), join(voiceDir(), "pairs.json"), JINA_EMBED_MODEL) && openAiIndex(aiIndexDir(), JINA_EMBED_MODEL)) return true;
+  context.err("voice: the AI tells index is older than matt's voice index, so AI phrasing isn't checked on this gate; it is rebuilt in the background by `log voice aiIndex`, never inline (a gate must not stall the send)");
+  return false;
 }
 
 export function ensurePhraseIndex(context: CommandContext, dir = voiceDir()) {
@@ -228,7 +229,9 @@ export const voiceCommand: Command = {
         context.err(`voice: pairing matt's replies in ${conversations.length} saved conversations and embedding them with ${embedder.model}`);
         const built = await buildVoiceIndex(conversations, embedder);
         embedder.stop?.();
-        const line = `log voice index: ${built.pairs} of matt's replies paired with what was said before them, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
+        const line = built.current
+          ? `log voice index: already current, so nothing was re-paired: ${built.pairs} messages indexed across every chat matt has written in, ${built.profiles} profiles, at ${voiceDir()}`
+          : `log voice index: ${built.pairs} messages indexed across every chat matt has written in, each of his replies paired with what was said before it, ${built.profiles} profiles (chat, person, platform), in ${(built.ms / 1000).toFixed(1)} s at ${voiceDir()}`;
         return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify(built, null, 2) : line };
       } catch (error) {
         return refuseError("voice index", error);
@@ -305,9 +308,9 @@ export async function gateReading(context: CommandContext, draft: { to: string; 
   if (!phraseIndex) context.err("voice: no voice index yet, so matt's own phrasing isn't measured: build it with `log voice index`");
   const phrases = phraseIndex ? readPhrases(text, phraseIndex, said) : undefined;
   const scrambler = voiceDeps.scrambler(text);
-  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.unfamiliar } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
+  const scored = await readVoice({ to, text, ...(said ? { context: said } : {}), ...(evidence ? { evidence } : {}), ...(everywhere ? { everywhere } : {}), ...(phrases ? { phrasesNewToMatt: phrases.newPhrasing } : {}), ...(ranked.length ? { conversation: ranked } : {}), ...(draft.spoken ? { spoken: true, howMattTalks: voiceDeps.howMattTalks() } : {}), ...(draft.room ? { room: draft.room } : {}), ...(scrambler.ran ? { scrambler: { suspicious: scrambler.suspicious, kinds: [...new Set(scrambler.hits.map((h) => h.kind))] } } : {}) }, guide, voiceDeps.decisions());
   const notHere = evidence && !draft.spoken ? offProfile(text, evidence.profile as VoiceProfile | null) : [];
-  await ensureAiIndex(context);
+  const aiReady = await ensureAiIndex(context);
   const aiIndex = openAiIndex(aiIndexDir(), JINA_EMBED_MODEL);
   if (!aiIndex) context.err("voice: the AI tells index couldn't be built, so AI phrasing isn't checked");
   const aiTells = aiIndex ? await readAiTells(text, aiIndex, voiceDeps.aiEmbedder()) : undefined;
@@ -341,7 +344,7 @@ export function failedParts(reading: GateReading): string[] {
 }
 
 export function chatIdFor(conversations: readonly Conversation[], send: { platform: string; conversationId?: string | null; userId?: string | null; handle?: string | null }): string | null {
-  const mine = conversations.filter((c) => c.platform === send.platform);
+  const mine = conversations.filter((c) => c.platform === send.platform && (c.platform !== "twitter" || c.with.some(Boolean)));
   const parties = (id: string) => id.split(/[-:]/).filter(Boolean);
   const found = mine.find((c) => !!send.conversationId && c.conversationId === send.conversationId)
     ?? (send.platform === "twitter" && send.userId ? mine.find((c) => parties(c.conversationId).includes(String(send.userId))) : undefined)
@@ -361,6 +364,16 @@ export function momentAnswered(messages: readonly { fromMe: boolean; text: strin
   const sorted = [...messages].filter((m) => m.text.trim()).sort((a, b) => String(a.time).localeCompare(String(b.time)));
   const lastOfMine = sorted.map((m) => m.fromMe).lastIndexOf(true);
   return sorted.slice(lastOfMine + 1).map((m) => m.text).join("\n");
+}
+
+export function saidOnly<T extends { text?: string | null }>(messages: readonly T[]): T[] {
+  return messages.filter((m) => !REACTION.test(String(m.text ?? "").trim()) && !NOT_SAID.test(String(m.text ?? "").trim()));
+}
+
+export function roomKindOf(send: { platform: string; conversationId?: string | null; handle?: string | null; userId?: string | null }): RoomKind {
+  if (send.platform !== "twitter") return "unknown";
+  if (send.conversationId?.startsWith("g")) return "group";
+  return send.conversationId || send.handle || send.userId ? "dm" : "unknown";
 }
 
 type GateSend = { platform: string; account: string; to: string; text: string; conversationId?: string | null; handle?: string | null; userId?: string | null; said?: string; spoken?: boolean; room?: Room; readRoom?: () => Room | undefined; brief?: boolean; files?: readonly string[] };
@@ -383,9 +396,9 @@ async function gateSendNow(context: CommandContext, send: GateSend): Promise<{ o
   if (!guide) return { ok: false, refused: `>>> VOICE GATE: matt's writing guide isn't at ${guidePath()}, so nothing is sent until it is back` };
   const handle = send.handle || (send.userId ? personOf(send.platform, send.account, String(send.userId)) : null);
   const who = { conversationId: send.conversationId ?? null, handle, userId: send.userId ?? null };
-  const held = timedSync("voice.chatContext", () => chatContextOf(send.platform, send.account, who).messages);
+  const held = timedSync("voice.chatContext", () => saidOnly(chatContextOf(send.platform, send.account, who).messages));
   const said = send.said ?? momentAnswered(held);
-  const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const room = send.room ?? timedSync("voice.room", () => send.readRoom?.()) ?? roomOf(send.to, roomKindOf(send), held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
   const ranked = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [said, send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const evidence = await timed("voice.evidence", () => chatEvidence(context, said, { platform: send.platform, conversationId: send.conversationId, userId: send.userId, handle }, send.text));
   const reading = await timed("voice.reading", () => gateReading(context, { to: handle || send.to, text: send.text, said, guide, ranked, ...(evidence ? { evidence } : {}), ...(send.spoken ? { spoken: true } : {}), room }));
@@ -400,8 +413,8 @@ export async function gateBrief(send: { platform: string; account: string; to: s
   const scrambler = voiceDeps.scrambler(send.text);
   if (scrambler.suspicious) return { ok: false, refused: `>>> BRIEF GATE FAILED for ${send.to}, nothing was sent: ${scramblerLine(scrambler)}` };
   const who = { conversationId: send.conversationId ?? null, handle: send.handle ?? null, userId: send.userId ?? null };
-  const held = chatContextOf(send.platform, send.account, who).messages;
-  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, "unknown", held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
+  const held = saidOnly(chatContextOf(send.platform, send.account, who).messages);
+  const room = send.room ?? send.readRoom?.() ?? roomOf(send.to, roomKindOf(send), held.map((m) => ({ from: m.fromMe ? "matt" : String(m.senderId ?? "them"), fromMe: !!m.fromMe, at: String(m.time ?? "") })));
   const conversation = await timed("voice.rankedContext", () => rankedContext(send.platform, send.account, who, [momentAnswered(held), send.text].filter((t) => t.trim()).join("\n"))).catch(() => []);
   const guide = readGuide();
   const reading = await timed("voice.briefReading", () => readBrief({ to: send.to, text: send.text, conversation, ...(room ? { room } : {}), attached: attachedOf(send.files ?? []), ...(guide ? { howMattWrites: guide } : {}) }, voiceDeps.decisions()));

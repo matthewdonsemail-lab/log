@@ -36,7 +36,7 @@ Seen 21 time(s) in 13 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 481 ms
+**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 481 ms
 
 Sent:
 
@@ -59,7 +59,7 @@ Answered:
       "marketplace_uim_upsell_card": {
         "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
         "c2c_shipping_incentive_campaign_id": null,
-        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
+        "body": "<messageText>",
         "header": "Keep your listings up to date",
         "icon_name": "shield",
         "primary_button_text": "Learn more",
@@ -85,7 +85,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 16: goto /marketplace/you/selling: 200, 455 ms
+**runs/warmup/20261023T074930_<userId:1>**, step 16: goto /marketplace/you/selling: 200, 455 ms
 
 Sent:
 
@@ -108,7 +108,7 @@ Answered:
       "marketplace_uim_upsell_card": {
         "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
         "c2c_shipping_incentive_campaign_id": null,
-        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
+        "body": "<messageText>",
         "header": "Keep your listings up to date",
         "icon_name": "shield",
         "primary_button_text": "Learn more",
@@ -134,7 +134,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261025T065539_61593939852820**, step 2: goto /marketplace/you/selling: 200, 538 ms
+**runs/inspect/20261025T065539_<userId:2>**, step 2: goto /marketplace/you/selling: 200, 538 ms
 
 Sent:
 
@@ -161,7 +161,7 @@ Answered:
       "marketplace_uim_upsell_card": {
         "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
         "c2c_shipping_incentive_campaign_id": null,
-        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
+        "body": "<messageText>",
         "header": "Keep your listings up to date",
         "icon_name": "shield",
         "primary_button_text": "Learn more",

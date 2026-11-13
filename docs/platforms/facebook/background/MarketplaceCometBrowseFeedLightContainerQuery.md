@@ -25,7 +25,7 @@ Seen 3 time(s) in 3 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 4341 ms
+**runs/inspect/20261022T155857_<userId:1>**, step 3: goto /marketplace/inbox: 200, 4341 ms
 
 Sent:
 
@@ -36,8 +36,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 40.6262,
-      "longitude": -75.3757
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "count": 1,
     "cursor": null,
@@ -72,42 +72,42 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/792705720_3291896437666761_6608927264699573403_n.jpg (449 chars)",
+          "uri": "<mediaUrl> (449 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-lga3-2.xx.fbcdn.net/v/t45.5328-4/825331279_1107805111679275_6933076528485965959_n.jpg (453 chars)",
+          "uri": "<mediaUrl> (453 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-lga3-2.xx.fbcdn.net/v/t45.5328-4/857707952_1153535390363224_1249299151427696707_n.jpg (429 chars)",
+          "uri": "<mediaUrl> (429 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/825284948_1070647075726010_7259050604123215370_n.jpg (429 chars)",
+          "uri": "<mediaUrl> (429 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t45.5328-4/798589946_28765747766366253_5841133203145583122_n.jpg (454 chars)",
+          "uri": "<mediaUrl> (454 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-lga3-2.xx.fbcdn.net/v/t45.5328-4/852101236_2204837723468461_3402126919315690121_n.jpg (429 chars)",
+          "uri": "<mediaUrl> (429 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -133,15 +133,15 @@ Answered:
       ],
       "data": {
         "node": {
-          "id": "120250502573310687:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:826419681",
+          "id": "<id:1>:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:826419681",
           "__typename": "MarketplaceFeedAdStory",
-          "story_key": "1783131660348493942",
+          "story_key": "<id:2>",
           "story_type": "AD",
-          "tracking": "{\"qid\":\"-5934810194876610109\",\"mf_story_key\":\"1783131660348493942\",\"commerce_rank_obj\":\"{\\\"target_id\\\":120250502573310687,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":142.73214264999,\\\"is_prefetch\\\":false}\"}",
+          "tracking": "{\"qid\":\"-5934810194876610109\",\"mf_story_key\":\"<id:2>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:1>,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":142.73214264999,\\\"is_prefetch\\\":false}\"}",
           "story_attachment_style": "large_single_video_tile",
           "story": "(12 fields)",
           "ad_impression_client_token": "(taken out)",
-          "ad_id_string": "120250502573310687",
+          "ad_id_string": "<id:1>",
           "is_hidden": false,
           "is_demo": false,
           "transparency_ad_info": "(1 fields)",
@@ -198,7 +198,7 @@ Answered:
         "… 2 more"
       ],
       "data": {
-        "id": "1786431472192000",
+        "id": "<id:3>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 22
         },
@@ -215,7 +215,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 4827 ms
+**runs/inspect/20261022T110738_<userId:1>**, step 4: click e191: 200, 4827 ms
 
 Sent:
 
@@ -226,8 +226,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "buyLocation": {
-      "latitude": 37.193232725035,
-      "longitude": -3.6622435304279
+      "latitude": "<coordinate>",
+      "longitude": "<coordinate>"
     },
     "count": 1,
     "cursor": null,
@@ -262,42 +262,42 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/821178588_4563241127337366_7168015474036199596_n.jpg (453 chars)",
+          "uri": "<mediaUrl> (453 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856583545_28732861209675642_3535474348993802822_n.jpg (449 chars)",
+          "uri": "<mediaUrl> (449 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/798589946_28765747766366253_5841133203145583122_n.jpg (454 chars)",
+          "uri": "<mediaUrl> (454 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/845832759_1428507518727010_7975235107897927002_n.jpg (448 chars)",
+          "uri": "<mediaUrl> (448 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/855166534_4230998330369910_8961199944737311324_n.jpg (448 chars)",
+          "uri": "<mediaUrl> (448 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/853286697_1806506914008863_6981065559839165275_n.jpg (448 chars)",
+          "uri": "<mediaUrl> (448 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -323,15 +323,15 @@ Answered:
       ],
       "data": {
         "node": {
-          "id": "120250502573310687:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:11853141",
+          "id": "<id:1>:IN_MEMORY_MARKETPLACE_FEED_STORY_ENT:EntMarketplaceFeedAdStory:11853141",
           "__typename": "MarketplaceFeedAdStory",
-          "story_key": "9008724415471845301",
+          "story_key": "<id:4>",
           "story_type": "AD",
-          "tracking": "{\"qid\":\"-5936041173641534037\",\"mf_story_key\":\"9008724415471845301\",\"commerce_rank_obj\":\"{\\\"target_id\\\":120250502573310687,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":83.293845104781,\\\"is_prefetch\\\":false}\"}",
+          "tracking": "{\"qid\":\"-5936041173641534037\",\"mf_story_key\":\"<id:4>\",\"commerce_rank_obj\":\"{\\\"target_id\\\":<id:1>,\\\"target_type\\\":4,\\\"primary_position\\\":0,\\\"ranking_signature\\\":0,\\\"commerce_channel\\\":501,\\\"value\\\":83.293845104781,\\\"is_prefetch\\\":false}\"}",
           "story_attachment_style": "large_single_video_tile",
           "story": "(12 fields)",
           "ad_impression_client_token": "(taken out)",
-          "ad_id_string": "120250502573310687",
+          "ad_id_string": "<id:1>",
           "is_hidden": false,
           "is_demo": false,
           "transparency_ad_info": "(1 fields)",
@@ -388,7 +388,7 @@ Answered:
         "… 2 more"
       ],
       "data": {
-        "id": "1786431472192000",
+        "id": "<id:3>",
         "instream_extra_config": {
           "instream_halo_delay_time_seconds": 22
         },

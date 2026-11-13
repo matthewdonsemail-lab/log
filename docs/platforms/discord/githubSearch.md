@@ -1,6 +1,6 @@
 # Discord: what GitHub already has on the calls we found
 
-Searched 2026-10-28 with GitHub's code search API (`/search/code`, two at a time, backing off on 403), for every internal call and gateway event the inspect runs of `sourcedandsoldtothehighestbidder` recorded (`README.md`, `background/*.md`). 49 searches, 12 by event or call shape and 37 by path. Stars and last push are from `GET /repos/<repo>` the same day.
+Searched 2026-10-28 with GitHub's code search API (`/search/code`, two at a time, backing off on 403), for every internal call and gateway event the inspect runs of `<name:1>` recorded (`README.md`, `background/*.md`). 49 searches, 12 by event or call shape and 37 by path. Stars and last push are from `GET /repos/<repo>` the same day.
 
 ## The repos that come up across most of them
 

@@ -40,7 +40,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -48,7 +48,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name=\"module\"\r\n\r\nfiles\r\n------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name=\"query\"\r\n\r\ntype:lists type:quip type:documents type:spreadsheets type:presentations type:pdfs\r\n-… (2826 chars)"
+    "------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name=\"module\"\r\n\r\nfiles\r\n------WebKitFormBoundaryZgCmoZBTID5iuMIT\r\nContent-Disposition: form-data; name=\"query\"\r\n\r\ntype:lists type:quip type:documents type:spreadsheets type:presentations type:pdfs\r\n-… (2826 chars)"
   }
 }
 ```
@@ -91,14 +91,14 @@ Answered:
   "module": "files",
   "items": [
     {
-      "id": "F0817A32Y1E",
+      "id": "<fileId:1>",
       "created": 1731432010,
       "timestamp": 1731432010,
       "mimetype": "application/vnd.slack-docs",
       "filetype": "quip",
       "pretty_type": "Canvas",
       "user": "USLACKBOT",
-      "user_team": "T0C4VCD06MR",
+      "user_team": "<teamId:1>",
       "editable": true,
       "size": 656,
       "mode": "quip",
@@ -108,18 +108,18 @@ Answered:
       "public_url_shared": false,
       "display_as_bot": false,
       "username": "",
-      "name": "Weekly_1_1",
+      "name": "<name:1>",
       "title": "Weekly 1:1",
-      "url_private": "https://files.slack.com/files-pri/T0C4VCD06MR-F0817A32Y1E/canvas",
-      "url_private_download": "https://files.slack.com/files-pri/T0C4VCD06MR-F0817A32Y1E/download/canvas",
-      "permalink": "https://matthewsteam-op91876.slack.com/docs/T0C4VCD06MR/F0817A32Y1E",
-      "permalink_public": "https://slack-files.com/T0C4VCD06MR-F0817A32Y1E-85e844ed8c",
-      "url_static_preview": "https://matthewsteam-op91876.slack.com/docs/T0C4VCD06MR/F0817A32Y1E/mobile",
+      "url_private": "<mediaUrl>",
+      "url_private_download": "<mediaUrl>",
+      "permalink": "https://<workspace:1>.slack.com/docs/<teamId:1>/<fileId:1>",
+      "permalink_public": "<mediaUrl>",
+      "url_static_preview": "https://<workspace:1>.slack.com/docs/<teamId:1>/<fileId:1>/mobile",
       "quip_thread_id": "bcC9AAFLNo4",
       "updated": 1756322140,
       "update_notification": 1756314672,
       "canvas_readtime": 0.33881975110397,
-      "source_team": "T0C4VCD06MR",
+      "source_team": "<teamId:1>",
       "skipped_shares": true,
       "is_restricted_sharing_enabled": false,
       "has_rich_preview": false,
@@ -179,7 +179,7 @@ Sent:
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
     "_x_csid": "b3O92r22OFk",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -187,7 +187,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name=\"module\"\r\n\r\nfiles\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name=\"query\"\r\n\r\nin:<@U0A9JFXK21L> type:images type:videos\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\n… (2885 chars)"
+    "------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name=\"module\"\r\n\r\nfiles\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\nContent-Disposition: form-data; name=\"query\"\r\n\r\nin:<@<userId:1>> type:images type:videos\r\n------WebKitFormBoundaryV8J6tzWB8RUDElTh\r\n… (2885 chars)"
   }
 }
 ```
@@ -205,7 +205,7 @@ Answered:
     "first": 1,
     "last": 8
   },
-  "query": "in:<@U0A9JFXK21L> type:images type:videos",
+  "query": "in:<@<userId:1>> type:images type:videos",
   "filters": {
     "in": "(1 items)",
     "file_types": "(2 items)"

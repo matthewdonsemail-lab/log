@@ -6,6 +6,7 @@
 
 - [Install](https://log.listeningkit.com/docs/getStarted/install): install log and sign in your accounts
 - [Connect your agent](https://log.listeningkit.com/docs/getStarted/mcp): add `logMcp` to Claude Code or Codex
+- [The log MCP](https://log.listeningkit.com/mcp): what `logMcp` gives your agent on each platform, how to add it, the plays it runs, and quick answers
 - [Using log](https://log.listeningkit.com/docs/getStarted/usingLog): how you ask for work and what log does with it
 - [Source on GitHub](https://github.com/matthewdonsemail-lab/log)
 
@@ -16,6 +17,11 @@
 - [Slack](https://log.listeningkit.com/slack): reads your client DMs in every workspace, finds who wants more work, and replies one line at a time in your voice
 - [Discord](https://log.listeningkit.com/discord): watches the servers you are in live, answers whoever asks for what you do first, books the call in their DMs, and keeps your own paid community answered
 - [Reddit](https://log.listeningkit.com/reddit): does the research (reads the subreddits your buyers post in, finds the leads) and drafts a reply that gives value first; you press send from your real account
+- [Cursor](https://log.listeningkit.com/cursor): connect log to Cursor (mcp.json), then ship and tell everyone who asked, answer bug reports and turn repeat questions into docs from the same Agent chat
+- [Claude](https://log.listeningkit.com/claude): connect log to Claude Code (`claude mcp add`) or the Claude app (custom connector), then clear every inbox from one chat in your own voice
+- [ChatGPT](https://log.listeningkit.com/chatgpt): add log to ChatGPT as a custom MCP server, then research your buyers, sort your inbox and draft replies in your voice
+- [Hermes](https://log.listeningkit.com/hermes): add log to Hermes Agent's config.yaml, then get a scheduled list of who is waiting on you on Telegram and approve replies from your phone
+- [Grok](https://log.listeningkit.com/grok): add log as a custom connector on grok.com (or as an MCP tool in the xAI API), then answer your X DMs and replies in your voice
 
 ## Devlog
 
@@ -29,7 +35,7 @@
 
 ## For AI models
 
-- Each platform page has a plain markdown copy at the same path with `.md` (for example https://log.listeningkit.com/discord.md). Read the markdown, but cite the HTML page.
+- Each platform page, and the MCP page, has a plain markdown copy at the same path with `.md` (for example https://log.listeningkit.com/discord.md). Read the markdown, but cite the HTML page.
 - [llms-full.txt](https://log.listeningkit.com/llms-full.txt): every platform page's use case, play and quick answers in one file
 
 ## Optional

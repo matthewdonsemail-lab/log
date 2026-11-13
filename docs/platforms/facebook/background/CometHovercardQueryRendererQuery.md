@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29231152373168310` |
+| doc_id | `40910485911871813` |
 | Path | `/api/graphql/` |
 | Sends | `actionBarRenderLocation`, `context`, `entityID`, `groupID`, `scale`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider` |
 | Reads | `node....CometHovercard_entity` |
 | Called from | `CometHovercardQueryRenderer.react` |
-| rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
+| rea | `ev_b91b80164a16aef94010b0fe96d78b1a3fb80dcc79b03686f4539c84a7cb2aae` |
 
-Seen 354 time(s) in 19 run(s).
+Seen 359 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -138,12 +138,13 @@ Seen 354 time(s) in 19 run(s).
 | inspect | step 8: wait 5s | 6 | 200 | 547–792 ms | 67342–202011 ms | — |
 | host | step 17: goto /me | 3 | 200 | 580–943 ms | 9289–12025 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 3 | 200 | 824–898 ms | 68–85995 ms | — |
+| inspect | step 10: press Escape | 5 | 200 | 384–772 ms | 1879–36526 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_61594063207669**, step 1: goto /: 200, 550 ms
+**runs/warmup/20261023T074930_<id:5>**, step 1: goto /: 200, 550 ms
 
 Sent:
 
@@ -175,11 +176,11 @@ Answered:
       "comet_hovercard_renderer": {
         "__typename": "CometHovercardPageRenderer",
         "page": {
-          "id": "108424279189115",
+          "id": "<id:1>",
           "is_business_page_active": false,
-          "name": "New York, New York",
+          "name": "<name:1>",
           "entity_card_subtitle": {
-            "text": "Town/city"
+            "text": "<messageText>"
           },
           "about": {
             "text": "",
@@ -196,7 +197,7 @@ Answered:
           "__typename": "Page",
           "pages_story_bucket_v2": {
             "__typename": "DirectMessageThreadBucket",
-            "id": "4256127501085418",
+            "id": "<id:2>",
             "first_story_to_show": null
           },
           "url": "https://www.facebook.com/pages/New-York-New-York/108424279189115",
@@ -237,7 +238,7 @@ Answered:
           "__dr": "CometHovercardPageRenderer.react"
         }
       },
-      "id": "108424279189115"
+      "id": "<id:1>"
     }
   },
   "extensions": {
@@ -434,7 +435,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
+**runs/warmup/20261023T074930_<id:5>**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
 
 Sent:
 
@@ -446,7 +447,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "DEFAULT",
-    "entityID": "61562855553053",
+    "entityID": "<id:3>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -466,19 +467,19 @@ Answered:
       "comet_hovercard_renderer": {
         "__typename": "CometHovercardProfilePlusUserRenderer",
         "user": {
-          "id": "61562855553053",
-          "name": "The Big NYC",
+          "id": "<id:3>",
+          "name": "<name:2>",
           "is_visibly_memorialized": false,
           "is_verified": false,
           "username_for_profile": null,
           "__isActor": "User",
           "__isEntity": "User",
-          "profile_url": "https://www.facebook.com/profile.php?id=61562855553053",
+          "profile_url": "https://www.facebook.com/profile.php?id=<id:3>",
           "__typename": "User",
           "story_bucket": {
             "nodes": "(1 items)"
           },
-          "url": "https://www.facebook.com/profile.php?id=61562855553053",
+          "url": "https://www.facebook.com/profile.php?id=<id:3>",
           "profile_picture": {
             "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
             "width": 100,
@@ -511,7 +512,7 @@ Answered:
           "__dr": "CometHovercardProfilePlusUserRenderer.react"
         }
       },
-      "id": "61562855553053"
+      "id": "<id:3>"
     }
   },
   "extensions": {
@@ -630,7 +631,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_61594063207669**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
+**runs/warmup/20261023T074930_<id:5>**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
 
 Sent:
 
@@ -664,7 +665,7 @@ Answered:
         "__typename": "CometHovercardGroupRenderer",
         "group": {
           "if_viewer_can_see_wayfinding_topics": null,
-          "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region",
+          "name": "<name:3>",
           "url": "https://www.facebook.com/groups/4191018610937243/",
           "group_member_profiles": {
             "formatted_count_text": "17.3K members"
@@ -683,7 +684,7 @@ Answered:
               "… 2 more"
             ]
           },
-          "id": "4191018610937243",
+          "id": "<id:4>",
           "privacy_info": {
             "icon_name": "globe-americas",
             "title": {
@@ -693,16 +694,16 @@ Answered:
               "aggregated_ranges": "(0 items)",
               "ranges": "(0 items)",
               "color_ranges": "(0 items)",
-              "text": "Public group"
+              "text": "<messageText>"
             }
           },
           "join_action_with_menu": {
             "__typename": "GroupJoinedGroupAction",
             "group": {
-              "id": "4191018610937243",
+              "id": "<id:4>",
               "url": "https://www.facebook.com/groups/4191018610937243/",
               "group_type_name_for_content": "GROUP",
-              "name": "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region"
+              "name": "<name:3>"
             },
             "__module_operation_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
               "__dr": "GroupsCometJoinedGroupButton_action$normalization.graphql"
@@ -729,7 +730,7 @@ Answered:
           "__dr": "CometHovercardGroupRenderer.react"
         }
       },
-      "id": "4191018610937243"
+      "id": "<id:4>"
     }
   },
   "extensions": {

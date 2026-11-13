@@ -10,27 +10,28 @@
 | Path | `discord.com/api/auth/login` |
 | Sends | `login`, `undelete`, `login_source`, `gift_code_sku_id` |
 | Reads | `message`, `code`, `errors.login`, `user_id`, `token`, `user_settings.locale`, `user_settings.theme` |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 9 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 1 | 200 | 946 ms | 862 ms | — |
 | inspect | step 2: snapshot | 3 | 400, 200 | 575–892 ms | 36683–43074 ms | — |
+| inspect | step 1: goto /login | 5 | 400, 200 | 607–1295 ms | 26209–1038889 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder**, step 2: snapshot: 400, 575 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 400, 815 ms
 
 Sent:
 
 ```json
 {
-  "login": "matthewdonsemail@gmail.com",
+  "login": "<username:1>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null
@@ -41,14 +42,14 @@ Answered:
 
 ```json
 {
-  "message": "Invalid Form Body",
+  "message": "<messageText>",
   "code": 50035,
   "errors": {
     "login": {
       "_errors": [
         {
           "code": "INVALID_LOGIN",
-          "message": "Login or password is invalid."
+          "message": "<messageText>"
         }
       ]
     }
@@ -56,13 +57,13 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 5: click e40: 200, 946 ms
+**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 400, 575 ms
 
 Sent:
 
 ```json
 {
-  "login": "matthewdonsemail@gmail.com",
+  "login": "<username:1>",
   "undelete": false,
   "login_source": null,
   "gift_code_sku_id": null
@@ -73,8 +74,40 @@ Answered:
 
 ```json
 {
-  "user_id": "1434443116663930960",
-  "token": "(taken out)",
+  "message": "<messageText>",
+  "code": 50035,
+  "errors": {
+    "login": {
+      "_errors": [
+        {
+          "code": "INVALID_LOGIN",
+          "message": "<messageText>"
+        }
+      ]
+    }
+  }
+}
+```
+
+**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 946 ms
+
+Sent:
+
+```json
+{
+  "login": "<username:1>",
+  "undelete": false,
+  "login_source": null,
+  "gift_code_sku_id": null
+}
+```
+
+Answered:
+
+```json
+{
+  "user_id": "<userId:1>",
+  "token": "<token>",
   "user_settings": {
     "locale": "en-US",
     "theme": "light"

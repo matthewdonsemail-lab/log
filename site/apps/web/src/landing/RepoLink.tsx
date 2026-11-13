@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, Lock, Star, UserPlus, X } from 'lucide-react'
 import { GG_REVIEWS, type Review } from './ggReviews'
 import './RepoModal.css'
 import { ggJoinUrl, track } from './track'
+import { toast } from '@listeningkit/ui'
 
 // The gg page's video player loads only when the modal reaches the video, not with the landing page.
 const VslPlayer = lazy(() => import('./VslPlayer'))
@@ -187,7 +188,6 @@ export function RepoModal({
   endpoint?: string
 }) {
   const [step, setStep] = useState<Step>('ask')
-  const [error, setError] = useState(false)
   const [watched, setWatched] = useState(0)
   const unlocked = watched >= WATCH_GATE_SECONDS
   const panel = useRef<HTMLDivElement>(null)
@@ -226,7 +226,6 @@ export function RepoModal({
   async function subscribe(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const email = String(new FormData(e.currentTarget).get('email') ?? '').trim()
-    setError(false)
     setStep('sending')
     try {
       const res = await fetch(endpoint, {
@@ -244,7 +243,7 @@ export function RepoModal({
       setStep('thanks')
     } catch {
       track('newsletter_signup_error', { repo })
-      setError(true)
+      toast.error('That did not go through.', 'Try again, or skip and continue.')
       setStep('ask')
     }
   }
@@ -410,11 +409,6 @@ export function RepoModal({
                 <button type="submit" disabled={step === 'sending'} className="lk-btn w-full disabled:opacity-60">
                   {step === 'sending' ? 'Joining' : 'Join the newsletter'} <ArrowRight size={14} strokeWidth={3} />
                 </button>
-                {error ? (
-                  <p role="alert" className="text-sm font-bold text-red-600">
-                    That did not go through. Try again, or skip and continue.
-                  </p>
-                ) : null}
                 <button
                   type="button"
                   onClick={() => {

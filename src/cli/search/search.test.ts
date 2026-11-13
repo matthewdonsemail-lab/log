@@ -35,8 +35,8 @@ function fixture() {
 }
 
 const EXPORTED = [
-  { id: "1547936265436012645", kind: "group", name: "log", members: ["QuadScorpion", "John"], messages: [{ id: "1", at: "2026-10-28T08:00:11Z", from: "sourcedandsoldtothehighestbidder", fromMe: true, text: "Yo, this is Stump from the MCP" }, { id: "2", at: "2026-10-28T08:01:00Z", from: "John", fromMe: false, text: "the inference saver setup is live" }] },
-  { id: "1555254123148873869", kind: "dm", name: null, members: ["Jilly"], messages: [] },
+  { id: "1000000000000000001", kind: "group", name: "log", members: ["QuietSparrow", "Jon"], messages: [{ id: "1", at: "2026-10-28T08:00:11Z", from: "myDiscordName", fromMe: true, text: "Yo, this is Stump from the MCP" }, { id: "2", at: "2026-10-28T08:01:00Z", from: "Jon", fromMe: false, text: "the inference saver setup is live" }] },
+  { id: "1555254123148873869", kind: "dm", name: null, members: ["Jinny"], messages: [] },
 ];
 
 describe("log search index on Discord", () => {
@@ -56,10 +56,10 @@ describe("log search index on Discord", () => {
     expect(calls).toMatchObject([{ action: "export", limit: 20000 }]);
     expect(out.join("\n")).toContain("discord discordOne: 1 conversations, 2 messages");
     const saved = loadConversations();
-    expect(saved).toMatchObject([{ platform: "discord", account: "discordOne", conversationId: "1547936265436012645", box: "group log", with: ["QuadScorpion", "John"] }]);
+    expect(saved).toMatchObject([{ platform: "discord", account: "discordOne", conversationId: "1000000000000000001", box: "group log", with: ["QuietSparrow", "Jon"] }]);
     out.length = 0;
     expect(await runCli(["search", "inference saver setup", "--platform", "discord"], context as never)).toBe(0);
-    expect(out.join("\n")).toContain("conversation 1547936265436012645");
+    expect(out.join("\n")).toContain("conversation 1000000000000000001");
   });
 });
 
@@ -75,6 +75,6 @@ describe("log search index when Discord refuses the read", () => {
     await runCli(["search", "index", "--platform", "discord"], context as never);
     expect(out.join("\n")).toContain("discord discordOne: rateLimited: Discord answered 429 to channel 1555254123148873869");
     expect(out.join("\n")).toContain("kept the 1 conversation(s) read before it, 2 messages, and read nothing more");
-    expect(loadConversations()).toMatchObject([{ platform: "discord", conversationId: "1547936265436012645" }]);
+    expect(loadConversations()).toMatchObject([{ platform: "discord", conversationId: "1000000000000000001" }]);
   });
 });

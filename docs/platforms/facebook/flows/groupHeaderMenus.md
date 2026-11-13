@@ -2,7 +2,7 @@
 
 Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked
 
-Built by `log flow fromInspect` from the recording `C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupHeaderMenus` (account groupHeaderMenus). Run it on any account with `log flow run groupHeaderMenus --account <a> --live`, or over MCP as the tool `flowGroupHeaderMenus` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T153648_<userId:1>/sequences/groupHeaderMenus` (account groupHeaderMenus). Run it on any account with `log flow run groupHeaderMenus --account <a> --live`, or over MCP as the tool `flowGroupHeaderMenus` (rule 31).
 
 ## Params
 

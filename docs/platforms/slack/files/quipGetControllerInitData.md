@@ -34,7 +34,7 @@ Sent:
     "_x_id": "2c6eaecf-1793689471.584",
     "_x_gantry": "true",
     "_x_desktop_ia": "4",
-    "slack_route": "T0C4VCD06MR",
+    "slack_route": "<teamId:1>",
     "_x_version_ts": "1793684253",
     "_x_foreground": "true",
     "_x_frontend_build_type": "current",
@@ -42,7 +42,7 @@ Sent:
     "_x_num_retries": "0"
   },
   "body": {
-    "------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\nxoxc-12165421006739-12156263517591-12492529441700-5bffe6e6a317b9bbab53d938a4526d20e882de6ab372cd46f9f90868bb0322a0\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ncanvas-controller-init\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Dispo… (592 chars)"
+    "------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name": "\"token\"\r\n\r\n<slackToken>\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name=\"_x_reason\"\r\n\r\ncanvas-controller-init\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Disposition: form-data; name=\"_x_mode\"\r\n\r\nonline\r\n------WebKitFormBoundaryfXCqttnwvuT6AAtY\r\nContent-Dispo… (592 chars)"
   }
 }
 ```

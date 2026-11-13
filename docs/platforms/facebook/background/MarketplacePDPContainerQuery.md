@@ -36,7 +36,7 @@ Seen 15 time(s) in 7 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261026T180628_61594285317994**, scroll: -553px in 12 wheel steps, 499 ms: 200, 479 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: -553px in 12 wheel steps, 499 ms: 200, 479 ms
 
 Sent:
 
@@ -54,7 +54,7 @@ Sent:
     "referralSurfaceString": "browse_tab",
     "scale": 1,
     "shouldFetchLoggedOutSimilarListings": false,
-    "targetId": "1818774979262678",
+    "targetId": "<id:1>",
     "useDefaultActor": false,
     "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
     "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
@@ -111,7 +111,7 @@ Answered:
         "viewer": "(4 fields)",
         "__module_operation_MarketplacePDP_page": "(1 fields)",
         "__module_component_MarketplacePDP_page": "(1 fields)",
-        "id": "66:1818774979262678:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:<id:1>:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },
@@ -133,7 +133,7 @@ Answered:
 }
 ```
 
-**runs/host/20261026T180628_61594285317994**, scroll: +617px in 15 wheel steps, 789 ms: 200, 361 ms
+**runs/host/20261026T180628_<userId:1>**, scroll: +617px in 15 wheel steps, 789 ms: 200, 361 ms
 
 Sent:
 
@@ -151,7 +151,7 @@ Sent:
     "referralSurfaceString": "browse_tab",
     "scale": 1,
     "shouldFetchLoggedOutSimilarListings": false,
-    "targetId": "2249546198922840",
+    "targetId": "<id:2>",
     "useDefaultActor": false,
     "__relay_internal__pv__MarketplacePDPShouldUseListingRevamprelayprovider": false,
     "__relay_internal__pv__MarketplacePDPCometSimilarListingsrelayprovider": false,
@@ -208,7 +208,7 @@ Answered:
         "viewer": "(4 fields)",
         "__module_operation_MarketplacePDP_page": "(1 fields)",
         "__module_component_MarketplacePDP_page": "(1 fields)",
-        "id": "66:2249546198922840:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
+        "id": "66:<id:2>:IN_MEMORY_MARKETPLACE_PRODUCT_DETAILS_PAGE:MarketplaceC2CProductDetailsPage"
       }
     }
   },

@@ -51,7 +51,7 @@ function fixture() {
 
 function seed() {
   saveConversations([
-    { platform: "twitter", account: "matt", conversationId: "1:2", box: "xchat", with: ["nefer"], messages: [{ id: "10", at: "2026-11-01T00:00:00Z", from: "nefer", fromMe: false, text: "(audio: v.m4a)" }] },
+    { platform: "twitter", account: "matt", conversationId: "1:2", box: "xchat", with: ["handle_n1"], messages: [{ id: "10", at: "2026-11-01T00:00:00Z", from: "handle_n1", fromMe: false, text: "(audio: v.m4a)" }] },
     { platform: "discord", account: "discordOne", conversationId: "55", box: "dm", with: ["A"], messages: [{ id: "9", at: "2026-11-02T00:00:00Z", from: "A", fromMe: false, text: "" }] },
   ]);
   const media = { type: "audio", filename: "v.m4a", media_hash_key: "abc" };
@@ -106,7 +106,7 @@ describe("log transcribe", () => {
     expect(calls).toMatchObject([{ action: "voiceNotes", channels: ["55"] }]);
     expect(said.sort()).toEqual(["v.m4a", "voice-message.ogg"]);
     expect(r.out).toContain("2 voice note(s) transcribed (2 new with AssemblyAI, 0 from the cache)");
-    expect(r.out).toContain("twitter @nefer: 1");
+    expect(r.out).toContain("twitter @handle_n1: 1");
     expect(r.out).toContain("discord A: 1");
     const texts = loadConversations().map((c) => c.messages[0].text).sort();
     expect(texts).toEqual(['(voice note: "words of v.m4a")', '(voice note: "words of voice-message.ogg")']);

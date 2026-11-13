@@ -84,7 +84,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed bottom-3 right-3 z-50 flex flex-col gap-2">
+      <div aria-live="polite" aria-atomic="false" className="fixed bottom-3 right-3 z-[10002] flex flex-col gap-2">
         {toasts.map(toast => (
           <ToastItem key={toast.id} toast={toast} onDismiss={dismiss} />
         ))}
@@ -125,7 +125,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
         <div className="flex-1">
           <p className={`text-sm font-medium ${textColors[toast.type]}`}>{toast.title}</p>
           {toast.message && (
-            <p className={`text-xs mt-1 ${textColors[toast.type]} opacity-80`}>{toast.message}</p>
+            <p className={`text-sm mt-1 ${textColors[toast.type]} opacity-80`}>{toast.message}</p>
           )}
         </div>
         <button

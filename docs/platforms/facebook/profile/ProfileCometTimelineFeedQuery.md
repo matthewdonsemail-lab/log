@@ -25,7 +25,7 @@ Seen 3 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 1004 ms
+**runs/inspect/20261023T045453_<userId:2>**, step 7: goto /: 200, 1004 ms
 
 Sent:
 
@@ -43,7 +43,7 @@ Sent:
     "renderLocation": "timeline",
     "runWithContinuationKey": true,
     "scale": 1,
-    "userID": "61556829712306",
+    "userID": "<userId:1>",
     "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
     "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
     "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
@@ -83,7 +83,7 @@ Answered:
   "first": {
     "data": {
       "user": {
-        "id": "61556829712306",
+        "id": "<userId:1>",
         "timeline_list_feed_units": {
           "edges": [
             {
@@ -121,14 +121,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+          "uri": "<mediaUrl> (452 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+          "uri": "<mediaUrl> (452 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -214,14 +214,14 @@ Answered:
       "extensions": {
         "prefetch_uris_v2": [
           {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+            "uri": "<mediaUrl> (452 chars)",
             "label": null,
             "width": null,
             "height": null,
             "surface": null
           },
           {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
+            "uri": "<mediaUrl> (452 chars)",
             "label": null,
             "width": null,
             "height": null,

@@ -1,6 +1,6 @@
 ---
 name: lifecycle
-description: 'The account lifecycle (rule 35): one XState machine per Facebook account from import to its host, the browser opened once per local day and kept open, onboarding (proxy, sign-in, checks, profile, name, location, a day of Listaro''s warm-up) and host (watching, acting, overnight). Use when matt asks where an account is, what it has left, what happens on a checkpoint or restriction, or to change the lifecycle.'
+description: 'The account lifecycle (rule 35): one XState machine per Facebook account from import to its host, the browser opened once per local day and kept open, onboarding (proxy, sign-in, checks, profile, name, location, a day of warm-up) and host (watching, acting, overnight). Use when matt asks where an account is, what it has left, what happens on a checkpoint or restriction, or to change the lifecycle.'
 ---
 
 # lifecycle

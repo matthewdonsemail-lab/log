@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf` |
+| rea | `ev_7d19cfe1e6071070328155d2deff0eba19eac03c7e288867577eea08652d5a6b` |
 
-Seen 172 time(s) in 48 run(s).
+Seen 180 time(s) in 52 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ Seen 172 time(s) in 48 run(s).
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 414–8934 ms | 1640–10709 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 503 ms | 747 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 468 ms | 2145 ms | — |
-| inspect | step 1: goto / | 9 | 200 | 431–2879 ms | 1800–4779 ms | — |
+| inspect | step 1: goto / | 12 | 200 | 330–2879 ms | 1323–4779 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 431 ms | 736 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 7439 ms | 7856 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 673 ms | 1809 ms | — |
@@ -118,12 +118,17 @@ Seen 172 time(s) in 48 run(s).
 | inspect | step 3: goto /direct/inbox/ | 1 | 200 | 355 ms | 5467 ms | error 1357005: Your request couldn't be processed |
 | inspect | step 5: goto /direct/t/<id>/ | 1 | 200 | 186 ms | 5496 ms | error 1357005: Your request couldn't be processed |
 | inspect | step 1: goto /direct/t/<id>/ | 1 | 200 | 217 ms | 6751 ms | error 1357005: Your request couldn't be processed |
+| inspect | signIn: password typed; submitting with Enter | 1 | 200 | 6970 ms | 12356 ms | — |
+| inspect | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 2714 ms | 6604 ms | — |
+| inspect | step 8: click e53 | 1 | 200 | 330 ms | 5389 ms | — |
+| inspect | step 9: snapshot | 1 | 200 | 24588 ms | 1903 ms | — |
+| inspect | step 2: goto / | 1 | 200 | 337 ms | 1805 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 428 ms
+**runs/warmup/20261023T080515_<id:1>**, step 1: goto /marketplace/: 200, 428 ms
 
 Sent:
 
@@ -142,7 +147,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 427 ms
+**runs/warmup/20261023T080515_<id:1>**, step 3: goto /marketplace/you/selling: 200, 427 ms
 
 Sent:
 
@@ -161,7 +166,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 438 ms
+**runs/warmup/20261023T080515_<id:1>**, step 5: goto /messages/: 200, 438 ms
 
 Sent:
 

@@ -11,7 +11,7 @@ function fresh(): Database {
 }
 
 function message(over: Partial<EventInsert> = {}): EventInsert {
-  return { platform: "discord", account: "me", conversationId: "c1", type: "message", with: "Deepman", text: "hi", box: "dm", payload: { id: "1" }, sourceAt: "2026-11-08T01:00:00Z", receivedAt: "2026-11-08T01:00:01Z", source: "live", ...over };
+  return { platform: "discord", account: "me", conversationId: "c1", type: "message", with: "Dex", text: "hi", box: "dm", payload: { id: "1" }, sourceAt: "2026-11-08T01:00:00Z", receivedAt: "2026-11-08T01:00:01Z", source: "live", ...over };
 }
 
 const senders = (handle: Database) => (handle.prepare("SELECT senderUserId FROM messages ORDER BY seq").all() as { senderUserId: string }[]).map((r) => r.senderUserId);
@@ -20,13 +20,13 @@ describe("stable ids for people and accounts", () => {
   test("a person known only by handle is re-keyed to their real id once it is learned, and later messages use it", () => {
     const handle = fresh();
     insertEventRow(handle, message());
-    expect(senders(handle)).toEqual(["@Deepman"]);
-    insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "deepman", "Deep", "2026-11-08T01:05:00Z"));
+    expect(senders(handle)).toEqual(["@Dex"]);
+    insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "dex", "Deep", "2026-11-08T01:05:00Z"));
     expect(senders(handle)).toEqual(["555"]);
     insertEventRow(handle, message({ payload: { id: "2" }, text: "again", sourceAt: "2026-11-08T01:06:00Z" }));
     expect(senders(handle)).toEqual(["555", "555"]);
-    expect(handle.prepare("SELECT userId, handle, displayName FROM identities WHERE platform = 'discord'").all()).toEqual([{ userId: "555", handle: "Deepman", displayName: "Deep" }]);
-    expect(handle.prepare("SELECT fromId, toId, reason FROM identityMerges").all()).toEqual([{ fromId: "@deepman", toId: "555", reason: "identityLearned" }]);
+    expect(handle.prepare("SELECT userId, handle, displayName FROM identities WHERE platform = 'discord'").all()).toEqual([{ userId: "555", handle: "Dex", displayName: "Deep" }]);
+    expect(handle.prepare("SELECT fromId, toId, reason FROM identityMerges").all()).toEqual([{ fromId: "@dex", toId: "555", reason: "identityLearned" }]);
   });
 
   test("the account's own messages move from self: to its real id, only in that account's chats", () => {
@@ -44,8 +44,8 @@ describe("stable ids for people and accounts", () => {
   test("learning the same alias twice is one event, and a rebuild lands on the same rows", () => {
     const handle = fresh();
     insertEventRow(handle, message());
-    expect(insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "Deepman", null, "2026-11-08T01:05:00Z"))).not.toBeNull();
-    expect(insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "@deepman", null, "2026-11-08T01:09:00Z"))).toBeNull();
+    expect(insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "Dex", null, "2026-11-08T01:05:00Z"))).not.toBeNull();
+    expect(insertEventRow(handle, identityLearnedEvent("discord", "me", "555", "@dex", null, "2026-11-08T01:09:00Z"))).toBeNull();
     insertEventRow(handle, accountIdentifiedEvent("discord", "me", "999", "2026-11-08T02:00:00Z"));
     expect(verifyDerived(handle).ok).toBe(true);
   });

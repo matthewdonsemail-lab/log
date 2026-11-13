@@ -2,7 +2,11 @@
 
 What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself.
 
-Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
+
+## Current scope
+
+This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
 ## Use cases these tools are part of
 
@@ -207,7 +211,11 @@ log facebook capture --docs          # run it live (Monitor), every stage prints
 3. Each GraphQL request's slice (`<Name>.graphql`, its doc_id module, and the
    modules that import it) goes to `rea analyze-javascript-application`:
    about 4 s each, cached by sha256 in `~/.logCli/rea/facebookClient/`.
-4. `docs/platforms/facebook/<domain>/<Name>.md` gets the facts block; the three
+4. `docs/platforms/facebook/<domain>/<Name>.md` gets the facts block, redacted
+   before it is written (`src/privacy/redact`: secrets, emails, phones, IPs,
+   ids, names, usernames and message text become `<slackToken>`, `<email>`,
+   `<userId:1>`, `<messageText>` and the like; the raw run stays in
+   `~/.logCli/runs/`). The three
    reasoning sections are written by hand from the facts and rea (open the
    Evidence with `inspect_analysis_view`). lefthook's pre-push refuses a
    push while any is unwritten, unread by rea, or older than a run.
@@ -329,7 +337,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass`
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 19, 22, 26, 27, 46, 48, 85, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 19, 26, 117, 1, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsList`
 
@@ -341,7 +349,7 @@ log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, s
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 19, 25, 117, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsExchanges`
 
@@ -350,7 +358,7 @@ The recorded runs on this machine, and pruning the ones rea settled and the requ
 log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 19, 25, 117, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsPrune`
 
@@ -359,7 +367,7 @@ The recorded runs on this machine, and pruning the ones rea settled and the requ
 log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 19, 25, 117, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `runsSpace`
 
@@ -368,7 +376,7 @@ The recorded runs on this machine, and pruning the ones rea settled and the requ
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 19, 25, 117, 66, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `storageVerify`
 
@@ -408,7 +416,7 @@ Follow or stop a long MCP run: each runs as a job when it outlasts its call's wa
 log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `jobCancel`
 
@@ -418,7 +426,7 @@ log job cancel <jobId>   (stops it at its next browser step; never once Publish 
 Fill the named fields; each value goes through whole.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/voiceNote" }), getGuide({ useCase: "twitter/getTheAction" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `jobList`
 
@@ -427,48 +435,42 @@ Follow or stop a long MCP run: each runs as a job when it outlasts its call's wa
 log job list [--json]   (the latest jobs)
 Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
-AGENTS.md (log://agents): rules 10, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+AGENTS.md (log://agents): rules 8, 26, 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
-From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
 
-**Rule 6.** 2026-10-18 · Processes that run over time are XState machines that can be started and watched from the CLI (`log watch`, `src/observability/trace`).
+**Rule 1.** 2026-10-18 · Use camelCase for owned files, folders, values, ids, statuses and error codes. Convert external naming once at the boundary. See docs/namingConventions.md.
 
-**Rule 10.** 2026-10-18 · matt asked for posting: `log publish` posts one listing through the publish machine. It is a dry run unless `--live`, and once Publish is clicked nothing is retried. Captchas go CaptchaKraken first, then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still holds for editing and deleting.
+**Rule 6.** 2026-10-18 · Processes that run over time use XState machines and observable stages through the existing CLI/trace infrastructure.
 
-**Rule 19.** 2026-10-18 · Captures are kept raw for analysis. The HAR `log publish` records from Camoufox keeps every cookie, header, token and body: nothing is stripped, because rea, SubQ and the matrices need it. It is only for matt's own development machine: it stays in the run folder (`~/.logCli/publish/<run>/firefox`) and is never committed (`skills/reaCapture/SKILL.md`). The REA work is based on live runs.
+**Rule 8.** 2026-10-18 · Platform actions require the user authorization their tool defines. Send, post, react, join, edit and delete only when authorized; preserve explicit live confirmation, governor and account gates. Ordinary reads do not need new approval.
 
-**Rule 22.** 2026-10-19 · Every action records a HAR, with no way to turn it off. The proxy gate puts a raw HAR recorder (rule 19) on every browser context, and refuses a context without a capture folder (`captureMissing`). That covers connect, scan, status, each watch check and publish. Each run keeps `~/.logCli/runs/<action>/<time>_<account>/firefox` (publish: its run folder): `session.har`, `steps.jsonl` (every action the run logged, timed), and `steps/NN_<action>.har`, one per step, each read by the local rea (`settleRunCapture`). Never committed.
+**Rule 19.** 2026-10-18 · Every browser action records its raw HAR and timed step evidence, with no switch to disable capture. Raw private captures may contain credentials. Keep them in the selected private runtime/browser-host storage, never in git, central payload logs or user-facing output. Retention/pruning must preserve required analysis evidence.
 
-**Rule 25.** 2026-10-19 · matt: a run that fails or hangs is fixed from its own recording, never by guessing. Read its HAR with rea (timeline, cause line, compare runs), then fix the machine. The outline is at the top of this file.
+**Rule 25.** 2026-10-19 · Fix failed or unfamiliar behavior from its own recorded action/request/response timeline. Identify the first response deciding the outcome, compare evidence, then change the machine. Do not infer success from a screen, timer or completed tool call.
 
-**Rule 26.** 2026-10-19 · matt: "I always want to see what is going on." Every process that runs over time writes a progress line per stage as it happens (never only at the end) and to a log file in its folder. Agents run long commands so the lines stream live (Claude Code: Monitor, never piped through `tail`/`head`).
+**Rule 26.** 2026-10-19 · Stream progress while work runs, one meaningful line per stage, with the run log retained. Explain stages in plain words; do not leave the user waiting silently for a final buffered result.
 
-**Rule 27.** 2026-10-19 · matt: every request Facebook's client makes in our runs is documented by domain in `docs/platforms/facebook/<domain>/<request>.md`: what it sends and reads, which step fires it, how fast, what errors it returns, and why it matters to our machines. Built by `log capture --docs`: our syntax-tree parse cuts each request's modules out of Facebook's bundles, rea reads each slice (seconds, not the whole bundle). lefthook's pre-push (`check:facebookClientDocs`) refuses a push while a request is undocumented, unread by rea, has its reasoning unwritten, or a run is newer than the docs.
+**Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
-**Rule 30.** 2026-10-19 · matt: "If I tell you to do something, do it completely." When matt gives a plan, it is carried out to the end in the same turn, not stopped to ask again or to say what won't be done. `log inspect start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so a recording continues at once. Recording a sign-in or a checkpoint with `log inspect` (signIn, code, solve, click) is the intended work: it is how each state gets documented from rea. The run on 2026-10-19 was interrupted once because a snapshot printed the account's email and password; snapshots now redact every typed field value (`redact_fields`), and signIn/code read only the private login.json (rule 21), so no credential reaches any output.
+**Rule 35.** 2026-10-19 · Browser work uses one account browser through its active day, with actions as tabs/steps; close only for a logged lifecycle reason. Preserve existing proxy-country, locale/timezone, device/profile, headed visibility, capture, active-hours and launch-budget gates. Keep checkpoint stops and account-specific constraints in the browser/flow guides. Do not create a fresh browser per action.
 
-**Rule 35.** 2026-10-19 · matt: the browser stays open. One browser per account, opened once per local day by its host and kept open through the account's active hours; every action is a tab in it; it closes only for a logged reason (end of active hours, shutdown, checkpoint or restriction, account lost, a crash reopened once). Every account runs one lifecycle machine (`src/marketplace/lifecycle`, XState) across an onboarding lane (with a day's warm-up after profile and name) and a host lane. Top of this file.
+**Rule 38.** 2026-10-19 · Do not introduce discussions of Meta/Facebook rules, terms, eligibility or account ownership unless Matt raises them.
 
-**Rule 38.** 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with him unless he raises them first. Research text that does is not his, and is never repeated to him. Top of this file.
+**Rule 39.** 2026-10-19 · Use only the scope, options and intent Matt stated or implied. Do not add unrelated alternatives to research, comparisons, plans or implementation.
 
-**Rule 39.** 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." Deep research prompts, searches, SubQ matrices, plans and write-ups use only what matt said, or clearly meant through a misspelling. Nothing added, nothing steered towards. Top of this file.
+**Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
-**Rule 40.** 2026-10-19 · matt: no physical options. He is in Vietnam with no physical access. Phones, SIMs, mini PCs, laptops, phone farms and home devices are never options unless he names them. In scope: hosted and cloud options, the tools he named and their competitors, and what our four projects already use.
+**Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
 
-**Rule 41.** 2026-10-19 · matt: "any time any task correlates to money, and I never say something, that means you shouldn't do what you think. You should do what I say." Paid work (deep research, SubQ, proxies, captcha, vendors) does exactly what he asked, nothing more. Ask before anything else.
+**Rule 66.** 2026-10-22 · Prune recordings only through the existing evidence-aware routine after analysis and documentation requirements are satisfied. Keep findings, exchanges and required recovery evidence; do not delete private data as incidental cleanup.
 
-**Rule 46.** 2026-10-20 · matt: names are browser-agnostic. A command, domain, type or message is named for what it does, never for one browser (Camoufox's Firefox, AdsPower's Chromium, rule 44): `log capture --docs | --settle | --har` (was `firefoxCapture`, kept as an alias), `src/rea/capture` (was `rea/firefox`), `BrowserCapture`, `settleCapture`. Run folders already carry the browser that ran (`adsPower/`, `camoufox/`).
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
-**Rule 48.** 2026-10-20 · matt: what a platform's client does is documented by platform first, then domain: `docs/platforms/<platform>/<domain>/<request>.md` (was `docs/facebookClient/`; Facebook is `docs/platforms/facebook/`, and its group requests have a `groups` domain of their own). A new platform or domain is explored with `log inspect` and gets its own folder beside Facebook's. Over MCP, any call that runs long is watched live: the caller starts a Monitor on `~/.logCli/mcp/<day>.log` before it (rule 26), as the server's instructions and each long tool's description say.
+**Rule 117.** 2026-11-02 · Current behavior belongs in its domain spec with code anchors; generator/wiring changes update that spec and relevant use cases. Distinguish implemented anchors from future design. Rule 170 governs which checks run automatically.
 
-**Rule 66.** 2026-10-22 · matt: the runs never fill the disk again. A run is deleted once it is analysed: rea settled it (`settle.json`) and the request docs hold its requests (`log facebook capture --docs`). The docs build folds each request's facts into `~/.logCli/rea/clientFacts.json`, so a doc keeps every row its pruned runs gave and only adds. `log runs` lists them, `log runs prune --apply` deletes them and keeps each one's findings.md, steps.jsonl, settle.json and requests by domain (`~/.logCli/runs/kept`, `runs/pruned.jsonl`). An agent hook (`scripts/hooks/storage.ts`) says so when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free. Tests never write into the real runs (`scripts/tests/preload.ts`). `skills/runs/SKILL.md`.
+**Rule 134.** 2026-11-04 · Existing workspace log.db is the native private record/coordination foundation. Preserve events, stable identities, chats/messages, attachments/interactions, claims/owners/cursors, queues/jobs, media/search and records/state. Keep current WAL/migration/version semantics and transaction boundaries; unknown events retain source payload and are surfaced for analysis. Only proven projections are rebuildable.
 
-**Rule 73.** 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of the stack, above rule 30 and every other: Facebook's internal API answers are the decision-making factor of what and when something is relevant, and the deterministic factor of the system. Every browser step reads the internal API answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. The MCP instructions put it first. Inspect steps read theirs since rule 74, and every flow, warm-up and host step on AdsPower that makes a call since 2026-10-23; the Camoufox-only machines don't yet (#35). Top of this file.
-
-**Rule 85.** 2026-10-25 · matt: "THE WHOLE POINT IS TO GO THROUGH REA." Every platform's internal calls go through rea, their code as well as their network, never Facebook's alone. `log facebook capture --docs` builds every browser platform's request docs (`docs/platforms/<platform>/`): it takes each run's calls to that platform's hosts (`PLATFORM_SITES`), names each by its GraphQL operation or its path without ids, finds the code that sends it in the platform's own bundles by syntax tree (an operation by its exact name, a path where it is fetched), and rea reads each call's slice (`src/rea/platformClient`). A call whose code isn't in the bundles keeps its step's rea reading. The docs gate (`check:facebookClientDocs`) refuses a platform's doc that rea hasn't read or whose reasoning isn't written. The first Reddit run: 39 calls, 33 read from their code, the other 6 from their step.
-
-**Rule 134.** 2026-11-04 · matt: "Yes, go", moving the inbox's state out of loose files into one SQLite database, `~/.logCli/log.db` (`LOG_DB` moves it; `src/inbox/store`, WAL, every write in a `BEGIN IMMEDIATE` transaction). The owner appends every event its push channel brings in to `events` with a sequence number, once (`appendEvent`, by its event id), and each session reads from its own cursor (`cursors`), so nothing is shown twice or lost between sessions; `pending.jsonl` is imported once and no longer written. An event type nobody has catalogued is stored with its raw payload and raised loudly (`unknownEventType`, `eventTypes`), to be named from rea, the docs and SubQ (rule one). The one owner per account (rules 131, 132) is a row in `owners` (pid, hostname, heartbeat, status, relay port and token, subscribers, a generation that rises with each new owner), never `session.json`, and a relay subscriber that falls more than 1 MB behind is dropped rather than slowing the owner. Claims (rule 133) are rows in `claims`, each with its chat's next generation, and a send checks before every part after the first that its claim is still the one held (`stillHeld`); a session whose claim was taken over stops, and the rest is held. Every claim, send and release goes to `actions` in the same transaction as the change it records, with what was done in the chat before it (`stateBefore`), and what was done is searchable with the events (`searchIndex`, FTS5). Each event's moments are timed (`timings`: received, appended, relayed, claimed, actionStart, confirmed, indexed). Alerts are rows in `alerts`. Spec: `docs/specs/agentHooks.md` (REQ-HOOKS-16).
-
-**Rule 165.** 2026-11-07 · matt: "find the place inside of my code that are slowing it down", then "have all timing known and stored so that we're able to then add further optimizations", after `twitterDms` took p50 9.5 s while X answered in 0.69 s, and the live log had no call id, so two sessions' calls couldn't be told apart. Every call is timed, never guessed, through one timing layer for Bun and Python (`src/observability/timing`, `python/platformKit/timing.py`): - **A call id on every call.** Each MCP tool call and terminal run is one call. Its id and how long it took are on its `▶` and `■` lines in the live log. - **Every stage is a span.** Each span records its parent, start and length: the guards (the catch-up wait, the read source, the claim), each step of the voice gate, every `fetch` (SubQ, Jina, Twenty, ...), each Python engine run and the Python start-up before it. The trace goes into the engine's spec and through the account's session host: its queue, the account lock, the spacing, the governor, the client, the action, and every curl_cffi request (twikit, instagrapi, gabriel). The host sends its spans back in its answer, so one call is one tree. - **Stored, kept 90 days.** Spans go to log.db's `spans` table. With `LOG_OTLP_URL` set they are also sent as OTLP to a trace viewer (otel-desktop-viewer), with no OpenTelemetry package to install. - **Read before saying it's slow or fast.** `log timing` (MCP `timing`) gives p50, p95 and p99 per tool and per stage, with each stage's share of the time and the call's own time outside every stage. `log timing --call <id>` shows one call as a waterfall. Optimisation starts from those numbers, and the same report is run again after the change. Research: `RESEARCH/LOG_CLI_CALL_TRACING_TOOLING_2026_11_07.md`. Spec: `docs/specs/callTiming.md`.
+**Rule 165.** 2026-11-07 · Preserve per-stage call timings in the private observability store so latency can be traced to its cause. Keep proposed central metadata free of private payloads.

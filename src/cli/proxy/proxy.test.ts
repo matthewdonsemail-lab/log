@@ -54,11 +54,11 @@ describe("log proxy check", () => {
     const { code, err, twenty } = await run(["proxy", "check", "--account", "galwayOne"], () => ({
       ok: false,
       code: "proxyCountryMismatch",
-      detail: "exit IP 116.105.162.81 is in VN, the account is IE",
+      detail: "exit IP 203.0.113.81 is in VN, the account is IE",
     }));
     expect(code).toBe(1);
     expect(err).toContain("proxyCountryMismatch");
-    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")).toMatchObject({ proxyExitIp: "116.105.162.81", proxyExitCountry: "VN" });
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")).toMatchObject({ proxyExitIp: "203.0.113.81", proxyExitCountry: "VN" });
   });
 
   test("works for any status (it opens no browser), never without a proxy", async () => {

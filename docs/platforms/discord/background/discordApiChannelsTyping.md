@@ -10,7 +10,7 @@
 | Path | `discord.com/api/channels/typing` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1036.js:1 parse`, `runs/inspect/20261030T222341_sourcedandsoldtothehighestbidder/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_sourcedandsoldtothehighestbidder/script1245.js:2 anonymous` |
+| Called from | `runs/inspect/20261030T222341_<name:1>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:1>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:1>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:1>/script1245.js:2 anonymous` |
 | rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
 
 Seen 8 time(s) in 2 run(s).
@@ -26,7 +26,7 @@ Seen 8 time(s) in 2 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261028T065202_sourcedandsoldtothehighestbidder**, step 3: type e2287: 204, 389 ms
+**runs/inspect/20261028T065202_<name:1>**, step 3: type e2287: 204, 389 ms
 
 Sent:
 
@@ -40,7 +40,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 11: type e2625: 204, 405 ms
+**runs/inspect/20261028T062914_<name:1>**, step 11: type e2625: 204, 405 ms
 
 Sent:
 
@@ -54,7 +54,7 @@ Answered:
 null
 ```
 
-**runs/inspect/20261028T062914_sourcedandsoldtothehighestbidder**, step 19: type e3935: 204, 348 ms
+**runs/inspect/20261028T062914_<name:1>**, step 19: type e3935: 204, 348 ms
 
 Sent:
 
@@ -76,7 +76,7 @@ Says the account is typing in a channel (`POST .../typing`); others then get a `
 
 ## What our machine does with it
 
-Fires on our type step before a send. The other side's typing comes back to us as `TYPING_START` over the gateway (Jilly, +0.64 s).
+Fires on our type step before a send. The other side's typing comes back to us as `TYPING_START` over the gateway (<name:2>, +0.64 s).
 
 ## What can go wrong
 
