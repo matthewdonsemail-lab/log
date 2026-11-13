@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { motion } from 'motion/react'
+import { motion, useMotionValue, useTransform } from 'motion/react'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faReddit, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
@@ -31,6 +31,8 @@ const REST_SHADOW = '0 0 0 0px rgba(42, 140, 255, 0), 0 0px 0px -20px rgba(13, 4
 const RAISED_SHADOW = '0 0 0 6px rgba(42, 140, 255, 0.22), 0 24px 48px -20px rgba(13, 42, 76, 0.35)'
 
 function Step({ index, children, className = '' }: { index: number; children: ReactNode; className?: string }) {
+  const focusScale = useMotionValue(1)
+  const focusLayer = useTransform(focusScale, (value) => value > 1.000001 ? 30 : 0)
   const slot = SLOT_SECONDS / CYCLE_SECONDS
   const start = index * slot + 0.001
   const times = [0, start, start + slot * 0.25, start + slot * 0.75, start + slot - 0.001, 1]
@@ -38,6 +40,7 @@ function Step({ index, children, className = '' }: { index: number; children: Re
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
+      style={{ scale: focusScale, zIndex: focusLayer }}
       animate={{
         opacity: 1,
         y: 0,
@@ -106,7 +109,7 @@ function XDemo() {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1 whitespace-nowrap">
               <span className="truncate font-bold">{row.name}</span>
-              <span className="truncate text-[#536471]">@{row.handle} · {row.when}</span>
+              <span className="truncate text-[#536471]">@{row.handle} {row.when}</span>
             </div>
             <div className={`truncate ${row.unread ? 'font-semibold text-[#0F1419]' : 'text-[#536471]'}`}>{row.text}</div>
           </div>
@@ -159,7 +162,7 @@ function FacebookDemo() {
             <Avatar name="Dana" color="#E4405F" />
             <div className="min-w-0 flex-1">
               <div className="text-[15px] font-semibold">Dana Miller <span className="font-normal text-[#65676B]"><Icon icon={faCaretRight} className="mx-1" />Lehigh Valley Locals</span></div>
-              <div className="text-[13px] text-[#65676B]">12m · <Icon icon={faEarthAmericas} className="text-[11px]" /></div>
+              <div className="text-[13px] text-[#65676B]">12m <Icon icon={faEarthAmericas} className="text-[11px]" /></div>
             </div>
             <LogTag>Asking for you</LogTag>
           </div>
@@ -295,7 +298,7 @@ function LinkedinDemo() {
           <div className="-mt-7 px-4 pb-3">
             <span className="flex size-14 items-center justify-center rounded-full border-2 border-white bg-[#0A66C2] text-xl font-bold text-white">Y</span>
             <div className="mt-1 text-base font-semibold">Your Name</div>
-            <div className="text-[#666]">Growth marketer · helping local businesses get found</div>
+            <div className="text-[#666]">Growth marketer helping local businesses get found</div>
           </div>
         </Step>
         <Step index={2} className="rounded-lg border border-[#E0DFDC] bg-white p-3">
@@ -303,7 +306,7 @@ function LinkedinDemo() {
             <Avatar name="Priya" color="#8F5849" size="size-10" />
             <div>
               <div className="font-semibold">Priya Shah</div>
-              <div className="text-xs text-[#666]">Head of Growth · 1h</div>
+              <div className="text-xs text-[#666]">Head of Growth 1h</div>
             </div>
           </div>
           <div className="mt-2">We tested 4 outreach channels this quarter. Here is what booked meetings…</div>
@@ -354,7 +357,7 @@ function SlackDemo() {
             <LogTag>watching live</LogTag>
           </Step>
         </div>
-        <div className="flex flex-col gap-3 px-4 py-4">
+        <div className="flex flex-1 flex-col gap-3 px-4 py-4">
           {messages.map((message, index) => (
             <Step key={index} index={index + 1} className="flex items-start gap-3 rounded-md bg-white p-1">
               <Avatar name={message.name} color={message.color} size="size-9" rounded="rounded-lg" />

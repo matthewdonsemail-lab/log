@@ -1,89 +1,96 @@
+import { useMemo, useState } from 'react'
 import { AreaChart } from '../../components/dither-kit/area-chart'
 import { Area } from '../../components/dither-kit/area'
 import { Grid } from '../../components/dither-kit/grid'
 import { YAxis } from '../../components/dither-kit/y-axis'
-import { ReferenceLine } from '../../components/dither-kit/reference-line'
-import { useState } from 'react'
 import { useChartPart } from '../../components/dither-kit/chart-context'
+import type { UsageSummary } from './usageData'
 
-const config = { usage: { label: 'Usage (%)', color: 'brand' } } as const
-const values = [0, 3, 16, 25, 39, 46, 46, 46, 46, 46, 46, 51, 51, 57, 86]
-const data = Array.from({ length: 32 }, (_, index) => ({ label: new Date(Date.UTC(2026, 9, 28 + index)).toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }), usage: index < values.length ? values[index] : 86 + (index - 14) * 107 / 17 }))
-const margins = { top: 26, left: 54, bottom: 38, right: 18 }
+const config = { usage: { label: 'Calls', color: 'brand' } } as const
+const margins = { top: 26, left: 62, bottom: 38, right: 18 }
+const dayMs = 86400000
+const count = (value: number) => Math.round(value).toLocaleString()
+type UsagePoint = { label: string; start: string; usage: number; daily: number; failed: number | null; forecast: boolean }
 
-function UsageTooltip() {
+function UsageTooltip({ data }: { data: UsagePoint[] }) {
   const chart = useChartPart('UsageTooltip')
-  const index = chart.hoverIndex
-  if (!chart.ready || index === null) return null
-  const point = data[index]
-  const change = point.usage - (data[index - 1]?.usage ?? 0)
-  const date = new Date(Date.UTC(2026, 9, 28 + index)).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })
-  return <div className="pointer-events-none absolute top-2 z-30 w-52 rounded-xl border border-slate-200 bg-white p-3 shadow-lg" style={{ left: Math.max(4, Math.min(chart.plot.width + margins.left + margins.right - 212, chart.xCenter(index) + margins.left + 14)) }}>
+  const point = chart.hoverIndex === null ? null : data[chart.hoverIndex]
+  if (!chart.ready || !point) return null
+  const date = new Date(point.start).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })
+  return <div className="pointer-events-none absolute top-2 z-30 w-56 rounded-xl border border-slate-200 bg-white p-3 shadow-lg" style={{ left: Math.max(4, Math.min(chart.plot.width + margins.left + margins.right - 228, chart.xCenter(chart.hoverIndex ?? 0) + margins.left + 14)) }}>
     <p className="mb-3 text-sm font-semibold text-slate-600">{date}</p>
-    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><span className="h-4 w-1 rounded-full bg-[#2A8CFF]" /><span>{index > 14 ? 'Forecast' : 'Used'}</span><span className="ml-auto tabular-nums">{point.usage.toFixed(1)}%</span></div>
-    <div className="ml-3 mt-2 space-y-1.5 text-sm text-slate-600"><div className="flex justify-between"><span>That day</span><span className="tabular-nums">+{change.toFixed(1)}%</span></div><div className="flex justify-between"><span>Requests</span><span className="tabular-nums">{Math.round(change * 65).toLocaleString()}</span></div></div>
+    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900"><span className="h-4 w-1 rounded-full bg-[#2A8CFF]" /><span>{point.forecast ? 'Forecast' : 'Calls so far'}</span><span className="ml-auto tabular-nums">{count(point.usage)}</span></div>
+    <dl className="ml-3 mt-2 space-y-1.5 text-sm text-slate-600"><div className="flex justify-between gap-3"><dt>{point.forecast ? 'Projected that day' : 'That day'}</dt><dd className="tabular-nums">{count(point.daily)}</dd></div>{point.failed !== null ? <div className="flex justify-between"><dt>Failed that day</dt><dd className="tabular-nums">{count(point.failed)}</dd></div> : null}</dl>
   </div>
 }
-
 UsageTooltip.chartLayer = 'dom' as const
 
-function UsageDateAxis() {
+function UsageDateAxis({ data, actualEnd }: { data: UsagePoint[]; actualEnd: number }) {
   const chart = useChartPart('UsageDateAxis')
   if (!chart.ready) return null
   const hover = chart.hoverIndex
-  const crossing = 0.534435 * chart.plot.width
-  const hoverPosition = hover === null ? null : Math.max(30, Math.min(chart.plot.width - 30, chart.xCenter(hover)))
+  const edge = Math.min(32, chart.plot.width / 2)
+  const positionOf = (index: number) => Math.max(edge, Math.min(chart.plot.width - edge, chart.xCenter(index)))
+  const hoverPosition = hover === null ? null : positionOf(hover)
+  const indices = [...new Set([0, Math.round(actualEnd / 2), actualEnd, data.length - 1])]
+  const displayed: number[] = []
   return <div className="activity-chart-axis pointer-events-none absolute bottom-0 h-7 rounded-md border border-slate-200 bg-slate-100 text-sm leading-[26px] text-slate-600" style={{ left: margins.left, right: margins.right }}>
-    {[0, 9, 19, 31].map((index) => {
-      const position = Math.max(30, Math.min(chart.plot.width - 30, chart.xCenter(index)))
-      const hidden = Math.abs(position - crossing) < 60 || (hoverPosition !== null && Math.abs(position - hoverPosition) < 60)
-      return <span key={index} className="absolute whitespace-nowrap" style={{ left: position, transform: 'translateX(-50%)', visibility: hidden ? 'hidden' : 'visible' }}>{data[index].label.toUpperCase()}</span>
+    {indices.map((index) => {
+      const position = positionOf(index)
+      const hidden = displayed.some((previous) => Math.abs(previous - position) < 66) || (hoverPosition !== null && Math.abs(position - hoverPosition) < 66)
+      if (!hidden) displayed.push(position)
+      return <span key={index} className={`absolute whitespace-nowrap ${index === actualEnd ? 'font-semibold text-[#2A8CFF]' : ''}`} style={{ left: position, transform: 'translateX(-50%)', visibility: hidden ? 'hidden' : 'visible' }}>{data[index].label.toUpperCase()}</span>
     })}
-    <span className="activity-crossing absolute whitespace-nowrap font-semibold text-[#2A8CFF]" style={{ left: crossing, transform: 'translateX(-50%)', visibility: hoverPosition !== null && Math.abs(crossing - hoverPosition) < 60 ? 'hidden' : 'visible' }}>NOV 13</span>
-    {hoverPosition !== null && hover !== null ? <span className="activity-hover-date absolute left-0 whitespace-nowrap rounded bg-blue-50 px-1 font-semibold text-[#0D2A4C]" style={{ transform: `translateX(${hoverPosition}px) translateX(-50%)` }}>{data[hover].label.toUpperCase()}</span> : null}
+    {hoverPosition !== null && hover !== null && data[hover] ? <span className="activity-hover-date absolute left-0 whitespace-nowrap rounded bg-blue-50 px-1 font-semibold text-[#0D2A4C]" style={{ transform: `translateX(${hoverPosition}px) translateX(-50%)` }}>{data[hover].label.toUpperCase()}</span> : null}
   </div>
 }
-
 UsageDateAxis.chartLayer = 'dom' as const
 
-function ForecastMarkers({ activeIndex }: { activeIndex: number | null }) {
+function ForecastMarkers({ data, actualEnd, activeIndex }: { data: UsagePoint[]; actualEnd: number; activeIndex: number | null }) {
   const chart = useChartPart('ForecastMarkers')
   if (!chart.ready) return null
+  const active = activeIndex === null ? null : data[activeIndex]
+  const last = data.length - 1
   return <g className="text-[#2A8CFF]">
-    <path d={data.slice(0, 15).map((point, index) => `${index ? 'L' : 'M'}${chart.xCenter(index)},${chart.y(point.usage)}`).join(' ')} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
-    <line x1={chart.xCenter(14)} x2={chart.xCenter(14)} y1={0} y2={chart.plot.height} stroke="currentColor" strokeOpacity={0.2} strokeDasharray="3 5" />
-    {[14, 31].map((index) => <circle key={index} cx={chart.xCenter(index)} cy={chart.y(data[index].usage)} r={3} fill="white" stroke="currentColor" strokeWidth={1.5} />)}
-    <text x={chart.xCenter(31)} y={chart.y(193) - 10} textAnchor="end" fill="currentColor" className="text-sm font-semibold">193%</text>
-    {activeIndex !== null ? <g>
-      <line x1={chart.xCenter(activeIndex)} x2={chart.xCenter(activeIndex)} y1={0} y2={chart.plot.height} stroke="#94a3b8" strokeWidth={1} strokeOpacity={0.6} />
-      <circle cx={chart.xCenter(activeIndex)} cy={chart.y(data[activeIndex].usage)} r={5} fill="white" stroke="currentColor" strokeWidth={2} style={{ filter: 'drop-shadow(0 0 4px #2A8CFF66)' }} />
-    </g> : null}
+    <path d={data.slice(0, actualEnd + 1).map((point, index) => `${index ? 'L' : 'M'}${chart.xCenter(index)},${chart.y(point.usage)}`).join(' ')} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+    <line x1={chart.xCenter(actualEnd)} x2={chart.xCenter(actualEnd)} y1={0} y2={chart.plot.height} stroke="currentColor" strokeOpacity={0.2} strokeDasharray="3 5" />
+    {[actualEnd, last].map((index) => <circle key={index} cx={chart.xCenter(index)} cy={chart.y(data[index].usage)} r={3} fill="white" stroke="currentColor" strokeWidth={1.5} />)}
+    <text x={chart.xCenter(last)} y={chart.y(data[last].usage) - 10} textAnchor="end" fill="currentColor" className="text-sm font-semibold">{count(data[last].usage)}</text>
+    {active && activeIndex !== null ? <g><line x1={chart.xCenter(activeIndex)} x2={chart.xCenter(activeIndex)} y1={0} y2={chart.plot.height} stroke="#94a3b8" strokeWidth={1} strokeOpacity={0.6} /><circle cx={chart.xCenter(activeIndex)} cy={chart.y(active.usage)} r={5} fill="white" stroke="currentColor" strokeWidth={2} style={{ filter: 'drop-shadow(0 0 4px #2A8CFF66)' }} /></g> : null}
   </g>
 }
 
-export function UsageForecast({ example }: { example: boolean }) {
+export function UsageForecast({ summary }: { summary: UsageSummary }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
-  if (!example) return <div className="flex h-80 items-center justify-center rounded-lg border border-dashed border-slate-200 p-6 text-center text-sm text-slate-600">Usage forecasts will appear when your workspace has a plan limit and billing period.</div>
+  const { data, actualEnd, average } = useMemo(() => {
+    let cumulative = 0
+    const points: UsagePoint[] = summary.buckets.map((bucket) => {
+      cumulative += bucket.calls
+      return { label: new Date(bucket.start).toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }), start: bucket.start, usage: cumulative, daily: bucket.calls, failed: bucket.failed, forecast: false }
+    })
+    const actualEnd = points.length - 1
+    const completed = summary.buckets.slice(0, -1).slice(-7)
+    const average = completed.length ? completed.reduce((sum, bucket) => sum + bucket.calls, 0) / completed.length : 0
+    const lastStart = Date.parse(points[actualEnd]?.start ?? summary.to)
+    for (let index = 1; index <= 7; index++) {
+      const date = new Date(lastStart + dayMs * index)
+      points.push({ label: date.toLocaleDateString('en', { month: 'short', day: 'numeric', timeZone: 'UTC' }), start: date.toISOString(), usage: Math.round(cumulative + average * index), daily: Math.round(average), failed: null, forecast: true })
+    }
+    return { data: points, actualEnd, average }
+  }, [summary])
+  const futureFraction = 1 - actualEnd / (data.length - 1)
   return <div className="min-w-0 rounded-xl bg-white p-5 sm:p-6">
-    <div className="text-2xl font-bold tracking-tight text-[#0D2A4C]">86%</div>
-    <p className="mt-1 text-sm leading-5 text-slate-600">Plan usage · Ends Nov 28 · <span className="font-semibold text-[#2A8CFF]">On pace to hit the limit Nov 13</span></p>
-    <div className="relative mt-3 h-64 min-w-0" role="img" aria-label="Example usage at 86 percent, projected to reach 193 percent by November 28. The plan limit is 100 percent.">
+    <div className="text-2xl font-bold tracking-tight text-[#0D2A4C]">{count(summary.totals.calls)} calls</div>
+    <p className="mt-1 text-sm leading-6 text-slate-600">Last 30 days · <span className="font-semibold text-[#2A8CFF]">{count(summary.totals.failed)} failed</span></p>
+    {summary.totals.calls && actualEnd >= 0 ? <div className="relative mt-3 h-64 min-w-0" role="img" aria-label={`${count(summary.totals.calls)} recorded calls, with a seven day forecast based on the previous seven completed days.`}>
       <AreaChart data={data} config={config} margins={margins} bloom="off" onHoverChange={setActiveIndex}>
-        <Grid /><YAxis className="fill-current text-sm text-slate-600" tickFormatter={(value) => `${value}%`} /><ReferenceLine y={100} className="stroke-slate-400" /><UsageTooltip /><UsageDateAxis />
-        <Area dataKey="usage" variant="hatched" strokeVariant="dashed" /><ForecastMarkers activeIndex={activeIndex} />
+        <Grid /><YAxis className="fill-current text-sm text-slate-600" tickFormatter={(value) => new Intl.NumberFormat('en', { notation: 'compact' }).format(value)} /><UsageTooltip data={data} /><UsageDateAxis data={data} actualEnd={actualEnd} />
+        <Area dataKey="usage" variant="hatched" strokeVariant="dashed" /><ForecastMarkers data={data} actualEnd={actualEnd} activeIndex={activeIndex} />
       </AreaChart>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ clipPath: 'inset(0 calc(54.8387% - 21.4839px) 0 0)' }}>
-        <AreaChart data={data} config={config} margins={margins} bloom="off" interactive={false}>
-          <Area dataKey="usage" variant="gradient" />
-          <ForecastMarkers activeIndex={activeIndex} />
-        </AreaChart>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ clipPath: `inset(0 calc(${futureFraction * 100}% - ${futureFraction * (margins.left + margins.right) - margins.right}px) 0 0)` }}>
+        <AreaChart data={data} config={config} margins={margins} bloom="off" interactive={false}><Area dataKey="usage" variant="gradient" /><ForecastMarkers data={data} actualEnd={actualEnd} activeIndex={activeIndex} /></AreaChart>
       </div>
-    </div>
-    <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
-      <span>Averaging <strong className="text-[#0D2A4C]">6.2%</strong> a day</span>
-      <div className="flex gap-3"><span><span className="mr-1 text-[#2A8CFF]">━</span>Usage</span><span><span className="mr-1 text-[#2A8CFF]">┄</span>Forecast</span><span><span className="mr-1">┄</span>Plan limit</span></div>
-    </div>
+    </div> : <div className="flex h-64 items-center justify-center text-sm text-slate-600">No calls recorded in the last 30 days.</div>}
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600"><span>Averaging <strong className="text-[#0D2A4C]">{count(average)} calls</strong> a day over the last 7 completed days</span><div className="flex gap-3"><span><span className="mr-1 text-[#2A8CFF]">━</span>Calls</span><span><span className="mr-1 text-[#2A8CFF]">┄</span>7-day forecast</span></div></div>
   </div>
 }
-
-

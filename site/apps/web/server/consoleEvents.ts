@@ -48,3 +48,11 @@ export function consoleEvents(): Plugin {
     },
   }
 }
+
+export function localConsoleMode(): Plugin {
+  return {
+    name: 'logLocalConsoleMode',
+    apply: 'serve',
+    transformIndexHtml: (html) => html.replace('</head>', '<script>window.logConsoleMode="local"</script></head>'),
+  }
+}
