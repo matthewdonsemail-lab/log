@@ -241,7 +241,8 @@ export function Icon({ name, size = 16, color }: { name: string; size?: number; 
   return <span className="sb-icon" style={{ width: size, height: size, color }} dangerouslySetInnerHTML={{ __html: svg }} />;
 }
 
-export function Avatar({ name, size = 32 }: { name: string; size?: number }) {
+export function Avatar({ name, size = 32, src }: { name: string; size?: number; src?: string | null }) {
+  if (src && src.startsWith("data:image/")) return <img className="sb-avatar" src={src} alt={name} width={size} height={size} style={{ width: size, height: size, objectFit: "cover" }} />;
   const words = name.replace(/^@/, "").split(/[\s._-]+/).filter(Boolean);
   const letters = (words.length > 1 ? `${words[0][0]}${words[1][0]}` : [...(words[0] ?? "?")].slice(0, 2).join("")).toUpperCase();
   return (

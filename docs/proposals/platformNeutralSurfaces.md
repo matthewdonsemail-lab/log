@@ -242,12 +242,13 @@ The detail, with schemas, files and acceptance tests, is in [inAppVerificationAn
 - URL elicitation is verified for Claude Code and VS Code only ([sources.md](sources.md)). Every other host is unknown until tested, and gets rung 3.
 - Files: `src/platformKit/sessionCheck/client.ts`, `src/mcp/apps/browserView/client.ts`, `src/mcp/server/index.ts`, `src/cli/browser/index.ts`, `python/browser/browserViewer.py`, `python/controlService/tools.py`, `python/controlService/dispatcher.py`, `src/runtime/bridge/client.ts`, `src/console/operations/types.ts`, and a new console route for the link.
 
-**Slice 21: people data stored once, so `report` draws it without a platform call.**
-- `report` reads one data source today (`twitterDmsBySender`), and the `source` input is never dispatched on. It becomes a registry of sources, one per capability, on every platform that has the data.
-- The engines already fetch bios, follower counts, verified flags and display names, then drop them. A new `identityProfiles` table, keyed by platform and user id, keeps them, with the avatar in the existing `blobs` table under a raw codec. It is rebuilt from events like the other derived tables.
-- `report` gains an `identityProfile` source that reads that table.
-- On the hosted path, `report` and `sessionsSignIn` results are redacted before they are journaled. Today a `report` result is journaled as it is.
-- A view written by the agent can't reach a module through a dynamic `import()`. Today only static imports are blocked.
+**Slice 21: people data stored once, so `report` draws it without a platform call (built).**
+- `report`'s `data` is a registry of sources, `REPORT_SOURCES` (`src/mcp/apps/report/helpers/sources.ts`), dispatched on `source`: `twitterDmsBySender` as before, `dmsBySender { platform }` for any platform with chats in log.db (refused with `reportSourceNoData` when it has none), and `identityProfile { platform, userId | handle }` (refused with `identityProfileMissing`).
+- Migration 19 adds `identityProfiles (platform, userId, bio, avatarHash, followerCount, verified, extra, fetchedAt)`. It is a derived table, rebuilt from events: the session callers and `log twitter followers` append `profileSeen` events, and the X extender reads follower counts from notifications. `extra` holds only the keys in `IDENTITY_PROFILE_EXTRA_KEYS`. `putBlob` has a `raw` codec for `avatar` blobs. What each platform keeps is in [storage.md](../specs/storage.md) REQ-STORAGE-18.
+- No avatar is fetched: no engine answer carries the bytes. X followers and Discord's session check now pass the picture link through, kept as `extra.pictureUrl`.
+- On the hosted path, `report` and `reportData` results are redacted before they are journaled (`PRIVATE_RESULT_TOOLS`). `sessionsSignIn` doesn't exist yet: slice 20 adds it to that list.
+- A view written by the agent can't reach a module through `import()`: refused at compile time (`dynamicImportIn`) and at run time (`moduleRequire`).
+- Not built: Slack keeps no profile (its engine folds `display_name` and `real_name` into one label inside Python, so they never reach TypeScript); `log report data` still offers only `twitterDmsBySender`; the server-side text rendering still runs view code with `new Function`, so runtime globals stay reachable from a view.
 - Files: `src/storage/schema/helpers/migrations.ts`, `src/storage/schema/helpers/platformTables.ts`, `src/storage/platform/client.ts`, `src/storage/platform/types.ts`, `src/inbox/senders/types.ts`, `src/mcp/apps/report/client.ts`, `src/mcp/apps/report/view/run.ts`, `src/storage/platform/helpers/extenders.ts`, the Discord, Slack and LinkedIn session callers, `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`.
 
 ### Slice 22: serve the 2026-07-28 revision as well as the older ones

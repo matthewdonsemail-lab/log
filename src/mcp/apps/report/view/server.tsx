@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
 import { transform } from "sucrase";
 import { KitProvider, setHost } from "./kit.tsx";
-import { viewFromModule } from "./run.ts";
+import { VIEW_MODULES, viewFromModule } from "./run.ts";
 
 export const VIEW_IMPORTS = ["log", "react"] as const;
 export const VIEW_CODE_LIMIT = 60_000;
@@ -15,12 +15,27 @@ const STARTERS = new URL("./starters/", import.meta.url);
 
 export type Compiled = { ok: true; compiled: string } | { ok: false; error: string };
 
+const COMPILED_DYNAMIC_IMPORT = /Promise\.resolve\(\)\.then\(\(\)\s*=>\s*_interopRequireWildcard\(require\(/;
+const NATIVE_DYNAMIC_IMPORT = /\bimport\s*\(/;
+const REQUIRE_CALL = /\brequire\(\s*([^)]*)\)/g;
+
+export function dynamicImportIn(compiled: string): string | null {
+  if (COMPILED_DYNAMIC_IMPORT.test(compiled) || NATIVE_DYNAMIC_IMPORT.test(compiled)) return `viewImportRefused: a view can't load a module with import(): import from ${VIEW_IMPORTS.map((n) => `"${n}"`).join(" and ")} at the top`;
+  for (const [, argument] of compiled.matchAll(REQUIRE_CALL)) {
+    const name = /^["']([^"']+)["']$/.exec(argument.trim())?.[1];
+    if (!name || !VIEW_MODULES.includes(name)) return `viewImportRefused: a view can't require ${argument.trim() || "a module"}: import from ${VIEW_IMPORTS.map((n) => `"${n}"`).join(" and ")} at the top`;
+  }
+  return null;
+}
+
 export function compileView(code: string): Compiled {
   const imports = [...code.matchAll(/^\s*import\s[\s\S]*?from\s+["']([^"']+)["']/gm)].map((m) => m[1]);
   const outside = imports.filter((name) => !(VIEW_IMPORTS as readonly string[]).includes(name));
   if (outside.length) return { ok: false, error: `a view imports only from "log" and "react"; it imported ${outside.map((n) => `"${n}"`).join(", ")}` };
   try {
     const out = transform(code, { transforms: ["jsx", "typescript", "imports"], jsxRuntime: "automatic", production: true, filePath: "App.jsx" });
+    const refused = dynamicImportIn(out.code);
+    if (refused) return { ok: false, error: refused };
     return { ok: true, compiled: out.code };
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : String(error) };

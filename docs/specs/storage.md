@@ -36,7 +36,7 @@ Checked by: code and SubQ
 
 ### REQ-STORAGE-05: Nothing a replay needs is cut or looked up again
 
-A payload longer than `PAYLOAD_INLINE_LIMIT` is kept whole, gzip-compressed, in `blobs` (`putBlob`), with `events.rawHash` pointing at it, and a replay reads it back (`readBlob`, `eventInputOf`). The account's own id is written into `events.ownerId` when the event is appended, from a per-database tally of its conversation pairs (`notePairConversation`), so a replay never guesses it again. Each derived message and interaction records the `EXTENDER_VERSION` that made it.
+A payload longer than `PAYLOAD_INLINE_LIMIT` is kept whole, gzip-compressed, in `blobs` (`putBlob`), with `events.rawHash` pointing at it, and a replay reads it back (`readBlob`, `eventInputOf`). A blob of a kind in `RAW_BLOB_KINDS` (`avatar`) is stored as its bytes, codec `raw`, never gzipped (`blobCodecOf`), and `readBlobBytes` hands its bytes back unchanged. The account's own id is written into `events.ownerId` when the event is appended, from a per-database tally of its conversation pairs (`notePairConversation`), so a replay never guesses it again. Each derived message and interaction records the `EXTENDER_VERSION` that made it.
 
 Checked by: code and SubQ
 
@@ -51,6 +51,25 @@ Checked by: code and SubQ
 ### REQ-STORAGE-07: People and accounts have stable ids, and names live in one place
 
 `accounts (platform, account, userId)` holds each account's own real id, learned from its session check: `recordPlatformSession` and `recordTwitterSession` call `identifyAccount`, which appends an `accountIdentified` event once per id. Deriving it moves the account's own messages from `self:<account>` to that id, only in that account's chats (`rekeyIdentity`). `handleAliases (platform, handle, userId)` maps each handle, lower-cased, to the id behind it, from `identityLearned` events (`rememberPerson`, whenever an event carries both a sender id and a handle). Deriving one re-keys every row keyed by `@handle` (messages, memberships, interactions, identities) to the real id and logs it in `identityMerges`. Later messages from that handle are keyed by the id (`userIdOfHandle`). Reads (`storeRead`) keep the sender's id (`fromId`, `senderId` or `userId`) so ids are learned from every read and catch-up. A name is read through `identities` (`personOf`, `handleOfIdentity`, the join in `chatMessages`), and `people` is no longer read or written: its rows were imported once as `identityLearned` events (`peopleToAliases`). Every id is stored as text.
+
+Checked by: code and SubQ
+
+### REQ-STORAGE-18: Profile fields the engines already return are kept once, per person, and rebuilt from events
+
+`identityProfiles (platform, userId, bio, avatarHash, followerCount, verified, extra, fetchedAt)`, keyed by platform and user id, comes from migration 19 (`IDENTITY_PROFILE_TABLES`). It is a derived table (`DERIVED_TABLES`): every row comes from an event, so `rebuildDerived` clears it and replays it like the others and `derivedFingerprint` compares it. Two kinds of event feed it. A `profileSeen` event (`profileSeenEvent`, `src/storage/platform/helpers/derivedEvents.ts`) carries the fields of one sighting; its id is the platform, user id and fields, so the same profile seen again appends nothing. An X `notification` carries the follower count of who acted, and the X extender reads it (`toProfile`, `twitterNotificationProfile`). Each sighting is merged into the row by `writeIdentityProfile`: a field the sighting has replaces the stored one, a field it lacks keeps the stored one, `extra` is merged key by key, and `fetchedAt` is the latest sighting.
+
+The writers append only what an engine already answered, with no new platform call: `recordPlatformSession` and `recordTwitterSession` pass the session check's answer through `sessionProfileOf`, and `log twitter followers` passes each follower through `twitterFollowerProfile`, both into `rememberProfiles` (`src/inbox/store/client.ts`), which also appends `identityLearned` for the handle and display name. Per platform today:
+
+| Platform | From | Kept |
+| --- | --- | --- |
+| X | session check | handle and display name (`identities`), no profile row |
+| X | `log twitter followers` | bio, follower count; `extra`: `location`, `followingCount`, `postCount`, `canDm`, `protected`, `joinedAt`, `pictureUrl` (the engine's `follower_of` passes twikit's `profile_image_url` through) |
+| X | notifications | follower count |
+| Discord | session check (`/users/@me`) | handle, global name as display name; `verified`, which on Discord means the account's email is verified; `extra.pictureUrl` built from the answer's avatar hash (`discordAvatarUrl`) |
+| LinkedIn | session check (`/voyager/api/me`) | handle, name; `extra`: `premium` |
+| Slack, Instagram, Reddit | session check | nothing: their answers carry no profile field. Slack's engine reads `users.info` for names and keeps only one label, so its profile fields never reach TypeScript |
+
+`extra` is JSON (checked with `json_valid`) and holds only the keys in `IDENTITY_PROFILE_EXTRA_KEYS`: `pictureUrl`, `location`, `followingCount`, `postCount`, `canDm`, `protected`, `joinedAt`, `premium`, `headline`. `profileExtraOf` drops any other key, so it never becomes a convenience column. `avatarHash` points at a `blobs` row of kind `avatar`; no writer fetches an avatar: no engine answer carries the image bytes, only a link (`extra.pictureUrl`), and fetching it would be a new call, so `avatarHash` stays empty until a writer has the bytes in hand. The view never loads the link itself (its CSP has no resource domains). `readIdentityProfile` (`src/inbox/profiles/client.ts`) reads one person by user id or handle (through `handleAliases`, then `identities`), joined to `identities` for the name, with the avatar as a data URI.
 
 Checked by: code and SubQ
 

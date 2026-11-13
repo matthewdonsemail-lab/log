@@ -2,7 +2,7 @@ import { conversationsDbPath, loadConversations } from "../../search/conversatio
 import type { Conversation, ConversationMessage } from "../../search/conversations/index.ts";
 import { useDatabase } from "../../storage/schema/index.ts";
 import { isMirror, personKeyOf } from "../../twitter/dm/person/index.ts";
-import { SENDERS_ACTIVITY_DAYS, SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT, SENDERS_PREVIEW_CHARS } from "./types.ts";
+import { SendersNoDataError, SENDERS_ACTIVITY_DAYS, SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT, SENDERS_PREVIEW_CHARS } from "./types.ts";
 import type { Sender, SendersOptions, SendersReport } from "./types.ts";
 
 const DAY_MS = 86_400_000;
@@ -39,11 +39,11 @@ function inbound(messages: readonly ConversationMessage[], since: string | null)
   return kept;
 }
 
-export function sendersOf(conversations: readonly Conversation[], options: SendersOptions = {}, names: ReadonlyMap<string, string> = new Map()): SendersReport {
+export function sendersOf(conversations: readonly Conversation[], options: SendersOptions = {}, names: ReadonlyMap<string, string> = new Map(), platform = "twitter"): SendersReport {
   const since = sinceOf(options.since, options.now);
   const account = options.account ? handleOf(options.account) : null;
   const limit = Math.min(Math.max(1, options.limit ?? SENDERS_DEFAULT_LIMIT), SENDERS_MAX_LIMIT);
-  const oneToOne = conversations.filter((c) => c.platform === "twitter" && c.with.length === 1 && (!account || c.account.toLowerCase() === account.toLowerCase()));
+  const oneToOne = conversations.filter((c) => c.platform === platform && c.with.length === 1 && (!account || c.account.toLowerCase() === account.toLowerCase()));
   const groups = new Map<string, { handle: string; account: string; messages: ConversationMessage[] }>();
   for (const c of oneToOne) {
     const key = `${c.account}\u0000${personKeyOf(c.conversationId)}`;
@@ -104,13 +104,23 @@ function fillDays(days: ReadonlyMap<string, number>, since: string | null): { da
   return out;
 }
 
-export function twitterNames(path: string = conversationsDbPath()): Map<string, string> {
+export function identityNames(platform: string, path: string = conversationsDbPath()): Map<string, string> {
   return useDatabase(path, (handle) => {
-    const rows = handle.prepare("SELECT handle, displayName FROM identities WHERE platform = 'twitter' AND handle IS NOT NULL AND displayName IS NOT NULL AND displayName <> ''").all() as { handle: string; displayName: string }[];
+    const rows = handle.prepare("SELECT handle, displayName FROM identities WHERE platform = ? AND handle IS NOT NULL AND displayName IS NOT NULL AND displayName <> ''").all(platform) as { handle: string; displayName: string }[];
     return new Map(rows.map((r) => [handleOf(r.handle).toLowerCase(), r.displayName]));
   });
 }
 
+export function twitterNames(path: string = conversationsDbPath()): Map<string, string> {
+  return identityNames("twitter", path);
+}
+
 export function readTwitterSenders(options: SendersOptions = {}, path: string = conversationsDbPath()): SendersReport {
   return sendersOf(loadConversations(path, { platform: "twitter" }), options, twitterNames(path));
+}
+
+export function readPlatformSenders(platform: string, options: SendersOptions = {}, path: string = conversationsDbPath()): SendersReport {
+  const conversations = loadConversations(path, { platform });
+  if (!conversations.length) throw new SendersNoDataError(platform);
+  return { ...sendersOf(conversations, options, identityNames(platform, path), platform), source: "dmsBySender", platform };
 }

@@ -6,7 +6,7 @@ import { signInConsoleAccount } from "../signIn/index.ts";
 import { loadConsoleUsage, usageDaysOf } from "../usage/index.ts";
 import { actOnBrowser, browserCheckFrame, browserCheckView, browserErrorCode, closeBrowser, openBrowser, saveBrowserState, sendBrowserInput } from "../browserCheck/index.ts";
 import type { ConnectionAccount } from "../connections/index.ts";
-import { CONSOLE_OPERATIONS, CONSOLE_SAFE_ERRORS, FRAME_TOOLS, REDACTED, SECRET_ARGS, STREAM_TOOLS } from "./types.ts";
+import { CONSOLE_OPERATIONS, CONSOLE_SAFE_ERRORS, FRAME_TOOLS, PRIVATE_RESULT_TOOLS, REDACTED, SECRET_ARGS, STREAM_TOOLS } from "./types.ts";
 import type { ConsoleOperation, ConsoleOperationDeps } from "./types.ts";
 
 export function isConsoleOperation(value: unknown): value is ConsoleOperation {
@@ -36,6 +36,7 @@ function redactedValue(value: unknown, frames: boolean): unknown {
 
 export function redactConsoleResult(tool: string, result: unknown): unknown {
   if (tool === "uiResourceRead" && result && typeof result === "object") return { ...(result as Record<string, unknown>), contents: REDACTED };
+  if (PRIVATE_RESULT_TOOLS.includes(tool)) return result && typeof result === "object" && !Array.isArray(result) ? Object.fromEntries(Object.keys(result).map((key) => [key, REDACTED])) : REDACTED;
   if (!STREAM_TOOLS.includes(tool) && !FRAME_TOOLS.includes(tool)) return result;
   return redactedValue(result, FRAME_TOOLS.includes(tool));
 }

@@ -1654,7 +1654,7 @@ Read an X account's own followers on the direct-API engine, sending nothing MCP 
 
 ```text
 log twitter followers --account <accountName> [--limit <n>] [--json]
-Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing.
+Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing. Each follower's profile is kept in log.db (identityProfiles), so report draws it later with no X call.
 X's own answer decides: the session check first, then X's followers list, 100 a page, 1.5 s apart. --limit is how many to read, default 200, at most 4000.
 ```
 
