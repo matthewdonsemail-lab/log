@@ -3,6 +3,8 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, errorText, sessionKey, useResetPrivate, useSession, type SessionView, type TeamView } from '@/lib/controlApi'
 import './console.css'
+import { localConsole } from '@/lib/consoleMode'
+import { LocalNoTeamPage } from './LocalNoTeamPage'
 import { toast } from '@listeningkit/ui'
 
 function slugOf(name: string): string {
@@ -10,6 +12,10 @@ function slugOf(name: string): string {
 }
 
 export function TeamsPage() {
+  return localConsole ? <LocalNoTeamPage title="Teams" /> : <HostedTeamsPage />
+}
+
+function HostedTeamsPage() {
   const session = useSession()
   const [params, setParams] = useSearchParams()
   const navigate = useNavigate()

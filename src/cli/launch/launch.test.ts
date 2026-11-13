@@ -91,7 +91,7 @@ describe("runLaunch", () => {
     const { calls } = stubPrompts([]);
     const result = await runLaunch(capture().context, ["--json"]);
     expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout!).start).toEqual(["setup", "add", "signIn", "check", "agent"]);
+    expect(JSON.parse(result.stdout!).start).toEqual(["setup", "add", "signIn", "check", "agent", "console"]);
     expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "watch", "connect", "join", "answer", "fill", "reels", "doctor"]);
     expect(calls).toEqual([]);
   });
@@ -187,14 +187,14 @@ describe("runLaunch: start here, no Twenty", () => {
     launchDeps.twentyReady = () => false;
     const { context, out } = capture();
     expect((await runLaunch(context, [])).code).toBe(0);
-    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent"]);
+    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent", "console"]);
     expect(out.join("\n")).toContain("claude mcp add log -- logMcp");
   });
 
   test("Twenty set up adds the Facebook Marketplace menu", async () => {
     const { offered } = stubPrompts(["agent"]);
     await runLaunch(capture().context, []);
-    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent", "marketplace"]);
+    expect(offered[0]).toEqual(["setup", "add", "signIn", "check", "agent", "console", "marketplace"]);
   });
 
   test("add an X account goes straight to the masked cookie prompt", async () => {

@@ -9,6 +9,7 @@ import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { captureCommand } from "../capture/index.ts";
 import { checkCommand } from "../check/index.ts";
 import { launchCommand } from "../launch/index.ts";
+import { consoleCommand } from "../console/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
 import { preflightCommand } from "../preflight/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
@@ -59,6 +60,7 @@ export type { Command, CommandContext, CommandResult, MarketplaceData } from "./
 
 export const COMMANDS: Command[] = [
   launchCommand,
+  consoleCommand,
   listingsCommand,
   listingCommand,
   accountsCommand,

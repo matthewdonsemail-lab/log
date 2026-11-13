@@ -9,6 +9,10 @@ import { AgentPlatformSelector } from './AgentPlatformSelector'
 import { agentPlatforms, type AgentPlatform } from './agentPlatforms'
 import { getPlayToolCalls } from './playToolCalls'
 import { AgentCover } from './AgentCover'
+import { useQuery } from '@tanstack/react-query'
+import { localConsole } from '@/lib/consoleMode'
+import { useErrorToast } from '@/lib/useErrorToast'
+import { loadLocalStart } from './startData'
 
 const SETUP_COMMAND = 'set up log — https://log.listeningkit.com/mcp'
 const MASKED_KEY = 'lg_••••••••••••••••••••••'
@@ -22,6 +26,32 @@ const EXAMPLES: { play: string; title: string; icon: IconDefinition; description
   { play: 'Marketplace buyers', title: 'Facebook', icon: faFacebook, description: 'Review listing questions and prepare helpful replies for buyers.', prompt: 'Review Facebook Marketplace messages about my listings. Show each buyer’s question and the listing context, then draft a helpful reply.' },
   { play: 'New messages', title: 'LinkedIn', icon: faLinkedin, description: 'Catch up on new messages and prepare professional replies.', prompt: 'Review my new LinkedIn messages. Tell me who each message is from, summarize the context, and draft a professional reply when one is needed.' },
 ]
+
+function LocalStatus() {
+  const query = useQuery({ queryKey: ['consoleStart'], queryFn: ({ signal }) => loadLocalStart(signal), retry: false, refetchOnWindowFocus: false })
+  useErrorToast(query.isError, query.error, 'Could not read this machine.')
+  const data = query.data
+  const rows = data ? [
+    ['log.db', data.database.found ? `Found: ${data.database.path}` : `Not found yet: ${data.database.path}`],
+    ['MCP', data.mcp.running ? `Running${data.mcp.pid ? ` (pid ${data.mcp.pid})` : ''}` : 'Not running: your agent starts it (see AI clients)'],
+    ['Accounts', String(data.accounts)],
+    ['Last event', data.lastEventAt ? new Date(data.lastEventAt).toLocaleString() : 'None yet'],
+  ] : []
+  return (
+    <section className="mb-6 rounded-2xl border-2 border-slate-200 bg-white p-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-bold">This machine</h2>
+        <button type="button" onClick={() => query.refetch()} disabled={query.isFetching} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 disabled:opacity-50">{query.isFetching ? 'Reading…' : 'Refresh'}</button>
+      </div>
+      {query.isError ? <p className="mt-3 text-sm text-slate-600"><button type="button" onClick={() => query.refetch()} className="font-semibold underline">Try again</button></p> : null}
+      {rows.length ? (
+        <dl className="mt-3 divide-y divide-slate-100">
+          {rows.map(([label, value]) => <div key={label} className="flex flex-wrap justify-between gap-3 py-2 text-sm"><dt className="text-slate-600">{label}</dt><dd className="min-w-0 break-all text-right font-medium">{value}</dd></div>)}
+        </dl>
+      ) : query.isLoading ? <p className="mt-3 text-sm text-slate-500">Reading this machine…</p> : null}
+    </section>
+  )
+}
 
 function CopyButton({ value, light = false }: { value: string; light?: boolean }) {
   const [copied, setCopied] = useState(false)
@@ -82,6 +112,7 @@ export function StartPage() {
 
   return (
     <ConsoleLayout title="Getting started" subtitle="Three steps and your agent is running on your own accounts.">
+      {localConsole ? <LocalStatus /> : null}
       <section className="min-w-0 max-w-full rounded-2xl border-2 border-slate-200 bg-white">
         <div className="grid min-w-0 grid-cols-1 gap-0 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="min-w-0 border-b-2 border-slate-200 p-4 sm:p-5 md:border-b-0 md:border-r-2">

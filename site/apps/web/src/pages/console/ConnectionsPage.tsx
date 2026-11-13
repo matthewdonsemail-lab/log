@@ -9,6 +9,8 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
 import { AddKeyDialog, type KeyProvider } from './AddKeyDialog'
 import { useErrorToast } from '@/lib/useErrorToast'
+import { localConsole } from '@/lib/consoleMode'
+import { loadLocalConnections, localAccountViews } from './connectionsData'
 
 type Platform = { service: string; label: string; icon: IconDefinition; summary: string }
 
@@ -38,13 +40,17 @@ const EXTENSION_GROUPS = ['System One & decision models', 'Media', 'AI generatio
 export function ConnectionsPage() {
   const { team } = useSelectedTeam()
   const workspaces = useWorkspaces(team?.id ?? null)
-  const workspaceState = workspaceStateOf(workspaces.data, workspaces.isError)
-  const accounts = useQuery({
+  const workspaceState = localConsole ? 'ready' : workspaceStateOf(workspaces.data, workspaces.isError)
+  const hosted = useQuery({
     queryKey: ['controlAccounts', team?.id],
     queryFn: ({ signal }) => api<{ accounts: AccountView[]; cursor: string | null }>(`/teams/${team?.id}/accounts?limit=200`, { signal }),
-    enabled: Boolean(team?.id) && workspaceState === 'ready',
+    enabled: !localConsole && Boolean(team?.id) && workspaceState === 'ready',
     staleTime: 30_000,
   })
+  const local = useQuery({ queryKey: ['consoleConnections'], queryFn: ({ signal }) => loadLocalConnections(signal), enabled: localConsole, retry: false, refetchOnWindowFocus: false })
+  const accounts = localConsole
+    ? { rows: local.data ? localAccountViews(local.data) : undefined, isLoading: local.isLoading, isError: local.isError, error: local.error, refetch: local.refetch }
+    : { rows: hosted.data?.accounts, isLoading: hosted.isLoading, isError: hosted.isError, error: hosted.error, refetch: hosted.refetch }
   useErrorToast(accounts.isError, accounts.error)
   const iconOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.icon ?? faMagnifyingGlass
   const [query, setQuery] = useState('')
@@ -67,11 +73,11 @@ export function ConnectionsPage() {
 
       <section className="mb-8">
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <WorkspaceChip state={workspaceState} />
+          {localConsole ? <span className="text-sm text-slate-600">Accounts on this machine{local.data ? <>, in <code className="rounded bg-slate-100 px-1">{local.data.path}</code></> : null}</span> : <WorkspaceChip state={workspaceState} />}
           {workspaceState === 'notConnected' || workspaceState === 'awaitingConnection' ? <Link to="/console/settings" className="text-sm font-semibold text-[#1B6FD6]">Set up your workspace →</Link> : null}
           {workspaceState === 'offline' ? <span className="text-sm text-slate-600">Start <code className="rounded bg-slate-100 px-1">log runtime connect</code> in your workspace to see its accounts.</span> : null}
         </div>
-        <SectionHeading title="Connected" count={workspaceState === 'ready' ? accounts.data?.accounts.length ?? 0 : undefined} />
+        <SectionHeading title="Connected" count={workspaceState === 'ready' ? accounts.rows?.length ?? 0 : undefined} />
         {workspaceState !== 'ready' ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
             <p className="text-sm font-semibold text-slate-700">Accounts show while your workspace is connected</p>
@@ -81,9 +87,9 @@ export function ConnectionsPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">Asking your workspace…</div>
         ) : accounts.isError ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-600"><button type="button" onClick={() => accounts.refetch()} className="font-semibold underline">Try again</button></div>
-        ) : accounts.data?.accounts.length ? (
+        ) : accounts.rows?.length ? (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {accounts.data.accounts.map((account) => (
+            {accounts.rows.map((account) => (
               <li key={account.id || `${account.platform}:${account.account}`} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FF] text-[#2A8CFF]"><FontAwesomeIcon icon={iconOf(account.platform)} className="size-[1.1rem]" /></span>
                 <span className="min-w-0 flex-1">
@@ -180,10 +186,10 @@ export function ConnectionsPage() {
                     </span>
                     <button
                       type="button"
-                      disabled={!running}
+                      disabled={!running || localConsole}
                       onClick={() => setKeyDialog({ open: true, provider })}
                       className="relative h-8 shrink-0 rounded-lg bg-white px-3 text-xs font-bold text-[#0D2A4C] shadow-[0_3px_0_#1A5FC8] transition-transform active:not-disabled:translate-y-px disabled:bg-white disabled:text-[#0D2A4C]/60"
-                      title={running ? `Add a key for ${provider.label}` : 'Connect a workspace first'}
+                      title={localConsole ? 'On this machine, add keys with log launch --setup' : running ? `Add a key for ${provider.label}` : 'Connect a workspace first'}
                     >
                       Add key
                     </button>
@@ -209,12 +215,12 @@ export function ConnectionsPage() {
                 <FontAwesomeIcon icon={setupPlatform.icon} className="size-[1.1rem]" />
               </span>
               <div className="min-w-0 flex-1">
-                <h2 id="platform-setup-title" className="text-base font-bold text-slate-900">Connect {setupPlatform.label} in your workspace</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-600">Account sign-in runs inside your selected workspace so its session stays there. Open that workspace’s terminal and run:</p>
+                <h2 id="platform-setup-title" className="text-base font-bold text-slate-900">Connect {setupPlatform.label} {localConsole ? 'on this machine' : 'in your workspace'}</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-600">{localConsole ? 'Account sign-in runs on this machine so its session stays here. In a terminal, run:' : 'Account sign-in runs inside your selected workspace so its session stays there. Open that workspace’s terminal and run:'}</p>
               </div>
             </div>
             <code className="mt-5 block overflow-x-auto rounded-xl bg-[#0D2A4C] px-4 py-3 text-sm text-white">{PLATFORM_SETUP_COMMAND}</code>
-            <p className="mt-3 text-xs leading-5 text-slate-500">Choose {setupPlatform.label} in the guided setup. When it finishes, keep <code className="rounded bg-slate-100 px-1">log runtime connect</code> running and this page will show the account.</p>
+            <p className="mt-3 text-xs leading-5 text-slate-500">{localConsole ? <>Choose {setupPlatform.label} in the guided setup. When it finishes, refresh this page to see the account.</> : <>Choose {setupPlatform.label} in the guided setup. When it finishes, keep <code className="rounded bg-slate-100 px-1">log runtime connect</code> running and this page will show the account.</>}</p>
             <div className="mt-5 flex justify-end gap-2">
               <button type="button" onClick={() => setSetupPlatform(null)} className="h-10 rounded-lg px-3 text-sm font-bold text-slate-600 hover:bg-slate-100">Close</button>
               <button type="button" onClick={() => navigator.clipboard?.writeText(PLATFORM_SETUP_COMMAND)} className="h-10 rounded-lg bg-[#2A8CFF] px-4 text-sm font-bold text-white hover:bg-[#1F6FE6]">Copy command</button>

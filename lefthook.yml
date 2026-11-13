@@ -38,6 +38,9 @@ pre-commit:
     browserParity:
       run: bun run check:browsers
 
+    consoleParity:
+      run: bun run check:consoleParity
+
     agentHooks:
       run: bun run check:agentHooks
 
@@ -98,6 +101,9 @@ pre-push:
 
     browserParity:
       run: bun run check:browsers
+
+    consoleParity:
+      run: bun run check:consoleParity
 
     agentHooks:
       run: bun run check:agentHooks

@@ -22,6 +22,8 @@ import { TeamsPage } from './pages/console/TeamsPage'
 import { SettingsPage } from './pages/console/SettingsPage'
 import { McpConsolePage } from './pages/console/McpConsolePage'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
+import { LocalNoTeamPage } from './pages/console/LocalNoTeamPage'
+import { localConsole } from './lib/consoleMode'
 
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
@@ -98,8 +100,8 @@ export function App() {
             <Route path="/docs" element={<StaticDocsRedirect />} />
             <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/shareCard/:slug" element={<ShareCardPage />} />
-            <Route path="/sign-in" element={<ClerkAuthPage />} />
-            <Route path="/sign-up" element={<ClerkAuthPage />} />
+            <Route path="/sign-in" element={localConsole ? <Navigate to="/console/start" replace /> : <ClerkAuthPage />} />
+            <Route path="/sign-up" element={localConsole ? <Navigate to="/console/start" replace /> : <ClerkAuthPage />} />
             <Route path="/verify" element={<Navigate to="/sign-in" replace />} />
             <Route path="/console" element={<Navigate to="/console/start" replace />} />
             <Route path="/console/start" element={<StartPage />} />
@@ -110,7 +112,7 @@ export function App() {
             <Route path="/console/usage" element={<UsagePage />} />
             <Route path="/console/events" element={<EventsPage />} />
             <Route path="/console/analytics" element={<ConsolePlaceholderPage title="Analytics" subtitle="Private metrics read from the live workspace, shown with their provenance and unavailable while it is offline." />} />
-            <Route path="/console/subscription" element={<ConsolePlaceholderPage title="Subscription" subtitle="Billing stays unconfigured until a real billing authority is implemented." />} />
+            <Route path="/console/subscription" element={localConsole ? <LocalNoTeamPage title="Subscription" /> : <ConsolePlaceholderPage title="Subscription" subtitle="Billing stays unconfigured until a real billing authority is implemented." />} />
             <Route path="/teams" element={<TeamsPage />} />
             <Route path="/login" element={<Navigate to="/sign-in" replace />} />
             <Route path="/health" element={<HealthPage />} />
