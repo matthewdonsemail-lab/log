@@ -290,6 +290,10 @@ async def suggestions(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str
     return await asyncio.to_thread(share_run, cookies, browser, lambda n: n.suggestions(), Network, "network")
 
 
+async def connect_check(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    return connect_pace(spec, time.time()) or {"ok": True, "loginState": "unknown", "connectsToday": len([t for t in connects_sent(spec) if time.time() - t < 24 * 3600])}
+
+
 async def connect(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
     from linkedinApi.network import Network
 
@@ -310,7 +314,7 @@ async def connect(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, An
     return out
 
 
-ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connect": connect}
+ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connectPace": connect_check, "connect": connect}
 
 
 if __name__ == "__main__":

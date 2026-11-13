@@ -119,6 +119,8 @@ export const linkedinConnectCommand: Command = {
         if (json) return { code: 0, stdout: JSON.stringify({ platform: "linkedin", account: account.accountName, dryRun: true, person }, null, 2) };
         return { code: 0, stdout: `log linkedin connect: dry run: ${account.accountName} would invite ${person.name} (${person.publicId}), suggested by LinkedIn. Nothing was sent. --live --approvedBy <who> does it (rule 8).` };
       }
+      const pace = context.directLinkedin!(account, { action: "connectPace" });
+      if (!pace.answer.ok) return failed("connect", pace);
       context.err(`${account.accountName}: invite ${profile}, approved by ${approvedBy}, on the direct-API engine`);
       const run = context.directLinkedin!(account, { action: "connect", live: true, approvedBy, profile });
       for (const line of await recordLinkedinSession(context.twenty, account, run, context.now?.() ?? new Date())) context.err(line);
