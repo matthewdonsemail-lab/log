@@ -2,7 +2,7 @@ import { conversationsDbPath, loadConversations } from "../../search/conversatio
 import type { Conversation, ConversationMessage } from "../../search/conversations/index.ts";
 import { useDatabase } from "../../storage/schema/index.ts";
 import { isMirror, personKeyOf } from "../../twitter/dm/person/index.ts";
-import { SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT } from "./types.ts";
+import { SENDERS_ACTIVITY_DAYS, SENDERS_DEFAULT_LIMIT, SENDERS_MAX_LIMIT, SENDERS_PREVIEW_CHARS } from "./types.ts";
 import type { Sender, SendersOptions, SendersReport } from "./types.ts";
 
 const DAY_MS = 86_400_000;
@@ -51,14 +51,31 @@ export function sendersOf(conversations: readonly Conversation[], options: Sende
     group.messages.push(...c.messages);
     groups.set(key, group);
   }
-  const senders: Sender[] = [];
+  const kept: { group: { handle: string; account: string }; messages: ConversationMessage[] }[] = [];
   const days = new Map<string, number>();
   for (const group of groups.values()) {
     const messages = inbound(group.messages, since);
     if (!messages.length) continue;
     for (const m of messages) days.set(m.at!.slice(0, 10), (days.get(m.at!.slice(0, 10)) ?? 0) + 1);
-    senders.push({ handle: group.handle, name: names.get(group.handle.toLowerCase()) || group.handle, account: group.account, count: messages.length, firstAt: messages[0].at, lastAt: messages.at(-1)!.at });
+    kept.push({ group, messages });
   }
+  const lastDay = [...days.keys()].sort().at(-1);
+  const window = lastDay ? Array.from({ length: SENDERS_ACTIVITY_DAYS }, (_, i) => new Date(Date.parse(`${lastDay}T00:00:00Z`) - (SENDERS_ACTIVITY_DAYS - 1 - i) * DAY_MS).toISOString().slice(0, 10)) : [];
+  const senders: Sender[] = kept.map(({ group, messages }) => {
+    const perDay = new Map<string, number>();
+    for (const m of messages) perDay.set(m.at!.slice(0, 10), (perDay.get(m.at!.slice(0, 10)) ?? 0) + 1);
+    const last = [...messages].reverse().find((m) => m.text.trim() && !/^\(.*\)$/s.test(m.text.trim()));
+    return {
+      handle: group.handle,
+      name: names.get(group.handle.toLowerCase()) || group.handle,
+      account: group.account,
+      count: messages.length,
+      firstAt: messages[0].at,
+      lastAt: messages.at(-1)!.at,
+      activity: window.map((day) => perDay.get(day) ?? 0),
+      lastMessage: last ? last.text.replace(/\s+/g, " ").trim().slice(0, SENDERS_PREVIEW_CHARS) : null,
+    };
+  });
   senders.sort((a, b) => b.count - a.count || (b.lastAt ?? "").localeCompare(a.lastAt ?? "") || a.handle.localeCompare(b.handle));
   return {
     source: "twitterDmsBySender",

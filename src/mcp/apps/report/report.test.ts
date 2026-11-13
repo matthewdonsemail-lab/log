@@ -7,7 +7,7 @@ import { MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "../browserView/index.ts";
 import { bar, sparkline } from "./helpers/text.ts";
 import { checkReport, readReportResource, REPORT_URI, reportInputSchema, reportText, runReport } from "./index.ts";
 import type { ReportSpec } from "./index.ts";
-import { blockHtml, esc, initials, reportBodyHtml } from "./widget/render.ts";
+import type { SendersReport } from "../../../inbox/senders/index.ts";
 
 const UI = { extensions: { [UI_EXTENSION_ID]: { mimeTypes: [MCP_APP_MIME_TYPE] } } };
 
@@ -52,10 +52,11 @@ describe("the report spec", () => {
     expect(refused({ blocks: [] }).code).toBe("reportFieldInvalid");
   });
 
-  test("the input schema the model sees is the catalog", () => {
-    const schema = JSON.stringify(reportInputSchema());
-    for (const type of ["heading", "text", "stat", "barChart", "lineChart", "table", "personList", "callout"]) expect(schema).toContain(`"const":"${type}"`);
-    expect(schema).not.toContain("$schema");
+  test("the input schema offers code, data and the older blocks", () => {
+    const schema = reportInputSchema() as unknown as { properties: Record<string, unknown> };
+    expect(Object.keys(schema.properties).sort()).toEqual(["blocks", "code", "data", "subtitle", "title"]);
+    expect(JSON.stringify(schema)).toContain("twitterDmsBySender");
+    expect(JSON.stringify(schema)).not.toContain("$schema");
   });
 });
 
@@ -79,74 +80,92 @@ describe("the text a host without MCP Apps gets", () => {
     expect(text).toContain("> **Watch out:** 2 people are waiting on a reply");
   });
 
-  test("runReport answers the spec as structuredContent, the markdown without a view and one line with it", () => {
-    const plain = runReport(SPEC, false);
+  test("blocks become the blocks starter view, and the text twin stays the markdown report", async () => {
+    const plain = await runReport(SPEC, false);
     expect(plain.isError).toBeUndefined();
-    expect(plain.structuredContent).toEqual(SPEC as unknown as Record<string, unknown>);
+    const payload = plain.structuredContent as { compiled: string; data: { blocks: unknown[] } };
+    expect(payload.compiled).toContain("require('log')");
+    expect(payload.data.blocks).toHaveLength(8);
     expect((plain.content as { text: string }[])[0].text).toBe(reportText(SPEC));
-    const drawn = runReport(SPEC, true);
-    expect((drawn.content as { text: string }[])[0].text).toContain('The report "Who messaged the test account" is shown to the person');
-    const refused = runReport({ title: "t", blocks: [{ type: "pie" }] }, false);
+    const drawn = await runReport(SPEC, true);
+    expect((drawn.content as { text: string }[])[0].text).toContain('The view "Who messaged the test account" is shown to the person');
+    const refused = await runReport({ title: "t", blocks: [{ type: "pie" }] }, false);
     expect(refused.isError).toBe(true);
-    expect(refused.structuredContent).toBeUndefined();
     expect((refused.content as { text: string }[])[0].text).toMatch(/^reportBlockUnknown: /);
   });
 });
 
-describe("the view's drawing", () => {
-  test("every block becomes its element, and text is escaped, never run", async () => {
-    const { JSDOM } = await import("jsdom" as string);
-    const dom = new JSDOM(`<main>${reportBodyHtml(SPEC)}</main>`);
-    const doc = dom.window.document;
-    expect(doc.querySelectorAll(".stat")).toHaveLength(3);
-    expect(doc.querySelector(".stat.lead .statValue")?.textContent).toBe("120");
-    const fills = [...doc.querySelectorAll(".barFill")].map((el: { getAttribute(name: string): string | null }) => el.getAttribute("style"));
-    expect(fills).toEqual(["width:100.00%", "width:64.06%", "width:23.44%"]);
-    expect(doc.querySelector("[data-block=lineChart] polyline")?.getAttribute("points")?.split(" ")).toHaveLength(3);
-    expect([...doc.querySelectorAll("th")].map((th: { textContent: string }) => th.textContent)).toEqual(["Person", "Messages"]);
-    expect(doc.querySelector("td.num")?.textContent).toBe("64");
-    expect(doc.querySelector(".avatar")?.textContent).toBe("FO");
-    expect(doc.querySelector(".callout")?.dataset.tone).toBe("warning");
-    expect(doc.querySelector("script")).toBeNull();
-    expect(doc.querySelector(".prose")?.textContent).toBe("<script>alert(1)</script>");
+const FAKE: SendersReport = {
+  source: "twitterDmsBySender",
+  readFrom: "log.db",
+  account: "testAccount",
+  accounts: ["testAccount"],
+  since: null,
+  messages: 12,
+  people: 2,
+  senders: [
+    { handle: "fakeOne", name: "Fake One", account: "testAccount", count: 9, firstAt: "2026-11-01T10:00:00Z", lastAt: "2026-11-03T10:00:00Z", activity: [0, 4, 5], lastMessage: "see you then" },
+    { handle: "fakeTwo", name: "Fake Two", account: "testAccount", count: 3, firstAt: "2026-11-02T10:00:00Z", lastAt: "2026-11-02T11:00:00Z", activity: [0, 3, 0], lastMessage: null },
+  ],
+  byDay: [
+    { day: "2026-11-01", count: 4 },
+    { day: "2026-11-02", count: 3 },
+    { day: "2026-11-03", count: 5 },
+  ],
+};
+
+describe("generative views", () => {
+  test("data alone reads log.db and hands the starter view its numbers", async () => {
+    const asked: unknown[] = [];
+    const answer = await runReport({ title: "Who messaged me", data: { dms: { source: "twitterDmsBySender", since: "30d" } } }, false, { readSenders: (o) => (asked.push(o), FAKE) });
+    expect(asked).toEqual([{ account: null, since: "30d", limit: undefined }]);
+    const payload = answer.structuredContent as { compiled: string; data: { dms: SendersReport } };
+    expect(payload.data.dms.people).toBe(2);
+    expect(payload.compiled).toContain("Top 10 share");
+    expect((answer.content as { text: string }[])[0].text).toContain("**People** 2");
   });
 
-  test("vertical bars are SVG rects, escaping covers attributes, initials read names and handles", () => {
-    expect(blockHtml({ type: "barChart", orientation: "vertical", data: [{ label: "Mon", value: 3 }, { label: "Tue", value: 6 }] }).match(/<rect class="vbar"/g)).toHaveLength(2);
-    expect(esc(`"><img src=x>`)).toBe("&quot;&gt;&lt;img src=x&gt;");
-    expect(initials("fake_one")).toBe("FO");
-    expect(initials("@solo")).toBe("SO");
+  test("a view the model writes is compiled, and hosts without widgets get it as text", async () => {
+    const code = `import { Page, Stat, Table, fmt } from "log";\nexport default function App({ data, title }) {\n  return <Page title={title}><Stat label="People" value={fmt(data.dms.people)} /><Table rows={data.dms.senders} columns={[{ key: "name", title: "Person" }, { key: "count", title: "Messages" }]} /></Page>;\n}`;
+    const answer = await runReport({ title: "Mine", code, data: { dms: { source: "twitterDmsBySender" } } }, false, { readSenders: () => FAKE });
+    expect(answer.isError).toBeUndefined();
+    const text = (answer.content as { text: string }[])[0].text;
+    expect(text).toContain("# Mine");
+    expect(text).toContain("People");
+    expect(text).toContain("| Fake One | 9 |");
+  });
+
+  test("broken code, outside imports and a view with nothing to show are refused with the fix", async () => {
+    const syntax = await runReport({ title: "x", code: "export default function App() { return <div> }" }, false);
+    expect((syntax.content as { text: string }[])[0].text).toMatch(/^reportFieldInvalid: .*code: /);
+    const outside = await runReport({ title: "x", code: 'import x from "node:fs";\nexport default function App() { return null }' }, false);
+    expect((outside.content as { text: string }[])[0].text).toContain('imports only from "log" and "react"');
+    const crash = await runReport({ title: "x", code: "export default function App({ data }) { return data.nope.length }" }, false);
+    expect((crash.content as { text: string }[])[0].text).toContain("broke while drawing");
+    expect((await runReport({ title: "Empty" }, false)).isError).toBe(true);
   });
 });
 
-describe("the report as an MCP App", () => {
+describe("the view as an MCP App", () => {
   test("every host gets report; an MCP Apps host gets it pointing at the view, and the resource", async () => {
     const plain = await connected({});
     const tool = (await plain.listTools()).tools.find((t) => t.name === "report");
     expect(tool).toBeDefined();
     expect(tool?._meta?.ui).toBeUndefined();
     expect((await plain.listResources()).resources.some((r) => r.uri === REPORT_URI)).toBe(false);
-    const text = await plain.callTool({ name: "report", arguments: SPEC as unknown as Record<string, unknown> });
-    expect((text.content as { text: string }[])[0].text).toContain("████");
-    const refused = await plain.callTool({ name: "report", arguments: { title: "x", blocks: [{ type: "pie" }] } });
-    expect(refused.isError).toBe(true);
-    expect((refused.content as { text: string }[])[0].text).toContain("reportBlockUnknown: ");
     const ui = await connected(UI);
     expect((await ui.listTools()).tools.find((t) => t.name === "report")?._meta?.ui).toEqual({ resourceUri: REPORT_URI });
     expect((await ui.listResources()).resources.some((r) => r.uri === REPORT_URI && r.mimeType === MCP_APP_MIME_TYPE)).toBe(true);
-    const drawn = await ui.callTool({ name: "report", arguments: SPEC as unknown as Record<string, unknown> });
-    expect(drawn.structuredContent).toEqual(SPEC as unknown as Record<string, unknown>);
-    expect((drawn.content as { text: string }[])[0].text).not.toContain("████");
   });
 
-  test("the resource is one inline HTML page with the app mime type and an empty CSP", async () => {
+  test("the resource is one self-contained page: no outside scripts, styles or fonts", async () => {
     const content = (await readReportResource()).contents[0];
     expect(content.mimeType).toBe("text/html;profile=mcp-app");
     expect(content._meta.ui).toEqual({ csp: { connectDomains: [], resourceDomains: [] }, prefersBorder: false });
     expect(content.text.startsWith("<!doctype html>")).toBe(true);
-    expect(content.text).toContain("ui/initialize");
-    expect(content.text).toContain("--lk-blue:#2A8CFF");
+    expect(content.text).toContain("--sb-surface");
     expect(content.text).not.toMatch(/<script[^>]+src=/);
+    expect(content.text).not.toMatch(/<link[^>]+href=/);
     expect(content.text).not.toMatch(/Loading…/);
-  }, 30_000);
+  }, 60_000);
 });

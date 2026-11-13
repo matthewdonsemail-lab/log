@@ -1,6 +1,6 @@
 # ui
 
-Reports in the chat: the report tool and its block catalog (KPI tiles, bar and line charts, tables, people, callouts), drawn inline by MCP Apps hosts and as markdown everywhere else, with reportData for the numbers from log.db.
+Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -12,7 +12,7 @@ This guide describes the current command implementation. Legacy storage names an
 
 | Tool | What it does |
 |---|---|
-| `report` | Show a report |
+| `report` | Show a view |
 | `reportData` | The numbers behind a report, from log.db only |
 
 ## The work, step by step: report
@@ -21,85 +21,111 @@ From `skills/report/SKILL.md`.
 
 ## report
 
-`report` turns numbers into something the person looks at. You send data and layout, never code: a title and a list of blocks from one small catalog. The same call works in every host. An MCP Apps host (Claude, ChatGPT, Cursor) draws it inline in log's look, light or dark, with a full-screen button. Any other host (Claude Code, Codex) gets the same report back as markdown: headings, tables and unicode bars such as `████████▌ 42`. Show that text to the person as it is.
+`report` is log's generative UI. You decide what the person should see and write it as a small React view. log compiles it and draws it in the chat, with the data read from log.db in the same call.
 
-### The loop
+- **Where it draws:** an MCP Apps host (Claude, ChatGPT, Cursor) draws the view inline. Other hosts (Claude Code, Codex) get the same view rendered as text, which you show as it is.
+- **Why it looks the way it does:** the kit follows [Lynx](https://github.com/yakkomajuri/lynx)'s workspace kit (MIT): a quiet canvas, plain blocks, big light numbers, and Geist. It gives a general starting point that informs; the content is what makes it good.
 
-1. **Get the numbers first.** Read them from log, never from memory. For who messaged an X account, `reportData` { source: "twitterDmsBySender", account?, since?, limit?, json: true } counts one-to-one DMs per person from log.db only (no platform call, no governor use). It holds only what log.db has, so if the inbox may be behind, read it with `twitterDms` first (rule 160). For anything else, use the log read that has it (`twitterDms`, `inboxWaiting`, `search`, `governorShow`…).
-2. **Lay the report out** with the rules below. Pick the blocks the question needs and nothing more.
-3. **Call `report` once** with the finished spec. A spec that breaks the catalog is refused with a code and the exact paths to fix (`blocks[2].data[0].value: …`). Fix those and call again.
-4. **Then answer in a sentence or two.** In an MCP Apps host the person already sees the report, so say what it means, not the numbers again. Without one, the answer's text is the report: show it.
-
-### The block catalog
-
-A report is `{ title, subtitle?, blocks }`, 1 to 40 blocks. Every field is plain text or a number. HTML, markdown and URLs are shown as text, never run.
-
-| Block | Fields | Use it for |
-|---|---|---|
-| `heading` | `text`, `level?` (2, or 3 for a smaller one) | Starting a section |
-| `text` | `text` (up to 2000 characters, line breaks kept) | One or two sentences of reading |
-| `stat` | `items`: 1 to 6 of { `label`, `value` (number or short text), `unit?`, `delta?` ("+12%", "−3"), `hint?` } | The headline numbers, as tiles. The first tile is the lead, drawn in brand blue |
-| `barChart` | `data`: 1 to 50 of { `label`, `value` ≥ 0, `hint?` }, `title?`, `unit?`, `orientation?` ("horizontal", the default, or "vertical") | Comparing amounts: people, accounts, categories |
-| `lineChart` | `x`: 2 to 366 labels, `series`: 1 to 4 of { `name`, `values` } with one value per x label, `title?`, `unit?` | A count over time |
-| `table` | `columns`: 1 to 8 of { `key`, `label`, `align?`, `format?` ("text", "number" or "date") }, `rows`: up to 200 objects keyed by column key, each cell text, a number or null, `title?` | The detail behind a chart |
-| `personList` | `people`: 1 to 100 of { `name`, `handle?`, `count?`, `note?` }, `title?`, `unit?` | Ranked people, each with initials as the avatar and a meter for the count |
-| `callout` | `text`, `tone?` ("info", "success" or "warning"), `title?` | One thing the person must not miss |
-
-Refusal codes: `reportBlockUnknown` (a `type` outside the catalog), `reportFieldInvalid` (a missing or wrong field, or a field the block doesn't have), `reportTooLarge` (over a limit above), `reportSeriesMismatch` (a line series whose values don't match the x labels), `reportColumnUnknown` (a row key no column has, or a column key used twice).
-
-### Example: who has been messaging me on X
-
-The person asks: "generate a report with some bar charts of who has been messaging me on Twitter". Call `reportData` { source: "twitterDmsBySender", since: "30d", json: true }, then `report` with its numbers:
+### One call, no code
 
 ```json
-{
-  "title": "Who messaged you on X",
-  "subtitle": "One-to-one DMs, last 30 days, from log.db",
-  "blocks": [
-    { "type": "stat", "items": [
-      { "label": "Messages in", "value": 412 },
-      { "label": "People", "value": 37 },
-      { "label": "Top sender", "value": "@sam_example", "hint": "64 messages" }
-    ] },
-    { "type": "barChart", "title": "Messages by person, top 10", "unit": "msgs", "data": [
-      { "label": "Sam Example", "value": 64 },
-      { "label": "Jo Placeholder", "value": 41 },
-      { "label": "@test_user", "value": 22 }
-    ] },
-    { "type": "lineChart", "title": "Messages per day", "x": ["2026-10-14", "2026-10-15", "2026-10-16"], "series": [{ "name": "Messages", "values": [12, 18, 9] }] },
-    { "type": "table", "title": "Everyone", "columns": [
-      { "key": "name", "label": "Person" },
-      { "key": "handle", "label": "Handle" },
-      { "key": "count", "label": "Messages", "format": "number" },
-      { "key": "lastAt", "label": "Last message", "format": "date" }
-    ], "rows": [
-      { "name": "Sam Example", "handle": "@sam_example", "count": 64, "lastAt": "2026-11-12T18:04:00Z" }
-    ] }
-  ]
+{ "title": "Who's been messaging you on X", "subtitle": "last 30 days", "data": { "dms": { "source": "twitterDmsBySender", "since": "30d" } } }
+```
+
+This draws the starter view, which shows:
+- headline stats, each with a line of what it means (top 10 share, new this week, busiest day)
+- messages per day
+- who messages most
+- a table of people with their 30-day activity, when they last wrote and what they said
+
+log.db holds only what has been read. If the inbox may be behind, read it with `twitterDms` first (rule 160).
+
+### Your own view
+
+Send `code` with the same `data`, and shape the view to the question. A question about one person gets that person; a question about the week gets the week. Start from what would help the person decide or act, and keep it short.
+
+```jsx
+import { Page, Card, Grid, Stat, Bars, Quote, Avatar, Row, Stack, Badge, Time, fmt } from "log";
+
+export default function App({ data, title, subtitle }) {
+  const r = data.dms;
+  const p = r.senders[0];
+  return (
+    <Page title={title} subtitle={subtitle}>
+      <Card>
+        <Row gap={14}>
+          <Avatar name={p.name} size={48} />
+          <Stack gap={2} style={{ flex: 1 }}><strong>{p.name}</strong><span className="sb-stat-hint">@{p.handle}</span></Stack>
+          <Badge tone="accent">{Math.round((p.count / r.messages) * 100)}% of your DMs</Badge>
+        </Row>
+      </Card>
+      <Grid min={150}>
+        <Stat label="Messages" value={fmt(p.count)} hint={`rank 1 of ${r.people}`} />
+        <Stat label="Last message" value={<Time value={p.lastAt} />} />
+      </Grid>
+      <Card title="Latest message"><Quote>{p.lastMessage}</Quote></Card>
+      <Card title="How they compare"><Bars data={r.senders.slice(0, 5).map((s) => ({ label: s.name, value: s.count }))} unit="msgs" /></Card>
+    </Page>
+  );
 }
 ```
 
-Map `reportData` straight across: `messages` and `people` to the stat tiles, `senders` (name, count) to the bars, `byDay` (day, count) to the line chart's `x` and `values`, and `senders` again to the table. Use the person's name as the bar label when there is one, else `@handle`.
+- **Imports:** only from `"log"` and `"react"`. End with `export default function App({ data, title, subtitle })`.
+- **Layout:**
+  - `Page { title, subtitle, actions }`
+  - `Card { title, actions, pad }`; use `pad={false}` around a `Table`
+  - `Grid { min }`
+  - `Row` and `Stack`, each `{ gap }`
+- **Numbers:**
+  - `Stat { label, value, hint, tone }`
+  - `Badge { tone: neutral|good|bad|warn|accent }`
+  - `fmt(n)` formats a number, and `Time { value }` shows how long ago
+- **Charts:**
+  - `Bars { data: [{ label, value }], unit }` for ranked lists
+  - `BarChart` for columns over time
+  - `LineChart { series: [{ name, values }], labels }`
+  - `Sparkline { values, width }`
+- **People and words:**
+  - `Avatar { name, size }`
+  - `Quote`
+  - `Icon { name }`, with Font Awesome 6 names in camelCase (`xTwitter`, `discord`, `message`, `users`, `clock`)
+- **Detail:**
+  - `Table { rows, columns: [{ key, title, render, align, width }], limit }`
+  - `Tabs`, `Details`, `Empty`
+- **Your own CSS:** plain CSS works. Use the `--sb-*` variables (`--sb-text`, `--sb-muted`, `--sb-accent`, `--sb-surface`), which follow light and dark mode.
+- **Live data:**
+  - `useTool(name, args)` calls a log read tool from inside the view and returns `{ data, loading, error, reload }`.
+  - Wrap it in `<Query q={…}>{(data) => …}</Query>`.
+  - Only call read tools.
 
-### Layout rules
+A view that doesn't compile, imports from anywhere else, or breaks while drawing is refused with `reportFieldInvalid`, with the line or error to fix.
 
-- **Lead with the answer.** The first block is a `stat` row with two to four numbers that answer the question. Charts come next, the detail table last.
-- **One idea per chart**, titled with what it shows ("Messages by person, top 10"), not how ("Bar chart"). Put the unit in `unit`, not in every label.
-- **Bars are sorted**, largest first, and stop at 10 to 15. Put the rest in the table. Horizontal bars for people and names; vertical only for a few short labels such as weekdays.
-- **Time is a `lineChart`**, its days in order, with the days that had nothing filled in as 0 (`reportData`'s `byDay` already is).
-- **Real numbers only**, from the tool you just called. Never round them into a different story, never invent a delta. Leave `delta` out unless you computed it from two real periods.
-- **People by name and handle** (rule 154), never a bare id. Their names and messages are private: they go in the report, never in a file, a commit or a test (rule 178).
-- **Short.** A report is a page, not a dump: 3 to 8 blocks is usual. Use a `callout` only for the one thing that needs action ("9 people are waiting on a reply").
+The older `blocks` list (`heading`, `text`, `stat`, `barChart`, `lineChart`, `table`, `personList`, `callout`) still works and is drawn with the same kit.
+
+### After it is drawn
+
+In an MCP Apps host the person already sees the view, so say what it means in a sentence or two, not the numbers again.
+
+### How it is built
+
+- **Code:** `src/mcp/apps/report/view` holds:
+  - the kit (`kit.tsx`, `kit.css`)
+  - the widget that runs the view in the chat (`widget.tsx`)
+  - the server side that compiles with sucrase and renders the text version (`server.tsx`)
+  - the starter views (`starters/`)
+- **What the page loads:** the page is self-contained, with React, the kit and Geist inlined, so it loads nothing from the internet.
 
 ## Every tool, in full
 
 ### `report`
 
-Show data to the person as a report: KPI tiles, bar and line charts, tables, people lists and callouts, in log's own look.
-Send DATA and LAYOUT only, never code or HTML: { title, subtitle?, blocks: [...] }, each block one of heading, text, stat, barChart, lineChart, table, personList, callout. Fetch the numbers first (reportData, or any log read), then call this once with the finished report.
-An MCP Apps host (Claude, ChatGPT, Cursor) draws it inline with a full-screen button; any other host (Claude Code, Codex) gets the same report as markdown with unicode bar charts, so show that text to the person as it is.
-Reads nothing and sends nothing; a spec that breaks the catalog is refused with reportBlockUnknown, reportFieldInvalid, reportTooLarge, reportSeriesMismatch or reportColumnUnknown and the paths to fix. The answer's structuredContent is the checked spec.
-Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Reports in the chat: the report tool and its block catalog (KPI tiles, bar and line charts, tables, people, callouts), drawn inline by MCP Apps hosts and as markdown everywhere else, with reportData for the numbers from log.db).
+Generative UI: show the person a view you build for their question, drawn in the chat. Plain and readable by default, in the spirit of Lynx workspaces.
+One call: { title, data: { dms: { source: "twitterDmsBySender", since?: "30d", account?, limit? } } } reads log.db and draws a starter view (headline stats, messages per day, who messages most, a table of people with activity and their latest message).
+Your own view: add code, a React component in JSX. import { Page, Card, Grid, Row, Stack, Stat, Badge, Table, Bars, BarChart, LineChart, Sparkline, Avatar, Quote, Icon, Tabs, Details, Empty, Query, Time, fmt, rel, useTool, useData } from "log". End with export default function App({ data, title, subtitle }) { return <Page title={title}>…</Page> }.
+Components: Page { title, subtitle, actions }, Card { title, actions, pad }, Grid { min }, Row/Stack { gap }, Stat { label, value, hint, tone }, Badge { tone: neutral|good|bad|warn|accent }, Table { rows, columns: [{ key, title, render, align, width }], limit }, Bars { data: [{ label, value }], unit } for ranked lists, BarChart { data: [{ label, value }] } for columns, LineChart { series: [{ name, values }], labels }, Sparkline { values, width }, Avatar { name, size }, Quote, Icon { name } (Font Awesome 6 names in camelCase: xTwitter, discord, message, users, clock, fire…), Time { value } (relative), fmt(n). Plain CSS works with the --sb-* variables (--sb-text, --sb-muted, --sb-accent, --sb-surface).
+Data: data.<name> from the data field is there at once. useTool(name, args) calls a log read tool live from the view and returns { data, loading, error, reload }; wrap it in Query. Only call read tools.
+Shown inline in MCP Apps hosts (Claude, ChatGPT, Cursor); other hosts (Claude Code, Codex) get the same view as text. A view that doesn't compile is refused with reportFieldInvalid and the line to fix.
+Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else).
 AGENTS.md (log://agents): rules 134, 154, 160, 178, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `reportData`
@@ -111,7 +137,7 @@ The numbers behind a report, read from log.db only: no platform call, no governo
 --account keeps one X account (default every X account in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.
 Show it with the MCP tool report (getGuide({ topic: "ui" })): an MCP Apps host draws it inline, any other host gets markdown with unicode bars.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Reports in the chat: the report tool and its block catalog (KPI tiles, bar and line charts, tables, people, callouts), drawn inline by MCP Apps hosts and as markdown everywhere else, with reportData for the numbers from log.db).
+Before first using this tool in a session, load its guide: getGuide({ topic: "ui" }) (Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else).
 AGENTS.md (log://agents): rules 134, 154, 160, 178, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full

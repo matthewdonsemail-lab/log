@@ -4,12 +4,13 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": [],
+    "jsx": "react-jsx",
+    "types": ["bun"],
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["./*.ts"]
+  "include": ["./*.ts", "./*.tsx"]
 }

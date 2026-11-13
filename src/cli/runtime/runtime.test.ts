@@ -27,7 +27,7 @@ describe("the hosted relay serves the report widget", () => {
     const ui = await reportOperation({ ...SPEC, ui: true });
     expect(ui.state).toBe("succeeded");
     expect((ui.result as { text: string }).text).toContain("Fake report");
-    expect((ui.result as { spec: { title: string } | null }).spec?.title).toBe("Fake report");
+    expect((ui.result as { spec: { compiled: string } | null }).spec?.compiled).toContain("require('log')");
     const refused = await reportOperation({ title: "t", blocks: [{ type: "pie", data: [] }] });
     expect(refused.state).toBe("failed");
   });

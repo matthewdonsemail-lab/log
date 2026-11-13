@@ -1,3 +1,4 @@
 export * from "./client.ts";
-export { buildReportScript, checkReport, reportHtml, reportPage, reportSchema, reportSummary, reportText } from "./helpers/index.ts";
+export { checkReport, reportSchema, reportSummary, reportText } from "./helpers/index.ts";
+export * from "./presets.ts";
 export * from "./types.ts";

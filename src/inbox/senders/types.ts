@@ -2,6 +2,8 @@ export const SENDER_SOURCES = ["twitterDmsBySender"] as const;
 export type SenderSource = (typeof SENDER_SOURCES)[number];
 export const SENDERS_DEFAULT_LIMIT = 20;
 export const SENDERS_MAX_LIMIT = 200;
+export const SENDERS_ACTIVITY_DAYS = 30;
+export const SENDERS_PREVIEW_CHARS = 200;
 
 export interface SendersOptions {
   account?: string | null;
@@ -17,6 +19,8 @@ export interface Sender {
   count: number;
   firstAt: string | null;
   lastAt: string | null;
+  activity: number[];
+  lastMessage: string | null;
 }
 
 export interface SendersDay {

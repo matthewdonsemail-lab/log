@@ -77,7 +77,7 @@ export async function uiResources(tool: string, args: Record<string, unknown>): 
 export async function reportOperation(args: Record<string, unknown>): Promise<ResultPayload> {
   const { runReport } = await import("../../mcp/apps/index.ts");
   const { ui, ...spec } = args;
-  const answer = runReport(spec, ui === true);
+  const answer = await runReport(spec, ui === true);
   const text = answer.content.map((part) => (part.type === "text" ? part.text : "")).join("\n");
   if (answer.isError) return { state: "failed", error: { code: text.split(":")[0] || "reportFieldInvalid", message: text.slice(0, 2000) } };
   return { state: "succeeded", result: { text, spec: answer.structuredContent ?? null } };
