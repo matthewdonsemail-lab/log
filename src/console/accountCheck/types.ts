@@ -1,3 +1,4 @@
+import type { SessionReport } from "../../platformKit/sessionCheck/index.ts";
 import type { CheckState, ConnectionAccount } from "../connections/types.ts";
 
 export type CheckAccount = Pick<ConnectionAccount, "id" | "name" | "platform">;
@@ -6,6 +7,7 @@ export type CheckOutcome = Exclude<CheckState, "running">;
 
 export interface CheckResult {
   state: CheckOutcome;
+  session?: SessionReport;
 }
 
 export type CheckToolAnswer = { isError?: boolean; structuredContent?: unknown };

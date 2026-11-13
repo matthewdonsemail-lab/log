@@ -9,7 +9,7 @@ import type { Authority, Binding } from "../../runtime/bridge/index.ts";
 import { migrate } from "../../storage/schema/index.ts";
 import { consoleOperation, isolationRefusal } from "../../cli/runtime/index.ts";
 import { CREDENTIAL_MASK } from "../../auth/credentials/index.ts";
-import { checkStateOf, createAccountChecker } from "../accountCheck/index.ts";
+import { checkStateOf, checkStateOfVerdict, createAccountChecker } from "../accountCheck/index.ts";
 import { connectionIdOf } from "../connections/index.ts";
 import type { ConnectionsView } from "../connections/index.ts";
 import { parseCookies, signInDeps } from "../signIn/index.ts";
@@ -110,7 +110,7 @@ describe("console operations on the runtime", () => {
     await expect(runConsoleOperation("accountCheck", { accountId: "0".repeat(24) })).rejects.toThrow("accountNotFound");
   });
 
-  test("the checker runs one check at a time and reads a refusal as stopped", async () => {
+  test("the checker runs one check at a time and reads an error with no platform answer as unknown", async () => {
     let release: () => void = () => {};
     const recorded: string[] = [];
     const checker = createAccountChecker(() => new Promise((resolve) => { release = () => resolve({ isError: true }); }), (id, state) => recorded.push(`${id}:${state}`));
@@ -118,9 +118,11 @@ describe("console operations on the runtime", () => {
     await expect(checker.check({ id: "b", name: "other", platform: "reddit" })).rejects.toThrow("accountCheckBusy");
     expect(checker.activeAccountId()).toBe("a");
     release();
-    expect(await first).toEqual({ state: "stopped" });
-    expect(recorded).toEqual(["a:running", "a:stopped"]);
+    expect(await first).toMatchObject({ state: "unknown", session: { account: "fakeBird", verdict: "unknown" } });
+    expect(recorded).toEqual(["a:running", "a:unknown"]);
     expect(checkStateOf({ structuredContent: { job: { id: "j" } } })).toBe("unknown");
+    expect(checkStateOfVerdict("signInNeeded")).toBe("signInNeeded");
+    expect(checkStateOfVerdict("stopped")).toBe("stopped");
     checker.stop();
   });
 

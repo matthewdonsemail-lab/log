@@ -15,6 +15,7 @@ When the owner asks for one of these, follow its page step by step.
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
 | `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+| `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 
 ## The tools in this guide
 
@@ -26,6 +27,7 @@ When the owner asks for one of these, follow its page step by step.
 | `accountResetOpens` | Restart today's count of launches and host opens, only when matt asks |
 | `accountStatus` | Set an account's status |
 | `proxy` | Check an account's proxy, give it one from a provider |
+| `sessionsCheck` | Check every account's saved session through its platform's own answer |
 
 ## Every tool, in full
 
@@ -88,9 +90,22 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
 AGENTS.md (log://agents): rules 35, 41, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
+### `sessionsCheck`
+
+Check every account's saved session through its platform's own answer (a 401 means sign in again), with the next step to sign each one back in.
+Check every account's saved session through its platform's own answer, with the next step to sign each one back in
+log sessions check [--platform <p>] [--account <accountName>] [--json]
+Checks every account's saved session through its platform's own check (X, Discord, Instagram, Slack, Reddit, LinkedIn), one account after another, and says for each: signed in, needs signing in (a 401, or no session saved), stopped (the platform refused: nothing retries, rule 94) or unknown. An account that needs signing in comes with its next step: its own browser opened on the platform's sign-in page for the owner (log inspect start; closing it saves the new session), or X's cookie prompt. Facebook is checked in its browser, and a deactivated account is skipped. Each result is also the console's last check for that account, so the console, the CLI and the MCP tool sessionsCheck say the same. Sends nothing.
+Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "accountsAndProxies" }) (Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher).
+AGENTS.md (log://agents): rules 25, 73, 94, 163, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
 ## The rules these tools fall under, in full
 
 From the current AGENTS.md (`log://agents`). Historical citations are consolidated; archived instructions do not override the active scope.
+
+**Rule 25.** 2026-10-19 · Fix failed or unfamiliar behavior from its own recorded action/request/response timeline. Identify the first response deciding the outcome, compare evidence, then change the machine. Do not infer success from a screen, timer or completed tool call.
 
 **Rule 30.** 2026-10-19 · Complete the authorized task. Do not repeatedly request confirmation already given. Distinguish implemented behavior, proposed contracts and unverified assumptions.
 
@@ -103,5 +118,11 @@ From the current AGENTS.md (`log://agents`). Historical citations are consolidat
 **Rule 40.** 2026-10-19 · Do not propose physical infrastructure unless Matt asks. His available implementation scope is hosted/cloud environments and the tools already selected.
 
 **Rule 41.** 2026-10-19 · Paid work must stay within the authorized task and spend. Ask before adding a paid operation he did not authorize; do not substitute a new paid provider implicitly.
+
+**Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
+
+**Rule 94.** 2026-10-29 · Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies. A refusal, failed send, 429, block, disable, captcha or cooldown stops that run/account until Matt authorizes continuation. Do not retry through refusals. Bulk reading and sending are separate sessions; cold DMs stay a few a day, minutes apart, and opening a DM counts as a write.
+
+**Rule 163.** 2026-11-07 · Agent Log actions go through Log MCP tools; never work around a stale or unavailable MCP with shell Log commands or scratch clients. Terminal-only credential prompts remain for Matt. Expose discoverable command contracts through the existing Log catalog: search the job, get exact inputs, then call. Keep tool descriptions concise and accurate to the current implementation.
 
 **Rule 175.** 2026-11-11 · Use existing log.db and platform-agnostic engine contracts for native schemas. Do not copy Twenty agency prefixes or CRM/SMS structures. Old listing/campaign functionality is deferred. Add only missing account/credential and hosted execution contracts; preserve existing identity, message, queue, job and governor authorities.

@@ -654,7 +654,7 @@ log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|
 Sends one step to the open session and returns its snapshot (element refs), requests and rea reading. Steps that act on Facebook (click, type, press, solve, signIn, code, pin…) are `inspectDoLive`.
 Fill the named fields; each value goes through whole. What acts on Facebook is `inspectDoLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "instagram/newPlatform" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }), getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
