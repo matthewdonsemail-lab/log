@@ -82,7 +82,7 @@ The `--file` for `record` holds one thread, a list, or `{ "threads": [...] }`:
 }
 ```
 
-Each command is also an MCP tool (`conversations`, `conversation`). None of them opens a browser or writes to Facebook.
+Each command is also an MCP tool (`facebookConversations`, and `facebookConversationShow`, `facebookConversationRead`, `facebookConversationLead`, `facebookConversationLink`, `facebookConversationRecord` for `conversation`). None of them opens a browser or writes to Facebook.
 
 ## Next
 

@@ -66,13 +66,13 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
     const text = (result.content as { text: string }[])[0].text;
     expect(text.split("\n")[0]).toContain("bethlehem on https://www.facebook.com/");
     expect(result.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" }, needsMatt: null, browsers: [{ account: "bethlehem", state: { id: "rememberPassword" } }] });
-    const refused = await runToolCall("check", {}, {}, () => {}, () => views);
+    const refused = await runToolCall("facebookCheck", {}, {}, () => {}, () => views);
     expect(refused.isError).toBe(true);
     expect(refused.structuredContent).toMatchObject({ next: { tool: "inspectDoLive" } });
   });
 
   test("progress carries every streamed line with its time", async () => {
-    const result = await runToolCall("accounts", {}, { twenty: marketplaceFixture() }, () => {}, () => []);
+    const result = await runToolCall("facebookAccounts", {}, { twenty: marketplaceFixture() }, () => {}, () => []);
     const progress = (result.structuredContent as { progress: { at: string; source: string; line: string }[] }).progress;
     expect(progress.length).toBeGreaterThan(0);
     for (const p of progress) expect(Number.isNaN(Date.parse(p.at))).toBe(false);

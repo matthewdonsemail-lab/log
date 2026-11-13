@@ -25,7 +25,7 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|
 | `errors` | The error catalog |
 | `graph` | Print a machine's states and transitions as a Mermaid diagram |
-| `capture` | Read a run's raw HAR |
+| `facebookCapture` | Read a run's raw HAR |
 | `runsList` | Every recorded run |
 | `runsExchanges` | Take every recorded step's internal API calls |
 | `runsPrune` | Delete each analysed run after taking out its steps' exchanges… |
@@ -147,8 +147,8 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 
 #### 1. Capture (live)
 
-Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
-`publish` do the same.
+Any action records one. Through the MCP, `mcp__log__facebookConnect` /
+`facebookScan` / `facebookPublish` do the same.
 
 ```bash
 log facebook connect --account <a> --noPrompt   # the login, step by step
@@ -325,7 +325,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass`
 Before first using this tool in a session, load its guide: getGuide({ topic: "runsAndEvidence" }) (What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself).
 AGENTS.md (log://agents): rules 6, 25, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `capture`
+### `facebookCapture`
 
 log facebook capture --har <path> [--out <dir>] [--noRea] [--json] | --settle <dir> | --docs [--noRea]
 Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser.

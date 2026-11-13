@@ -2,7 +2,7 @@ import { viewerState } from "../../browser/viewer/index.ts";
 import type { ViewerView } from "../../browser/viewer/index.ts";
 import { readLocalAccounts } from "../../twenty/graphql/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
-import { PLATFORM_LABELS, platformOfAccount } from "../runner/helpers/platforms.ts";
+import { knownPlatformOfAccount, PLATFORM_LABELS } from "../runner/helpers/platforms.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const BROWSER_USAGE = [
@@ -32,7 +32,8 @@ export function browserViewLocation(env: Record<string, string | undefined> = pr
 export function platformNameOf(account: string): string {
   try {
     const row = readLocalAccounts().find((item) => String(item.accountName ?? "") === account);
-    return row ? PLATFORM_LABELS[platformOfAccount({ platform: typeof row.platform === "string" ? row.platform : null })] : "account";
+    const platform = row ? knownPlatformOfAccount({ platform: typeof row.platform === "string" ? row.platform : null }) : null;
+    return platform ? PLATFORM_LABELS[platform] : "account";
   } catch {
     return "account";
   }

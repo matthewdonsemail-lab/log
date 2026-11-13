@@ -19,7 +19,6 @@ When the owner asks for one of these, follow its page step by step.
 | `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 | `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client | "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work" |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM | "read the messages with <someone> on slack", "reply to <someone> on slack", "what did <someone> say in <workspace>" |
-| `getGuide({ useCase: "twitter/engagementReplies" })` | Answering the people who engaged with your posts | see the page |
 
 ## The tools in this guide
 
@@ -27,28 +26,28 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|
 | `adsPower` | AdsPower: Local API status, its profiles, and one profile per Twenty… |
 | `localAccount` | Accounts kept in a local file instead of Twenty |
-| `lifecycle` | Each account's place in its lifecycle |
-| `preflight` | Before any browser opens, check each account will get through |
-| `doctor` | Check python, facebook-camofox-client, Camoufox, Twenty, and which… |
-| `connect` | Sign a Facebook account in through its proxy |
-| `profile` | Set an account's profile picture and cover photo from Twenty |
-| `profileLive` | Set an account's profile picture and cover photo from…, live on Facebook |
-| `hostStart` | Run the account's lifecycle in one open browser through its active… |
-| `hostStartLive` | Run the account's lifecycle in one open browser…, live on Facebook |
-| `hostSend` | Send an event to the account's running host |
-| `hostStatus` | Where each host is |
+| `facebookLifecycle` | Each account's place in its lifecycle |
+| `facebookPreflight` | Before any browser opens, check each account will get through |
+| `facebookDoctor` | Check python, facebook-camofox-client, Camoufox, Twenty, and which… |
+| `facebookConnect` | Sign a Facebook account in through its proxy |
+| `facebookProfile` | Set an account's profile picture and cover photo from Twenty |
+| `facebookProfileLive` | Set an account's profile picture and cover photo from…, live on Facebook |
+| `facebookHostStart` | Run the account's lifecycle in one open browser through its active… |
+| `facebookHostStartLive` | Run the account's lifecycle in one open browser…, live on Facebook |
+| `facebookHostSend` | Send an event to the account's running host |
+| `facebookHostStatus` | Where each host is |
 | `inspectStart` | Open the account's browser through every gate and keep it open |
 | `inspectDo` | Send one step to the open browser |
-| `inspectDoLive` | Send one step to the open browser, live on Facebook |
+| `inspectDoLive` | Send one step to the open browser, live on the platform |
 | `inspectRead` | Read a recorded step again |
 | `inspectMap` | The recorded steps as states and transitions |
 | `inspectGoal` | The session's goal, whether a step's reading says it is reached, and… |
 | `inspectFinding` | Write a P.E.E |
 | `inspectSessions` | The open sessions |
-| `check` | Check one account in its open browser |
-| `scan` | Read Marketplace > Selling live for one account and update its… |
-| `status` | Open one Marketplace item page live and classify its status |
-| `watch` | Run the listing monitor |
+| `facebookCheck` | Check one account in its open browser |
+| `facebookScan` | Read Marketplace > Selling live for one account and update its… |
+| `facebookStatus` | Open one Marketplace item page live and classify its status |
+| `facebookWatch` | Run the listing monitor |
 | `browsers` | Where every open browser is, and what resolves its page |
 | `browserView` | The account's live browser |
 | `logout` | Forget the stored Twenty session |
@@ -442,7 +441,7 @@ of its warm-up. This does that for one account, both photos in one run (matt's c
 ### Hard boundaries
 
 1. **Dry run first, `--live` only when matt asks** (rules 8, 28). Over MCP,
-   `--live` is `profileLive`, with `confirmLive: true`.
+   `--live` is `facebookProfileLive`, with `confirmLive: true`.
 2. **Read before clicking** (rule 25). The upload clicks in
    `python/session/profileSession.py` were written before the page was seen. The dry
    run writes every button, link and file input the profile page has to
@@ -524,7 +523,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 175, 35, 44, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `lifecycle`
+### `facebookLifecycle`
 
 log facebook lifecycle [states [--write]] [--account <name>] [--json]
 Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine
@@ -534,7 +533,7 @@ Pass the arguments after the command name in `args`, e.g. ["--json"]. `--bypass`
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `preflight`
+### `facebookPreflight`
 
 log facebook preflight [--account <a>] [--homes <US,CA>] [--noProxy] [--apply] [--json]
 Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk
@@ -546,7 +545,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `doctor`
+### `facebookDoctor`
 
 log facebook doctor [--json]
 Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run
@@ -556,7 +555,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `connect`
+### `facebookConnect`
 
 log facebook connect --account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]
 Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty
@@ -568,7 +567,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `profile`
+### `facebookProfile`
 
 log facebook profile setup --account <name> [--live] [--bypass] [--json]
 Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)
@@ -579,7 +578,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 8, 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `profileLive`
+### `facebookProfileLive`
 
 log facebook profile setup --account <name> [--live] [--bypass] [--json]
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -592,17 +591,17 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 8, 35, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `hostStart`
+### `facebookHostStart`
 
 Run the account's lifecycle in one open browser through its active hours.
 Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress
 log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--now] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)
-Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `hostStartLive`.
+Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `facebookHostStartLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `hostStartLive`
+### `facebookHostStartLive`
 
 Run the account's lifecycle in one open browser through its active hours.
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -614,7 +613,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `hostSend`
+### `facebookHostSend`
 
 Send an event to the account's running host.
 Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress
@@ -624,7 +623,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 73, 79, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `hostStatus`
+### `facebookHostStatus`
 
 Where each host is.
 Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress
@@ -652,7 +651,7 @@ Send one step to the open browser; it returns the snapshot (element refs), reque
 Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)
 log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
 Sends one step to the open session and returns its snapshot (element refs), requests and rea reading. Steps that act on Facebook (click, type, press, solve, signIn, code, pin…) are `inspectDoLive`.
-Fill the named fields; each value goes through whole. What acts on Facebook is `inspectDoLive`.
+Fill the named fields; each value goes through whole. What acts on the platform is `inspectDoLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }), getGuide({ useCase: "instagram/newPlatform" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
@@ -661,7 +660,7 @@ AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 
 ### `inspectDoLive`
 
 Send one step to the open browser; it returns the snapshot (element refs), requests and rea's reading.
-Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Live on the platform: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
 Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)
 log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
 Sends one step that acts on Facebook to the open session and returns its snapshot (element refs), requests and rea reading.
@@ -722,18 +721,18 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 8, 35, 19, 26, 29, 30, 117, 55, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `check`
+### `facebookCheck`
 
 Check one account in its open browser.
 Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats
 log facebook check --account <accountName> [--bypass] [--json]   (in the account's open browser: Marketplace status, each listing's state and clicks in the last 14 days on Selling into Twenty, the seller inbox's chats; nothing clicked)
 Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }), getGuide({ useCase: "twitter/engagementReplies" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/marketplaceListings" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 8, 175, 35, 19, 29, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `scan`
+### `facebookScan`
 
 log facebook scan --account <name> [--json] [--bypass]
 Read Marketplace > Selling live for one account and update its listings in Twenty
@@ -743,7 +742,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `status`
+### `facebookStatus`
 
 log facebook status <listingId> --account <name> [--json] [--bypass]
 Open one Marketplace item page live and classify its status
@@ -753,7 +752,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 35, 19, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `watch`
+### `facebookWatch`
 
 log facebook watch --account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]
 Run the listing monitor (XState) for one account and print every step

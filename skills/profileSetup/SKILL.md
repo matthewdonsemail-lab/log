@@ -11,7 +11,7 @@ of its warm-up. This does that for one account, both photos in one run (matt's c
 ## Hard boundaries
 
 1. **Dry run first, `--live` only when matt asks** (rules 8, 28). Over MCP,
-   `--live` is `profileLive`, with `confirmLive: true`.
+   `--live` is `facebookProfileLive`, with `confirmLive: true`.
 2. **Read before clicking** (rule 25). The upload clicks in
    `python/session/profileSession.py` were written before the page was seen. The dry
    run writes every button, link and file input the profile page has to

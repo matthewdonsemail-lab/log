@@ -18,7 +18,7 @@ export function annotationsOf(effect: ToolEffect, live: boolean, title: string):
   }
 }
 
-export function titleOf(summary: string, live = false, place = "Facebook"): string {
+export function titleOf(summary: string, live: boolean, place: string): string {
   const parts = summary.split(/:\s|;\s|\s\(|\.\s|\s—\s/);
   const first = (parts[0].length < 12 && parts[1] ? `${parts[0]}: ${parts[1]}` : parts[0]).replace(/\.$/, "").trim();
   const limit = live ? 54 : 70;

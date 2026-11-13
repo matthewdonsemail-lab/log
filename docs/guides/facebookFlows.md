@@ -21,47 +21,47 @@ When the owner asks for one of these, follow its page step by step.
 | Tool | What it does |
 |---|---|
 | `flow` | Recorded inspect runs as flows |
-| `flowLive` | Recorded inspect runs as flows, live on Facebook |
+| `flowLive` | Recorded inspect runs as flows, live on the platform |
 | `warmup` | The warm-up, by platform and activity |
-| `warmupLive` | The warm-up, by platform and activity, live on Facebook |
+| `warmupLive` | The warm-up, by platform and activity, live on the platform |
 | `flowDeletePost` | Delete the newest post on the account's own profile |
-| `flowDeletePostLive` | Delete the newest post on the account's own profile, live on Facebook |
+| `flowDeletePostLive` | Delete the newest post on the account's own profile, live on the platform |
 | `flowFacebookLanguageEnglish` | Switch the account's Facebook language to English |
-| `flowFacebookLanguageEnglishLive` | Switch the account's Facebook language to English, live on Facebook |
+| `flowFacebookLanguageEnglishLive` | Switch the account's Facebook language to English, live on the platform |
 | `flowGroupHeaderMenus` | Open and close the group header's search, More menu, Joined menu… |
-| `flowGroupHeaderMenusLive` | Open and close the group header's search, More menu…, live on Facebook |
+| `flowGroupHeaderMenusLive` | Open and close the group header's search, More menu…, live on the platform |
 | `flowGroupMembers` | Open a group's People tab and scroll it read-only so Facebook loads… |
-| `flowGroupMembersLive` | Open a group's People tab and scroll it read-only so…, live on Facebook |
+| `flowGroupMembersLive` | Open a group's People tab and scroll it read-only so…, live on the platform |
 | `flowGroupPostComments` | On a group's Open questions tab, open a post's comments, switch the… |
-| `flowGroupPostCommentsLive` | On a group's Open questions tab, open a post's…, live on Facebook |
+| `flowGroupPostCommentsLive` | On a group's Open questions tab, open a post's…, live on the platform |
 | `flowGroupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a… |
-| `flowGroupPostDialogLive` | On a group's Discussion feed, open a post in its…, live on Facebook |
+| `flowGroupPostDialogLive` | On a group's Discussion feed, open a post in its…, live on the platform |
 | `flowGroupTabs` | Open each tab of a group the account is in |
-| `flowGroupTabsLive` | Open each tab of a group the account is in, live on Facebook |
+| `flowGroupTabsLive` | Open each tab of a group the account is in, live on the platform |
 | `flowMarketplaceListingDelete` | Delete one Marketplace listing from the Selling page |
-| `flowMarketplaceListingDeleteLive` | Delete one Marketplace listing from the Selling page, live on Facebook |
+| `flowMarketplaceListingDeleteLive` | Delete one Marketplace listing from the Selling page, live on the platform |
 | `flowMarketplaceListingPublish` | Publish one Marketplace listing in the account's open AdsPower browser |
-| `flowMarketplaceListingPublishLive` | Publish one Marketplace listing in the account's open…, live on Facebook |
+| `flowMarketplaceListingPublishLive` | Publish one Marketplace listing in the account's open…, live on the platform |
 | `flowMessengerPinCreate` | Messenger's Create a PIN |
-| `flowMessengerPinCreateLive` | Messenger's Create a PIN, live on Facebook |
+| `flowMessengerPinCreateLive` | Messenger's Create a PIN, live on the platform |
 | `flowPostComment` | Comment on the newest post on the account's own profile |
-| `flowPostCommentLive` | Comment on the newest post on the account's own…, live on Facebook |
+| `flowPostCommentLive` | Comment on the newest post on the account's own…, live on the platform |
 | `flowProfilePhotoPost` | Post a photo on the account's own profile |
-| `flowProfilePhotoPostLive` | Post a photo on the account's own profile, live on Facebook |
+| `flowProfilePhotoPostLive` | Post a photo on the account's own profile, live on the platform |
 | `flowProfilePost` | Post text on the account's own profile |
-| `flowProfilePostLive` | Post text on the account's own profile, live on Facebook |
+| `flowProfilePostLive` | Post text on the account's own profile, live on the platform |
 | `flowProfileSetup` | Give an account its profile picture, cover photo and name, as… |
-| `flowProfileSetupLive` | Give an account its profile picture, cover photo and…, live on Facebook |
+| `flowProfileSetupLive` | Give an account its profile picture, cover photo and…, live on the platform |
 | `flowWarmupCreateAccessCheck` | Warm-up createAccessCheck |
-| `flowWarmupCreateAccessCheckLive` | Warm-up createAccessCheck, live on Facebook |
+| `flowWarmupCreateAccessCheckLive` | Warm-up createAccessCheck, live on the platform |
 | `flowWarmupFeedBrowse` | Warm-up feedBrowse |
-| `flowWarmupFeedBrowseLive` | Warm-up feedBrowse, live on Facebook |
+| `flowWarmupFeedBrowseLive` | Warm-up feedBrowse, live on the platform |
 | `flowWarmupMarketplaceBrowse` | Warm-up marketplaceBrowse |
-| `flowWarmupMarketplaceBrowseLive` | Warm-up marketplaceBrowse, live on Facebook |
+| `flowWarmupMarketplaceBrowseLive` | Warm-up marketplaceBrowse, live on the platform |
 | `flowWarmupMessagesVisit` | Warm-up messagesVisit |
-| `flowWarmupMessagesVisitLive` | Warm-up messagesVisit, live on Facebook |
+| `flowWarmupMessagesVisitLive` | Warm-up messagesVisit, live on the platform |
 | `flowWarmupSellingVisit` | Warm-up sellingVisit |
-| `flowWarmupSellingVisitLive` | Warm-up sellingVisit, live on Facebook |
+| `flowWarmupSellingVisitLive` | Warm-up sellingVisit, live on the platform |
 
 ## The work, step by step: flow
 
@@ -446,7 +446,7 @@ AGENTS.md (log://agents): rules 29, 31, 35, 73, 79, 30, 38, 39, 40, 41. When mat
 ### `flowLive`
 
 log flow fromInspect <runDir> --name <n> | docs <n> | list | show <n> | run <n> --account <a> [--set k=v]... [--live]
-Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Live on the platform: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
 Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31)
 Usage: log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename text1=firstName]...
        log flow docs <name> | list | show <name>
@@ -481,7 +481,7 @@ AGENTS.md (log://agents): rules 8, 35, 25, 26, 29, 31, 63, 55, 1, 2, 73, 30, 38,
 ### `warmupLive`
 
 log <platform> warmup <platform> <activity> [plan|record|run|log|persona] [--account <a>] [--live] [--likes] [--bypass]
-Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Live on the platform: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
 The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60)
 Usage: log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)
        log <platform> warmup <activity> plan [--json]   (the activity's steps and what each must do)

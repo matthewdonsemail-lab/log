@@ -57,7 +57,7 @@ export function commandEntry(command: Command): CommandEntry {
     terminalOnly,
     longRunning: LONG_RUNNING.has(command.name),
     browser: commandBrowser(command.name),
-    engine: commandEngine(commandKey(command)),
+    engine: commandEngine(commandKey(command), command.name),
     platform: command.platform,
     words: commandWords(command),
     rules: [...(COMMAND_RULES[commandKey(command)] ?? []), ...EVERY_TOOL_RULES],

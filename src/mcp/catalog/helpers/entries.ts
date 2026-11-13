@@ -1,4 +1,5 @@
 import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
+import { currentToolName } from "../../server/helpers/toolAliases.ts";
 import type { Command, FlagSpec, InputForm, PositionalSpec } from "../../../cli/runner/types.ts";
 import { guideOfCommand } from "../../server/helpers/guides.ts";
 import { argsLiveFlags, commandTools, LONG_RUNNING } from "../../server/helpers/toolsFromCommands.ts";
@@ -97,6 +98,6 @@ export function catalogOf(commands: readonly Command[]): CatalogEntry[] {
 }
 
 export function entryById(entries: readonly CatalogEntry[], id: string): CatalogEntry | null {
-  const wanted = id.trim();
+  const wanted = currentToolName(id.trim());
   return entries.find((e) => e.id === wanted) ?? entries.find((e) => (e.tool && e.tool === wanted) || e.liveTool === wanted) ?? entries.find((e) => e.id.toLowerCase() === wanted.toLowerCase()) ?? null;
 }

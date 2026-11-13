@@ -20,16 +20,16 @@ When the owner asks for one of these, follow its page step by step.
 
 | Tool | What it does |
 |---|---|
-| `join` | Join a Facebook group as one account, in its open browser |
-| `joinLive` | Join a Facebook group as one account, in its open…, live on Facebook |
-| `readGroup` | Read a Facebook group's new posts and the comments of the new posts… |
-| `readGroupLive` | Read a Facebook group's new posts and the comments of…, live on Facebook |
-| `readMembers` | Read a Facebook group's newest members |
-| `poll` | Poll a Facebook group from one account, in its open browser, for a… |
+| `facebookJoin` | Join a Facebook group as one account, in its open browser |
+| `facebookJoinLive` | Join a Facebook group as one account, in its open…, live on Facebook |
+| `facebookReadGroup` | Read a Facebook group's new posts and the comments of the new posts… |
+| `facebookReadGroupLive` | Read a Facebook group's new posts and the comments of…, live on Facebook |
+| `facebookReadMembers` | Read a Facebook group's newest members |
+| `facebookPoll` | Poll a Facebook group from one account, in its open browser, for a… |
 
 ## Every tool, in full
 
-### `join`
+### `facebookJoin`
 
 log facebook join group --account <a> --group <g> [--live] | --show | --answer [--set n=v]... [--agree] | --fill [--live [--submit]] [--bypass] [--json]
 Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45)
@@ -50,7 +50,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 35, 25, 26, 29, 175, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `joinLive`
+### `facebookJoinLive`
 
 log facebook join group --account <a> --group <g> [--live] | --show | --answer [--set n=v]... [--agree] | --fill [--live [--submit]] [--bypass] [--json]
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -72,7 +72,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 35, 25, 26, 29, 175, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `readGroup`
+### `facebookReadGroup`
 
 Read a Facebook group's new posts and the comments of the new posts, on the direct-API engine first (no browser) or else in the account's open browser; only the group's cursor is saved to Twenty.
 Read a Facebook group's new posts and their comments, or its newest members, as one account, by hand: posts on the direct-API engine first, else in its open browser; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file
@@ -89,13 +89,13 @@ Reads the group's newest members from its People tab (/groups/<g>/members) in th
 --count: members to read (1-5000). --secondsPerScroll: the wait before each scroll (default 15; matt: the time 40 scrolls take is a variable). --maxScrolls: scrolls at most (default twice the plan's, plus 2). It says up front: count N → ~S scrolls, ~M min at Xs per scroll.
 It stops at --count members, when the list ends (has_next_page false) or at --maxScrolls. --owners keeps only owners: a bio naming owner, co-owner, founder, CEO, president, proprietor or self-employed, or a page (a category set).
 The members go to ~/.logCli/members/<group>/<run time>.tsv and .json, never to Twenty; it prints how many, how many with a bio, owners and pages, and the files. --json gives them.
-Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `readGroupLive`.
+Fill the named fields; each value goes through whole. `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked. What acts on Facebook is `facebookReadGroupLive`.
 Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
 Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "facebook/groups" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 175, 35, 19, 25, 26, 29, 63, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `readGroupLive`
+### `facebookReadGroupLive`
 
 Read a Facebook group's new posts and the comments of the new posts, on the direct-API engine first (no browser) or else in the account's open browser; only the group's cursor is saved to Twenty.
 Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
@@ -118,7 +118,7 @@ Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 175, 35, 19, 25, 26, 29, 63, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `readMembers`
+### `facebookReadMembers`
 
 Read a Facebook group's newest members (name, profile, bio, page category, followers, when they joined) from its People tab in the account's open browser, nothing clicked; saved to a TSV and JSON file.
 Read a Facebook group's new posts and their comments, or its newest members, as one account, by hand: posts on the direct-API engine first, else in its open browser; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file
@@ -140,7 +140,7 @@ Use cases that call it, each a workflow the owner asks for, tool by tool: getGui
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookGroups" }) (Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls).
 AGENTS.md (log://agents): rules 8, 175, 35, 19, 25, 26, 29, 63, 2, 73, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
-### `poll`
+### `facebookPoll`
 
 log facebook poll <group> <account> [<how long to poll>] [--bypass] | --request <json>
 Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63)

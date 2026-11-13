@@ -22,7 +22,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { guideAnswer, playRefusal, withPlayFooter } from "./helpers/index.ts";
+import { currentToolName, guideAnswer, playRefusal, renamedTool, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
@@ -214,6 +214,7 @@ export async function runToolCall(
   signal?: AbortSignal,
   appCaller: boolean = browserViewLocation() === "remote",
 ): Promise<CallToolResult> {
+  if (renamedTool(name)) return withRenamedNote(name, await runToolCall(currentToolName(name), input, context, onLine, readBrowsers, signal, appCaller));
   if (isAppTool(name)) return runAppTool(name, input, appCaller);
   if (name === REPORT_TOOL) return runReport(input, appCaller);
   if (name === GUIDE_TOOL) {
@@ -322,7 +323,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     const result = await runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()));
     if (request.params.name === GUIDE_TOOL || request.params.name === REPORT_TOOL) return result;
     const target = request.params.name === CALL_TOOL ? resolveCall(catalog(COMMANDS), request.params.arguments as LogToolInput | undefined) : null;
-    return withPlayFooter(target?.ok ? target.tool : request.params.name, result);
+    return withPlayFooter(target?.ok ? target.tool : currentToolName(request.params.name), result);
   });
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;

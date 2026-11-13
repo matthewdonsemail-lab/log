@@ -1,4 +1,4 @@
-import { platformOfAccount, PLATFORMS, siteOfAccount } from "../runner/helpers/platforms.ts";
+import { platformOfAccount, siteOfAccount } from "../runner/helpers/platforms.ts";
 import { spawn } from "node:child_process";
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -231,7 +231,7 @@ export const inspectCommand: Command = {
             repliesPath: current.repliesPath,
             loginPath: run.loginPath,
             idleMouse: !parsed.flags["noIdleMouse"],
-            startUrl: url ?? (platformOfAccount(account) === PLATFORMS[0] ? null : siteOfAccount(account).home),
+            startUrl: url ?? (platformOfAccount(account) === "facebook" ? null : siteOfAccount(account).home),
             site: { platform: platformOfAccount(account), domain: siteOfAccount(account).domain, hosts: siteOfAccount(account).hosts },
             browser: browserFor(account),
           });

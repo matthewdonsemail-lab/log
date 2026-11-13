@@ -726,6 +726,17 @@
     "monitor": "blocked",
     "action": "Pick a FACEBOOK account, or fix its platform in Twenty."
   },
+  "accountPlatformMissing": {
+    "layer": "account",
+    "meaning": "The account has no platform, or one log doesn't know. No platform is assumed for it.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/runner/platforms"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Set the account's platform (FACEBOOK, TWITTER, REDDIT, DISCORD, LINKEDIN, SLACK or INSTAGRAM) on its row."
+  },
   "accountNotUsable": {
     "layer": "account",
     "meaning": "The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable.",

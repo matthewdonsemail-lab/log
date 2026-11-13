@@ -72,7 +72,7 @@ log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commen
 
 - `--show` prints the group's read cursor from Twenty instead of reading (`src/cli/read`).
 - It refuses without the account's open browser (`groupBrowserNotOpen`) and outside its active hours.
-- MCP tools: `readGroup` and `readGroupLive`. It's a long run, so watch its live log.
+- MCP tools: `facebookReadGroup` and `facebookReadGroupLive`. It's a long run, so watch its live log.
 
 ## What is stored in Twenty
 

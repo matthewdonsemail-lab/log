@@ -39,8 +39,9 @@ const proxyText = (p: Platform) => (PLATFORM_SITES[p].proxy === "required" ? "it
 const isDirect = (e: CommandEntry) => e.engine === "directApiFirst" || e.engine === "directApiOnly";
 
 export function platformsDiagram(entries: readonly CommandEntry[]): Diagram {
-  const anyBrowser = entries.filter((e) => e.platform === "any" && e.browser === "accountBrowser");
-  const anyNone = entries.filter((e) => e.platform === "any" && e.browser === "none");
+  const shared = (e: CommandEntry) => e.platform === "any" || e.platform === "byArgument";
+  const anyBrowser = entries.filter((e) => shared(e) && e.browser === "accountBrowser");
+  const anyNone = entries.filter((e) => shared(e) && e.browser === "none");
   const lines = [
     "flowchart LR",
     `  twenty[("Twenty socialAccounts: one row per account, its platform, session and proxy")]`,
@@ -48,7 +49,7 @@ export function platformsDiagram(entries: readonly CommandEntry[]): Diagram {
     `  drivers["The account's browser: AdsPower or Camoufox, through the driver (The browser layer)"]`,
   ];
   for (const p of PLATFORMS) {
-    const own = entries.filter((e) => e.platform === p || (e.platform === "byArgument" && p === PLATFORMS[0]));
+    const own = entries.filter((e) => e.platform === p);
     lines.push(`  p_${p}["${label(`${PLATFORM_LABELS[p]} (${PLATFORM_SITES[p].twenty}): ${countOf(entries.filter((e) => e.platform === p).length, "command")} of its own`)}"]`, `  twenty --> p_${p}`);
     for (const lib of platformLibraries(p)) {
       const node = `e_${lib.replace(/[^A-Za-z0-9_]/g, "_")}`;
