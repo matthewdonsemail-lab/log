@@ -27,7 +27,9 @@ export const SERVER_INSTRUCTIONS = [
   "5. Read current private context and claims before sends; preserve voice/media checks (rules 109, 133, 137, 138, 160).",
   "6. Stream progress: with a shell start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`. A client without a shell reads each result's `progress` instead (rule 26).",
   "7. No added scope/spend; do not raise Meta/Facebook rules unless Matt does (rules 38, 39, 41).",
-  "8. Discover exact inputs with logSearch, logGet, logCall (rule 163). Use active rules; old rule history is non-authoritative (rule 176)."
+  "8. Discover exact inputs with logSearch, logGet, logCall (rule 163). Use active rules; old rule history is non-authoritative (rule 176).",
+  "9. To show something, call report: data from log.db draws a starter view, or write the view with code (getGuide({ topic: \"ui\" })); MCP Apps hosts draw it inline, others get text.",
+  "10. With no log prompt hook in this app, route each request first: getGuide({ ask: \"<the owner's words>\" }) returns the use case to follow.",
 ].join("\n");
 
 const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
@@ -94,6 +96,8 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   timing: [26, 73, 165],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 169],
   browsers: [29, 35, 54, 55],
+  browser: [8, 19, 35, 94, 105],
+  report: [134, 154, 160, 178],
   job: [10, 26, 35],
   mcp: [21, 47, 167, 170],
   conversations: [34],

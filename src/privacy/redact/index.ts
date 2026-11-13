@@ -19,6 +19,9 @@ const KEY_KINDS: Record<string, KeyKind> = {
   jazoest: 'csrfToken',
   cookie: 'cookie',
   cookies: 'cookie',
+  verifykey: 'token',
+  fingerprint: 'token',
+  xfingerprint: 'token',
   setcookie: 'cookie',
   token: 'token',
   accesstoken: 'token',
@@ -124,7 +127,9 @@ const PATTERN_RULES = SCAN_RULES.filter((rule) => RULE_PLACEHOLDERS[rule.name]).
   placeholder: RULE_PLACEHOLDERS[rule.name] as string,
 }))
 
-export function createRedactor(options: { byKeys?: boolean } = {}): Redactor {
+const escapeTerm = (term: string): string => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+export function createRedactor(options: { byKeys?: boolean; denylist?: string[] } = {}): Redactor {
   const numbering = new Map<NumberedKind, Map<string, number>>()
   const placeholderFor = (kind: KeyKind, value: string): string => {
     if (!NUMBERED.has(kind)) return `<${kind as FixedKind}>`
@@ -180,11 +185,22 @@ export function createRedactor(options: { byKeys?: boolean } = {}): Redactor {
     return out
   }
 
+  const terms = [...new Set(options.denylist ?? [])].filter((term) => term.length >= 3).sort((a, b) => b.length - a.length)
+  const byDenylist = (text: string): string => {
+    let out = text
+    for (const term of terms) {
+      if (!out.includes(term)) continue
+      const pattern = new RegExp(`(?<=^|[^A-Za-z0-9]|\\\\[rnt])${escapeTerm(term)}(?![A-Za-z0-9])`, 'g')
+      out = out.replace(pattern, () => (/^\d+$/.test(term) ? placeholderFor('id', term) : term.includes('@') ? '<email>' : placeholderFor('name', term)))
+    }
+    return out
+  }
+
   return {
-    redact: (text: string) => (options.byKeys === false ? text : byKeys(text)).split('\n').map(byPatterns).join('\n'),
+    redact: (text: string) => byDenylist((options.byKeys === false ? text : byKeys(text)).split('\n').map(byPatterns).join('\n')),
   }
 }
 
-export const redactDoc = (text: string): string => createRedactor().redact(text)
+export const redactDoc = (text: string, denylist: string[] = []): string => createRedactor({ denylist }).redact(text)
 
 export const redactPatterns = (text: string): string => createRedactor({ byKeys: false }).redact(text)

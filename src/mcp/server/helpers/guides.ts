@@ -16,12 +16,13 @@ export interface GuideTopic {
   commands: string[];
   skills: string[];
   flows?: boolean;
+  serverTools?: string[];
 }
 
 export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   logMcpInstructions: { about: "Step-by-step guide to the log MCP: every core rule in full, which guide covers which work, and how runs, jobs, browsers and refusals report back", commands: [], skills: ["logCli"] },
   logCatalog: { about: "Finding and running any log command with three tools: logSearch by what you want done, logGet for its inputs and a call that works, logCall to run it", commands: [], skills: ["logCatalog"] },
-  facebookBrowser: { about: "An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks", commands: ["facebook:preflight", "facebook:connect", "any:inspect", "facebook:host", "facebook:lifecycle", "any:browsers", "any:adsPower", "any:localAccount", "facebook:profile", "facebook:messenger", "facebook:doctor", "facebook:scan", "facebook:status", "facebook:watch", "facebook:check", "any:login", "any:logout", "any:whoami"], skills: ["inspect", "host", "lifecycle", "adsPower", "humanMouse", "profileSetup"] },
+  facebookBrowser: { about: "An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks", commands: ["facebook:preflight", "facebook:connect", "any:inspect", "facebook:host", "facebook:lifecycle", "any:browsers", "any:browser", "any:adsPower", "any:localAccount", "facebook:profile", "facebook:messenger", "facebook:doctor", "facebook:scan", "facebook:status", "facebook:watch", "facebook:check", "any:login", "any:logout", "any:whoami"], skills: ["inspect", "host", "lifecycle", "adsPower", "humanMouse", "profileSetup"] },
   facebookFlows: { about: "Recorded flows and the warm-up, run as steps in the account's open browser, each step checked against the call it must cause", commands: ["any:flow", "byArgument:warmup"], skills: ["flow", "warmup", "personaPicture"], flows: true },
   facebookMarketplace: { about: "Marketplace listings from copy to publish, campaigns that fill and heal them, and the buyers' conversations", commands: ["facebook:listings", "facebook:listing", "facebook:publish", "facebook:campaign", "facebook:conversations", "facebook:conversation"], skills: ["accountToDryRun", "listingCopy", "listingCreative", "nicheCreativeResearch", "conversations"] },
   facebookGroups: { about: "Facebook groups: joining and answering their questions, reading posts and members, and serving OpenMagpie's polls", commands: ["facebook:join", "facebook:read", "facebook:poll"], skills: [] },
@@ -40,6 +41,7 @@ export const GUIDE_TOPICS: Readonly<Record<string, GuideTopic>> = {
   governor: { about: "Every platform account's governor: its daily count of requests and writes, reading it, and putting it back to 0 when matt says so, recorded in log.db", commands: ["any:governor"], skills: ["governor"] },
   newPlatform: { about: "Making a new platform whole with one command, and where every new file goes", commands: ["any:new"], skills: ["layout"] },
   instagram: { about: "An Instagram account: its session, reading its DMs, sending text and photos, and the live realtime watch", commands: ["instagram:session", "instagram:dms", "instagram:send", "instagram:react", "instagram:voice", "instagram:watch"], skills: ["instagram"] },
+  ui: { about: "Generative UI in the chat: the report tool, where you write a small React view against log's kit (in the spirit of Lynx workspaces) and log draws it with data from log.db, or send just data for a starter view; text everywhere else", commands: ["any:report"], skills: ["report"], serverTools: ["report"] },
 };
 
 export const guideKey = (command: Pick<Command, "platform" | "name">): string => `${command.platform}:${command.name}`;
@@ -117,6 +119,7 @@ export function guideTool(): Omit<LogTool, "outputSchema"> {
       `Read a detailed guide on one kind of work. Call with topic "${CORE_GUIDE}" before using other log tools, once per session; call again if a long thread may have dropped guide text.`,
       "Each tool's description names its guide: load it before first using that tool. A guide holds the work step by step (the skills), every tool it covers with its full usage, and every AGENTS.md rule those tools fall under, in full.",
       `Guides live in docs/guides/<topic>.md. Topics: ${Object.keys(GUIDE_TOPICS).map((t) => `"${t}"`).join(", ")}.`,
+      "When the owner asks for something and this app has no log prompt hook (Claude app, ChatGPT, Cursor, Hermes, Grok), pass their request word for word as ask: getGuide({ ask: \"<their words>\" }) returns the use case that fits, as the session's play, or says none does.",
       `Use cases are the work the owner asks for again and again, each one tool by tool in order (docs/useCases/<platform>/<page>.md). Read one with useCase instead of topic, and when the owner asks for work a use case covers, follow its page step by step. Use cases: ${useCases.map((u) => `"${u.id}"`).join(", ")}.`,
     ].join("\n"),
     annotations: { title: "Read a log guide", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
@@ -124,6 +127,7 @@ export function guideTool(): Omit<LogTool, "outputSchema"> {
       type: "object",
       properties: {
         topic: { type: "string", enum: Object.keys(GUIDE_TOPICS), description: `The guide topic to read. Available topics:\n${topics}` },
+        ask: { type: "string", description: "The owner's request in their own words: log finds the use case that fits and returns it, as when its prompt hook routes a prompt" },
         useCase: { type: "string", enum: useCases.map((u) => u.id), description: `A use case to read instead of a topic: its steps, tool by tool. Available use cases:\n${useCases.map((u) => `"${u.id}": ${u.title}`).join("\n")}` },
       },
       additionalProperties: false,
@@ -156,13 +160,15 @@ export function skillBody(name: string): string {
 
 const shift = (markdown: string, levels: number): string => markdown.replace(/^(#{1,4}) /gm, (_, h: string) => `${"#".repeat(Math.min(6, h.length + levels))} `);
 
+export type GuideTool = Pick<LogTool, "name" | "title" | "description">;
+
 export interface GuideInput {
   topic: string;
-  tools: LogTool[];
+  tools: GuideTool[];
   commands: readonly Command[];
   flows: FlowDefinition[];
   agentsMd: string;
-  rulesOf: (tool: LogTool) => number[];
+  rulesOf: (tool: GuideTool) => number[];
   rules?: number[];
   extra?: string[];
 }

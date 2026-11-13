@@ -16,6 +16,7 @@ When the owner asks for one of these, follow its page step by step.
 |---|---|---|
 | `getGuide({ useCase: "discord/groupChatRead" })` | Reading a Discord group chat without Twenty | "read the <group> chat over the last <N> hours", "what did <someone> set up in <group>" |
 | `getGuide({ useCase: "facebook/marketplaceListings" })` | From accounts to live Marketplace listings | see the page |
+| `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 | `getGuide({ useCase: "instagram/newPlatform" })` | Bringing a new platform up, then vendoring its client | "make a new platform via the MCP for <platform>", "open <platform> in AdsPower", "find me via the gh api the most likely to go into the vendor", "make it work" |
 | `getGuide({ useCase: "slack/dmReply" })` | Reading and answering a Slack DM | "read the messages with <someone> on slack", "reply to <someone> on slack", "what did <someone> say in <workspace>" |
 | `getGuide({ useCase: "twitter/engagementReplies" })` | Answering the people who engaged with your posts | see the page |
@@ -49,6 +50,7 @@ When the owner asks for one of these, follow its page step by step.
 | `status` | Open one Marketplace item page live and classify its status |
 | `watch` | Run the listing monitor |
 | `browsers` | Where every open browser is, and what resolves its page |
+| `browserView` | The account's live browser |
 | `logout` | Forget the stored Twenty session |
 | `whoami` | Show who is signed in, refreshing the session if it expired |
 
@@ -770,6 +772,17 @@ Fill the named fields; each value goes through whole.
 Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
 AGENTS.md (log://agents): rules 29, 35, 55, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
+### `browserView`
+
+The account's live browser: whether it needs a person to sign in, and where they do it.
+One account's live browser: whether it needs a person to sign in, in the window on this machine or inline from a remote runtime
+log browser view --account <accountName> [--json]   (the account's live browser: whether it needs a person to sign in, the page state and its revision; when log runs on the person's own machine the sign-in is in the browser window there, and from a remote runtime an MCP Apps host shows it inline through browserView)
+Where the runtime is comes from LOG_BROWSER_VIEW_LOCATION (local or remote), which the stdio MCP, the HTTP MCP and the hosted bridge each set for their own process.
+Fill the named fields; each value goes through whole.
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }).
+Before first using this tool in a session, load its guide: getGuide({ topic: "facebookBrowser" }) (An account's one browser for its day: preflight, opening and signing in, inspecting a page step by step, the host and its lifecycle, the profile and Messenger PIN, and the account checks).
+AGENTS.md (log://agents): rules 8, 19, 35, 94, 105, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
 ### `logout`
 
 log logout [--apiUrl <url>] [--json]
@@ -821,6 +834,10 @@ From the current AGENTS.md (`log://agents`). Historical citations are consolidat
 **Rule 73.** 2026-10-23 · For an unknown platform state, collate the goal, account/runtime, action, sent requests, answers, timing and page evidence. Use the existing REA/SubQ reading workflow when applicable, report the unknown state, write Point/Evidence/Explain and the fix, then name the state. Preserve paid-work scope. This runtime analysis does not add SubQ to commit/CI gates.
 
 **Rule 79.** 2026-10-25 · Flow controls must match deterministically by the recorded role/name and scope; ambiguous, missing or disabled controls refuse. Await the confirming API answer. Known resolvable states follow their recorded resolver; checkpoints/refusals remain stops.
+
+**Rule 94.** 2026-10-29 · Every platform call goes through Log and its governor, never a scratch client with account tokens/cookies. A refusal, failed send, 429, block, disable, captcha or cooldown stops that run/account until Matt authorizes continuation. Do not retry through refusals. Bulk reading and sending are separate sessions; cold DMs stay a few a day, minutes apart, and opening a DM counts as a write.
+
+**Rule 105.** 2026-11-01 · One platform/account owns one continuous engine session and push connection. Reads, writes, queues and watches share that owner through existing relay/serialization. Never open a parallel client to bypass the owner or its governor.
 
 **Rule 117.** 2026-11-02 · Current behavior belongs in its domain spec with code anchors; generator/wiring changes update that spec and relevant use cases. Distinguish implemented anchors from future design. Rule 170 governs which checks run automatically.
 

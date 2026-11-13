@@ -1,14 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { consoleEvents } from './server/consoleEvents'
+import { consoleEvents, localConsoleMode } from './server/consoleEvents'
 
 const controlServiceUrl = process.env.CONTROL_SERVICE_URL || 'http://127.0.0.1:8765'
 const controlServiceIsRemote = controlServiceUrl.startsWith('https://')
 const controlServiceProxy = { target: controlServiceUrl, changeOrigin: controlServiceIsRemote }
+const localConsoleApi = process.env.LOG_CONSOLE_API
+const localConsoleProxy = localConsoleApi ? { '/api/console': { target: localConsoleApi, changeOrigin: false } } : {}
 
 export default defineConfig({
-  plugins: [react(), consoleEvents()],
+  plugins: [react(), consoleEvents(), ...(localConsoleApi ? [localConsoleMode()] : [])],
   define: {
     __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)),
   },
@@ -20,6 +22,7 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      ...localConsoleProxy,
       '/api/v1': controlServiceProxy,
       '/oauth': controlServiceProxy,
       '/.well-known': controlServiceProxy,

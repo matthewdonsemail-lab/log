@@ -24,7 +24,7 @@ Checked by: code (anchors)
 
 ### REQ-MCP-03: AGENTS.md is the resource log://agents
 
-The server lists one resource, `log://agents`, and reading it returns AGENTS.md as it is in the checkout.
+The server lists `log://agents`, and reading it returns AGENTS.md as it is in the checkout. A client that supports MCP Apps also sees the browser view resource (REQ-MCP-19) and the report resource (REQ-MCP-20).
 
 Checked by: code and SubQ
 
@@ -137,5 +137,21 @@ Checked by: code and SubQ
 ### REQ-MCP-15: The loaded use case is the session's play, and sends need one
 
 When `getGuide` is called with a `useCase`, `runToolCall` in `src/mcp/server/index.ts` makes it the active play with `setActivePlay` (`src/mcp/server/helpers/activePlay.ts`), which reads the page's steps table (`stepsOf`: each row's number, step, tools named in backticks, and done when). Every other tool's answer then ends with `playFooter`: the play's id and title, the step this tool is and what counts as done, and the next step with its tools, or that the tool isn't one of the play's steps. A tool in `PLAY_REQUIRED` (the live sends as matt) is refused by `playRefusal` with `playMissing` while no play is loaded, naming the use cases whose pages name that tool. matt, 2026-11-07: the guides were not being called for actions. Rule 157.
+
+Checked by: code and SubQ
+
+## The live browser in the chat
+
+### REQ-MCP-19: browserView shows an account's live browser where the person is, and only their own gated input reaches it
+
+`browserView` (`log browser view --account`, `browserCommand` in `src/cli/browser/index.ts`) reads the account's viewer with `viewerState` (`src/browser/viewer/client.ts`). Where the runtime is comes from `browserViewLocation`, which `settleLocation` in `src/mcp/apps/browserView/client.ts` sets once per process: `local` for the stdio server (`startLogMcpServer`), `httpLocation` for the HTTP server (local only on loopback with no token or OAuth), `remote` for the hosted bridge (`runtimeDeps` in `src/cli/runtime/index.ts`). Local: `browserViewText` tells the person to finish the sign-in in the browser window on this machine, `browserViewJson` carries no stream, and `runAppTool` refuses frames and input with `browserViewLocal`. Remote: `browserViewJson` says only which stream there is (`streamKind`), and the voxl descriptor from `streamOf`, whose URL carries voxl's password, reaches the view only through the app-only `browserViewStream` (voxl first); `browserViewFrame` (`viewerFrame`) is the screenshot fallback when there is none. Nothing the model reads carries the voxl URL. When the client advertises the MCP Apps extension (`uiCapable`), `createLogMcpServer` adds `_meta.ui.resourceUri` `ui://log/browserView` to `browserView` (`withBrowserViewUi`), lists `appTools` with `visibility: ["app"]` and the `browserViewResource`; a client without it is refused the app-only tools with `browserViewAppOnly`. `browserViewInput` posts the person's click, text, key or scroll to the viewer's `/input` (`viewerInput`), which `BrowserViewer.input` in `python/browser/browserViewer.py` refuses unless the generation and revision still match and the page still reports a sign-in state, and replays as a recorded `viewerInput` step; input never goes through voxl. `readBrowserViewResource` answers one HTML page built by `widgetHtml` (`src/mcp/apps/browserView/helpers/build.ts`) with `text/html;profile=mcp-app` and a CSP from `browserViewCsp`: no connect domains unless `LOG_VOXL_URL` is https, or http on loopback (`voxlOrigins`). matt, 2026-11-13: the person signs in without leaving the harness, voxl is the stream and screenshots only the fallback, and on their own machine they use the window already open there.
+
+Checked by: code and SubQ
+
+## Reports in the chat
+
+### REQ-MCP-20: report draws a report from log's block catalog in every host, inline where the host can and as markdown where it can't
+
+`report` is a server tool listed to every client (`reportTool` in `src/mcp/apps/report/client.ts`, added by `createLogMcpServer`). Its input is a declarative spec, `{ title, subtitle?, blocks }`, each block one of `REPORT_BLOCK_TYPES` (`heading`, `text`, `stat`, `barChart`, `lineChart`, `table`, `personList`, `callout`): data and layout only, never code. `checkReport` (`src/mcp/apps/report/helpers/schema.ts`) validates it against `reportSchema` (zod, strict objects, `REPORT_LIMITS`), and `runReport` refuses a spec that breaks it with one of `REPORT_REFUSALS` and the paths to fix. A valid spec comes back as `structuredContent`. When the client advertises the MCP Apps extension (`uiCapable`), the tool carries `_meta.ui.resourceUri` `ui://log/report` (`withReportUi`), the resource list has `reportResource`, and the text is `reportSummary`, one line so the model doesn't repeat the numbers. Without it, the text is `reportText` (`src/mcp/apps/report/helpers/text.ts`): markdown headings, the KPI line, tables, people, and unicode bar charts (`bar`) and sparklines (`sparkline`). `readReportResource` answers one HTML page built by `reportHtml` (`src/mcp/apps/report/helpers/build.ts`) with `text/html;profile=mcp-app` and an empty CSP; `reportBodyHtml` (`src/mcp/apps/report/widget/render.ts`) draws every block as escaped HTML and SVG in log's `brandTokens`, and the view follows the host's theme and offers fullscreen when the host lists it. The numbers come from `reportData` (`log report data`, `reportCommand` in `src/cli/report/index.ts`), which reads log.db only through `readTwitterSenders` (`src/inbox/senders/client.ts`): no platform call and no governor use. The server instructions and the `ui` guide topic point the model at it. matt, 2026-11-13: "We are making a generative UI MCP. I go to my harness and say 'generate a report with some bar charts of who has been messaging me on Twitter'." One server, the best presentation each host can show.
 
 Checked by: code and SubQ

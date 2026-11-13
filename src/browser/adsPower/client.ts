@@ -1,3 +1,4 @@
+import { savedCredential } from '../../auth/credentials/index.ts'
 import { AdsPowerError, DEFAULT_LOCAL_API_URL } from './types'
 import type { AdsPowerClient, AdsPowerProfile, CreateProfileBody, LocalApiConfig, LocalApiReply, StartedBrowser } from './types'
 import { listBrowserAccounts, saveAdsPowerProfileId } from '../../marketplace/socialAccount/index'
@@ -13,7 +14,7 @@ export const RATE_LIMIT_WAIT_MS = [2000, 4000]
 const PAGE_SIZE = 100
 
 export function localApiConfig(env: Record<string, string | undefined> = process.env): LocalApiConfig {
-  return { baseUrl: (env.ADSPOWER_HOST?.trim() || DEFAULT_LOCAL_API_URL).replace(/\/+$/, ''), apiKey: env.ADSPOWER_API_KEY?.trim() || null }
+  return { baseUrl: (savedCredential('ADSPOWER_HOST', env) || env.ADSPOWER_HOST?.trim() || DEFAULT_LOCAL_API_URL).replace(/\/+$/, ''), apiKey: savedCredential('ADSPOWER_API_KEY', env) || env.ADSPOWER_API_KEY?.trim() || null }
 }
 
 type Fetch = (url: string, init?: RequestInit) => Promise<Response>
@@ -179,10 +180,11 @@ export async function ensureProfileKernel(
 }
 
 export function adsPowerHomes(env: Record<string, string | undefined> = process.env): string[] | null {
-  return homesOf(env[ADS_POWER_HOMES_ENV])
+  return homesOf(savedCredential(ADS_POWER_HOMES_ENV, env) || env[ADS_POWER_HOMES_ENV])
 }
 
 export function homesOf(value: string | undefined | null): string[] | null {
+  if (value?.trim().toLowerCase() === 'all') return null
   const homes = (value ?? '').split(',').map((h) => h.trim().toUpperCase()).filter(Boolean)
   return homes.length ? homes : null
 }

@@ -82,3 +82,17 @@ describe('redactDoc', () => {
     expect(keyKindOf('doc_id')).toBeUndefined()
   })
 })
+
+describe('the private denylist', () => {
+  const name = ['qu', 'iet', 'sparrow', '77'].join('')
+  const id = ['6159', '4000', '000', '001'].join('')
+  test('names, ids and emails on it become placeholders, even inside a run folder name', () => {
+    const out = redactDoc(`runs/inspect/20261113T044840_${name}/script0.js and ${id} and ${name}x`, [name, id])
+    expect(out).toContain('runs/inspect/20261113T044840_<name:1>/script0.js')
+    expect(out).toContain('<id:1>')
+    expect(out).toContain(`${name}x`)
+  })
+  test('no denylist leaves the text to the other rules', () => {
+    expect(redactDoc(`hello ${name}`)).toBe(`hello ${name}`)
+  })
+})

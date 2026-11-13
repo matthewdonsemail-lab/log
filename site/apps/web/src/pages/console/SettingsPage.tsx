@@ -6,6 +6,7 @@ import { Spinner, toast } from '@listeningkit/ui'
 import { useErrorToast } from '@/lib/useErrorToast'
 import { localConsole } from '@/lib/consoleMode'
 import { loadLocalSettings } from './settingsData'
+import { AccountSettings } from './AccountSettings'
 
 function origin(): string {
   return window.location.origin
@@ -239,11 +240,12 @@ export function SettingsPage() {
     )
   }
   return (
-    <ConsoleLayout title="Settings" subtitle="Your team’s workspace, members and invites.">
+    <ConsoleLayout title="Settings" subtitle="Your team’s workspace, members and invites, and your account.">
       {team ? (
         <>
           <WorkspaceSetup teamId={team.id} canAdmin={team.role !== 'member'} />
           <Members teamId={team.id} canInvite={team.role !== 'member'} manageOwners={team.role === 'owner'} />
+          <AccountSettings />
         </>
       ) : null}
     </ConsoleLayout>

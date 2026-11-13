@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["bun"],
+    "types": [
+      "bun"
+    ],
     "strict": true,
     "noUncheckedIndexedAccess": false,
     "noEmit": true,
@@ -13,5 +17,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["bin", "src"]
+  "include": [
+    "bin",
+    "src"
+  ],
+  "exclude": [
+    "src/mcp/apps/browserView/widget",
+    "src/mcp/apps/report/view"
+  ]
 }

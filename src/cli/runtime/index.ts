@@ -1,3 +1,5 @@
+import { consoleErrorCode, isConsoleOperation, redactConsoleArgs, redactConsoleResult, runConsoleOperation } from "../../console/operations/index.ts";
+import type { ConsoleOperationDeps } from "../../console/operations/index.ts";
 import { finishPairing, keepConnected, readBinding, startPairing } from "../../runtime/bridge/index.ts";
 import type { ResultPayload, RunTool } from "../../runtime/bridge/index.ts";
 import { defaultDbPath, openDatabase, SCHEMA_VERSION } from "../../storage/schema/index.ts";
@@ -26,6 +28,9 @@ type ToolCaller = (name: string, input: Record<string, unknown>) => Promise<{ is
 export const runtimeDeps: { callTool: () => Promise<ToolCaller>; connect: typeof keepConnected; dbPath: () => string } = {
   callTool: async () => {
     const { runToolCall } = await import("../../mcp/server/index.ts");
+    const { settleLocation } = await import("../../mcp/apps/index.ts");
+    settleLocation("remote");
+    void import("../../mcp/apps/browserView/helpers/index.ts").then(({ widgetHtml }) => widgetHtml()).catch(() => {});
     return (name, input) => runToolCall(name, input) as Promise<{ isError?: boolean; structuredContent?: unknown }>;
   },
   connect: keepConnected,
@@ -51,21 +56,66 @@ export function accountsList(args: Record<string, unknown>): ResultPayload {
 
 export async function toolManifest(args: Record<string, unknown>): Promise<ResultPayload> {
   const names = new Set(Array.isArray(args.names) ? args.names.map(String) : []);
-  const [{ COMMANDS }, { toolsFromCommands }] = await Promise.all([import("../runner/index.ts"), import("../../mcp/server/helpers/index.ts")]);
+  const [{ COMMANDS }, { GUIDE_TOOL, guideTool, toolsFromCommands }] = await Promise.all([import("../runner/index.ts"), import("../../mcp/server/helpers/index.ts")]);
   const tools = toolsFromCommands(COMMANDS, { shell: false })
     .filter((tool) => names.has(tool.name))
     .map((tool) => ({ name: tool.name, title: tool.title, description: tool.description, inputSchema: tool.inputSchema, annotations: tool.annotations }));
-  return { state: "succeeded", result: { tools } };
+  const { appTools, reportTool, withBrowserViewUi, withReportUi } = await import("../../mcp/apps/index.ts");
+  const report = [...(names.has(GUIDE_TOOL) ? [guideTool()] : []), ...(names.has("report") ? [args.ui === true ? withReportUi(reportTool()) : reportTool()] : [])];
+  if (args.ui !== true) return { state: "succeeded", result: { tools: [...tools, ...report] } };
+  return { state: "succeeded", result: { tools: [...tools.map((tool) => withBrowserViewUi(tool as typeof tool & { _meta?: Record<string, unknown> })), ...report, ...appTools()] } };
+}
+
+export async function uiResources(tool: string, args: Record<string, unknown>): Promise<ResultPayload> {
+  const { BROWSER_VIEW_URI, REPORT_URI, browserViewResource, readBrowserViewResource, readReportResource, reportResource } = await import("../../mcp/apps/index.ts");
+  if (tool === "uiResourcesList") return { state: "succeeded", result: { resources: [browserViewResource(), reportResource()] } };
+  if (args.uri === BROWSER_VIEW_URI) return { state: "succeeded", result: await readBrowserViewResource() };
+  if (args.uri === REPORT_URI) return { state: "succeeded", result: await readReportResource() };
+  return { state: "failed", error: { code: "resourceNotFound", message: "no such ui resource" } };
+}
+
+export async function guideOperation(args: Record<string, unknown>): Promise<ResultPayload> {
+  const { guideAnswer } = await import("../../mcp/server/helpers/index.ts");
+  const answer = guideAnswer(args);
+  if (answer.isError) return { state: "failed", error: { code: "guideUnknown", message: answer.text.slice(0, 2000) } };
+  return { state: "succeeded", result: { text: answer.text } };
+}
+
+export async function reportOperation(args: Record<string, unknown>): Promise<ResultPayload> {
+  const { runReport } = await import("../../mcp/apps/index.ts");
+  const { ui, ...spec } = args;
+  const answer = await runReport(spec, ui === true);
+  const text = answer.content.map((part) => (part.type === "text" ? part.text : "")).join("\n");
+  if (answer.isError) return { state: "failed", error: { code: text.split(":")[0] || "reportFieldInvalid", message: text.slice(0, 2000) } };
+  return { state: "succeeded", result: { text, spec: answer.structuredContent ?? null } };
+}
+
+export function isolationRefusal(env: Record<string, string | undefined>): string | null {
+  if (!env.LOG_RUNTIME_DIR || env.LOG_DB || env.LOG_INBOX_STATE) return null;
+  return "a runtime paired under LOG_RUNTIME_DIR keeps its own log.db: set LOG_DB (or LOG_INBOX_STATE) to its own folder too, so it never journals into the default log.db";
+}
+
+export async function consoleOperation(tool: string, args: Record<string, unknown>, callTool: ToolCaller, deps: Omit<ConsoleOperationDeps, "callTool"> = {}): Promise<ResultPayload> {
+  try {
+    return { state: "succeeded", result: await runConsoleOperation(tool, args, { ...deps, callTool }) };
+  } catch (error) {
+    const code = consoleErrorCode(error);
+    return { state: "failed", error: { code, message: code } };
+  }
 }
 
 export function toolRunner(callTool: ToolCaller): RunTool {
   return async (tool, args) => {
     if (tool === "accountsList") return accountsList(args);
     if (tool === "toolManifest") return toolManifest(args);
+    if (tool === "uiResourcesList" || tool === "uiResourceRead") return uiResources(tool, args);
+    if (tool === "report") return reportOperation(args);
+    if (tool === "getGuide") return guideOperation(args);
+    if (isConsoleOperation(tool)) return consoleOperation(tool, args, callTool);
     const answer = await callTool(tool, args);
     const content = (answer.structuredContent ?? {}) as Record<string, unknown>;
     const { browsers: _browsers, next: _next, ...result } = content;
-    return answer.isError ? { state: "failed", result, error: { code: "toolFailed", message: String(content.stderr ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
+    return answer.isError ? { state: "failed", result, error: { code: typeof content.error === "string" && /^[a-zA-Z]{1,60}$/.test(content.error) ? content.error : "toolFailed", message: String(content.stderr ?? content.message ?? "the tool failed").slice(0, 2000) } } : { state: "succeeded", result };
   };
 }
 
@@ -112,6 +162,8 @@ export const runtimeCommand: Command = {
       return { code: 0, stdout: json ? JSON.stringify(view) : binding ? `log runtime status: paired to workspace ${binding.workspaceId} at ${binding.origin} (generation ${binding.generation}, expires ${binding.expiresAt})` : "log runtime status: not paired (log runtime init, then log runtime pair)" };
     }
     if (!binding) return { code: 1, stderr: "log runtime connect: not paired yet (log runtime init --origin <url>, then log runtime pair --token <t>)" };
+    const isolation = isolationRefusal(process.env);
+    if (isolation) return { code: 1, stderr: `log runtime connect: ${isolation}` };
     const db = openDatabase(runtimeDeps.dbPath());
     const runTool = toolRunner(await runtimeDeps.callTool());
     const onLine = (line: string) => context.err?.(line);
@@ -120,6 +172,8 @@ export const runtimeCommand: Command = {
       db,
       runTool,
       isLive: (tool) => tool.endsWith("Live"),
+      redact: redactConsoleArgs,
+      redactResult: redactConsoleResult,
       hello: () => ({ runtimeVersion: "log", schemaVersion: SCHEMA_VERSION, capabilities: { persistentStorage: true, browserAvailable: Boolean(process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST), driver: process.env.ADSPOWER_API_KEY || process.env.ADSPOWER_HOST ? "adsPower" : "none", protocolVersion: 1, checkedAt: new Date().toISOString(), status: "passed" } }),
       onLine,
     });

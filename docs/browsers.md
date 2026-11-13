@@ -96,3 +96,81 @@ The two capabilities still to build are tracked: `syncSessions` in [#43](https:/
 
 Setting a browser up: [Browser setup](browserSetup.md). The rules behind this
 are in AGENTS.md.
+
+## The live browser viewer
+
+An account's browser can be watched and, while its page asks for sign-in,
+used by a person: in the local console and inline in an MCP Apps host
+(ChatGPT, Claude, Cursor). The frame path and the input path meet only in the
+viewer.
+
+**The viewer.** `python/browser/browserViewer.py` starts a private HTTP server
+on `127.0.0.1:0` inside the account's inspect session and writes its port,
+bearer token, generation and pid to `browserViewer.json` in the run folder
+(`BrowserViewer.start`); `Inspector.serve` in `python/session/inspectSession.py`
+starts it with the session and removes it when the session ends. `GET /state`
+answers the classified page state (`classify` from `login/autoLogin.py`), a
+revision hashed from the URL, the page text, the step index, the input count
+and the HAR count, whether the page is blocked (a checkpoint, a disabled
+account, a captcha, a video selfie, automated behaviour) and whether input is
+allowed (only the sign-in states). `GET /frame` answers one
+`page.screenshot(type="jpeg", quality=65, scale="css")` with the generation and
+revision in its headers. `src/browser/viewer` is the one TypeScript client both
+surfaces use: `viewerState`, `viewerFrame` and `viewerInput` find the account's
+inspect session, read its descriptor, check the generation, and turn the
+answers into a view with a phase (`browserMissing`, `viewerUnavailable`,
+`signInRequired`, `needsAttention`, `busy`, `ready`).
+
+**Input, both paths.** Clicks, text, keys and scrolls never travel on the frame
+channel. They go to `POST /input`, which refuses them unless the generation and
+the revision still match (`browserStateChanged`), the page still reports a
+sign-in state (`browserInputStopped`) and no other step holds the browser
+(`browserBusy`), then replays them with Playwright's `page.mouse`,
+`page.keyboard` and `mouse.wheel` inside `owner.step("viewerInput", ...)`, so
+every viewer action is a recorded step with its HAR and reading. The answer is
+the page read again once the step has let go of the browser. A checkpoint or
+other blocked page is shown but takes no input: it stays a stop (rule 94).
+
+**Picture, voxl first.** voxl is the stream, chosen because screenshots are
+slow. When `LOG_VOXL_URL` names a running
+[voxl](https://github.com/tembo/voxl) server (`--read-only`) on the account's
+display, `python/browser/streamSurface.py` reports a stream in `/state`:
+`{kind: "voxl", url, page, window}`. It first puts the browser window into
+fullscreen over CDP (`Browser.getWindowForTarget`, `Browser.setWindowBounds`
+with `windowState: "fullscreen"`, then a re-read that refuses the stream if the
+state did not take; `streamSurface.composite`, cached for 3 seconds), because a
+fullscreen window is the one arrangement where the page viewport is the whole
+display, which makes a point on the video a point in the page. `streamOf` in
+`src/browser/viewer/client.ts` then re-checks the URL (https anywhere, http
+only on loopback), that every number is a non-negative integer and that the
+window still matches the viewport. When any of that does not hold, the view has
+no stream and the JPEG path is used unchanged. Camoufox is Firefox and has no
+CDP, so it keeps the JPEG path. voxl runs `--read-only`, so its own input paths
+are never used; Playwright still supplies the input. voxl captures X11 or Xvfb
+on Linux, DXGI on Windows (the logged-in session, not a service) and
+ScreenCaptureKit on macOS (Screen Recording permission).
+
+**Fallback, screenshots.** Only when voxl cannot run (a Camoufox account, no
+`LOG_VOXL_URL`, a URL that is neither https nor loopback, or a stream that
+fails), the console's `/api/console/browser/frame` and the MCP App's
+`browserViewFrame` read `GET /frame`, about 2 frames a second: the screenshot,
+not the network, is the limit.
+
+**On the person's own machine** the MCP App streams nothing: the browser
+window is already on their screen, and `browserView` tells them to finish
+there (see [the live browser in the chat](mcp.md#the-live-browser-in-the-chat)).
+
+**In the local console.** `log console --web` serves `/api/console/browser`
+(the view), `/api/console/browser/frame` and `POST /api/console/browser/input`
+from `consoleBrowserAnswer` (`src/console/web/helpers/browser.ts`), behind the
+same loopback, origin and fetch-site guard as every console route. On
+Connections each local account has a live browser button that opens
+`BrowserCheckDialog.tsx`; `browserCheckMachine.ts` polls the frame every 500 ms
+into a `<canvas>`, takes the revision from each frame, and sends input only
+while the view can take it. With a voxl stream the console embeds voxl's own
+client in an iframe under a transparent overlay that maps clicks by fraction.
+Errors are toasts. The console attaches to a browser that is already open (by
+`log inspect start` or a flow); opening, closing, provisioning a profile and
+verifying a session from the console are not ported yet.
+
+**In an MCP Apps host.** See [the live browser in the chat](mcp.md#the-live-browser-in-the-chat).

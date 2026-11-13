@@ -1,7 +1,9 @@
 import { join } from "node:path";
 import { PACKAGE_ROOT } from "../../agentHooks/opencode/index.ts";
 import { DEFAULT_CONSOLE_PORT } from "../screens/index.ts";
-import { consoleApiAnswer } from "./helpers/api.ts";
+import { consoleBrowserAnswer } from "./helpers/browser.ts";
+import { consoleApiAnswer, consoleMutationAnswer } from "./helpers/api.ts";
+import { CONSOLE_MUTATIONS } from "../operations/index.ts";
 import { consoleRequestAllowed } from "./helpers/guard.ts";
 import { siteAnswer, siteBuilt } from "./helpers/site.ts";
 import type { ConsoleWebOptions, ConsoleWebServer } from "./types.ts";
@@ -31,6 +33,9 @@ export function serveConsoleWeb(options: ConsoleWebOptions = {}): ConsoleWebServ
       });
       if (!allowed) return Response.json({ error: "consoleWorkspaceAccessDenied" }, { status: 403, headers: { "Cache-Control": "no-store" } });
       const url = new URL(request.url);
+      const browser = consoleBrowserAnswer(url, request);
+      if (browser) return browser;
+      if (CONSOLE_MUTATIONS[url.pathname]) return consoleMutationAnswer(url.pathname, request.method, { header: (name) => request.headers.get(name), json: () => request.json() });
       const api = consoleApiAnswer(url, request.method, self.port ?? DEFAULT_CONSOLE_PORT);
       if (api) return api;
       if (request.method !== "GET" && request.method !== "HEAD") return new Response("Method not allowed", { status: 405, headers: { Allow: "GET, HEAD" } });

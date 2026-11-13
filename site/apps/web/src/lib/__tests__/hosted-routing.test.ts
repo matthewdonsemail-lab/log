@@ -29,8 +29,8 @@ describe('hosted control routing', () => {
     expect(mcpPage).toContain('href="/sign-in?returnPath=/console/start"')
   })
 
-  it('gives every platform card a real workspace setup action', () => {
+  it('gives every platform card a real sign-in action', () => {
     expect(PLATFORM_SETUP_COMMAND).toBe('log launch --setup')
-    expect(connectionsPage).toMatch(/onClick=\{\(\) => setSetupPlatform\(platform\)\}/)
+    expect(connectionsPage).toMatch(/onClick=\{\(\) => setSignInPlatform\(platform\)\}/)
   })
 })

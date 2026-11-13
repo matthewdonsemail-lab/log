@@ -5,6 +5,7 @@ export type ConsoleEvent = {
   status: 'recorded' | 'succeeded' | 'failed' | 'unknown'
   kind: string
   model: 'SubQ' | 'Jev' | null
+  platform: 'facebook' | 'twitter' | 'discord' | 'slack' | 'instagram' | 'reddit' | 'linkedin' | null
   durationMs: number | null
   usage: { type: 'tokens'; input: number; output: number } | { type: 'balance'; amount: number } | null
 }

@@ -1,4 +1,23 @@
-import type { UsageKind, UsageSummary, UsageTotals } from '../../../../../../src/observability/usage/types'
+import { consoleRequest, type ConsoleTarget } from './consoleClient'
+export type UsageKind = 'platformRead' | 'platformWrite' | 'decision' | 'media' | 'background' | 'control' | 'other'
+
+export type UsageTotals = { calls: number; succeeded: number; failed: number; p50Ms: number; p95Ms: number }
+export type UsageBucket = UsageTotals & { start: string }
+export type UsageBreakdown = UsageTotals & { kind: UsageKind }
+export type UsageCall = { id: string; time: number; kind: UsageKind; status: 'succeeded' | 'failed'; durationMs: number }
+
+export type UsageSummary = {
+  schemaVersion: 1
+  source: 'workspace'
+  generatedAt: string
+  from: string
+  to: string
+  totals: UsageTotals
+  buckets: UsageBucket[]
+  kinds: UsageBreakdown[]
+  recentCalls: UsageCall[]
+}
+
 
 export const usageKindLabels: Record<UsageKind, string> = {
   platformRead: 'Platform reads',
@@ -8,31 +27,6 @@ export const usageKindLabels: Record<UsageKind, string> = {
   background: 'Background jobs',
   control: 'Workspace operations',
   other: 'Other',
-}
-
-const dayMs = 86400000
-
-export function exampleUsage(days: number): UsageSummary {
-  const end = Math.floor(Date.now() / dayMs) * dayMs + dayMs
-  const buckets = Array.from({ length: days }, (_, index) => {
-    const calls = 64 + (index * 37 + 11) % 121
-    const failed = 1 + index % 5
-    return { start: new Date(end - (days - index) * dayMs).toISOString(), calls, failed, succeeded: calls - failed, p50Ms: 420 + index % 4 * 95, p95Ms: 1400 + index % 5 * 220 }
-  })
-  const calls = buckets.reduce((sum, bucket) => sum + bucket.calls, 0)
-  const failed = buckets.reduce((sum, bucket) => sum + bucket.failed, 0)
-  const weights = [0.42, 0.17, 0.16, 0.1, 0.08, 0.05, 0.02]
-  let remainingCalls = calls
-  let remainingFailures = failed
-  const kinds = (Object.keys(usageKindLabels) as UsageKind[]).map((kind, index) => {
-    const last = index === weights.length - 1
-    const count = last ? remainingCalls : Math.floor(calls * weights[index])
-    const failures = last ? remainingFailures : Math.floor(failed * weights[index])
-    remainingCalls -= count
-    remainingFailures -= failures
-    return { kind, calls: count, failed: failures, succeeded: count - failures, p50Ms: 450 + index * 80, p95Ms: 1600 + index * 120 }
-  })
-  return { schemaVersion: 1, source: 'example', generatedAt: new Date().toISOString(), from: buckets[0].start, to: new Date(end).toISOString(), totals: { calls, failed, succeeded: calls - failed, p50Ms: 610, p95Ms: 2060 }, buckets, kinds }
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -57,11 +51,9 @@ function totals(value: unknown): UsageTotals {
   return result
 }
 
-export async function loadUsageSummary(days: number, signal?: AbortSignal): Promise<UsageSummary> {
-  const response = await fetch(`/api/console/usage?days=${days}`, { signal, credentials: 'same-origin' })
-  if (!response.ok) throw new Error('usageUnavailable')
-  const body = record(await response.json())
-  if (body.schemaVersion !== 1 || body.source !== 'workspace' || !Array.isArray(body.buckets) || !Array.isArray(body.kinds) || body.buckets.length > 32 || body.kinds.length > 7) throw new Error('usageResponseInvalid')
+export async function loadUsageSummary(target: ConsoleTarget, days: number, signal?: AbortSignal): Promise<UsageSummary> {
+  const body = record(await consoleRequest(target, { local: `/api/console/usage?days=${days}`, hosted: `/console/usage?days=${days}` }, { signal }))
+  if (body.schemaVersion !== 1 || body.source !== 'workspace' || !Array.isArray(body.buckets) || !Array.isArray(body.kinds) || body.buckets.length > 32 || body.kinds.length > 7 || !Array.isArray(body.recentCalls) || body.recentCalls.length > 40) throw new Error('usageResponseInvalid')
   return {
     schemaVersion: 1,
     source: 'workspace',
@@ -70,6 +62,11 @@ export async function loadUsageSummary(days: number, signal?: AbortSignal): Prom
     to: date(body.to),
     totals: totals(body.totals),
     buckets: body.buckets.map((item) => ({ start: date(record(item).start), ...totals(item) })),
+    recentCalls: body.recentCalls.map((item) => {
+      const row = record(item)
+      if (typeof row.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(row.id) || typeof row.kind !== 'string' || !Object.prototype.hasOwnProperty.call(usageKindLabels, row.kind) || (row.status !== 'failed' && row.status !== 'succeeded')) throw new Error('usageResponseInvalid')
+      return { id: row.id, time: number(row.time), kind: row.kind as UsageKind, status: row.status, durationMs: number(row.durationMs) }
+    }),
     kinds: body.kinds.map((item) => {
       const row = record(item)
       if (typeof row.kind !== 'string' || !Object.prototype.hasOwnProperty.call(usageKindLabels, row.kind)) throw new Error('usageResponseInvalid')
@@ -77,5 +74,3 @@ export async function loadUsageSummary(days: number, signal?: AbortSignal): Prom
     }),
   }
 }
-
-
