@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "log": {
+      "type": "stdio",
+      "command": "logMcp",
+      "args": [],
+      "env": {
+        "LOG_ACCOUNTS": "${LOG_ACCOUNTS}"
+      }
+    }
+  }
+}

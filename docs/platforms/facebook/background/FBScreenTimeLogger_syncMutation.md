@@ -69,7 +69,7 @@ Seen 104 time(s) in 30 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_<userId:1>**, openAny: read /marketplace/item/<id>/: 200, 420 ms
+**runs/warmup/20261023T074930_<id:2>**, openAny: read /marketplace/item/<id>/: 200, 420 ms
 
 Sent:
 
@@ -85,7 +85,7 @@ Sent:
       "device_time_iso": "2026-10-23T07:54:52.628Z",
       "fb_web_fb_intervals_payload": {
         "device_timestamp": "1792742092",
-        "device_timezone": "<timezone>",
+        "device_timezone": "America/New_York",
         "intervals": [
           {
             "end_timestamp": "1792731798",
@@ -150,7 +150,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_<userId:1>**, step 14: goto /marketplace/: 200, 806 ms
+**runs/warmup/20261023T074930_<id:2>**, step 14: goto /marketplace/: 200, 806 ms
 
 Sent:
 
@@ -166,7 +166,7 @@ Sent:
       "device_time_iso": "2026-10-23T07:59:55.380Z",
       "fb_web_fb_intervals_payload": {
         "device_timestamp": "1792742395",
-        "device_timezone": "<timezone>",
+        "device_timezone": "America/New_York",
         "intervals": [
           {
             "end_timestamp": "1792742395",
@@ -211,7 +211,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261111T081957_<userId:2>**, step 10: press Escape: 200, 588 ms
+**runs/inspect/20261111T081957_<id:1>**, step 10: press Escape: 200, 588 ms
 
 Sent:
 
@@ -227,7 +227,7 @@ Sent:
       "device_time_iso": "2026-11-11T08:38:37.037Z",
       "fb_web_fb_intervals_payload": {
         "device_timestamp": "1794386317",
-        "device_timezone": "<timezone>",
+        "device_timezone": "America/Vancouver",
         "intervals": [
           {
             "end_timestamp": "1794386317",

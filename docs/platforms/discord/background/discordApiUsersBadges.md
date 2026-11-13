@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/badges` |
 | Sends | — |
 | Reads | `badges` |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_52a6ccf0e7060826b70943adeeae519fa1d5149750e62a9947fb4cb95579f428` |
+| Called from | `runs/inspect/20261113T141543_<name:9>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:9>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:9>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:9>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 8 time(s) in 5 run(s).
+Seen 9 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,14 +22,14 @@ Seen 8 time(s) in 5 run(s).
 | inspect | step 9: goto /channels/@me | 1 | 200 | 463 ms | 5243 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 584 ms | 4841 ms | — |
 | inspect | step 31: wait 60s | 1 | 200 | 611 ms | 241902 ms | — |
-| inspect | step 1: goto /login | 2 | 200 | 413–530 ms | 11383–39337 ms | — |
+| inspect | step 1: goto /login | 3 | 200 | 413–530 ms | 11383–1045715 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 691 ms | 48674 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 413 ms
+**runs/inspect/20261113T141543_<name:9>**, step 1: goto /login: 200, 488 ms
 
 Sent:
 
@@ -55,7 +55,7 @@ Answered:
     {
       "badge_id": 18,
       "name": "<name:2>",
-      "description": "<messageText>",
+      "description": "Keep an active Discord account to level up this badge. Time will do the rest.",
       "leveling_instructions": "Unlock more levels by keeping your account active.",
       "info_label": "1 year",
       "rarity": 1,
@@ -87,7 +87,7 @@ Answered:
     {
       "badge_id": 21,
       "name": "<name:3>",
-      "description": "<messageText>",
+      "description": "Play more detectable PC games with Discord open to level up this badge.",
       "leveling_instructions": "Unlock more levels by playing more games.",
       "info_label": "3 games played",
       "rarity": 1,
@@ -119,7 +119,7 @@ Answered:
     {
       "badge_id": 20,
       "name": "<name:4>",
-      "description": "<messageText>",
+      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "37 hours of games played",
       "rarity": 1,
@@ -153,7 +153,7 @@ Answered:
     {
       "badge_id": 19,
       "name": "<name:5>",
-      "description": "<messageText>",
+      "description": "Stream more hours to other users to level up this badge.",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "987 hours streamed to others",
       "rarity": 2,
@@ -191,7 +191,7 @@ Answered:
     {
       "badge_id": 1,
       "name": "<name:6>",
-      "description": "<messageText>",
+      "description": "Subscribe to Nitro to unlock this badge.",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",
@@ -217,7 +217,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 691 ms
+**runs/inspect/20261030T222341_<name:9>**, step 2: snapshot: 200, 691 ms
 
 Sent:
 
@@ -243,7 +243,7 @@ Answered:
     {
       "badge_id": 21,
       "name": "<name:3>",
-      "description": "<messageText>",
+      "description": "Play more detectable PC games with Discord open to level up this badge.",
       "leveling_instructions": "Unlock more levels by playing more games.",
       "info_label": "2 games played",
       "rarity": 1,
@@ -275,7 +275,7 @@ Answered:
     {
       "badge_id": 20,
       "name": "<name:4>",
-      "description": "<messageText>",
+      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "25 hours of games played",
       "rarity": 1,
@@ -309,7 +309,7 @@ Answered:
     {
       "badge_id": 19,
       "name": "<name:5>",
-      "description": "<messageText>",
+      "description": "Stream more hours to other users to level up this badge.",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "970 hours streamed to others",
       "rarity": 2,
@@ -347,7 +347,7 @@ Answered:
     {
       "badge_id": 1,
       "name": "<name:6>",
-      "description": "<messageText>",
+      "description": "Subscribe to Nitro to unlock this badge.",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",
@@ -383,7 +383,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261028T065202_<name:1>**, step 1: goto /channels/@me/<id>: 200, 397 ms
+**runs/inspect/20261028T065202_<name:9>**, step 1: goto /channels/@me/<id>: 200, 397 ms
 
 Sent:
 
@@ -409,7 +409,7 @@ Answered:
     {
       "badge_id": 20,
       "name": "<name:4>",
-      "description": "<messageText>",
+      "description": "Play more hours of detectable PC games with Discord open to level up this badge.",
       "leveling_instructions": "Unlock more levels by playing more hours of games.",
       "info_label": "20 hours of games played",
       "rarity": 1,
@@ -443,7 +443,7 @@ Answered:
     {
       "badge_id": 19,
       "name": "<name:5>",
-      "description": "<messageText>",
+      "description": "Stream more hours to other users to level up this badge.",
       "leveling_instructions": "Unlock more levels by streaming more hours.",
       "info_label": "969 hours streamed to others",
       "rarity": 2,
@@ -481,7 +481,7 @@ Answered:
     {
       "badge_id": 1,
       "name": "<name:6>",
-      "description": "<messageText>",
+      "description": "Subscribe to Nitro to unlock this badge.",
       "leveling_instructions": "Unlock more levels the longer you have Nitro.",
       "rarity": 1,
       "simple_icon_url": "https://cdn.discordapp.com/assets/content/f61ddf640d11d9bdfaf9de265eb862edf28986b659e545f293b54adf229433af.svg",

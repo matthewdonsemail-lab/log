@@ -30,7 +30,7 @@ Seen 14 time(s) in 8 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_<userId:1>**, expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent: 200, 729 ms
+**runs/warmup/20261023T074930_<id:1>**, expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent: 200, 729 ms
 
 Sent:
 
@@ -87,7 +87,7 @@ Answered:
         "has_professional_features_for_watch": false,
         "name": "<name:1>",
         "profile_picture": {
-          "uri": "<mediaUrl> (454 chars)"
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
         },
         "url": "https://www.facebook.com/profile.php?id=<id:1>",
         "short_name": "<name:2>",
@@ -144,7 +144,7 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "<id:1>",
+        "post_param": "291667064279714",
         "id": "<id:3>"
       },
       "format_merge_milestone_for_user": "M1"
@@ -268,7 +268,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261111T081957_<userId:2>**, step 10: press Escape: 200, 1068 ms
+**runs/inspect/20261111T081957_<id:5>**, step 10: press Escape: 200, 1068 ms
 
 Sent:
 
@@ -325,7 +325,7 @@ Answered:
         "has_professional_features_for_watch": false,
         "name": "<name:4>",
         "profile_picture": {
-          "uri": "<mediaUrl> (403 chars)"
+          "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)"
         },
         "url": "https://www.facebook.com/profile.php?id=<id:5>",
         "short_name": "<name:5>",
@@ -379,7 +379,7 @@ Answered:
           "privacy_targeting": null,
           "tag_expansion_state": "UNSPECIFIED"
         },
-        "post_param": "<id:1>",
+        "post_param": "291667064279714",
         "id": "<id:6>"
       },
       "format_merge_milestone_for_user": "M1"
