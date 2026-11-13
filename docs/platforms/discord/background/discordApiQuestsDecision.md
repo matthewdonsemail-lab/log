@@ -10,10 +10,10 @@
 | Path | `discord.com/api/quests/decision` |
 | Sends | — |
 | Reads | `request_id`, `quest`, `creative.creative_type`, `creative.creative_content`, `creative.starts_at`, `creative.ends_at`, `ad_identifiers`, `ad_context`, `response_ttl_seconds`, `metadata_sealed`, `traffic_metadata_sealed`, `provenance_metadata_sealed` |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_36449fb0116f35a7330610ce09a20facabd6fc32ec365bf046501a4c69cb44c3` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 8 time(s) in 5 run(s).
+Seen 9 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ Seen 8 time(s) in 5 run(s).
 | inspect | step 5: click e40 | 1 | 200 | 783 ms | 8359 ms | — |
 | inspect | step 9: goto /channels/@me | 1 | 200 | 607 ms | 3121 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 580 ms | 2467 ms | — |
-| inspect | step 1: goto /login | 2 | 200 | 887–8655 ms | 13524–41995 ms | — |
+| inspect | step 1: goto /login | 3 | 200 | 887–8655 ms | 13524–1047414 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 401 | 359 ms | 9647 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 505 ms | 48946 ms | — |
 
@@ -29,7 +29,7 @@ Seen 8 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 8655 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 969 ms
 
 Sent:
 
@@ -37,9 +37,9 @@ Sent:
 {
   "query": {
     "placement": "1",
-    "client_heartbeat_session_id": "18fa4278-989f-4a8a-a0cd-a6ac55dae24e",
-    "client_ad_session_id": "f20855a6-d7de-453b-9ffc-da1aa6c9dfe7",
-    "visible_guild_ids": "<id:1>"
+    "client_heartbeat_session_id": "ee3b2ed0-a8b3-4c1c-a140-de9d15be9685",
+    "client_ad_session_id": "01455f41-69fa-4b5c-b99a-57a872bda1ba",
+    "visible_guild_ids": "1529710922749181963"
   },
   "body": null
 }
@@ -49,7 +49,7 @@ Answered:
 
 ```json
 {
-  "request_id": "e941b5b6-3b21-4ecc-b498-57da9db62dfa",
+  "request_id": "6c096432-beab-4122-8869-5f74cfec63d9",
   "quest": null,
   "creative": {
     "creative_type": 4,
@@ -61,9 +61,9 @@ Answered:
   },
   "ad_identifiers": null,
   "ad_context": null,
-  "response_ttl_seconds": 2155,
-  "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dMUVRzcFNNalJKK2tuaFBta3JpeTlqSW52OVlPLzhJZ2U4NitEckQwSFBZUXVPYzdta3R2WVZod3F0RHB2UWk4UEZPSmlnTWVkVHQ4M01hRFBwSXZndGVDQ3FDSldlVzU4dG9MUDlkZHhCd1F6Z3lrSHBXUy8zMzdKWFhMbWY1UE9QWUQ2dm5iOU1Kd0tiMFoxZVl5WUFDY3FVTzF3Vi9qcGhTaGVTYTdMZG1JRVNNWk9TTklTdERMTW9jSXFvVDZGRk1pNTdnM0dmT05oNTJLSG1vQzNFZEI0c2lDdmREcUlRcDRiTUNFalRTcUhzRXFqSnoxMTZLUEsySC9D… (852 chars)",
-  "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKS2huOU5Sa3VRYXNlaElFMkdGZ3VRdGNUS0ZaRUtRK0ZxdmVudWRuL0FLdEdrdTV6ajZXbkVVWjcyNGRJbU0yazVvSnFJZldYUndmT0xrUFQ3amRmWkNvVGlaZTRpNitINWZrTEJ2eFNOMmVleGptQitzMGdkWnlwTzNRdUk1TVp1V2ZRUm5GZ1BVdTZSbEc3eEtsVHNFQT09In0=",
+  "response_ttl_seconds": 2493,
+  "metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dLUmthZ2FtMFkvSExYalhEa2QyZmV2YXErSzErV2ttMzkxSjNycDh0NGthbnh0dmtSaXJqY1VSOEhUSmVlc3pRcjR1d0dhTzQrdUN2ZmpyWGNkY3g1NWJ5djBSdmFRdXVwQWVmc3QrTmlGeTNTeHkxNzdzNW9MV1pmZUtta0ZJVDZUZ1lrVnlEd0h5VTlJdFhxU01kdGJkZFRzL21UOElxbWgycEZ0M0QvWFdWRVhKN2MwQVVXZ01XYjhIQVQzSGIvdkpjZDZaU2U5UEtKdnM2N1NuMmx5Q3NYTUhTL3pwa0FsaFdQZy9pa3NFRkw4VzhxUUFSSU81akpIQjg4… (852 chars)",
+  "traffic_metadata_sealed": "eyJrZXlfZmluZ2VycHJpbnQiOiI4ZGUwNzVmMiIsInBheWxvYWQiOiJBWHdMd2dKTEZ4Z2l1Wi9vcGxtY3lNRjJMamZFWDF0cEVjTUM2bXJJMng2ck5vd2t2VTZEcVpjQ0pONUZGZjRHa2tmdlZQRFYxcjhWOExNS2FRUThDU0xhYk8ybjVvTG4rTG5sQjBKV3pzSG9Id3NxbXpNb0R3K1NZTTlHTU5uK0w4bC91QjVmRUxwcmI1TXdJanBKNWhITWNFRHRkdz09In0=",
   "provenance_metadata_sealed": null
 }
 ```
@@ -102,7 +102,7 @@ Sent:
     "placement": "1",
     "client_heartbeat_session_id": "89081172-35da-4e8d-8b5c-da5e1bf81773",
     "client_ad_session_id": "a683df8e-3741-4919-9185-22ceb745e6fb",
-    "visible_guild_ids": "<id:2>"
+    "visible_guild_ids": "1493969349747146974"
   },
   "body": null
 }

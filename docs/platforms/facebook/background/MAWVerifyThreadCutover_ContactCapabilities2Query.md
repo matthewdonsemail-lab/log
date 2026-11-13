@@ -106,7 +106,7 @@ Seen 144 time(s) in 40 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_<userId:1>**, step 1: goto /marketplace/: 200, 366 ms
+**runs/warmup/20261023T080515_<id:1>**, step 1: goto /marketplace/: 200, 366 ms
 
 Sent:
 
@@ -128,7 +128,7 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "<id:1>",
+      "message_capabilities2_str": "252060841644982528",
       "id": "<id:1>"
     }
   },
@@ -142,7 +142,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 395 ms
+**runs/warmup/20261023T080515_<id:1>**, step 3: goto /marketplace/you/selling: 200, 395 ms
 
 Sent:
 
@@ -168,7 +168,7 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "<id:1>",
+      "message_capabilities2_str": "252060841644982528",
       "id": "<id:1>"
     }
   },
@@ -182,7 +182,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 492 ms
+**runs/warmup/20261023T080515_<id:1>**, step 5: goto /messages/: 200, 492 ms
 
 Sent:
 
@@ -204,7 +204,7 @@ Answered:
 {
   "data": {
     "user": {
-      "message_capabilities2_str": "<id:1>",
+      "message_capabilities2_str": "252060841644982528",
       "id": "<id:1>"
     }
   },

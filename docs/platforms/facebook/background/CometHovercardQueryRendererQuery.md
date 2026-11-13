@@ -144,7 +144,7 @@ Seen 359 time(s) in 20 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_<userId:1>**, step 1: goto /: 200, 550 ms
+**runs/warmup/20261023T074930_<id:5>**, step 1: goto /: 200, 550 ms
 
 Sent:
 
@@ -156,7 +156,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "DEFAULT",
-    "entityID": "<id:1>",
+    "entityID": "108424279189115",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -202,7 +202,7 @@ Answered:
           },
           "url": "https://www.facebook.com/pages/New-York-New-York/108424279189115",
           "profile_picture": {
-            "uri": "<mediaUrl> (410 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -212,8 +212,8 @@ Answered:
               "full_address": "New York, NY, US"
             },
             "addressEditable": true,
-            "latitude": "<coordinate>",
-            "longitude": "<coordinate>",
+            "latitude": 40.7142,
+            "longitude": -74.0064,
             "websiteEditable": true,
             "website": "http://www.nyc.gov/",
             "open_hour_setting": "NO_STATUS",
@@ -244,7 +244,7 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "<mediaUrl> (410 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.30497-1/83245568_1845797888897938_3274147281632231424_n.png (410 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -435,7 +435,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_<userId:1>**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
+**runs/warmup/20261023T074930_<id:5>**, step 3: scroll 4-7 x 300-600px: 200, 986 ms
 
 Sent:
 
@@ -447,7 +447,7 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "DEFAULT",
-    "entityID": "<userId:2>",
+    "entityID": "<id:3>",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -481,7 +481,7 @@ Answered:
           },
           "url": "https://www.facebook.com/profile.php?id=<id:3>",
           "profile_picture": {
-            "uri": "<mediaUrl> (434 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -546,7 +546,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (434 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/657391294_122181091976428518_1135771770589420424_n.jpg (434 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -631,7 +631,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T074930_<userId:1>**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
+**runs/warmup/20261023T074930_<id:5>**, scroll: +535px in 12 wheel steps, 969 ms: 200, 592 ms
 
 Sent:
 
@@ -643,8 +643,8 @@ Sent:
   "variables": {
     "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
     "context": "GROUP",
-    "entityID": "<id:2>",
-    "groupID": "<groupId:1>",
+    "entityID": "4191018610937243",
+    "groupID": "4191018610937243",
     "scale": 1,
     "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
   },
@@ -717,7 +717,7 @@ Answered:
           "profile_url": "https://www.facebook.com/groups/4191018610937243/",
           "__typename": "Group",
           "profile_picture": {
-            "uri": "<mediaUrl> (454 chars)",
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
             "width": 100,
             "height": 100,
             "scale": 1
@@ -736,7 +736,7 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "<mediaUrl> (454 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (454 chars)",
         "label": null,
         "width": null,
         "height": null,

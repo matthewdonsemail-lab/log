@@ -10,10 +10,10 @@
 | Path | `discord.com/api/science` |
 | Sends | `events` |
 | Reads | — |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_a2c13a863ad5f319eaac4d44d769e6d522d9fe84530518651d5e0ef88672c56b` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 142 time(s) in 5 run(s).
+Seen 156 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ Seen 142 time(s) in 5 run(s).
 | inspect | step 2: snapshot | 16 | 204 | 287–485 ms | 8909–52433 ms | — |
 | inspect | step 4: press Enter | 6 | 204 | 267–490 ms | 7564–10902 ms | — |
 | inspect | step 5: wait 75s | 25 | 204 | 273–727 ms | 75767–412983 ms | — |
-| inspect | step 1: goto /login | 18 | 204 | 272–480 ms | 3263–46934 ms | — |
+| inspect | step 1: goto /login | 32 | 204 | 272–672 ms | 3263–1111934 ms | — |
 | inspect | step 3: goto /login | 4 | 204 | 291–396 ms | 5385–47260 ms | — |
 | inspect | step 5: click e40 | 8 | 204 | 306–511 ms | 816–13580 ms | — |
 | inspect | step 7: snapshot | 4 | 204 | 299–529 ms | 16081–19305 ms | — |
@@ -49,7 +49,7 @@ Seen 142 time(s) in 5 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 204, 319 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 204, 318 ms
 
 Sent:
 
@@ -59,7 +59,7 @@ Sent:
     {
       "type": "libdiscore_loaded",
       "properties": {
-        "client_track_timestamp": 1794545333913,
+        "client_track_timestamp": 1794579361435,
         "event_sequence_number": 1,
         "success": true,
         "experimental_features": [],
@@ -67,127 +67,83 @@ Sent:
         "accessibility_features": 128,
         "rendered_locale": "en-US",
         "uptime_app": 0,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
-        "client_send_timestamp": 1794545337661
-      }
-    },
-    {
-      "type": "experiment_user_evaluation_exposed",
-      "properties": {
-        "client_track_timestamp": 1794545334133,
-        "event_sequence_number": 2,
-        "evaluation_id": "e9edfa4",
-        "experiment": "2026-05-server-theme-user",
-        "exposure_location": "useActiveGuildTheme",
-        "unit_type": "user",
-        "tracked_variation_id": 1,
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 1,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794545337661
-      }
-    },
-    {
-      "type": "experiment_user_evaluation_exposed",
-      "properties": {
-        "client_track_timestamp": 1794545334663,
-        "event_sequence_number": 3,
-        "evaluation_id": "e9edfa4",
-        "experiment": "2026-08-dcf-new-user-cooldown",
-        "exposure_location": "useDcfNewUserCooldown",
-        "unit_type": "user",
-        "tracked_variation_id": 0,
-        "client_performance_memory": 0,
-        "accessibility_features": 128,
-        "rendered_locale": "en-US",
-        "uptime_app": 1,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
-        "client_rtc_state": "DISCONNECTED",
-        "client_app_state": "focused",
-        "client_viewport_width": 929,
-        "client_viewport_height": 917,
-        "client_send_timestamp": 1794545337661
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_send_timestamp": 1794579363093
       }
     },
     {
       "type": "login_viewed",
       "properties": {
-        "client_track_timestamp": 1794545336677,
-        "event_sequence_number": 4,
+        "client_track_timestamp": 1794579362397,
+        "event_sequence_number": 2,
         "login_source": null,
         "authenticated": true,
         "location": "Non-Invite Login Page",
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 3,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
+        "uptime_app": 1,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
         "client_viewport_height": 917,
-        "client_send_timestamp": 1794545337661
+        "client_send_timestamp": 1794579363093
       }
     },
     {
       "type": "app_web_perf_startup_metrics",
       "properties": {
-        "client_track_timestamp": 1794545336713,
-        "event_sequence_number": 5,
-        "load_id": "3a7a5b0c-e3e4-4f93-aa1b-121efdf6e705",
+        "client_track_timestamp": 1794579362518,
+        "event_sequence_number": 3,
+        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
         "metric_name": "tti",
         "url_root_path": "login",
         "was_authenticated": true,
-        "time_first_render_after_ready_end": 7089,
+        "time_first_render_after_ready_end": 4245,
         "script_cost_loaf_supported": true,
-        "script_cost_unattributed_eval_ms": 0,
-        "script_cost_total_count": 599,
+        "script_cost_unattributed_eval_ms": 31,
+        "script_cost_total_count": 530,
         "script_cost_reported_count": 20,
         "script_cost_url": [
+          "/assets/619666.39a9c889d48f07ce.js",
           "/assets/web.637e82960de4dc33.js",
-          "/assets/f4ee462337834e02.js",
-          "/assets/5d589a7e3b3504f1.js",
-          "/assets/675110210e2fb008.js",
-          "/assets/87d569fbd37f6690.js",
-          "/assets/3c9379d40707abdc.js",
+          "/assets/572018.46aab2493cfbe4fb.js",
+          "/assets/14335.8f50c7e3cc239ed9.js",
+          "/assets/363189.f566234fc8638ced.js",
+          "/assets/641877.378be635771f416b.js",
           "… 14 more"
         ],
         "script_cost_download_ms": [
-          2429,
-          1977,
-          1347,
-          1345,
-          1345,
-          1343,
+          0,
+          0,
+          376,
+          474,
+          470,
+          470,
           "… 14 more"
         ],
         "script_cost_transfer_size_bytes": [
-          3543003,
-          41566,
-          934,
-          3730,
-          707,
-          804,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
           "… 14 more"
         ],
         "script_cost_from_cache": [
           false,
           false,
-          false,
-          false,
-          false,
-          false,
+          true,
+          true,
+          true,
+          true,
           "… 14 more"
         ],
         "script_cost_initial_eval_ms": [
-          763,
           0,
+          825,
           0,
           0,
           0,
@@ -195,9 +151,9 @@ Sent:
           "… 14 more"
         ],
         "script_cost_total_eval_ms": [
-          763,
-          0,
-          0,
+          1079,
+          825,
+          102,
           0,
           0,
           0,
@@ -205,8 +161,8 @@ Sent:
         ],
         "script_cost_eval_attributed": [
           true,
-          false,
-          false,
+          true,
+          true,
           false,
           false,
           false,
@@ -215,46 +171,64 @@ Sent:
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 3,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
+        "uptime_app": 1,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
         "client_viewport_height": 917,
-        "client_send_timestamp": 1794545337661
+        "client_send_timestamp": 1794579363093
       }
     },
     {
       "type": "app_ui_viewed",
       "properties": {
-        "client_track_timestamp": 1794545336789,
-        "event_sequence_number": 6,
-        "total_compressed_byte_size": 4692555,
-        "total_uncompressed_byte_size": 20754364,
+        "client_track_timestamp": 1794579362637,
+        "event_sequence_number": 4,
+        "total_compressed_byte_size": 2291525,
+        "total_uncompressed_byte_size": 8063806,
         "total_transfer_byte_size": 0,
-        "js_compressed_byte_size": 729241,
-        "js_uncompressed_byte_size": 2926786,
+        "js_compressed_byte_size": 731177,
+        "js_uncompressed_byte_size": 2135098,
         "js_transfer_byte_size": 0,
-        "css_compressed_byte_size": 19492,
-        "css_uncompressed_byte_size": 87569,
+        "css_compressed_byte_size": 126006,
+        "css_uncompressed_byte_size": 519463,
         "css_transfer_byte_size": 0,
-        "load_id": "3a7a5b0c-e3e4-4f93-aa1b-121efdf6e705",
+        "load_id": "312b7cea-30e4-45c9-8d22-cab15398b8d0",
         "screen_name": "<username:1>",
-        "duration_ms_since_app_opened": 7071,
+        "duration_ms_since_app_opened": 4143,
         "app_hardware_acceleration_enabled": true,
         "client_performance_memory": 0,
         "accessibility_features": 128,
         "rendered_locale": "en-US",
-        "uptime_app": 3,
-        "launch_signature": "d02bcd25-a0eb-4106-812a-4b37defeb286",
+        "uptime_app": 2,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
         "client_rtc_state": "DISCONNECTED",
         "client_app_state": "focused",
         "client_viewport_width": 929,
         "client_viewport_height": 917,
-        "client_send_timestamp": 1794545337661
+        "client_send_timestamp": 1794579363093
       }
     },
-    "… 1 more"
+    {
+      "type": "impression_multi_account_switch_landing",
+      "properties": {
+        "client_track_timestamp": 1794579362824,
+        "event_sequence_number": 5,
+        "impression_type": "modal",
+        "location_section": "impression_multi_account_switch_landing",
+        "client_performance_memory": 0,
+        "accessibility_features": 128,
+        "rendered_locale": "en-US",
+        "uptime_app": 2,
+        "launch_signature": "da0ec52b-87ca-46e9-9514-e7bc3ec174ea",
+        "client_rtc_state": "DISCONNECTED",
+        "client_app_state": "focused",
+        "client_viewport_width": 929,
+        "client_viewport_height": 917,
+        "client_send_timestamp": 1794579363093
+      }
+    }
   ]
 }
 ```
