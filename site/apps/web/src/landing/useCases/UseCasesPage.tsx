@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { SiteHeader } from '../SiteHeader'
 import { AnimatePresence, motion, useInView } from 'motion/react'
 import { TextMorph } from 'torph/react'
 import { Building2, Rocket, User, Users } from 'lucide-react'
@@ -12,7 +13,6 @@ import Dither from '@/components/Dither'
 import { AreaChart } from '@/components/dither-kit/area-chart'
 import { Area } from '@/components/dither-kit/area'
 import { useChart } from '@/components/dither-kit/chart-context'
-import { Header } from '../Header'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
 import { DitherFade } from './DitherFade'
@@ -22,7 +22,7 @@ import { PLATFORM_SESSIONS } from './platformSessions'
 import { Control, Dashed } from '../Control'
 import { PLATFORMS, type Platform } from '../PlatformSuite'
 import { LogWith, PlatformMoney } from './PlatformMoney'
-import { HandArrow, LOG_REPO_URL, RepoLink, ReviewMarquee, parseRepoUrl } from '../RepoLink'
+import { HandArrow, LOG_REPO_URL, RepoLink, ReviewMarquee } from '../RepoLink'
 import { GG_REVIEWS } from '../ggReviews'
 import '../RepoModal.css'
 import { USE_CASES, type ShowcaseId, type UseCase } from './useCaseCatalog'
@@ -37,7 +37,6 @@ import { StoryFaq } from '../story/StorySections'
 const LIP = 'shadow-[0_0_0_1px_#C9E3FF,0_3px_0_#B5D6FF]'
 const STICKER = 'sticker-word inline-block px-[0.08em] text-[1.18em] leading-none'
 const HAND = { fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 const SETUP_HREF = LOG_REPO_URL
 const INSTALL = 'curl -fsSL https://log.listeningkit.com/install.sh | sh'
 
@@ -1190,14 +1189,7 @@ export function UseCasesPage({ platform: pageId }: { platform?: PageId }) {
   }, [platform])
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: SETUP_HREF, label: 'Set up log', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: SETUP_HREF, label: 'Set up log' }} />
       <Hero platform={platform} />
       {harness ? <HarnessSetupSection setup={harness} /> : <PlatformScroll platformId={page ? page.platformId : 'slack'} ctaHref={SETUP_HREF} />}
       {platform && page ? (

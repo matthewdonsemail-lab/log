@@ -1,23 +1,14 @@
-import { useState, type CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDiscord, faInstagram, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { MCP_PATH } from './mcpContent'
+import { MCP_PATH, MCP_PLAY } from './mcpContent'
 import './McpPromo.css'
 
 const CLOSED_KEY = 'logMcpPromoClosed'
-
-const TILES = [
-  { icon: faXTwitter, label: 'X', x: 13, y: 30, rotate: -8 },
-  { icon: faDiscord, label: 'Discord', x: 29, y: 74, rotate: 6 },
-  { icon: faRedditAlien, label: 'Reddit', x: 50, y: 16, rotate: -3 },
-  { icon: faSlack, label: 'Slack', x: 76, y: 28, rotate: 8 },
-  { icon: faInstagram, label: 'Instagram', x: 87, y: 72, rotate: -6 },
-]
-
-const CENTER = { x: 55, y: 58 }
+const STEP_MS = 3400
+const CARD_STYLE: CSSProperties = { background: 'radial-gradient(ellipse at 50% 0%, #4FA6FF 0%, #2A8CFF 55%, #1F78F0 100%)' }
 
 function readClosed() {
   try {
@@ -35,41 +26,79 @@ function saveClosed() {
   }
 }
 
-function Art() {
+function AskDemo() {
   return (
-    <div aria-hidden className="relative h-[136px] w-full overflow-hidden" style={{ background: 'linear-gradient(180deg, var(--mcp-promo-art-top) 0%, var(--mcp-promo-art-bottom) 100%)' }}>
-      <svg className="absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-        {TILES.map((tile) => (
-          <line key={tile.label} x1={CENTER.x} y1={CENTER.y} x2={tile.x} y2={tile.y} stroke="var(--mcp-promo-line)" strokeWidth="0.6" strokeDasharray="2 2" vectorEffect="non-scaling-stroke" />
-        ))}
-      </svg>
-      {TILES.map((tile) => (
-        <span
-          key={tile.label}
-          className="absolute grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-xl text-[16px] shadow-[0_3px_0_rgba(13,42,76,0.12)]"
-          style={{ left: `${tile.x}%`, top: `${tile.y}%`, rotate: `${tile.rotate}deg`, background: 'var(--mcp-promo-tile)', color: 'var(--mcp-promo-tile-ink)' }}
-        >
-          <FontAwesomeIcon icon={tile.icon} />
-        </span>
-      ))}
-      <span
-        className="absolute grid size-[60px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl shadow-[0_4px_0_#1A5FC8,0_10px_24px_-8px_rgba(13,42,76,0.45)]"
-        style={{ left: `${CENTER.x}%`, top: `${CENTER.y}%`, background: 'var(--mcp-promo-tile)' }}
-      >
-        <img src="/logo.svg" alt="" className="size-11 rounded-xl" />
-      </span>
+    <div className="w-full rounded-2xl bg-white px-4 py-3 text-left text-[#0D2A4C] shadow-[0_4px_0_rgba(13,42,76,0.18)]">
+      <span className="font-mono text-[11px] font-bold text-[#2A8CFF]">/log</span>
+      <p className="mt-0.5 text-[15px] font-bold leading-snug">{MCP_PLAY.ask}</p>
     </div>
   )
+}
+
+function CallsDemo() {
+  return (
+    <div className="flex w-full flex-wrap justify-center gap-1.5">
+      {MCP_PLAY.calls.map((call, index) => (
+        <motion.span
+          key={call}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.18 }}
+          className="rounded-full bg-white px-2.5 py-1 font-mono text-[12px] font-bold text-[#2A8CFF] shadow-[0_3px_0_rgba(13,42,76,0.18)]"
+        >
+          {call}
+        </motion.span>
+      ))}
+    </div>
+  )
+}
+
+function OutcomeDemo() {
+  return (
+    <div className="flex w-full flex-col gap-1.5">
+      {MCP_PLAY.how.rows.map((row, index) => (
+        <motion.div
+          key={row.who}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.18 }}
+          className="flex items-center justify-between rounded-xl bg-white px-3 py-1.5 text-[13px] font-bold text-[#0D2A4C] shadow-[0_3px_0_rgba(13,42,76,0.18)]"
+        >
+          {row.who}
+          <span className="rounded-full bg-[#EAF3FF] px-2 py-0.5 text-[11px] text-[#2A8CFF]">{row.status}</span>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+const STEPS: { demo: ReactNode; title: string; body: string }[] = [
+  { demo: <AskDemo />, title: 'Ask your agent', body: 'Say it the way you’d say it, in Claude Code, Codex or Cursor.' },
+  { demo: <CallsDemo />, title: 'log runs the play', body: 'Every log command is a tool, each step checked before the next.' },
+  { demo: <OutcomeDemo />, title: 'It lands on your accounts', body: 'Sent from your own accounts, in your voice, once you say so.' },
+]
+
+function useStepCycle(paused: boolean) {
+  const [step, setStep] = useState(0)
+  useEffect(() => {
+    if (paused) return
+    const id = window.setTimeout(() => setStep((value) => (value + 1) % STEPS.length), STEP_MS)
+    return () => window.clearTimeout(id)
+  }, [step, paused])
+  return [step, setStep] as const
 }
 
 export function McpPromo() {
   const { pathname } = useLocation()
   const [closed, setClosed] = useState(readClosed)
+  const [hovered, setHovered] = useState(false)
+  const [step, setStep] = useStepCycle(hovered)
   const close = () => {
     saveClosed()
     setClosed(true)
   }
   const shown = !['/sign-in', '/verify', '/login'].includes(pathname) && !closed && pathname !== MCP_PATH && !pathname.startsWith('/shareCard')
+  const current = STEPS[step]
   return (
     <AnimatePresence>
       {shown ? (
@@ -104,34 +133,59 @@ export function McpPromo() {
             </button>
           </div>
           <div
-            className="hidden w-[320px] overflow-hidden rounded-3xl shadow-[0_5px_0_#1A5FC8,0_24px_48px_-16px_rgba(13,42,76,0.5)] ring-1 sm:block"
-            style={{ background: 'var(--mcp-promo-card)', '--tw-ring-color': 'var(--mcp-promo-ring)' } as CSSProperties}
+            className="hidden w-[320px] flex-col gap-4 rounded-3xl px-5 pb-5 pt-4 text-white shadow-[0_6px_0_#1A5FC8,0_24px_48px_-16px_rgba(13,42,76,0.5)] sm:flex"
+            style={CARD_STYLE}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
           >
-            <Art />
-            <div className="flex flex-col gap-3 p-5">
-              <span className="self-start rounded-full bg-[#2A8CFF] px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-white">New: log MCP</span>
-              <p className="text-[20px] font-black leading-tight tracking-[-0.02em]">Your AI agent runs your DMs</p>
-              <p className="text-[14px] leading-snug" style={{ color: 'var(--mcp-promo-muted)' }}>
-                Claude Code or Codex reads your inbox, drafts replies in your voice and sends from your own accounts on X, Discord, Slack, Instagram and Reddit, only when you say so.
-              </p>
-              <div className="mt-1 flex gap-2">
-                <button
-                  type="button"
-                  onClick={close}
-                  className="rounded-xl px-4 py-2.5 text-[15px] font-bold transition-colors hover:bg-[var(--mcp-promo-close-hover)]"
-                  style={{ boxShadow: 'inset 0 0 0 1px var(--mcp-promo-close-ring)' }}
-                >
-                  Close
-                </button>
-                <a
-                  href={MCP_PATH}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#2A8CFF] px-4 py-2.5 text-[15px] font-bold text-white shadow-[0_3px_0_#1A5FC8] transition-transform hover:-translate-y-px"
-                >
-                  See the log MCP
-                  <FontAwesomeIcon icon={faArrowRight} className="text-[12px]" />
-                </a>
-              </div>
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-white px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[#2A8CFF]">New: log MCP</span>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="Close"
+                className="grid size-8 place-items-center rounded-full text-[14px] text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
             </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex h-[112px] items-center justify-center">{current.demo}</div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-4xl font-black leading-none tracking-[-0.045em]">Step {step + 1}</p>
+                  <p className="mt-1 text-lg font-bold tracking-[-0.01em]">{current.title}</p>
+                  <p className="text-[14px] leading-snug text-white/80">{current.body}</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+            <div className="flex items-center gap-1.5" role="tablist" aria-label="How the log MCP works">
+              {STEPS.map((item, index) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  role="tab"
+                  aria-selected={index === step}
+                  aria-label={`Step ${index + 1}`}
+                  onClick={() => setStep(index)}
+                  className={`h-1.5 rounded-full transition-all ${index === step ? 'w-6 bg-white' : 'w-1.5 bg-white/45 hover:bg-white/70'}`}
+                />
+              ))}
+            </div>
+            <a
+              href={MCP_PATH}
+              className="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[15px] font-bold text-[#2A8CFF] shadow-[0_3px_0_#1A5FC8] transition-transform hover:-translate-y-px"
+            >
+              See the log MCP
+              <FontAwesomeIcon icon={faArrowRight} className="text-[12px]" />
+            </a>
           </div>
         </motion.aside>
       ) : null}

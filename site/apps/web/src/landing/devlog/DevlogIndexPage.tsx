@@ -1,13 +1,12 @@
 import { useEffect } from 'react'
-import { Header } from '../Header'
+import { SiteHeader } from '../SiteHeader'
 import { SiteFooter } from '../SiteFooter'
 import { ClayClouds } from '../ClayClouds'
-import { LOG_REPO_URL, parseRepoUrl } from '../RepoLink'
+import { LOG_REPO_URL } from '../RepoLink'
 import { DitherFade } from '../useCases/DitherFade'
 import { DEVLOG_ARTICLES, devlogImage, devlogPath } from './articles'
 
 const HAND = { fontFamily: "'Schoolbell', cursive" }
-const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
 export const DEVLOG_TITLE = 'Devlog · log by ListeningKit'
 export const DEVLOG_DESCRIPTION = 'What Matthew Don tried, what it cost, why it didn\'t work, and what he built into log instead. Free, open source, his own accounts.'
 
@@ -51,14 +50,7 @@ export function DevlogIndexPage() {
   }, [])
   return (
     <div className="flex min-h-screen flex-col bg-white" style={{ fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}>
-      <Header
-        tone="light"
-        homeHref="/"
-        logoLabel="ListeningKit"
-        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
-        className="z-[70]"
-        accountItems={[{ href: LOG_REPO_URL, label: 'Set up log', variant: 'cta' }]}
-      />
+      <SiteHeader cta={{ href: LOG_REPO_URL, label: 'Set up log' }} />
       <section aria-label="Hero" className="relative isolate w-full overflow-hidden text-left">
         <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden bg-[#2A8CFF]">
           <ClayClouds className="absolute inset-x-0 top-12 h-[20rem] [mask-image:linear-gradient(to_bottom,black_75%,transparent)] md:h-[26rem]" />
