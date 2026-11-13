@@ -73,6 +73,8 @@ export function serviceStarted(root = contextLayerRoot()): void {
 }
 
 export interface RouteAnswer {
+  play: PlayMatch | null
+  menu: PlayMatch[]
   matches: PlayMatch[]
   skipped?: string
   corrected: string[]

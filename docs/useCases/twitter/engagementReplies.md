@@ -5,6 +5,8 @@ When one of your posts gets comments, the people who commented are the warmest p
 - **Answer their comment** under your post, pointing at the follow-up (a newer post, a video, an article).
 - **Reply to a fresh post of theirs** where you have a real take, so the conversation moves onto their timeline.
 
+How the owner asks for it: "reply to everyone who commented on my last tweet", "answer the comments on my post", "reply to the people who replied to my tweet with the follow-up link".
+
 ## Run it from a fresh context
 
 Say: **"go on docs/useCases/twitter/engagementReplies.md for <post url>"** and, if there is one, the follow-up link. The agent then reads this page and [README.md](README.md) and runs the steps.
@@ -20,7 +22,7 @@ flowchart TD
   s3["3a. Answer the comment: one line that answers what they said, then…<br/><i>house style</i>"]
   s4["3b. Or their own post: read their recent posts and pick one from th…<br/><i>treg's X posts read</i>"]
   s5["4. Show the owner the table: who, what they said, the post being r…<br/><i>wherever the owner reads</i>"]
-  s6["5. Queue it with likes and send<br/><i>README queue steps</i>"]
+  s6["5. Queue it with likes and send<br/><i>twitterQueueBuild, twitterQueueRunLive</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
@@ -38,7 +40,7 @@ flowchart TD
 | 3a | **Answer the comment:** one line that answers what they said, then the follow-up link | house style | passes `twitterQueueCheck` |
 | 3b | **Or their own post:** read their recent posts and pick one from the last few days where you have a real take | treg's X posts read | one post per person and the line for it |
 | 4 | Show the owner the table: who, what they said, the post being replied to, the line | wherever the owner reads | the owner says yes |
-| 5 | Queue it with likes and send | README queue steps | `finished` |
+| 5 | Queue it with likes and send | README queue steps: `twitterQueueBuild`, `twitterQueueRunLive` | `finished` |
 
 Where the comment was a question (for example "what does the first message actually look like"), the answer is the reply. Unanswered questions are the best openers.
 

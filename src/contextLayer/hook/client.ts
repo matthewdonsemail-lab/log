@@ -1,10 +1,10 @@
 import { playReminder, sessionPlayOf, transcriptTail } from '../session/index'
 import { readUseCase } from '../../mcp/server/helpers/guides.ts'
-import { isPrompt, playMatchText } from '../../useCases/router/client'
+import { isPrompt, outcomeOf, playMatchText } from '../../useCases/router/client'
 import type { PlayMatch } from '../../useCases/router/types'
 import type { HookInput, HookResult } from './types'
 
-export type RouteFn = (prompt: string) => Promise<{ matches: PlayMatch[]; menu?: PlayMatch[]; skipped?: string } | null>
+export type RouteFn = (prompt: string) => Promise<{ play?: PlayMatch | null; menu?: PlayMatch[]; skipped?: string } | null>
 
 export async function hookAnswer(input: HookInput, route: RouteFn): Promise<HookResult> {
   const event = input.hook_event_name ?? 'UserPromptSubmit'
@@ -17,7 +17,9 @@ export async function hookAnswer(input: HookInput, route: RouteFn): Promise<Hook
   if (!isPrompt(prompt)) return { event, text: '', outcome: 'notAPrompt' }
   const answer = await route(prompt)
   if (!answer) return { event, text: '', outcome: 'serviceTimeout' }
-  return { event, text: playMatchText(answer.matches, answer.menu ?? []), outcome: answer.skipped ?? (answer.matches[0]?.id || (answer.menu?.length ? `menu ${answer.menu.map((m) => m.id).join(',')}` : 'none')) }
+  const play = answer.play ?? null
+  const menu = answer.menu ?? []
+  return { event, text: playMatchText(play ? [play] : [], menu), outcome: answer.skipped ?? outcomeOf({ play, menu }), ...(menu.length && !play ? { menu: menu.map((m) => m.id) } : {}) }
 }
 
 export function hookOutput(result: HookResult): string {

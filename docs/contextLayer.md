@@ -15,7 +15,7 @@ flowchart LR
   P["matt's prompt"] --> C["Claude Code: one http hook<br/>(p50 9.6 ms, no process)<br/>Codex: curl"]
   C --> S["context layer service<br/>127.0.0.1:47317, one per machine,<br/>model kept loaded"]
   S --> R["router: typo fix, meaning match<br/>over his own asks, fitted threshold"]
-  R --> O[">>> PLAY MATCH, or nothing"]
+  R --> O[">>> PLAY MATCH, >>> MAYBE A PLAY, or nothing"]
   C -. "Codex, service down" .-> B["bun fallback: starts the service, injects nothing"]
   K["SessionStart (startup, resume, compact)"] --> T["the session's own transcript:<br/>last play loaded, last step run"]
   T --> A[">>> ACTIVE PLAY with steps done and to do"]
@@ -28,9 +28,9 @@ flowchart LR
 ## The conventions
 
 1. **A hook is a provider with a contract.** It declares its event(s), its matcher, what it reads, its latency budget and its outcomes. It writes one timing line per run to `~/.logCli/contextLayer/timings.jsonl`: `event`, `provider`, `ms`, `chars` and `outcome`.
-2. **Outcomes are named states, in camelCase.** A run ends in one of a fixed set. For the router these are `notAPrompt`, `trivial`, `serviceDown`, `serviceTimeout`, `none` or a play id. For the re-injection they are `noPlay` or `reinjected <play>`. A new outcome is added to the provider's types, never made up inline.
+2. **Outcomes are named states, in camelCase.** A run ends in one of a fixed set. For the router these are `notAPrompt`, `trivial` (no content word at all), `serviceDown`, `serviceTimeout`, `none`, `menu` or a play id. For the re-injection they are `noPlay` or `reinjected <play>`. A new outcome is added to the provider's types, never made up inline.
 3. **Only matt's words are routed.** Task notifications, system text, compaction summaries and anything starting with `<` are `notAPrompt` (`NOT_A_PROMPT`). Before this, the router matched a research agent's report to `facebook/marketplaceListings`.
-4. **Silence beats a guess.** Below the fitted threshold nothing is said. When two plays are within 0.03 of each other, both are named. The agent says which one it is following, or "none" for building or fixing the system, before it calls a tool.
+4. **Silence beats a guess.** The hook and `getGuide({ ask })` call the same `route` (`src/useCases/router/client.ts`), the hook adding the meaning score. Below the threshold nothing is said. When two plays are within the ambiguity band (0.03 with the meaning score, 0.1 on words alone), or the best phrase names a platform the prompt doesn't, no play is named and the closest few are listed as a menu. A prompt that names a platform never gets a play filed under another platform. The text is statements of fact, not instructions.
 5. **Budgets:**
    - per-prompt hooks: p95 under 100 ms inside the service, under 300 ms end to end;
    - SessionStart: under 1 s;

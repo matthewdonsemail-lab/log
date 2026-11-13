@@ -1,7 +1,7 @@
 ---
 name: log-twitter-recruiting
 description: "Recruiting on X with a reply queue. A log play (docs/useCases/twitter/recruiting.md): Find people who just posted that they want work, or who already do the job. Reply to each one publicly with one line in their own language, about their own post, ending with the job link. The owner approves the list, then the queue sends the replies slowly with likes mixed in. Applicants then come in through the job page."
-when_to_use: "Use when matt asks for: recruiting on x with a reply queue."
+when_to_use: "Use when matt asks for this, in words like: \"recruit for the <role> role on x\", \"find people looking for work on twitter and reply with the job link\", \"hire a <role> through tweet replies\"."
 metadata:
   summary: "Recruiting on X with a reply queue"
 ---
@@ -15,6 +15,8 @@ Draft every message from that person's own thread and matt's real replies (`voic
 Find people who just posted that they want work, or who already do the job. Reply to each one publicly with one line in their own language, about their own post, ending with the job link. The owner approves the list, then the queue sends the replies slowly with likes mixed in. Applicants then come in through the job page.
 
 Recruiting is public replies only. DMs are a different job: [dmInbox.md](../log-twitter-dm-inbox/SKILL.md) and [engagerDms.md](../log-twitter-engager-dms/SKILL.md).
+
+How the owner asks for it: "recruit for the <role> role on x", "find people looking for work on twitter and reply with the job link", "hire a <role> through tweet replies".
 
 ## Run it from a fresh context
 
@@ -49,7 +51,7 @@ All five, checked on every person before they go in the table:
 | 3 | Qualify them with the five checks | by hand, or a model scoring fit, region and real person | a keep list, plus a "no location" hold list |
 | 4 | Write one line per person, in their language, opening on their own post, ending with the link | house style | every line passes `twitterQueueCheck` |
 | 5 | Show the owner the table: handle, location, why, post url, the line | wherever the owner reads | the owner says yes |
-| 6 | Queue it: each target carries its own `text`, build, check, approve, plan with likes, dry run, live run | the README's queue steps | the run is `finished` |
+| 6 | Queue it: each target carries its own `text`, build, check, approve, plan with likes, dry run, live run | the README's queue steps: `twitterQueueBuild`, `twitterQueueRunLive` | the run is `finished` |
 | 7 | Log and report every reply url, or X's event | the queue file, a send log | every item says sent, skipped or blocked |
 | 8 | Check applicants | wherever the job page sends applications | new applicants reported |
 

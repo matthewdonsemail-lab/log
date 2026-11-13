@@ -65,7 +65,7 @@ Only what the thread has not already answered. In practice, in this order:
 - **The gate failing six times was a data problem and a shape problem, not a wording problem.** On 2026-11-12 a scoping message to a Discord DM scored `voice` 0.16 to 0.66 over seven drafts. The voice index held no pairs for that chat, so the gate graded the owner as a stranger and treated a two-day conversation as a first message; once the chat was indexed, the same draft scored 0.85. The other half was shape: six lines read as one wall of text scored 0.22, and as six messages 0.85.
 - **A gate refusal is a signal to check the evidence, not only the words.** Before rewriting a fifth time, read `voice` with no text: if his latest messages there are empty, the gate has nothing to compare against and no phrasing will pass.
 - **The scope is usually in the artefact they already sent.** On 2026-11-12 the whole job — the stages, the two blocked substeps, the counts that already passed — was in one spreadsheet the person had sent two days earlier, and the open questions were only about the artefacts, the blocker and what "done" meant.
-- **A play must be loaded before sending as the owner,** and a session that changed models mid-thread loses it: a send with no play is refused `playMissing` (rule 157).
+- **A play must be loaded before sending as the owner,** and a session that changed models mid-thread loses it: a send with no play is refused `playMissing`.
 
 ## Next
 

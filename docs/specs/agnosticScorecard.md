@@ -45,7 +45,7 @@ Checked by: code and SubQ
 | `useCasesWithoutSteps` | Use cases where `stepsOf` reads zero steps | slice 16 |
 | `toolsInNoUseCase` | Command and flow tools no use case names | slices 7 and 16 |
 | `argsTools` | Listed tools whose input is a raw `args` list | slice 12 |
-| `actingTools`, `actingToolsWithoutPlay` | Live tools that act (not spend), command and flow; and those not in `PLAY_REQUIRED` | slices 14 and 17 |
+| `actingTools`, `actingToolsWithoutPlay`, `actingToolsInNoUseCase` | Live tools that act (not spend), command and flow; those that can run with no play loaded, that is every acting tool not in `playRequiredTools` (the tools gated on main, which always need a play); and the tools that act as the owner but no use case's steps name (`unnamedActingTools`), which only a play filed under their platform can cover | slices 14 and 17 |
 | `liveCommands`, `liveCommandsWithoutMachine` | Commands with an acting live tool; and those with no machine by the rule below | slice 8 |
 | `hookHosts` | Members of `HookHost` (higher is better) | slices 9 and 19 |
 | `serverInstructionsChars`, `toolsListed`, `toolDescriptionChars`, `toolDescriptionAverage`, `boilerplatePercent` | The server instructions; the listed tools, their description text in total and on average, and the share of it that is the guide line plus the rules line | slice 18 |

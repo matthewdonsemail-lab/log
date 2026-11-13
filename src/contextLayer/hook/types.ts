@@ -10,4 +10,5 @@ export interface HookResult {
   event: string
   text: string
   outcome: string
+  menu?: string[]
 }

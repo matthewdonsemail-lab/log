@@ -74,6 +74,7 @@ export interface ScorecardInput {
   guideOf: (command: ScoredCommand) => string | null;
   notes: Readonly<Record<string, readonly string[]>>;
   playRequired: ReadonlySet<string>;
+  actingNamedByNoUseCase: readonly string[];
   useCases: readonly UseCaseText[];
   guides: Readonly<Record<string, string>>;
   serverInstructions: string;

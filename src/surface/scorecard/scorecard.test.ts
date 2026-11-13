@@ -111,7 +111,7 @@ describe("tools", () => {
     expect(argsTools([{ name: "flow", description: "", inputSchema: { properties: { args: {} } } }, { name: "discordSend", description: "", inputSchema: { properties: { account: {} } } }])).toEqual(["flow"]);
   });
 
-  test("acting tools are live tools that do not only spend, plus live flows, and PLAY_REQUIRED covers some", () => {
+  test("acting tools are live tools that do not only spend, plus live flows, and the play gate covers some", () => {
     const acting = actingTools(tools, flowTools);
     expect(acting).toEqual(["inspectDoLive", "warmupLive", "discordSendLive", "twitterDmLive", "flowPostCommentLive", "flowFacebookLanguageEnglishLive"]);
     expect(ungatedActingTools(acting, new Set(["twitterDmLive", "discordSendLive"]))).toEqual(["inspectDoLive", "warmupLive", "flowPostCommentLive", "flowFacebookLanguageEnglishLive"]);
@@ -171,6 +171,7 @@ const input = (overrides: Partial<ScorecardInput> = {}): ScorecardInput => ({
   guideOf,
   notes: {},
   playRequired: new Set(["twitterDmLive"]),
+  actingNamedByNoUseCase: ["discordDeleteLive"],
   useCases: [],
   guides: { xSending: "x".repeat(60_000), discord: "d".repeat(10) },
   serverInstructions: "Load the guide.",
@@ -197,6 +198,7 @@ describe("measure", () => {
       "deadRuleCitations.skills": 1,
       "deadRuleCitations.toolDescriptions": 1,
       serverInstructionsChars: 15,
+      actingToolsInNoUseCase: 1,
     });
   });
 });

@@ -113,7 +113,8 @@ export function measure(input: ScorecardInput): Metric[] {
   out.push(metric("argsTools", "Tools that take a raw args list", "lower", argsTools(input.listedTools)));
   const acting = actingTools(input.commandTools, input.flowTools);
   out.push(count("actingTools", "Live (acting) tools", "info", acting.length));
-  out.push(metric("actingToolsWithoutPlay", "Live (acting) tools not in PLAY_REQUIRED", "lower", ungatedActingTools(acting, input.playRequired)));
+  out.push(metric("actingToolsWithoutPlay", "Live (acting) tools that can run with no play loaded", "lower", ungatedActingTools(acting, input.playRequired)));
+  out.push(metric("actingToolsInNoUseCase", "Live tools that act as the owner and no use case names (not play-gated)", "lower", [...input.actingNamedByNoUseCase]));
   const live = liveCommands(input.commandTools);
   out.push(count("liveCommands", "Commands with a live (acting) tool", "info", live.length));
   out.push(metric("liveCommandsWithoutMachine", "Commands with a live tool and no machine behind them", "lower", live.filter((c) => !input.hasMachine(c)).map(where)));

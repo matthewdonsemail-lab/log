@@ -21,6 +21,14 @@ export interface CommandTool {
   effect: ToolEffect;
 }
 
+export const OWNER_EFFECTS: ReadonlySet<ToolEffect> = new Set(["write", "delete"]);
+
+export function actsAsOwner(entry: Pick<CommandTool, "live" | "effect" | "command">): boolean {
+  return entry.live && OWNER_EFFECTS.has(entry.effect) && isPlatform(entry.command.platform);
+}
+
+export const PLAY_HANDLE = { type: "string", description: "The play handle getGuide returned, when this caller keeps more than one play; left out, the caller's own play is used. The play decides which step this call is, and a send a play names goes out only under a play that names it" };
+
 export const ARGS_LIVE_FLAGS = ["live", "likes"] as const;
 
 export function argsLiveFlags(command: Command): string[] {
@@ -128,7 +136,7 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
       type: "object",
-      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}) },
+      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}), ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}) },
       ...(required.length || entry.live ? { required: [...required, ...(entry.live ? ["confirmLive"] : [])] } : {}),
       additionalProperties: false,
     },
@@ -164,6 +172,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
         ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}),
         confirmBypass: CONFIRM_BYPASS,
         ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}),
+        ...(actsAsOwner(entry) ? { playHandle: PLAY_HANDLE } : {}),
       },
       ...(entry.live ? { required: ["args", "confirmLive"] } : {}),
       additionalProperties: false,
