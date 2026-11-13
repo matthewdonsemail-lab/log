@@ -1,14 +1,16 @@
 ---
 name: commitLog
-description: Write the log entry every log-cli commit needs, in the day's file log/<date>.md (indexed from log.md). On commit, the pre-commit hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent then writes What changed, Why and Checked from the AST before the commit can go through.
+description: Write the day-log entry every log-cli commit needs, in the private devlog (LOG_DEVLOG_DIR, default ~/.logCli/devlog/<date>.md, indexed by log.md there), never in the repo. On commit, the pre-commit hook parses the staged code into an abstract syntax tree (AST), writes which declarations and tests were added, changed or removed into a template entry, and feeds that back to the agent. The agent then writes What changed, Why and Checked from the AST before the commit can go through.
 ---
 
 # commitLog
 
-The log is the running record of the repo, one entry per commit. It is kept
-in one file per day, `log/<date>.md` (the day in UTC, newest entry at the
-bottom), and `log.md` is the index of every day, newest first. One file was
-too big for GitHub to show (1.6 MB), a day's file isn't. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
+The day log is the running record of the work, one entry per commit. It is
+private: the repo is public, and day logs quote requests, people and infra
+steps. It lives in `LOG_DEVLOG_DIR` (default `~/.logCli/devlog/`), one file per
+day, `<date>.md` (the day in UTC, newest entry at the bottom), and `log.md` in
+the same folder is the index of every day, newest first. lefthook's pre-commit
+(`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
 `scripts/commitLog/astSummary.mjs`:
 
 - `.ts` / `.mjs` files are parsed with the TypeScript compiler API.
@@ -27,6 +29,8 @@ too big for GitHub to show (1.6 MB), a day's file isn't. lefthook's pre-commit (
 3. **Never edit old entries.** Only add.
 4. **Write the three fields from the AST,** in plain words, naming the real
    behaviour, commands and results. No `<fill in>` left.
+5. **Nothing from the day log goes in the repo.** Never copy an entry into a
+   tracked file. The hook stages nothing.
 
 ## The routine
 
@@ -34,18 +38,19 @@ too big for GitHub to show (1.6 MB), a day's file isn't. lefthook's pre-commit (
 GIT_CONFIG_COUNT=0 git add <files>
 GIT_CONFIG_COUNT=0 git commit -m "..."
 # 1st try: the hook prints the AST of the staged change, appends the entry
-#          to today's log/<date>.md, updates the index log.md, and stops the commit
-# write What changed / Why / Checked under the AST block
-GIT_CONFIG_COUNT=0 git add log.md log
+#          to today's ~/.logCli/devlog/<date>.md, updates the index log.md
+#          there, remembers the entry as this checkout's pending one, and stops
+# write What changed / Why / Checked under the AST block in that file
 GIT_CONFIG_COUNT=0 git commit -m "..."
 # 2nd try: the hook re-parses the staged code; if it matches the block and the
 #          fields are written, the commit goes through
 ```
 
-If you change code after the entry was written, the hook updates the AST
-block in place and stops once more. Re-read your What changed line, re-stage
-`log.md log`, commit again. If only the index is stale, the hook rewrites
-log.md and asks for `git add log.md`.
+The pending entry is kept per checkout in `<devlog>/.pending/`, and lefthook's
+post-commit clears it once the commit lands, so a commit stopped by a later
+hook keeps its written entry. If you change code after the entry was written,
+the hook updates the AST block in place and stops once more. Re-read your What
+changed line and commit again.
 
 To see the AST for any commit: `node scripts/commitLog/astSummary.mjs <commit>`. With
 no argument it shows the staged change.

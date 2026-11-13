@@ -8,7 +8,7 @@ skill in the same commit.
 | Skill | Use it to |
 | --- | --- |
 | [`logCli`](skills/logCli/SKILL.md) | Run the CLI: seed data, live Camoufox checks, the XState monitor |
-| [`commitLog`](skills/commitLog/SKILL.md) | Write the `log.md` entry every commit needs, from the AST summary the hook generates |
+| [`commitLog`](skills/commitLog/SKILL.md) | Write the private day-log entry (`~/.logCli/devlog/`) every commit needs, from the AST summary the hook generates |
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
 | [`discordServers`](skills/discordServers/SKILL.md) | Know what a Discord server holds (channels, forums, posts, threads) and read each live with its own tool |
 | [`reaCapture`](skills/reaCapture/SKILL.md) | Capture live publish runs as a raw HAR, read them with `rea`, and score client design changes with SubQ |
@@ -45,7 +45,7 @@ skill in the same commit.
 
 These three files stay in step:
 
-- **`log.md`** says what happened, commit by commit, starting from an AST of the code.
+- **The day log** (private, `~/.logCli/devlog/`, never in the repo) says what happened, commit by commit, starting from an AST of the code.
 - **`AGENTS.md`** holds the hard rules matt has set.
 - **`skills/`** holds the routines that follow those rules.
 | [`instagram`](skills/instagram/SKILL.md) | Work an Instagram account through the direct-API engine and its one session host, never the browser: read the thread, draft in matt's voice, gate it, send text or a meme as a photo, the realtime watch pushes every DM |

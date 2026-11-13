@@ -111,7 +111,11 @@ log facebook capture --docs          # run it live (Monitor), every stage prints
 3. Each GraphQL request's slice (`<Name>.graphql`, its doc_id module, and the
    modules that import it) goes to `rea analyze-javascript-application`:
    about 4 s each, cached by sha256 in `~/.logCli/rea/facebookClient/`.
-4. `docs/platforms/facebook/<domain>/<Name>.md` gets the facts block; the three
+4. `docs/platforms/facebook/<domain>/<Name>.md` gets the facts block, redacted
+   before it is written (`src/privacy/redact`: secrets, emails, phones, IPs,
+   ids, names, usernames and message text become `<slackToken>`, `<email>`,
+   `<userId:1>`, `<messageText>` and the like; the raw run stays in
+   `~/.logCli/runs/`). The three
    reasoning sections are written by hand from the facts and rea (open the
    Evidence with `inspect_analysis_view`). lefthook's pre-push refuses a
    push while any is unwritten, unread by rea, or older than a run.

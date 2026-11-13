@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { evidenceIdOf } from '../../rea/capture/client'
+import { redactPatterns } from '../../privacy/redact/index'
 import { renderFlowDoc } from './helpers/index'
 import type { RecordedCommand } from './helpers/index'
 import type { FlowDefinition, FlowStep } from './types'
@@ -117,6 +118,6 @@ function requestDocFor(name: string): string | null {
 export function writeFlowDoc(flow: FlowDefinition, dir = FLOW_DOCS_DIR): string {
   mkdirSync(dir, { recursive: true })
   const path = join(dir, `${flow.name}.md`)
-  writeFileSync(path, renderFlowDoc(flow, requestDocFor))
+  writeFileSync(path, redactPatterns(renderFlowDoc(flow, requestDocFor)))
   return path
 }

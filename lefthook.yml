@@ -1,5 +1,8 @@
 pre-commit:
   commands:
+    privacy:
+      run: bun run check:privacy --staged
+
     noComments:
       run: bun run check:noComments
 
@@ -45,14 +48,22 @@ pre-commit:
       run: bun run check:siteDocs
 
     siteSkills:
-      run: bun run check:siteSkills
+      run: bun run check:siteSkills --staged
 
     specs:
       run: bun run check:specs --staged
 
+post-commit:
+  commands:
+    commitLog:
+      run: node scripts/commitLog/commitLog.mjs --committed
+
 pre-push:
   parallel: false
   commands:
+    privacy:
+      run: bun run check:privacy
+
     noComments:
       run: bun run check:noComments
 

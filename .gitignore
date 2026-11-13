@@ -38,3 +38,6 @@ skills-lock.json
 
 vendor/chatXdk/target/
 vendor/juicebox-sdk/
+
+/log/
+/log.md
