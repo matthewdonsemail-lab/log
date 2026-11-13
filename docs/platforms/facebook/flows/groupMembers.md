@@ -2,7 +2,7 @@
 
 Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction
 
-Built by `log flow fromInspect` from the recording `~\.logCli\runs\inspect\20261024T060921_<userId:1>` (account <userId:1>). Run it on any account with `log flow run groupMembers --account <a> --live`, or over MCP as the tool `flowGroupMembers` (rule 31).
+Built by `log flow fromInspect` from the recording `~\.logCli\runs\inspect\20261024T060921_<userId:1>` (account <userId:1>). Run it on any account with `log flow run groupMembers --account <a> --live`, or over MCP as the tool `facebookFlowGroupMembers` (rule 31).
 
 ## Params
 

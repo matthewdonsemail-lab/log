@@ -48,11 +48,11 @@ export async function localMedia(entries: readonly string[] | undefined, fetcher
 }
 const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "The approved copy, in house style (lowercase, no commas, full stops or dashes; urls exempt)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
-const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when matt asked" };
-export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when matt asked (rule 86)" };
-const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when matt asked (rule 90)" };
-const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "matt said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
-const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when matt asked (rule 8); without it a dry run checks it and contacts nothing" };
+const SKIP_STYLE: FlagSpec = { name: "skipStyleCheck", kind: "boolean", description: "Skip the account's copy style check (copyStyle, empty: house), only when the owner asked" };
+export const FORCE: FlagSpec = { name: "force", kind: "boolean", description: "Go past the account's governor (its pause, hourly, daily and write caps) for this call, only when the owner asked (rule 86)" };
+const AS_ONE: FlagSpec = { name: "asOne", kind: "boolean", description: "Send the dm as one message, never split, only when the owner asked (rule 90)" };
+const OVER_GATE: FlagSpec = { name: "overGate", kind: "boolean", description: "the owner said to send this exact dm over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" };
+const LIVE: FlagSpec = { name: "live", kind: "boolean", live: true, description: "Send it on X, only when the owner asked (rule 8); without it a dry run checks it and contacts nothing" };
 
 interface SendShape {
   action: SendAction;

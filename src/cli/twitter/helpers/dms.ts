@@ -44,7 +44,7 @@ export const DMS_INPUT: CommandInput = {
         { name: "with", kind: "string", description: "A handle, to read that person's thread without looking up its id" },
         { name: "conversation", kind: "string", description: "One conversation's id, to read its messages" },
         { name: "full", kind: "boolean", description: "Read the whole inbox again instead of only what is new since the last read" },
-        { name: "force", kind: "boolean", description: "Read past the account's governor (its pause, hourly and daily caps) for this call, only when matt asked (rule 86)" },
+        { name: "force", kind: "boolean", description: "Read past the account's governor (its pause, hourly and daily caps) for this call, only when the owner asked (rule 86)" },
         JSON_FLAG,
       ],
     },

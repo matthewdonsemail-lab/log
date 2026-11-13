@@ -18,7 +18,7 @@ export const CHECK_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account whose browser is open (`inspectStart` opens it)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         JSON_FLAG,
       ],
     },

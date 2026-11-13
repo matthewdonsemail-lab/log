@@ -215,7 +215,7 @@ export const SLACK_READ_INPUT: CommandInput = {
       positionals: [],
       flags: [
         SLACK_ACCOUNT,
-        { name: "chat", kind: "string", required: true, description: "The chat as matt says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
+        { name: "chat", kind: "string", required: true, description: "The chat as the owner says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
         SLACK_WORKSPACE,
         { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the latest messages, default 30, at most 1000" },
         JSON_FLAG,
@@ -286,7 +286,7 @@ export const SLACK_WATCH_INPUT: CommandInput = {
       flags: [
         SLACK_ACCOUNT,
         SLACK_WORKSPACE,
-        { name: "chat", kind: "string", description: "Only this chat (as matt says it) or its id" },
+        { name: "chat", kind: "string", description: "Only this chat (as the owner says it) or its id" },
         { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new DM, group message or mention of the account to the inbox hook" },
         JSON_FLAG,
@@ -394,12 +394,12 @@ export const SLACK_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         SLACK_ACCOUNT,
-        { name: "chat", kind: "string", required: true, description: "The chat as matt says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
-        { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
+        { name: "chat", kind: "string", required: true, description: "The chat as the owner says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
+        { name: "text", kind: "string", required: true, description: "The message, as the owner gave it" },
         SLACK_WORKSPACE,
         { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Slack, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Slack, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
     },

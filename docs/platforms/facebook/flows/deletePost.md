@@ -2,7 +2,7 @@
 
 Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live).
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/deletePost` (account deletePost). Run it on any account with `log flow run deletePost --account <a> --live`, or over MCP as the tool `flowDeletePost` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/deletePost` (account deletePost). Run it on any account with `log flow run deletePost --account <a> --live`, or over MCP as the tool `facebookFlowDeletePost` (rule 31).
 
 ## Params
 

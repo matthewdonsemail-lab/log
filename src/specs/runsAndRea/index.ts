@@ -99,7 +99,7 @@ export const runsAndRea = {
       { kind: 'value', file: verdict, name: 'RUNS_WARN_BYTES', equals: 2000000000 },
       { kind: 'value', file: verdict, name: 'DISK_WARN_BYTES', equals: 5000000000 },
       { kind: 'symbol', file: verdict, name: 'storageVerdict' },
-      { kind: 'string', file: verdict, includes: 'log runs prune --apply' },
+      { kind: 'string', file: verdict, includes: '`runsPrune` { apply: true }' },
       { kind: 'string', file: 'src/agentHooks/registry/index.ts', includes: 'scripts/hooks/storage.ts' },
     ],
   },

@@ -2,7 +2,7 @@
 
 Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live).
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/postComment` (account postComment). Run it on any account with `log flow run postComment --account <a> --live`, or over MCP as the tool `flowPostComment` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/postComment` (account postComment). Run it on any account with `log flow run postComment --account <a> --live`, or over MCP as the tool `facebookFlowPostComment` (rule 31).
 
 ## Params
 

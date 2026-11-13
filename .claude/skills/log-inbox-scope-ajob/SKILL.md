@@ -37,7 +37,7 @@ Say: **"go on docs/useCases/inbox/scopeAJob.md for <the person>"**. The agent re
 | 2 | Read the artefacts they sent, not just the message about them: open the spreadsheet, the doc, the tracker, and say what it actually shows | `read`, the file's own tool (an `.xlsx` through the spreadsheet skill), `mediaView` | each artefact's real content, and the gap between it and the message |
 | 3 | Pull how the owner really writes in that chat, before drafting a word | `voice` { to, with, context } with no text | his latest messages there, his real replies to things like it, and the chat's own length and burst |
 | 4 | Ask the open scope questions, as short lines in his shape, one question per line, and gate the whole draft | `voice` { to, with, context, text }, then the send | every line he would plausibly have typed, and `pass` |
-| 5 | Claim the chat and send it one message per line | `inboxClaim`, `discordSendLive` { channel, text, approvedBy: "matt", confirmLive: true } | the platform answers `sent` for every line |
+| 5 | Claim the chat and send it one message per line | `inboxClaim`, `discordSendLive` { channel, text, approvedBy: "<owner>", confirmLive: true } | the platform answers `sent` for every line |
 | 6 | Stay on it until the scope is closed: read their answer, ask the next thing, never a second question the first one already answered | the chat, read before every reply | what it is, what is done, what is blocked, what done looks like, and the constraints |
 | 7 | Tell the owner what the job now is, with the unknowns still in it named | the reply to the owner | one line per open question, and what only he can answer (usually the price) |
 
@@ -50,7 +50,7 @@ Only what the thread has not already answered. In practice, in this order:
 - **Whether the original still works.** For anything that has to match an original's behaviour, whether that original still runs on the current build. If it does not, parity cannot be measured, and that changes the job completely.
 - **What is actually in scope.** The part they first named is often not the whole thing, and sometimes not the part they are stuck on.
 - **What "done" is to them.** Finished to a stage, or a build they can run themselves. Their answer sets the size of the job, not the owner's guess.
-- **Money, last, and only as a fact.** What they can pay is a fact to bring back; the number to charge is the owner's call (rule 108).
+- **Money, last, and only as a fact.** What they can pay is a fact to bring back; the number to charge is the owner's call.
 
 ## Writing it so it goes out
 

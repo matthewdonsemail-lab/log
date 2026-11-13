@@ -1,6 +1,6 @@
 ---
 name: listingCopy
-description: Write a Marketplace listing's title, description and photos by the copy rules, each with a good and a bad version, from research on high-response classified and service ads. Use when matt asks for listing copy, a new listing, a rewrite, "the copy sucks", or before `log facebook listing create`.
+description: Write a Marketplace listing's title, description and photos by the copy rules, each with a good and a bad version, from research on high-response classified and service ads. Use when the owner asks for listing copy, a new listing, a rewrite, "the copy sucks", or before `log facebook listing create`.
 ---
 
 # listingCopy
@@ -24,7 +24,7 @@ Write these down first (D's method):
    price, and they take everything."
 3. The objection in the way: price, hassle, trust, time. The copy answers it.
 
-Facts the copy may claim only when matt has said they are true: same-day
+Facts the copy may claim only when the owner has said they are true: same-day
 pickup, licensed, insured, the towns served, each price. If one isn't known,
 leave it out; never guess it (E: be honest).
 
@@ -50,7 +50,7 @@ to get a price.
 | Prices as numbers (A, C) | `Small load (a few items): $99` | `Great prices!` / `Call for pricing` |
 | Never "cheap"; say "free quote" (B) | `Free quote from a photo` | `Cheapest junk removal in town` / `affordable` |
 | Say what happens next (A) | `1. Send a photo 2. Get your price 3. We load, haul and sweep up` | nothing about how it works |
-| Credentials and area only if true (A, C) | `Bethlehem, Allentown and Easton` (once matt confirms them) | `Licensed & insured` with no licence |
+| Credentials and area only if true (A, C) | `Bethlehem, Allentown and Easton` (once the owner confirms them) | `Licensed & insured` with no licence |
 | The call to action in the reader's words, naming what they get (D, A) | `Send a photo of the pile here and get your price` | `Contact us` / `Inquire within` |
 | Plain tone, no exclamation marks (B, D) | `We take it all and leave it swept.` | `Best service ever!!! Don't miss out!!!` |
 | Real urgency only, a fact (D) | `Pickup tomorrow if you message today` (only if true) | `Limited time offer!` |
@@ -87,7 +87,7 @@ What's wrong with it, rule by rule:
 - There's one price, and nothing about how it works.
 - The call to action, "message a photo", is the best idea in it, but it's buried at the end.
 
-**✅ Rewritten by the rules.** The parts in `[brackets]` need a fact from matt
+**✅ Rewritten by the rules.** The parts in `[brackets]` need a fact from the owner
 first; leave a line out if it isn't true.
 
 ```
@@ -115,7 +115,7 @@ How it works:
 [Bethlehem and the towns you cover]. [Same-day pickup when we have a slot, only if true.]
 ```
 
-## Versions: one ad, several ways to say it (rule 71)
+## Versions: one ad, several ways to say it
 
 An ad that goes out on more than one listing in a city carries **copy
 versions**: whole title-and-description pairs, each with its own angle (a

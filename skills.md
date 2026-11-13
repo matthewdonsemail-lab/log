@@ -26,11 +26,14 @@ skill in the same commit.
 | [`report`](skills/report/SKILL.md) | Show data as a report in the chat from log's block catalog (KPI tiles, bar and line charts, tables, people, callouts) with `report`, its numbers from log.db through `reportData` |
 | [`console`](skills/console/SKILL.md) | Read this machine's local console (Start, Connections, Usage, Events, AI clients, Settings) in the terminal, as JSON per screen, or as the web console on loopback with no sign-in: `log console`, `consoleStart` … `consoleSettings`, `log console --web` |
 | [`tregExtension`](skills/tregExtension/SKILL.md) | Find a treg endpoint by the job, read its price and params, and call it with the key held server-side; priced ones only when matt approves the spend (rule 166) |
-| [`warmup`](skills/warmup/SKILL.md) | Record the five warm-up activities headed, turn them into flows, run them in one open browser with an activity feed (rule 36) |
-| [`humanMouse`](skills/humanMouse/SKILL.md) | Make the cursor move like matt's hand (rule 32): record his mouse, fit `humanMouse.py`, measure ours with the same analyser |
-| [`inspect`](skills/inspect/SKILL.md) | Look at a Facebook page step by step in one gated Camoufox before writing code for it (rule 29): snapshot refs, screenshot, HAR and rea per step |
+| [`warmup`](skills/warmup/SKILL.md) | Record a platform's warm-up activities headed, turn them into flows, run them in one open browser with an activity feed: `log <platform> warmup stages` (rule 31) |
+| [`facebookWarmup`](skills/facebookWarmup/SKILL.md) | The Facebook part of `warmup`: the five Facebook activities, what each step must answer, likes, unmute and the Reels persona run |
+| [`humanMouse`](skills/humanMouse/SKILL.md) | Make the cursor move like the owner's hand: record their mouse, fit `humanMouse.py`, measure ours with the same analyser |
+| [`inspect`](skills/inspect/SKILL.md) | Look at a page on any platform step by step in the account's own gated browser before writing code for it (rule 29): snapshot refs, screenshot, HAR and rea per step |
+| [`facebookInspect`](skills/facebookInspect/SKILL.md) | The Facebook part of `inspect`: Facebook's pages and URLs, worked goal and finding examples, request docs, the mouse on Facebook |
 | [`flow`](skills/flow/SKILL.md) | Turn an inspect recording into a flow: docs, an XState machine, a `log flow run` command and an MCP tool, then run it on any account (rule 31) |
-| [`adsPower`](skills/adsPower/SKILL.md) | Give every Twenty account its AdsPower profile (`log adsPower sync`), check the Local API, add a browser driver (rule 42) |
+| [`facebookFlows`](skills/facebookFlows/SKILL.md) | The Facebook part of `flow`: Facebook's saved flows, their `facebookFlow<Name>` tools, what each must answer, Facebook's overlays |
+| [`adsPower`](skills/adsPower/SKILL.md) | Give every account its AdsPower profile (`log adsPower sync`), check the Local API, add a browser driver (rule 44) |
 | [`profileSetup`](skills/profileSetup/SKILL.md) | Give an account its profile picture and cover photo (`log facebook profile setup`, rule 28): dry run, read the page's controls, then `--live` |
 | [`agentHooks`](skills/agentHooks/SKILL.md) | Keep the CLI, MCP tools, agent hooks (Claude Code, Codex) and the live log in step (rule 55): add a hook, a command or a page state |
 | [`surfaceDocs`](skills/surfaceDocs/SKILL.md) | Keep the README command table (flags, MCP tool, hooks) and the Mermaid `.mmd` diagrams generated from the code (rule 56) |

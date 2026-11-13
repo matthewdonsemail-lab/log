@@ -1,6 +1,6 @@
 ---
 name: surfaceDocs
-description: Keep the command reference (docs/reference.md) and the Mermaid diagrams (docs/diagrams/*.mmd) generated from the code (rules 56, 103). Use when adding or changing a command, a flag, an MCP tool, a hook or a page state, or when `bun run check:docs` refuses a commit.
+description: Keep the command reference (docs/reference.md) and the Mermaid diagrams (docs/diagrams/*.mmd) generated from the code (rules 55, 103). Use when adding or changing a command, a flag, an MCP tool, a hook or a page state, or when `bun run check:docs` refuses a commit.
 ---
 
 # surfaceDocs
@@ -26,7 +26,7 @@ Everything comes from the code:
 `src/surface/readme` writes the section of `docs/reference.md` between
 `<!-- surface:start` and `<!-- surface:end -->`.
 
-log-cli is browser-agnostic (rule 59): no command summary or page heading
+log-cli is browser-agnostic: no command summary or page heading
 presents one browser as log-cli's. A command moved onto the driver goes from `CAMOUFOX_ONLY` to
 `OPENER_ACTIONS`, and the Browsers section and its diagram follow. The check
 parses every diagram with Mermaid (as GitHub does): text in a label, note or

@@ -206,11 +206,11 @@ export const INSTAGRAM_SEND_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
         { name: "with", kind: "string", required: true, description: "Who it goes to: their handle, a thread's name, or its id" },
-        { name: "text", kind: "string", description: "The message, as matt gave it; one message per line" },
+        { name: "text", kind: "string", description: "The message, as the owner gave it; one message per line" },
         { name: "photo", kind: "string", description: "A picture to send first (a meme, a screenshot): the file's path" },
         { name: "asOne", kind: "boolean", description: "Send the text as one message, never split" },
         { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
       groups: [{ rule: "atLeastOne", names: ["text", "photo"] }],

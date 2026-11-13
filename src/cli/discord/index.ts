@@ -144,7 +144,7 @@ export const DISCORD_READ_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id (a server channel by its id)" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id (a server channel by its id)" },
         { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the latest messages, default 20, at most 1000, read 100 a page as Discord's app scrolls back" },
         { name: "after", kind: "string", description: "Only messages after this message id" },
         { name: "noMedia", kind: "boolean", description: "Text only: skip saving images and files and transcribing voice notes, for a fast read of a busy channel" },
@@ -295,7 +295,7 @@ export const DISCORD_WATCH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", description: "Only this chat (as matt says it) or channel id" },
+        { name: "channel", kind: "string", description: "Only this chat (as the owner says it) or channel id" },
         { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new DM, group message, mention or reply to the account to the inbox hook" },
         JSON_FLAG,
@@ -415,10 +415,10 @@ export const DISCORD_DELETE_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id" },
         { name: "message", kind: "list", required: true, pattern: "^\\d{15,22}$", takes: "Discord message ids (15 to 22 digits)", refusal: "messageInvalid", description: "The message id to delete, or several separated by commas (ids from log discord read)" },
         { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
-        { name: "live", kind: "boolean", live: true, description: "Delete on Discord, only when matt asked (rule 8); without it a dry run deletes nothing" },
+        { name: "live", kind: "boolean", live: true, description: "Delete on Discord, only when the owner asked (rule 8); without it a dry run deletes nothing" },
         JSON_FLAG,
       ],
     },
@@ -525,14 +525,14 @@ export const DISCORD_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         DISCORD_ACCOUNT,
-        { name: "channel", kind: "string", required: true, description: "The chat as matt says it (\"the log group\", \"wren\", \"the partners group\"), matched to one DM or group; or a channel id" },
-        { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
+        { name: "channel", kind: "string", required: true, description: "The chat as the owner says it (\"the log group\", \"wren\", \"the partners group\"), matched to one DM or group; or a channel id" },
+        { name: "text", kind: "string", required: true, description: "The message, as the owner gave it" },
         { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
         { name: "file", kind: "list", description: "Files to attach to the last message, comma-separated paths under OUTBOX or ~/.logCli, at most 10 MB each" },
         { name: "brief", kind: "boolean", description: "The message hands someone a task: gated as a brief (clear, why, done when, kind, how to ask), not as casual chat (rule 162)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
-        { name: "overGate", kind: "boolean", description: "matt said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "overGate", kind: "boolean", description: "the owner said to send this exact message over the voice gate's refusal: its SubQ read is skipped, the AI artifact check still runs; only when he said so for this message (rule 152)" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Discord, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
     },
@@ -743,7 +743,7 @@ export const DISCORD_CHANNELS_INPUT: CommandInput = {
     words: [],
     summary: "One server's channels by category, each with its kind",
     positionals: [],
-    flags: [DISCORD_ACCOUNT, { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" }, JSON_FLAG],
+    flags: [DISCORD_ACCOUNT, { name: "server", kind: "string", required: true, description: "The server by its name, as the owner says it" }, JSON_FLAG],
   }],
 };
 
@@ -863,7 +863,7 @@ export const DISCORD_SEARCH_INPUT: CommandInput = {
     positionals: [],
     flags: [
       DISCORD_ACCOUNT,
-      { name: "server", kind: "string", required: true, description: "The server by its name, as matt says it" },
+      { name: "server", kind: "string", required: true, description: "The server by its name, as the owner says it" },
       { name: "query", kind: "string", required: true, description: "The words to look for" },
       { name: "channel", kind: "string", description: "Only this channel, as \"<server> #<channel>\"" },
       { name: "from", kind: "string", description: "Only messages from this person, by their name" },

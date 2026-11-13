@@ -265,7 +265,7 @@ export const redditReadCommand: Command = {
 const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function liveFlag(what: string): FlagSpec {
-  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when matt asked (rule 8); without it a dry run sends nothing` };
+  return { name: "live", kind: "boolean", live: true, description: `${what} on Reddit, only when the owner asked (rule 8); without it a dry run sends nothing` };
 }
 
 interface RedditWrite {

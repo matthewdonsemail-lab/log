@@ -26,7 +26,7 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
 
   test("Messenger's Create PIN runs the recorded flow when the PIN is in Twenty, and is matt's when it isn't", () => {
     const text = "- heading \"Create a PIN to access your chats on any device\" [ref=e3]";
-    expect(browserView(at("https://www.facebook.com/messages/", text, { messengerPin: true })).next).toEqual({ tool: "flowMessengerPinCreateLive", input: { account: "bethlehem", confirmLive: true } });
+    expect(browserView(at("https://www.facebook.com/messages/", text, { messengerPin: true })).next).toEqual({ tool: "facebookFlowMessengerPinCreateLive", input: { account: "bethlehem", confirmLive: true } });
     const without = browserView(at("https://www.facebook.com/messages/", text));
     expect(without.next).toBeNull();
     expect(without.needsMatt).toContain("messenger pin");

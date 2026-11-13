@@ -37,7 +37,7 @@ ensureLiveWatchers('instagram', twitterAccounts(platformStateRoot('instagram')).
 ensureLiveWatchers('model', ['describer'], () => startDescriber(repo))
 
 const alerts = takeAlerts(hookReaderOf(raw))
-const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 131): a second watcher tried to start and was refused. Every Claude session shares the one watcher per account through the inbox; never start another. Tell matt now.', ...alerts].join('\n') : ''
+const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 105): a second watcher tried to start and was refused. Every session shares the one watcher per account through the inbox; another is never started. The owner is told now.', ...alerts].join('\n') : ''
 const fresh = takePending(hookReaderOf(raw)).map((m) => ({ ...m, text: inboxTextWithVoiceNotes(m) }))
 const pushed = inboxContext(fresh)
 const claims = claimContext(fresh)

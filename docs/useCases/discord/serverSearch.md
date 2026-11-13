@@ -1,6 +1,6 @@
 # Finding a conversation in a Discord server
 
-Find what someone said in a server, or a conversation matt had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with <someone> about <a topic> in the <server> server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
+Find what someone said in a server, or a conversation the owner had there, with Discord's own search across every channel, forum post and thread at once, then read around it. This is how "the conversation I had with <someone> about <a topic> in the <server> server" is found in one search instead of reading a channel back hundreds of messages. This page reads and sends nothing.
 
 How the owner asks for it: "find the conversation I had with <someone> in <server> about <thing>", "what did <someone> say in <server> about <thing>", "search <server> for <words>", "read through the <server> server and find <thing>"
 
@@ -14,9 +14,9 @@ Say: **"go on docs/useCases/discord/serverSearch.md for <server>, looking for <w
 ```mermaid
 flowchart TD
   s0["1. Search the server for the subject, narrowed to the person when…<br/><i>discordSearch</i>"]
-  s1["2. When nothing comes back, search again with other words matt or…<br/><i>discordSearch</i>"]
+  s1["2. When nothing comes back, search again with other words the owne…<br/><i>discordSearch</i>"]
   s2["3. Read the conversation around the hit, text only, in the channel…<br/><i>discordRead</i>"]
-  s3["4. Tell matt what was said<br/><i>the reply to matt</i>"]
+  s3["4. Tell the owner what was said<br/><i>the reply to the owner</i>"]
   s0 --> s1
   s1 --> s2
   s2 --> s3
@@ -25,10 +25,10 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Search the server for the subject, narrowed to the person when matt names one | `discordSearch` { account, server: "<server>", query: "<words>", from: "<who>" } | hits with their time, author, text and where each one is (`"<server> #<channel>"` or a post) |
-| 2 | When nothing comes back, search again with other words matt or they would have used | `discordSearch` { account, server: "<server>", query: "<other words>" } | the hit, or two searches with nothing |
+| 1 | Search the server for the subject, narrowed to the person when the owner names one | `discordSearch` { account, server: "<server>", query: "<words>", from: "<who>" } | hits with their time, author, text and where each one is (`"<server> #<channel>"` or a post) |
+| 2 | When nothing comes back, search again with other words the owner or they would have used | `discordSearch` { account, server: "<server>", query: "<other words>" } | the hit, or two searches with nothing |
 | 3 | Read the conversation around the hit, text only, in the channel or post it names | `discordRead` { account, channel: "<where the hit is>", limit: 60, noMedia: true } | the whole exchange: what was asked and every answer |
-| 4 | Tell matt what was said | the reply to matt | who said what, when (matt's time), quoted closely, and what it means for what he asked |
+| 4 | Tell the owner what was said | the reply to the owner | who said what, when (the owner's time), quoted closely, and what it means for what the owner asked |
 
 ## What to know
 

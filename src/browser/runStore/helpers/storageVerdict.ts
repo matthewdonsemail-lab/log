@@ -2,7 +2,7 @@ export const RUNS_WARN_BYTES = 2e9
 
 export const DISK_WARN_BYTES = 5e9
 
-export const PRUNE_ADVICE = 'See what may go with `log runs`, then `log runs prune --apply`: it deletes only runs rea has settled and the request docs hold, keeping the findings.md, steps.jsonl and domains.'
+export const PRUNE_ADVICE = 'The MCP tool `runsList` shows what may go, and `runsPrune` { apply: true } deletes only runs rea has settled and the request docs hold, keeping the findings.md, steps.jsonl and domains.'
 
 const gb = (bytes: number) => `${(bytes / 1e9).toFixed(1)} GB`
 

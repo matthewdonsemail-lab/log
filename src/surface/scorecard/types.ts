@@ -84,10 +84,12 @@ export interface ScorecardInput {
   useCases: readonly UseCaseText[];
   guides: Readonly<Record<string, string>>;
   serverInstructions: string;
+  hostedInstructions: string;
   hookTypes: string;
   ruleIds: ReadonlySet<number>;
   useCaseFiles: readonly SourceText[];
   skillFiles: readonly SourceText[];
+  hookFiles: readonly SourceText[];
   codeFiles: readonly SourceText[];
   declaredFlags: readonly DeclaredFlag[];
   hasMachine: (command: ScoredCommand) => boolean;

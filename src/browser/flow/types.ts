@@ -54,6 +54,7 @@ export type FlowEffect = 'write' | 'delete'
 
 export interface FlowDefinition {
   name: string
+  platform?: string
   summary: string
   effect?: FlowEffect
   params: FlowParam[]

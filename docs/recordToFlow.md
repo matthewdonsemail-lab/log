@@ -14,7 +14,7 @@ It works on every platform with a browser path (Facebook, Reddit). Every run pas
 | 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/browser/flow/definitions/<n>.json`: each step's element by role and name, the request that confirms each step, and the parameters. Plus its doc in `docs/platforms/facebook/flows/<n>.md`. |
 | 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, and `failed` on the first step that fails. |
 | 6. Run | `log flow run <n> --account <a> --set k=v … [--live]` | A dry run lists the filled-in steps. `--live` runs the machine through an inspect session, so the run is recorded and mapped again. |
-| 7. MCP | the `log` MCP server | Every saved flow becomes its own tool (for example `flowProfileSetup`), with parameters by name. The live version needs `confirmLive`. |
+| 7. MCP | the `log` MCP server | Every saved flow becomes its own tool (for example `facebookFlowProfileSetup`), with parameters by name. The live version needs `confirmLive`. |
 
 ## Inspect actions
 

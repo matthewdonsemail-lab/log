@@ -72,7 +72,7 @@ export function catalogTools(): LogTool[] {
       title: "Run a log command by its id",
       description: [
         `Run a command by its id with its inputs, exactly as ${GET_TOOL} lists them. It goes through the same checks as the command's own tool: an unknown input is refused by name with the ones it takes, and nothing runs.`,
-        "Read-only unless live: true, which needs confirmLive: true and only when matt asked for this live run (rules 8, 10). Outside an account's hours only with confirmBypass: true, when matt asked (rule 20). A long run comes back as a job past waitMs: follow it with jobStatus.",
+        "Read-only unless live: true, which needs confirmLive: true and only when the owner asked for this live run (rule 8). Outside an account's hours only with confirmBypass: true, when the owner asked (rule 35). A long run comes back as a job past waitMs: follow it with jobStatus.",
         ...tail(CALL_TOOL),
       ].join("\n"),
       annotations: annotationsOf("write", true, "Run a log command by its id"),
@@ -81,9 +81,9 @@ export function catalogTools(): LogTool[] {
         properties: {
           id: { type: "string", description: `The command's id from ${SEARCH_TOOL} or ${GET_TOOL}` },
           inputs: { type: "object", description: `The command's inputs by name, as ${GET_TOOL} lists them` },
-          live: { type: "boolean", description: "Run the live form that acts on the platform; only when matt asked" },
-          confirmLive: { type: "boolean", description: "Set true only when matt asked for this live run" },
-          confirmBypass: { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" },
+          live: { type: "boolean", description: "Run the live form that acts on the platform; only when the owner asked" },
+          confirmLive: { type: "boolean", description: "Set true only when the owner asked for this live run" },
+          confirmBypass: { type: "boolean", description: "Set true only when the owner asked for a run outside the account's local waking hours (rule 20)" },
           waitMs: { type: "integer", description: "How long this call waits for a long run, in ms (default 20000, at most 50000); past it the run comes back as a job" },
         },
         required: ["id"],

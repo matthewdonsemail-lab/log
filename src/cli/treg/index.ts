@@ -42,7 +42,7 @@ export const TREG_INPUT: CommandInput = {
         { name: "where", kind: "list", pattern: "^[^=]+=", takes: "key=value pairs", refusal: "tregTrimInvalid", description: "Keep only rows whose key equals the value, comma-separated, e.g. isReply=false" },
         { name: "raw", kind: "boolean", description: "Keep treg's raw provider copy in the answer (dropped by default, it repeats output)" },
         APPROVED_BY,
-        { name: "live", kind: "boolean", live: true, description: "Spend on a priced endpoint, only when matt asked (rule 41); a free one runs without it" },
+        { name: "live", kind: "boolean", live: true, description: "Spend on a priced endpoint, only when the owner asked (rule 41); a free one runs without it" },
         JSON_FLAG,
       ],
     },
@@ -71,7 +71,7 @@ export const tregCommand: Command = {
   name: "treg",
   effect: "read",
   input: TREG_INPUT,
-  summary: "The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when matt asked)",
+  summary: "The treg extension: find an endpoint by the job, read it, and call it with the key injected server-side (free ones run, priced ones only when the owner asked)",
   args: "search \"<job>\"|get <id>|call <id> [--params <json>] [--approvedBy <who>] [--live] [--json]",
   async run(context, argv) {
     const sub = SUBS.find((s) => s === argv[0]);

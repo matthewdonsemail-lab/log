@@ -49,7 +49,8 @@ export const flows = {
     'REQ-FLOW-08': [
       { kind: 'value', file: 'src/mcp/server/helpers/toolAnnotations.ts', name: 'LIVE_SUFFIX', equals: 'Live' },
       { kind: 'symbol', file: 'src/mcp/server/helpers/toolsFromFlows.ts', name: 'toolsFromFlows' },
-      { kind: 'symbol', file: 'src/browser/flow/helpers/renderFlowDoc.ts', name: 'toolName' },
+      { kind: 'symbol', file: 'src/browser/flow/helpers/flowPlatform.ts', name: 'flowToolName' },
+      { kind: 'symbol', file: 'src/browser/flow/helpers/flowPlatform.ts', name: 'flowPlatform' },
     ],
     'REQ-FLOW-09': [
       { kind: 'symbol', file: match, name: 'pick' },
@@ -84,7 +85,7 @@ export const flows = {
     'REQ-FLOW-05': noul('Does writeFlowDoc write <name>.md into the flow docs folder, and does checkFacebookClientDocs report a problem for every JSON file in the flow definitions folder that has no matching doc in the flows docs folder?'),
     'REQ-FLOW-06': noul('Does createFlowMachine make one state per flow step, in order, where a step whose output is not ok, or whose actor throws, goes to the final state failed and records failedAt?'),
     'REQ-FLOW-07': noul('Does runFlow return the list of steps without opening any browser when the live flag is not set, and only open the account and run the flow in its session when it is set?'),
-    'REQ-FLOW-08': noul('Does toolsFromFlows make two MCP tools for every saved flow, one named toolName(flow.name) that is a dry run and one with LIVE_SUFFIX added that runs it?'),
+    'REQ-FLOW-08': noul('Does toolsFromFlows make two MCP tools for every saved flow, one named flowToolName(flow), its platform from the definition followed by Flow and the flow name (facebookFlowPostComment), that is a dry run, and one with LIVE_SUFFIX added that runs it; and does RENAMED_FLOW_TOOLS keep each old flow<Name> name as an unlisted alias?'),
     'REQ-FLOW-09': noul('Does pick match a candidate only when its role equals the role of the step and one of aria, label, text or placeholder equals the name of the step, both compared after norm collapses whitespace and casefolds?'),
     'REQ-FLOW-10': noul('When within is given, does pick keep only candidates whose dialog equals within, and when within is not given and some match has a dialog, does it keep only the matches inside a dialog?'),
     'REQ-FLOW-11': noul('After narrowing by exact accessible name, enabled, not aria-hidden and hit, does pick return code controlAmbiguous when more than one candidate is left, rather than taking the first?'),

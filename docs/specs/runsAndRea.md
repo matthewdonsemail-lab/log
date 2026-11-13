@@ -92,6 +92,6 @@ Checked by: code and SubQ
 
 ### REQ-RUNS-14: The storage hook warns before the disk fills
 
-An agent hook says so, with `log runs prune`, when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free.
+An agent hook says so, naming the MCP tools `runsList` and `runsPrune` { apply: true }, when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free.
 
 Checked by: code and SubQ

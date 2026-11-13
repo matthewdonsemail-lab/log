@@ -17,7 +17,7 @@ export const warmupCommand: Command = {
   platform: "byArgument",
   name: "warmup",
   effect: "browser",
-  summary: "The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60)",
+  summary: "The warm-up, by platform and activity: `log <platform> warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written)",
   args: "<platform> <activity> [plan|record|run|log|persona] [--account <a>] [--live] [--likes] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["likes", "bypass", "now", "follow", "json", "live", "persona", "newPersona"], valued: ["account", "only", "gapSeconds", "lines", "seconds", "reels", "watch", "skip", "comments", "profile", "seed", "trafficMb", "posts"] });

@@ -5,8 +5,8 @@ import type { Command, CommandInput } from "../runner/types.ts";
 
 export const REPORT_USAGE = [
   "Usage: log report data --source twitterDmsBySender [--account <accountName>] [--since <7d|4w|12h|2026-11-01>] [--limit <n>] [--json]",
-  "The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. twitterDmsBySender counts who messaged the X account in its one-to-one DMs (old DM thread and X Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. It holds only what log.db has: run twitterDms first if the inbox may be behind.",
-  "--account keeps one X account (default every X account in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.",
+  "The numbers behind a report, read from log.db only: no platform call, no governor use, nothing sent. twitterDmsBySender counts who messaged the account in its one-to-one DMs (the old DM thread and the Chat thread with one person counted as one, a message mirrored into both counted once; group chats left out), most messages first, with each person's first and last message time, the totals and the count per day. It holds only what log.db has: run twitterDms first if the inbox may be behind.",
+  "--account keeps one account (default every account the source covers in log.db). --since keeps messages from that date or span on. --limit is how many people to list, default 20, at most 200; the totals count everyone.",
   'Show it with the MCP tool report (getGuide({ topic: "ui" })): an MCP Apps host draws it inline, any other host gets markdown with unicode bars.',
 ].join("\n");
 
@@ -15,7 +15,7 @@ export const REPORT_INPUT: CommandInput = {
     {
       words: ["data"],
       effect: "read",
-      summary: "The numbers behind a report, from log.db only: who messaged an X account in DMs and how many messages, per person and per day",
+      summary: "The numbers behind a report, from log.db only: who messaged an account in DMs and how many messages, per person and per day, by source",
       positionals: [],
       flags: [
         { name: "source", kind: "enum", values: SENDER_SOURCES, required: true, description: "What to count: twitterDmsBySender, who messaged the X account in one-to-one DMs" },
@@ -44,7 +44,7 @@ export const reportCommand: Command = {
   name: "report",
   effect: "read",
   input: REPORT_INPUT,
-  summary: "The numbers behind a report, read from log.db only (who messaged an X account and how often), for the MCP report view",
+  summary: "The numbers behind a report, read from log.db only (who messaged an account and how often, by source), for the MCP report view",
   args: "data --source twitterDmsBySender [--account <a>] [--since <span|date>] [--limit <n>] [--json]",
   async run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(REPORT_INPUT));

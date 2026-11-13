@@ -13,10 +13,10 @@ import type { CommandContext, CommandResult } from "../../runner/types.ts";
 export const stagesDeps = { flowsDir: FLOWS_DIR };
 
 export const STAGES_USAGE = [
-  "       log facebook warmup stages plan",
-  "       log facebook warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
-  "       log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapSeconds <n>] [--bypass] [--now]",
-  "       log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
+  "       log <platform> warmup stages plan",
+  "       log <platform> warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
+  "       log <platform> warmup stages run --account <accountName> [--only …] [--likes] [--gapSeconds <n>] [--bypass] [--now]",
+  "       log <platform> warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
 ].join("\n");
 
 const runName = (dir: string) => dir.split(/[\\/]/).filter(Boolean).pop() ?? dir;

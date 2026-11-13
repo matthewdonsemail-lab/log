@@ -3,7 +3,7 @@ import type { BrowserView } from "../../browser/inspect/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
-export const BROWSERS_USAGE = "Usage: log browsers [--json]   (every open browser: its step and page, the known page state it sits on, the call that resolves it, and what only matt can clear)";
+export const BROWSERS_USAGE = "Usage: log browsers [--json]   (every open browser: its step and page, the known page state it sits on, the call that resolves it, and what only the owner can clear)";
 
 export const BROWSERS_INPUT: CommandInput = {
   forms: [{ words: [], summary: "Where every open browser is, and what resolves its page", positionals: [], flags: [JSON_FLAG] }],
@@ -31,7 +31,7 @@ export const browsersCommand: Command = {
   name: "browsers",
   effect: "read",
   input: BROWSERS_INPUT,
-  summary: "Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55)",
+  summary: "Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only the owner can clear (rule 35)",
   args: "[--json]",
   run(_context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(BROWSERS_INPUT));

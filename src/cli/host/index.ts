@@ -29,9 +29,9 @@ export const HOST_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account" },
-        { name: "live", kind: "boolean", live: true, description: "Profile, name and location on Facebook, only when matt asked (rule 8)" },
-        { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when matt asked (rule 8)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "live", kind: "boolean", live: true, description: "Profile, name and location on Facebook, only when the owner asked (rule 8)" },
+        { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when the owner asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "gapSeconds", kind: "integer", min: 0, max: 36_000, description: "Seconds between warm-up activities (default 10)" },
         { name: "watchMinutes", kind: "integer", min: 0, max: 600, description: "Minutes between watch checks (default 12)" },

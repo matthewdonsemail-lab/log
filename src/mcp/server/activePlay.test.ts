@@ -21,7 +21,7 @@ describe("the active play", () => {
     expect(stepsOf(page("facebook/groups")).map((s) => s.tools[0])).toEqual(["facebookJoin", "facebookReadGroup", "facebookPoll", "facebookReadMembers"]);
     const listings = stepsOf(page("facebook/marketplaceListings"));
     expect(listings.length).toBe(15);
-    expect(listings.some((s) => s.tools.includes("flowMarketplaceListingPublishLive"))).toBe(true);
+    expect(listings.some((s) => s.tools.includes("facebookFlowMarketplaceListingPublishLive"))).toBe(true);
   });
 
   test("loading a use case makes it the play, and each answer names its step and the next", () => {
@@ -101,18 +101,18 @@ describe("a play unlocks only the sends it covers", () => {
   const flows = savedFlows();
   const pages = listUseCases();
   const acting = actingAsOwnerTools(COMMANDS, flows);
-  const UNNAMED = ["discordDeleteLive", "flowDeletePostLive", "flowPostCommentLive", "flowProfilePhotoPostLive", "flowProfilePostLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
+  const UNNAMED = ["discordDeleteLive", "facebookFlowDeletePostLive", "facebookFlowPostCommentLive", "facebookFlowProfilePhotoPostLive", "facebookFlowProfilePostLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
   const gate = (tool: string, play: ActivePlay | null) => {
     const platform = platformOfTool(tool, COMMANDS, flows);
     return playRefusal(tool, { mode: playGateMode(tool, acting, pages, platform), platform, useCases: [], play });
   };
 
   test("acting as the owner is derived from each tool's effect, with its platform", () => {
-    const ungatedOnMain = ["twitterPostLive", "twitterLikeLive", "twitterRepostLive", "twitterFollowLive", "twitterReactLive", "redditPostLive", "redditReplyLive", "discordDeleteLive", "discordReactLive", "discordVoiceLive", "slackReactLive", "slackVoiceLive", "instagramReactLive", "instagramVoiceLive", "flowPostCommentLive", "flowProfilePostLive", "flowProfilePhotoPostLive", "flowDeletePostLive"];
+    const ungatedOnMain = ["twitterPostLive", "twitterLikeLive", "twitterRepostLive", "twitterFollowLive", "twitterReactLive", "redditPostLive", "redditReplyLive", "discordDeleteLive", "discordReactLive", "discordVoiceLive", "slackReactLive", "slackVoiceLive", "instagramReactLive", "instagramVoiceLive", "facebookFlowPostCommentLive", "facebookFlowProfilePostLive", "facebookFlowProfilePhotoPostLive", "facebookFlowDeletePostLive"];
     for (const tool of [...PLAY_GATED_ON_MAIN, ...ungatedOnMain]) expect(acting.has(tool)).toBe(true);
-    for (const tool of ["twitterDm", "twitterDms", "discordRead", "tregCallLive", "inspectDoLive", "flowGroupTabsLive", "warmupLive"]) expect(acting.has(tool)).toBe(false);
+    for (const tool of ["twitterDm", "twitterDms", "discordRead", "tregCallLive", "inspectDoLive", "facebookFlowGroupTabsLive", "warmupLive"]) expect(acting.has(tool)).toBe(false);
     expect(platformOfTool("twitterPostLive", COMMANDS, flows)).toBe("twitter");
-    expect(platformOfTool("flowPostCommentLive", COMMANDS, flows)).toBe("facebook");
+    expect(platformOfTool("facebookFlowPostCommentLive", COMMANDS, flows)).toBe("facebook");
   });
 
   test("the acting tools no use case names are exported, and are what this fixture expects", () => {
@@ -122,7 +122,7 @@ describe("a play unlocks only the sends it covers", () => {
   });
 
   test("with no play loaded, a tool ungated on main runs past the play gate", () => {
-    for (const tool of ["twitterPostLive", "twitterRepostLive", "discordDeleteLive", "redditPostLive", "flowPostCommentLive"]) expect(gate(tool, null)).toBeNull();
+    for (const tool of ["twitterPostLive", "twitterRepostLive", "discordDeleteLive", "redditPostLive", "facebookFlowPostCommentLive"]) expect(gate(tool, null)).toBeNull();
     expect(playGateMode("twitterPostLive", acting, pages, "twitter")).toBe("ifPlay");
     expect(playGateMode("twitterDms", acting, pages, null)).toBe("none");
   });
@@ -185,7 +185,7 @@ describe("a play unlocks only the sends it covers", () => {
   });
 
   test("a hand-run flowLive of an acting flow is gated as that flow's tool", () => {
-    expect(gatedToolOf("flowLive", { args: ["run", "postComment", "--account", "a"] }, savedFlows())).toBe("flowPostCommentLive");
+    expect(gatedToolOf("flowLive", { args: ["run", "postComment", "--account", "a"] }, savedFlows())).toBe("facebookFlowPostCommentLive");
     expect(gatedToolOf("flowLive", { args: ["run", "groupTabs", "--account", "a"] }, savedFlows())).toBe("flowLive");
   });
 

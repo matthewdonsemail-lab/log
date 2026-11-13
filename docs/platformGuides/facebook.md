@@ -49,4 +49,4 @@ There is no separate session check: `log facebook check --account <a>` shows whe
 ## Full detail
 
 - [Reference](../reference.md): every command, flag and MCP tool.
-- Agent guides: [Marketplace](../guides/facebookMarketplace.md), [groups](../guides/facebookGroups.md), [the account's browser](../guides/facebookBrowser.md), [flows and warm-up](../guides/facebookFlows.md), [accounts and proxies](../guides/accountsAndProxies.md).
+- Agent guides: [Marketplace](../guides/facebookMarketplace.md), [groups](../guides/facebookGroups.md), [the account's browser](../guides/facebookBrowser.md), [flows and warm-up](../guides/facebookFlows.md). Shared with every platform: [the account's browser on any platform](../guides/accountBrowser.md), [sessions](../guides/sessions.md), [flows](../guides/flows.md), [proxies and the launcher](../guides/accountsAndProxies.md).

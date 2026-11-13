@@ -35,9 +35,9 @@ flowchart LR
 
 - **Imported** into Twenty with its home town, cookies and two-step secret.
 - **Proxy:** a residential proxy near the home town, checked for country and distance before it's saved.
-- **Location:** typing "City, ST" can be offered as a different place entirely (a town of the same name abroad), and a bare zip can be offered as another country first. So locations are always typed with the state written out, "City, State" (rules 68 and 72, [spec](https://github.com/matthewdonsemail-lab/log/blob/main/docs/specs/marketplaceLocation.md)).
+- **Location:** typing "City, ST" can be offered as a different place entirely (a town of the same name abroad), and a bare zip can be offered as another country first. So locations are always typed with the state written out, "City, State" ([spec](https://github.com/matthewdonsemail-lab/log/blob/main/docs/specs/marketplaceLocation.md)).
 - **Listing:** the service, a price and photos. Facebook's create answer returns the listing id, under review at first, and Twenty marks it UNDER_REVIEW, then live.
-- **Taken down** when needed: the delete answer names the listing id, and the row becomes REMOVED (rows are never deleted, rule 13).
+- **Taken down** when needed: the delete answer names the listing id, and the row becomes REMOVED (rows are never deleted).
 
 Count the cost per account (the account, its proxy traffic, the browser profile) against what one lead is worth before scaling to many towns.
 
@@ -59,17 +59,17 @@ Every Facebook command starts with the platform (`log facebook …`), and each h
 | 9 | Location | `inspectDoLive` | the location save's answer names the town | `log inspect do setLocation "<City>, <State>" --live` (the host does it) |
 | 10 | Warm-up | `warmup`, `warmupLive` | the five browsing activities each see their own answer; then 24 h before it's ready | `log facebook warmup stages run`, `log facebook warmup reel` |
 | 11 | Copy | `facebookListingCreate`, `facebookListingLint` | an ad on more than one listing in a city: at least 3 versions and one per listing live there, every two titles at least half different (the city not counted); `campaign fill` refuses too few (`notEnoughCopyVersions`) | `log facebook listing create`, `listing lint` |
-| 12 | Publish | `flowMarketplaceListingPublishLive` | the create answer returns the listing id | `log flow run marketplaceListingPublish --account <a> --live` |
+| 12 | Publish | `facebookFlowMarketplaceListingPublishLive` | the create answer returns the listing id | `log flow run marketplaceListingPublish --account <a> --live` |
 | 13 | Many towns | `facebookCampaign`, `facebookCampaignLive` | one copy per account, a lost account's copy handed to another in the same area | `log facebook campaign fill`, `run`, `heal` |
 | 14 | Watch | `facebookCheck` | each listing's state and clicks from the Selling page, into `agencyListings` | the host, every 12 minutes, or `log facebook check` |
-| 15 | Take down | `facebookListingRemoveLive`, `flowMarketplaceListingDeleteLive` | the delete answer names the listing | `log facebook listing remove <id> --live` |
+| 15 | Take down | `facebookListingRemoveLive`, `facebookFlowMarketplaceListingDeleteLive` | the delete answer names the listing | `log facebook listing remove <id> --live` |
 
 ## What keeps an account safe
 
-- **One browser a day.** The host opens each account's browser once per local day and keeps it open; every action is a tab in it (rule 35). On top of that, an account's browser opens at most 8 times a day, 10 minutes apart (rule 24).
-- **The proxy first.** No browser opens without a proxy in the account's home country (rule 12).
-- **Local hours.** Nothing runs outside 08:00–22:00 in the account's home town unless the owner asks (rules 18 and 20).
-- **The same device every time.** Each account keeps one fingerprint (rule 15).
+- **One browser a day.** The host opens each account's browser once per local day and keeps it open; every action is a tab in it (rule 35). On top of that, an account's browser opens at most 8 times a day, 10 minutes apart (rule 35).
+- **The proxy first.** No browser opens without a proxy in the account's home country (rule 35).
+- **Local hours.** Nothing runs outside 08:00–22:00 in the account's home town unless the owner asks (rule 35).
+- **The same device every time.** Each account keeps one fingerprint (rule 35).
 - **Recorded.** Every step is recorded, and Facebook's own answers decide what happened, never the screen (rule 73).
 
 ## What log-cli does underneath
@@ -90,7 +90,7 @@ flowchart LR
 
 ## When accounts are lost
 
-Not every account makes it. Some are lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings go to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). A checkpointed account is deactivated and gives its browser profile back (rules 78 and 82).
+Not every account makes it. Some are lost before or after their first listing: a video selfie, a wrong password, or an identity check on a live listing. Their listings go to ACCOUNT_LOST, and a campaign hands each lost copy to another account in the same area (`log facebook listing sweep`). A checkpointed account is deactivated and gives its browser profile back.
 
 ## Next
 

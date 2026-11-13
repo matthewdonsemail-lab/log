@@ -7,7 +7,7 @@ import { COMMANDS } from "../../cli/runner/index.ts";
 import { COMMAND_INDEX } from "../../cli/runner/helpers/commandIndex.ts";
 import { reportTool } from "../../mcp/apps/report/index.ts";
 import { catalogTools } from "../../mcp/catalog/index.ts";
-import { agentsRules, commandTools, GUIDE_TOPICS, guideOfCommand, guideTool, listUseCases, playRequiredTools, SERVER_INSTRUCTIONS, unnamedActingTools, toolsFromCommands, toolsFromFlows, withUseCases } from "../../mcp/server/helpers/index.ts";
+import { agentsRules, commandTools, HOSTED_INSTRUCTIONS_FILE, GUIDE_TOPICS, guideOfCommand, guideTool, listUseCases, playRequiredTools, SERVER_INSTRUCTIONS, unnamedActingTools, toolsFromCommands, toolsFromFlows, withUseCases } from "../../mcp/server/helpers/index.ts";
 import { NOTES } from "../../mcp/server/helpers/toolsFromCommands.ts";
 import { hasMachine, measure } from "./helpers/index.ts";
 import type { Metric, ScoredCommand, ScorecardInput, SourceText, ToolText } from "./types.ts";
@@ -63,10 +63,12 @@ export function repoInput(root: string = REPO_ROOT): ScorecardInput {
     useCases,
     guides,
     serverInstructions: SERVER_INSTRUCTIONS,
+    hostedInstructions: existsSync(join(root, HOSTED_INSTRUCTIONS_FILE)) ? text(join(root, HOSTED_INSTRUCTIONS_FILE)) : "",
     hookTypes: text(join(root, "src/agentHooks/registry/types.ts")),
     ruleIds: new Set(agentsRules(text(join(root, "AGENTS.md"))).keys()),
     useCaseFiles: filesIn(root, "docs/useCases", [".md"]),
     skillFiles: filesIn(root, "skills", [".md"]),
+    hookFiles: [...filesIn(root, "src/agentHooks", [".ts"]), ...filesIn(root, "src/observability/liveLog", [".ts"]), ...filesIn(root, "src/mcp/freshness", [".ts"]), ...filesIn(root, "scripts/hooks", [".ts"])].filter((f) => !f.path.endsWith(".test.ts")),
     codeFiles: [...filesIn(root, "src", [".ts", ".tsx", ".mjs", ".js"]), ...filesIn(root, "scripts", [".ts", ".mjs", ".js"])],
     declaredFlags: COMMANDS.flatMap((command) => {
       const entry = modules.get(`${command.platform}:${command.name}`);

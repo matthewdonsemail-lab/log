@@ -1,6 +1,6 @@
 ---
 name: personaPicture
-description: Draw random personas from the warm-up datasets, store them in media/personas/personas.jsonl with each one's characteristics and image prompt, generate each one's profile picture in the low-angle selfie style through treg, and have SubQ check it matches the persona, regenerating until it does. Use when matt asks for personas, profile pictures for personas, or more of them.
+description: Draw random personas from the warm-up datasets, store them in media/personas/personas.jsonl with each one's characteristics and image prompt, generate each one's profile picture in the low-angle selfie style through treg, and have SubQ check it matches the persona, regenerating until it does. Use when the owner asks for personas, profile pictures for personas, or more of them.
 ---
 
 # personaPicture
@@ -31,14 +31,14 @@ Each picture is at `media/personas/<personaId>/profilePicture.png`.
 
 ## The style
 
-It is read from matt's two example photos, which are kept in
+It is read from the owner's two example photos, which are kept in
 `~/.logCli/personaExamples` and are never committed, because they are real
 people:
 
 - the camera held low, below the chin, pointing up at the face, with the
   ceiling behind the head: an unflattering angle
 - the arm holding the camera out of the frame: an arm in the picture looks
-  wrong and unnatural (matt, 2026-10-24)
+  wrong and unnatural (the owner, 2026-10-24)
 - a flat, unsmiling expression and ordinary clothes
 - bad light: a blown-out ceiling light, or a dark room lit from below
 - old front-camera quality: soft focus, noise, washed-out colours
@@ -47,11 +47,11 @@ The place comes from the persona's `profession` in the social behaviour dataset
 (Engineer, Teacher, Marketer, Researcher, Entrepreneur, Student, Freelancer,
 Doctor, Designer, Other), or `Unemployed` from the occupation. Each has three
 places in `BACKGROUNDS`, and no two personas in a draw get the same one
-(`backgroundOf`), because matt said the pictures can't all look the same. The
+(`backgroundOf`), because the owner said the pictures can't all look the same. The
 light comes from the time of day they scroll. The prompt never says phone, iPhone or screen (`listingCreative`), and
 it carries no text or logos.
 
-Generation is done only from the prompt. matt's photos are never passed to the
+Generation is done only from the prompt. The owner's photos are never passed to the
 image model, so no real face is copied. They go only to SubQ, as the style to
 judge against.
 
@@ -75,9 +75,9 @@ first attempts missed them. Each later prompt adds a fix for every check that
 has failed so far. It tries at most 5 times, then keeps the closest attempt and
 sets `matched: false`.
 
-- `likeReference`: taken the same way as the style reference, the picture matt
+- `likeReference`: taken the same way as the style reference, the picture the owner
   liked best (`--styleFrom <id>`, now freelancerSelfEmployedMale36). It is SubQ's
-  fourth image, after the picture and matt's two examples.
+  fourth image, after the picture and the owner's two examples.
 - `backgroundDistinct`: a second SubQ call shows the picture beside the other
   personas' pictures (three at a time) and asks whether its kind of room
   differs from every one of theirs. Only the kind of room counts, because a
@@ -110,7 +110,7 @@ the current checks and regenerates whichever fail. An account whose last
 attempts never passed moves to another place first, and an account with no
 picture yet is generated.
 
-Clothing checks (matt, 2026-10-24):
+Clothing checks (the owner, 2026-10-24):
 
 - `noStonewashedHoodie`: no stonewashed, acid-washed or faded washed-out
   hoodie or sweatshirt.
@@ -125,16 +125,16 @@ background it was taken in.
 On 2026-10-24 all 20 accounts (10 in Pennsylvania, 10 around Kamloops) matched,
 and each one's picture is its profilePhoto in Twenty.
 
-## matt's verdict comes first
+## The owner's verdict comes first
 
-- `--approve <id,id>` locks pictures matt likes (`approved`). They are never
+- `--approve <id,id>` locks pictures the owner likes (`approved`). They are never
   rechecked or regenerated, and `--redo` refuses them.
 - `--redo <id>` rejects one picture (it is kept in `rejected`, with its
   attempts) and regenerates it.
 - `--recheck` checks every picture that isn't approved against the current
   checks, and regenerates whichever fail.
 
-matt approved fullTimeEmployeeMale30, fullTimeEmployeeMale26 and
+The owner approved fullTimeEmployeeMale30, fullTimeEmployeeMale26 and
 freelancerSelfEmployedMale36 ("perfect") and rejected studentFemale25
 (2026-10-24).
 
@@ -146,4 +146,4 @@ bun scripts/media/personaPictures.ts --count 5 --country US
 
 Run it live through Monitor (rule 26). It costs $0.034 an image through
 `reapi.image-gen.gemini-3-pro-image`, plus one SubQ call per image (rule 41:
-only as many as matt asked for). A new run replaces `personas.jsonl`.
+only as many as the owner asked for). A new run replaces `personas.jsonl`.

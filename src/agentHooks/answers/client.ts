@@ -93,7 +93,7 @@ export async function knowledgeAnswer(): Promise<HookAnswer> {
   const config = kbConfig()
   const count = 'missing' in config ? null : await chunkCount(config.redisUrl)
   const reach = 'missing' in config ? `not set up on this machine (${config.missing})` : count === null ? 'not reachable right now (the KB_TWENTY_URL host)' : `${count} indexed chunks`
-  return { context: `log-cli knowledge base (rule 93): every AGENTS.md rule, skill, doc, infra note, Claude memory file, page state, account and agent note, in ListeningKit's Twenty and searched through Redis, ${reach}. Before guessing how something works, where a login lives or what an earlier session found, run \`log kb search "<query>"\` (MCP kbSearch) and \`log kb show <key>\`; save what this session learns with \`log kb remember "<text>"\`, never a secret.` }
+  return { context: `log-cli knowledge base: every AGENTS.md rule, skill, doc, infra note, memory file, page state, account and agent note, kept in Twenty and searched through Redis, ${reach}. The MCP tools read it: \`kbSearch\` { query } finds what an earlier session found or how something works, \`kbShow\` { key } reads one entry, and \`kbRemember\` { text } saves what this session learns, never a secret.` }
 }
 
 export function queueAnswer(raw: string): HookAnswer {
@@ -131,7 +131,7 @@ export function inboxAnswer(event: HookEvent, raw: string, repo: string): HookAn
   ensureLiveWatchers('instagram', twitterAccounts(platformStateRoot('instagram')).filter((a) => !coolingDown(platformStateRoot('instagram'), a)), (account) => startInstagramWatch(account, repo))
   ensureLiveWatchers('model', ['describer'], () => startDescriber(repo))
   const alerts = takeAlerts(hookReaderOf(raw))
-  const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 131): a second watcher tried to start and was refused. Every Claude session shares the one watcher per account through the inbox; never start another. Tell matt now.', ...alerts].join('\n') : ''
+  const loud = alerts.length ? ['>>> ONE PROCESS PER ACCOUNT, NEVER TWO (rule 105): a second watcher tried to start and was refused. Every session shares the one watcher per account through the inbox; another is never started. The owner is told now.', ...alerts].join('\n') : ''
   const fresh = takePending(hookReaderOf(raw)).map((m) => ({ ...m, text: inboxTextWithVoiceNotes(m) }))
   const text = [loud, inboxContext(fresh), claimContext(fresh), event === 'SessionStart' ? storedInboxContext(twitterAccounts()) : null].filter(Boolean).join('\n\n')
   return text ? { context: text } : {}

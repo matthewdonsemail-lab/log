@@ -1,5 +1,6 @@
 {
   "name": "groupHeaderMenus",
+  "platform": "facebook",
   "summary": "Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked",
   "params": [
     {

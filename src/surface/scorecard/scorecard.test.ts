@@ -14,6 +14,8 @@ import {
   hasMachine,
   hookHosts,
   measure,
+  ownerNameIn,
+  platformNeutralProblems,
   platformFallbacks,
   platformOfTopic,
   renderScorecard,
@@ -59,7 +61,7 @@ const tools: ScoredCommandTool[] = [
 ];
 const fakeGuides: Record<string, string> = { inspect: "facebookBrowser", governor: "governor", warmup: "flows", send: "discord", dm: "xSending" };
 const guideOf = (c: ScoredCommand) => fakeGuides[c.name] ?? null;
-const flowTools = ["flowPostComment", "flowPostCommentLive", "flowFacebookLanguageEnglish", "flowFacebookLanguageEnglishLive"];
+const flowTools = ["flowPostComment", "flowPostCommentLive", "facebookFlowLanguageEnglish", "facebookFlowLanguageEnglishLive"];
 
 describe("guides and names", () => {
   test("a topic is named for a platform by its id or label, as a whole first word", () => {
@@ -78,6 +80,20 @@ describe("guides and names", () => {
   test("a shared command whose text or tool note names exactly one platform is counted", () => {
     expect(sharedNamingPlatform(commands, tools, {})).toEqual(["inspect (facebook)"]);
     expect(sharedNamingPlatform(commands, tools, { warmupLive: ["Runs in Facebook's feed"] })).toEqual(["inspect (facebook)", "warmup (facebook)"]);
+    expect(sharedNamingPlatform(commands, tools, { warmupLive: ["  Platforms: facebook (reel, feed)"] })).toEqual(["inspect (facebook)"]);
+  });
+
+  test("the owner's name is counted per file, never inside an identifier", () => {
+    expect(ownerNameIn([{ path: "a", text: "Ask Matt, then matt's call" }, { path: "b", text: "needsMatt and mattsWords" }])).toEqual(["a (2)"]);
+  });
+
+  test("check:platformNeutral fails on any of its numbers above zero, naming why", () => {
+    const zero = measure(input({ guides: { discord: "d" }, listedTools: [], skillFiles: [], hookFiles: [], hostedInstructions: "" }));
+    const problems = platformNeutralProblems(zero);
+    expect(problems.some((p) => p.startsWith("sharedCommandsUnderPlatformGuide is 1"))).toBe(true);
+    expect(problems.some((p) => p.startsWith("ownerNameInServedText"))).toBe(false);
+    expect(problems.some((p) => p.startsWith("guidesOverLimit"))).toBe(false);
+    expect(platformNeutralProblems([])).toContain("guidesOverLimit is not measured");
   });
 
   test("tools are counted per platform, shared and flow apart, and flow tools need a platform in the name", () => {
@@ -114,8 +130,8 @@ describe("tools", () => {
 
   test("acting tools are live tools that do not only spend, plus live flows, and the play gate covers some", () => {
     const acting = actingTools(tools, flowTools);
-    expect(acting).toEqual(["inspectDoLive", "warmupLive", "discordSendLive", "twitterDmLive", "flowPostCommentLive", "flowFacebookLanguageEnglishLive"]);
-    expect(ungatedActingTools(acting, new Set(["twitterDmLive", "discordSendLive"]))).toEqual(["inspectDoLive", "warmupLive", "flowPostCommentLive", "flowFacebookLanguageEnglishLive"]);
+    expect(acting).toEqual(["inspectDoLive", "warmupLive", "discordSendLive", "twitterDmLive", "flowPostCommentLive", "facebookFlowLanguageEnglishLive"]);
+    expect(ungatedActingTools(acting, new Set(["twitterDmLive", "discordSendLive"]))).toEqual(["inspectDoLive", "warmupLive", "flowPostCommentLive", "facebookFlowLanguageEnglishLive"]);
   });
 
   test("hook hosts come from the HookHost union", () => {
@@ -176,10 +192,12 @@ const input = (overrides: Partial<ScorecardInput> = {}): ScorecardInput => ({
   useCases: [],
   guides: { xSending: "x".repeat(60_000), discord: "d".repeat(10) },
   serverInstructions: "Load the guide.",
+  hostedInstructions: "Ask the owner, not Matt.",
   hookTypes: 'export type HookHost = "claudeCode" | "codex";',
   ruleIds: new Set([8]),
   useCaseFiles: [],
   skillFiles: [{ path: "skills/fake/SKILL.md", text: "rule 8 and rule 7" }],
+  hookFiles: [{ path: "src/agentHooks/fake/index.ts", text: "says rule 21" }],
   codeFiles: [],
   declaredFlags: [],
   hasMachine: (c) => c.name === "dm",
@@ -201,6 +219,9 @@ describe("measure", () => {
       "deadRuleCitations.toolDescriptions": 1,
       serverInstructionsChars: 15,
       actingToolsInNoUseCase: 1,
+      "deadRuleCitations.hooks": 1,
+      "deadRuleCitations.guides": 0,
+      ownerNameInServedText: 1,
     });
   });
 });

@@ -22,5 +22,5 @@ async function chunkCount(url: string): Promise<number | null> {
 const config = kbConfig()
 const count = 'missing' in config ? null : await chunkCount(config.redisUrl)
 const reach = 'missing' in config ? `not set up on this machine (${config.missing})` : count === null ? 'not reachable right now (the KB_TWENTY_URL host)' : `${count} indexed chunks`
-const text = `log-cli knowledge base (rule 93): every AGENTS.md rule, skill, doc, infra note, Claude memory file, page state, account and agent note, in ListeningKit's Twenty and searched through Redis, ${reach}. Before guessing how something works, where a login lives or what an earlier session found, run \`log kb search "<query>"\` (MCP kbSearch) and \`log kb show <key>\`; save what this session learns with \`log kb remember "<text>"\`, never a secret.`
+const text = `log-cli knowledge base: every AGENTS.md rule, skill, doc, infra note, memory file, page state, account and agent note, kept in Twenty and searched through Redis, ${reach}. The MCP tools read it: \`kbSearch\` { query } finds what an earlier session found or how something works, \`kbShow\` { key } reads one entry, and \`kbRemember\` { text } saves what this session learns, never a secret.`
 process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: text } }))

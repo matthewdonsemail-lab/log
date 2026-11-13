@@ -32,14 +32,14 @@ export const voiceNoteDeps: { render: (provider: VoiceProvider, platform: VoiceN
   render: (provider, platform, text, language) => renderVoiceNote(voiceProvider(provider), platform, text, undefined, undefined, undefined, language),
 };
 
-const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What matt says in the voice note, as text in his words; never an audio file" };
+const TEXT: FlagSpec = { name: "text", kind: "string", required: true, description: "What the owner says in the voice note, as text in his words; never an audio file" };
 const PROVIDER: FlagSpec = { name: "provider", kind: "enum", values: VOICE_PROVIDERS, description: "Which voice provider says it: inworld or fishAudio (default: LOG_VOICE_PROVIDER, else inworld)" };
 const APPROVED_BY: FlagSpec = { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" };
 
 function usageOf(shape: VoiceShape): string {
   return [
-    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--mattsWords] [--translationOf "<what it translates>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
-    `Sends a voice note in matt's cloned voice (the voice provider, log clone voice) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
+    `Usage: log ${shape.platform} voice --account <accountName> --${shape.chat.name} <${shape.chat.name}> --text "<what the owner says>"${shape.extra.map((f) => ` [--${f.name} <${f.name}>]`).join("")} [--provider inworld|fishAudio] [--mattsWords] [--translationOf "<what it translates>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
+    `Sends a voice note in the owner's cloned voice (the voice provider, log clone voice) as ${shape.platform}'s own voice note: ${shape.native}. It takes text only, never an audio file: the words are said in his voice, converted with ffmpeg to ${PLATFORM_AUDIO[shape.platform].container} and uploaded on the direct-API engine through the account's one session (${shape.engine}, no browser).`,
     "A voice note goes out only when matt asks for one (rule 142). The provider is --provider, else LOG_VOICE_PROVIDER, else inworld; the command only ever calls the shared voice layer (rule 143). Without --live it is a dry run: nothing is generated and nothing is contacted. --live needs --approvedBy (rule 8). It says and converts the note while the account catches up (rule 135) and the text goes through the voice gate every send runs (rule 137), so a note that passes goes out without waiting for it to be made; one the gate refuses is never sent. It then claims the chat (rule 133) and releases it after. The governor counts it as a write, the platform's answer decides (rule 73), and a refusal stops with nothing retried (rule 94).",
     "--mattsWords says the text is matt's own words, dictated by him for this voice note: the voice gate's read is skipped, since it grades speech as typed text and as a reply, while the AI artifact check still runs and refuses aiArtifacts (rule 144).",
     "--translationOf \"<what it translates>\" says the text is a translation, only when matt asked for one: the voice gate grades those original words (his own language, which the gate reads) instead of the translation, which it can't match to his writing; both are read for AI artifacts. --language <code> (zh-CN, es-ES ...) is the language the clone speaks it in, instead of the clone's own, and it is needed with --translationOf (rule 148).",
@@ -47,8 +47,8 @@ function usageOf(shape: VoiceShape): string {
 }
 
 function inputOf(shape: VoiceShape): CommandInput {
-  const summary = `Send a voice note in matt's cloned voice as ${shape.platform[0].toUpperCase() + shape.platform.slice(1)}'s own voice note, from text; a dry run unless --live`;
-  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is matt's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, { name: "translationOf", kind: "string", description: "The text is a translation matt asked for, of these original words: the voice gate grades the original instead of the translation; needs --language (rule 148)" }, { name: "language", kind: "string", description: "The language the clone speaks it in (zh-CN, es-ES ...), instead of the clone's own (rule 148)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when matt asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
+  const summary = `Send a voice note in the owner's cloned voice as ${shape.platform[0].toUpperCase() + shape.platform.slice(1)}'s own voice note, from text; a dry run unless --live`;
+  return { forms: [{ words: [], effect: "write", summary, positionals: [], flags: [{ name: "account", kind: "string", required: true, description: `The ${shape.platform.toUpperCase()} socialAccount's accountName (its handle)` }, shape.chat, TEXT, ...shape.extra, PROVIDER, { name: "mattsWords", kind: "boolean", description: "The text is the owner's own words, dictated by him for this voice note: the voice gate's read of his typing is skipped, the AI artifact check still runs (rule 144)" }, { name: "translationOf", kind: "string", description: "The text is a translation the owner asked for, of these original words: the voice gate grades the original instead of the translation; needs --language (rule 148)" }, { name: "language", kind: "string", description: "The language the clone speaks it in (zh-CN, es-ES ...), instead of the clone's own (rule 148)" }, APPROVED_BY, { name: "live", kind: "boolean", live: true, description: "Send it, only when the owner asked for a voice note (rules 8, 142); without it a dry run generates and contacts nothing" }, JSON_FLAG] }] };
 }
 
 export function voiceNoteCommandOf(shape: VoiceShape): Command {
@@ -62,7 +62,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
     effect: "write",
     input,
     summary: input.forms[0].summary,
-    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what matt says>" [--provider <p>] [--mattsWords] [--translationOf "<original>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
+    args: `--account <a> --${shape.chat.name} <${shape.chat.name}> --text "<what the owner says>" [--provider <p>] [--mattsWords] [--translationOf "<original>" --language <code>] [--approvedBy <who>] [--live] [--json]`,
     async run(context, argv) {
       const parsed = parseArgs(argv, parserSpecOf(input));
       if (!parsed.ok) return { code: 1, stderr: `log ${label}: ${parsed.error}\n${usage}` };
@@ -91,11 +91,11 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
         const where = { platform: shape.platform, account: resolved.account, chat: resolved.chatId, text: text.trim(), provider, container: PLATFORM_AUDIO[shape.platform].container, ...(translationOf ? { translationOf, language } : language ? { language } : {}) };
         if (!live) {
           if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ engine: "directApi", ok: true, dryRun: true, cloned: !!clone, mattsWords, ...where }, null, 2) };
-          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in matt's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, ...(mattsWords ? ["These are matt's own dictated words (--mattsWords): the voice gate's read is skipped, the AI artifact check passed (rule 144)."] : []), ...(translationOf ? [`It is a translation into ${language} of: ${translationOf} (--translationOf): the voice gate grades that original (rule 148).`] : language ? [`Spoken in ${language}.`] : []), "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
+          return { code: 0, stdout: [`log ${label}: dry run: ${resolved.account} would send ${resolved.label} a voice note in the owner's cloned voice (${PLATFORM_AUDIO[shape.platform].container}) saying:`, `  ${text.trim()}`, clone ? `The clone on ${provider} is ready (made ${clone.createdAt}).` : `There is no clone on ${provider} yet: log clone voice --provider ${provider} --apply makes it first.`, ...(mattsWords ? ["These are matt's own dictated words (--mattsWords): the voice gate's read is skipped, the AI artifact check passed (rule 144)."] : []), ...(translationOf ? [`It is a translation into ${language} of: ${translationOf} (--translationOf): the voice gate grades that original (rule 148).`] : language ? [`Spoken in ${language}.`] : []), "Nothing was generated or sent. --live --approvedBy <who> sends it, only when matt asked for a voice note (rules 8, 142)."].join("\n") };
         }
         if (!clone) return refuse(label, "voiceCloneMissing", `log clone voice --provider ${provider} --apply makes it once from matt's own voice notes`);
         context.err(`${resolved.account}: voice note to ${resolved.label}, approved by ${approvedBy}`);
-        context.err(`${resolved.account}: saying it in matt's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}, while the account catches up and the gate reads it`);
+        context.err(`${resolved.account}: saying it in the owner's cloned voice on ${provider} and converting it to ${PLATFORM_AUDIO[shape.platform].container}, while the account catches up and the gate reads it`);
         const rendering = voiceNoteDeps.render(provider, shape.platform, text, language || undefined).catch((error): Rendered => ({ ok: false, code: "voiceProcessingFailed", detail: error instanceof Error ? error.message : String(error) }) as Rendered);
         const caught = await waitCaughtUp(shape.platform, resolved.account);
         if (!caught.ok) return refuse(label, "accountBehind", caught.refused);
@@ -137,7 +137,7 @@ export function voiceNoteCommandOf(shape: VoiceShape): Command {
 
 export const discordVoiceCommand = voiceNoteCommandOf({
   platform: "discord",
-  chat: { name: "channel", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or a channel id" },
+  chat: { name: "channel", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or a channel id" },
   extra: [],
   native: "a voice message (flags 8192, its waveform and duration), the bubble Discord's own app records",
   engine: "vendor/endcord",
@@ -187,7 +187,7 @@ export const instagramVoiceCommand = voiceNoteCommandOf({
 
 export const slackVoiceCommand = voiceNoteCommandOf({
   platform: "slack",
-  chat: { name: "chat", kind: "string", required: true, description: "The chat as matt says it, matched to one DM or group; or its id (D…, G…, C…)" },
+  chat: { name: "chat", kind: "string", required: true, description: "The chat as the owner says it, matched to one DM or group; or its id (D…, G…, C…)" },
   extra: [{ name: "workspace", kind: "string", description: "The workspace's domain; needed when the session is signed in to more than one" }],
   native: "an audio file shared into the chat through Slack's own upload (files.getUploadURLExternal, the bytes, files.completeUploadExternal), which Slack plays inline",
   engine: "vendor/gabrielSlack on curl_cffi",
