@@ -132,30 +132,36 @@ example for an HTTP MCP on loopback behind a tunnel.
 
 | Tool | Who sees it | Input | Answer |
 | --- | --- | --- | --- |
-| `browserView` | the model and the view | `account` | text for the model; `structuredContent.json` is the view: `phase`, `needsHuman`, `pageState`, `generation`, `revision`, `address`, `width`, `height`, `canInteract`, `location`, `streamKind` (`voxl`, `frames` or `none`) and, from a remote runtime, the voxl `stream` descriptor (`url`, `page`, `window`) |
+| `browserView` | the model and the view | `account` | text for the model; `structuredContent.json` is the view: `phase`, `needsHuman`, `pageState`, `generation`, `revision`, `address`, `width`, `height`, `canInteract`, `location` and `streamKind` (`voxl`, `frames` or `none`); never the voxl URL |
+| `browserViewStream` | the view only | `account`, `generation` | from a remote runtime, the voxl stream descriptor: `url` (with voxl's read-only password), `page` and `window` geometry; refused locally (`browserViewLocal`) or when there is none (`browserStreamUnavailable`) |
 | `browserViewFrame` | the view only | `account`, `generation`, `withState` | the fallback picture: the latest JPEG (base64) and its revision, plus the view when asked |
 | `browserViewInput` | the view only | `account`, `generation`, `revision`, `event` (`click` x/y in page pixels, `text`, `key`, `scroll`) | the new view, or a refusal: `browserStateChanged`, `browserInputStopped`, `browserBusy`, `browserGenerationChanged`, `browserInputInvalid` |
 | `browserViewDone` | the view only | `account` | the page read again and `done` (no sign-in or stop left); the view polls it for state |
 
-The three view-only tools carry `_meta.ui.visibility: ["app"]` and are listed
+The four view-only tools carry `_meta.ui.visibility: ["app"]` and are listed
 only to a client that advertises the extension; a direct client without it is
 refused with `browserViewAppOnly`. The hosted bridge calls `runToolCall`
 without an MCP session, so through it the hosted side is the one that must keep
 these tools away from the model.
 
-**Picture: voxl first.** voxl is the stream. `browserView` from a remote
-runtime carries the stream descriptor that `streamSurface` reports (the
-`LOG_VOXL_URL` of a `--read-only` voxl on the browser's display, and the page
-and window geometry from the fullscreened Chromium window). The view opens
+**Picture: voxl first.** voxl is the stream. When `browserView` from a remote
+runtime says `streamKind: "voxl"`, the view asks `browserViewStream` for the
+descriptor that `streamSurface` reports (the `LOG_VOXL_URL` of a `--read-only`
+voxl on the browser's display, and the page and window geometry from the
+fullscreened Chromium window). The view opens
 voxl's WebSocket itself (`connectVoxl` in
 `src/mcp/apps/browserView/widget/voxl.ts`), decodes its H.264 stripes with
 WebCodecs onto a canvas and maps a click on the canvas to the page by taking
 off the window's origin. It does not nest voxl's own page, because hosts block
 nested iframes by default (ChatGPT says so in its docs), so no `frameDomains`
 are declared. voxl must allow the host's view origin with `--allowed-origins`.
-The descriptor's URL carries voxl's password, which on a `--read-only` voxl
-lets a viewer watch and nothing else; it is in the tool's structured answer,
-so treat it as visible to the model and give each runtime its own.
+The descriptor's URL carries voxl's password, so it never goes in anything the
+model reads: not `browserView`'s text or `structuredContent`, and not its
+`_meta` either, because the MCP Apps spec only says `_meta` is "not intended
+for model context" as a best practice, not a rule a host must keep. It travels
+only in the answer to the app-only `browserViewStream`, which the view calls
+itself; `streamSecret.test.ts` checks every location (on this machine, remote
+over MCP with and without MCP Apps, and through the hosted bridge).
 
 **Fallback: screenshots.** When voxl cannot run (a Camoufox account, which has
 no CDP; no `LOG_VOXL_URL`; one that is not https, or http on loopback; or a

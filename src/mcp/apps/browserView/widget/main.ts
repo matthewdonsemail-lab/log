@@ -17,7 +17,6 @@ interface View {
   canInteract: boolean;
   location: "local" | "remote";
   streamKind: "voxl" | "frames" | "none";
-  stream: VoxlStream | null;
 }
 type Input = { type: "click"; x: number; y: number } | { type: "text"; text: string } | { type: "key"; key: string } | { type: "scroll"; deltaY: number };
 interface ToolAnswer {
@@ -80,8 +79,8 @@ const canvas = ref<HTMLCanvasElement>("canvas");
 const keys = ref<HTMLTextAreaElement>("keys");
 const context2d = canvas.getContext("2d");
 
-const state: { account: string | null; view: View | null; revision: string | null; live: boolean; hasControl: boolean; pending: boolean; queue: Input[]; stream: VoxlStream | null; voxl: VoxlConnection | null; timer: number | null; tick: number; finished: boolean; autoMode: boolean; mode: string } = {
-  account: null, view: null, revision: null, live: false, hasControl: false, pending: false, queue: [], stream: null, voxl: null, timer: null, tick: 0, finished: false, autoMode: false, mode: "inline",
+const state: { account: string | null; view: View | null; revision: string | null; live: boolean; hasControl: boolean; pending: boolean; queue: Input[]; stream: VoxlStream | null; voxl: VoxlConnection | null; timer: number | null; tick: number; finished: boolean; autoMode: boolean; mode: string; streamAsked: boolean } = {
+  account: null, view: null, revision: null, live: false, hasControl: false, pending: false, queue: [], stream: null, voxl: null, timer: null, tick: 0, finished: false, autoMode: false, mode: "inline", streamAsked: false,
 };
 
 const app = new App({ name: "logBrowserView", version: "1.0.0" }, { availableDisplayModes: ["inline", "fullscreen", "pip"] }, { autoResize: true });
@@ -183,11 +182,12 @@ function adopt(view: View | null): void {
   if (!view) return;
   const restarted = state.view?.generation !== view.generation;
   state.view = view;
-  if (view.location === "remote" && view.stream?.kind === "voxl" && !state.stream) state.stream = view.stream;
   if (restarted) {
     state.live = false;
     state.hasControl = false;
     state.revision = view.revision;
+    state.stream = null;
+    state.streamAsked = false;
     stopVoxl();
   }
   if (view.revision && !state.pending) state.revision = view.revision;
@@ -224,6 +224,11 @@ async function poll(): Promise<void> {
     if (!view?.generation || view.location === "local") {
       const answer = await call("browserViewDone", { account: state.account });
       adopt((answer.structuredContent?.view as View | undefined) ?? null);
+    } else if (view.streamKind === "voxl" && !state.stream && !state.streamAsked && voxlSupported()) {
+      state.streamAsked = true;
+      const answer = await call("browserViewStream", { account: state.account, generation: view.generation });
+      const stream = answer.structuredContent?.stream as VoxlStream | undefined;
+      if (!answer.isError && stream?.kind === "voxl") state.stream = stream;
     } else if (state.stream && voxlSupported()) {
       startVoxl();
       const answer = await call("browserViewDone", { account: state.account });

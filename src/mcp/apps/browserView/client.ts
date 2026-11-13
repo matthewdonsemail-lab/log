@@ -4,7 +4,7 @@ import type { ViewerView } from "../../../browser/viewer/index.ts";
 import { browserViewJson, browserViewLocation, browserViewText } from "../../../cli/browser/index.ts";
 import type { BrowserViewLocation } from "../../../cli/browser/index.ts";
 import { widgetHtml } from "./helpers/index.ts";
-import { APP_TOOLS, BROWSER_VIEW_DONE_TOOL, BROWSER_VIEW_FRAME_TOOL, BROWSER_VIEW_INPUT_TOOL, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "./types.ts";
+import { APP_TOOLS, BROWSER_VIEW_DONE_TOOL, BROWSER_VIEW_FRAME_TOOL, BROWSER_VIEW_INPUT_TOOL, BROWSER_VIEW_STREAM_TOOL, BROWSER_VIEW_TOOL, BROWSER_VIEW_URI, MCP_APP_MIME_TYPE, UI_EXTENSION_ID } from "./types.ts";
 import type { AppToolDefinition, AppToolName, BrowserViewCsp } from "./types.ts";
 
 const ACCOUNT = { type: "string", description: "The account whose browser this is" };
@@ -41,6 +41,7 @@ function appTool(name: AppToolName, title: string, description: string, properti
 
 export function appTools(): AppToolDefinition[] {
   return [
+    appTool(BROWSER_VIEW_STREAM_TOOL, "Browser view stream", "The voxl stream descriptor (its URL, which carries voxl's read-only password, and the page and window geometry), for the browser view only so it never reaches the model. Remote runtimes only.", { account: ACCOUNT, generation: GENERATION }, ["account", "generation"], true),
     appTool(BROWSER_VIEW_FRAME_TOOL, "Browser view frame (fallback)", "The fallback picture for the browser view when voxl cannot stream (a Camoufox account, or no https voxl): the live browser's latest JPEG frame and its revision. withState adds the current view.", { account: ACCOUNT, generation: GENERATION, withState: { type: "boolean", description: "Also return the current view" } }, ["account", "generation"], true),
     appTool(
       BROWSER_VIEW_INPUT_TOOL,
@@ -88,6 +89,12 @@ export async function runAppTool(name: AppToolName, input: Record<string, unknow
   if (!account) return refusal("browserInputInvalid", "account is required");
   if (location === "local" && name !== BROWSER_VIEW_DONE_TOOL) return refusal("browserViewLocal", "The browser runs on this machine: the person uses its own window, so the view neither streams it nor sends input.");
   try {
+    if (name === BROWSER_VIEW_STREAM_TOOL) {
+      const view = await appToolDeps.state(account);
+      if (typeof fields.generation !== "string" || fields.generation !== view.generation) return refusal("browserGenerationChanged", VIEWER_ERROR_TEXT.browserGenerationChanged);
+      if (!view.stream) return refusal("browserStreamUnavailable", "This browser has no voxl stream; the view uses screenshot frames.");
+      return { content: [{ type: "text", text: `voxl stream for ${account}` }], structuredContent: { generation: view.generation, stream: view.stream } };
+    }
     if (name === BROWSER_VIEW_FRAME_TOOL) {
       const frame = await appToolDeps.frame(account, fields.generation);
       const view = fields.withState === true ? browserViewJson(await appToolDeps.state(account), location) : null;

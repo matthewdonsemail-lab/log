@@ -35,7 +35,7 @@ describe("the browser view as an MCP App", () => {
 
   test("app-only tools are hidden from the model and point at the view", () => {
     for (const tool of appTools()) expect(tool._meta.ui).toEqual({ resourceUri: BROWSER_VIEW_URI, visibility: ["app"] });
-    expect(appTools().map((tool) => tool.name)).toEqual(["browserViewFrame", "browserViewInput", "browserViewDone"]);
+    expect(appTools().map((tool) => tool.name)).toEqual(["browserViewStream", "browserViewFrame", "browserViewInput", "browserViewDone"]);
   });
 
   test("a host with MCP Apps sees browserView with its view, the app-only tools and the resource", async () => {
@@ -43,7 +43,7 @@ describe("the browser view as an MCP App", () => {
     const { tools } = await client.listTools();
     const view = tools.find((tool) => tool.name === "browserView");
     expect(view?._meta?.ui).toEqual({ resourceUri: BROWSER_VIEW_URI });
-    expect(tools.filter((tool) => (tool._meta?.ui as { visibility?: string[] } | undefined)?.visibility?.includes("app") && !(tool._meta?.ui as { visibility: string[] }).visibility.includes("model")).map((tool) => tool.name)).toEqual(["browserViewFrame", "browserViewInput", "browserViewDone"]);
+    expect(tools.filter((tool) => (tool._meta?.ui as { visibility?: string[] } | undefined)?.visibility?.includes("app") && !(tool._meta?.ui as { visibility: string[] }).visibility.includes("model")).map((tool) => tool.name)).toEqual(["browserViewStream", "browserViewFrame", "browserViewInput", "browserViewDone"]);
     const { resources } = await client.listResources();
     expect(resources.some((resource) => resource.uri === BROWSER_VIEW_URI && resource.mimeType === MCP_APP_MIME_TYPE)).toBe(true);
   });
@@ -89,12 +89,13 @@ describe("the browser view as an MCP App", () => {
     expect(settleLocation("local", { LOG_BROWSER_VIEW_LOCATION: "local" })).toBe("local");
   });
 
-  test("a remote view carries the voxl descriptor so the view can connect and map clicks; a local one carries no stream", () => {
+  test("the view the model gets says which stream there is but never carries the descriptor", () => {
     const stream = { kind: "voxl" as const, url: "https://voxl.example.com/?token=t", page: { width: 800, height: 600 }, window: { left: 0, top: 0, width: 800, height: 600 } };
     const view = { account: "a", phase: "signInRequired" as const, needsHuman: true, generation: "g", revision: "r", pageState: "loginForm", address: null, width: 800, height: 600, canInteract: true, stream };
-    expect(browserViewJson(view, "remote")).toMatchObject({ location: "remote", streamKind: "voxl", stream });
-    expect(browserViewJson({ ...view, stream: null }, "remote")).toMatchObject({ streamKind: "frames", stream: null });
-    expect(browserViewJson(view, "local")).toMatchObject({ location: "local", streamKind: "none", stream: null });
+    expect(browserViewJson(view, "remote")).toEqual(expect.objectContaining({ location: "remote", streamKind: "voxl" }));
+    expect("stream" in browserViewJson(view, "remote")).toBe(false);
+    expect(browserViewJson({ ...view, stream: null }, "remote")).toMatchObject({ streamKind: "frames" });
+    expect(browserViewJson(view, "local")).toMatchObject({ location: "local", streamKind: "none" });
   });
 
   test("app tools refuse a missing account before anything else", async () => {

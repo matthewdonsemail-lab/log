@@ -1,5 +1,5 @@
 import { viewerState } from "../../browser/viewer/index.ts";
-import type { ViewerStream, ViewerView } from "../../browser/viewer/index.ts";
+import type { ViewerView } from "../../browser/viewer/index.ts";
 import { readLocalAccounts } from "../../twenty/graphql/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import { PLATFORM_LABELS, platformOfAccount } from "../runner/helpers/platforms.ts";
@@ -59,12 +59,12 @@ export function browserViewText(view: ViewerView, location: BrowserViewLocation 
   return [head, REMOTE[view.phase], ...(view.needsHuman ? ["Without an inline view (a host without MCP Apps), the person opens it in an MCP Apps host (Claude, ChatGPT, Cursor), or runs log console --web on the runtime's machine and uses the account's live browser button on Connections."] : [])].join("\n");
 }
 
-export type BrowserViewJson = Omit<ViewerView, "stream"> & { location: BrowserViewLocation; streamKind: "voxl" | "frames" | "none"; stream: ViewerStream | null };
+export type BrowserViewJson = Omit<ViewerView, "stream"> & { location: BrowserViewLocation; streamKind: "voxl" | "frames" | "none" };
 
 export function browserViewJson(view: ViewerView, location: BrowserViewLocation = browserViewLocation()): BrowserViewJson {
   const { stream, ...rest } = view;
-  if (location === "local") return { ...rest, location, streamKind: "none", stream: null };
-  return { ...rest, location, streamKind: stream ? "voxl" : "frames", stream };
+  if (location === "local") return { ...rest, location, streamKind: "none" };
+  return { ...rest, location, streamKind: stream ? "voxl" : "frames" };
 }
 
 export const browserDeps: { state: (account: string) => Promise<ViewerView> } = { state: viewerState };
