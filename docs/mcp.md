@@ -98,4 +98,92 @@ Calls that take a while write one line per step to `~/.logCli/mcp/<day>.log`. Fo
 tail -f ~/.logCli/mcp/$(date -u +%F).log
 ```
 
+## The live browser in the chat
+
+When an account's browser needs a person (a sign-in page), the agent calls
+`browserView { account }`. What the person sees depends on where the runtime
+is.
+
+**On the person's own machine** (log runs where they are), the browser window
+is already on their screen, so nothing is streamed. `browserView` says "the
+<platform> sign-in is open in the browser window on this machine. Finish
+there, then continue", in text for every client and in the inline view as a
+card with a Done button. The view-only frame and input tools refuse with
+`browserViewLocal`.
+
+**From a remote runtime** (a VPS or Boat instance reached through the hosted
+side), a host that supports MCP Apps (the `io.modelcontextprotocol/ui`
+extension: Claude on the web and Desktop, ChatGPT, Cursor, VS Code, Goose,
+MCPJam) renders `ui://log/browserView` inline: the account's live page, its
+address and state, and a Done button. The person clicks and types in it
+without leaving the chat.
+
+**How log decides.** `LOG_BROWSER_VIEW_LOCATION` (`local` or `remote`) is
+settled once per process by whatever serves the call (`settleLocation` in
+`src/mcp/apps/browserView/client.ts`), unless it is already set:
+
+- the stdio MCP (`logMcp`, started by the host app on this machine) is `local`;
+- the HTTP MCP is `local` only when it listens on loopback with no token and
+  no OAuth (`httpLocation`), and `remote` otherwise;
+- the hosted bridge (`log runtime connect`) is `remote`.
+
+Plain CLI runs default to `local`. Set the variable to override it, for
+example for an HTTP MCP on loopback behind a tunnel.
+
+| Tool | Who sees it | Input | Answer |
+| --- | --- | --- | --- |
+| `browserView` | the model and the view | `account` | text for the model; `structuredContent.json` is the view: `phase`, `needsHuman`, `pageState`, `generation`, `revision`, `address`, `width`, `height`, `canInteract`, `location`, `streamKind` (`voxl`, `frames` or `none`) and, from a remote runtime, the voxl `stream` descriptor (`url`, `page`, `window`) |
+| `browserViewFrame` | the view only | `account`, `generation`, `withState` | the fallback picture: the latest JPEG (base64) and its revision, plus the view when asked |
+| `browserViewInput` | the view only | `account`, `generation`, `revision`, `event` (`click` x/y in page pixels, `text`, `key`, `scroll`) | the new view, or a refusal: `browserStateChanged`, `browserInputStopped`, `browserBusy`, `browserGenerationChanged`, `browserInputInvalid` |
+| `browserViewDone` | the view only | `account` | the page read again and `done` (no sign-in or stop left); the view polls it for state |
+
+The three view-only tools carry `_meta.ui.visibility: ["app"]` and are listed
+only to a client that advertises the extension; a direct client without it is
+refused with `browserViewAppOnly`. The hosted bridge calls `runToolCall`
+without an MCP session, so through it the hosted side is the one that must keep
+these tools away from the model.
+
+**Picture: voxl first.** voxl is the stream. `browserView` from a remote
+runtime carries the stream descriptor that `streamSurface` reports (the
+`LOG_VOXL_URL` of a `--read-only` voxl on the browser's display, and the page
+and window geometry from the fullscreened Chromium window). The view opens
+voxl's WebSocket itself (`connectVoxl` in
+`src/mcp/apps/browserView/widget/voxl.ts`), decodes its H.264 stripes with
+WebCodecs onto a canvas and maps a click on the canvas to the page by taking
+off the window's origin. It does not nest voxl's own page, because hosts block
+nested iframes by default (ChatGPT says so in its docs), so no `frameDomains`
+are declared. voxl must allow the host's view origin with `--allowed-origins`.
+The descriptor's URL carries voxl's password, which on a `--read-only` voxl
+lets a viewer watch and nothing else; it is in the tool's structured answer,
+so treat it as visible to the model and give each runtime its own.
+
+**Fallback: screenshots.** When voxl cannot run (a Camoufox account, which has
+no CDP; no `LOG_VOXL_URL`; one that is not https, or http on loopback; or a
+socket that fails or a browser without WebCodecs), the view pulls JPEG frames
+through `browserViewFrame`, about 2 a second, and its badge says
+"Screenshots (fallback)".
+
+**Input, always the gated path.** Clicks and keys never go through voxl.
+`browserViewInput` posts to the same viewer `/input` as the console (see
+[the live browser viewer](browsers.md#the-live-browser-viewer)), so input
+reaches the page only while it still asks for sign-in and the revision still
+matches, and each one is a recorded step. When the person presses Done, the
+view reads the page again, puts a line in the model's context
+(`ui/update-model-context`) and sends it as the person's message
+(`ui/message`), so the agent calls `browserView` and carries on.
+
+The view asks the host for fullscreen when a remote page needs sign-in and the
+host offers it, and shows fullscreen and picture-in-picture buttons when the
+host lists them (`ui/request-display-mode`); otherwise it stays inline.
+
+**CSP.** `ui://log/browserView` is one HTML page with its script, styles and
+fonts inline. Its `_meta.ui.csp` declares no `resourceDomains` and no
+`frameDomains`; `connectDomains` is the `LOG_VOXL_URL` origin and its `wss:`
+twin when it is https (or loopback `http:` and `ws:` for a host on the same
+machine), and empty otherwise.
+
+**Hosts without MCP Apps** (Claude Code, Codex) get the same text: on the
+person's machine, finish in the window there; from a remote runtime, open the
+view in an MCP Apps host, or the local console on the runtime's machine.
+
 Next: [using log well](usingLog.md).

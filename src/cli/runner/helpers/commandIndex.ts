@@ -45,6 +45,7 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "inbox", platform: "any", module: "src/cli/inbox/index.ts", exportName: "inboxCommand" },
   { name: "media", platform: "any", module: "src/cli/media/index.ts", exportName: "mediaCommand" },
   { name: "browsers", platform: "any", module: "src/cli/browsers/index.ts", exportName: "browsersCommand" },
+  { name: "browser", platform: "any", module: "src/cli/browser/index.ts", exportName: "browserCommand" },
   { name: "job", platform: "any", module: "src/cli/job/index.ts", exportName: "jobCommand" },
   { name: "mcp", platform: "any", module: "src/cli/mcp/index.ts", exportName: "mcpCommand" },
   { name: "login", platform: "any", module: "src/cli/auth/index.ts", exportName: "loginCommand" },

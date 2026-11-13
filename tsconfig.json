@@ -13,5 +13,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["bin", "src"]
+  "include": ["bin", "src"],
+  "exclude": ["src/mcp/apps/browserView/widget"]
 }

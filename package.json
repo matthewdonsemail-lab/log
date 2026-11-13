@@ -58,7 +58,7 @@
     "launch": "bun run bin/log.ts launch",
     "doctor": "bun run bin/log.ts doctor",
     "mcp": "bun run bin/logMcp.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p src/mcp/apps/browserView/widget",
     "test": "bun test",
     "check:privacy": "node scripts/privacy/checkPrivacy.mjs",
     "check:naming": "node scripts/checks/checkNamingConventions.mjs",
@@ -93,6 +93,7 @@
   "dependencies": {
     "@clack/prompts": "^1.8.1",
     "@huggingface/transformers": "^4.3.1",
+    "@modelcontextprotocol/ext-apps": "1.7.5",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "bm25s": "2.0.0",
     "cheerio": "1.2.0",

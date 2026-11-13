@@ -39,6 +39,7 @@ import { timingCommand } from "../timing/index.ts";
 import { inboxCommand } from "../inbox/index.ts";
 import { mediaCommand } from "../media/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
+import { browserCommand } from "../browser/index.ts";
 import { jobCommand } from "../job/index.ts";
 import { mcpCommand } from "../mcp/index.ts";
 import { newCommand } from "../new/index.ts";
@@ -98,6 +99,7 @@ export const COMMANDS: Command[] = [
   inboxCommand,
   mediaCommand,
   browsersCommand,
+  browserCommand,
   jobCommand,
   mcpCommand,
   loginCommand,

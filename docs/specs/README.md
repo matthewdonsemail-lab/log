@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 504 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 44 domains, 505 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -47,6 +47,7 @@ The log MCP server is how every agent works with log-cli: it carries matt's rule
 - **REQ-MCP-17** One warm context layer routes matt's prompts and puts the play back after compaction
 - **REQ-MCP-16** The prompt is matched to a play, and every play is a skill
 - **REQ-MCP-15** The loaded use case is the session's play, and sends need one
+- **REQ-MCP-19** browserView shows an account's live browser where the person is, and only their own gated input reaches it
 
 ## [Agent hooks](./agentHooks.md)
 

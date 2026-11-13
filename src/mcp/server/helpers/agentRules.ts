@@ -94,6 +94,7 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   timing: [26, 73, 165],
   inbox: [94, 105, 108, 109, 130, 131, 132, 133, 134, 135, 136, 138, 139, 150, 169],
   browsers: [29, 35, 54, 55],
+  browser: [8, 19, 35, 94, 105],
   job: [10, 26, 35],
   mcp: [21, 47, 167, 170],
   conversations: [34],
