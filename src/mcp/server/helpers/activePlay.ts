@@ -157,9 +157,9 @@ export function sweepPlays(now: Date = new Date()): number {
 
 const twinOf = (tool: string) => (tool.endsWith(LIVE_TOOL_SUFFIX) ? tool.slice(0, -LIVE_TOOL_SUFFIX.length) : `${tool}${LIVE_TOOL_SUFFIX}`);
 
-export function playCovers(play: ActivePlay, tool: string): boolean {
+export function playCovers(play: ActivePlay, tool: string, platform: string | null = null): boolean {
   const named = new Set(play.steps.flatMap((s) => s.tools));
-  return named.has(tool) || named.has(twinOf(tool));
+  return named.has(tool) || named.has(twinOf(tool)) || (platform !== null && play.id.split("/")[0] === platform);
 }
 
 const short = (text: string) => (text.length > STEP_TEXT_MAX ? `${text.slice(0, STEP_TEXT_MAX - 1)}…` : text).replace(/\*\*/g, "");
@@ -177,7 +177,8 @@ export function playFooter(tool: string, play: ActivePlay | null = activePlay())
 }
 
 export interface PlayGate {
-  mode: "covered" | "anyPlay" | "none";
+  mode: "required" | "anyPlay" | "ifPlay" | "none";
+  platform?: string | null;
   useCases: readonly string[];
   play?: ActivePlay | null;
 }
@@ -186,9 +187,12 @@ export function playRefusal(tool: string, gate: PlayGate): string | null {
   if (gate.mode === "none") return null;
   const play = gate.play === undefined ? activePlay() : gate.play;
   const options = gate.useCases.length ? gate.useCases.map((id) => `getGuide({ useCase: "${id}" })`).join(", ") : 'the use case that fits, from getGuide({ topic: "logMcpInstructions" })';
-  if (!play) return `playMissing: ${tool} sends as the owner, and no play is loaded for this caller (none was loaded, it expired after ${PLAY_IDLE_MS / 3_600_000} idle hours, or its handle is unknown), so nothing was sent. The plays that use it: ${options}. Every message in a play is written from that person's own thread, and no two read alike.`;
-  if (gate.mode === "anyPlay" || playCovers(play, tool)) return null;
-  return `playNotCovering: ${tool} sends as the owner, and the active play ${play.id} names no step that uses it, so nothing was sent. The plays that use it: ${options}. Loading one replaces ${play.id}.`;
+  if (!play) {
+    if (gate.mode === "ifPlay") return null;
+    return `playMissing: ${tool} sends as the owner, and no play is loaded for this caller (none was loaded, it expired after ${PLAY_IDLE_MS / 3_600_000} idle hours, or its handle is unknown), so nothing was sent. The plays that use it: ${options}. Every message in a play is written from that person's own thread, and no two read alike.`;
+  }
+  if (gate.mode === "anyPlay" || playCovers(play, tool, gate.platform ?? null)) return null;
+  return `playNotCovering: ${tool} sends as the owner, and the active play ${play.id} neither names it in its steps nor is filed under its platform, so nothing was sent. Two ways out: end the play with getGuide({ clearPlay: true }), or load the play that fits (${options}), which replaces ${play.id}.`;
 }
 
 export function playMeta(play: ActivePlay | null): { id: string; handle: string; loadedBy: PlayLoadedBy } | null {

@@ -213,6 +213,18 @@ CREATE INDEX identityProfiles_fetchedAt ON identityProfiles(fetchedAt);
 4. **Hosted redaction for `report`/`sessionsSignIn`.** Files: `src/console/operations/types.ts`, `src/runtime/bridge/client.ts`. Acceptance: a journaled `report` call's `operations.result` row contains redacted content, proven by a test asserting the stored row excludes bio/avatar text present in the tool's actual result.
 5. **Dynamic-import sandbox fix.** Files: `src/mcp/apps/report/view/run.ts`. Acceptance: a view calling `await import("node:fs")` (or any non-allowlisted module) throws at call time, with a test for both static and dynamic forms.
 
+### What slice 21 built, and what the code said that this audit didn't
+
+All five phases are built; [storage.md](../specs/storage.md) REQ-STORAGE-18 and [mcpServer.md](../specs/mcpServer.md) REQ-MCP-20 are the current behaviour. Where the code differed from the audit above:
+
+- **The profile data wasn't in `events`.** Session answers and the X followers list were never stored as events, so a table filled from them couldn't be replayed. The writers now append a `profileSeen` event per sighting, and the table is derived from those (and from X notifications, which already carry a follower count). That keeps `identityProfiles` in `DERIVED_TABLES` honestly.
+- **Slack carries no profile fields to TypeScript.** `display_name` and `real_name` are folded into one label inside the engine (`user_names`), and the session answer has only `screenName` and `userId`. No Slack row is written; keeping them needs an engine change.
+- **Discord's `verified` is the account's email verification**, from `/users/@me`, not a public badge. It is kept in `verified` and documented that way. `mfaEnabled` is not kept.
+- **No avatar bytes are in any answer.** X followers and Discord's session check now pass the picture link through (`extra.pictureUrl`); `avatarHash` stays empty until a writer has the bytes.
+- **`extra` keys.** Besides the keys `storageReadPath.md` names (picture link, headline), the X followers read keeps `location`, `followingCount`, `postCount`, `canDm`, `protected` and `joinedAt`; LinkedIn keeps `premium`. All are listed in `IDENTITY_PROFILE_EXTRA_KEYS`.
+- **The import guard.** Sucrase turns `import()` into `require` inside a promise, so `moduleRequire` already rejected it when called. The compile-time check also missed a side-effect `import "node:fs"` (it matched only `import … from`). Both are now refused when the view compiles.
+- **Redaction.** `reportData`'s result carries message text too, so it is redacted with `report`.
+
 ### Acceptance criteria and test plan, overall
 
 - A fixture per platform's engine response feeds the extender; `identityProfiles` ends up populated without a second network call.

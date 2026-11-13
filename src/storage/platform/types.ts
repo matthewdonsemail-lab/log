@@ -93,6 +93,35 @@ export interface InteractionRow {
   at: string
 }
 
+export const IDENTITY_PROFILE_EXTRA_KEYS = ['pictureUrl', 'location', 'followingCount', 'postCount', 'canDm', 'protected', 'joinedAt', 'premium', 'headline'] as const
+
+export type IdentityProfileExtraKey = (typeof IDENTITY_PROFILE_EXTRA_KEYS)[number]
+
+export type IdentityProfileExtra = Partial<Record<IdentityProfileExtraKey, string | number | boolean>>
+
+export interface IdentityProfileFields {
+  bio?: string | null
+  avatarHash?: string | null
+  followerCount?: number | null
+  verified?: boolean | null
+  extra?: IdentityProfileExtra | null
+}
+
+export interface IdentityProfileRow {
+  platform: string
+  userId: string
+  bio: string | null
+  avatarHash: string | null
+  followerCount: number | null
+  verified: boolean | null
+  extra: IdentityProfileExtra | null
+  fetchedAt: string
+}
+
+export const RAW_BLOB_KINDS: readonly string[] = ['avatar']
+
+export type BlobCodec = 'gzip' | 'raw'
+
 export interface ExtenderContext {
   ownerIdOf(platform: string, account: string): string | null
   userIdOfHandle?(platform: string, handle: string): string | null
@@ -105,6 +134,7 @@ export interface PlatformExtender {
   toMessage(event: EventInput, context: ExtenderContext): MessageRow | null
   toAttachments(event: EventInput): AttachmentRow[]
   toInteraction(event: EventInput): InteractionRow | null
+  toProfile(event: EventInput): IdentityProfileRow | null
 }
 
 export interface TypedRows {
@@ -113,12 +143,13 @@ export interface TypedRows {
   message: MessageRow | null
   attachments: AttachmentRow[]
   interaction: InteractionRow | null
+  profile: IdentityProfileRow | null
 }
 
 export const MESSAGE_TYPES: readonly string[] = ['message', 'ownMessage']
 
-export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen', 'identityLearned', 'accountIdentified']
+export const DERIVED_EVENT_TYPES: readonly string[] = ['attachmentsSeen', 'messageEdited', 'conversationSeen', 'identityLearned', 'accountIdentified', 'profileSeen']
 
-export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identities', 'accounts', 'handleAliases', 'identityMerges']
+export const DERIVED_TABLES: readonly string[] = ['attachments', 'memberships', 'messages', 'interactions', 'chats', 'identityProfiles', 'identities', 'accounts', 'handleAliases', 'identityMerges']
 
 export const EXTENDER_VERSION = 2

@@ -5,7 +5,8 @@ import { existsSync, readFileSync, renameSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { defaultDbPath, openDatabase } from '../../storage/schema'
-import { accountIdentifiedEvent, attachmentsSeenEvent, eventIdFrom, identityLearnedEvent, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf } from '../../storage/platform'
+import { accountIdentifiedEvent, attachmentsSeenEvent, eventIdFrom, identityLearnedEvent, insertEventRow, isBareId, MESSAGE_TYPES, messageKeyOf, msOf, platformMessageIdOf, profileFieldsOf, profileSeenEvent } from '../../storage/platform'
+import type { ProfileSighting } from '../../storage/platform'
 import { INTERNAL_TYPES, KNOWN_TYPES } from './types'
 import type { GapRow, GapStatus, Stage, StoredEvent } from './types'
 
@@ -181,6 +182,22 @@ export function identifyAccount(platform: string, account: string, userId: strin
   const known = on.prepare('SELECT userId FROM accounts WHERE platform = ? AND account = ?').get(platform, account) as { userId: string } | null
   if (known?.userId === String(userId)) return false
   return on.transaction(() => insertEventRow(on, accountIdentifiedEvent(platform, account, String(userId), now.toISOString()), now) !== null).immediate()
+}
+
+export function rememberProfiles(platform: string, account: string, sightings: readonly (ProfileSighting | null)[], now: Date = new Date(), on: Database = db()): number {
+  const at = now.toISOString()
+  let written = 0
+  const learn = () => {
+    for (const sighting of sightings) {
+      if (!sighting?.userId) continue
+      if (sighting.handle && !isBareId(sighting.handle)) insertEventRow(on, identityLearnedEvent(platform, account, sighting.userId, sighting.handle, sighting.displayName, at), now)
+      const fields = profileFieldsOf(sighting.fields)
+      if (fields && insertEventRow(on, profileSeenEvent(platform, account, sighting.userId, fields, at), now)) written++
+    }
+  }
+  if (on.inTransaction) learn()
+  else on.transaction(learn).immediate()
+  return written
 }
 
 export function handleOfIdentity(platform: string, userId: string, on: Database = db()): string | null {

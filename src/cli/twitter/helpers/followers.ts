@@ -1,3 +1,5 @@
+import { rememberProfiles } from "../../../inbox/store/index.ts";
+import { twitterFollowerProfile } from "../../../storage/platform/index.ts";
 import type { TwitterFollower, TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
@@ -5,7 +7,7 @@ import { governorLine, openTwitterAccount } from "./account.ts";
 
 export const FOLLOWERS_USAGE = [
   "Usage: log twitter followers --account <accountName> [--limit <n>] [--json]",
-  "Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing.",
+  "Reads the account's own followers on the direct-API engine (no browser, no proxy: X accounts call X directly, rule 80), newest first: handle, name, bio, location, follower and post counts, whether they take DMs. Sends nothing. Each follower's profile is kept in log.db (identityProfiles), so report draws it later with no X call.",
   "X's own answer decides: the session check first, then X's followers list, 100 a page, 1.5 s apart. --limit is how many to read, default 200, at most 4000.",
 ].join("\n");
 
@@ -61,6 +63,7 @@ export const followersCommand: Command = {
       context.err(`${opened.account.accountName}: followers read (up to ${limit}) on the direct-API engine, X called directly`);
       const run = await opened.engine({ action: "followers", limit });
       const code = run.answer.ok ? 0 : 1;
+      if (run.answer.ok && run.answer.followers?.length) rememberProfiles("twitter", opened.account.accountName, run.answer.followers.map((f) => twitterFollowerProfile(f as unknown as Record<string, unknown>)), context.now?.() ?? new Date());
       if (parsed.flags["json"]) return { code, stdout: JSON.stringify({ engine: "directApi", library: "twikit", account: opened.account.accountName, ...run.answer }, null, 2) };
       const governor = governorLine(run);
       return { code, stdout: [render(opened.account.accountName, run.answer), ...(governor ? [governor] : [])].join("\n") };

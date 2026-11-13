@@ -22,7 +22,7 @@ import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_M
 import type { JobRecord } from "../jobs/index.ts";
 import { oauthFromEnv } from "../oauth/index.ts";
 import type { OAuthServer } from "../oauth/index.ts";
-import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, namedByPlay, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
+import { activePlay, currentToolName, FLOW_LIVE_TOOL, forgetPlayScope, gatedToolOf, guideAnswer, handleOf, PLAY_HANDLE_FIELD, playMeta, playRefusal, actingAsOwnerTools, folderOfPlay, namedByPlay, platformOfTool, playGateMode, stepToolsOf, playScope, processPlayScope, renamedTool, touchPlay, withoutHandle, withPlayFooter, withRenamedNote } from "./helpers/index.ts";
 import type { PlayScope } from "./helpers/index.ts";
 import { CALL_TOOL, catalog, catalogTools, getAnswer, isCatalogTool, resolveCall, searchAnswer, SEARCH_TOOL } from "../catalog/index.ts";
 import { AGENTS_URI, commandTools, CORE_GUIDE, flowArgv, flowOfTool, guardCall, GUIDE_TOOL, GUIDE_TOPICS, guideTool, listUseCases, readUseCase, withUseCases, hasShell, LONG_RUNNING, parseEnvText, readGuide, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
@@ -244,8 +244,9 @@ export async function runToolCall(
   const gate = (tool: string) => {
     const play = activePlay(scope, handle);
     const pages = listUseCases([tool]);
-    const mode = playGateMode(tool, actingAsOwnerTools(COMMANDS, flows), stepToolsOf(pages));
-    const refusal = playRefusal(tool, { mode, useCases: pages.filter((u) => namedByPlay(tool, stepToolsOf([u]))).map((u) => u.id), play });
+    const platform = platformOfTool(tool, COMMANDS, flows);
+    const mode = playGateMode(tool, actingAsOwnerTools(COMMANDS, flows), pages, platform);
+    const refusal = playRefusal(tool, { mode, platform, useCases: pages.filter((u) => namedByPlay(tool, stepToolsOf([u])) || (platform !== null && folderOfPlay(u.id) === platform)).map((u) => u.id), play });
     if (!refusal) touchPlay(play);
     return refusal;
   };

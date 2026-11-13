@@ -13,6 +13,8 @@ export const SECRET_ARGS: Readonly<Partial<Record<ConsoleOperation, readonly str
 
 export const REDACTED = "<redacted>";
 
+export const PRIVATE_RESULT_TOOLS: readonly string[] = ["report", "reportData"];
+
 export const CONSOLE_SAFE_ERRORS = [
   "consoleInputInvalid",
   "consoleOperationUnknown",
