@@ -15,4 +15,5 @@ export { activePlay, clearActivePlay, forgetPlayScope, handleOf, hostedPlayOwner
 export type { ActivePlay, PlayGate, PlayLoad, PlayLoadedBy, PlayScope, PlayStep } from "./activePlay.ts";
 export { askAnswer, askDecision, guideAnswer } from "./guideAnswer.ts";
 export type { GuideAnswer } from "./guideAnswer.ts";
-export { FLOW_LIVE_TOOL, gatedToolOf, playRequiredTools } from "./playGate.ts";
+export { actingAsOwnerTools, FLOW_LIVE_TOOL, gatedToolOf, namedByPlay, PLAY_GATED_ON_MAIN, playGateMode, playRequiredTools, stepToolsOf, unnamedActingTools } from "./playGate.ts";
+export type { PlayGateMode, PlayPage } from "./playGate.ts";

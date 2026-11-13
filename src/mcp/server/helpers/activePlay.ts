@@ -177,17 +177,17 @@ export function playFooter(tool: string, play: ActivePlay | null = activePlay())
 }
 
 export interface PlayGate {
-  required: boolean;
+  mode: "covered" | "anyPlay" | "none";
   useCases: readonly string[];
   play?: ActivePlay | null;
 }
 
 export function playRefusal(tool: string, gate: PlayGate): string | null {
-  if (!gate.required) return null;
+  if (gate.mode === "none") return null;
   const play = gate.play === undefined ? activePlay() : gate.play;
   const options = gate.useCases.length ? gate.useCases.map((id) => `getGuide({ useCase: "${id}" })`).join(", ") : 'the use case that fits, from getGuide({ topic: "logMcpInstructions" })';
   if (!play) return `playMissing: ${tool} sends as the owner, and no play is loaded for this caller (none was loaded, it expired after ${PLAY_IDLE_MS / 3_600_000} idle hours, or its handle is unknown), so nothing was sent. The plays that use it: ${options}. Every message in a play is written from that person's own thread, and no two read alike.`;
-  if (playCovers(play, tool)) return null;
+  if (gate.mode === "anyPlay" || playCovers(play, tool)) return null;
   return `playNotCovering: ${tool} sends as the owner, and the active play ${play.id} names no step that uses it, so nothing was sent. The plays that use it: ${options}. Loading one replaces ${play.id}.`;
 }
 

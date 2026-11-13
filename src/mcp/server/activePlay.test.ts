@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { COMMANDS } from "../../cli/runner/index.ts";
-import { activePlay, clearActivePlay, gatedToolOf, guideAnswer, hostedPlayOwner, mintPlayHandle, PLAY_HANDLE_PATTERN, PLAY_IDLE_MS, playCovers, playFooter, playRefusal, playRequiredTools, playScope, processPlayScope, readUseCase, setActivePlay, stepsOf, toolsFromCommands, toolsFromFlows, withPlayFooter } from "./helpers/index.ts";
+import { actingAsOwnerTools, activePlay, clearActivePlay, gatedToolOf, listUseCases, namedByPlay, PLAY_GATED_ON_MAIN, playGateMode, stepToolsOf, unnamedActingTools, guideAnswer, hostedPlayOwner, mintPlayHandle, PLAY_HANDLE_PATTERN, PLAY_IDLE_MS, playCovers, playFooter, playRefusal, playRequiredTools, playScope, processPlayScope, readUseCase, setActivePlay, stepsOf, toolsFromCommands, toolsFromFlows, withPlayFooter } from "./helpers/index.ts";
 import { runToolCall, savedFlows, withCallFooter } from "./index.ts";
 
 afterEach(() => clearActivePlay());
@@ -97,22 +97,54 @@ describe("the play is kept per handle", () => {
 });
 
 describe("a play unlocks only the sends it covers", () => {
-  const required = playRequiredTools(COMMANDS, savedFlows());
+  const flows = savedFlows();
+  const pages = listUseCases();
+  const required = playRequiredTools(COMMANDS, flows, pages);
+  const acting = actingAsOwnerTools(COMMANDS, flows);
+  const named = stepToolsOf(pages);
+  const UNNAMED = ["discordDeleteLive", "flowDeletePostLive", "flowPostCommentLive", "flowProfilePhotoPostLive", "flowProfilePostLive", "redditPostLive", "redditReplyLive", "redditVoteLive", "twitterListAddLive", "twitterListCreateLive", "twitterQuoteLive", "twitterRepostLive", "twitterVoiceLive"];
 
-  test("the gate is derived from each tool's effect, covering every live tool that acts as the owner", () => {
-    for (const tool of ["twitterDmLive", "twitterReplyLive", "twitterQuoteLive", "twitterQueueRunLive", "twitterVoiceLive", "discordSendLive", "slackSendLive", "instagramSendLive"]) expect(required.has(tool)).toBe(true);
-    const ungatedBefore = ["twitterPostLive", "twitterLikeLive", "twitterRepostLive", "twitterFollowLive", "twitterReactLive", "redditPostLive", "redditReplyLive", "discordDeleteLive", "discordReactLive", "discordVoiceLive", "slackReactLive", "slackVoiceLive", "instagramReactLive", "instagramVoiceLive", "flowPostCommentLive", "flowProfilePostLive", "flowProfilePhotoPostLive", "flowDeletePostLive"];
-    for (const tool of ungatedBefore) expect(required.has(tool)).toBe(true);
-    for (const tool of ["twitterDm", "twitterDms", "discordRead", "tregCallLive", "inspectDoLive", "flowGroupTabsLive", "warmupLive"]) expect(required.has(tool)).toBe(false);
+  test("acting as the owner is derived from each tool's effect", () => {
+    const ungatedOnMain = ["twitterPostLive", "twitterLikeLive", "twitterRepostLive", "twitterFollowLive", "twitterReactLive", "redditPostLive", "redditReplyLive", "discordDeleteLive", "discordReactLive", "discordVoiceLive", "slackReactLive", "slackVoiceLive", "instagramReactLive", "instagramVoiceLive", "flowPostCommentLive", "flowProfilePostLive", "flowProfilePhotoPostLive", "flowDeletePostLive"];
+    for (const tool of [...PLAY_GATED_ON_MAIN, ...ungatedOnMain]) expect(acting.has(tool)).toBe(true);
+    for (const tool of ["twitterDm", "twitterDms", "discordRead", "tregCallLive", "inspectDoLive", "flowGroupTabsLive", "warmupLive"]) expect(acting.has(tool)).toBe(false);
   });
 
-  test("every gated tool takes a play handle in its schema", () => {
-    const tools = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())];
-    for (const tool of tools) expect(Boolean((tool.inputSchema.properties as Record<string, unknown>).playHandle)).toBe(required.has(tool.name));
+  test("the acting tools no use case names are exported, and are what this fixture expects", () => {
+    expect(unnamedActingTools(COMMANDS, flows, pages)).toEqual(UNNAMED);
+    for (const tool of UNNAMED) expect(namedByPlay(tool, named)).toBe(false);
+  });
+
+  test("an acting tool a use case names needs a play that covers it; one no use case names is not play-gated", () => {
+    expect(playGateMode("discordSendLive", acting, named)).toBe("covered");
+    expect(playGateMode("twitterPostLive", acting, named)).toBe("covered");
+    expect(playGateMode("discordDeleteLive", acting, named)).toBe("none");
+    expect(playGateMode("redditPostLive", acting, named)).toBe("none");
+    expect(playRefusal("discordDeleteLive", { mode: "none", useCases: [], play: null })).toBeNull();
+    expect(required.has("discordDeleteLive")).toBe(false);
+    expect(required.has("discordSendLive")).toBe(true);
+  });
+
+  test("the eight tools gated on main are never less gated", () => {
+    expect(PLAY_GATED_ON_MAIN.size).toBe(8);
+    for (const tool of PLAY_GATED_ON_MAIN) {
+      expect(required.has(tool)).toBe(true);
+      expect(playGateMode(tool, acting, named)).not.toBe("none");
+      expect(playRefusal(tool, { mode: playGateMode(tool, acting, named), useCases: [], play: null })).toStartWith("playMissing");
+    }
+    expect(playGateMode("twitterQuoteLive", acting, named)).toBe("anyPlay");
+    expect(playGateMode("twitterVoiceLive", acting, named)).toBe("anyPlay");
+    const discord = setActivePlay("discord/channelReply", page("discord/channelReply"));
+    expect(playRefusal("twitterQuoteLive", { mode: "anyPlay", useCases: [], play: discord })).toBeNull();
+  });
+
+  test("every acting tool takes a play handle in its schema", () => {
+    const tools = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(flows)];
+    for (const tool of tools) expect(Boolean((tool.inputSchema.properties as Record<string, unknown>).playHandle)).toBe(acting.has(tool.name));
   });
 
   test("a send as the owner is refused while no play is loaded, naming the plays that use it", () => {
-    const refusal = playRefusal("twitterDmLive", { required: true, useCases: ["twitter/followUps", "twitter/networkMaxing"], play: null });
+    const refusal = playRefusal("twitterDmLive", { mode: "covered", useCases: ["twitter/followUps", "twitter/networkMaxing"], play: null });
     expect(refusal).toContain("playMissing");
     expect(refusal).toContain('getGuide({ useCase: "twitter/networkMaxing" })');
     expect(refusal).not.toContain("matt");
@@ -122,15 +154,15 @@ describe("a play unlocks only the sends it covers", () => {
     const discord = setActivePlay("discord/channelReply", page("discord/channelReply"));
     expect(playCovers(discord, "discordSendLive")).toBe(true);
     expect(playCovers(discord, "twitterDmLive")).toBe(false);
-    expect(playRefusal("twitterDmLive", { required: true, useCases: [], play: discord })).toStartWith("playNotCovering");
-    expect(playRefusal("discordSendLive", { required: true, useCases: [], play: discord })).toBeNull();
-    expect(playRefusal("discordReactLive", { required: true, useCases: [], play: discord })).toStartWith("playNotCovering");
+    expect(playRefusal("twitterDmLive", { mode: "covered", useCases: [], play: discord })).toStartWith("playNotCovering");
+    expect(playRefusal("discordSendLive", { mode: "covered", useCases: [], play: discord })).toBeNull();
+    expect(playRefusal("discordReactLive", { mode: "covered", useCases: [], play: discord })).toStartWith("playNotCovering");
   });
 
   test("naming the dry run covers its live twin, and reads are never refused", () => {
     const followUps = setActivePlay("twitter/followUps", page("twitter/followUps"));
     expect(playCovers(followUps, "twitterDmLive")).toBe(true);
-    expect(playRefusal("twitterDms", { required: false, useCases: [], play: null })).toBeNull();
+    expect(playRefusal("twitterDms", { mode: "none", useCases: [], play: null })).toBeNull();
   });
 
   test("a hand-run flowLive of an acting flow is gated as that flow's tool", () => {

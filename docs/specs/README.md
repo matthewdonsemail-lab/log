@@ -4,7 +4,7 @@ title: "Specs"
 
 # Specs
 
-What log-cli must do, in order by domain: 44 domains, 507 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
+What log-cli must do, in order by domain: 45 domains, 512 requirements. Each one's anchors are proved against its code by the syntax tree on every commit, push and pull request (`bun run check:specs`). SubQ reads a requirement against its code only when asked (`bun run check:specs --subq`, rule 170). AGENTS.md keeps the rules by date; these pages are the same rules as they stand today. Written by `bun run docs:build` from the spec pages, not edited by hand.
 
 ## [Command shape](./commandShape.md)
 
@@ -648,6 +648,16 @@ Every platform account's governor counts what it sent today (requests, writes, t
 - **REQ-GOVERNOR-02** A reset puts the count back to 0 and proves it held
 - **REQ-GOVERNOR-03** Every reset is a row in log.db
 - **REQ-GOVERNOR-04** A cooldown after a block is kept
+
+## [The platform-neutral scorecard](./agnosticScorecard.md)
+
+`bun run check:agnostic` measures, from the code alone, how far log is from one platform-neutral capability set ([platformNeutralSurfaces.md](../proposals/platformNeutralSurfaces.md)), and fails a commit that makes any number worse than the committed baseline. Each slice of that plan lowers its numbers and lowers the baseline in the same change. Nothing is read from the network or from this machine's state: only the commands, the tool definitions, the committed flows, use cases, guides, skills, AGENTS.md and the source files.
+
+- **REQ-AGNOSTIC-01** Every number is computed from the code
+- **REQ-AGNOSTIC-02** A number worse than its baseline fails, and says which
+- **REQ-AGNOSTIC-03** The baseline only moves down without an explicit flag
+- **REQ-AGNOSTIC-04** It runs on every commit and in CI
+- **REQ-AGNOSTIC-05** The measuring functions are tested over fixtures
 
 ## [Instagram](./instagram.md)
 

@@ -27,7 +27,7 @@ export function actsAsOwner(entry: Pick<CommandTool, "live" | "effect" | "comman
   return entry.live && OWNER_EFFECTS.has(entry.effect) && isPlatform(entry.command.platform);
 }
 
-export const PLAY_HANDLE = { type: "string", description: "The play handle getGuide returned, when this caller keeps more than one play; left out, the caller's own play is used. A send as the owner goes out only under a play whose steps name it" };
+export const PLAY_HANDLE = { type: "string", description: "The play handle getGuide returned, when this caller keeps more than one play; left out, the caller's own play is used. The play decides which step this call is, and a send a play names goes out only under a play that names it" };
 
 export const ARGS_LIVE_FLAGS = ["live", "likes"] as const;
 

@@ -23,6 +23,9 @@ pre-commit:
     platforms:
       run: bun run check:platforms
 
+    agnostic:
+      run: bun run check:agnostic
+
     layout:
       run: bun run check:layout
 
@@ -86,6 +89,9 @@ pre-push:
 
     platforms:
       run: bun run check:platforms
+
+    agnostic:
+      run: bun run check:agnostic
 
     naming:
       run: bun run check:naming
