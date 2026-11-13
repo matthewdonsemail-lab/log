@@ -14,7 +14,6 @@ When the owner asks for one of these, follow its page step by step.
 
 | Use case | What it is | How the owner asks for it |
 |---|---|---|
-| `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
 | `getGuide({ useCase: "reddit/contributorMaxxing" })` | Contributor maxxing: finding talented builders through what they share | "contributormaxxing", "find talented people who are out there who are interested in the same things that we're interested in", "use our reddit to load up gotomarketengineering", "find people who are posting on github inside of that subreddit", "find me all of the best githubs that have been posted in the past 7 days" |
 
 ## The tools in this guide
@@ -43,7 +42,7 @@ log reddit session check --account <accountName> [--json]
 Checks that Reddit still accepts the account's saved session, on the direct-API engine (no browser). Sends nothing.
 Reddit's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }), getGuide({ useCase: "reddit/contributorMaxxing" }).
+Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "reddit/contributorMaxxing" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "reddit" }) (A Reddit account: its session, reading subreddits, the home feed and posts with their comments, and posting, commenting and voting).
 AGENTS.md (log://agents): rules 175, 63, 2, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 

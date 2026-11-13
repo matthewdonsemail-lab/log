@@ -25,10 +25,10 @@ Say: **"go on docs/useCases/inbox/signIn.md for <account>"**. The agent reads th
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Check the session through the platform's own answer, never a screen | `twitterSessionCheck`, `discordSessionCheck`, `instagramSessionCheck`, `slackSessionCheck`, `redditSessionCheck` or `linkedinSessionCheck` { account } | signed in, or what is missing |
+| 1 | Check every account (or one) through its platform's own answer, never a screen. A 401 or no saved session is "needs signing in", with its next step | `sessionsCheck` { platform?, account? } (the CLI's `log sessions check`, the console's Check) | each account signed in, needs signing in, stopped or unknown |
 | 2 | When it needs a person, open the account's live browser. On the owner's machine it is the window on their screen; from a remote runtime an MCP Apps host shows it inline in the chat | `browserView` { account } | the browser is on the sign-in page, and the answer says where |
 | 3 | The owner signs in themself, in the window or in the chat. Their clicks and typing reach the page only while it still asks for sign-in | the owner | the page has moved past sign-in |
-| 4 | Check again, and only call it signed in when the platform says so (rule 25) | the same session check | signed in |
+| 4 | Close the browser to save the new session (`inspectDo` stop), check again, and only call it signed in when the platform says so (rule 25) | `inspectDo` { action: "stop" }, then `sessionsCheck` { account } | signed in |
 
 ## What to know
 

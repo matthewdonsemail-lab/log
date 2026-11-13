@@ -1,5 +1,13 @@
 import { assign, fromPromise, setup } from "xstate";
+import { checkSession } from "../../platformKit/sessionCheck/index.ts";
+import type { SessionVerdict } from "../../platformKit/sessionCheck/index.ts";
 import type { CheckAccount, CheckRecorder, CheckResult, CheckToolCaller } from "./types.ts";
+
+export function checkStateOfVerdict(verdict: SessionVerdict): CheckResult["state"] {
+  if (verdict === "signedIn") return "succeeded";
+  if (verdict === "signInNeeded" || verdict === "stopped") return "stopped";
+  return "unknown";
+}
 
 export interface CheckTask {
   account: CheckAccount;
@@ -23,14 +31,10 @@ export function accountCheckMachine(callTool: CheckToolCaller, record: CheckReco
     actors: {
       check: fromPromise(async ({ input }: { input: CheckTask }): Promise<CheckResult> => {
         record(input.account.id, "running");
-        let state: CheckResult["state"];
-        try {
-          state = checkStateOf(await callTool(sessionCheckTool(input.account.platform), { account: input.account.name, json: true }));
-        } catch {
-          state = "unknown";
-        }
+        const session = await checkSession({ id: input.account.id, name: input.account.name, platform: input.account.platform }, callTool);
+        const state = checkStateOfVerdict(session.verdict);
         record(input.account.id, state);
-        return { state };
+        return { state, session };
       }),
     },
   }).createMachine({

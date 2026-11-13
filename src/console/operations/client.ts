@@ -67,7 +67,7 @@ async function accountCheck(args: Record<string, unknown>, deps: ConsoleOperatio
   if (refusal) throw new Error(refusal);
   const checker = sharedAccountChecker(deps.callTool ?? (await inProcessToolCaller()));
   const result = await checker.check({ id: account.id, name: account.name, platform: account.platform });
-  return { state: result.state, connections: loadConnectionsView() };
+  return { state: result.state, session: result.session ?? null, connections: loadConnectionsView() };
 }
 
 export async function runConsoleOperation(tool: string, args: Record<string, unknown>, deps: ConsoleOperationDeps = {}): Promise<unknown> {

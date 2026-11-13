@@ -8,14 +8,6 @@ Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55
 
 This guide describes the current command implementation. Legacy storage names and deferred features in procedure text do not define the native hosted schema. Active rules 171, 172 and 175 govern the target: existing private workspace log.db, central identity/team authorization and minimal routing metadata, with no required Twenty or agency/CRM model. Preserve current execution gates while migrating legacy dependencies explicitly.
 
-## Use cases these tools are part of
-
-When the owner asks for one of these, follow its page step by step.
-
-| Use case | What it is | How the owner asks for it |
-|---|---|---|
-| `getGuide({ useCase: "inbox/signIn" })` | Signing an account in: checking it, then the live browser | "sign in to my account", "is my x account logged in", "check my accounts", "log me back into instagram", "my session expired", "check the status of my accounts", "open the browser so I can sign in" |
-
 ## The tools in this guide
 
 | Tool | What it does |
@@ -32,7 +24,6 @@ log linkedin session check --account <accountName> [--json]
 Checks that LinkedIn still accepts the account's saved session, on the direct-API engine (openLinkedinApi, no browser). Sends nothing.
 LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 Fill the named fields; each value goes through whole.
-Use cases that call it, each a workflow the owner asks for, tool by tool: getGuide({ useCase: "inbox/signIn" }).
 Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn).
 AGENTS.md (log://agents): rules 175, 63, 2, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
