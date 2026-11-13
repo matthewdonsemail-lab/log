@@ -24,6 +24,22 @@ This draws the starter view, which shows:
 
 log.db holds only what has been read. If the inbox may be behind, read it with `twitterDms` first (rule 160).
 
+## The data sources
+
+Each entry in `data` names one `source`. Every source reads log.db only, with no platform call.
+
+| `source` | Inputs | What it hands the view |
+| --- | --- | --- |
+| `twitterDmsBySender` | `account?`, `since?`, `limit?` | Who messaged the X account in one-to-one DMs: people, counts, activity, latest message |
+| `dmsBySender` | `platform`, `account?`, `since?`, `limit?` | The same, for any platform with chats in log.db. A platform with none is refused with `reportSourceNoData` |
+| `identityProfile` | `platform`, and `userId` or `handle` | One person: name, handle, bio, follower count, verified, `extra` (location, following, posts, premium and so on) and the avatar as a data URI. Drawn as a person card with no code. A person with no stored profile is refused with `identityProfileMissing` |
+
+```json
+{ "title": "Who is this", "data": { "person": { "source": "identityProfile", "platform": "twitter", "handle": "fakeBird" } } }
+```
+
+Profiles are kept when a session check or `twitterFollowers` sees them; nothing fetches a profile just to draw it.
+
 ## Your own view
 
 Send `code` with the same `data`, and shape the view to the question. A question about one person gets that person; a question about the week gets the week. Start from what would help the person decide or act, and keep it short.
@@ -54,7 +70,7 @@ export default function App({ data, title, subtitle }) {
 }
 ```
 
-- **Imports:** only from `"log"` and `"react"`. End with `export default function App({ data, title, subtitle })`.
+- **Imports:** only from `"log"` and `"react"`, at the top. `import()` is refused with `viewImportRefused`. End with `export default function App({ data, title, subtitle })`.
 - **Layout:**
   - `Page { title, subtitle, actions }`
   - `Card { title, actions, pad }`; use `pad={false}` around a `Table`
@@ -70,7 +86,7 @@ export default function App({ data, title, subtitle }) {
   - `LineChart { series: [{ name, values }], labels }`
   - `Sparkline { values, width }`
 - **People and words:**
-  - `Avatar { name, size }`
+  - `Avatar { name, size, src }`, `src` a `data:image/` URI such as a profile's `avatar`
   - `Quote`
   - `Icon { name }`, with Font Awesome 6 names in camelCase (`xTwitter`, `discord`, `message`, `users`, `clock`)
 - **Detail:**
@@ -105,4 +121,5 @@ In an MCP Apps host the person already sees the view, so say what it means in a 
   - the widget that runs the view in the chat (`widget.tsx`)
   - the server side that compiles with sucrase and renders the text version (`server.tsx`)
   - the starter views (`starters/`)
+- **Data:** the sources are one registry, `REPORT_SOURCES` in `src/mcp/apps/report/helpers/sources.ts`. A new source is one entry there: its input schema, its reader, its starter and its text.
 - **What the page loads:** the page is self-contained, with React, the kit and Geist inlined, so it loads nothing from the internet.

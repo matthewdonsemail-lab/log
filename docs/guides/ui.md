@@ -40,6 +40,22 @@ This draws the starter view, which shows:
 
 log.db holds only what has been read. If the inbox may be behind, read it with `twitterDms` first (rule 160).
 
+### The data sources
+
+Each entry in `data` names one `source`. Every source reads log.db only, with no platform call.
+
+| `source` | Inputs | What it hands the view |
+| --- | --- | --- |
+| `twitterDmsBySender` | `account?`, `since?`, `limit?` | Who messaged the X account in one-to-one DMs: people, counts, activity, latest message |
+| `dmsBySender` | `platform`, `account?`, `since?`, `limit?` | The same, for any platform with chats in log.db. A platform with none is refused with `reportSourceNoData` |
+| `identityProfile` | `platform`, and `userId` or `handle` | One person: name, handle, bio, follower count, verified, `extra` (location, following, posts, premium and so on) and the avatar as a data URI. Drawn as a person card with no code. A person with no stored profile is refused with `identityProfileMissing` |
+
+```json
+{ "title": "Who is this", "data": { "person": { "source": "identityProfile", "platform": "twitter", "handle": "fakeBird" } } }
+```
+
+Profiles are kept when a session check or `twitterFollowers` sees them; nothing fetches a profile just to draw it.
+
 ### Your own view
 
 Send `code` with the same `data`, and shape the view to the question. A question about one person gets that person; a question about the week gets the week. Start from what would help the person decide or act, and keep it short.
@@ -70,7 +86,7 @@ export default function App({ data, title, subtitle }) {
 }
 ```
 
-- **Imports:** only from `"log"` and `"react"`. End with `export default function App({ data, title, subtitle })`.
+- **Imports:** only from `"log"` and `"react"`, at the top. `import()` is refused with `viewImportRefused`. End with `export default function App({ data, title, subtitle })`.
 - **Layout:**
   - `Page { title, subtitle, actions }`
   - `Card { title, actions, pad }`; use `pad={false}` around a `Table`
@@ -86,7 +102,7 @@ export default function App({ data, title, subtitle }) {
   - `LineChart { series: [{ name, values }], labels }`
   - `Sparkline { values, width }`
 - **People and words:**
-  - `Avatar { name, size }`
+  - `Avatar { name, size, src }`, `src` a `data:image/` URI such as a profile's `avatar`
   - `Quote`
   - `Icon { name }`, with Font Awesome 6 names in camelCase (`xTwitter`, `discord`, `message`, `users`, `clock`)
 - **Detail:**
@@ -121,6 +137,7 @@ In an MCP Apps host the person already sees the view, so say what it means in a 
   - the widget that runs the view in the chat (`widget.tsx`)
   - the server side that compiles with sucrase and renders the text version (`server.tsx`)
   - the starter views (`starters/`)
+- **Data:** the sources are one registry, `REPORT_SOURCES` in `src/mcp/apps/report/helpers/sources.ts`. A new source is one entry there: its input schema, its reader, its starter and its text.
 - **What the page loads:** the page is self-contained, with React, the kit and Geist inlined, so it loads nothing from the internet.
 
 ## Every tool, in full
@@ -129,8 +146,9 @@ In an MCP Apps host the person already sees the view, so say what it means in a 
 
 Generative UI: show the person a view you build for their question, drawn in the chat. Plain and readable by default, in the spirit of Lynx workspaces.
 One call: { title, data: { dms: { source: "twitterDmsBySender", since?: "30d", account?, limit? } } } reads log.db and draws a starter view (headline stats, messages per day, who messages most, a table of people with activity and their latest message).
+Sources, picked by source, all read from log.db with no platform call: twitterDmsBySender (X one-to-one DMs by sender); dmsBySender { platform, account?, since?, limit? } (the same for any platform with chats in log.db, refused with reportSourceNoData when it has none); identityProfile { platform, userId or handle } (one person's name, bio, follower count, verified flag and avatar, kept from session checks and follower reads, refused with identityProfileMissing when none is stored).
 Your own view: add code, a React component in JSX. import { Page, Card, Grid, Row, Stack, Stat, Badge, Table, Bars, BarChart, LineChart, Sparkline, Avatar, Quote, Icon, Tabs, Details, Empty, Query, Time, fmt, rel, useTool, useData } from "log". End with export default function App({ data, title, subtitle }) { return <Page title={title}>…</Page> }.
-Components: Page { title, subtitle, actions }, Card { title, actions, pad }, Grid { min }, Row/Stack { gap }, Stat { label, value, hint, tone }, Badge { tone: neutral|good|bad|warn|accent }, Table { rows, columns: [{ key, title, render, align, width }], limit }, Bars { data: [{ label, value }], unit } for ranked lists, BarChart { data: [{ label, value }] } for columns, LineChart { series: [{ name, values }], labels }, Sparkline { values, width }, Avatar { name, size }, Quote, Icon { name } (Font Awesome 6 names in camelCase: xTwitter, discord, message, users, clock, fire…), Time { value } (relative), fmt(n). Plain CSS works with the --sb-* variables (--sb-text, --sb-muted, --sb-accent, --sb-surface).
+Components: Page { title, subtitle, actions }, Card { title, actions, pad }, Grid { min }, Row/Stack { gap }, Stat { label, value, hint, tone }, Badge { tone: neutral|good|bad|warn|accent }, Table { rows, columns: [{ key, title, render, align, width }], limit }, Bars { data: [{ label, value }], unit } for ranked lists, BarChart { data: [{ label, value }] } for columns, LineChart { series: [{ name, values }], labels }, Sparkline { values, width }, Avatar { name, size, src }, Quote, Icon { name } (Font Awesome 6 names in camelCase: xTwitter, discord, message, users, clock, fire…), Time { value } (relative), fmt(n). Plain CSS works with the --sb-* variables (--sb-text, --sb-muted, --sb-accent, --sb-surface).
 Interaction (from Lynx): Routes { routes: { "/": Overview, "/person/:handle": Person } } with Link { to } and BackLink for list-to-detail pages; AskButton { prompt } and FollowUps { prompts } put a question into the chat; askAgent(text); Pointable { about } and tellAgent(text) tell the agent what the person is looking at; ErrorNote offers Ask the agent to fix it; Button, Input, Select, Textarea, Field, Modal, useAction(fn) for forms; Markdown; FullscreenButton; downloadCsv(name, rows); openExternal(url). End overviews with 2 or 3 FollowUps. A send never happens from the view: AskButton prompts go through the chat and its gates.
 Data: data.<name> from the data field is there at once. useTool(name, args) calls a log read tool live from the view and returns { data, loading, error, reload }; wrap it in Query. Only call read tools.
 Shown inline in MCP Apps hosts (Claude, ChatGPT, Cursor); other hosts (Claude Code, Codex) get the same view as text. A view that doesn't compile is refused with reportFieldInvalid and the line to fix.

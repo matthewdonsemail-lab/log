@@ -2,10 +2,10 @@ import { Database } from 'bun:sqlite'
 import { timedSync } from '../../observability/timing/index'
 import { createHash } from 'node:crypto'
 import { gunzipSync, gzipSync } from 'node:zlib'
-import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, platformMessageIdOf, readConversations, writeConversation } from './helpers'
+import { chatIdOf, eventIdFrom, extenderOf, handleIdOf, isBareId, messageKeyOf, msOf, normalHandle, platformMessageIdOf, profileFieldsOf, readConversations, writeConversation } from './helpers'
 import type { StoredConversation } from './helpers'
-import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES } from './types'
-import type { EventInput, EventInsert, ExtenderContext, InsertedEvent, TypedRows } from './types'
+import { DERIVED_TABLES, EXTENDER_VERSION, MESSAGE_TYPES, RAW_BLOB_KINDS } from './types'
+import type { BlobCodec, EventInput, EventInsert, ExtenderContext, IdentityProfileFields, IdentityProfileRow, InsertedEvent, TypedRows } from './types'
 
 export const PAYLOAD_INLINE_LIMIT = 20000
 
@@ -98,21 +98,40 @@ export function typedRowsOf(event: EventInput, context: ExtenderContext): TypedR
     message: extender.toMessage(event, context),
     attachments: extender.toAttachments(event),
     interaction: extender.toInteraction(event),
+    profile: extender.toProfile(event),
   }
 }
 
-export function putBlob(handle: Database, kind: string, text: string, now: Date = new Date()): string {
-  const bytes = Buffer.from(text, 'utf8')
+export function blobCodecOf(kind: string): BlobCodec {
+  return RAW_BLOB_KINDS.includes(kind) ? 'raw' : 'gzip'
+}
+
+export function putBlob(handle: Database, kind: string, content: string | Uint8Array, now: Date = new Date(), codec: BlobCodec = blobCodecOf(kind)): string {
+  const bytes = typeof content === 'string' ? Buffer.from(content, 'utf8') : Buffer.from(content)
   const hash = createHash('sha256').update(bytes).digest('hex')
-  const packed = gzipSync(bytes)
-  handle.prepare('INSERT OR IGNORE INTO blobs (hash, kind, codec, size, storedSize, chunks, bytes, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?, ?)').run(hash, kind, 'gzip', bytes.length, packed.length, packed, now.toISOString())
+  const stored = codec === 'raw' ? bytes : gzipSync(bytes)
+  handle.prepare('INSERT OR IGNORE INTO blobs (hash, kind, codec, size, storedSize, chunks, bytes, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?, ?)').run(hash, kind, codec, bytes.length, stored.length, stored, now.toISOString())
   return hash
 }
 
-export function readBlob(handle: Database, hash: string): string | null {
+export function readBlobBytes(handle: Database, hash: string): Buffer | null {
   const row = handle.prepare('SELECT codec, bytes FROM blobs WHERE hash = ?').get(hash) as { codec: string; bytes: Uint8Array } | null
   if (!row) return null
-  return (row.codec === 'gzip' ? gunzipSync(row.bytes) : Buffer.from(row.bytes)).toString('utf8')
+  return row.codec === 'gzip' ? gunzipSync(row.bytes) : Buffer.from(row.bytes)
+}
+
+export function readBlob(handle: Database, hash: string): string | null {
+  return readBlobBytes(handle, hash)?.toString('utf8') ?? null
+}
+
+export function writeIdentityProfile(handle: Database, row: IdentityProfileRow): void {
+  handle.prepare('INSERT INTO identityProfiles (platform, userId, bio, avatarHash, followerCount, verified, extra, fetchedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET bio = COALESCE(excluded.bio, identityProfiles.bio), avatarHash = COALESCE(excluded.avatarHash, identityProfiles.avatarHash), followerCount = COALESCE(excluded.followerCount, identityProfiles.followerCount), verified = COALESCE(excluded.verified, identityProfiles.verified), extra = CASE WHEN excluded.extra IS NULL THEN identityProfiles.extra WHEN identityProfiles.extra IS NULL THEN excluded.extra ELSE json_patch(identityProfiles.extra, excluded.extra) END, fetchedAt = MAX(identityProfiles.fetchedAt, excluded.fetchedAt)').run(row.platform, row.userId, row.bio, row.avatarHash, row.followerCount, row.verified === null ? null : row.verified ? 1 : 0, row.extra ? JSON.stringify(row.extra) : null, row.fetchedAt)
+}
+
+export function identityProfileRowOf(platform: string, userId: string, fields: IdentityProfileFields, fetchedAt: string): IdentityProfileRow | null {
+  const clean = profileFieldsOf(fields)
+  if (!clean) return null
+  return { platform, userId, bio: clean.bio ?? null, avatarHash: clean.avatarHash ?? null, followerCount: clean.followerCount ?? null, verified: clean.verified ?? null, extra: clean.extra ?? null, fetchedAt }
 }
 
 export function insertEventRow(handle: Database, input: EventInsert, now: Date = new Date()): InsertedEvent | null {
@@ -157,6 +176,12 @@ function deriveInternal(handle: Database, event: EventInput): boolean {
     handle.prepare('INSERT INTO identities (platform, userId, handle, displayName, firstSeenAt, lastSeenAt) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(platform, userId) DO UPDATE SET handle = excluded.handle, displayName = COALESCE(excluded.displayName, identities.displayName), lastSeenAt = MAX(identities.lastSeenAt, excluded.lastSeenAt)').run(event.platform, userId, name, displayName, at, at)
     return true
   }
+  if (event.type === 'profileSeen') {
+    const userId = String(event.payload.userId ?? '')
+    const row = userId ? identityProfileRowOf(event.platform, userId, event.payload as IdentityProfileFields, event.receivedAt) : null
+    if (row) writeIdentityProfile(handle, row)
+    return true
+  }
   if (event.type === 'messageEdited') {
     handle.prepare('UPDATE messages SET text = ? WHERE messageKey = ?').run(event.text, String(event.payload.messageKey ?? ''))
     return true
@@ -198,6 +223,7 @@ export function writeTypedRows(handle: Database, event: EventInput, rows: TypedR
       }
     }
   }
+  if (rows.profile) writeIdentityProfile(handle, rows.profile)
   if (rows.interaction) {
     const i = rows.interaction
     handle.prepare('INSERT OR IGNORE INTO interactions (interactionKey, platform, account, kind, actorUserId, targetRef, targetText, text, at, atMs, rawHash, extenderVersion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)').run(i.interactionKey, event.platform, event.account, i.kind, i.actorUserId, i.targetRef, i.targetText, i.text, i.at, msOf(i.at) ?? msOf(event.receivedAt), EXTENDER_VERSION)
@@ -271,6 +297,7 @@ const FINGERPRINT_COLUMNS: Record<string, string> = {
   accounts: 'platform, account, userId',
   handleAliases: 'platform, handle, userId',
   identityMerges: 'platform, fromId, toId, reason',
+  identityProfiles: 'platform, userId, bio, avatarHash, followerCount, verified, extra, fetchedAt',
 }
 
 export function derivedFingerprint(handle: Database): Record<string, { rows: number; hash: string }> {
