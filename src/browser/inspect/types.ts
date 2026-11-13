@@ -11,6 +11,7 @@ export const INSPECT_ACTIONS = [
   'nextPost', 'likePost', 'postButton',
   'dwell',
   'saveState', 'pageText', 'sellLocation', 'setLocation',
+  'clearSession',
 ] as const
 
 export type InspectAction = (typeof INSPECT_ACTIONS)[number]

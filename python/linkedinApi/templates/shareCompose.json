@@ -1,0 +1,1 @@
+{"clientArguments":{"$type":"proto.sdui.actions.requests.RequestedArguments","requestedStateKeys":[],"payload":{"shareOrigin":"PROFILE"},"requestMetadata":{"$type":"proto.sdui.common.RequestMetadata"},"states":[],"screenId":"com.linkedin.sdui.flagshipnav.sharing.ShareCompose","knownTemplateIds":[]},"isModal":true}

@@ -57,6 +57,25 @@ describe("log linkedin session check", () => {
     expect(probe.stdout.trim()).toBe("curl_cffi.requests.session chrome150 None");
   });
 
+  test("with the saved browser, every call carries its user agent, client hints and Voyager's own headers", () => {
+    const probe = spawnSync(process.env.LOG_PYTHON || "python", ["-c", "import sys,json; sys.path[:0]=['python','vendor/openLinkedinApi']; from linkedinApi.engine import session_of; h=session_of({'li_at':'x','JSESSIONID':'ajax:1','bcookie':'b'},{'userAgent':'UA Windows','secChUaPlatform':'\"Windows\"'}).client.session.headers; print(json.dumps([h.get('user-agent'),h.get('sec-ch-ua-platform'),h.get('accept'),h.get('csrf-token')]))"], { encoding: "utf8" });
+    if (probe.error) return;
+    expect(JSON.parse(probe.stdout.trim())).toEqual(["UA Windows", '"Windows"', "application/vnd.linkedin.normalized+json+2.1", "ajax:1"]);
+  });
+
+  test("the engine never sends a session without its browser's identity (bcookie, bscookie, user agent): LinkedIn would end it", () => {
+    const dir = mkdtempSync(join(tmpdir(), "linkedinEngine"));
+    const cookiesPath = join(dir, "cookies.json");
+    writeFileSync(cookiesPath, JSON.stringify({ li_at: "x".repeat(40), JSESSIONID: '"ajax:1234567890"' }));
+    const spec = join(dir, "spec.json");
+    writeFileSync(spec, JSON.stringify({ action: "ping", account: "linkedinOne", platform: "linkedin", stateRoot: join(dir, "state"), cookiesPath }));
+    const engine = spawnSync(process.env.LOG_PYTHON || "python", [LINKEDIN_PLATFORM.engine, spec], { encoding: "utf8" });
+    if (engine.error) return;
+    const answer = JSON.parse(engine.stdout.trim().split(/\r?\n/).pop()!);
+    expect(answer).toMatchObject({ ok: false, code: "browserIdentityMissing" });
+    expect(answer.detail).toContain("bcookie, bscookie, the browser's user agent");
+  });
+
   test("the engine refuses cookies without li_at and JSESSIONID before calling LinkedIn", () => {
     const dir = mkdtempSync(join(tmpdir(), "linkedinEngine"));
     const cookiesPath = join(dir, "cookies.json");

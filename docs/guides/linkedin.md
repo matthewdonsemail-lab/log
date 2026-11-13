@@ -1,6 +1,6 @@
 # linkedin
 
-A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn.
+A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -9,6 +9,11 @@ Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 56
 | Tool | What it does |
 |---|---|
 | `linkedinSessionCheck` | Check that LinkedIn still accepts one account's saved session… |
+| `linkedinSessionScripts` | Read the signed-in feed page once and save the LinkedIn app's bundle… |
+| `linkedinPost` | Post to the account's LinkedIn feed, with an optional image |
+| `linkedinPostLive` | Post to the account's LinkedIn feed, with an optional…, live on LinkedIn |
+| `linkedinDelete` | Delete one of the account's own LinkedIn posts |
+| `linkedinDeleteLive` | Delete one of the account's own LinkedIn posts, live on LinkedIn |
 
 ## Every tool, in full
 
@@ -19,13 +24,76 @@ Check that LinkedIn still accepts an account's saved session, on the direct-API 
 log linkedin session check --account <accountName> [--json]
 Checks that LinkedIn still accepts the account's saved session, on the direct-API engine (openLinkedinApi, no browser). Sends nothing.
 LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+scripts reads the signed-in /feed/ page once and saves the app's bundle URLs to ~/.logCli/linkedin/<account>/appScripts.json, for rea to read LinkedIn's own code. Sends nothing.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account's session: saving its cookies from a masked prompt and checking them with LinkedIn).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
 AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinSessionScripts`
+
+Read the signed-in feed page once and save the LinkedIn app's bundle URLs for rea, sending nothing.
+Check that LinkedIn still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty
+log linkedin session scripts --account <accountName> [--json]
+Checks that LinkedIn still accepts the account's saved session, on the direct-API engine (openLinkedinApi, no browser). Sends nothing.
+LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
+scripts reads the signed-in /feed/ page once and saves the app's bundle URLs to ~/.logCli/linkedin/<account>/appScripts.json, for rea to read LinkedIn's own code. Sends nothing.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+AGENTS.md (log://agents): rules 13, 63, 64, 73, 83, 102, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinPost`
+
+Post to the account's LinkedIn feed, with an optional image; a dry run unless --live.
+Post to the account's LinkedIn feed, with an optional image, on the direct-API engine; a dry run unless --live
+log linkedin post --account <accountName> --text "<post>" [--image <path>] [--approvedBy <who>] [--live] [--json]
+Posts to the account's LinkedIn feed (anyone can see and comment), with one image if --image, on the direct-API engine (no browser), replaying the calls LinkedIn's own composer makes (ShareCompose, DispatchPostCreateWithDetour, the image upload, CreatePost), recorded from a real post.
+@[Name] in the text mentions a person or page: LinkedIn's own mention search must give exactly one match with that name, and @[Name|entityID] picks one of several. The dry run looks them up (reads only) and shows each pick. After the post, the composer's own follow-up calls go out as the browser sends them (FetchSharingAfterPostNBA, addUpdateToFeedListRequest, restoreTagPills, collaboratorResetOnDiscardAction, TrackShareboxInteraction), and the calls are paced like a person typing. The app version comes from LinkedIn's own x-li-application-version answer header; without one nothing is sent (appVersionUnknown).
+A dry run unless --live, which needs --approvedBy (rule 8). The image must be under OUTBOX or ~/.logCli, a JPEG, PNG or GIF of at most 20 MB. The copy is read for what AI chat interfaces leave in text first (rule 111). LinkedIn's answer decides: the new post's activityId is the post, and anything else stops the run with nothing retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
+Fill the named fields; each value goes through whole. What acts on LinkedIn is `linkedinPostLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+AGENTS.md (log://agents): rules 8, 63, 64, 73, 94, 102, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinPostLive`
+
+Post to the account's LinkedIn feed, with an optional image; a dry run unless --live.
+Live on LinkedIn: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Post to the account's LinkedIn feed, with an optional image, on the direct-API engine; a dry run unless --live
+log linkedin post --account <accountName> --text "<post>" [--image <path>] [--approvedBy <who>] [--live] [--json]
+Posts to the account's LinkedIn feed (anyone can see and comment), with one image if --image, on the direct-API engine (no browser), replaying the calls LinkedIn's own composer makes (ShareCompose, DispatchPostCreateWithDetour, the image upload, CreatePost), recorded from a real post.
+@[Name] in the text mentions a person or page: LinkedIn's own mention search must give exactly one match with that name, and @[Name|entityID] picks one of several. The dry run looks them up (reads only) and shows each pick. After the post, the composer's own follow-up calls go out as the browser sends them (FetchSharingAfterPostNBA, addUpdateToFeedListRequest, restoreTagPills, collaboratorResetOnDiscardAction, TrackShareboxInteraction), and the calls are paced like a person typing. The app version comes from LinkedIn's own x-li-application-version answer header; without one nothing is sent (appVersionUnknown).
+A dry run unless --live, which needs --approvedBy (rule 8). The image must be under OUTBOX or ~/.logCli, a JPEG, PNG or GIF of at most 20 MB. The copy is read for what AI chat interfaces leave in text first (rule 111). LinkedIn's answer decides: the new post's activityId is the post, and anything else stops the run with nothing retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+AGENTS.md (log://agents): rules 8, 63, 64, 73, 94, 102, 111, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinDelete`
+
+Delete one of the account's own LinkedIn posts; a dry run unless --live.
+Delete one of the account's own LinkedIn posts on the direct-API engine; a dry run unless --live
+log linkedin delete --account <accountName> --activity <activityId|post url> [--approvedBy <who>] [--live] [--json]
+Deletes one of the account's own LinkedIn posts by its activity id (what log linkedin post printed, or the urn:li:activity in its URL), on the direct-API engine (no browser), replaying LinkedIn's own deletePost call.
+A dry run unless --live, which needs --approvedBy (rule 8). LinkedIn's answer decides; a refusal stops it with nothing retried (rule 94). The governor counts it as a write.
+Fill the named fields; each value goes through whole. What acts on LinkedIn is `linkedinDeleteLive`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+AGENTS.md (log://agents): rules 8, 63, 64, 73, 94, 102, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinDeleteLive`
+
+Delete one of the account's own LinkedIn posts; a dry run unless --live.
+Live on LinkedIn: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Delete one of the account's own LinkedIn posts on the direct-API engine; a dry run unless --live
+log linkedin delete --account <accountName> --activity <activityId|post url> [--approvedBy <who>] [--live] [--json]
+Deletes one of the account's own LinkedIn posts by its activity id (what log linkedin post printed, or the urn:li:activity in its URL), on the direct-API engine (no browser), replaying LinkedIn's own deletePost call.
+A dry run unless --live, which needs --approvedBy (rule 8). LinkedIn's answer decides; a refusal stops it with nothing retried (rule 94). The governor counts it as a write.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+AGENTS.md (log://agents): rules 8, 63, 64, 73, 94, 102, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full
 
 From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md and win.
+
+**Rule 8.** 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted unless matt asks for it.
 
 **Rule 13.** 2026-10-18 · Twenty is the only place accounts and listings live: Facebook accounts are `socialAccounts` (platform FACEBOOK), listings are `agencyListings`. Never delete either: a banned or dead account keeps its record with its status, and its campaign listings get replacement accounts in the same country (`docs/accountsAndListings.md`). Fields are only ever added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the twitter-controller keeps working.
 
@@ -47,4 +115,8 @@ From AGENTS.md (`log://agents`). The newest rules are at the bottom of AGENTS.md
 
 **Rule 83.** 2026-10-25 · matt: a new platform is made with one command, written normally: `log new platform <name>` (MCP `newPlatform`). It writes the platform's account session on the shared `src/platformKit/session`, `log <name> session check` with its MCP tool, a direct-API engine in `python/<name>Api` on the shared `python/platformKit/engine.py`, and `docs/platforms/<name>/README.md`, and wires it into the repo by editing each file through its syntax tree (`PLATFORMS`, `PLATFORM_LABELS`, `COMMANDS`, `createContext`, `CommandContext`, `DIRECT_ROUTES`, `COMMAND_RULES`), checking every edit landed before anything is written. Without `--apply` it only lists what it would do; nothing is overwritten; it names what Twenty is missing (the `socialAccounts.platform` option) and never changes Twenty. Routes and rules are keyed by the platform-qualified name (`commandKey`: `read`, `twitterSession`, `redditSession`), so two platforms' commands never share one. lefthook's `platforms` (`bun run check:platforms`, pre-commit and pre-push) refuses a platform missing its label, src, command, engine, session route, rules or docs. `src/scaffold/platform`, `src/cli/new`.
 
+**Rule 94.** 2026-10-29 · matt: "whatever you did in such quick succession lead to my account getting disabled, never do that again." Never act on an account in quick succession. What happened (matt's Discord, `sourcedandsoldtothehighestbidder`, 2026-10-29 00:47-01:00 UTC): in about 13 minutes an agent replied in 3 chats, read 1,400 messages from a server (Finn Automated) with a scratch script that went around log-cli (`.scratch/finn/dc.ts`: its own fetch to `discord.com/api/v9` with the session token, pages back to back, retrying straight through 429s), pulled the account's relationships, then opened new DMs to strangers from that server 30 s apart. Discord disabled the account. From now on: - Every call to a platform goes through log-cli's own commands and their governor. Never a hand-rolled script with an account's token or cookies. - A 429 or a failed send stops the run. It is never retried through, and the next action waits for matt. - Reading a server, group or member list in bulk is its own session. It never runs in the same session as sending. - Cold DMs to people the account has never talked to go out at most a few a day, minutes apart, never back to back. Each new DM channel opened counts as a write. - After a block, disable, captcha or cooldown, nothing resumes on that account until matt says so.
+
 **Rule 102.** 2026-10-30 · mandeep: LinkedIn goes out looking like a browser, the way X does (rule 81). `vendor/openLinkedinApi` reaches LinkedIn only through one curl_cffi `Session` in `open_linkedin_api/transport.py`, pinned to one impersonation target (`IMPERSONATE`, `chrome150`, the closest to the Chrome its cookies come from), sending the target's own user agent, never the library's fixed one or plain `requests`. `python/checks/linkedinTransport.py` refuses anything else (`bun run check:linkedinTransport`, pre-commit and pre-push). Every LinkedIn call runs through the account's governor (`python/platformKit/engine.py`), and a LinkedIn account writes at most 10 times a day (`WRITES_PER_DAY`), not 40 (rule 91).
+
+**Rule 111.** 2026-11-02 · matt: find GitHub repos "good for claude watermarking ... so we're able to pass it through context into the sends so that we can see how likely it is to be watermarked". Claude's own watermark is statistical (word choice under a secret key) and Anthropic's text detector is private preview, so no public repo can score it (`RESEARCH/CLAUDE_WATERMARK_REPOS_2026_11_02.md`). What can be read is what AI chat interfaces leave in text: `OfirYC/claude-watermark-checker` is vendored at `vendor/claudeArtifactDetector` (MIT, no dependencies) and every send's copy is read by it (`watermarkReadingOf`, `src/twitter/copy/watermark`): `clean`, `stylistic` (curly quotes, em dashes) or `artifacts` (zero-width or other hidden characters, odd spaces, pasted Claude HTML), with `statistical: unknown` always said. `planSend` refuses a send with artifacts (`aiArtifacts`) and carries the reading in its plan; `log voice` shows it and fails a draft with artifacts; a direct send and each queue send log it.

@@ -55,6 +55,8 @@ export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
   discordSend: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'send_message', when: 'send --live', seam: 'directDiscord' },
   discordDelete: { platform: 'discord', library: 'endcord', only: true, surface: 'messages', method: 'delete_message', when: 'delete --live (only the account own messages, each read first)', seam: 'directDiscord' },
   linkedinSession: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directLinkedin' },
+  linkedinPost: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'posts', method: 'post', when: 'a feed post, with an optional image (LinkedIn composer calls recorded from a real post)', seam: 'directLinkedin' },
+  linkedinDelete: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'posts', method: 'deletePost', when: 'deleting one of the accounts own posts', seam: 'directLinkedin' },
   linkedinCookies: { platform: 'linkedin', library: 'openLinkedinApi', only: true, surface: 'account', method: 'ping', when: 'cookies save (the cookies are checked with LinkedIn before they are saved)', seam: 'directLinkedin' },
   slackSession: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'session check (and auth.test with --workspace)', seam: 'directSlack' },
   slackWorkspaces: { platform: 'slack', library: 'gabrielSlack', only: true, surface: 'account', method: 'exchange_cookie', when: 'workspaces (the ones the d cookie is signed in to)', seam: 'directSlack' },

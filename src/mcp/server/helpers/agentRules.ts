@@ -180,6 +180,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   redditReply: [8, 10, 41, 63, 64, 73, 94],
   redditVote: [8, 63, 64, 73, 94],
   linkedinSession: [13, 63, 64, 73, 83, 102],
+  linkedinPost: [8, 63, 64, 73, 94, 102, 111],
+  linkedinDelete: [8, 63, 64, 73, 94, 102],
   linkedinCookies: [13, 21, 63, 64, 73, 83, 102],
   discordSession: [13, 63, 64, 73, 83, 94],
   discordChats: [13, 63, 64, 73, 83, 94],

@@ -129,7 +129,16 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/linkedin'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Copy li_at and JSESSIONID again from a browser where the account is signed in to linkedin.com, and run it again.'
+    action: 'Sign in to linkedin.com again in Chrome, copy a www.linkedin.com request as cURL from DevTools, Network, and run it again.'
+  },
+  linkedinRequestUnusable: {
+    layer: 'account',
+    meaning: "The request log linkedin cookies save read from the clipboard can't carry the account to LinkedIn as its browser (not a linkedin.com request copied as cURL, or without li_at, JSESSIONID, bcookie, bscookie or the user agent), so LinkedIn was never called and nothing was saved.",
+    retryable: false,
+    raisedIn: ['cli/linkedin'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'In Chrome signed in to linkedin.com: DevTools, Network, right-click a www.linkedin.com request (not a static file), Copy, Copy as cURL, then run it again.'
   },
   linkedinCookiesWrongAccount: {
     layer: 'account',

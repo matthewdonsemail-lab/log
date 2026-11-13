@@ -5,7 +5,8 @@ import { hasStoredDevice, toDeviceProfile } from '../../camofox/device/index'
 import type { DeviceProfile, DeviceRunFile } from '../../camofox/device/index'
 import { HOME_COUNTRIES, homeOf, outsideActiveHours } from '../../marketplace/home/index'
 import type { Home } from '../../marketplace/home/index'
-import { siteOfAccount } from '../../cli/runner/helpers/platforms'
+import { platformOfAccount, siteOfAccount } from '../../cli/runner/helpers/platforms'
+import { linkedinCookieDomain } from '../../linkedin/account/browser/index'
 import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, PlaywrightCookie, RunPurpose } from '../../marketplace/socialAccount/index'
 import { LAUNCH_LIMITS, listLaunches, overLaunchBudget } from './helpers/index'
@@ -55,7 +56,10 @@ export function directHome(account: FacebookAccount): { ok: true; home: Home } {
 export function prepareRun(account: FacebookAccount, purpose: RunPurpose, options: PrepareRunOptions = {}): PrepareRunResult {
   const check = checkRunnable(account, purpose)
   if (!check.ok) return check
-  const cookies = toFacebookCookies(account.cookies, siteOfAccount(account).domain)
+  const platform = platformOfAccount(account)
+  const deadElsewhere = platform !== 'facebook' && account.sessionState === 'loggedOut'
+  const carried = deadElsewhere ? [] : toFacebookCookies(account.cookies, siteOfAccount(account).domain)
+  const cookies = platform === 'linkedin' ? carried.map((c) => ({ ...c, domain: linkedinCookieDomain(c.name, c.domain) })) : carried
   if (purpose === 'run' && cookies.length === 0) {
     return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log facebook connect --account ${account.accountName}` }
   }

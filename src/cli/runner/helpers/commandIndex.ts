@@ -91,6 +91,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "voice", platform: "discord", module: "src/cli/voiceNote/index.ts", exportName: "discordVoiceCommand" },
   { name: "session", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinSessionCommand" },
   { name: "cookies", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinCookiesCommand" },
+  { name: "post", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinPostCommand" },
+  { name: "delete", platform: "linkedin", module: "src/cli/linkedin/index.ts", exportName: "linkedinDeleteCommand" },
   { name: "session", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackSessionCommand" },
   { name: "workspaces", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackWorkspacesCommand" },
   { name: "chats", platform: "slack", module: "src/cli/slack/index.ts", exportName: "slackChatsCommand" },

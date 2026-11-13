@@ -47,7 +47,7 @@ import { dispatchWith, runWith } from "./client.ts";
 import type { Command, CommandContext } from "./types.ts";
 import { redditPostCommand, redditReadCommand, redditReplyCommand, redditSessionCommand, redditVoteCommand } from "../reddit/index.ts";
 import { discordChatsCommand, discordDeleteCommand, discordReadCommand, discordSendCommand, discordSessionCommand, discordWatchCommand } from "../discord/index.ts";
-import { linkedinCookiesCommand, linkedinSessionCommand } from "../linkedin/index.ts";
+import { linkedinCookiesCommand, linkedinDeleteCommand, linkedinPostCommand, linkedinSessionCommand } from "../linkedin/index.ts";
 import { slackChatsCommand, slackCookiesCommand, slackReadCommand, slackSendCommand, slackSessionCommand, slackWatchCommand, slackWorkspacesCommand } from "../slack/index.ts";
 import { instagramDmsCommand, instagramSendCommand, instagramSessionCommand, instagramWatchCommand } from "../instagram/index.ts";
 import { discordReactCommand, instagramReactCommand, slackReactCommand, twitterReactCommand } from "../react/index.ts";
@@ -142,6 +142,8 @@ export const COMMANDS: Command[] = [
   discordVoiceCommand,
   linkedinSessionCommand,
   linkedinCookiesCommand,
+  linkedinPostCommand,
+  linkedinDeleteCommand,
   slackSessionCommand,
   slackWorkspacesCommand,
   slackChatsCommand,

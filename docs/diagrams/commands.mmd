@@ -104,6 +104,8 @@ flowchart TB
   subgraph g_linkedin["LinkedIn"]
     c_linkedinSession["session"]
     c_linkedinCookies["cookies"]
+    c_linkedinPost["post"]
+    c_linkedinDelete["delete"]
   end
   subgraph g_slack["Slack"]
     c_slackSession["session"]
@@ -315,6 +317,10 @@ flowchart TB
   mcp --> c_linkedinSession
   cli --> c_linkedinCookies
   c_linkedinCookies -.- terminal
+  cli --> c_linkedinPost
+  mcp --> c_linkedinPost
+  cli --> c_linkedinDelete
+  mcp --> c_linkedinDelete
   cli --> c_slackSession
   mcp --> c_slackSession
   cli --> c_slackWorkspaces
