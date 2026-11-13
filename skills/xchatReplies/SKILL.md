@@ -1,6 +1,6 @@
 ---
 name: xchatReplies
-description: Answer people who write to matt on X - X pushes each X Chat message over one socket (no polling), the inbox hook says who wrote, then read the thread, draft from matt's own writing guide, gate it with log voice, show matt, send only when he says. Use when a >>> NEW MESSAGE note arrives, when matt asks who messaged, or asks to reply, follow up or take over a conversation.
+description: Answer people who write to the owner on X - X pushes each X Chat message over one socket (no polling), the inbox hook says who wrote, then read the thread, draft from the owner's own writing guide, gate it with log voice, show the owner, send only when the owner says. Use when a >>> NEW MESSAGE note arrives, when the owner asks who messaged, or asks to reply, follow up or take over a conversation.
 ---
 
 # xchatReplies
@@ -21,16 +21,16 @@ replies show up the second they land and no inbox read ever hits X's 429.
    releases the claim.
 3. **Read everything with the person first:** `log twitter dms --account
    <a> --with <handle>` (the old DM thread and X Chat are one conversation,
-   rule 88).
-3. **Draft from matt's guide, with his facts only.** Read
+   rule 89).
+3. **Draft from the owner's guide, with the owner's facts only.** Read
    `C:/Users/tester/.buzz/GUIDES/MATT_WRITING_STYLE.md` before drafting. Lowercase,
-   no commas or full stops, his words, almost never end on a question, no
-   praise-then-pitch, nothing he didn't say (rules 39-41).
+   no commas or full stops, the owner's words, almost never end on a question, no
+   praise-then-pitch, nothing the owner didn't say (rules 39-41).
 4. **Gate every draft:** `log voice --to <handle> --text "<draft>"
    --context "<what they said>"`. Rewrite until it says PASS.
-5. **Show matt and send only when he says**, unless he has handed you the
+5. **Show the owner and send only when the owner says**, unless the owner has handed you the
    conversation (2026-10-28: "let the ai take over the conversation"). Then
-   gate each reply and send it, and stop the moment he says it's over.
+   gate each reply and send it, and stop the moment the owner says it's over.
 
 ## The routine
 
@@ -41,8 +41,8 @@ log twitter chat watch --account matthewsoldit --seconds 600
 log twitter dms --account matthewsoldit --with <handle>
 # gate the draft
 log voice --to <handle> --text "<draft>" --context "<what they said>"
-# send, once matt says
-log twitter dm --account matthewsoldit --userId <id> --text "<draft>" --approvedBy matt --live
+# send, once the owner says
+log twitter dm --account matthewsoldit --userId <id> --text "<draft>" --approvedBy <owner> --live
 ```
 
 ## When it goes wrong

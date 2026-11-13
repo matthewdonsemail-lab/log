@@ -1,5 +1,6 @@
 {
   "name": "warmupCreateAccessCheck",
+  "platform": "facebook",
   "summary": "Warm-up createAccessCheck: recorded on 99900000000001 2026-10-22 (rule 35).",
   "params": [],
   "steps": [

@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import json
 import uuid
+from pathlib import Path
 
 from anyio import to_thread
 from fastapi import APIRouter, Request
@@ -15,13 +16,7 @@ from controlService.oauthRoutes import bearer_grant
 from controlService.settings import MCP_PROTOCOL_VERSIONS, Settings
 from controlService.tools import APP_TOOLS, MCP_APP_MIME_TYPE, READ_TOOLS, UI_EXTENSION_ID
 
-INSTRUCTIONS = (
-    "log runs your team's social accounts from its own cloud workspace. Every tool runs there, with that workspace's "
-    "accounts and limits; nothing is stored by this server. Start with accountsList to see which accounts exist. "
-    "Tools that post or send are not available over this connection yet. "
-    "Route each request first: getGuide({ ask: \"<the owner's words>\" }) returns the use case to follow, and "
-    "getGuide({ topic: \"ui\" }) explains report, which shows the owner a view of their data."
-)
+INSTRUCTIONS = Path(__file__).with_name("serverInstructions.txt").read_text(encoding="utf-8").strip()
 HIDDEN = {"toolManifest", "uiResourcesList", "uiResourceRead"}
 SESSION_HEADER = "mcp-session-id"
 MAX_TEXT = 200_000

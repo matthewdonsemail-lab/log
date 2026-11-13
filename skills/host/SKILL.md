@@ -1,6 +1,6 @@
 ---
 name: host
-description: Run an account's whole lifecycle (rule 35) in ONE browser kept open for its day - log facebook host start opens it once, signs in by the session cookie, checks the account, sets profile/name/location (--live), runs the warm-up and watches, saving progress on every change so a restart resumes at the exact next step. Use when matt says host, keep it open, run the account, resume, or the persistent browser.
+description: Run an account's whole lifecycle (rule 35) in ONE browser kept open for its day - log facebook host start opens it once, signs in by the session cookie, checks the account, sets profile/name/location (--live), runs the warm-up and watches, saving progress on every change so a restart resumes at the exact next step. Use when the owner says host, keep it open, run the account, resume, or the persistent browser.
 ---
 
 # host
@@ -19,14 +19,14 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
    for the step's call and applies its flow's `answers` with the account's
    home. The create page answering `marketplace_new_seller_can_post_item:
    false` is the issue `marketplaceMayNotPost`, and a location outside home
-   `marketplaceLocationWrong`; both go to a person (matt decides).
+   `marketplaceLocationWrong`; both go to a person (the owner decides).
    **The account check reads Marketplace status from its answer**:
    `/marketplace/status`'s `CometMarketplaceStatusContentContainerQuery`
    (`marketplaceAccessOf`). A ban, selling not `ELIGIBLE`, an enforcement or a
    profile not `GOOD` is the issue `suspended` (`accessProblem`); only when that
    answer didn't load is the page text read instead.
-4. **Writes need matt:** `--live` for profile, name and Marketplace location
-   (rules 8, 28); `--likes` for the warm-up's likes.
+4. **Writes need the owner:** `--live` for profile, name and Marketplace location
+   (rule 8); `--likes` for the warm-up's likes.
 5. **Stop with SHUTDOWN, never by killing it,** so the browser closes for its
    reason and the session and device are saved (`log facebook host send ... SHUTDOWN`,
    or Ctrl+C).
@@ -42,24 +42,24 @@ log facebook host send --account <a> SHUTDOWN
 ```
 
 The host reads no Facebook group on its own: OpenMagpie polls, and its worker
-`log facebook poll --request` reads in the browser the host holds (rule 65).
+`log facebook poll --request` reads in the browser the host holds (rule 105).
 
 Run `start` through Monitor (rule 26). A restart reads
 `~/.logCli/runs/host/<a>/progress.json` and resumes: the warm-up activities
 done, today's opens; a fresh browser opens and the router walks to the next
-step. Too soon after the last launch (rule 24), the host waits the gap out.
+step. Too soon after the last launch (rule 35), the host waits the gap out.
 
 A save Twenty refused keeps the run's device and session in
 `~/.logCli/runs/unsaved/` (login removed): `log facebook account resave <a> --from <dir>`.
 
-`opensSpent` or `launchBudgetSpent` ends the day. Only when matt asks, close
+`opensSpent` or `launchBudgetSpent` ends the day. Only when the owner asks, close
 every browser (`log facebook host send --account <a> SHUTDOWN`), then run `log facebook account
-resetOpens <a>|all --reason "<why>"` (rule 37). It deletes nothing.
+resetOpens <a>|all --reason "<why>"`. It deletes nothing.
 
 Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
 `src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
 
-## The check (every watch round, rule 69)
+## The check (every watch round)
 
 Each round the host opens three pages in the browser it holds, reading each
 from its step's own recording, nothing clicked:
@@ -78,7 +78,7 @@ from its step's own recording, nothing clicked:
 3. `/marketplace/inbox?targetTab=SELLER`: the seller chats. None: said so. Some:
    counted and kept as Facebook sent them in the run folder, until a recording of
    a real chat maps a thread's fields (rule 29) and they go to Twenty's
-   conversations (rule 34).
+   conversations.
 
 `log facebook check --account <a>` runs the same once.
 Code: `src/facebook/marketplace/check`.
@@ -105,16 +105,16 @@ Some accounts land on "Use face scan, fingerprint or screen lock to confirm
 it's you" (`twoStepPasskey`) instead of the code box. The host presses "Try
 another way", waits for `TwoStepVerificationChallengePickerDialogQuery`, and
 goes on only when its answer lists `TOTP` not disabled (`authAppOffered`; else
-`twoStepNoAuthApp`, for matt). On the picker (`twoStepMethodPicker`) it chooses
+`twoStepNoAuthApp`, for the owner). On the picker (`twoStepMethodPicker`) it chooses
 "Authentication app", then Continue, and the code is typed from Twenty as
-usual (rule 21). Mountain Top, host 20261024T222706, steps 12-26.
+usual. Mountain Top, host 20261024T222706, steps 12-26.
 
 ## The Marketplace location is the account's home
 
 The host's setLocation types the account's own home written out
 (`homePlace`: its city and the state or province from `CITY_REGIONS`,
 `src/marketplace/home/types.ts`, through `fullPlaceName`, so it passes the
-acronym check, rule 72): "Mountain Top, Pennsylvania", "Kamloops, British
+acronym check): "Mountain Top, Pennsylvania", "Kamloops, British
 Columbia". A listing's `locationQuery` is used only for a home with no region.
 `log facebook preflight` shows each account's place and refuses one with no
 region (`noHomeRegion`). Mountain Top's was Pachuca, Mexico, until it was set

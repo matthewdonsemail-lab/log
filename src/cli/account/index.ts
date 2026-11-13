@@ -65,7 +65,7 @@ export const ACCOUNT_INPUT: CommandInput = {
   forms: [
     { words: ["show"], summary: "One account's record", positionals: [ACCOUNT_NAME], flags: [JSON_FLAG] },
     { words: ["resave"], effect: "write", summary: "Save a run's device and session that Twenty didn't take", positionals: [ACCOUNT_NAME], flags: [{ name: "from", kind: "string", required: true, description: "The kept run folder (~/.logCli/runs/unsaved/...)" }] },
-    { words: ["resetOpens"], effect: "write", summary: "Restart today's count of launches and host opens, only when matt asks (rule 37)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
+    { words: ["resetOpens"], effect: "write", summary: "Restart today's count of launches and host opens, only when the owner asks (rule 35)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
     {
       words: ["status"], effect: "write",
       summary: "Set an account's status (a lost account gets its listings replaced)",

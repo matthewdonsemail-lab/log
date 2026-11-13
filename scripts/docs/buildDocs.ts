@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { commandKey, commandWordOfKey } from "../../src/cli/runner/helpers/platforms.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, listUseCases, longRunLine, renderGuide, savedFlows, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
+import { agentsSection, commandTools, CORE_GUIDE, CORE_PRINCIPLES, GUIDE_TOOL, GUIDE_TOPICS, guideOfCommand, HOSTED_INSTRUCTIONS_FILE, listUseCases, longRunLine, noShellOnly, renderGuide, savedFlows, serverInstructions, shellOnly, toolsFromCommands, toolsFromFlows, withUseCases } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
@@ -110,7 +110,11 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
             "",
             "This is how the owner works. Each use case is something the owner asks for again and again, written as its steps in order, each step naming its tool and what counts as done. When the owner asks for work a use case covers, read that use case and follow it step by step instead of improvising. Work no use case covers yet, done for the owner more than once, gets a page of its own in docs/useCases/<platform>/.",
             "",
-            ...useCaseRows(useCases),
+            "With no prompt hook, getGuide({ ask }) routes the owner's words to the one that fits; each page's own asks line holds the words it is matched on.",
+            "",
+            "| Use case | What it is |",
+            "|---|---|",
+            ...useCases.map((u) => `| \`${GUIDE_TOOL}({ useCase: "${u.id}" })\` | ${u.title} |`),
             "",
             "## Rule one: if we don't know, we do this",
             "",
@@ -130,9 +134,9 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
             "",
             "## How a run reports back",
             "",
-            `- With a shell (Claude Code, Codex): ${longRunLine({ shell: true })}`,
-            `- Without one (claude.ai, Duet): ${longRunLine({ shell: false })}`,
-            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 79) and what only matt can clear (`needsMatt`).",
+            ...shellOnly([`- ${longRunLine({ shell: true })}`]),
+            ...noShellOnly([`- ${longRunLine({ shell: false })}`]),
+            "- Every result also says where every open browser is (`browsers`), the call that resolves its known page state (`next`: make it, don't stop, rule 79) and what only the owner can clear (`needsMatt`).",
             "- A refusal names its error code; the `errors` tool says what each one means and what to do.",
           ]
         : theirs.length
@@ -150,6 +154,8 @@ put("docs/specs/README.md", specsIndex(specDomains(root).filter((d) => existsSyn
     }
   }
 }
+
+put(HOSTED_INSTRUCTIONS_FILE, `${serverInstructions("hosted")}\n`);
 
 const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\r\n/g, "\n");
 const referencePath = join(root, "docs/reference.md");

@@ -1,5 +1,6 @@
 {
   "name": "profilePhotoPost",
+  "platform": "facebook",
   "summary": "Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).",
   "effect": "write",
   "params": [

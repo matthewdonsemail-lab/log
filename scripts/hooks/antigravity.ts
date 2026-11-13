@@ -85,7 +85,7 @@ if (event === 'SessionStart') {
 } else if (event === 'Stop') {
   const answered = await answerEvent('Stop', raw, repo, route)
   if (answered.body?.decision === 'block') {
-    const reason = typeof answered.body.reason === 'string' ? answered.body.reason : 'A browser sits on a state log-cli can resolve (rule 54).'
+    const reason = typeof answered.body.reason === 'string' ? answered.body.reason : 'A browser sits on a state log-cli can resolve (rule 35).'
     process.stdout.write(JSON.stringify({ decision: 'continue', reason }))
   } else {
     process.stdout.write(JSON.stringify({ decision: 'allow' }))

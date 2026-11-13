@@ -37,7 +37,7 @@ flowchart TD
 | 4 | Draft each one from those lines, in the owner's words and length. Every draft reads differently: no shared opener, no stock line. Each line of a draft is one message | the agent | one draft per person |
 | 5 | Gate each draft against the same person, and rewrite until it passes | `voice` { to, with, context, text: "<draft>" } | the gate passes |
 | 6 | Show the owner every draft as it will go out, one message per line | the owner | the owner says yes, or what to change |
-| 7 | One person: dry run, then live. Two or more: put them in the account's one queue, never a loop of sends (rule 104): `twitterQueueAdd` { queue, targets, action: "dm", by } adds them, even while it runs, fitted between what is already planned; if no run is going, `twitterQueueRunLive` { queue, keepOpen: true, confirmLive: true } starts it. A draft on several lines goes out one message per line | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true }, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` for every part |
+| 7 | One person: dry run, then live. Two or more: put them in the account's one queue, never a loop of sends (rule 105): `twitterQueueAdd` { queue, targets, action: "dm", by } adds them, even while it runs, fitted between what is already planned; if no run is going, `twitterQueueRunLive` { queue, keepOpen: true, confirmLive: true } starts it. A draft on several lines goes out one message per line | `twitterDm`, then `twitterDmLive` { userId, text, approvedBy, confirmLive: true }, or `twitterQueueAdd` and `twitterQueueRunLive` | X's answer is `sent` for every part |
 
 ## What to know
 
@@ -45,5 +45,5 @@ flowchart TD
 - Use only facts the owner said. Nothing invented about a meeting, a deal or a number.
 - `--asOne` (`asOne: true`) sends a draft as one message, only when the owner asks for that.
 - A drop or a 429 stops the rest: what went out stays out, nothing is resent, and the next send waits for the owner (rule 94).
-- An account has one queue and one run for everything it sends: follow-ups, reply-guy replies and answers go into the same one (rule 107). Never start a second queue or run beside it, and never send from a hand-run command or a loop (rules 104, 106). Each target carries its own `text`, and its dm items split one message per line the same way.
+- An account has one queue and one run for everything it sends: follow-ups, reply-guy replies and answers go into the same one (rule 105). Never start a second queue or run beside it, and never send from a hand-run command or a loop (rules 105, 163). Each target carries its own `text`, and its dm items split one message per line the same way.
 - Every call goes through the account's one X session (rule 105); the answer's `xSession` names it.

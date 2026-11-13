@@ -26,7 +26,7 @@ describe("registry", () => {
 
   test("every log MCP tool and the shells are hooked after the call", () => {
     expect(toolIsHooked("inspect")).toBe(true);
-    expect(toolIsHooked("flowProfileSetup")).toBe(true);
+    expect(toolIsHooked("facebookFlowProfileSetup")).toBe(true);
     expect(AGENT_HOOKS.find((h) => h.event === "PostToolUse")?.matcher).toContain("Bash|PowerShell|Monitor");
   });
 });
@@ -52,7 +52,7 @@ describe("page state hook", () => {
   test("a failed step is an unconfirmed page: snapshot, then resolve", () => {
     const f = findingOf(at({ failed: 'RuntimeError: no visible heading "Comments"' }));
     expect(f).toMatchObject({ kind: "failed", resolvable: true });
-    expect(f.line).toContain("log inspect do snapshot --account reading");
+    expect(f.line).toContain('`inspectDo` { action: "snapshot", account: "reading" }');
   });
 
   test("PostToolUse speaks once per change; prompts always", () => {
@@ -116,11 +116,11 @@ describe("live logs hook", () => {
     expect(buffersOutput("cd repo && bun bin/log.ts facebook capture --docs | tail -3")).toBe(true);
   });
 
-  test("a log command run by hand from a shell is refused and pointed at the MCP (rule 106)", () => {
-    expect(liveLogVerdict("Bash", "bun bin/log.ts twitter queue run q.json --live").deny).toContain("rule 106");
+  test("a log command run by hand from a shell is refused and pointed at the MCP (rule 163)", () => {
+    expect(liveLogVerdict("Bash", "bun bin/log.ts twitter queue run q.json --live").deny).toContain("rule 163");
     expect(liveLogVerdict("PowerShell", "log twitter dm --account a --userId 1 --text hi --live").deny).toContain("mcp__log__");
-    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log").deny).toContain("rule 106");
-    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook accounts --json").deny).toContain("rule 106");
+    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log").deny).toContain("rule 163");
+    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook accounts --json").deny).toContain("rule 163");
   });
 
   test("the terminal-only prompts matt runs himself are not refused", () => {
@@ -153,12 +153,12 @@ describe("live log", () => {
   });
 });
 
-describe("local changes are said before code is changed (rule 106)", () => {
+describe("local changes are said before code is changed (rule 4)", () => {
   test("uncommitted code files are named loudly", () => {
     const line = localChangesLine("repo", ["python/twitterApi/engine.py", "src/a.ts"]);
     expect(line).toContain("UNCOMMITTED LOCAL CHANGES");
     expect(line).toContain("python/twitterApi/engine.py");
-    expect(line).toContain("rule 106");
+    expect(line).toContain("rule 4");
   });
 
   test("a clean checkout says nothing", () => {

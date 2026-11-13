@@ -1,6 +1,6 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 
-export const RENAMED_TOOLS: Readonly<Record<string, string>> = {
+export const RENAMED_COMMAND_TOOLS: Readonly<Record<string, string>> = {
   listings: "facebookListings",
   listing: "facebookListing",
   listingCreate: "facebookListingCreate",
@@ -45,6 +45,49 @@ export const RENAMED_TOOLS: Readonly<Record<string, string>> = {
   conversationRecord: "facebookConversationRecord",
   capture: "facebookCapture",
 };
+
+export const RENAMED_FLOW_TOOLS: Readonly<Record<string, string>> = {
+  flowDeletePost: "facebookFlowDeletePost",
+  flowDeletePostLive: "facebookFlowDeletePostLive",
+  flowFacebookLanguageEnglish: "facebookFlowLanguageEnglish",
+  flowFacebookLanguageEnglishLive: "facebookFlowLanguageEnglishLive",
+  flowGroupHeaderMenus: "facebookFlowGroupHeaderMenus",
+  flowGroupHeaderMenusLive: "facebookFlowGroupHeaderMenusLive",
+  flowGroupMembers: "facebookFlowGroupMembers",
+  flowGroupMembersLive: "facebookFlowGroupMembersLive",
+  flowGroupPostComments: "facebookFlowGroupPostComments",
+  flowGroupPostCommentsLive: "facebookFlowGroupPostCommentsLive",
+  flowGroupPostDialog: "facebookFlowGroupPostDialog",
+  flowGroupPostDialogLive: "facebookFlowGroupPostDialogLive",
+  flowGroupTabs: "facebookFlowGroupTabs",
+  flowGroupTabsLive: "facebookFlowGroupTabsLive",
+  flowMarketplaceListingDelete: "facebookFlowMarketplaceListingDelete",
+  flowMarketplaceListingDeleteLive: "facebookFlowMarketplaceListingDeleteLive",
+  flowMarketplaceListingPublish: "facebookFlowMarketplaceListingPublish",
+  flowMarketplaceListingPublishLive: "facebookFlowMarketplaceListingPublishLive",
+  flowMessengerPinCreate: "facebookFlowMessengerPinCreate",
+  flowMessengerPinCreateLive: "facebookFlowMessengerPinCreateLive",
+  flowPostComment: "facebookFlowPostComment",
+  flowPostCommentLive: "facebookFlowPostCommentLive",
+  flowProfilePhotoPost: "facebookFlowProfilePhotoPost",
+  flowProfilePhotoPostLive: "facebookFlowProfilePhotoPostLive",
+  flowProfilePost: "facebookFlowProfilePost",
+  flowProfilePostLive: "facebookFlowProfilePostLive",
+  flowProfileSetup: "facebookFlowProfileSetup",
+  flowProfileSetupLive: "facebookFlowProfileSetupLive",
+  flowWarmupCreateAccessCheck: "facebookFlowWarmupCreateAccessCheck",
+  flowWarmupCreateAccessCheckLive: "facebookFlowWarmupCreateAccessCheckLive",
+  flowWarmupFeedBrowse: "facebookFlowWarmupFeedBrowse",
+  flowWarmupFeedBrowseLive: "facebookFlowWarmupFeedBrowseLive",
+  flowWarmupMarketplaceBrowse: "facebookFlowWarmupMarketplaceBrowse",
+  flowWarmupMarketplaceBrowseLive: "facebookFlowWarmupMarketplaceBrowseLive",
+  flowWarmupMessagesVisit: "facebookFlowWarmupMessagesVisit",
+  flowWarmupMessagesVisitLive: "facebookFlowWarmupMessagesVisitLive",
+  flowWarmupSellingVisit: "facebookFlowWarmupSellingVisit",
+  flowWarmupSellingVisitLive: "facebookFlowWarmupSellingVisitLive",
+};
+
+export const RENAMED_TOOLS: Readonly<Record<string, string>> = { ...RENAMED_COMMAND_TOOLS, ...RENAMED_FLOW_TOOLS };
 
 export function renamedTool(name: string): string | null {
   return Object.hasOwn(RENAMED_TOOLS, name) ? RENAMED_TOOLS[name] : null;

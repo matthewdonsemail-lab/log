@@ -221,7 +221,7 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue|تجاهل)"?\s*$/),
   browserNotificationsNotice: (at) => liveStep(at.account, 'press', ['Escape']),
   pastNoticeDialog: (at) => liveStep(at.account, 'press', ['Escape']),
-  messengerPinCreate: (at) => (at.messengerPin ? { tool: 'flowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
+  messengerPinCreate: (at) => (at.messengerPin ? { tool: 'facebookFlowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
   messengerPinEnter: (at) => (at.messengerPin ? liveStep(at.account, 'pin') : null),
   marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),
   marketplaceCreateLimitReached: () => null,

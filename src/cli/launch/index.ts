@@ -591,7 +591,7 @@ export const launchCommand: Command = {
   platform: "any",
   name: "launch",
   effect: "write",
-  summary: "Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and Facebook Marketplace when Twenty is set up)",
+  summary: "Start here: a guided menu to set log up (platforms, sign-ins, the account's browser and extensions), add an account, sign it in, check it and connect your agent (and the listing tools when Twenty is set up)",
   args: "[--setup] [--json]",
   run: runLaunch,
 };

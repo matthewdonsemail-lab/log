@@ -266,7 +266,7 @@ async function runCommand(context: CommandContext, path: string, flags: Record<s
             if (!chosen.ok) return { ok: false, code: "voiceProviderInvalid", detail: String((chosen as { detail?: string }).detail ?? "no voice provider") };
             const rendered = await voiceNoteDeps.render(chosen.provider, "twitter", item.text);
             if (!rendered.ok) return { ok: false, code: rendered.code, detail: rendered.detail };
-            log(`#${item.n} @${item.handle ?? "?"}: voice note made in matt's cloned voice, ${rendered.note.seconds} s`);
+            log(`#${item.n} @${item.handle ?? "?"}: voice note made in the owner's cloned voice, ${rendered.note.seconds} s`);
             const guard = guardSend({ platform: "twitter", account: opened.account.accountName, conversationId: item.userId });
             if (!guard.ok) return { ok: false, code: "chatClaimedElsewhere", detail: guard.refused };
             if (guard.part(0, `voice note: ${item.text}`) !== "go") {

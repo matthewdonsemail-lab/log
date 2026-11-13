@@ -2,7 +2,7 @@
 
 Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/profilePhotoPost` (account profilePhotoPost). Run it on any account with `log flow run profilePhotoPost --account <a> --live`, or over MCP as the tool `flowProfilePhotoPost` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261020T162343_<userId:1>/sequences/profilePhotoPost` (account profilePhotoPost). Run it on any account with `log flow run profilePhotoPost --account <a> --live`, or over MCP as the tool `facebookFlowProfilePhotoPost` (rule 31).
 
 ## Params
 

@@ -2,7 +2,7 @@
 
 Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done.
 
-Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261019T111507_<userId:1>` (account <userId:1>). Run it on any account with `log flow run profileSetup --account <a> --live`, or over MCP as the tool `flowProfileSetup` (rule 31).
+Built by `log flow fromInspect` from the recording `~/.logCli/runs/inspect/20261019T111507_<userId:1>` (account <userId:1>). Run it on any account with `log flow run profileSetup --account <a> --live`, or over MCP as the tool `facebookFlowProfileSetup` (rule 31).
 
 ## Params
 

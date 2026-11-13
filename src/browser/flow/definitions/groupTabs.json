@@ -1,5 +1,6 @@
 {
   "name": "groupTabs",
+  "platform": "facebook",
   "summary": "Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only",
   "params": [
     {

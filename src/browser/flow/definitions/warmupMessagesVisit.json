@@ -1,5 +1,6 @@
 {
   "name": "warmupMessagesVisit",
+  "platform": "facebook",
   "summary": "Warm-up messagesVisit: recorded on 99900000000001 2026-10-22 (rule 35).",
   "params": [],
   "steps": [

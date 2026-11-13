@@ -217,15 +217,16 @@ export async function runToolCall(
   signal?: AbortSignal,
   appCaller: boolean = browserViewLocation() === "remote",
   scope: PlayScope = processPlayScope(),
+  shell: boolean = true,
 ): Promise<CallToolResult> {
   const handle = handleOf(input);
   const given = withoutHandle(input);
-  const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope);
+  const again = (tool: string, next: LogToolInput | undefined, app: boolean = appCaller) => runToolCall(tool, handle && next ? { ...next, [PLAY_HANDLE_FIELD]: handle } : next, context, onLine, readBrowsers, signal, app, scope, shell);
   if (renamedTool(name)) return withRenamedNote(name, await again(currentToolName(name), input));
   if (isAppTool(name)) return runAppTool(name, given, appCaller);
   if (name === REPORT_TOOL) return runReport(given, appCaller);
   if (name === GUIDE_TOOL) {
-    const answer = guideAnswer(input, scope);
+    const answer = guideAnswer(input, scope, shell);
     const play = answer.play === undefined ? undefined : playMeta(answer.play);
     return { ...(answer.isError ? { isError: true } : {}), content: [{ type: "text", text: answer.text }], ...(play === undefined ? {} : { _meta: { [PLAY_META]: play } }) };
   }
@@ -335,7 +336,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [
-      { uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" },
+      { uri: AGENTS_URI, name: "AGENTS.md", description: "The owner's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" },
       ...(uiCapable(server.getClientCapabilities()) ? [browserViewResource(), reportResource()] : []),
     ],
   }));
@@ -347,7 +348,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
   });
   server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const input = request.params.arguments as LogToolInput | undefined;
-    const result = await runToolCall(request.params.name, input, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope);
+    const result = await runToolCall(request.params.name, input, context, onLine, options.readBrowsers ?? browserViews, extra.signal, uiCapable(server.getClientCapabilities()), scope, hasShell(server.getClientVersion()?.name));
     return withCallFooter(request.params.name, input, result, scope);
   });
   if (options.playOwner) {

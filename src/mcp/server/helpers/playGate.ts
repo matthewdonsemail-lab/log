@@ -1,15 +1,13 @@
 import type { FlowDefinition } from "../../../browser/flow/index.ts";
-import { toolName } from "../../../browser/flow/index.ts";
+import { flowPlatform } from "../../../browser/flow/index.ts";
 import { isPlatform } from "../../../cli/runner/helpers/platforms.ts";
 import type { Command } from "../../../cli/runner/types.ts";
 import { stepsOf } from "./activePlay.ts";
 import { LIVE_SUFFIX } from "./toolAnnotations.ts";
 import { actsAsOwner, commandTools } from "./toolsFromCommands.ts";
-import { flowActsAsOwner } from "./toolsFromFlows.ts";
+import { flowActsAsOwner, flowTool } from "./toolsFromFlows.ts";
 
 export const FLOW_LIVE_TOOL = "flowLive";
-
-export const FLOW_PLATFORM = "facebook";
 
 export const PLAY_GATED_ON_MAIN: ReadonlySet<string> = new Set(["twitterDmLive", "twitterReplyLive", "twitterQuoteLive", "twitterQueueRunLive", "twitterVoiceLive", "discordSendLive", "slackSendLive", "instagramSendLive"]);
 
@@ -28,7 +26,7 @@ export interface ActingTool {
 export function actingToolsOf(commands: readonly Command[], flows: readonly FlowDefinition[]): ActingTool[] {
   return [
     ...commandTools(commands).filter(actsAsOwner).flatMap((t) => (isPlatform(t.command.platform) ? [{ tool: t.tool, platform: t.command.platform as string }] : [])),
-    ...flows.filter((f) => flowActsAsOwner(f, true)).map((f) => ({ tool: `${toolName(f.name)}${LIVE_SUFFIX}`, platform: FLOW_PLATFORM })),
+    ...flows.filter((f) => flowActsAsOwner(f, true)).map((f) => ({ tool: flowTool(f, true), platform: flowPlatform(f) ?? "unknown" })),
   ];
 }
 
@@ -77,5 +75,5 @@ export function gatedToolOf(name: string, input: Record<string, unknown> | undef
   const args = Array.isArray(input?.args) ? (input.args as unknown[]) : [];
   if (args[0] !== "run" || typeof args[1] !== "string") return name;
   const flow = flows.find((f) => f.name === args[1]);
-  return flow && flowActsAsOwner(flow, true) ? `${toolName(flow.name)}${LIVE_SUFFIX}` : name;
+  return flow && flowActsAsOwner(flow, true) ? flowTool(flow, true) : name;
 }
