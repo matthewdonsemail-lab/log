@@ -34,7 +34,6 @@ Related studies stay where they are:
 - How a listing is posted: [How a Marketplace listing gets posted](../listingPublish/README.md)
 - What can leak the machine or link accounts: the private identity-leak study
 - Proxy, device and hours: [proxies](../proxies.md), [accounts and listings](../accountsAndListings.md)
-- Where to host later: `docs/scaleArchitecture/`
 
 ## The decision
 

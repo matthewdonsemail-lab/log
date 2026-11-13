@@ -1,6 +1,6 @@
 # Flow: `warmupCreateAccessCheck`
 
-Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on <userId:1> 2026-10-22 (rule 35).
+Warm-up createAccessCheck: recorded on <userId:1> 2026-10-22 (rule 35).
 
 Built by `log flow fromInspect` from the recording `~\.logCli\runs\warmup\20261022T091121_<userId:1>` (account <userId:1>). Run it on any account with `log flow run warmupCreateAccessCheck --account <a> --live`, or over MCP as the tool `flowWarmupCreateAccessCheck` (rule 31).
 

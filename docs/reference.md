@@ -380,11 +380,11 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowProfilePhotoPost`, `flowProfilePhotoPostLive` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
 | `flowProfilePost`, `flowProfilePostLive` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
 | `flowProfileSetup`, `flowProfileSetupLive` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
-| `flowWarmupCreateAccessCheck`, `flowWarmupCreateAccessCheckLive` | `log flow run warmupCreateAccessCheck` | Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll |
-| `flowWarmupFeedBrowse`, `flowWarmupFeedBrowseLive` | `log flow run warmupFeedBrowse` | Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 99900000000001 2026-10-22 (rule 35). | none | goto → dwell → scroll → gotomarketplace → dwell → scroll |
-| `flowWarmupMarketplaceBrowse`, `flowWarmupMarketplaceBrowseLive` | `log flow run warmupMarketplaceBrowse` | Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → dwell → scroll → openAny |
-| `flowWarmupMessagesVisit`, `flowWarmupMessagesVisitLive` | `log flow run warmupMessagesVisit` | Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll |
-| `flowWarmupSellingVisit`, `flowWarmupSellingVisitLive` | `log flow run warmupSellingVisit` | Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell |
+| `flowWarmupCreateAccessCheck`, `flowWarmupCreateAccessCheckLive` | `log flow run warmupCreateAccessCheck` | Warm-up createAccessCheck: recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll |
+| `flowWarmupFeedBrowse`, `flowWarmupFeedBrowseLive` | `log flow run warmupFeedBrowse` | Warm-up feedBrowse: recorded on 99900000000001 2026-10-22 (rule 35). | none | goto → dwell → scroll → gotomarketplace → dwell → scroll |
+| `flowWarmupMarketplaceBrowse`, `flowWarmupMarketplaceBrowseLive` | `log flow run warmupMarketplaceBrowse` | Warm-up marketplaceBrowse: recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → dwell → scroll → openAny |
+| `flowWarmupMessagesVisit`, `flowWarmupMessagesVisitLive` | `log flow run warmupMessagesVisit` | Warm-up messagesVisit: recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll |
+| `flowWarmupSellingVisit`, `flowWarmupSellingVisitLive` | `log flow run warmupSellingVisit` | Warm-up sellingVisit: recorded on 99900000000001 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell |
 
 ### Every command, CLI and MCP
 
@@ -931,7 +931,7 @@ flowchart LR
   checkpointStart --> person
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
-  automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  automatedBehaviour -->|"dismiss it"| nextautomatedBehaviour(["next state"])
   browserNotificationsNotice["browserNotificationsNotice: Facebook's browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)"]
   page --> browserNotificationsNotice
   browserNotificationsNotice -->|"press Escape"| nextbrowserNotificationsNotice(["next state"])

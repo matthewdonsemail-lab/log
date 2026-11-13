@@ -203,7 +203,7 @@ describe("live commands", () => {
     expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "restrictedPolicy" });
   });
 
-  test("Listaro's post-login check: signed in but unable to buy or sell is recorded, cookies kept", async () => {
+  test("The post-login check: signed in but unable to buy or sell is recorded, cookies kept", async () => {
     const twenty = marketplaceFixture();
     const session = scriptedConnect(["loggedIn"], undefined, "You can't buy or sell on Facebook");
     const err: string[] = [];

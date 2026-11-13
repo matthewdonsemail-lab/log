@@ -158,7 +158,7 @@ const AGENCY_CONVERSATION_FIELDS = [
     name: 'leadStatus',
     label: 'Lead status',
     type: 'SELECT',
-    description: 'log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand',
+    description: 'log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand',
     options: [
       option('NEW', 'New', 'blue', 0),
       option('CONTACTED', 'Contacted', 'turquoise', 1),
@@ -187,7 +187,7 @@ const AGENCY_MESSAGE_FIELDS = [
     name: 'sentBy',
     label: 'Sent by',
     type: 'SELECT',
-    description: 'log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system',
+    description: 'log-cli: who wrote an outbound message: a person, a VA, AI, or the system',
     options: [option('PERSON', 'Person', 'blue', 0), option('VA', 'VA', 'turquoise', 1), option('AI', 'AI', 'purple', 2), option('SYSTEM', 'System', 'gray', 3)]
   },
   {

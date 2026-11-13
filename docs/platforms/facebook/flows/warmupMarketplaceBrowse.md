@@ -1,6 +1,6 @@
 # Flow: `warmupMarketplaceBrowse`
 
-Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on <userId:1> 2026-10-22 (rule 35).
+Warm-up marketplaceBrowse: recorded on <userId:1> 2026-10-22 (rule 35).
 
 Built by `log flow fromInspect` from the recording `~\.logCli\runs\warmup\20261022T091121_<userId:1>` (account <userId:1>). Run it on any account with `log flow run warmupMarketplaceBrowse --account <a> --live`, or over MCP as the tool `flowWarmupMarketplaceBrowse` (rule 31).
 

@@ -25009,7 +25009,7 @@ export type AgencyMessageAiStatusEnum = 'DRAFT' | 'APPROVED' | 'SENT' | 'DISMISS
 export type AgencyMessageChannelEnum = 'SMS' | 'FACEBOOK_MARKETPLACE'
 
 
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 export type AgencyMessageSentByEnum = 'PERSON' | 'VA' | 'AI' | 'SYSTEM'
 
 
@@ -25047,7 +25047,7 @@ export interface AgencyMessage {
     channel?: AgencyMessageChannelEnum
     /** log-cli: the Facebook message id, when the page gives it */
     facebookMessageId?: Scalars['String']
-    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    /** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
     sentBy?: AgencyMessageSentByEnum
     direction?: Scalars['String']
     /** Telnyx error code when the text failed, e.g. 40010 */
@@ -40444,7 +40444,7 @@ export interface AgencyGroupGroupByConnection {
 }
 
 
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 export type AgencyConversationLeadStatusEnum = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'BOOKED' | 'LOST' | 'SPAM'
 
 
@@ -40503,7 +40503,7 @@ export interface AgencyConversation {
     /** log-cli: the listing title the thread header shows (Buyer · Title) */
     listingTitle?: Scalars['String']
     createdByMemberId?: Scalars['String']
-    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    /** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
     leadStatus?: AgencyConversationLeadStatusEnum
     pairKey?: Scalars['String']
     latestMessageId?: Scalars['String']
@@ -99495,7 +99495,7 @@ export interface AgencyMessageGenqlSelection{
     channel?: boolean | number
     /** log-cli: the Facebook message id, when the page gives it */
     facebookMessageId?: boolean | number
-    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    /** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
     sentBy?: boolean | number
     direction?: boolean | number
     /** Telnyx error code when the text failed, e.g. 40010 */
@@ -100192,7 +100192,7 @@ aiStatus?: (AgencyMessageAiStatusEnum | null),telnyxMessageId?: (Scalars['String
 channel?: (AgencyMessageChannelEnum | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['String'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnum | null),direction?: (Scalars['String'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
@@ -100242,7 +100242,7 @@ aiStatus?: (AgencyMessageAiStatusEnum | null),telnyxMessageId?: (Scalars['String
 channel?: (AgencyMessageChannelEnum | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['String'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnum | null),direction?: (Scalars['String'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
@@ -100292,7 +100292,7 @@ aiStatus?: (AgencyMessageAiStatusEnumFilter | null),telnyxMessageId?: (StringFil
 channel?: (AgencyMessageChannelEnumFilter | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (StringFilter | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (AgencyMessageSentByEnumFilter | null),direction?: (StringFilter | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (StringFilter | null),
@@ -100348,7 +100348,7 @@ aiStatus?: (OrderByDirection | null),telnyxMessageId?: (OrderByDirection | null)
 channel?: (OrderByDirection | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (OrderByDirection | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (OrderByDirection | null),direction?: (OrderByDirection | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
@@ -100400,7 +100400,7 @@ aiStatus?: (OrderByDirection | null),telnyxMessageId?: (OrderByDirection | null)
 channel?: (OrderByDirection | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (OrderByDirection | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (OrderByDirection | null),direction?: (OrderByDirection | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
@@ -100742,7 +100742,7 @@ aiStatus?: (Scalars['Boolean'] | null),telnyxMessageId?: (Scalars['Boolean'] | n
 channel?: (Scalars['Boolean'] | null),
 /** log-cli: the Facebook message id, when the page gives it */
 facebookMessageId?: (Scalars['Boolean'] | null),
-/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+/** log-cli: who wrote an outbound message: a person, a VA, AI, or the system */
 sentBy?: (Scalars['Boolean'] | null),direction?: (Scalars['Boolean'] | null),
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['Boolean'] | null),
@@ -128643,7 +128643,7 @@ export interface AgencyConversationGenqlSelection{
     /** log-cli: the listing title the thread header shows (Buyer · Title) */
     listingTitle?: boolean | number
     createdByMemberId?: boolean | number
-    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    /** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
     leadStatus?: boolean | number
     pairKey?: boolean | number
     latestMessageId?: boolean | number
@@ -129602,7 +129602,7 @@ facebookThreadId?: (Scalars['String'] | null),
 buyerFacebookId?: (Scalars['String'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnum | null),pairKey?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),latestPreview?: (Scalars['String'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Float'] | null),
@@ -129664,7 +129664,7 @@ facebookThreadId?: (Scalars['String'] | null),
 buyerFacebookId?: (Scalars['String'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnum | null),pairKey?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),latestPreview?: (Scalars['String'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Float'] | null),
@@ -129730,7 +129730,7 @@ facebookThreadId?: (StringFilter | null),
 buyerFacebookId?: (StringFilter | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (StringFilter | null),createdByMemberId?: (StringFilter | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (AgencyConversationLeadStatusEnumFilter | null),pairKey?: (StringFilter | null),latestMessageId?: (StringFilter | null),latestMessageAt?: (DateTimeFilter | null),latestPreview?: (StringFilter | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (FloatFilter | null),
@@ -129802,7 +129802,7 @@ facebookThreadId?: (OrderByDirection | null),
 buyerFacebookId?: (OrderByDirection | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (OrderByDirection | null),pairKey?: (OrderByDirection | null),latestMessageId?: (OrderByDirection | null),latestMessageAt?: (OrderByDirection | null),latestPreview?: (OrderByDirection | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (OrderByDirection | null),
@@ -129872,7 +129872,7 @@ facebookThreadId?: (OrderByDirection | null),
 buyerFacebookId?: (OrderByDirection | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (OrderByDirection | null),pairKey?: (OrderByDirection | null),latestMessageId?: (OrderByDirection | null),latestMessageAt?: (OrderByDateGranularityInput | null),latestPreview?: (OrderByDirection | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (OrderByDirection | null),
@@ -130362,7 +130362,7 @@ facebookThreadId?: (Scalars['Boolean'] | null),
 buyerFacebookId?: (Scalars['Boolean'] | null),
 /** log-cli: the listing title the thread header shows (Buyer · Title) */
 listingTitle?: (Scalars['Boolean'] | null),createdByMemberId?: (Scalars['Boolean'] | null),
-/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+/** log-cli: where the buyer is: NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
 leadStatus?: (Scalars['Boolean'] | null),pairKey?: (Scalars['Boolean'] | null),latestMessageId?: (Scalars['Boolean'] | null),latestMessageAt?: (GroupByDateGranularityInput | null),latestPreview?: (Scalars['Boolean'] | null),
 /** log-cli: buyer messages not yet read */
 unreadCount?: (Scalars['Boolean'] | null),

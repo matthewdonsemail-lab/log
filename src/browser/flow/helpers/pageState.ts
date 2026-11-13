@@ -64,7 +64,7 @@ export const PAGE_STATES: readonly StateRule[] = [
     resolve: 'none: a checkpointed account is deactivated (rule 82, matt 2026-11-02): the browser\'s checkpoint watch sets it DEACTIVATED, reason checkpointed, its listings lost; the browser closes and nothing is pressed. Tell matt',
     person: true
   },
-  { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated|نشتبه في وجود سلوك تلقائي/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
+  { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated|نشتبه في وجود سلوك تلقائي/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it (rule 23): the Dismiss/Continue control, then go on', person: false },
   {
     id: 'browserNotificationsNotice',
     text: /to allow or block browser notifications from facebook|للسماح بإشعار المتصفح من فيسبوك/i,

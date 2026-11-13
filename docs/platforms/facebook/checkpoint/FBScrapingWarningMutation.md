@@ -94,7 +94,7 @@ Clears Facebook's scraping warning on the account (`fb_scraping_warning_clear`).
 
 ## What our machine does with it
 
-The connect machine's `automatedBehaviour` page kind dismisses the warning (Listaro's path, rule 23), which sends this. The machine reads the page, not this response; the next page read decides where it goes.
+The connect machine's `automatedBehaviour` page kind dismisses the warning (rule 23), which sends this. The machine reads the page, not this response; the next page read decides where it goes.
 
 ## What can go wrong
 

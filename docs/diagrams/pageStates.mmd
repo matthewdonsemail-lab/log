@@ -20,7 +20,7 @@ flowchart LR
   checkpointStart --> person
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
-  automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  automatedBehaviour -->|"dismiss it"| nextautomatedBehaviour(["next state"])
   browserNotificationsNotice["browserNotificationsNotice: Facebook's browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)"]
   page --> browserNotificationsNotice
   browserNotificationsNotice -->|"press Escape"| nextbrowserNotificationsNotice(["next state"])

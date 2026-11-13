@@ -7,7 +7,7 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   feedBrowse: {
     activity: 'feedBrowse',
     flow: 'warmupFeedBrowse',
-    source: 'runStage1, account-warmup.ts:92-130',
+    source: 'stage 1',
     steps: [
       { action: 'goto', args: [`${FB}/`], why: 'the home feed' },
       { action: 'dwell', args: ['3-5'], why: 'wait 3000-5000 ms' },
@@ -21,7 +21,7 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   marketplaceBrowse: {
     activity: 'marketplaceBrowse',
     flow: 'warmupMarketplaceBrowse',
-    source: 'runStage2, account-warmup.ts:135-174',
+    source: 'stage 2',
     steps: [
       { action: 'goto', args: [`${FB}/marketplace/`], why: 'Marketplace' },
       { action: 'dwell', args: ['3-5'], why: 'wait 3000-5000 ms' },
@@ -32,7 +32,7 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   createAccessCheck: {
     activity: 'createAccessCheck',
     flow: 'warmupCreateAccessCheck',
-    source: 'runStage3, account-warmup.ts:181-209',
+    source: 'stage 3',
     steps: [
       { action: 'goto', args: [`${FB}/marketplace/`], why: 'Marketplace' },
       { action: 'dwell', args: ['2-4'], why: 'wait 2000-4000 ms' },
@@ -45,7 +45,7 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   sellingVisit: {
     activity: 'sellingVisit',
     flow: 'warmupSellingVisit',
-    source: 'runStage4or5 (stage 4), account-warmup.ts:214-246',
+    source: 'stage 4',
     steps: [
       { action: 'goto', args: [`${FB}/marketplace/`], why: 'Marketplace' },
       { action: 'scroll', args: ['4-7', '300-600'], why: '4-7 scrolls of 300-600 px, 1.5-3 s apart' },
@@ -56,7 +56,7 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   messagesVisit: {
     activity: 'messagesVisit',
     flow: 'warmupMessagesVisit',
-    source: 'runStage4or5 (stage 5), account-warmup.ts:214-246',
+    source: 'stage 5',
     steps: [
       { action: 'goto', args: [`${FB}/marketplace/`], why: 'Marketplace' },
       { action: 'scroll', args: ['4-7', '300-600'], why: '4-7 scrolls of 300-600 px' },

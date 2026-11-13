@@ -282,9 +282,9 @@ Facebook group listening is OpenMagpie's triage job: an account joins a group, O
 
 ## [Warm-up](./warmup.md)
 
-The warm-up makes an account look used before it sells: Listaro's five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
+The warm-up makes an account look used before it sells: five Facebook activities run as recorded flows (`log facebook warmup stages`), and the Reels activity (`log facebook warmup reel`) watches reels the way a real person with the account's persona would, each step checked against what it must achieve. Rules 36, 49 and 50, with the command forms of rules 60 and 63 and the code layout of rule 64.
 
-- **REQ-WARMUP-01** The stages are Listaro's five activities, each a flow of its own
+- **REQ-WARMUP-01** The stages are the five warm-up activities, each a flow of its own
 - **REQ-WARMUP-02** Recording turns each activity into a flow, never from a broken recording
 - **REQ-WARMUP-03** Running needs every flow recorded, and runs them in turn in one browser
 - **REQ-WARMUP-04** A checkpoint, login wall or restriction stops the stages

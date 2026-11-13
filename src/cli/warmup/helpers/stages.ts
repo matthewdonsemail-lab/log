@@ -29,7 +29,7 @@ function stage(context: CommandContext, line: Omit<StageLogLine, "at">): void {
 
 export async function runStages(context: CommandContext, sub: string | undefined, flags: Record<string, string | true>): Promise<CommandResult> {
   if (sub === "plan") {
-    const lines = ["The warm-up: Listaro's five activities, in its stage order (account-warmup.ts). Record once with `log facebook warmup stages record`, run with `log facebook warmup stages run`."];
+    const lines = ["The warm-up: five activities, in stage order. Record once with `log facebook warmup stages record`, run with `log facebook warmup stages run`."];
     for (const script of SCRIPTS_IN_ORDER) {
       const flow = loadFlow(script.flow, stagesDeps.flowsDir);
       lines.push(`\n${script.activity} → flow ${script.flow}: ${flow ? `recorded (${flow.steps.length} steps)` : "NOT RECORDED"}  [${script.source}]`);
@@ -121,7 +121,7 @@ function saveFlows(current: Parameters<CommandContext["sendInspect"]>[0], spans:
   const commands = readRecordedCommands(current.runDir);
   return spans.map((span) => {
     const script = ACTIVITY_SCRIPTS[span.activity];
-    const flow = flowFromRecording(script.flow, `Warm-up ${span.activity}: Listaro's ${script.source}, recorded on ${base.account} ${new Date().toISOString().slice(0, 10)} (rule 35).`, commands.slice(span.from, span.to), {
+    const flow = flowFromRecording(script.flow, `Warm-up ${span.activity}: recorded on ${base.account} ${new Date().toISOString().slice(0, 10)} (rule 35).`, commands.slice(span.from, span.to), {
       runDir: current.runDir,
       account: base.account,
     });

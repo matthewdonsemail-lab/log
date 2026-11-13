@@ -188,8 +188,8 @@ describe('warmupActivityMachine', () => {
   })
 })
 
-describe('the feed: Listaro stage 1 as a warm-up activity', () => {
-  test('its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)', () => {
+describe('the feed: stage 1 as a warm-up activity', () => {
+  test('its steps in stage order, each saying what it must achieve; the like only with --likes (rule 8)', () => {
     const feed = FACEBOOK_ACTIVITIES.feed
     expect(feed.steps.map((s) => s.id)).toEqual(['openFeed', 'dismissPrompt', 'settle', 'readFeed', 'nextPost', 'likePost', 'seeMore', 'openComments', 'scrollComments', 'closeComments', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
     expect(feed.steps.find((s) => s.id === 'likePost')).toMatchObject({ likes: true, clicks: true, expect: { answers: [{ call: 'CometUFIFeedbackReactMutation' }] } })

@@ -60,7 +60,7 @@ Each report is stored as returned. A thin result is still a result; it isn't fil
 SubQ's Decisions API (<https://docs.subq.ai/markdown/endpoints/decisions-api.md>, read on 2026-10-18): `POST https://api.subq.ai/v1/systemone`, model `subq-snap-preview`, `Authorization: Bearer <SUBQ_API_KEY>`. One to sixteen questions per call, with the whole context fitting in 384K tokens.
 
 - **Context:** this spec, the three research reports, `visibleBrowser.py`, and the identity-leak status table.
-- **Questions:** in `matrix/`. The script is `matrix/runMatrix.mjs`, which follows `docs/scaleArchitecture/runSubqScaleMatrix.mjs`: a choice, then scores, then true/false claims.
+- **Questions:** in `matrix/`. The script is `matrix/runMatrix.mjs`, which runs a choice, then scores, then true/false claims.
 - **Output:** `matrix/subqResults.json`, explained in [the ranking](matrix/README.md).
 
 ## Done when
