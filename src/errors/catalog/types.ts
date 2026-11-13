@@ -140,6 +140,15 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'In Chrome signed in to linkedin.com: DevTools, Network, right-click a www.linkedin.com request (not a static file), Copy, Copy as cURL, then run it again.'
   },
+  profileNotSuggested: {
+    layer: 'account',
+    meaning: "log linkedin connect only sends what a suggested person's own Connect button on My Network sends, and the profile asked for isn't among the people LinkedIn suggests to the account right now, so nothing was sent.",
+    retryable: false,
+    raisedIn: ['cli/linkedin'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Pick someone from log linkedin suggestions --account <a>. Connecting from a profile page needs a Chrome recording of that first.'
+  },
   linkedinCookiesWrongAccount: {
     layer: 'account',
     meaning: 'The cookies typed into log linkedin cookies save are signed in to a different LinkedIn profile than --account names, so nothing was saved.',

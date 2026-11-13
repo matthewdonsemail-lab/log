@@ -18,7 +18,9 @@ from platformKit import engine as kit
 
 PLATFORM = "linkedin"
 LIBRARY = "vendor/openLinkedinApi"
-WRITES: tuple[str, ...] = ("post", "deletePost")
+WRITES: tuple[str, ...] = ("post", "deletePost", "connect")
+CONNECT_GAP_S = 15 * 60
+CONNECTS_PER_DAY = 5
 SESSION_COOKIES = ("li_at", "JSESSIONID")
 BROWSER_COOKIES = ("bcookie", "bscookie")
 BROWSER_HEADERS = {
@@ -182,16 +184,16 @@ async def scripts(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, An
     return await asyncio.to_thread(app_scripts, cookies, browser)
 
 
-def share_run(cookies: dict[str, str], browser: dict[str, str], act: Any) -> dict[str, Any]:
+def share_run(cookies: dict[str, str], browser: dict[str, str], act: Any, kind: Any = None, folder: str = "share") -> dict[str, Any]:
     from linkedinApi.share import Composer, ShareRefused
 
     api = session_of(cookies, browser)
     session = api.client.session
     session.headers.clear()
     lines: list[str] = []
-    composer = Composer(session, cookies, browser, log=lambda line: (lines.append(line), print(line, file=sys.stderr, flush=True)))
+    composer = (kind or Composer)(session, cookies, browser, log=lambda line: (lines.append(line), print(line, file=sys.stderr, flush=True)))
     home = Path(os.environ.get("LOG_CLI_HOME") or Path.home() / ".logCli")
-    composer.record = home / "linkedin" / "share" / time.strftime("%Y%m%dT%H%M%S")
+    composer.record = home / "linkedin" / folder / time.strftime("%Y%m%dT%H%M%S")
     try:
         out = act(composer)
     except ShareRefused as refused:
@@ -248,7 +250,67 @@ async def mentions(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, A
     return await asyncio.to_thread(share_run, cookies, browser, lambda c: c.preview_mentions(text))
 
 
-ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions}
+def connects_path(spec: dict[str, Any]) -> Path:
+    return Path(spec["stateRoot"]) / spec["account"] / "connects.json"
+
+
+def connects_sent(spec: dict[str, Any]) -> list[float]:
+    path = connects_path(spec)
+    try:
+        return [float(t) for t in json.loads(path.read_text(encoding="utf-8")).get("sent") or []]
+    except (OSError, ValueError):
+        return []
+
+
+def connect_pace(spec: dict[str, Any], now: float) -> dict[str, Any] | None:
+    sent = connects_sent(spec)
+    if sent and now - max(sent) < CONNECT_GAP_S:
+        wait = int((CONNECT_GAP_S - (now - max(sent))) // 60) + 1
+        return {"ok": False, "code": "connectTooSoon", "detail": f"the last invitation went {int((now - max(sent)) // 60)} min ago: connects go at least {CONNECT_GAP_S // 60} min apart (LinkedIn refused every connect sent seconds after another), so nothing was sent. Wait about {wait} min"}
+    today = [t for t in sent if now - t < 24 * 3600]
+    if len(today) >= CONNECTS_PER_DAY:
+        return {"ok": False, "code": "connectDailyCap", "detail": f"{len(today)} invitations in the last 24 hours, the most this account sends: nothing was sent"}
+    return None
+
+
+def connect_noted(spec: dict[str, Any], now: float) -> None:
+    sent = [t for t in connects_sent(spec) if now - t < 7 * 24 * 3600] + [now]
+    path = connects_path(spec)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"sent": sent}), encoding="utf-8")
+
+
+async def suggestions(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.network import Network
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    return await asyncio.to_thread(share_run, cookies, browser, lambda n: n.suggestions(), Network, "network")
+
+
+async def connect(spec: dict[str, Any], cookies: dict[str, str]) -> dict[str, Any]:
+    from linkedinApi.network import Network
+
+    browser = browser_of(spec)
+    missing = identity_missing(cookies, browser)
+    if missing:
+        return missing
+    profile = str(spec.get("profile") or "").strip()
+    if not profile:
+        return {"ok": False, "code": "invalidArgs", "detail": "connect needs the profile's public id"}
+    now = time.time()
+    paced = connect_pace(spec, now)
+    if paced:
+        return paced
+    out = await asyncio.to_thread(share_run, cookies, browser, lambda n: n.connect(profile), Network, "network")
+    if out.get("ok") or out.get("code") == "connectRefused":
+        connect_noted(spec, now)
+    return out
+
+
+ACTIONS = {"ping": ping, "scripts": scripts, "post": post, "deletePost": delete_post, "mentions": mentions, "suggestions": suggestions, "connect": connect}
 
 
 if __name__ == "__main__":

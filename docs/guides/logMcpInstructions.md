@@ -89,7 +89,7 @@ Each tool's description names its guide. Load it with `getGuide({ topic })` befo
 | `discord` | A Discord account: its session, DMs and group DMs, servers with their channels, forums, posts and threads, server search, reading, the live gateway watch, sending and deleting its own messages |
 | `reddit` | A Reddit account: its session, reading subreddits, the home feed and posts with their comments, and posting, commenting and voting |
 | `slack` | A Slack account: its session and workspaces, chats, reading, the live websocket watch and sending |
-| `linkedin` | A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts |
+| `linkedin` | A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests |
 | `accountsAndProxies` | Accounts in Twenty, their status and secrets, their proxies, and the interactive launcher |
 | `runsAndEvidence` | What runs leave behind: run folders and pruning, captures and request docs, error codes, jobs, every call's timings, log.db's typed tables checked and rebuilt from its events, and the MCP server itself |
 | `knowledgeAndSearch` | Finding context: the knowledge base, the conversation search (keyword and meaning at once) and every voice note transcribed into it |

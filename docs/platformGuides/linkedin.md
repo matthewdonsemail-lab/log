@@ -2,7 +2,7 @@
 
 log saves a LinkedIn account's session, checks that LinkedIn still accepts it, and posts and deletes the account's own posts. It talks to LinkedIn directly through its own API client with the saved session. When you need the website itself, log opens the account's own browser, with no proxy.
 
-LinkedIn is new in log: signing in, checking the session, posting (text, an image, mentions) and deleting a post are what it does so far. Comments aren't built.
+LinkedIn is new in log: signing in, checking the session, posting (text, an image, mentions), deleting a post and inviting people LinkedIn suggests are what it does so far. Comments aren't built.
 
 ## What you can do
 
@@ -18,6 +18,11 @@ LinkedIn is new in log: signing in, checking the session, posting (text, an imag
 
 - `log linkedin post --account <a> --text "<post>" [--image <path>]`: posts as the account, the way LinkedIn's own composer does. `@[Name]` in the text mentions a person or page found by LinkedIn's own mention search; when the name matches more than one, write `@[Name|entityID]` with the id the refusal lists. The dry run shows the post and its mentions without posting. The image must be in `~/.logCli` or your outbox.
 - `log linkedin delete --account <a> --activity <id|url>`: deletes one of the account's own posts.
+
+**Grow the network**
+
+- `log linkedin suggestions --account <a>`: lists the people LinkedIn suggests on My Network. Reads only.
+- `log linkedin connect --account <a> --profile <publicId|url>`: sends one invitation, without a note, to someone from that list, the way their own Connect button does. A dry run unless `--live --approvedBy <who>`. One a run, at least 15 minutes apart, at most 5 a day: LinkedIn refused every connect sent seconds after another and then ended the session. Connecting from a profile page isn't built yet.
 
 **Work in the account's own browser**
 

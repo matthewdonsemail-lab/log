@@ -1,6 +1,6 @@
 # linkedin
 
-A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts.
+A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests.
 
 Written by `bun run docs:build` from the code, the skills and AGENTS.md (rule 55). Not edited by hand: change the command's usage, its skill or the rule, and rebuild.
 
@@ -18,6 +18,9 @@ This guide describes the current command implementation. Legacy storage names an
 | `linkedinPostLive` | Post to the account's LinkedIn feed, with an optional…, live on LinkedIn |
 | `linkedinDelete` | Delete one of the account's own LinkedIn posts |
 | `linkedinDeleteLive` | Delete one of the account's own LinkedIn posts, live on LinkedIn |
+| `linkedinSuggestions` | List the people LinkedIn suggests on the account's My Network page |
+| `linkedinConnect` | Send one connection invitation to someone LinkedIn suggests |
+| `linkedinConnectLive` | Send one connection invitation to someone LinkedIn…, live on LinkedIn |
 
 ## Every tool, in full
 
@@ -30,7 +33,7 @@ Checks that LinkedIn still accepts the account's saved session, on the direct-AP
 LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 scripts reads the signed-in /feed/ page once and saves the app's bundle URLs to ~/.logCli/linkedin/<account>/appScripts.json, for rea to read LinkedIn's own code. Sends nothing.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 175, 63, 2, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `linkedinSessionScripts`
@@ -42,7 +45,7 @@ Checks that LinkedIn still accepts the account's saved session, on the direct-AP
 LinkedIn's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 scripts reads the signed-in /feed/ page once and saves the app's bundle URLs to ~/.logCli/linkedin/<account>/appScripts.json, for rea to read LinkedIn's own code. Sends nothing.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 175, 63, 2, 73, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `linkedinPost`
@@ -54,7 +57,7 @@ Posts to the account's LinkedIn feed (anyone can see and comment), with one imag
 @[Name] in the text mentions a person or page: LinkedIn's own mention search must give exactly one match with that name, and @[Name|entityID] picks one of several. The dry run looks them up (reads only) and shows each pick. After the post, the composer's own follow-up calls go out as the browser sends them (FetchSharingAfterPostNBA, addUpdateToFeedListRequest, restoreTagPills, collaboratorResetOnDiscardAction, TrackShareboxInteraction), and the calls are paced like a person typing. The app version comes from LinkedIn's own x-li-application-version answer header; without one nothing is sent (appVersionUnknown).
 A dry run unless --live, which needs --approvedBy (rule 8). The image must be under OUTBOX or ~/.logCli, a JPEG, PNG or GIF of at most 20 MB. The copy is read for what AI chat interfaces leave in text first (rule 111). LinkedIn's answer decides: the new post's activityId is the post, and anything else stops the run with nothing retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
 Fill the named fields; each value goes through whole. What acts on LinkedIn is `linkedinPostLive`.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `linkedinPostLive`
@@ -67,7 +70,7 @@ Posts to the account's LinkedIn feed (anyone can see and comment), with one imag
 @[Name] in the text mentions a person or page: LinkedIn's own mention search must give exactly one match with that name, and @[Name|entityID] picks one of several. The dry run looks them up (reads only) and shows each pick. After the post, the composer's own follow-up calls go out as the browser sends them (FetchSharingAfterPostNBA, addUpdateToFeedListRequest, restoreTagPills, collaboratorResetOnDiscardAction, TrackShareboxInteraction), and the calls are paced like a person typing. The app version comes from LinkedIn's own x-li-application-version answer header; without one nothing is sent (appVersionUnknown).
 A dry run unless --live, which needs --approvedBy (rule 8). The image must be under OUTBOX or ~/.logCli, a JPEG, PNG or GIF of at most 20 MB. The copy is read for what AI chat interfaces leave in text first (rule 111). LinkedIn's answer decides: the new post's activityId is the post, and anything else stops the run with nothing retried (rule 94). The governor counts it as a write, 10 a day (rule 102).
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 137, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `linkedinDelete`
@@ -78,7 +81,7 @@ log linkedin delete --account <accountName> --activity <activityId|post url> [--
 Deletes one of the account's own LinkedIn posts by its activity id (what log linkedin post printed, or the urn:li:activity in its URL), on the direct-API engine (no browser), replaying LinkedIn's own deletePost call.
 A dry run unless --live, which needs --approvedBy (rule 8). LinkedIn's answer decides; a refusal stops it with nothing retried (rule 94). The governor counts it as a write.
 Fill the named fields; each value goes through whole. What acts on LinkedIn is `linkedinDeleteLive`.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ### `linkedinDeleteLive`
@@ -90,7 +93,43 @@ log linkedin delete --account <accountName> --activity <activityId|post url> [--
 Deletes one of the account's own LinkedIn posts by its activity id (what log linkedin post printed, or the urn:li:activity in its URL), on the direct-API engine (no browser), replaying LinkedIn's own deletePost call.
 A dry run unless --live, which needs --approvedBy (rule 8). LinkedIn's answer decides; a refusal stops it with nothing retried (rule 94). The governor counts it as a write.
 Fill the named fields; each value goes through whole.
-Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, and posting or deleting its own posts).
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
+AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinSuggestions`
+
+List the people LinkedIn suggests on the account's My Network page.
+List the people LinkedIn suggests on the account's My Network page, on the direct-API engine
+log linkedin suggestions --account <accountName> [--json]
+Lists the people LinkedIn suggests on the account's My Network page, on the direct-API engine (no browser): the feed, then My Network the way the browser opens it (the MyNetwork navigation, then its own mojoTabsBadge, addaMarkNotificationsSeen and addaClearUnseenInvitationsMutation), recorded from a real visit. Each suggestion's public id is what log linkedin connect --profile takes.
+Reads only: nothing is sent to anyone. Opening My Network marks its notifications seen, as the browser does.
+Fill the named fields; each value goes through whole.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
+AGENTS.md (log://agents): rules 63, 2, 73, 94, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinConnect`
+
+Send one connection invitation to someone LinkedIn suggests; a dry run unless --live.
+Send one connection invitation to someone LinkedIn suggests, on the direct-API engine; a dry run unless --live
+log linkedin connect --account <accountName> --profile <publicId|profile url> [--approvedBy <who>] [--live] [--json]
+Sends one connection invitation, without a note, to a person LinkedIn suggests on the account's My Network page, on the direct-API engine (no browser): My Network is opened as log linkedin suggestions opens it, and the invitation is the request that person's own Connect button carries (addaAddConnection), sent as the browser sent it. Someone not among the suggestions is refused (profileNotSuggested), since a profile page's Connect hasn't been recorded yet.
+A dry run unless --live, which needs --approvedBy (rule 8); the dry run only says whether the person is suggested. One invitation a run, at least 15 minutes apart and at most 5 in 24 hours (connectTooSoon, connectDailyCap): in a recorded session LinkedIn refused every connect sent within seconds of another, then ended the session (rule 94). LinkedIn's answer decides: the invitation is sent only when it sets it to Pending; its "invitation not sent" stops the run with nothing retried. The governor counts it as a write, 10 a day (rule 102).
+Fill the named fields; each value goes through whole. What acts on LinkedIn is `linkedinConnectLive`.
+Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
+AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
+
+### `linkedinConnectLive`
+
+Send one connection invitation to someone LinkedIn suggests; a dry run unless --live.
+Live on LinkedIn: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).
+Send one connection invitation to someone LinkedIn suggests, on the direct-API engine; a dry run unless --live
+log linkedin connect --account <accountName> --profile <publicId|profile url> [--approvedBy <who>] [--live] [--json]
+Sends one connection invitation, without a note, to a person LinkedIn suggests on the account's My Network page, on the direct-API engine (no browser): My Network is opened as log linkedin suggestions opens it, and the invitation is the request that person's own Connect button carries (addaAddConnection), sent as the browser sent it. Someone not among the suggestions is refused (profileNotSuggested), since a profile page's Connect hasn't been recorded yet.
+A dry run unless --live, which needs --approvedBy (rule 8); the dry run only says whether the person is suggested. One invitation a run, at least 15 minutes apart and at most 5 in 24 hours (connectTooSoon, connectDailyCap): in a recorded session LinkedIn refused every connect sent within seconds of another, then ended the session (rule 94). LinkedIn's answer decides: the invitation is sent only when it sets it to Pending; its "invitation not sent" stops the run with nothing retried. The governor counts it as a write, 10 a day (rule 102).
+Fill the named fields; each value goes through whole.
+Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (`waitMs`, default 20 s, at most 50 s) comes back as a job (`exit` -1, `job.id`): follow it with `jobStatus` { jobId, afterLine }, stop it at its next browser step with `jobCancel`.
+Before first using this tool in a session, load its guide: getGuide({ topic: "linkedin" }) (A LinkedIn account: saving its cookies, checking its session, posting or deleting its own posts, and inviting people LinkedIn suggests).
 AGENTS.md (log://agents): rules 8, 63, 2, 73, 94, 83, 30, 38, 39, 40, 41. When matt says to do something, do it completely (rule 30).
 
 ## The rules these tools fall under, in full

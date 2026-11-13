@@ -115,6 +115,8 @@ const SOURCE_COMMAND_RULES: Readonly<Record<string, number[]>> = {
   linkedinSession: [13, 63, 64, 73, 83, 102],
   linkedinPost: [8, 63, 64, 73, 94, 102, 111],
   linkedinDelete: [8, 63, 64, 73, 94, 102],
+  linkedinSuggestions: [63, 64, 73, 94, 102],
+  linkedinConnect: [8, 63, 64, 73, 94, 102],
   linkedinCookies: [13, 21, 63, 64, 73, 83, 102],
   discordSession: [13, 63, 64, 73, 83, 94],
   discordChats: [13, 63, 64, 73, 83, 94],

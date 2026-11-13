@@ -176,6 +176,8 @@ class Composer:
         self.forest = secrets.token_hex(16)
         self.log = log or (lambda line: None)
         self.calls: list[dict[str, Any]] = []
+        self.referer = COMPOSE_REFERER
+        self.page_key = PAGE_KEY
 
     def base_headers(self) -> dict[str, str]:
         headers = {"user-agent": self.browser["userAgent"], "accept-language": self.browser.get("acceptLanguage") or "en-US,en;q=0.9"}
@@ -192,15 +194,15 @@ class Composer:
             "content-type": "application/json",
             "csrf-token": self.csrf,
             "origin": ORIGIN,
-            "referer": COMPOSE_REFERER,
+            "referer": self.referer,
             "sec-fetch-dest": "empty",
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-origin",
             "x-li-actor": "Self",
-            "x-li-anchor-page-key": PAGE_KEY,
+            "x-li-anchor-page-key": self.page_key,
             "x-li-application-instance": "undefined",
             "x-li-application-version": self.version,
-            "x-li-page-instance": f"urn:li:page:{PAGE_KEY};{self.tracking}",
+            "x-li-page-instance": f"urn:li:page:{self.page_key};{self.tracking}",
             "x-li-page-instance-tracking-id": self.tracking,
             "x-li-pageforestid": self.forest,
             "x-li-rsc-stream": "true",

@@ -11,14 +11,14 @@ export const LINKEDIN_TEXT_MAX = 3000;
 export const LINKEDIN_IMAGE_MAX_BYTES = 20 * 1024 * 1024;
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".gif"];
 
-const ACCOUNT_FLAG: FlagSpec = { name: "account", kind: "string", required: true, description: "The LINKEDIN socialAccount's accountName (its handle)" };
-const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
+export const ACCOUNT_FLAG: FlagSpec = { name: "account", kind: "string", required: true, description: "The LINKEDIN socialAccount's accountName (its handle)" };
+export const APPROVED_BY_FLAG: FlagSpec = { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" };
 
-function liveFlag(what: string): FlagSpec {
+export function liveFlag(what: string): FlagSpec {
   return { name: "live", kind: "boolean", live: true, description: `${what} on LinkedIn, only when matt asked (rule 8); without it a dry run sends nothing` };
 }
 
-function text(flags: Record<string, unknown>, name: string): string {
+export function text(flags: Record<string, unknown>, name: string): string {
   const value = flags[name];
   return typeof value === "string" ? value.trim() : "";
 }
@@ -38,7 +38,7 @@ export function imageOf(flag: string, roots = imageRoots()): { ok: true; path: s
   return { ok: true, path };
 }
 
-async function openAccount(context: CommandContext, name: string, ref: string): Promise<{ ok: true; account: PlatformAccount } | { ok: false; result: CommandResult }> {
+export async function openAccount(context: CommandContext, name: string, ref: string): Promise<{ ok: true; account: PlatformAccount } | { ok: false; result: CommandResult }> {
   const account = await findLinkedinAccount(context.twenty, ref);
   const gate = linkedinGate(account);
   if (!gate.ok) return { ok: false, result: refuse(`linkedin ${name}`, gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail) };
@@ -46,7 +46,7 @@ async function openAccount(context: CommandContext, name: string, ref: string): 
   return { ok: true, account };
 }
 
-function failed(name: string, run: PlatformEngineRun): { code: number; stderr: string } {
+export function failed(name: string, run: PlatformEngineRun): { code: number; stderr: string } {
   const calls = Array.isArray(run.answer["calls"]) ? (run.answer["calls"] as { call: string; httpStatus: number }[]).map((c) => `${c.call} ${c.httpStatus}`).join(", ") : "";
   return { code: 1, stderr: `log linkedin ${name}: ${run.answer.code}: ${run.answer.detail ?? ""}${calls ? ` (calls: ${calls})` : ""}. Nothing is retried (rule 94).` };
 }
