@@ -13,8 +13,8 @@ Say: **"go on docs/useCases/inbox/bossMaxxing.md for <people or group>"**. The a
 <!-- stepsDiagram: written by `bun run docs:build` from the steps table below, not edited by hand -->
 ```mermaid
 flowchart TD
-  s0["1. Find each person and where the owner talks to them: the group t…<br/><i>discordChats, twitterDms, slackChats, instagramDms</i>"]
-  s1["2. Read each person's chat in full before giving them anything: wh…<br/><i>discordRead, twitterDms, slackRead, instagramDms</i>"]
+  s0["1. Find each person and where the owner talks to them: the group t…<br/><i>chatsList, discordChats, twitterDms, slackChats, instagramDms</i>"]
+  s1["2. Read each person's chat in full before giving them anything: wh…<br/><i>messagesRead, discordRead, twitterDms, slackRead, instagramDms</i>"]
   s2["3. Triage the jobs across the team: one row per person with the ta…<br/><i>the reply to the owner</i>"]
   s3["4. Write the task as a brief: what to do, in order; why it matters…<br/><i>the agent, OUTBOX/PERSON_TASK.md</i>"]
   s4["5. Turn on the live monitor before anything goes out, so each repl…<br/><i>Monitor, events, seq, withWho</i>"]
@@ -35,8 +35,8 @@ flowchart TD
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Find each person and where the owner talks to them: the group they're in, or their DM, on whichever platform he named | `discordChats`, `twitterDms` { account, limit }, `slackChats`, `instagramDms` | every person has one chat, named as the owner says it ("the aeo group", "@someone on X"), never an id |
-| 2 | Read each person's chat in full before giving them anything: what they were last told, what they owe, what they said back, and what they sent (files and sheets open through the read) | `discordRead` { channel, limit: "120" }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { with } | for each person: the last task, its status and the time of their last message |
+| 1 | Find each person and where the owner talks to them: the group they're in, or their DM, on whichever platform he named | `chatsList` { account, limit? }: the platform is the account's (or `discordChats`, `twitterDms`, `slackChats`, `instagramDms`) | every person has one chat, named as the owner says it ("the aeo group", "@someone on X"), never an id |
+| 2 | Read each person's chat in full before giving them anything: what they were last told, what they owe, what they said back, and what they sent (files and sheets open through the read) | `messagesRead` { account, chat, limit: 120 } (or `discordRead` { channel }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { with }) | for each person: the last task, its status and the time of their last message |
 | 3 | Triage the jobs across the team: one row per person with the task, its status (done, waiting on them, waiting on the owner, blocked), the last update with its time, and the next move | the reply to the owner | the owner can see who has what in one table |
 | 4 | Write the task as a brief: what to do, in order; why it matters; what done looks like and by when; what to do if they're stuck. When it carries research or a long outline, put it in a file in `OUTBOX/` (plain words, no frontmatter) and keep the message short | the agent, `OUTBOX/<PERSON>_<TASK>.md` | the brief answers clear, why, done when, kind and how to ask (rule 109) |
 | 5 | Turn on the live monitor before anything goes out, so each reply wakes the agent the moment it lands | `Monitor` { timeout_ms: 1800000 } on a small `bun:sqlite` poll of `~/.logCli/log.db`: every 3 s, print each new `events` row past the last `seq` whose type is message, mention or reply, with its platform, `withWho`, text and conversation; re-armed on expiry (rule 134) | the monitor prints a test line from a message that just landed |

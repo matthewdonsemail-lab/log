@@ -66,6 +66,8 @@ export const COMMAND_INDEX: CommandIndexEntry[] = [
   { name: "balance", platform: "any", module: "src/cli/balance/index.ts", exportName: "balanceCommand" },
   { name: "governor", platform: "any", module: "src/cli/governor/index.ts", exportName: "governorCommand" },
   { name: "sessions", platform: "any", module: "src/cli/sessions/index.ts", exportName: "sessionsCommand" },
+  { name: "chats", platform: "any", module: "src/cli/capabilities/index.ts", exportName: "chatsCommand" },
+  { name: "messages", platform: "any", module: "src/cli/capabilities/index.ts", exportName: "messagesCommand" },
   { name: "clone", platform: "any", module: "src/cli/clone/index.ts", exportName: "cloneCommand" },
   { name: "transcribe", platform: "any", module: "src/cli/transcribe/index.ts", exportName: "transcribeCommand" },
   { name: "followers", platform: "twitter", module: "src/cli/twitter/index.ts", exportName: "followersCommand" },
