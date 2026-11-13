@@ -24,7 +24,7 @@ Seen 4 time(s) in 4 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261111T081957_<userId:1>**, signIn: password typed; submitting with Enter: 200, 5033 ms
+**runs/inspect/20261111T081957_<id:1>**, signIn: password typed; submitting with Enter: 200, 5033 ms
 
 Sent:
 
@@ -62,7 +62,7 @@ Sent:
       "credential_type": "password",
       "dyi_job_id": "",
       "enc_password": {
-        "<password>": "<password>"
+        "sensitive_string_value": "#PWD_BROWSER:5:1794385837:AQRQAEFN2ORdGoObvhpOw2tEl+qca8hmc8kzj8hedeKstBk/dizKuV+ki1HFYJqAlUnLVTRI8jPLCIPI3qDw1yzJmpwgLavIPYas2MmWA0iBJQWY8Aagf0FscjK+7IJtP5M3NtFxSEthqonNsTzz3cKkpUyR"
       },
       "event_request_id": "c9a24a67-40fa-40c7-b014-2caaebf326ce",
       "identifier": "<email>",

@@ -10,31 +10,31 @@
 | Path | `discord.com/api/applications/public` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_e278a09b94b290da9e332626ee4e1c8c4a98e39d635dcba927f2cf0da6ad1a9d` |
+| Called from | `runs/inspect/20261113T141543_<name:10>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:10>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:10>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:10>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 12 time(s) in 4 run(s).
+Seen 14 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 5: click e40 | 2 | 200 | 328–519 ms | 10619–11963 ms | — |
 | inspect | step 9: goto /channels/@me | 2 | 200 | 336–568 ms | 5245–6447 ms | — |
 | inspect | step 25: goto /channels/@me | 2 | 200 | 351–2376 ms | 4843–5938 ms | — |
-| inspect | step 1: goto /login | 4 | 200 | 360–11499 ms | 15797–44789 ms | — |
+| inspect | step 1: goto /login | 6 | 200 | 360–11499 ms | 15797–1050595 ms | — |
 | inspect | step 2: snapshot | 2 | 200 | 486–510 ms | 49606–49728 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 11499 ms
+**runs/inspect/20261113T141543_<name:10>**, step 1: goto /login: 200, 495 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "<id:1>"
+    "application_ids": "1461154307171811401"
   },
   "body": null
 }
@@ -63,7 +63,7 @@ Answered:
     "overlay": true,
     "hook": true,
     "aliases": "(1 items)",
-    "guild_id": "<guildId:1>",
+    "guild_id": "679875946597056683",
     "executables": "(1 items)",
     "storefront_available": false,
     "integration_types_config": "(1 fields)",
@@ -204,14 +204,14 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261030T222341_<name:1>**, step 2: snapshot: 200, 510 ms
+**runs/inspect/20261030T222341_<name:10>**, step 2: snapshot: 200, 510 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "<id:2>"
+    "application_ids": "1470616226995765409"
   },
   "body": null
 }
@@ -225,7 +225,7 @@ Answered:
     "id": "<id:7>",
     "name": "<name:7>",
     "icon": "b23dfa191e3f3aa8142572110a99723f",
-    "description": "<messageText>",
+    "description": "War Thunder is a free-to-play air combat game set in the World War II and Korean War eras. Naval and land battles are planned additions.",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -289,7 +289,7 @@ Answered:
     "aliases": [
       "Apex Legends"
     ],
-    "guild_id": "<guildId:2>",
+    "guild_id": "541484311354933258",
     "executables": [
       "(3 fields)",
       "(3 fields)",
@@ -336,7 +336,7 @@ Answered:
     "aliases": [
       "VALORANT"
     ],
-    "guild_id": "<guildId:1>",
+    "guild_id": "679875946597056683",
     "executables": [
       "(3 fields)"
     ],
@@ -507,7 +507,7 @@ Answered:
     "flags_new": "0",
     "hook": true,
     "aliases": [
-      "<name:2>"
+      "<name:6>"
     ],
     "executables": [
       "(3 fields)",
@@ -526,14 +526,14 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T062914_<name:1>**, step 5: click e40: 200, 519 ms
+**runs/inspect/20261028T062914_<name:10>**, step 5: click e40: 200, 519 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "application_ids": "<id:2>"
+    "application_ids": "1470616226995765409"
   },
   "body": null
 }
@@ -547,7 +547,7 @@ Answered:
     "id": "<id:7>",
     "name": "<name:7>",
     "icon": "b23dfa191e3f3aa8142572110a99723f",
-    "description": "<messageText>",
+    "description": "War Thunder is a free-to-play air combat game set in the World War II and Korean War eras. Naval and land battles are planned additions.",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -586,7 +586,7 @@ Answered:
     "id": "<id:9>",
     "name": "<name:9>",
     "icon": "dc0e50c93ea51ef3d025bc580b14dcf6",
-    "description": "<messageText>",
+    "description": "Wizard101 is a card-based fantasy MMO developed by KingIsle Entertainment.",
     "summary": "",
     "type": 5,
     "is_monetized": false,
@@ -650,7 +650,7 @@ Answered:
     "aliases": [
       "Apex Legends"
     ],
-    "guild_id": "<guildId:2>",
+    "guild_id": "541484311354933258",
     "executables": [
       "(3 fields)",
       "(3 fields)",
@@ -697,7 +697,7 @@ Answered:
     "aliases": [
       "VALORANT"
     ],
-    "guild_id": "<guildId:1>",
+    "guild_id": "679875946597056683",
     "executables": [
       "(3 fields)"
     ],

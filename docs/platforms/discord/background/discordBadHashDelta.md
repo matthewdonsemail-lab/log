@@ -10,19 +10,49 @@
 | Path | `discord.com/bad-hash-delta` |
 | Sends | — |
 | Reads | `ADDED`, `REMOVED` |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_c06c05d8a179a1fcccce17a40c831cbc5fc7b13bb7545ba644a84f8daee0ac19` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 2: snapshot | 1 | 200 | 51 ms | 61939 ms | — |
 | inspect | Stopping after 1 step(s). | 1 | 200 | 60 ms | 6064 ms | — |
+| inspect | step 1: goto /login | 1 | 200 | 71 ms | 1062683 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 71 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "revision": "3252",
+    "targetRevision": "3254"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "ADDED": [
+    "570cd697b52a452b11f61c778f2a010ac53afcdd0e1498b50ed2a4615e23cad3",
+    "5ebaac23c4a50be531d5486cd3fbecb7e96f98620a22d4d19ce7cfe3ff9be01f",
+    "9ba28ebea6c84a36a54b7645bcdf2637c3b9e83fd8745e0daceb1c8e9226f2ea",
+    "e4505095137db9da522849281a2322ee3fc121106361902402ff2998667115ef",
+    "f164fff65999e8534c01c773aa349b9f9b19b9a660f53924328b5ddf0698c931"
+  ],
+  "REMOVED": []
+}
+```
 
 **runs/inspect/20261113T044840_<name:1>**, Stopping after 1 step(s).: 200, 60 ms
 

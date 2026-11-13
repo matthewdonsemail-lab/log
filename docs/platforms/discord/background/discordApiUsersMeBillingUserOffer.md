@@ -10,10 +10,10 @@
 | Path | `discord.com/api/users/@me/billing/user-offer` |
 | Sends | `allow_triggers` |
 | Reads | `user_trial_offer`, `user_discount_offer.id`, `user_discount_offer.user_id`, `user_discount_offer.discount_id`, `user_discount_offer.applied_at`, `user_discount_offer.expires_at`, `user_discount_offer.discount`, `user_discount` |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_4e4f6500e63fb6910d770738f95614b2189b96c2fe3b8c8a63d59925dfcc16a3` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 7 time(s) in 5 run(s).
+Seen 8 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,14 +21,14 @@ Seen 7 time(s) in 5 run(s).
 | inspect | step 5: click e40 | 1 | 200 | 456 ms | 12896 ms | — |
 | inspect | step 9: goto /channels/@me | 1 | 200 | 442 ms | 9543 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 407 ms | 8653 ms | — |
-| inspect | step 1: goto /login | 2 | 200, 204 | 386–392 ms | 18482–46268 ms | — |
+| inspect | step 1: goto /login | 3 | 200, 204 | 386–410 ms | 18482–1052568 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 404 ms | 51730 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 204, 392 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 204, 410 ms
 
 Sent:
 
@@ -62,7 +62,7 @@ Answered:
   "user_discount_offer": {
     "id": "<id:1>",
     "user_id": "<userId:1>",
-    "discount_id": "<id:1>",
+    "discount_id": "1215366184820539392",
     "applied_at": null,
     "expires_at": "2026-11-02T19:32:04.567388+00:00",
     "discount": {
@@ -75,7 +75,7 @@ Answered:
       "sku_ids": null,
       "sku_group_ids": null,
       "plan_ids": [
-        "<id:2>"
+        "511651880837840896"
       ],
       "user_usage_limit_interval": 3,
       "user_usage_limit_interval_count": 1,
@@ -104,7 +104,7 @@ Answered:
   "user_discount_offer": {
     "id": "<id:1>",
     "user_id": "<userId:1>",
-    "discount_id": "<id:1>",
+    "discount_id": "1215366184820539392",
     "applied_at": null,
     "expires_at": "2026-11-02T19:32:04.567388+00:00",
     "discount": {
@@ -117,7 +117,7 @@ Answered:
       "sku_ids": null,
       "sku_group_ids": null,
       "plan_ids": [
-        "<id:2>"
+        "511651880837840896"
       ],
       "user_usage_limit_interval": 3,
       "user_usage_limit_interval_count": 1,

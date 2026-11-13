@@ -10,10 +10,10 @@
 | Path | `discord.com/api/dismissible-content/arbitrate` |
 | Sends | `candidates` |
 | Reads | `candidates` |
-| Called from | `runs/inspect/20261113T044840_<name:1>/script0.js:232 625075`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 559868`, `runs/inspect/20261113T044840_<name:1>/script0.js:124 961943`, `runs/inspect/20261113T044840_<name:1>/script1294.js:1 634654` |
-| rea | `ev_d831a118d3660312a92a77e942ba5e4dfcdb0adb351192c986c4e48686162615` |
+| Called from | `runs/inspect/20261113T141543_<name:1>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:1>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:1>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 6 time(s) in 3 run(s).
+Seen 7 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,13 +22,13 @@ Seen 6 time(s) in 3 run(s).
 | inspect | step 25: goto /channels/@me | 1 | 200 | 398 ms | 2733 ms | — |
 | inspect | step 1: goto /channels/@me | 1 | 401 | 308 ms | 9986 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 495 ms | 49556 ms | — |
-| inspect | step 1: goto /login | 1 | 200 | 393 ms | 43890 ms | — |
+| inspect | step 1: goto /login | 2 | 200 | 393–487 ms | 43890–1049496 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261113T044840_<name:1>**, step 1: goto /login: 200, 393 ms
+**runs/inspect/20261113T141543_<name:1>**, step 1: goto /login: 200, 487 ms
 
 Sent:
 

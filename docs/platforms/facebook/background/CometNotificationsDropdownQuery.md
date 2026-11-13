@@ -91,7 +91,7 @@ Seen 205 time(s) in 37 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T074930_<userId:1>**, step 13: goto /marketplace/create/item: 200, 1550 ms
+**runs/warmup/20261023T074930_<id:1>**, step 13: goto /marketplace/create/item: 200, 1550 ms
 
 Sent:
 
@@ -141,7 +141,7 @@ Answered:
           "… 2 more"
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[<userId:2>],\"ts\":1792454835,\"nid\":[<id:1>,<id:2>,<id:3>,<id:4>… (420 chars)",
+          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[<id:3>],\"ts\":1792454835,\"nid\":[1792727402487884,1792705704726789,1792494780900935,179246013892753… (420 chars)",
           "has_next_page": true
         }
       },
@@ -164,35 +164,35 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "<mediaUrl> (452 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (438 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (453 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (457 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (437 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -233,7 +233,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T072846_<userId:1>**, step 1: goto /: 200, 1126 ms
+**runs/warmup/20261023T072846_<id:1>**, step 1: goto /: 200, 1126 ms
 
 Sent:
 
@@ -279,7 +279,7 @@ Answered:
           "… 2 more"
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[<userId:2>],\"ts\":1792454835,\"nid\":[<id:1>,<id:2>,<id:3>,<id:4>… (420 chars)",
+          "end_cursor": "{\"bl\":[\"friend_requests\",\"mixed_state_notifs\"],\"bic\":4,\"rc\":8,\"nc\":5,\"rt\":\"see_previous_button\",\"ah\":530,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\",\"nt_see_more_button\"],\"erd\":[],\"fr\":[<id:3>],\"ts\":1792454835,\"nid\":[1792727402487884,1792705704726789,1792494780900935,179246013892753… (420 chars)",
           "has_next_page": true
         }
       },
@@ -302,35 +302,35 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "<mediaUrl> (452 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (438 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840348325_10241292513862813_809262265811029330_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (437 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/735761467_10240081022656686_4372525202903403670_n.jpg (437 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (453 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/821486959_39897881166477289_5103141192190276859_n.jpg (453 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (457 chars)",
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/473723967_10160867748297113_7439283712223610342_n.jpg (457 chars)",
         "label": null,
         "width": null,
         "height": null,
@@ -371,7 +371,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261111T081957_<userId:3>**, step 8: click e53: 200, 2268 ms
+**runs/inspect/20261111T081957_<id:2>**, step 8: click e53: 200, 2268 ms
 
 Sent:
 
@@ -442,7 +442,7 @@ Answered:
               "prefetch_score": 0,
               "notif": "(16 fields)"
             },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788783972,\"nid\":[<id:5>]}"
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"ts\":1788783972,\"nid\":[1788783972791570]}"
           },
           {
             "node": {
@@ -452,11 +452,11 @@ Answered:
               "prefetch_score": 0,
               "notif": "(16 fields)"
             },
-            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[<id:5>,<id:6>,<id:7>,<id:8>,<id:9>]}"
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[1788783972791570,1788783967563965,1794385919559732,1790733024259787,1790242991451437]}"
           }
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[<id:5>,<id:6>,<id:7>,<id:8>,<id:9>]}",
+          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1790242991,\"nid\":[1788783972791570,1788783967563965,1794385919559732,1790733024259787,1790242991451437]}",
           "has_next_page": false
         }
       },
@@ -487,7 +487,7 @@ Answered:
         "surface": null
       },
       {
-        "uri": "<mediaUrl> (438 chars)",
+        "uri": "https://scontent.fyvr3-1.fna.fbcdn.net/v/t39.30808-6/339329083_2210290515822569_8421297167700275731_n.jpg (438 chars)",
         "label": null,
         "width": null,
         "height": null,

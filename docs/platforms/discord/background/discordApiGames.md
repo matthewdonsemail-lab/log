@@ -10,10 +10,10 @@
 | Path | `discord.com/api/games` |
 | Sends | — |
 | Reads | — |
-| Called from | `runs/inspect/20261030T222341_<name:8>/script1.js:208 app_store_parental_revocation`, `runs/inspect/20261030T222341_<name:8>/script1036.js:1 parse`, `runs/inspect/20261030T222341_<name:8>/script1221.js:2 anonymous`, `runs/inspect/20261028T074137_<name:8>/script1245.js:2 anonymous` |
-| rea | `ev_065e7ad37dcb5911d240f9de7d6e2882220c5a8d7c025d92b46a23de59cf297c` |
+| Called from | `runs/inspect/20261113T141543_<name:8>/script1.js:232 625075`, `runs/inspect/20261113T141543_<name:8>/script1.js:124 559868`, `runs/inspect/20261113T141543_<name:8>/script1.js:124 961943`, `runs/inspect/20261113T141543_<name:8>/script1294.js:1 634654` |
+| rea | `ev_a9fa69c7432fa1fcc41058ba491790444cfcec72f4c96150b3d2566a4e5def67` |
 
-Seen 7 time(s) in 3 run(s).
+Seen 8 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,21 +21,21 @@ Seen 7 time(s) in 3 run(s).
 | inspect | step 9: goto /channels/@me | 1 | 200 | 366 ms | 10199 ms | — |
 | inspect | step 25: goto /channels/@me | 1 | 200 | 318 ms | 8803 ms | — |
 | inspect | step 27: type e2077 | 2 | 200 | 325–385 ms | 390–543 ms | — |
-| inspect | step 1: goto /login | 1 | 200 | 418 ms | 18655 ms | — |
+| inspect | step 1: goto /login | 2 | 200 | 418–570 ms | 18655–1051883 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 1088 ms | 50864 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261030T222341_<name:8>**, step 2: snapshot: 200, 1088 ms
+**runs/inspect/20261113T141543_<name:8>**, step 1: goto /login: 200, 570 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "game_ids": "<id:1>"
+    "game_ids": "1539812812854132867"
   },
   "body": null
 }
@@ -45,127 +45,120 @@ Answered:
 
 ```json
 [
-  {
-    "id": "<id:2>",
-    "name": "<name:1>",
-    "aliases": "(0 items)",
-    "description": "<messageText>",
-    "icon_hash": "5146eac718876015ae5d3eeadbaad9d7",
-    "executables": "(0 items)",
-    "third_party_skus": "(4 items)",
-    "overlay": false,
-    "overlay_warn": false,
-    "overlay_compatibility_hook": false,
-    "overlay_methods": 0,
-    "hook": true,
-    "themes": "(2 items)",
-    "linked_applications": "(1 items)",
-    "media": "(6 fields)",
-    "first_release_date": "2025-11-18T00:00:00+00:00",
-    "genres": "(5 items)",
-    "platforms": "(1 items)",
-    "platform_availability": "(2 items)",
-    "cover_image_hash": "06794d884aafbc11a17fd770620030f9",
-    "banner_hash": "899b1d4806aac5d7732049bf568dc4f4",
-    "screenshot_hashes": "(4 items)",
-    "screenshot_urls": "(4 items)",
-    "trailers": "(1 items)",
-    "websites": "(7 items)",
-    "companies": "(1 items)",
-    "steam_release_status": 3,
-    "reviews": "(1 fields)",
-    "l30_rank": 22,
-    "community_guild_ids": "(7 items)",
-    "game_flags": 0,
-    "content_classification": "(1 fields)"
-  },
-  {
-    "id": "<id:3>",
-    "name": "<name:2>",
-    "aliases": "(0 items)",
-    "description": "<messageText>",
-    "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
-    "executables": "(1 items)",
-    "third_party_skus": "(7 items)",
-    "overlay": false,
-    "overlay_warn": false,
-    "overlay_compatibility_hook": false,
-    "overlay_methods": 0,
-    "hook": false,
-    "themes": "(2 items)",
-    "linked_applications": "(0 items)",
-    "media": "(5 fields)",
-    "first_release_date": "2026-10-23T00:00:00+00:00",
-    "genres": "(1 items)",
-    "platforms": "(3 items)",
-    "platform_availability": "(2 items)",
-    "cover_image_hash": "7f8275b121cbd881753bad14969257ea",
-    "screenshot_urls": "(7 items)",
-    "websites": "(7 items)",
-    "companies": "(2 items)",
-    "steam_release_status": 3,
-    "reviews": "(1 fields)",
-    "l30_rank": 7,
-    "game_flags": 0,
-    "content_classification": "(1 fields)"
-  },
   {
     "id": "<id:1>",
-    "name": "<name:3>",
-    "aliases": "(1 items)",
-    "description": "<messageText>",
-    "icon_hash": "91fac0600c5b6527c1aea95a93c6a8e0",
-    "executables": "(4 items)",
-    "third_party_skus": "(7 items)",
-    "overlay": false,
+    "name": "<name:1>",
+    "aliases": [
+      "Epic Games Launcher"
+    ],
+    "description": "Fortnite is a free-to-play online game where you and your friends can create, play and battle. Be the last player standing in Battle Royale and Zero Build, experience a concert or live event, or discover over a million creator-made games, including racing, parkour, zombie survival and more.",
+    "icon_hash": "c1864b38910c209afd5bf6423b672022",
+    "executables": [
+      "(3 fields)",
+      "(3 fields)",
+      "(3 fields)"
+    ],
+    "third_party_skus": [
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "… 18 more"
+    ],
+    "overlay": true,
     "overlay_warn": false,
-    "overlay_compatibility_hook": false,
+    "overlay_compatibility_hook": true,
     "overlay_methods": 0,
     "hook": true,
-    "themes": "(2 items)",
-    "linked_applications": "(0 items)",
-    "media": "(5 fields)",
-    "first_release_date": "2019-02-04T00:00:00+00:00",
-    "genres": "(2 items)",
-    "platforms": "(4 items)",
-    "platform_availability": "(2 items)",
-    "screenshot_urls": "(6 items)",
-    "trailers": "(1 items)",
-    "websites": "(7 items)",
-    "companies": "(2 items)",
-    "steam_release_status": 3,
-    "reviews": "(2 fields)",
-    "opencritic_url": "https://opencritic.com/game/7267/apex-legends",
-    "l30_rank": 13,
-    "community_guild_ids": "(7 items)",
+    "themes": [
+      "Action",
+      "Open world",
+      "Sandbox",
+      "Survival"
+    ],
+    "linked_applications": [
+      "(2 fields)"
+    ],
+    "media": {
+      "cover_url": "https://images-ext-1.discordapp.net/external/NEKOQRfG-ycjcZsTBZWtV3pPSP_ryyGiJEIHva2pRYc/https/images.igdb.com/igdb/image/upload/t_cover_big/cocxbi.jpg",
+      "artwork_hashes": "(1 items)",
+      "icon": "(2 fields)",
+      "banner": "(2 fields)",
+      "cover": "(2 fields)",
+      "artwork": "(1 items)"
+    },
+    "first_release_date": "2020-06-29T00:00:00+00:00",
+    "genres": [
+      28,
+      23
+    ],
+    "platforms": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      "… 1 more"
+    ],
+    "platform_availability": [
+      "console",
+      "desktop",
+      "mobile"
+    ],
+    "banner_hash": "b82e4ce1bb3835f5adfd9a1e766844ae",
+    "screenshot_urls": [
+      "https://images-ext-1.discordapp.net/external/-3AuKABBsB3Bpa-oMkTW_zOQ66kIv8aZtorxu208u4c/https/images.igdb.com/igdb/image/upload/t_1080p/scvtmt.jpg",
+      "https://images-ext-1.discordapp.net/external/1J1l64i8vNCvJe-_FQTU91kd2GV9Nn4sNu_Bc5rjjnM/https/images.igdb.com/igdb/image/upload/t_1080p/sc105br.jpg",
+      "https://images-ext-1.discordapp.net/external/1rWFlzxH7A2FYz6bTrNq3XqTNdGSMcb5k6C6A3Wqcuk/https/images.igdb.com/igdb/image/upload/t_1080p/scvtmw.jpg",
+      "https://images-ext-1.discordapp.net/external/4yhRVnSuBZ8KvUhmIPwdmRWcbaE3WYBfrPTwqeKReHs/https/images.igdb.com/igdb/image/upload/t_1080p/sc105bp.jpg",
+      "https://images-ext-1.discordapp.net/external/6Da0FGoIn2h7-ZMhvcwLfuNLC34s-DnozpOs2QbF0nw/https/images.igdb.com/igdb/image/upload/t_1080p/sc105bo.jpg",
+      "https://images-ext-1.discordapp.net/external/BpirDw5XC3MM0JSkAG4VXvTgqsuw-96Qgo8GAfF4WmY/https/images.igdb.com/igdb/image/upload/t_1080p/scvtmv.jpg",
+      "… 14 more"
+    ],
+    "trailers": [
+      "(6 fields)"
+    ],
+    "websites": [
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "(2 fields)",
+      "… 8 more"
+    ],
+    "companies": [
+      "(2 fields)"
+    ],
+    "reviews": {
+      "opencritic": "(3 fields)",
+      "app_store": "(3 fields)",
+      "google_play": "(2 fields)"
+    },
+    "opencritic_url": "https://opencritic.com/game/6228/fortnite-battle-royale",
+    "l30_rank": 2,
+    "community_guild_ids": [
+      "322850917248663552",
+      "1175919536839610512",
+      "483995605593489419",
+      "625801565558800385",
+      "1143532130475970695",
+      "605881657286983736",
+      "… 34 more"
+    ],
     "game_flags": 0,
-    "content_classification": "(1 fields)"
-  }
-]
-```
-
-**runs/inspect/20261028T074137_<name:8>**, step 1: goto /login: 200, 418 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "game_ids": "<id:4>"
+    "content_classification": {
+      "agency_ratings": "(3 fields)"
+    }
   },
-  "body": null
-}
-```
-
-Answered:
-
-```json
-[
   {
-    "id": "<id:3>",
+    "id": "<id:2>",
     "name": "<name:2>",
     "aliases": [],
-    "description": "<messageText>",
+    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
     "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
     "executables": [
       "(3 fields)"
@@ -237,102 +230,8 @@ Answered:
       "steam": "(6 fields)"
     },
     "l30_rank": 7,
-    "game_flags": 0,
-    "content_classification": {
-      "agency_ratings": "(2 fields)"
-    }
-  },
-  {
-    "id": "<id:4>",
-    "name": "<name:4>",
-    "aliases": [],
-    "description": "<messageText>",
-    "icon_hash": "7ce8aa26a0dd472740eebeb9c25e6577",
-    "executables": [
-      "(3 fields)"
-    ],
-    "third_party_skus": [
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "… 4 more"
-    ],
-    "overlay": true,
-    "overlay_warn": false,
-    "overlay_compatibility_hook": false,
-    "overlay_methods": 0,
-    "hook": false,
-    "themes": [
-      "Action",
-      "Science fiction"
-    ],
-    "linked_applications": [
-      "(2 fields)"
-    ],
-    "media": {
-      "cover_url": "https://images-ext-1.discordapp.net/external/VhN78B3eWKBk9I6Sc7AfuqPw3RXp34hvQmYwHojgd5c/https/images.igdb.com/igdb/image/upload/t_cover_big/co9rk1.jpg",
-      "artwork_urls": "(5 items)",
-      "icon": "(2 fields)",
-      "cover": "(2 fields)",
-      "artwork": "(5 items)"
-    },
-    "first_release_date": "2025-10-30T00:00:00+00:00",
-    "genres": [
-      8,
-      23
-    ],
-    "platforms": [
-      0,
-      1,
-      2
-    ],
-    "platform_availability": [
-      "console",
-      "desktop"
-    ],
-    "screenshot_urls": [
-      "https://images-ext-1.discordapp.net/external/-2H_dHkUv4miagoU8Yb2V8Y1EsyYTduxLFF8wmORqTY/https/images.igdb.com/igdb/image/upload/t_1080p/sc11kkg.jpg",
-      "https://images-ext-1.discordapp.net/external/0FeHzf4pQlwUuP8ASQnP2UK9BA6uTUTshGMQwB4wgDU/https/images.igdb.com/igdb/image/upload/t_1080p/scii62.jpg",
-      "https://images-ext-1.discordapp.net/external/0M3bWzOoOevvAcD4JzUQXtddfCWbwhiHsfx88I3CP3I/https/images.igdb.com/igdb/image/upload/t_1080p/sc11kkk.jpg",
-      "https://images-ext-1.discordapp.net/external/9uD-nF2qjyxMgchgg3QR3O4PXB4lC--Es9Suf__TZXE/https/images.igdb.com/igdb/image/upload/t_1080p/sc11kkj.jpg",
-      "https://images-ext-1.discordapp.net/external/AmzovMyaGaYQke8DgByMwHQb-IGD8CoVk19DhHAGeO4/https/images.igdb.com/igdb/image/upload/t_1080p/sc11kkc.jpg",
-      "https://images-ext-1.discordapp.net/external/Bw-Ja2K0wdf1Yivko1G_f0NSroLKzzsDgsrenNCbJBM/https/images.igdb.com/igdb/image/upload/t_1080p/sc11kke.jpg",
-      "… 8 more"
-    ],
-    "trailers": [
-      "(6 fields)"
-    ],
-    "websites": [
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "(2 fields)",
-      "… 5 more"
-    ],
-    "companies": [
-      "(2 fields)",
-      "(2 fields)"
-    ],
-    "steam_release_status": 3,
-    "reviews": {
-      "steam": "(6 fields)",
-      "opencritic": "(3 fields)"
-    },
-    "opencritic_url": "https://opencritic.com/game/19023/arc-raiders",
-    "l30_rank": 17,
     "community_guild_ids": [
-      "<id:5>",
-      "<id:6>",
-      "<id:7>",
-      "<id:8>",
-      "<id:9>",
-      "<id:10>",
-      "… 29 more"
+      "1296834348271800452"
     ],
     "game_flags": 0,
     "content_classification": {
@@ -342,14 +241,14 @@ Answered:
 ]
 ```
 
-**runs/inspect/20261028T062914_<name:8>**, step 5: click e40: 200, 358 ms
+**runs/inspect/20261030T222341_<name:8>**, step 2: snapshot: 200, 1088 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "game_ids": "<id:3>"
+    "game_ids": "542075586886107149"
   },
   "body": null
 }
@@ -361,9 +260,125 @@ Answered:
 [
   {
     "id": "<id:3>",
+    "name": "<name:3>",
+    "aliases": "(0 items)",
+    "description": "AION 2 is the only MMORPG built around a world where the sky is the battlefield. Choose your faction, ascend as a Daeva, and fight a faction war across a world 36 times larger than the original. PC only, on Unreal Engine 5.",
+    "icon_hash": "5146eac718876015ae5d3eeadbaad9d7",
+    "executables": "(0 items)",
+    "third_party_skus": "(4 items)",
+    "overlay": false,
+    "overlay_warn": false,
+    "overlay_compatibility_hook": false,
+    "overlay_methods": 0,
+    "hook": true,
+    "themes": "(2 items)",
+    "linked_applications": "(1 items)",
+    "media": "(6 fields)",
+    "first_release_date": "2025-11-18T00:00:00+00:00",
+    "genres": "(5 items)",
+    "platforms": "(1 items)",
+    "platform_availability": "(2 items)",
+    "cover_image_hash": "06794d884aafbc11a17fd770620030f9",
+    "banner_hash": "899b1d4806aac5d7732049bf568dc4f4",
+    "screenshot_hashes": "(4 items)",
+    "screenshot_urls": "(4 items)",
+    "trailers": "(1 items)",
+    "websites": "(7 items)",
+    "companies": "(1 items)",
+    "steam_release_status": 3,
+    "reviews": "(1 fields)",
+    "l30_rank": 22,
+    "community_guild_ids": "(7 items)",
+    "game_flags": 0,
+    "content_classification": "(1 fields)"
+  },
+  {
+    "id": "<id:2>",
+    "name": "<name:2>",
+    "aliases": "(0 items)",
+    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
+    "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
+    "executables": "(1 items)",
+    "third_party_skus": "(7 items)",
+    "overlay": false,
+    "overlay_warn": false,
+    "overlay_compatibility_hook": false,
+    "overlay_methods": 0,
+    "hook": false,
+    "themes": "(2 items)",
+    "linked_applications": "(0 items)",
+    "media": "(5 fields)",
+    "first_release_date": "2026-10-23T00:00:00+00:00",
+    "genres": "(1 items)",
+    "platforms": "(3 items)",
+    "platform_availability": "(2 items)",
+    "cover_image_hash": "7f8275b121cbd881753bad14969257ea",
+    "screenshot_urls": "(7 items)",
+    "websites": "(7 items)",
+    "companies": "(2 items)",
+    "steam_release_status": 3,
+    "reviews": "(1 fields)",
+    "l30_rank": 7,
+    "game_flags": 0,
+    "content_classification": "(1 fields)"
+  },
+  {
+    "id": "<id:4>",
+    "name": "<name:4>",
+    "aliases": "(1 items)",
+    "description": "Conquer with character in Apex Legends, a free-to-play Hero shooter where legendary characters with powerful abilities team up to battle for fame & fortune on the fringes of the Frontier.\n\nMaster an ever-growing roster of diverse Legends, deep tactical squad play and bold new innovations that go beyond the Battle Royale experience—all within a rugged world where anything goes. Welcome to the next … (426 chars)",
+    "icon_hash": "91fac0600c5b6527c1aea95a93c6a8e0",
+    "executables": "(4 items)",
+    "third_party_skus": "(7 items)",
+    "overlay": false,
+    "overlay_warn": false,
+    "overlay_compatibility_hook": false,
+    "overlay_methods": 0,
+    "hook": true,
+    "themes": "(2 items)",
+    "linked_applications": "(0 items)",
+    "media": "(5 fields)",
+    "first_release_date": "2019-02-04T00:00:00+00:00",
+    "genres": "(2 items)",
+    "platforms": "(4 items)",
+    "platform_availability": "(2 items)",
+    "screenshot_urls": "(6 items)",
+    "trailers": "(1 items)",
+    "websites": "(7 items)",
+    "companies": "(2 items)",
+    "steam_release_status": 3,
+    "reviews": "(2 fields)",
+    "opencritic_url": "https://opencritic.com/game/7267/apex-legends",
+    "l30_rank": 13,
+    "community_guild_ids": "(7 items)",
+    "game_flags": 0,
+    "content_classification": "(1 fields)"
+  }
+]
+```
+
+**runs/inspect/20261028T062914_<name:8>**, step 5: click e40: 200, 358 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "game_ids": "1539812812854132867"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+[
+  {
+    "id": "<id:2>",
     "name": "<name:2>",
     "aliases": [],
-    "description": "<messageText>",
+    "description": "The Call of Duty® experience supports Modern Warfare® 4, Black Ops 7 and Call of Duty®: Warzone™.\n\nCall of Duty®: Modern Warfare® 4 brings players Warfare Without Limits.\n\nIn Call of Duty®: Black Ops 7, Treyarch and Raven Software are bringing players the biggest Black Ops ever.\n\nCall of Duty®: Warzone™ is the massive free-to-play combat arena, featuring Battle Royale, Resurgence, and now introduc… (495 chars)",
     "icon_hash": "532b24566a2cdde9646052b7e4d43bc0",
     "executables": [
       {
@@ -375,27 +390,27 @@ Answered:
     "third_party_skus": [
       {
         "distributor": "xbox_game_pass",
-        "id": "9N8KMNW6942X"
+        "id": "<id:5>"
       },
       {
         "distributor": "steam",
-        "id": "1938090"
+        "id": "<id:6>"
       },
       {
         "distributor": "playstation",
-        "id": "PPSA07952_00"
+        "id": "<id:7>"
       },
       {
         "distributor": "playstation",
-        "id": "PPSA37415_00"
+        "id": "<id:8>"
       },
       {
         "distributor": "xbox_game_pass",
-        "id": "9NNFG8BQRCXL"
+        "id": "<id:9>"
       },
       {
         "distributor": "xbox_title",
-        "id": "1680003655"
+        "id": "<id:10>"
       },
       "… 16 more"
     ],

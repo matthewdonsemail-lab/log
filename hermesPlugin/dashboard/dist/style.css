@@ -1,0 +1,64 @@
+/* log dashboard styles. Uses the active Hermes theme's variables so it matches any theme, with
+ * ListeningKit's blue (#2A8CFF) as the accent. Every class is prefixed lk- so nothing else changes. */
+.lk-page { --lk-blue: #2A8CFF; display: flex; flex-direction: column; gap: 1rem; max-width: 76rem; }
+.lk-muted { color: var(--color-muted-foreground); }
+.lk-kicker { color: var(--lk-blue); text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; font-family: var(--font-mono, ui-monospace, monospace); }
+
+.lk-hero { position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; padding: 1.4rem 1.4rem 1.25rem; border: 1px solid color-mix(in srgb, var(--lk-blue) 35%, var(--color-border));
+  background: radial-gradient(circle at 85% -20%, color-mix(in srgb, var(--lk-blue) 30%, transparent), transparent 45%), radial-gradient(circle at 0% 120%, color-mix(in srgb, var(--lk-blue) 16%, transparent), transparent 40%), color-mix(in srgb, var(--color-card) 92%, transparent); }
+.lk-hero h1 { margin: .35rem 0 0; font-size: clamp(1.8rem, 3.6vw, 3.1rem); line-height: 1; letter-spacing: -0.05em; }
+.lk-hero p { margin: .6rem 0 0; max-width: 46rem; color: var(--color-muted-foreground); }
+
+.lk-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
+.lk-stat { border: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-card) 92%, transparent); padding: 1rem; }
+.lk-stat-accent { border-color: color-mix(in srgb, var(--lk-blue) 55%, var(--color-border)); background: color-mix(in srgb, var(--lk-blue) 10%, var(--color-card)); }
+.lk-stat-accent .lk-stat-value { color: var(--lk-blue); }
+.lk-stat-label { color: var(--color-muted-foreground); font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; }
+.lk-stat-value { margin-top: .35rem; font-size: 1.6rem; font-weight: 750; letter-spacing: -0.035em; }
+.lk-stat-hint { margin-top: .2rem; color: var(--color-muted-foreground); font-size: .75rem; }
+
+.lk-split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.lk-section-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.lk-panel { border: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-card) 85%, transparent); padding: .9rem 1rem; }
+.lk-panel-title { display: block; margin: 0 0 .55rem; font-size: .76rem; text-transform: uppercase; letter-spacing: .12em; font-family: var(--font-mono, ui-monospace, monospace); }
+.lk-empty { color: var(--color-muted-foreground); text-align: center; padding: 1.6rem 1rem; }
+.lk-toggle { display: inline-flex; align-items: center; gap: .35rem; margin-bottom: .55rem; font-size: .75rem; color: var(--color-muted-foreground); cursor: pointer; }
+.lk-foot { margin-top: .5rem; font-size: .75rem; }
+.lk-note { font-size: .74rem; color: #f59e0b; }
+.lk-code { margin: .5rem 0 0; padding: .7rem .8rem; border: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-card) 70%, #000); font-family: var(--font-mono, ui-monospace, monospace); font-size: .8rem; white-space: pre; }
+
+.lk-list { display: flex; flex-direction: column; border: 1px solid var(--color-border); }
+.lk-row { display: flex; align-items: center; gap: .8rem; padding: .75rem .9rem; border-top: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-card) 90%, transparent); }
+.lk-row:first-child { border-top: 0; }
+.lk-row:hover { background: color-mix(in srgb, var(--lk-blue) 7%, var(--color-card)); }
+.lk-avatar { flex: none; display: grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 30%; background: color-mix(in srgb, var(--lk-blue) 22%, var(--color-card)); color: var(--lk-blue); font-weight: 750; }
+.lk-row-main { flex: 1; min-width: 0; }
+.lk-row-top { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+.lk-row-top .lk-muted { font-size: .75rem; }
+.lk-row-text { margin-top: .15rem; font-size: .86rem; color: var(--color-muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.lk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .7rem; }
+.lk-card { display: flex; flex-direction: column; gap: .5rem; padding: .85rem .9rem; border: 1px solid var(--color-border); background: color-mix(in srgb, var(--color-card) 92%, transparent); }
+.lk-card-head { display: flex; align-items: center; justify-content: space-between; gap: .4rem; }
+.lk-account { font-weight: 700; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-platform { font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; font-family: var(--font-mono, ui-monospace, monospace); color: var(--color-muted-foreground); }
+.lk-meter { height: 4px; background: color-mix(in srgb, var(--color-border) 70%, transparent); }
+.lk-meter-fill { height: 100%; background: var(--lk-blue); }
+.lk-card-foot { display: flex; justify-content: space-between; gap: .4rem; font-size: .74rem; color: var(--color-muted-foreground); }
+.lk-waiting-count { color: var(--lk-blue); font-weight: 650; }
+
+.lk-badge { font-size: .68rem; padding: .12rem .45rem; border: 1px solid currentColor; text-transform: uppercase; letter-spacing: .08em; font-family: var(--font-mono, ui-monospace, monospace); }
+.lk-ok { color: #34d399; }
+.lk-bad { color: #f87171; }
+.lk-unknown { color: var(--color-muted-foreground); }
+
+.lk-btn { flex: none; border: 1px solid color-mix(in srgb, var(--lk-blue) 55%, var(--color-border)); color: var(--lk-blue); background: color-mix(in srgb, var(--lk-blue) 9%, transparent); padding: .35rem .65rem; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; font-family: var(--font-mono, ui-monospace, monospace); cursor: pointer; }
+.lk-btn:hover { background: color-mix(in srgb, var(--lk-blue) 20%, transparent); }
+.lk-btn:disabled { opacity: .55; cursor: default; }
+.lk-btn-strong { background: var(--lk-blue); color: #fff; border-color: var(--lk-blue); }
+.lk-btn-strong:hover { background: color-mix(in srgb, var(--lk-blue) 85%, #000); }
+
+@media (max-width: 900px) {
+  .lk-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lk-split { grid-template-columns: 1fr; }
+}

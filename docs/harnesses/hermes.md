@@ -2,6 +2,10 @@
 
 Hermes (Nous Research) is an agent that runs on a server and answers through gateways such as Telegram and Slack, plus its CLI, TUI and desktop app.
 
+- **Plugin:** log has a Hermes plugin, named `log`, in this repo under [`hermesPlugin/`](../../hermesPlugin/README.md).
+  - **Install:** `hermes plugins install log --no-enable`, then `hermes plugins enable log`. log itself is installed first, with `logMcp` on the PATH.
+  - **What it adds:** it starts `logMcp` on the same machine over stdio, marks the server untrusted so every send asks for approval, ships two skills (`log:dm-inbox`, `log:outreach`) and adds a read-only log tab to Hermes's dashboard.
+  - **What it doesn't do yet:** it has no hosted option, and no `pre_llm_call` hook, so routing still goes through `getGuide` as below.
 - **Connects:**
   - **Config:** `mcp_servers` in `~/.hermes/config.yaml`. A remote server takes `url` and `auth: oauth`; Hermes handles registration, PKCE and refresh, and keeps tokens in `~/.hermes/mcp-tokens/<server>.json`. A local server takes `command`. ([Hermes: MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp), [MCP config reference](https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference))
   - **Tool names:** Hermes names tools `mcp_<server>_<tool>`, so log's tools appear as `mcp_log_report` and so on.

@@ -113,7 +113,7 @@ Seen 151 time(s) in 42 run(s).
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/warmup/20261023T080515_<userId:1>**, step 1: goto /marketplace/: 200, 441 ms
+**runs/warmup/20261023T080515_<id:5>**, step 1: goto /marketplace/: 200, 441 ms
 
 Sent:
 
@@ -173,7 +173,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_<userId:1>**, step 3: goto /marketplace/you/selling: 200, 386 ms
+**runs/warmup/20261023T080515_<id:5>**, step 3: goto /marketplace/you/selling: 200, 386 ms
 
 Sent:
 
@@ -237,7 +237,7 @@ Answered:
 }
 ```
 
-**runs/warmup/20261023T080515_<userId:1>**, step 5: goto /messages/: 200, 376 ms
+**runs/warmup/20261023T080515_<id:5>**, step 5: goto /messages/: 200, 376 ms
 
 Sent:
 
