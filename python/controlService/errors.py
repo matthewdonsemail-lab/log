@@ -46,6 +46,16 @@ STATUS = {
     "cookiesIncomplete": 400,
     "signInBusy": 409,
     "usageRangeInvalid": 400,
+    "browserMissing": 404,
+    "browserViewerUnavailable": 503,
+    "browserGenerationChanged": 409,
+    "browserBusy": 409,
+    "browserStateChanged": 409,
+    "browserInputStopped": 409,
+    "browserInputInvalid": 400,
+    "browserInputFailed": 409,
+    "browserCheckUnresolved": 409,
+    "browserOperationRefused": 409,
 }
 
 

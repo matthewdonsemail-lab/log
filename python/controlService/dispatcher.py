@@ -12,7 +12,7 @@ from controlService.dispatchAuthority import request_hash, sign_authority
 from controlService.errors import ApiError
 from controlService.models import Membership, MembershipStatus, OperationMetadata, OperationState, Team, TeamWorkspaceSelection, Workspace, WorkspaceStatus
 from controlService.settings import DISPATCH_WAIT_SECONDS, OPERATION_METADATA_DAYS, PROTOCOL_VERSION, Settings
-from controlService.tools import CONSOLE_TOOLS, tool_kind
+from controlService.tools import APP_TOOLS, CONSOLE_TOOLS, tool_kind
 from controlService.views import OperationView
 
 
@@ -72,9 +72,9 @@ class Dispatcher:
     engine: Engine
     bridges: Bridges
 
-    def admit(self, actor: Actor, operationId: uuid.UUID, tool: str, record: bool):
+    def admit(self, actor: Actor, operationId: uuid.UUID, tool: str, record: bool, app: bool = False):
         kind = tool_kind(tool)
-        if kind is None:
+        if kind is None or (tool in APP_TOOLS and not app):
             raise ApiError("invalidInput", f"{tool} is not a registered tool")
         with Session(self.engine, expire_on_commit=False) as db:
             team, membership = current_membership(db, actor)
@@ -111,8 +111,8 @@ class Dispatcher:
         team, workspace, link = await to_thread.run_sync(self.admit_console, actor, tool)
         return await self.dispatch(actor, team, workspace, link, uuid.uuid4(), tool, args, OperationState.dispatched, False)
 
-    async def run(self, actor: Actor, operationId: uuid.UUID, tool: str, args: dict, record: bool = True) -> OperationView:
-        team, workspace, link, state, repeat = await to_thread.run_sync(self.admit, actor, operationId, tool, record)
+    async def run(self, actor: Actor, operationId: uuid.UUID, tool: str, args: dict, record: bool = True, app: bool = False) -> OperationView:
+        team, workspace, link, state, repeat = await to_thread.run_sync(self.admit, actor, operationId, tool, record and not app, app)
         return await self.dispatch(actor, team, workspace, link, operationId, tool, args, state, repeat)
 
     async def dispatch(self, actor: Actor, team: Team, workspace: Workspace, link: Link, operationId: uuid.UUID, tool: str, args: dict, state: OperationState, repeat: bool) -> OperationView:
