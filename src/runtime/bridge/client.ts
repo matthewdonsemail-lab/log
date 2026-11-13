@@ -142,6 +142,7 @@ export interface ConnectOptions {
   onLine: (line: string) => void;
   signal?: AbortSignal;
   socket?: (url: string, headers: Record<string, string>) => WebSocket;
+  redact?: (tool: string, args: Record<string, unknown>) => Record<string, unknown>;
 }
 
 const openSocket = (url: string, headers: Record<string, string>) => new (WebSocket as unknown as new (url: string, options: { headers: Record<string, string> }) => WebSocket)(url, { headers });
@@ -188,7 +189,7 @@ export function connectOnce(options: ConnectOptions): Promise<{ code: number; re
         send({ kind: "result", operationId, payload: { state: "failed", error: { code: checked.code, message: checked.message } } });
         return;
       }
-      const accepted = journalAccept(db, checked.authority, operationId, checked.args, options.isLive(checked.tool));
+      const accepted = journalAccept(db, checked.authority, operationId, options.redact ? options.redact(checked.tool, checked.args) : checked.args, options.isLive(checked.tool));
       if ("code" in accepted) {
         send({ kind: "result", operationId, payload: { state: "failed", error: { code: accepted.code, message: accepted.message } } });
         return;
