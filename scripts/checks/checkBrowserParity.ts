@@ -4,7 +4,7 @@ import { BROWSER_CAPABILITIES, BROWSER_DRIVERS } from "../../src/browser/driver/
 import type { BrowserCapabilities } from "../../src/browser/driver/types.ts";
 
 const root = join(import.meta.dir, "..", "..");
-const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow", "runStore"];
+const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow", "runStore", "viewer"];
 const problems: string[] = [];
 const rows = new Map<string, BrowserCapabilities>();
 const capabilities = Object.keys(BROWSER_CAPABILITIES) as (keyof typeof BROWSER_CAPABILITIES)[];

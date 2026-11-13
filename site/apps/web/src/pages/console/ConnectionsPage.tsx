@@ -5,12 +5,13 @@ import { api, PLATFORM_SETUP_COMMAND, useSelectedTeam, useWorkspaces, type Accou
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faFacebook, faInstagram, faLinkedin, faRedditAlien, faSlack, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faDesktop, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { ConsoleLayout, SectionHeading, WorkspaceChip, workspaceStateOf } from './ConsoleLayout'
 import { AddKeyDialog, type KeyProvider } from './AddKeyDialog'
 import { useErrorToast } from '@/lib/useErrorToast'
 import { localConsole } from '@/lib/consoleMode'
 import { loadLocalConnections, localAccountViews } from './connectionsData'
+import { BrowserCheckDialog } from './BrowserCheckDialog'
 
 type Platform = { service: string; label: string; icon: IconDefinition; summary: string }
 
@@ -55,6 +56,8 @@ export function ConnectionsPage() {
   const iconOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.icon ?? faMagnifyingGlass
   const [query, setQuery] = useState('')
   const [setupPlatform, setSetupPlatform] = useState<Platform | null>(null)
+  const [browserAccount, setBrowserAccount] = useState<{ account: string; platform: string } | null>(null)
+  const labelOf = (platform: string) => PLATFORMS.find((item) => item.service === (platform === 'twitter' ? 'x' : platform))?.label ?? platform
   const [keyDialog, setKeyDialog] = useState<{ open: boolean; provider: KeyProvider | null }>({ open: false, provider: null })
   const running = workspaceState === 'ready' || workspaceState === 'reconnecting' || workspaceState === 'offline'
 
@@ -97,6 +100,7 @@ export function ConnectionsPage() {
                   <span className="block truncate text-xs text-slate-500">{account.platform} · {account.account}</span>
                 </span>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${account.sessionState === 'loggedIn' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{account.sessionState ?? account.status}</span>
+                {localConsole ? <button type="button" onClick={() => setBrowserAccount({ account: account.account, platform: account.platform })} aria-label={`View ${account.account}'s live browser`} title="View its live browser" className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-[#2A8CFF]"><FontAwesomeIcon icon={faDesktop} className="size-3.5" /></button> : null}
               </li>
             ))}
           </ul>
@@ -207,6 +211,7 @@ export function ConnectionsPage() {
         providers={EXTENSION_PROVIDERS}
         onClose={() => setKeyDialog({ open: false, provider: null })}
       />
+      {browserAccount ? <BrowserCheckDialog account={browserAccount.account} platformLabel={labelOf(browserAccount.platform)} onClose={() => setBrowserAccount(null)} /> : null}
       {setupPlatform ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#0D2A4C]/45 backdrop-blur-[2px] sm:items-center sm:p-6" onMouseDown={() => setSetupPlatform(null)}>
           <div role="dialog" aria-modal="true" aria-labelledby="platform-setup-title" className="w-full max-w-lg rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl" onMouseDown={(event) => event.stopPropagation()}>
