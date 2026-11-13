@@ -26,7 +26,7 @@ Say: **"go on docs/useCases/twitter/followers.md for <handles>"**, or "for every
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
 | 0 | Session check | `twitterSessionCheck` | `loggedIn` |
-| 1 | For each handle: do they follow the account, does the account follow them | `twitterFollows` { account, handles: "a,b,c" } | one answer per handle, from X |
+| 1 | For each handle: do they follow the account, does the account follow them | `twitterFollows` { account, handles: ["a", "b", "c"] } | one answer per handle, from X |
 | 2 | Take anyone who doesn't follow off the "followers" line, or reword the line | the page or copy | every name on it is true today |
 
 Handles come from research or from the owner, never guessed (rule 53). The read is 1.5 s per handle, so a long list takes a minute.

@@ -75,7 +75,7 @@ describe("who messaged an X account, from log.db", () => {
         expect(text.stdout).toContain("5 messages from 2 people");
         const refused = await reportCommand.run(context, ["data", "--source", "twitterDmsBySender", "--since", "lately"]);
         expect(refused.code).toBe(1);
-        expect(refused.stderr).toContain("sinceInvalid");
+        expect(refused.stderr).toContain("inputInvalid: --since got \"lately\"");
       } finally {
         reportDeps.read = previous;
       }

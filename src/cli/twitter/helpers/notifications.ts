@@ -1,7 +1,7 @@
 import type { TwitterSessionAnswer } from "../../../twitter/account/session/index.ts";
 import { NOTIFICATION_TYPES, countByKind, engagersOf, isNotificationType, notificationStorePath, postIdOf, queryNotifications, readNotificationStore } from "../../../twitter/notification/feed/index.ts";
 import type { NotificationKind, NotificationStore, NotificationType, TwitterNotification } from "../../../twitter/notification/feed/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../../runner/types.ts";
 import { governorLine, openTwitterAccount } from "./account.ts";
 
@@ -20,13 +20,13 @@ export const NOTIFICATIONS_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The TWITTER socialAccount's accountName (its handle)" },
-        { name: "type", kind: "string", description: "likes, reposts, replies, quotes, follows or all (default all)" },
-        { name: "since", kind: "string", description: "Only notifications at or after this date (ISO, e.g. 2026-11-01)" },
-        { name: "post", kind: "string", description: "Only notifications on this post (its id or x.com url)" },
+        { name: "type", kind: "enum", values: Object.keys(NOTIFICATION_TYPES), refusal: "notificationQueryInvalid", description: "likes, reposts, replies, quotes, follows or all (default all)" },
+        { name: "since", kind: "string", format: "time", refusal: "notificationQueryInvalid", description: "Only notifications at or after this date (ISO, e.g. 2026-11-01)" },
+        { name: "post", kind: "string", pattern: "^\\d+$|/status(?:es)?/\\d+", takes: "a post id or its x.com url", refusal: "notificationQueryInvalid", description: "Only notifications on this post (its id or x.com url)" },
         { name: "full", kind: "boolean", description: "Also page back through the history, from where the last --full stopped" },
-        { name: "pages", kind: "string", description: "The most pages read this run (default 5 new, 25 with --full, at most 200)" },
+        { name: "pages", kind: "integer", min: 1, max: 200, refusal: "notificationQueryInvalid", description: "The most pages read this run (default 5 new, 25 with --full, at most 200)" },
         { name: "stored", kind: "boolean", description: "Answer from what is kept, without calling X" },
-        { name: "limit", kind: "string", description: "How many rows to show (default 50, at most 5000)" },
+        { name: "limit", kind: "integer", min: 1, max: 5000, refusal: "limitInvalid", description: "How many rows to show (default 50, at most 5000)" },
         JSON_FLAG,
       ],
     },
@@ -80,12 +80,8 @@ export const notificationsCommand: Command = {
     const postRaw = parsed.flags["post"];
     const postId = typeof postRaw === "string" ? postIdOf(postRaw) : null;
     if (postRaw !== undefined && !postId) return refuse(label, "notificationQueryInvalid", `--post ${String(postRaw)}`);
-    const pagesRaw = parsed.flags["pages"];
-    const pages = pagesRaw === undefined ? undefined : Number(pagesRaw);
-    if (pages !== undefined && (!Number.isInteger(pages) || pages < 1 || pages > 200)) return refuse(label, "notificationQueryInvalid", `--pages ${String(pagesRaw)}`);
-    const limitRaw = parsed.flags["limit"];
-    const limit = limitRaw === undefined ? 50 : Number(limitRaw);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 5000) return refuse(label, "limitInvalid", "--limit is a whole number from 1 to 5000");
+    const pages = numberOf(parsed, "pages");
+    const limit = numberOf(parsed, "limit") ?? 50;
     const full = parsed.flags["full"] === true;
     try {
       const opened = await openTwitterAccount(context, label, ref);

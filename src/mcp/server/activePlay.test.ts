@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { COMMANDS } from "../../cli/runner/index.ts";
-import { actingAsOwnerTools, activePlay, clearActivePlay, gatedToolOf, listUseCases, namedByPlay, platformOfTool, PLAY_GATED_ON_MAIN, playGateMode, stepToolsOf, unnamedActingTools, guideAnswer, hostedPlayOwner, mintPlayHandle, PLAY_HANDLE_PATTERN, PLAY_IDLE_MS, playCovers, playFooter, playRefusal, playRequiredTools, playScope, processPlayScope, readUseCase, setActivePlay, stepsOf, toolsFromCommands, toolsFromFlows, withPlayFooter } from "./helpers/index.ts";
+import { actingAsOwnerTools, guardCall, withoutHandle, activePlay, clearActivePlay, gatedToolOf, listUseCases, namedByPlay, platformOfTool, PLAY_GATED_ON_MAIN, playGateMode, stepToolsOf, unnamedActingTools, guideAnswer, hostedPlayOwner, mintPlayHandle, PLAY_HANDLE_PATTERN, PLAY_IDLE_MS, playCovers, playFooter, playRefusal, playRequiredTools, playScope, processPlayScope, readUseCase, setActivePlay, stepsOf, toolsFromCommands, toolsFromFlows, withPlayFooter } from "./helpers/index.ts";
 import type { ActivePlay } from "./helpers/index.ts";
 import { runToolCall, savedFlows, withCallFooter } from "./index.ts";
 
@@ -192,18 +192,28 @@ describe("a play unlocks only the sends it covers", () => {
   test("runToolCall refuses an X DM under a Discord play, before anything runs", async () => {
     const scope = playScope("http:gate");
     guideAnswer({ useCase: "discord/channelReply" }, scope);
-    const result = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", confirmLive: true }, {}, () => {}, noBrowsers, undefined, false, scope);
+    const result = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", approvedBy: "fakeOwner", confirmLive: true }, {}, () => {}, noBrowsers, undefined, false, scope);
     expect(result.isError).toBe(true);
     expect((result.structuredContent as { stderr: string }).stderr).toStartWith("playNotCovering");
-    const none = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", confirmLive: true }, {}, () => {}, noBrowsers, undefined, false, playScope("http:empty"));
+    const none = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", approvedBy: "fakeOwner", confirmLive: true }, {}, () => {}, noBrowsers, undefined, false, playScope("http:empty"));
     expect((none.structuredContent as { stderr: string }).stderr).toStartWith("playMissing");
   });
 
   test("a play handle passed as a tool argument selects the play it names", async () => {
     const scope = playScope("http:handles");
     const play = setActivePlay("discord/channelReply", page("discord/channelReply"), { scope, handle: mintPlayHandle() });
-    const result = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", confirmLive: true, playHandle: play.handle }, {}, () => {}, noBrowsers, undefined, false, scope);
+    const result = await runToolCall("twitterDmLive", { account: "fakeBird", userId: "100", text: "hi", approvedBy: "fakeOwner", confirmLive: true, playHandle: play.handle }, {}, () => {}, noBrowsers, undefined, false, scope);
     expect((result.structuredContent as { stderr: string }).stderr).toContain("discord/channelReply");
+  });
+
+  test("a live call carrying both playHandle and approvedBy passes the input check and is decided by the play gate", async () => {
+    const scope = playScope("http:bothFields");
+    const play = setActivePlay("discord/channelReply", page("discord/channelReply"), { scope, handle: mintPlayHandle() });
+    const input = { account: "fakeBird", userId: "100", text: "hi", approvedBy: "fakeOwner", confirmLive: true, playHandle: play.handle };
+    expect(guardCall("twitterDmLive", withoutHandle(input), COMMANDS)).toMatchObject({ ok: true });
+    expect(guardCall("twitterDmLive", withoutHandle({ ...input, approvedBy: undefined }), COMMANDS)).toEqual({ ok: false, message: "twitterDmLive: approvedBy is needed on a live run (rule 8)" });
+    const result = await runToolCall("twitterDmLive", input, {}, () => {}, noBrowsers, undefined, false, scope);
+    expect((result.structuredContent as { stderr: string }).stderr).toStartWith("playNotCovering");
   });
 
   test("the call footer comes from the caller's own play", () => {

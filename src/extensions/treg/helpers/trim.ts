@@ -29,7 +29,7 @@ export function trimAnswer(answer: unknown, trim: TregTrim): unknown {
 }
 
 export function trimOf(flags: Record<string, unknown>): { ok: true; trim: TregTrim } | { ok: false; error: string } {
-  const listOf = (raw: unknown) => (typeof raw === 'string' ? raw.split(',').map((s) => s.trim()).filter(Boolean) : [])
+  const listOf = (raw: unknown): string[] => (Array.isArray(raw) ? raw.map(String) : typeof raw === 'string' ? raw.split(',').map((s) => s.trim()).filter(Boolean) : [])
   const where: [string, string][] = []
   for (const pair of listOf(flags['where'])) {
     const at = pair.indexOf('=')
@@ -38,7 +38,7 @@ export function trimOf(flags: Record<string, unknown>): { ok: true; trim: TregTr
   }
   let maxItems: number | undefined
   if (flags['maxItems'] !== undefined) {
-    maxItems = Number(flags['maxItems'])
+    maxItems = typeof flags['maxItems'] === 'number' ? flags['maxItems'] : Number(flags['maxItems'])
     if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 1000) return { ok: false, error: 'maxItems is a whole number from 1 to 1000' }
   }
   return { ok: true, trim: { fields: listOf(flags['fields']), maxItems, where, raw: flags['raw'] === true } }

@@ -22,7 +22,7 @@ export const GOVERNOR_INPUT: CommandInput = {
       effect: "write",
       summary: "Put a platform account's governor count (requests, writes, this hour) back to 0, recorded in log.db, only when the owner says so (rule 168)",
       positionals: [],
-      flags: [{ ...PLATFORM, required: true }, { name: "account", kind: "string", required: true, description: "The account's accountName, or all for every account on that platform" }, { name: "by", kind: "string", required: true, description: "Who said to reset it: matt" }, { name: "reason", kind: "string", description: "What matt said, written to the ledger" }, JSON_FLAG],
+      flags: [{ ...PLATFORM, required: true }, { name: "account", kind: "string", required: true, description: "The account's accountName, or all for every account on that platform" }, { name: "by", kind: "string", required: true, description: "Who said to reset it: the owner" }, { name: "reason", kind: "string", description: "What the owner said, written to the ledger" }, JSON_FLAG],
     },
   ],
 };

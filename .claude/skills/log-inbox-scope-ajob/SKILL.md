@@ -33,7 +33,7 @@ Say: **"go on docs/useCases/inbox/scopeAJob.md for <the person>"**. The agent re
 
 | # | Step | Tool | Done when |
 | --- | --- | --- | --- |
-| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `discordRead` { channel, limit: "120" }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { account, with } | what they have done, what is blocked, and what they are paying for, in a few lines |
+| 1 | Read them in full before asking anything: the whole thread, every file, sheet or screenshot they sent, what they have already built, what they are stuck on, and anything they have said about money | `discordRead` { channel, limit: 120 }, `twitterDms` { with }, `slackRead` { chat }, `instagramDms` { account, with } | what they have done, what is blocked, and what they are paying for, in a few lines |
 | 2 | Read the artefacts they sent, not just the message about them: open the spreadsheet, the doc, the tracker, and say what it actually shows | `read`, the file's own tool (an `.xlsx` through the spreadsheet skill), `mediaView` | each artefact's real content, and the gap between it and the message |
 | 3 | Pull how the owner really writes in that chat, before drafting a word | `voice` { to, with, context } with no text | his latest messages there, his real replies to things like it, and the chat's own length and burst |
 | 4 | Ask the open scope questions, as short lines in his shape, one question per line, and gate the whole draft | `voice` { to, with, context, text }, then the send | every line he would plausibly have typed, and `pass` |

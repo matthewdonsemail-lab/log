@@ -95,3 +95,43 @@ Checked by: code and SubQ
 The docs check refuses a command summary that names one browser (Camoufox, AdsPower, Firefox, Chromium), unless it is that browser's own command or a Camoufox-only command naming Camoufox. Rule 59.
 
 Checked by: code and SubQ
+
+## The command input contract
+
+An MCP call runs the CLI in the same process, so a command's input forms are the one source for its parser, its tool schema, its catalog entry and its reference line. What follows is what each of those says, and the test that holds them together.
+
+### REQ-COMMAND-15: A flag says its kind, range and shape
+
+A flag in an input form is one of `string`, `integer`, `number` (with `min` and `max`), `boolean` (present or not), `booleanValue` (the value `true` or `false`), `enum`, `list` (comma separated on the CLI or the flag repeated, an array in the schema) or `pairs` (`key=value`, repeated). A string or a list item can carry a `pattern` with the words it `takes`, or a named `format`: `date` (YYYY-MM-DD), `time` (anything `Date.parse` reads), `dateOrSpan` (a date, or `7d`, `4w`, `12h`) or `jsonObject`. A form can carry `groups` (`atLeastOne`, `atMostOne`) and `counts` (a positional list that needs at least N entries when another value is one of a set, as `inspect do` needs one value for `goto` and two for `type`). A flag that a refusal already had a code for keeps it (`refusal`, such as `limitInvalid` or `secondsInvalid`); every other bad value is `inputInvalid`. A form marked `terminalOnly` is parsed and documented but is never a tool (`log console --web`).
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-16: The CLI parses once into typed values
+
+`parseArgs` with `parserSpecOf(input)` picks the form by its words, then reads each flag as that form declares it into `values` (numbers, booleans, arrays, objects), and keeps the raw text in `flags`. A bad value is one refusal that names the flag, what it got and what it takes (`inputInvalid: --limit got "ten"; it takes a whole number from 1 to 200`). A scalar flag given twice is refused, on every `parseArgs` spec, instead of the last one winning; a list or pairs flag may repeat. `pairs` and `global` flags are in the parser spec. The groups and counts of the form are enforced after the flags. Commands read `numberOf`, `listOf` and `truthOf`, never `Number(...)` or `.split(",")` over a flag declared `string`; `check:agnostic` counts those (`stringFlagReparses`, baseline 0).
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-17: The tool schema says what run enforces
+
+`inputSchemaOf` gives `integer` and `number` with `minimum` and `maximum`, `array` of strings with `minItems` for a list, `boolean` for a true-or-false value, and `pattern` and `format` for a shaped string. A group or a count is a sentence on each property it names, never a top-level `anyOf` or `oneOf`: some model providers refuse a combinator at the top of a tool's input. `argvOfInput` turns numbers back into `--name=value`, a list into the flag repeated once per item, and a true-or-false value into `--name=true|false`, and enforces the same groups and counts. For one release it coerces a numeric string to a number, a comma string to a list and `"true"`/`"false"` to a boolean, so callers that still send `limit: "20"` keep working.
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-18: approvedBy is required on a live tool whose command needs it
+
+A flag marked `approval` is in `required` on the form's `*Live` tool, and `argvOfInput` refuses a live call without it. It is marked on the commands that refuse `--live` without `--approvedBy`: the X sends, likes, reposts, follows, dms, lists, reacts and voice notes, the Reddit post, reply and vote, the Discord send, delete, react and voice, the Slack send, react and voice, and the Instagram send, react and voice (24 tools). `tregCallLive` is not: a free endpoint runs without it.
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-19: Every form tool is driven through its command's own run
+
+`src/cli/runner/runRoundTrip.test.ts` builds, for every non-live form tool, a minimal input from its schema, then each optional field on its own, passes each through `argvOfInput` and runs the command's own `run` with stubbed engines, Twenty, treg and fetch in a temporary home, and fails when a schema-valid input is refused for a parse or input reason. A second pass sets each bounded flag to its minimum and maximum (they must run) and one past each (the schema and `run` must both refuse it). Its skip list is three forms that start a process (`inspectStart`, `facebookHostStart`, `mediaDescriber`), and `instagramDms.limit` is the one bound that depends on another field.
+
+Checked by: code and SubQ
+
+### REQ-COMMAND-20: The reference lists typed flags from the input forms
+
+For a command with input forms, `docs/reference.md` lists each flag from the forms with its kind and range (`[--limit <integer 1..1000>]`), optional flags in brackets, and adds any flag only its usage names. A command with no forms keeps the flags read from its usage.
+
+Checked by: code and SubQ

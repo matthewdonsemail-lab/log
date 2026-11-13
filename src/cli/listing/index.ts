@@ -91,8 +91,8 @@ export const LISTING_INPUT: CommandInput = {
       summary: "Delete a listing on Facebook from its account's Selling page, then set it REMOVED in Twenty (the row stays); a dry run unless live",
       positionals: [{ name: "listing", kind: "string", required: true, description: "The agencyListing id, or the Facebook listing id" }],
       flags: [
-        { name: "live", kind: "boolean", live: true, description: "Delete it on Facebook, only when matt asked (rule 8)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "live", kind: "boolean", live: true, description: "Delete it on Facebook, only when the owner asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
         JSON_FLAG,
       ],

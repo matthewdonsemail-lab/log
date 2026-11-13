@@ -15,7 +15,7 @@ import type { AudioOf } from "../transcribe/index.ts";
 import { profileFor, readProfiles, splitPlan } from "../../voice/pairs/index.ts";
 import type { VoiceProfile } from "../../voice/pairs/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandInput, CommandResult, FlagSpec } from "../runner/types.ts";
 
 export const SLACK_SESSION_USAGE = [
@@ -167,7 +167,7 @@ export const SLACK_CHATS_INPUT: CommandInput = {
       words: [],
       summary: "The account's DMs and group DMs in a workspace, with their ids",
       positionals: [],
-      flags: [SLACK_ACCOUNT, SLACK_WORKSPACE, { name: "limit", kind: "string", description: "How many, default 30, at most 200" }, JSON_FLAG],
+      flags: [SLACK_ACCOUNT, SLACK_WORKSPACE, { name: "limit", kind: "integer", min: 1, max: 200, description: "How many, default 30, at most 200" }, JSON_FLAG],
     },
   ],
 };
@@ -184,8 +184,7 @@ export const slackChatsCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_CHATS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log slack chats: ${parsed.error}\n${SLACK_CHATS_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log slack chats: takes no words, only flags\n${SLACK_CHATS_USAGE}` };
-    const limit = parsed.flags["limit"] === undefined ? 30 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 200) return { code: 1, stderr: `log slack chats: --limit must be 1 to 200\n${SLACK_CHATS_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 30;
     try {
       const opened = await openAccount(context, "slack chats", parsed.flags);
       if (!opened.ok) return opened.result;
@@ -216,9 +215,9 @@ export const SLACK_READ_INPUT: CommandInput = {
       positionals: [],
       flags: [
         SLACK_ACCOUNT,
-        { name: "chat", kind: "string", required: true, description: "The chat as matt says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
+        { name: "chat", kind: "string", required: true, description: "The chat as the owner says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
         SLACK_WORKSPACE,
-        { name: "limit", kind: "string", description: "How many of the latest messages, default 30, at most 1000" },
+        { name: "limit", kind: "integer", min: 1, max: 1000, description: "How many of the latest messages, default 30, at most 1000" },
         JSON_FLAG,
       ],
     },
@@ -248,8 +247,7 @@ export const slackReadCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_READ_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log slack read: ${parsed.error}\n${SLACK_READ_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log slack read: takes no words, only flags\n${SLACK_READ_USAGE}` };
-    const limit = parsed.flags["limit"] === undefined ? 30 : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) return { code: 1, stderr: `log slack read: --limit must be 1 to 1000\n${SLACK_READ_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? 30;
     try {
       const opened = await openAccount(context, "slack read", parsed.flags);
       if (!opened.ok) return opened.result;
@@ -288,8 +286,8 @@ export const SLACK_WATCH_INPUT: CommandInput = {
       flags: [
         SLACK_ACCOUNT,
         SLACK_WORKSPACE,
-        { name: "chat", kind: "string", description: "Only this chat (as matt says it) or its id" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (at least 5); default: until stopped" },
+        { name: "chat", kind: "string", description: "Only this chat (as the owner says it) or its id" },
+        { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new DM, group message or mention of the account to the inbox hook" },
         JSON_FLAG,
       ],
@@ -325,8 +323,8 @@ export const slackWatchCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(SLACK_WATCH_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log slack watch: ${parsed.error}\n${SLACK_WATCH_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log slack watch: takes no words, only flags\n${SLACK_WATCH_USAGE}` };
-    const seconds = parsed.flags["seconds"] === undefined ? 0 : Number(parsed.flags["seconds"]);
-    if (!Number.isFinite(seconds) || (seconds !== 0 && seconds < 5)) return refuse("slack watch", "secondsInvalid", "--seconds must be at least 5");
+    const seconds = numberOf(parsed, "seconds") ?? 0;
+    if (seconds !== 0 && seconds < 5) return refuse("slack watch", "secondsInvalid", "--seconds must be at least 5");
     try {
       const opened = await openAccount(context, "slack watch", parsed.flags);
       if (!opened.ok) return opened.result;
@@ -396,12 +394,12 @@ export const SLACK_SEND_INPUT: CommandInput = {
       positionals: [],
       flags: [
         SLACK_ACCOUNT,
-        { name: "chat", kind: "string", required: true, description: "The chat as matt says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
-        { name: "text", kind: "string", required: true, description: "The message, as matt gave it" },
+        { name: "chat", kind: "string", required: true, description: "The chat as the owner says it (\"sam\"), matched to one DM or group; or its id (D…, G…, C…)" },
+        { name: "text", kind: "string", required: true, description: "The message, as the owner gave it" },
         SLACK_WORKSPACE,
-        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
+        { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
         { name: "asOne", kind: "boolean", description: "Send it as one message, never split" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Slack, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Slack, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
     },

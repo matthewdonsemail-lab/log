@@ -9,6 +9,7 @@ export interface CapabilityInput {
   kind: "string" | "integer";
   description: string;
   required?: boolean;
+  min?: number;
 }
 
 export type InputMapping = { flag: string } | { positional: true } | { choose: (value: string) => { flag: string }; flags: readonly string[] };

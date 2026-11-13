@@ -2,7 +2,7 @@ import type { CapabilityDefinition, CapabilityInput } from "../types.ts";
 
 const ACCOUNT: CapabilityInput = { name: "account", kind: "string", required: true, description: "The account, by its accountName. Its platform is the one it is kept under, unless platform is given" };
 const SPACE: CapabilityInput = { name: "space", kind: "string", description: "Where the chats live, on a platform with more than one place per account (a workspace's domain); refused with inputUnsupported on a platform whose command takes none" };
-const LIMIT: CapabilityInput = { name: "limit", kind: "integer", description: "At most this many; refused with inputUnsupported on a platform whose command has no limit" };
+const LIMIT: CapabilityInput = { name: "limit", kind: "integer", min: 1, description: "At most this many; refused with inputUnsupported on a platform whose command has no limit" };
 const CHAT: CapabilityInput = { name: "chat", kind: "string", required: true, description: "The chat: as the owner says it (a name or handle) or its id, from chatsList" };
 
 const X_CONVERSATION_ID = /^\d+[-:]\d+$/;

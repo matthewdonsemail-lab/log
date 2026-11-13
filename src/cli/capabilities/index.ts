@@ -11,7 +11,7 @@ export const capabilityDeps: { accounts: () => CapabilityAccount[]; commands: ()
 
 const PLATFORM_FLAG: FlagSpec = { name: "platform", kind: "enum", values: PLATFORMS, description: "The platform; left out, it is the one the account is kept under. Given, it must be the account's" };
 
-const flagOf = (input: CapabilityInput): FlagSpec => ({ name: input.name, kind: input.kind, description: input.description, ...(input.required ? { required: true } : {}) });
+const flagOf = (input: CapabilityInput): FlagSpec => ({ name: input.name, kind: input.kind, description: input.description, ...(input.required ? { required: true } : {}), ...(input.min !== undefined ? { min: input.min } : {}) });
 
 const platformsLine = (definition: CapabilityDefinition): string => `Platforms: ${platformsWith(definition).map((p) => PLATFORM_LABELS[p]).join(", ")}.`;
 

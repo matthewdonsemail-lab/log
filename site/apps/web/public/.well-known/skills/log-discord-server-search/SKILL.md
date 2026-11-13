@@ -27,7 +27,7 @@ Say: **"go on docs/useCases/discord/serverSearch.md for <server>, looking for <w
 | --- | --- | --- | --- |
 | 1 | Search the server for the subject, narrowed to the person when the owner names one | `discordSearch` { account, server: "<server>", query: "<words>", from: "<who>" } | hits with their time, author, text and where each one is (`"<server> #<channel>"` or a post) |
 | 2 | When nothing comes back, search again with other words the owner or they would have used | `discordSearch` { account, server: "<server>", query: "<other words>" } | the hit, or two searches with nothing |
-| 3 | Read the conversation around the hit, text only, in the channel or post it names | `discordRead` { account, channel: "<where the hit is>", limit: "60", noMedia: true } | the whole exchange: what was asked and every answer |
+| 3 | Read the conversation around the hit, text only, in the channel or post it names | `discordRead` { account, channel: "<where the hit is>", limit: 60, noMedia: true } | the whole exchange: what was asked and every answer |
 | 4 | Tell the owner what was said | the reply to the owner | who said what, when (the owner's time), quoted closely, and what it means for what the owner asked |
 
 ## What to know

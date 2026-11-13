@@ -70,6 +70,12 @@ export function repoInput(root: string = REPO_ROOT): ScorecardInput {
     skillFiles: filesIn(root, "skills", [".md"]),
     hookFiles: [...filesIn(root, "src/agentHooks", [".ts"]), ...filesIn(root, "src/observability/liveLog", [".ts"]), ...filesIn(root, "src/mcp/freshness", [".ts"]), ...filesIn(root, "scripts/hooks", [".ts"])].filter((f) => !f.path.endsWith(".test.ts")),
     codeFiles: [...filesIn(root, "src", [".ts", ".tsx", ".mjs", ".js"]), ...filesIn(root, "scripts", [".ts", ".mjs", ".js"])],
+    declaredFlags: COMMANDS.flatMap((command) => {
+      const entry = modules.get(`${command.platform}:${command.name}`);
+      if (!entry || !command.input) return [];
+      const folder = entry.module.slice(0, entry.module.lastIndexOf("/") + 1);
+      return command.input.forms.flatMap((form) => form.flags.map((flag) => ({ folder, name: flag.name, kind: flag.kind })));
+    }),
     hasMachine: (command: ScoredCommand) => {
       const entry = modules.get(`${command.platform}:${command.name}`);
       return entry ? hasMachine(root, entry.module, entry.exportName) : false;

@@ -1,6 +1,6 @@
 import { findInstagramAccount, recordInstagramSession, instagramGate } from "../../instagram/account/session/index.ts";
 import type { PlatformAccount, PlatformAnswer } from "../../platformKit/session/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput, CommandResult } from "../runner/types.ts";
 import { watermarkLine, watermarkReadingOf } from "../../twitter/copy/watermark/index.ts";
 import { addPending, interruptedLines } from "../../inbox/watch/index.ts";
@@ -86,7 +86,7 @@ export const INSTAGRAM_DMS_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
         { name: "with", kind: "string", description: "Read one thread: who it is with (their handle), its name, or its id" },
-        { name: "limit", kind: "string", description: "Threads to list (default 20, at most 100), or messages to read with --with (default 30, at most 200)" },
+        { name: "limit", kind: "integer", min: 1, max: 200, description: "Threads to list (default 20, at most 100), or messages to read with --with (default 30, at most 200)" },
         JSON_FLAG,
       ],
     },
@@ -154,8 +154,8 @@ export const instagramDmsCommand: Command = {
     if (parsed.positionals.length) return { code: 1, stderr: `log instagram dms: takes no words, only flags\n${INSTAGRAM_DMS_USAGE}` };
     const said = typeof parsed.flags["with"] === "string" ? parsed.flags["with"].trim() : "";
     const most = said ? 200 : 100;
-    const limit = parsed.flags["limit"] === undefined ? (said ? 30 : 20) : Number(parsed.flags["limit"]);
-    if (!Number.isInteger(limit) || limit < 1 || limit > most) return { code: 1, stderr: `log instagram dms: --limit must be 1 to ${most}\n${INSTAGRAM_DMS_USAGE}` };
+    const limit = numberOf(parsed, "limit") ?? (said ? 30 : 20);
+    if (limit > most) return { code: 1, stderr: `log instagram dms: --limit must be 1 to ${most}\n${INSTAGRAM_DMS_USAGE}` };
     try {
       const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
       const gate = instagramGate(account);
@@ -206,13 +206,14 @@ export const INSTAGRAM_SEND_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
         { name: "with", kind: "string", required: true, description: "Who it goes to: their handle, a thread's name, or its id" },
-        { name: "text", kind: "string", description: "The message, as matt gave it; one message per line" },
+        { name: "text", kind: "string", description: "The message, as the owner gave it; one message per line" },
         { name: "photo", kind: "string", description: "A picture to send first (a meme, a screenshot): the file's path" },
         { name: "asOne", kind: "boolean", description: "Send the text as one message, never split" },
-        { name: "approvedBy", kind: "string", description: "Who approved it: needed with --live (rule 8)" },
-        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when matt asked (rule 8); without it a dry run contacts nothing" },
+        { name: "approvedBy", kind: "string", approval: true, description: "Who approved it: needed with --live (rule 8)" },
+        { name: "live", kind: "boolean", live: true, description: "Send it on Instagram, only when the owner asked (rule 8); without it a dry run contacts nothing" },
         JSON_FLAG,
       ],
+      groups: [{ rule: "atLeastOne", names: ["text", "photo"] }],
     },
   ],
 };
@@ -304,7 +305,7 @@ export const INSTAGRAM_WATCH_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The INSTAGRAM socialAccount's accountName (its handle)" },
-        { name: "seconds", kind: "string", description: "Stop after this many seconds (at least 5); default: until stopped" },
+        { name: "seconds", kind: "number", min: 0, refusal: "secondsInvalid", description: "Stop after this many seconds (at least 5); default: until stopped" },
         { name: "inbox", kind: "boolean", description: "Hand each new message from someone else to the inbox hook" },
         JSON_FLAG,
       ],
@@ -333,8 +334,8 @@ export const instagramWatchCommand: Command = {
     const parsed = parseArgs(argv, parserSpecOf(INSTAGRAM_WATCH_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log instagram watch: ${parsed.error}\n${INSTAGRAM_WATCH_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log instagram watch: takes no words, only flags\n${INSTAGRAM_WATCH_USAGE}` };
-    const seconds = parsed.flags["seconds"] === undefined ? 0 : Number(parsed.flags["seconds"]);
-    if (!Number.isFinite(seconds) || (seconds !== 0 && seconds < 5)) return refuse("instagram watch", "secondsInvalid", "--seconds must be at least 5");
+    const seconds = numberOf(parsed, "seconds") ?? 0;
+    if (seconds !== 0 && seconds < 5) return refuse("instagram watch", "secondsInvalid", "--seconds must be at least 5");
     try {
       const account = await findInstagramAccount(context.twenty, String(parsed.flags["account"]));
       const gate = instagramGate(account);

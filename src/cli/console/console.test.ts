@@ -55,7 +55,7 @@ describe("log console screens", () => {
   test("is registered like every other command, with one MCP form per screen", () => {
     expect(COMMANDS).toContain(consoleCommand);
     expect(COMMAND_INDEX.find((entry) => entry.name === "console")).toEqual({ name: "console", platform: "any", module: "src/cli/console/index.ts", exportName: "consoleCommand" });
-    expect(consoleCommand.input?.forms.map((form) => form.words[0])).toEqual(CONSOLE_SCREENS.map((screen) => screen.domain));
+    expect(consoleCommand.input?.forms.filter((form) => !form.terminalOnly).map((form) => form.words[0])).toEqual(CONSOLE_SCREENS.map((screen) => screen.domain));
     expect(consoleCommand.input?.forms.every((form) => form.effect === "read")).toBe(true);
   });
 
@@ -91,7 +91,7 @@ describe("log console screens", () => {
   test("bad input is refused with the usage", async () => {
     const { context } = capture();
     expect((await runConsole(context, ["teams"])).code).toBe(1);
-    expect((await runConsole(context, ["usage", "--days", "3"])).stderr).toContain("--days is one of 1, 7, 30");
+    expect((await runConsole(context, ["usage", "--days", "3"])).stderr).toContain("inputInvalid: --days got \"3\"; it takes one of 1, 7, 30");
     expect((await runConsole(context, ["events", "--status", "odd"])).code).toBe(1);
     expect((await runConsole(context, ["events", "--page", "-1"])).code).toBe(1);
     expect((await runConsole(context, ["connections", "--platform", "myspace"])).code).toBe(1);

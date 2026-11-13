@@ -9,7 +9,7 @@ export const CATALOG_GUIDE = "logCatalog";
 export const SEARCH_LIMIT = 8;
 export const SEARCH_LIMIT_MAX = 25;
 
-export type InputType = "string" | "integer" | "boolean" | "enum" | "pairs" | "list";
+export type InputType = "string" | "integer" | "number" | "boolean" | "enum" | "pairs" | "list";
 
 export interface CatalogInput {
   name: string;

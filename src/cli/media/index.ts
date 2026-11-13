@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { describerEnv } from "../../inbox/watch/index.ts";
 import { enqueueMedia, mediaLine, mediaView } from "../../media/describer/index.ts";
 import type { MediaRow } from "../../media/describer/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const MEDIA_USAGE = [
@@ -21,7 +21,7 @@ export const MEDIA_USAGE = [
 export const MEDIA_INPUT: CommandInput = {
   forms: [
     { words: ["describer"], summary: "Run the one media describer on this machine: the vision model loaded once, describing the queue one item at a time", positionals: [], flags: [JSON_FLAG] },
-    { words: ["describe"], summary: "Queue one local image or video for the describer and wait for its description", positionals: [{ name: "path", kind: "string", required: true, description: "The image or video file" }], flags: [{ name: "wait", kind: "string", description: "How long to wait for the description, in seconds, default 120" }, JSON_FLAG] },
+    { words: ["describe"], summary: "Queue one local image or video for the describer and wait for its description", positionals: [{ name: "path", kind: "string", required: true, description: "The image or video file" }], flags: [{ name: "wait", kind: "number", min: 0, description: "How long to wait for the description, in seconds, default 120" }, JSON_FLAG] },
     { words: ["status"], summary: "The media queue: how many wait, are described, not described yet or failed, and whether the describer runs", positionals: [], flags: [JSON_FLAG] },
     { words: ["view"], summary: "One media item: what it is as text, and its kept preview picture (returned as an image over MCP)", positionals: [{ name: "id", kind: "string", required: true, description: "The media id, from a line's (picture: media view <id>)" }], flags: [JSON_FLAG] },
   ],
@@ -73,7 +73,7 @@ export const mediaCommand: Command = {
       if (sub === "describe") {
         const path = resolve(String(parsed.positionals[0] ?? ""));
         if (!existsSync(path)) return refuse("media describe", "mediaInvalid", `no file at ${path}`);
-        const waitSeconds = typeof parsed.flags["wait"] === "string" ? Number(parsed.flags["wait"]) : 120;
+        const waitSeconds = numberOf(parsed, "wait") ?? 120;
         const row = enqueueMedia({ eventId: `file:${path}`, platform: "local", account: "", name: basename(path), path });
         if (!row) return refuse("media describe", "mediaInvalid", "the file could not be queued");
         context.err(`media describe: #${row.id} ${row.kind} ${row.name} ${row.status}`);

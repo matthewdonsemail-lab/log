@@ -4,12 +4,12 @@ import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } fr
 import { homedir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { addGoalEvent, clearCurrentInspect, currentInspectPath, evidenceOf, GOAL_FINDINGS_FILE, goalEvents, goalLine, goalProgress, goalProgressOf, INSPECT_ACTIONS, lastStepOf, stepBefore, LIVE_ACTIONS, openInspects, parseInspectAction, peeMarkdown, readCurrentInspect, renderInspectStep, runReadings, writeCurrentInspect } from "../../browser/inspect/index.ts";
+import { ARITY, addGoalEvent, clearCurrentInspect, currentInspectPath, evidenceOf, GOAL_FINDINGS_FILE, goalEvents, goalLine, goalProgress, goalProgressOf, INSPECT_ACTIONS, lastStepOf, stepBefore, LIVE_ACTIONS, openInspects, parseInspectAction, peeMarkdown, readCurrentInspect, renderInspectStep, runReadings, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import type { CurrentInspect } from "../../browser/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
-import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG } from "../runner/helpers/index.ts";
+import { JSON_FLAG, numberOf, parseArgs, parserSpecOf, PROXY_MS_FLAG } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { browserFor } from "../../browser/driver/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
@@ -88,7 +88,7 @@ export const INSPECT_INPUT: CommandInput = {
       flags: [
         { name: "account", kind: "string", required: true, description: "The account to open" },
         { name: "url", kind: "string", description: "The first page (https://www.facebook.com/..., or the account's own platform; default: the platform's home)" },
-        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when the owner asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "noIdleMouse", kind: "boolean", description: "No idle mouse loop between steps" },
         { name: "detach", kind: "boolean", description: "Run as its own process and return once open: set it over MCP" },
@@ -104,12 +104,13 @@ export const INSPECT_INPUT: CommandInput = {
         { name: "values", kind: "rest", description: "The step's values in order, each whole: goto [url], wait [s], click [ref], type [ref, text], press [key], upload [ref, file], highlight [role, name]" },
       ],
       flags: [
-        { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on the platform, only when matt asked (rule 8)` },
+        { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on the platform, only when the owner asked (rule 8)` },
         { name: "goal", kind: "string", description: "What this step is for, if not the session's goal (rule 74)" },
-        { name: "timeout", kind: "integer", description: "Seconds to wait for the step" },
+        { name: "timeout", kind: "integer", min: 5, max: 900, description: "Seconds to wait for the step, 5 to 900 (default 120)" },
         { name: "account", kind: "string", description: "Picks the session when more than one is open" },
         JSON_FLAG,
       ],
+      counts: [1, 2, 3].map((min) => ({ name: "values", min, when: { name: "action", values: INSPECT_ACTIONS.filter((a) => ARITY[a] === min) } })),
     },
     {
       words: ["read"],
@@ -144,7 +145,7 @@ export const INSPECT_INPUT: CommandInput = {
         { name: "point", kind: "string", description: "Point: the issue, in one clear sentence" },
         { name: "evidence", kind: "string", description: "Evidence of your own, added to what the step's reading quotes" },
         { name: "explain", kind: "string", description: "Explain: why the evidence shows it, and what caused it" },
-        { name: "fixes", kind: "integer", description: "The finding this fix is for" },
+        { name: "fixes", kind: "integer", min: 1, description: "The finding this fix is for" },
         { name: "fix", kind: "string", description: "How it was fixed" },
         { name: "account", kind: "string", description: "Picks the session when more than one is open" },
       ],
@@ -258,8 +259,7 @@ export const inspectCommand: Command = {
         if (accountName) return { code: 1, stderr: `log inspect: no session is open for ${accountName} (open: ${open.map((s) => s.account).join(", ")})` };
         return { code: 1, stderr: `log inspect: ${open.length} sessions are open (${open.map((s) => s.account).join(", ")}): add --account <name>` };
       }
-      const timeout = parsed.flags["timeout"] === undefined ? 120 : Number(parsed.flags["timeout"]);
-      if (!Number.isFinite(timeout) || timeout < 5 || timeout > 900) return { code: 1, stderr: `log inspect: --timeout must be 5 to 900 seconds\n${INSPECT_USAGE}` };
+      const timeout = numberOf(parsed, "timeout") ?? 120;
       const reply = await context.sendInspect(current, action.action, action.args, timeout * 1000);
       if (!reply) return { code: 1, stderr: `log inspect: no reply from the session in ${timeout} s (is it still open? ${current.runDir})` };
       const goal = typeof parsed.flags["goal"] === "string" ? parsed.flags["goal"] : current.goal ?? null;
@@ -301,7 +301,7 @@ export const inspectCommand: Command = {
       if ("code" in session) return session;
       const at = (context.now?.() ?? new Date()).toISOString();
       if (parsed.flags["fixes"] !== undefined) {
-        const n = Number(parsed.flags["fixes"]);
+        const n = numberOf(parsed, "fixes") ?? 0;
         const fix = typeof parsed.flags["fix"] === "string" ? parsed.flags["fix"].trim() : "";
         if (!fix) return { code: 1, stderr: "log inspect: --fixes needs --fix <how it was fixed>" };
         if (!goalProgress(session).findings.some((f) => f.n === n)) return { code: 1, stderr: `log inspect: there is no finding ${n}` };
